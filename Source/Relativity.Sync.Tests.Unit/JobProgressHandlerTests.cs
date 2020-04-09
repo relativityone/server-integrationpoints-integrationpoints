@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using kCura.Relativity.DataReaderClient;
 using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -22,8 +22,6 @@ namespace Relativity.Sync.Tests.Unit
 		private TestScheduler _testScheduler;
 
 		private const int _THROTTLE_SECONDS = 5;
-
-		private static readonly Lazy<PropertyInfo> _jobReportTotalRowsProperty = new Lazy<PropertyInfo>(GetJobReportTotalRowsPropertyInfo);
 
 		[SetUp]
 		public void SetUp()
@@ -58,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit
 				for (int i = 0; i < numberOfEvents; i++)
 				{
 					_testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(delayBetweenEvents).Ticks);
-					_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+					_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 				}
 			}
 
@@ -77,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				for (int i = 0; i < numberOfItemProcessedEvents; i++)
 				{
-					_bulkImportJobStub.Raise(x => x.OnProgress += null, i);
+					_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(i));
 				}
 
 				for (int i = 0; i < numberOfItemErrorEvents; i++)
@@ -140,9 +138,9 @@ namespace Relativity.Sync.Tests.Unit
 			{
 				using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batchId++, 1))
 				{
-					bulkImportJob.Raise(x => x.OnProgress += null, 0);
+					bulkImportJob.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 
-					bulkImportJob.Raise(x => x.OnProgress += null, 0); // to cover for decrement in OnError handling
+					bulkImportJob.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0)); // to cover for decrement in OnError handling
 					bulkImportJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
 				}
 			}
@@ -159,9 +157,9 @@ namespace Relativity.Sync.Tests.Unit
 			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
-				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 
-				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0); // to cover for decrement in OnError handling
+				_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0)); // to cover for decrement in OnError handling
 				_bulkImportJobStub.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
 
 				_bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(1, 1));
@@ -169,7 +167,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 1, 1))
 			{
-				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 			}
 
 			_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
@@ -209,10 +207,10 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			foreach (var jobMock in bulkImportJobs)
 			{
-				jobMock.VerifyRemove(m => m.OnProgress -= It.IsAny<IImportNotifier.OnProgressEventHandler>(), Times.Exactly(batchCount));
-				jobMock.VerifyRemove(m => m.OnItemLevelError -= It.IsAny<OnSyncImportBulkArtifactJobItemLevelErrorEventHandler>(), Times.Exactly(batchCount));
-				jobMock.VerifyRemove(m => m.OnComplete -= It.IsAny<IImportNotifier.OnCompleteEventHandler>(), Times.Exactly(batchCount));
-				jobMock.VerifyRemove(m => m.OnFatalException -= It.IsAny<IImportNotifier.OnFatalExceptionEventHandler>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnProgress -= It.IsAny<SyncJobEventHandler<ImportApiJobProgress>>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnItemLevelError -= It.IsAny<SyncJobEventHandler<ItemLevelError>>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnComplete -= It.IsAny<SyncJobEventHandler<ImportApiJobStatistics>>(), Times.Exactly(batchCount));
+				jobMock.VerifyRemove(m => m.OnFatalException -= It.IsAny<SyncJobEventHandler<ImportApiJobStatistics>>(), Times.Exactly(batchCount));
 			}
 		}
 		
@@ -226,10 +224,10 @@ namespace Relativity.Sync.Tests.Unit
 			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
-				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 
-				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 			}
 
@@ -248,10 +246,10 @@ namespace Relativity.Sync.Tests.Unit
 			// act
 			using (_sut.AttachToImportJob(_bulkImportJobStub.Object, 0, 1))
 			{
-				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 
-				_bulkImportJobStub.Raise(x => x.OnProgress += null, 0);
+				_bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
 				_testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 			}
 
@@ -280,29 +278,11 @@ namespace Relativity.Sync.Tests.Unit
 			Dispose();
 		}
 
-		private static PropertyInfo GetJobReportTotalRowsPropertyInfo()
+		private static ImportApiJobStatistics CreateJobReport(int itemsProcessed, int itemsWithErrors)
 		{
-			return typeof(JobReport).GetProperty(nameof(JobReport.TotalRows));
+			return new ImportApiJobStatistics(itemsProcessed + itemsWithErrors, itemsWithErrors, 0, 0);
 		}
 		
-		private static JobReport CreateJobReport(int itemsProcessed, int itemsWithErrors)
-		{
-			JobReport jobReport = CreateJobReport();
-			var jobError = new JobReport.RowError(0, "", "");
-			for (int i = 0; i < itemsWithErrors; i++)
-			{
-				jobReport.ErrorRows.Add(jobError);
-			}
-			_jobReportTotalRowsProperty.Value.SetValue(jobReport, itemsProcessed + itemsWithErrors);
-			return jobReport;
-		}
-		
-		private static JobReport CreateJobReport()
-		{
-			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
-			return jobReport;
-		}
-
 		public void Dispose()
 		{
 			_sut?.Dispose();

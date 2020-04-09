@@ -19,6 +19,7 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -34,6 +35,8 @@ namespace Relativity.Sync.Tests.Integration
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
 		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
+
+		private static readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
@@ -137,7 +140,7 @@ namespace Relativity.Sync.Tests.Integration
 				{
 					dataReader.Read();
 				}
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
 			});
 
 			SetupFieldQueryResult();
@@ -191,7 +194,7 @@ namespace Relativity.Sync.Tests.Integration
 					dataReader.Read();
 				}
 
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
 			});
 
 			SetupFieldQueryResult();
@@ -234,8 +237,8 @@ namespace Relativity.Sync.Tests.Integration
 			
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, _emptyJobStatistsics);
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
 			});
 
 			MassCreateResult massCreateResult = new MassCreateResult()
@@ -454,12 +457,6 @@ namespace Relativity.Sync.Tests.Integration
 				},
 				Value = value
 			};
-		}
-
-		private static JobReport CreateJobReport()
-		{
-			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
-			return jobReport;
 		}
 	}
 }

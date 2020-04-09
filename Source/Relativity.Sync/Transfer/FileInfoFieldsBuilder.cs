@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
@@ -7,10 +7,12 @@ namespace Relativity.Sync.Transfer
 	internal sealed class FileInfoFieldsBuilder : ISpecialFieldBuilder
 	{
 		private readonly INativeFileRepository _nativeFileRepository;
+		private readonly ISyncLog _logger;
 
-		public FileInfoFieldsBuilder(INativeFileRepository nativeFileRepository)
+		public FileInfoFieldsBuilder(INativeFileRepository nativeFileRepository, ISyncLog logger)
 		{
 			_nativeFileRepository = nativeFileRepository;
+			_logger = logger;
 		}
 
 		public IEnumerable<FieldInfoDto> BuildColumns()
@@ -28,13 +30,20 @@ namespace Relativity.Sync.Transfer
 				.QueryAsync(sourceWorkspaceArtifactId, documentArtifactIds)
 				.ConfigureAwait(false);
 
-			List<INativeFile> nativeFileInfoList = nativeFileInfo.ToList();
-			HashSet<int> documentsWithNatives = new HashSet<int>(nativeFileInfoList.Select(x => x.DocumentArtifactId));
+			IDictionary<int, INativeFile> artifactIdToNativeFile = new Dictionary<int, INativeFile>(documentArtifactIds.Count);
 
-			IDictionary<int, INativeFile> artifactIdToNativeFile = nativeFileInfoList.ToDictionary(n => n.DocumentArtifactId);
-			List<int> documentsWithoutNatives = documentArtifactIds.Where(x => !documentsWithNatives.Contains(x)).ToList();
-
-			artifactIdToNativeFile.AddMany(documentsWithoutNatives, NativeFile.Empty.Repeat());
+			foreach (INativeFile nativeFile in nativeFileInfo)
+			{
+				if (artifactIdToNativeFile.ContainsKey(nativeFile.DocumentArtifactId))
+				{
+					artifactIdToNativeFile[nativeFile.DocumentArtifactId].IsDuplicated = true;
+					_logger.LogWarning("Duplicated native file detected for document Artifact ID: {artifactId}", nativeFile.DocumentArtifactId);
+				}
+				else
+				{
+					artifactIdToNativeFile.Add(nativeFile.DocumentArtifactId, nativeFile);
+				}
+			}
 
 			return new FileInfoRowValuesBuilder(artifactIdToNativeFile);
 		}

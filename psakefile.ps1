@@ -62,7 +62,8 @@ Task Package -Description "Package up the build artifacts" {
     $syncBin = Join-Path $SourceDir "\Relativity.Sync\bin"
     Move-Output -Source $syncBin -Destination "$syncBin\net462"
     
-    & $paketExe pack $ArtifactsDir --include-referenced-projects --symbols
+    $NuGetPath = Join-Path $ArtifactsDir "NuGet"
+    & $paketExe pack $NuGetPath --include-referenced-projects --symbols
 
     Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
 }

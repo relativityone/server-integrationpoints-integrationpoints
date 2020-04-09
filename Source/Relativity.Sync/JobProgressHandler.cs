@@ -8,9 +8,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using kCura.Relativity.DataReaderClient;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync
 {
@@ -53,7 +53,7 @@ namespace Relativity.Sync
 			SyncBatchProgress batchProgress = new SyncBatchProgress(batchId, totalItemsInBatch);
 
 			IDisposable itemProcessedSubscription = Observable
-				.FromEvent<IImportNotifier.OnProgressEventHandler, long>(
+				.FromEvent<SyncJobEventHandler<ImportApiJobProgress>, ImportApiJobProgress>(
 					handler => job.OnProgress += handler,
 					 handler => job.OnProgress -= handler)
 					.Do(_ =>
@@ -63,7 +63,7 @@ namespace Relativity.Sync
 				}).Subscribe();
 
 			IDisposable itemFailedSubscription = Observable
-				.FromEvent<OnSyncImportBulkArtifactJobItemLevelErrorEventHandler, ItemLevelError>(
+				.FromEvent<SyncJobEventHandler<ItemLevelError>, ItemLevelError>(
 					 handler => job.OnItemLevelError += handler,
 					 handler => job.OnItemLevelError -= handler)
 					.Do(_ =>
@@ -75,15 +75,14 @@ namespace Relativity.Sync
 					// When IAPI completes processing of batch, it checks each item if it was successfully processed. If not, it fires OnError event for each of the items.
 					// That's why in HandleItemError method, we are decrementing number of successfully processed items and
 					// incrementing number of failed items.
-
-
+					
 					batchProgress.ItemsFailed++;
 					batchProgress.ItemsProcessed--;
 					_changeSignal.OnNext(Unit.Default);
 				}).Subscribe();
 
-			IObservable<JobReport> batchCompletedReports = Observable
-				.FromEvent<IImportNotifier.OnCompleteEventHandler, JobReport>(
+			IObservable<ImportApiJobStatistics> batchCompletedReports = Observable
+				.FromEvent<SyncJobEventHandler<ImportApiJobStatistics>, ImportApiJobStatistics>(
 					handler => job.OnComplete += handler,
 					 handler => job.OnComplete -= handler)
 					.Do(_ =>
@@ -93,14 +92,14 @@ namespace Relativity.Sync
 					);
 
 			IDisposable jobReportsSubscription = Observable
-				.FromEvent<IImportNotifier.OnFatalExceptionEventHandler, JobReport>(
+				.FromEvent<SyncJobEventHandler<ImportApiJobStatistics>, ImportApiJobStatistics>(
 					 handler => job.OnFatalException += handler,
 					 handler => job.OnFatalException -= handler)
 					.Merge(batchCompletedReports)
-					.Do(jobReport =>
+					.Do(statistics =>
 				{
-					batchProgress.ItemsProcessed = jobReport.TotalRows - jobReport.ErrorRowCount;
-					batchProgress.ItemsFailed = jobReport.ErrorRowCount;
+					batchProgress.ItemsProcessed = statistics.CompletedItemsCount;
+					batchProgress.ItemsFailed = statistics.ErrorItemsCount;
 					_forceUpdateSignal.OnNext(Unit.Default);
 				})
 					.Subscribe();

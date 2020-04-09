@@ -58,7 +58,10 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 		[JsonIgnore]
 		public Uri RelativityRestApiUri { get; private set; }
 
+		[JsonIgnore]
 		public bool GenerateNatives => TotalNativesSizeInMB > 0;
+
+		[JsonIgnore]
 		public bool GenerateExtractedText => TotalExtractedTextSizeInMB > 0;
 
 		public void WriteToJsonFile(string filePath)
