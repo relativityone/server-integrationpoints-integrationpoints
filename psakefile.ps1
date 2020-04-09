@@ -3,7 +3,7 @@ FormatTaskName "------- Executing Task: {0} -------"
 properties {
     $SourceDir = Join-Path $PSScriptRoot "source"
     $Solution = ((Get-ChildItem -Path $SourceDir -Filter *.sln -File)[0].FullName)
-    $ArtifactsDir = Join-Path $PSScriptRoot "Artifacts\NuGet"
+    $ArtifactsDir = Join-Path $PSScriptRoot "Artifacts"
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
@@ -62,7 +62,8 @@ Task Package -Description "Package up the build artifacts" {
     $syncBin = Join-Path $SourceDir "\Relativity.Sync\bin"
     Move-Output -Source $syncBin -Destination "$syncBin\net462"
     
-    & $paketExe pack $ArtifactsDir --include-referenced-projects --symbols
+    $NuGetPath = Join-Path $ArtifactsDir "NuGet"
+    & $paketExe pack $NuGetPath --include-referenced-projects --symbols
 
     Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
 }

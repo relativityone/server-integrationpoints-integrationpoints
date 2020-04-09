@@ -13,11 +13,11 @@ namespace Relativity.Sync.Transfer.ImportAPI
 			Exception = exception;
 		}
 
-		public int TotalItemsCount { set; get; }
-		public int ErrorItemsCount { get; set; }
+		public int TotalItemsCount { get; }
+		public int ErrorItemsCount { get; }
 		public int CompletedItemsCount => TotalItemsCount - ErrorItemsCount;
-		public long MetadataBytes { get; set; }
-		public long FileBytes { get; set; }
-		public Exception Exception { get; set; }
+		public long MetadataBytes { get; }
+		public long FileBytes { get; }
+		public Exception Exception { get; }
 	}
 }

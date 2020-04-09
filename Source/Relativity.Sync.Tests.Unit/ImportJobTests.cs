@@ -74,11 +74,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				ImportApiJobStatistics jobReport = CreateJobReport();
-				PropertyInfo fatalException = jobReport.GetType().GetProperty(nameof(jobReport.Exception));
-				InvalidOperationException ex = new InvalidOperationException();
-				fatalException?.SetValue(jobReport, ex, BindingFlags.NonPublic | BindingFlags.Instance, null, null, CultureInfo.InvariantCulture);
-
+				ImportApiJobStatistics jobReport = CreateJobReport(exception: new InvalidOperationException());
 				_syncImportBulkArtifactJob.Raise(x => x.OnFatalException += null, jobReport);
 			});
 
@@ -183,9 +179,10 @@ namespace Relativity.Sync.Tests.Unit
 			_importJob?.Dispose();
 		}
 
-		private static ImportApiJobStatistics CreateJobReport()
+		private static ImportApiJobStatistics CreateJobReport(int totalItems = 0, int errorItems = 0, long metadataBytes = 0, long fileBytes = 0,
+			Exception exception = null)
 		{
-			return new ImportApiJobStatistics(0, 0, 0, 0);
+			return new ImportApiJobStatistics(totalItems, errorItems, metadataBytes, fileBytes, exception);
 		}
 	}
 }
