@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
-		internal const string _profileDoesNotExistInCreatedWorkspaceMessageTemplate = @"Following profiles could be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
+		internal const string _profileDoesNotExistInCreatedWorkspaceMessageTemplate = @"Following profiles could not be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
 
 
 		public IntegrationPointProfileMigrationEventHandler()
