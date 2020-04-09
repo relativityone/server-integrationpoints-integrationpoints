@@ -37,10 +37,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_serializer = new JSONSerializer();
 		}
 
-		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)
+		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID, string condition = null)
 		{
 			var queryRequest = new QueryRequest
 			{
+				Condition = condition,
 				Fields = new[]
 				{
 					new FieldRef()
@@ -63,7 +64,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
 				.QueryAsync<IntegrationPointProfile>(queryRequest)
 				.ConfigureAwait(false);
-			
+
 			foreach (IntegrationPointProfile profile in integrationPointProfiles)
 			{
 				profile.SourceConfiguration =
@@ -76,6 +77,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 
 			return integrationPointProfiles;
+		}
+
+		public Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID) =>
+			GetAllProfilesAsync(workspaceID, null);
+
+		public Task<IEnumerable<IntegrationPointProfile>> GetProfilesAsync(int workspaceID, IEnumerable<int> artifactIds)
+		{
+			string condition = $"'ArtifactId' in [{string.Join(", ", artifactIds)}]";
+			return GetAllProfilesAsync(workspaceID, condition);
 		}
 
 		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
@@ -113,7 +123,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationPointProfile.SourceConfiguration);
 			bool isProductionAsSource = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet;
-			
+
 			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration);
 			bool isProductionAsDestination = destinationConfiguration.ProductionImport;
 

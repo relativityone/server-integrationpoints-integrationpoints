@@ -148,10 +148,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			const int syncProfilesCount = 5;
 			const int nonSyncProfilesCount = 0;
 			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
-			_createdWorkspaceRelativityObjectManagerMock.Setup(x => 
+			_createdWorkspaceRelativityObjectManagerMock.Setup(x =>
 					x.MassUpdateAsync(
 						It.IsAny<IEnumerable<int>>(),
-						It.IsAny<IEnumerable<FieldRefValuePair>>(), 
+						It.IsAny<IEnumerable<FieldRefValuePair>>(),
 						It.IsAny<FieldUpdateBehavior>(),
 						It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(true);
@@ -234,6 +234,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_createdWorkspaceRelativityObjectManagerMock
 				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
 					It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Exactly(syncProfilesCount));
+		}
+
+		[Test]
+		public void Execute_ShouldLogNotMigratedProfiles_WhenTheyDontExistInNewWorkspace()
+		{
+			// Arrange
+			const int syncProfilesCount = 5;
+			const int nonSyncProfilesCount = 0;
+			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
+			_createdWorkspaceRelativityObjectManagerMock.Setup(x =>
+					x.MassUpdateAsync(
+						It.IsAny<IEnumerable<int>>(),
+						It.IsAny<IEnumerable<FieldRefValuePair>>(),
+						It.IsAny<FieldUpdateBehavior>(),
+						It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(true);
+
+			_integrationPointProfilesQueryFake
+				.Setup(x => x.GetProfilesAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+				.ReturnsAsync(ProfilesToModifyArtifactIds(syncProfilesCount).Skip(1));
+
+			// Act
+			Response response = _sut.Execute();
+
+			//Assert
+			response.Success.Should().BeTrue("handler should have completed successfully");
+			response.Exception.Should().BeNull("there was no failure");
+
+			_loggerFake.Verify(x =>
+				x.LogWarning(
+					IntegrationPointProfileMigrationEventHandler._profileDoesNotExistInCreatedWorkspaceMessageTemplate,
+					_CREATED_WORKSPACE_ARTIFACT_ID, new[] { _FIRST_SYNC_PROFILE_ARTIFACT_ID }));
+
+			_createdWorkspaceRelativityObjectManagerMock
+				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
+					It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Exactly(syncProfilesCount - 1));
 		}
 
 		private static List<IntegrationPointProfile> ProfilesToModifyArtifactIds(int count)

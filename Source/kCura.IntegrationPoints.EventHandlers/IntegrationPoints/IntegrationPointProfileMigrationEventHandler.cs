@@ -32,6 +32,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
+		internal const string _profileDoesNotExistInCreatedWorkspaceMessageTemplate = @"Following profiles could be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
+
+
 		public IntegrationPointProfileMigrationEventHandler()
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
@@ -63,10 +66,35 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
 				.GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
+			profilesToPreserve = await CheckProfilesExistInWorkspace(profilesToPreserve).ConfigureAwait(false);
+
 			await Task.WhenAll(
 					DeleteProfilesAsync(profilesToDelete.Select(x => x.ArtifactId).ToList()),
 					UpdateProfilesAsync(profilesToPreserve)
 				).ConfigureAwait(false);
+		}
+
+		/// <summary>
+		/// Checks if profile was copied over form template workspace to prevent crashing
+		///
+		/// https://jira.kcura.com/browse/REL-411909
+		/// </summary>
+		/// <param name="profilesFromTemplateWorkspace"></param>
+		/// <returns>Profiles loaded from created workspace selected by ArtifactId</returns>
+		private async Task<List<IntegrationPointProfile>> CheckProfilesExistInWorkspace(List<IntegrationPointProfile> profilesFromTemplateWorkspace)
+		{
+			List<IntegrationPointProfile> existingProfiles = (await _integrationPointProfilesQuery
+				.GetProfilesAsync(WorkspaceID, profilesFromTemplateWorkspace.Select(x => x.ArtifactId)).ConfigureAwait(false))
+				.ToList();
+
+			if (existingProfiles.Count != profilesFromTemplateWorkspace.Count)
+			{
+				var existingArtifactIds = new HashSet<int>(existingProfiles.Select(x => x.ArtifactId));
+
+				Logger.LogWarning(_profileDoesNotExistInCreatedWorkspaceMessageTemplate, WorkspaceID, profilesFromTemplateWorkspace.Select(p => p.ArtifactId).Where(id => !existingArtifactIds.Contains(id)).ToArray());
+			}
+
+			return existingProfiles;
 		}
 
 		private async Task DeleteProfilesAsync(IReadOnlyCollection<int> profilesIDs)
@@ -103,7 +131,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			foreach (IntegrationPointProfile profile in profilesToUpdate)
 			{
 				FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
-				bool success = await objectManager.MassUpdateAsync(new[] {profile.ArtifactId}, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
+				bool success = await objectManager.MassUpdateAsync(new[] { profile.ArtifactId }, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
 
 				if (!success)
 				{
@@ -159,7 +187,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					{
 						ArtifactID = destinationProviderArtifactID
 					}
-				}, 
+				},
 				new FieldRefValuePair()
 				{
 					Field = new FieldRef()
@@ -193,7 +221,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			string updatedDestinationConfiguration = destinationConfiguration.ToString(Formatting.None);
 			return updatedDestinationConfiguration;
 		}
-		
+
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
 			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceID);
 
