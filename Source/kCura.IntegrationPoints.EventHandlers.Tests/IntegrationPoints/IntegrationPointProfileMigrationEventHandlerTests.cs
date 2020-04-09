@@ -312,6 +312,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(allProfiles);
 
 			_integrationPointProfilesQueryFake
+				.Setup(x => x.GetProfilesAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+				.ReturnsAsync(profilesToUpdate);
+
+			_integrationPointProfilesQueryFake
 				.Setup(x => x.GetProfilesToUpdate(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns(profilesToUpdate);
 
