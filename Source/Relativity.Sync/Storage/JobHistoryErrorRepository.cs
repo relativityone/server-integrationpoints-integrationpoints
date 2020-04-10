@@ -98,8 +98,13 @@ namespace Relativity.Sync.Storage
 		{
 			List<int> result = new List<int>();
 
-			const int numOfBatches = 2;
-			int batchSize = createJobHistoryErrorDtos.Count() / numOfBatches;
+			const double numOfBatches = 2;
+			int batchSize = (int)Math.Ceiling(createJobHistoryErrorDtos.Count() / numOfBatches);
+
+			if(batchSize == createJobHistoryErrorDtos.Count())
+			{
+				throw new SyncException($"Mass creation of item level errors failed, because single item is still to large");
+			}
 
 			foreach (var errorsBatchList in createJobHistoryErrorDtos.SplitList(batchSize))
 			{

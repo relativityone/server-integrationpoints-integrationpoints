@@ -122,10 +122,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		[TestCase(0, 5, 1)]
 		[TestCase(4, 5, 1)]
-		[TestCase(5, 5, 1)]
+		[TestCase(5, 5, 3)]
 		[TestCase(6, 5, 3)]
-		[TestCase(6, 1, 9)]
-		public async Task CreateMassAsync_ShouldCreateErrorsInChunks_WhenEntityIsTooLarge(int itemLevelErrorsCount, int maxItemsPerRequest, int expectedCalls)
+		public async Task CreateMassAsync_ShouldCreateErrorsInChunks_WhenEntityTooLargeExceptionOccurs(int itemLevelErrorsCount, int maxItemsPerRequest, int expectedCalls)
 		{
 			// Arrange
 			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(CreateJobHistoryErrorDto(ErrorType.Item), itemLevelErrorsCount).ToList();
@@ -141,6 +140,22 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_objectManagerMock.Verify(x => x.CreateAsync(
 				It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
 				It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
+		}
+
+		[Test]
+		public void CreateMassAsync_ShouldThrowException_WhenEvenSingleItemIsTooLargeForObjectManager()
+		{
+			// Arrange
+			const int itemLevelErrorsCount = 3;
+			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(CreateJobHistoryErrorDto(ErrorType.Item), itemLevelErrorsCount).ToList();
+
+			const int lessThanItemsPerRequest = 1;
+			SetupMassCreate(lessThanItemsPerRequest);
+
+			// Act & Assert
+			Func<Task> action = async () => await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, itemLevelErrors).ConfigureAwait(false);
+			
+			action.Should().ThrowAsync<SyncException>();
 		}
 
 		[Test]
@@ -313,9 +328,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private void SetupMassCreate(int maxItemsPerRequest)
 		{
-			_objectManagerMock.Setup(x => x.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<MassCreateRequest>(req => req.ValueLists.Count > maxItemsPerRequest)))
+			_objectManagerMock.Setup(x => x.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<MassCreateRequest>(req => req.ValueLists.Count >= maxItemsPerRequest)))
 				.Throws(new ServiceException(_ENTITY_TOO_LARGE_EXCEPTION));
-			_objectManagerMock.Setup(x => x.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<MassCreateRequest>(req => req.ValueLists.Count <= maxItemsPerRequest)))
+			_objectManagerMock.Setup(x => x.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<MassCreateRequest>(req => req.ValueLists.Count < maxItemsPerRequest)))
 				.Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(request)));
 		}
 
