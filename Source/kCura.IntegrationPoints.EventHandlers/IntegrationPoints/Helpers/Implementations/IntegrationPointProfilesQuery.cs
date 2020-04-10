@@ -81,6 +81,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		public async Task<IEnumerable<int>> CheckIfProfilesExist(int workspaceID, IEnumerable<int> artifactIds)
 		{
+			if (!artifactIds.Any())
+			{
+				return Enumerable.Empty<int>();
+			}
+
 			var queryRequest = new QueryRequest
 			{
 				Condition = $"'ArtifactId' in [{string.Join(", ", artifactIds)}]",
