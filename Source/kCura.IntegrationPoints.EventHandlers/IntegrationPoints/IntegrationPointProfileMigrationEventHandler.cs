@@ -32,7 +32,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
-		internal const string _profileDoesNotExistInCreatedWorkspaceMessageTemplate = @"Following profiles could not be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
+		internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration = @"Following profiles could not be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
+		internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion = @"Following profiles could not be deleted, because they don't exist in created workspace ({workspaceId}): {profiles}";
 
 
 		public IntegrationPointProfileMigrationEventHandler()
@@ -66,7 +67,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
 				.GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
-			profilesToPreserve = await CheckProfilesExistInWorkspace(profilesToPreserve).ConfigureAwait(false);
+			var profilesInCreatedWorkspace = new HashSet<int>(await _integrationPointProfilesQuery.CheckIfProfilesExist(WorkspaceID, allProfiles.Select(x => x.ArtifactId)).ConfigureAwait(false));
+
+
+			profilesToPreserve = CheckProfilesExistInWorkspace(profilesToPreserve, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration);
+			profilesToDelete = CheckProfilesExistInWorkspace(profilesToDelete, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion);
 
 			await Task.WhenAll(
 					DeleteProfilesAsync(profilesToDelete.Select(x => x.ArtifactId).ToList()),
@@ -81,17 +86,26 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		/// </summary>
 		/// <param name="profilesFromTemplateWorkspace"></param>
 		/// <returns>Profiles loaded from created workspace selected by ArtifactId</returns>
-		private async Task<List<IntegrationPointProfile>> CheckProfilesExistInWorkspace(List<IntegrationPointProfile> profilesFromTemplateWorkspace)
+		private List<IntegrationPointProfile> CheckProfilesExistInWorkspace(List<IntegrationPointProfile> profilesToCheck, HashSet<int> allExitsingProfilesArtifactIds, string messageTemplate)
 		{
-			List<IntegrationPointProfile> existingProfiles = (await _integrationPointProfilesQuery
-				.GetProfilesAsync(WorkspaceID, profilesFromTemplateWorkspace.Select(x => x.ArtifactId)).ConfigureAwait(false))
-				.ToList();
+			List<IntegrationPointProfile> existingProfiles = new List<IntegrationPointProfile>();
+			List<int> absentProfiles = new List<int>();
 
-			if (existingProfiles.Count != profilesFromTemplateWorkspace.Count)
+			foreach (var profile in profilesToCheck)
 			{
-				var existingArtifactIds = new HashSet<int>(existingProfiles.Select(x => x.ArtifactId));
+				if (allExitsingProfilesArtifactIds.Contains(profile.ArtifactId))
+				{
+					existingProfiles.Add(profile);
+				}
+				else
+				{
+					absentProfiles.Add(profile.ArtifactId);
+				}
+			}
 
-				Logger.LogWarning(_profileDoesNotExistInCreatedWorkspaceMessageTemplate, WorkspaceID, profilesFromTemplateWorkspace.Select(p => p.ArtifactId).Where(id => !existingArtifactIds.Contains(id)).ToArray());
+			if (existingProfiles.Count != profilesToCheck.Count)
+			{
+				Logger.LogWarning(messageTemplate, WorkspaceID, absentProfiles);
 			}
 
 			return existingProfiles;

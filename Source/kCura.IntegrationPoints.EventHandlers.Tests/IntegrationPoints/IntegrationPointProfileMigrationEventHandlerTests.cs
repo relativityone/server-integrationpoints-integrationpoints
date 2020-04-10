@@ -252,8 +252,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(true);
 
 			_integrationPointProfilesQueryFake
-				.Setup(x => x.GetProfilesAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
-				.ReturnsAsync(ProfilesToModifyArtifactIds(syncProfilesCount).Skip(1));
+				.Setup(x => x.CheckIfProfilesExist(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+				.ReturnsAsync(ProfilesToModifyArtifactIds(syncProfilesCount).Skip(1).Select(x => x.ArtifactId));
 
 			// Act
 			Response response = _sut.Execute();
@@ -264,12 +264,49 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 			_loggerFake.Verify(x =>
 				x.LogWarning(
-					IntegrationPointProfileMigrationEventHandler._profileDoesNotExistInCreatedWorkspaceMessageTemplate,
+					IntegrationPointProfileMigrationEventHandler._profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration,
 					_CREATED_WORKSPACE_ARTIFACT_ID, new[] { _FIRST_SYNC_PROFILE_ARTIFACT_ID }));
 
 			_createdWorkspaceRelativityObjectManagerMock
 				.Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
 					It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Exactly(syncProfilesCount - 1));
+		}
+
+
+		[Test]
+		public void Execute_ShouldLogNotDeleteProfiles_WhenTheyDontExistInNewWorkspace()
+		{
+			// Arrange
+			const int syncProfilesCount = 0;
+			const int nonSyncProfilesCount = 5;
+			SetUpProfilesQuery(nonSyncProfilesCount, syncProfilesCount);
+			_createdWorkspaceRelativityObjectManagerMock.Setup(x =>
+					x.MassUpdateAsync(
+						It.IsAny<IEnumerable<int>>(),
+						It.IsAny<IEnumerable<FieldRefValuePair>>(),
+						It.IsAny<FieldUpdateBehavior>(),
+						It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(true);
+
+			IEnumerable<int> profilesToDelete_SkipOne = ProfilesToDeleteArtifactIDs(nonSyncProfilesCount).Skip(1).Select(x => x.ArtifactId);
+			_integrationPointProfilesQueryFake
+				.Setup(x => x.CheckIfProfilesExist(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+				.ReturnsAsync(profilesToDelete_SkipOne);
+
+			// Act
+			Response response = _sut.Execute();
+
+			//Assert
+			response.Success.Should().BeTrue("handler should have completed successfully");
+			response.Exception.Should().BeNull("there was no failure");
+
+			_loggerFake.Verify(x =>
+				x.LogWarning(
+					IntegrationPointProfileMigrationEventHandler._profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion,
+					_CREATED_WORKSPACE_ARTIFACT_ID, new[] { _FIRST_NON_SYNC_PROFILE_ARTIFACT_ID }));
+
+			_createdWorkspaceRelativityObjectManagerMock
+				.Verify(x => x.MassDeleteAsync(profilesToDelete_SkipOne, It.IsAny<ExecutionIdentity>()), Times.Once);
 		}
 
 		private static List<IntegrationPointProfile> ProfilesToModifyArtifactIds(int count)
@@ -311,9 +348,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.Setup(x => x.GetAllProfilesAsync(_TEMPLATE_WORKSPACE_ARTIFACT_ID))
 				.ReturnsAsync(allProfiles);
 
-			_integrationPointProfilesQueryFake
-				.Setup(x => x.GetProfilesAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
-				.ReturnsAsync(profilesToUpdate);
+			_integrationPointProfilesQueryFake.Setup(x =>
+					x.CheckIfProfilesExist(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+				.ReturnsAsync(profilesToUpdate.Concat(profilesToDelete).Select(x => x.ArtifactId));
 
 			_integrationPointProfilesQueryFake
 				.Setup(x => x.GetProfilesToUpdate(It.IsAny<IEnumerable<IntegrationPointProfile>>(), It.IsAny<int>(), It.IsAny<int>()))

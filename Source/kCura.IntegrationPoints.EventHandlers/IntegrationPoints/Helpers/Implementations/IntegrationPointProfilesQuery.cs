@@ -37,11 +37,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_serializer = new JSONSerializer();
 		}
 
-		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID, string condition = null)
+		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)
 		{
 			var queryRequest = new QueryRequest
 			{
-				Condition = condition,
+				Condition = null,
 				Fields = new[]
 				{
 					new FieldRef()
@@ -79,13 +79,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return integrationPointProfiles;
 		}
 
-		public Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID) =>
-			GetAllProfilesAsync(workspaceID, null);
-
-		public Task<IEnumerable<IntegrationPointProfile>> GetProfilesAsync(int workspaceID, IEnumerable<int> artifactIds)
+		public async Task<IEnumerable<int>> CheckIfProfilesExist(int workspaceID, IEnumerable<int> artifactIds)
 		{
-			string condition = $"'ArtifactId' in [{string.Join(", ", artifactIds)}]";
-			return GetAllProfilesAsync(workspaceID, condition);
+			var queryRequest = new QueryRequest
+			{
+				Condition = $"'ArtifactId' in [{string.Join(", ", artifactIds)}]",
+				Fields = new FieldRef[0]
+			};
+
+			IRelativityObjectManager relativityObjectManager = _createRelativityObjectManager(workspaceID);
+
+			IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
+				.QueryAsync<IntegrationPointProfile>(queryRequest)
+				.ConfigureAwait(false);
+
+			return integrationPointProfiles.Select(x => x.ArtifactId);
 		}
 
 		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
@@ -130,8 +138,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			bool isProductionSelectedAsSourceOrDestination = isProductionAsSource || isProductionAsDestination;
 
 			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactID &&
-			       integrationPointProfile.SourceProvider == syncSourceProviderArtifactID &&
-			       !isProductionSelectedAsSourceOrDestination;
+				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactID &&
+				   !isProductionSelectedAsSourceOrDestination;
 		}
 
 		public Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
