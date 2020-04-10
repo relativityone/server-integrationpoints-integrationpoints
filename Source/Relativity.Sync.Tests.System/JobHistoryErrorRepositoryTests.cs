@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -76,6 +77,35 @@ namespace Relativity.Sync.Tests.System
 			error[_errorTypeField].Value.As<Choice>().Name.Should().Be(expectedErrorType.ToString());
 			error.ParentObject.ArtifactID.Should().Be(expectedJobHistoryArtifactId);
 		}
+
+		[Test]
+		public async Task ItemLevelErrorMassCreation_ShouldHandleAllErrors_WhenReguestEntityIsToLarge()
+		{
+			// Arrange
+			int jobHistoryArtifactID = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
+			const int errorMsgSize = 10;
+			const int stackTraceSize = errorMsgSize * 10;
+			const int itemLevelErrrosCount = 20000;
+
+			CreateJobHistoryErrorDto itemLevelError = new CreateJobHistoryErrorDto(ErrorType.Item)
+			{
+				ErrorMessage = GetLongTextString(errorMsgSize),
+				SourceUniqueId = Guid.NewGuid().ToString(),
+				StackTrace = GetLongTextString(stackTraceSize)
+			};
+
+			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(itemLevelError, itemLevelErrrosCount).ToList();
+
+			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, _dateTime, _logger);
+
+			// Act
+			IEnumerable<int> result = await sut.MassCreateAsync(_workspace.ArtifactID, jobHistoryArtifactID, itemLevelErrors).ConfigureAwait(false);
+
+			// Assert
+			result.Should().HaveCount(itemLevelErrrosCount);
+		}
+
+		private string GetLongTextString(int count) => new string('.', count);
 
 		private async Task<RelativityObject> QueryForCreatedJobHistoryError(int jobHistoryErrorArtifactId)
 		{
