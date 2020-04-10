@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private List<IntegrationPointProfile> CheckProfilesExistInWorkspace(List<IntegrationPointProfile> profilesToCheck, HashSet<int> allExitsingProfilesArtifactIds, string messageTemplate)
 		{
 			List<IntegrationPointProfile> existingProfiles = new List<IntegrationPointProfile>();
-			List<int> absentProfiles = new List<int>();
+			List<int> missingProfiles = new List<int>();
 
 			foreach (var profile in profilesToCheck)
 			{
@@ -99,13 +99,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				}
 				else
 				{
-					absentProfiles.Add(profile.ArtifactId);
+					missingProfiles.Add(profile.ArtifactId);
 				}
 			}
 
 			if (existingProfiles.Count != profilesToCheck.Count)
 			{
-				Logger.LogWarning(messageTemplate, WorkspaceID, absentProfiles);
+				Logger.LogWarning(messageTemplate, WorkspaceID, missingProfiles);
 			}
 
 			return existingProfiles;
