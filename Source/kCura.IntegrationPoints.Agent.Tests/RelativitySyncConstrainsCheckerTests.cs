@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -9,22 +8,18 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
 	[TestFixture, Category("Unit")]
 	public class RelativitySyncConstrainsCheckerTests
 	{
-		private Mock<IToggleProvider> _toggleProvider;
 		private Mock<IIntegrationPointService> _integrationPointService;
 		private Mock<IProviderTypeService> _providerTypeService;
 		private Mock<IJobHistoryService> _jobHistoryService;
@@ -65,10 +60,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			var log = new Mock<IAPILog>();
 
-			_toggleProvider = new Mock<IToggleProvider>();
-			_toggleProvider.Setup(p => p.IsEnabled<EnableSyncToggle>()).Returns(true);
-
-
 			_integrationPointService = new Mock<IIntegrationPointService>();
 			_integrationPointService.Setup(s => s.ReadIntegrationPoint(_integrationPointId)).Returns(integrationPoint);
 
@@ -88,13 +79,12 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_jobHistoryService = new Mock<IJobHistoryService>();
 
 			_instance = new RelativitySyncConstrainsChecker(_integrationPointService.Object,
-				_providerTypeService.Object, _toggleProvider.Object, _jobHistoryService.Object, _configurationDeserializer.Object, log.Object);
+				_providerTypeService.Object, _jobHistoryService.Object, _configurationDeserializer.Object, log.Object);
 		}
 
 		[Test]
 		public void ItShouldAllowUsingSyncWorkflow()
 		{
-			_toggleProvider.Setup(p => p.IsEnabled<EnableSyncToggle>()).Returns(true);
 			JobHistory jobHistory = new JobHistory()
 			{
 				JobType = JobTypeChoices.JobHistoryRun
@@ -123,16 +113,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_sourceConfiguration.TypeOfExport = typeOfExport;
 			_importSettings.ImageImport = imageImport;
 			_importSettings.ProductionImport = productionImport;
-
-			bool result = _instance.ShouldUseRelativitySync(_job);
-
-			Assert.IsFalse(result);
-		}
-
-		[Test]
-		public void ItShouldNotAllowUsingSyncWorkflowWhenToggleDisabled()
-		{
-			_toggleProvider.Setup(p => p.IsEnabled<EnableSyncToggle>()).Returns(false);
 
 			bool result = _instance.ShouldUseRelativitySync(_job);
 

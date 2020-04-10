@@ -69,7 +69,6 @@
     <Compile Include="Logging\CreateErrorRdo.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContext.cs" />
     <Compile Include="RelativitySyncConstrainsChecker.cs" />
-    <Compile Include="Toggles\EnableSyncToggle.cs" />
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
