@@ -1,24 +1,15 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
-using Relativity.Services.Objects;
+using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -29,30 +20,29 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			"You must either log in as a system administrator or change the settings to upload files.";
 
 		private readonly IAPILog _logger;
+		private readonly IHelper _helper;
 		private readonly ISerializer _serializer;
-		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 		private readonly IManagerFactory _managerFactory;
 
 		public string Key => Constants.IntegrationPointProfiles.Validation.NATIVE_COPY_LINKS_MODE;
 
-		public NativeCopyLinksValidator(IAPILog logger, ISerializer serializer, IRelativityObjectManagerFactory relativityObjectManagerFactory, IManagerFactory managerFactory)
+		public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory)
 		{
 			_logger = logger;
+			_helper = helper;
 			_serializer = serializer;
 			_managerFactory = managerFactory;
-			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public ValidationResult Validate(object value)
 		{
-			_logger.LogVerbose("Validating Native File links copy Restriction");
+			_logger.LogInformation("Validating Native File links copy Restriction");
 
 			var validationResult = new ValidationResult();
 
-			IntegrationPointProviderValidationModel validationModel = CastToValidationModel(value);
-
 			try
 			{
+				IntegrationPointProviderValidationModel validationModel = CastToValidationModel(value);
 				ImportSettings settings = _serializer.Deserialize<ImportSettings>(validationModel.DestinationConfiguration);
 
 				if (settings.ImportNativeFileCopyMode != ImportNativeFileCopyModeEnum.SetFileLinks)
@@ -60,9 +50,13 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 					return validationResult;
 				}
 
-				IInstanceSettingsManager instanceSettings = _managerFactory.CreateInstanceSettingsManager();
-				bool isRestrictReferentialFileLinksOnImport = instanceSettings.RetrieveRestrictReferentialFileLinksOnImport();
-				bool executingUserIsAdmin = UserIsAdmin(settings.CaseArtifactId, validationModel.UserId);
+				bool isRestrictReferentialFileLinksOnImport = _managerFactory.CreateInstanceSettingsManager()
+					.RetrieveRestrictReferentialFileLinksOnImport();
+				bool executingUserIsAdmin = UserIsAdmin(validationModel.UserId);
+
+				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}",
+					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin);
+
 				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin)
 				{
 					validationResult.Add(_COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION);
@@ -78,27 +72,25 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			return validationResult;
 		}
 
-		private bool UserIsAdmin(int workspaceId, int userId)
+		private bool UserIsAdmin(int userId)
 		{
-			QueryRequest request = BuildAdminGroupsQuery();
-			IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
-			RelativityObject adminGroup = objectManager.Query(request).Single();
+			_logger.LogInformation("Check if User {userId} is Admin", userId);
+			using (IGroupManager proxy = _helper.GetServicesManager().CreateProxy<IGroupManager>(ExecutionIdentity.System))
+			{
+				QueryRequest request = BuildAdminGroupsQuery();
+				QueryResultSlim result = proxy.QueryGroupsByUserAsync(request, 0, 1, userId)
+					.ConfigureAwait(false).GetAwaiter().GetResult();
 
-			IPermissionManager permissionManager = _managerFactory.CreatePermissionManager();
-			return permissionManager.UserBelongsToGroup(workspaceId, userId, adminGroup.ArtifactID);
+				return result.Objects.Any();
+			}
 		}
 
 		private static QueryRequest BuildAdminGroupsQuery()
 		{
 			const string adminGroupType = "System Admin";
-			const int groupArtifactTypeId = 3;
 			var request = new QueryRequest()
 			{
-				ObjectType = new ObjectTypeRef()
-				{
-					ArtifactTypeID = groupArtifactTypeId
-				},
-				Condition = $"(('Group Type' == '{adminGroupType}'))",
+				Condition = $"'Group Type' == '{adminGroupType}'",
 			};
 
 			return request;
