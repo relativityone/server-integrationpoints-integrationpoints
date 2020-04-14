@@ -17,6 +17,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
+using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
@@ -58,9 +59,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForSourceWorkspace()).Returns(_fieldsClassifierRunner.Object);
 			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForDestinationWorkspace()).Returns(_fieldsClassifierRunner.Object);
 
+			Mock<IMetricsSender> metricsSenderFake = new Mock<IMetricsSender>();
 			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
 
-			_sut = new FieldMappingsController(_fieldsClassifyRunnerFactoryMock.Object, _automapRunnerMock.Object, _fieldsMappingValidator.Object, loggerFake.Object)
+			_sut = new FieldMappingsController(_fieldsClassifyRunnerFactoryMock.Object, _automapRunnerMock.Object, _fieldsMappingValidator.Object, metricsSenderFake.Object, loggerFake.Object)
 			{
 				Configuration = new HttpConfiguration(),
 				Request = new HttpRequestMessage()

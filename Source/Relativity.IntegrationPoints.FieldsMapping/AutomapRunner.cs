@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		private const string _AUTOMAPPED_COUNT_METRIC_NAME = "AutoMappedCount";
 		private const string _AUTOMAPPED_BY_ID_COUNT_METRIC_NAME = "AutoMappedByIdCount";
 		private const string _AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME = "AutoMappedByNameCount";
-		private const string _AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME = "AutoMappedByNameCount";
+		private const string _AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME = "FixedLengthTextFieldsWithDifferentLengthCount";
 
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IMetricsSender _metrics;
