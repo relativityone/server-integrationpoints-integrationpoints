@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		private Mock<ISerializer> _serializerFake;
 		private Mock<IAPILog> _loggerFake;
 		private Mock<IHelper> _helperFake;
-		private Mock<IServicesMgr> _servicesMgr;
+		private Mock<IServicesMgr> _servicesMgrFake;
 		private Mock<IGroupManager> _groupManager;
 		private Mock<IInstanceSettingsManager> _instanceSettingsFake;
 		private Mock<IManagerFactory> _managerFactoryFake;
@@ -42,11 +42,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			_groupManager = new Mock<IGroupManager>();
 
-			_servicesMgr = new Mock<IServicesMgr>();
-			_servicesMgr.Setup(m => m.CreateProxy<IGroupManager>(ExecutionIdentity.System)).Returns(_groupManager.Object); 
+			_servicesMgrFake = new Mock<IServicesMgr>();
+			_servicesMgrFake.Setup(m => m.CreateProxy<IGroupManager>(ExecutionIdentity.System)).Returns(_groupManager.Object); 
 
 			_helperFake = new Mock<IHelper>();
-			_helperFake.Setup(m => m.GetServicesManager()).Returns(_servicesMgr.Object);
+			_helperFake.Setup(m => m.GetServicesManager()).Returns(_servicesMgrFake.Object);
 
 			_serializerFake = new Mock<ISerializer>();
 			_instanceSettingsFake = new Mock<IInstanceSettingsManager>();
