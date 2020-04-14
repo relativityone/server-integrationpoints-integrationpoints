@@ -1,10 +1,10 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.Relativity.ImportAPI;
 using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -35,10 +35,18 @@ namespace kCura.IntegrationPoints.Web.Installers
 				Component
 					.For<IAutomapRunner>()
 					.ImplementedBy<AutomapRunner>()
-					.LifestyleSingleton(),
+					.LifestyleTransient(),
 				Component
 					.For<IFieldsMappingValidator>()
 					.ImplementedBy<FieldsMappingValidator>()
+					.LifestyleTransient(),
+				Component
+					.For<IMetricsSender>()
+					.ImplementedBy<MetricsSender>()
+					.LifestyleTransient(),
+				Component
+					.For<IMetricsSink>()
+					.ImplementedBy<SplunkMetricsSink>()
 					.LifestyleTransient()
 			);
 		}

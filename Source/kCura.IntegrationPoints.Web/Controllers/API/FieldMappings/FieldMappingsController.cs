@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
+using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -16,12 +18,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		private readonly IFieldsClassifyRunnerFactory _fieldsClassifyRunnerFactory;
 		private readonly IAutomapRunner _automapRunner;
 		private readonly IFieldsMappingValidator _fieldsMappingValidator;
+		private readonly IAPILog _logger;
 
-		public FieldMappingsController(IFieldsClassifyRunnerFactory fieldsClassifyRunnerFactory, IAutomapRunner automapRunner, IFieldsMappingValidator fieldsMappingValidator)
+		public FieldMappingsController(IFieldsClassifyRunnerFactory fieldsClassifyRunnerFactory, IAutomapRunner automapRunner, IFieldsMappingValidator fieldsMappingValidator, IAPILog logger)
 		{
 			_fieldsClassifyRunnerFactory = fieldsClassifyRunnerFactory;
 			_automapRunner = automapRunner;
 			_fieldsMappingValidator = fieldsMappingValidator;
+			_logger = logger;
 		}
 
 		[HttpGet]
@@ -69,7 +73,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while validating mapped fields")]
 		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> request, int workspaceID, int destinationWorkspaceID)
 		{
-			IEnumerable<FieldMap> invalidFieldMaps = await _fieldsMappingValidator.ValidateAsync(request, workspaceID, destinationWorkspaceID).ConfigureAwait(false);
+			IEnumerable<FieldMap> invalidFieldMaps;
+
+			try
+			{
+				invalidFieldMaps = await _fieldsMappingValidator
+					.ValidateAsync(request, workspaceID, destinationWorkspaceID).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Exception occurred when validating fields mapping.");
+				invalidFieldMaps = Enumerable.Empty<FieldMap>();
+			}
 
 			return Request.CreateResponse(HttpStatusCode.OK, invalidFieldMaps, Configuration.Formatters.JsonFormatter);
 		}

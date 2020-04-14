@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Web.Models;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
@@ -57,7 +58,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForSourceWorkspace()).Returns(_fieldsClassifierRunner.Object);
 			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForDestinationWorkspace()).Returns(_fieldsClassifierRunner.Object);
 
-			_sut = new FieldMappingsController(_fieldsClassifyRunnerFactoryMock.Object, _automapRunnerMock.Object, _fieldsMappingValidator.Object)
+			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
+
+			_sut = new FieldMappingsController(_fieldsClassifyRunnerFactoryMock.Object, _automapRunnerMock.Object, _fieldsMappingValidator.Object, loggerFake.Object)
 			{
 				Configuration = new HttpConfiguration(),
 				Request = new HttpRequestMessage()

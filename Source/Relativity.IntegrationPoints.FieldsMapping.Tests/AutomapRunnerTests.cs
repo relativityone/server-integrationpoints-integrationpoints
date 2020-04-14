@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
@@ -26,7 +27,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			_servicesMgrFake = new Mock<IServicesMgr>();
 			_servicesMgrFake.Setup(x => x.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_keywordSearchManagerFake.Object);
-			_sut = new AutomapRunner(_servicesMgrFake.Object);
+
+			Mock<IMetricsSender> metricsSenderFake = new Mock<IMetricsSender>();
+			_sut = new AutomapRunner(_servicesMgrFake.Object, metricsSenderFake.Object);
 		}
 
 		[Test]

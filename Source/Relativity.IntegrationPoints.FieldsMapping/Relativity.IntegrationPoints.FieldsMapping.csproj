@@ -73,12 +73,19 @@
     <Compile Include="IFieldsClassifierRunner.cs" />
     <Compile Include="IFieldsMappingValidator.cs" />
     <Compile Include="IFieldsRepository.cs" />
+    <Compile Include="Metrics\IMetricsSender.cs" />
+    <Compile Include="Metrics\IMetricsSink.cs" />
+    <Compile Include="Metrics\Metric.cs" />
+    <Compile Include="Metrics\MetricsSender.cs" />
+    <Compile Include="Metrics\MetricType.cs" />
+    <Compile Include="Metrics\SplunkMetricsSink.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
