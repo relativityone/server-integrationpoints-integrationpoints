@@ -368,7 +368,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return identifiers;
 		}
 
-		public static async Task<int> CreateSyncConfigurationRDO(ServiceFactory serviceFactory, int workspaceId,
+		public static async Task<int> CreateSyncConfigurationRDOAsync(ServiceFactory serviceFactory, int workspaceId,
 			FullSyncJobConfiguration configuration, ISerializer serializer = null)
 		{
 			CreateRequest request =
@@ -419,7 +419,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")
 					},
-					Condition = $"ArtifactId = {jobHistoryId}",
+					Condition = $"'ArtifactId' == {jobHistoryId}",
 					Fields = new FieldRef[]
 					{
 						new FieldRef

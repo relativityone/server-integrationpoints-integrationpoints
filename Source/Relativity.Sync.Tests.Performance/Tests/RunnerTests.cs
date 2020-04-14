@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			await SetupConfigurationAsync().ConfigureAwait(false);
 
 			ConfigurationRdoId = await
-				Rdos.CreateSyncConfigurationRDO(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
+				Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
 					.ConfigureAwait(false);
 		}
 
