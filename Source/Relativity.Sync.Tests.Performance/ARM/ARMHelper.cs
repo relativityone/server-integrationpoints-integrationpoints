@@ -168,21 +168,31 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		public async Task<int> RestoreWorkspaceAsync(string archivedWorkspace)
 		{
-			string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspace, _RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
-			Debug.WriteLine("Archived workspace has been uploaded to fileshare.");
+			try
+			{
+				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspace, _RELATIVE_ARCHIVES_LOCATION)
+					.ConfigureAwait(false);
+				Debug.WriteLine("Archived workspace has been uploaded to fileshare.");
 
-			string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
+				string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION,
+					Path.GetFileNameWithoutExtension(uploadedFile));
 
-			Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
-			Debug.WriteLine($"Restore job {job.JobId} has been created");
+				Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
+				Debug.WriteLine($"Restore job {job.JobId} has been created");
 
-			await RunJobAsync(job).ConfigureAwait(false);
-			Debug.WriteLine($"Job {job.JobId} is running...");
+				await RunJobAsync(job).ConfigureAwait(false);
+				Debug.WriteLine($"Job {job.JobId} is running...");
 
-			await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
-			Debug.WriteLine("Restore job has been completed successfully.");
+				await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
+				Debug.WriteLine("Restore job has been completed successfully.");
 
-			return await GetRestoredWorkspaceID(job.JobId).ConfigureAwait(false);
+				return await GetRestoredWorkspaceID(job.JobId).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				throw;
+			}
 		}
 
 		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
