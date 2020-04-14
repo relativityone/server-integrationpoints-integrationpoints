@@ -308,29 +308,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			result.Should().Be(useAdmin);
 		}
 
-		[IdentifiedTestCase("ff6326fe-cba7-441a-bb75-084e245b68dd")]
-		public void UserBelongsToGroup_ShouldReturnsTrue_WhenUserBelongsToGroup()
-		{
-			// act
-			bool result = _adminPermissionRepository.UserBelongsToGroup(_user.ArtifactID, _groupId);
-
-			// assert
-			result.Should().BeTrue();
-		}
-
-		[IdentifiedTestCase("edf48796-895d-43e6-96b1-c81544cc96be")]
-		public void UserBelongsToGroup_ShouldReturnsFalse_WhenUserDoesNotBelongToGroup()
-		{
-			// arrange
-			UserModel userWithoutGroup = User.CreateUser("Test", "User", "test.user@relativity.com");
-
-			// act
-			bool result = _adminPermissionRepository.UserBelongsToGroup(userWithoutGroup.ArtifactID, _groupId);
-
-			// assert
-			result.Should().BeFalse();
-		}
-
 		private IntegrationPointModel CreateNewIntegrationPoint()
 		{
 			IIntegrationPointTypeService integrationPointTypeService = Container.Resolve<IIntegrationPointTypeService>();

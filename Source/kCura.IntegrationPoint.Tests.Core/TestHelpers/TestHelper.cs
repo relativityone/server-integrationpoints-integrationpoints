@@ -15,6 +15,7 @@ using Relativity.Services.Security;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using Relativity.Productions.Services;
+using Relativity.Services.Interfaces.Group;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -60,6 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			RegisterProxyInServiceManagerMock<IOAuth2ClientManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IFolderManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<global:: Relativity.Productions.Services.IProductionManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IGroupManager>(ExecutionIdentity.System);
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
 		
