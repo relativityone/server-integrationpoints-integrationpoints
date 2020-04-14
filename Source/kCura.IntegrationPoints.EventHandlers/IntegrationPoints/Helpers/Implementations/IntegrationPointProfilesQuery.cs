@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			var queryRequest = new QueryRequest
 			{
+				Condition = null,
 				Fields = new[]
 				{
 					new FieldRef()
@@ -63,7 +64,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
 				.QueryAsync<IntegrationPointProfile>(queryRequest)
 				.ConfigureAwait(false);
-			
+
 			foreach (IntegrationPointProfile profile in integrationPointProfiles)
 			{
 				profile.SourceConfiguration =
@@ -76,6 +77,28 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			}
 
 			return integrationPointProfiles;
+		}
+
+		public async Task<IEnumerable<int>> CheckIfProfilesExist(int workspaceID, IEnumerable<int> artifactIds)
+		{
+			if (!artifactIds.Any())
+			{
+				return Enumerable.Empty<int>();
+			}
+
+			var queryRequest = new QueryRequest
+			{
+				Condition = $"'ArtifactId' in [{string.Join(", ", artifactIds)}]",
+				Fields = new FieldRef[0]
+			};
+
+			IRelativityObjectManager relativityObjectManager = _createRelativityObjectManager(workspaceID);
+
+			IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
+				.QueryAsync<IntegrationPointProfile>(queryRequest)
+				.ConfigureAwait(false);
+
+			return integrationPointProfiles.Select(x => x.ArtifactId);
 		}
 
 		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
@@ -113,15 +136,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationPointProfile.SourceConfiguration);
 			bool isProductionAsSource = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet;
-			
+
 			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration);
 			bool isProductionAsDestination = destinationConfiguration.ProductionImport;
 
 			bool isProductionSelectedAsSourceOrDestination = isProductionAsSource || isProductionAsDestination;
 
 			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactID &&
-			       integrationPointProfile.SourceProvider == syncSourceProviderArtifactID &&
-			       !isProductionSelectedAsSourceOrDestination;
+				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactID &&
+				   !isProductionSelectedAsSourceOrDestination;
 		}
 
 		public Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
