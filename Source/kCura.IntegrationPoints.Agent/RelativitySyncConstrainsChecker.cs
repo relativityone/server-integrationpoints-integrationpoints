@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -12,7 +11,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -21,17 +19,15 @@ namespace kCura.IntegrationPoints.Agent
 		private readonly IAPILog _logger;
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly ISerializer _serializer;
 
 		public RelativitySyncConstrainsChecker(IIntegrationPointService integrationPointService,
-			IProviderTypeService providerTypeService, IToggleProvider toggleProvider,
+			IProviderTypeService providerTypeService,
 			IJobHistoryService jobHistoryService, ISerializer serializer, IAPILog logger)
 		{
 			_integrationPointService = integrationPointService;
 			_providerTypeService = providerTypeService;
-			_toggleProvider = toggleProvider;
 			_jobHistoryService = jobHistoryService;
 			_serializer = serializer;
 			_logger = logger;
@@ -42,15 +38,6 @@ namespace kCura.IntegrationPoints.Agent
 			_logger.LogDebug("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
 			try
 			{
-				if (!IsRelativitySyncToggleEnabled())
-				{
-					_logger.LogInformation(
-						$"Normal flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
-						job.JobId, job.RelatedObjectArtifactID);
-
-					return false;
-				}
-
 				if (!string.IsNullOrWhiteSpace(job.ScheduleRuleType))
 				{
 					return false;
@@ -97,24 +84,6 @@ namespace kCura.IntegrationPoints.Agent
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
 			return jobHistory.JobType.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors);
-		}
-
-		private bool IsRelativitySyncToggleEnabled()
-		{
-			_logger.LogDebug($"Checking if {nameof(EnableSyncToggle)} is enabled.");
-
-			try
-			{
-				bool isEnabled = _toggleProvider.IsEnabled<EnableSyncToggle>();
-				_logger.LogInformation($"Confirmed that {nameof(EnableSyncToggle)} is {(isEnabled ? "enabled" : "disabled")}.");
-				return isEnabled;
-
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Checking if {nameof(EnableSyncToggle)} is enabled operation failed.");
-				throw;
-			}
 		}
 
 		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
