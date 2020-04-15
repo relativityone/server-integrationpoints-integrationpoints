@@ -16,6 +16,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		private const string _UNIT_OF_MEASURE = "field(s)";
 		private const string _AUTOMAP_ALL_METRIC_NAME = "AutoMapAll";
 		private const string _AUTOMAP_SAVED_SEARCH_METRIC_NAME = "AutoMapSavedSearch";
+		private const string _OBJECT_FIELDS_FOUND_METRIC_NAME = "ObjectFieldsFound";
 		private const string _AUTOMAPPED_COUNT_METRIC_NAME = "AutoMappedCount";
 		private const string _AUTOMAPPED_BY_ID_COUNT_METRIC_NAME = "AutoMappedByIdCount";
 		private const string _AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME = "AutoMappedByNameCount";
@@ -30,12 +31,25 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			_metrics = metrics;
 		}
 
+		private bool ContainsFieldsOfTypeObject(IEnumerable<DocumentFieldInfo> fields)
+		{
+			return fields.Any(x => x.Type == FieldTypeName.SINGLE_OBJECT || x.Type == FieldTypeName.MULTIPLE_OBJECT);
+		}
+
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
 			_metrics.CountOperation(_AUTOMAP_ALL_METRIC_NAME);
 
-			AutomapBuilder mappingBuilder = new AutomapBuilder(sourceFields, destinationFields, _metrics).MapByIsIdentifier();
+			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
+			List<DocumentFieldInfo> destinationFieldsList = destinationFields.ToList();
+
+			if (ContainsFieldsOfTypeObject(sourceFieldsList) || ContainsFieldsOfTypeObject(destinationFieldsList))
+			{
+				_metrics.CountOperation(_OBJECT_FIELDS_FOUND_METRIC_NAME);
+			}
+
+			AutomapBuilder mappingBuilder = new AutomapBuilder(sourceFieldsList, destinationFieldsList).MapByIsIdentifier();
 
 			if (!matchOnlyIdentifiers)
 			{
@@ -89,15 +103,13 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			public IEnumerable<FieldMap> Mapping { get; }
 			private readonly IEnumerable<DocumentFieldInfo> _sourceFields;
 			private readonly IEnumerable<DocumentFieldInfo> _destinationFields;
-			private readonly IMetricsSender _metrics;
 
 			public AutomapBuilder(IEnumerable<DocumentFieldInfo> sourceFields,
-				IEnumerable<DocumentFieldInfo> destinationFields, IMetricsSender metrics, IEnumerable<FieldMap> mapping = null)
+				IEnumerable<DocumentFieldInfo> destinationFields, IEnumerable<FieldMap> mapping = null)
 			{
 				Mapping = mapping ?? new FieldMap[0];
 				_sourceFields = sourceFields;
 				_destinationFields = destinationFields;
-				_metrics = metrics;
 			}
 
 			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector, out int mappedCount, out int fixedLengthTextFieldsWithDifferentLengthCount)
@@ -127,7 +139,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				return new AutomapBuilder(
 					remainingSourceFields,
 					remainingDestinationFields,
-					_metrics,
 					Mapping.Concat(newMappings)
 					);
 			}
@@ -139,12 +150,11 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 				if (sourceIdentifier == null || destinationIdentifier == null || !sourceIdentifier.IsTypeCompatible(destinationIdentifier))
 				{
-					return new AutomapBuilder(_sourceFields.ToArray(), _destinationFields.ToArray(), _metrics, Mapping.ToArray());
+					return new AutomapBuilder(_sourceFields.ToArray(), _destinationFields.ToArray(), Mapping.ToArray());
 				}
 
 				return new AutomapBuilder(_sourceFields.Where(x => x != sourceIdentifier).ToArray(),
 					_destinationFields.Where(x => x != destinationIdentifier).ToArray(),
-					_metrics,
 					Mapping.Concat(new FieldMap[]
 					{
 						new FieldMap
