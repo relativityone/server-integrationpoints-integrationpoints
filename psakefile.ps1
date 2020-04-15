@@ -16,10 +16,6 @@ Task Analyze -Description "Run build analysis" {
 }
 
 Task Compile -Description "Compile code for this repo" {
-	$AmbientData = Join-Path $SourceDir "Relativity.AmbientData"
-	$DistDir = Join-Path $PSScriptRoot "Dist"
-    $MergeScript = Join-Path $AmbientData "DLLMerge.bat"
-
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 
@@ -32,10 +28,6 @@ Task Compile -Description "Compile code for this repo" {
         ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
         ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`"")) 
     }
-
-    #ILMerge
-    Initialize-Folder $DistDir
-    Invoke-Expression $MergeScript
 }
 
 Task Test -Description "Run Unit and Integration Tests without coverage" {
