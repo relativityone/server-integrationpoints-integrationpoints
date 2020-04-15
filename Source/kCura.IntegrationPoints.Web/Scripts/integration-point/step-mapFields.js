@@ -1321,6 +1321,7 @@ ko.validation.insertValidationMessage = function (element) {
 					const proceedConfirmation = function (invalidMappedFields) {
 						if (invalidMappedFields.length > 0) {
 							var proceedCallback = function () {
+								this.returnModel.mappingHasWarnings = true;
 								d.resolve(this.returnModel);
 							}.bind(this);
 
