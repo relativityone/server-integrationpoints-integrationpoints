@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -18,10 +19,10 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	[TestFixture]
 	internal sealed class JobHistoryErrorRepositoryTests
 	{
-		private JobHistoryErrorRepository _jobHistoryErrorRepository;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
-		private Mock<IObjectManager> _objectManager;
-		private Mock<IDateTime> _dateTime;
+		private JobHistoryErrorRepository _sut;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryFake;
+		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IDateTime> _dateTimeFake;
 		private DateTime _utcNow;
 
 		private const ErrorType _TEST_ERROR_TYPE_ITEM = ErrorType.Item;
@@ -32,6 +33,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const string _TEST_ERROR_MESSAGE = "Test error";
 		private const string _TEST_SOURCE_UNIQUE_ID = "101810";
 		private const string _TEST_STACK_TRACE = "Test stack trace.";
+
+		private const string _ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
 
 		private readonly Guid _expectedErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
 		private readonly Guid _expectedErrorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
@@ -53,13 +56,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryFake = new Mock<ISourceServiceFactoryForUser>();
 			_utcNow = DateTime.UtcNow;
-			_dateTime = new Mock<IDateTime>();
-			_dateTime.SetupGet(x => x.UtcNow).Returns(_utcNow);
-			_objectManager = new Mock<IObjectManager>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_jobHistoryErrorRepository = new JobHistoryErrorRepository(_serviceFactory.Object, _dateTime.Object, new EmptyLogger());
+			_dateTimeFake = new Mock<IDateTime>();
+			_dateTimeFake.SetupGet(x => x.UtcNow).Returns(_utcNow);
+			_objectManagerMock = new Mock<IObjectManager>();
+			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, _dateTimeFake.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -87,14 +90,14 @@ namespace Relativity.Sync.Tests.Unit.Storage
 					}
 				}
 			};
-			_objectManager.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>())).ReturnsAsync(massCreateResult);
+			_objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>())).ReturnsAsync(massCreateResult);
 
 			// act
-			int createResult = await _jobHistoryErrorRepository.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, createJobHistoryErrorDto)
+			int createResult = await _sut.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, createJobHistoryErrorDto)
 				.ConfigureAwait(false);
 
 			// assert
-			_objectManager.Verify(x => x.CreateAsync(It.IsAny<int>(), It.Is<MassCreateRequest>(cr => VerifyMassCreateRequest(cr, createJobHistoryErrorDto))));
+			_objectManagerMock.Verify(x => x.CreateAsync(It.IsAny<int>(), It.Is<MassCreateRequest>(cr => VerifyMassCreateRequest(cr, createJobHistoryErrorDto))));
 			createResult.Should().Be(errorArtifactId);
 		}
 
@@ -102,20 +105,58 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void CreateAsyncObjectManagerThrowsExceptionTest()
 		{
 			// Arrange
-			_objectManager.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>())).Throws<NotAuthorizedException>();
+			_objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>())).Throws<NotAuthorizedException>();
 
 			CreateJobHistoryErrorDto expectedCreateJobHistoryErrorDto = CreateJobHistoryErrorDto(_TEST_ERROR_TYPE_ITEM);
 
 			// Act & Assert
 			Assert.ThrowsAsync<NotAuthorizedException>(async () =>
-				await _jobHistoryErrorRepository.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, new List<CreateJobHistoryErrorDto>()
+				await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, new List<CreateJobHistoryErrorDto>()
 			{
 				expectedCreateJobHistoryErrorDto
 			}).ConfigureAwait(false));
 
-			_objectManager.Verify(x => x.CreateAsync(
+			_objectManagerMock.Verify(x => x.CreateAsync(
 				It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
 				It.Is<MassCreateRequest>(y => VerifyMassCreateRequest(y, expectedCreateJobHistoryErrorDto))));
+		}
+
+		[TestCase(0, 5, 1)]
+		[TestCase(4, 5, 1)]
+		[TestCase(5, 5, 3)]
+		[TestCase(6, 5, 3)]
+		public async Task CreateMassAsync_ShouldCreateErrorsInChunks_WhenEntityTooLargeExceptionOccurs(int itemLevelErrorsCount, int lessThanItemsPerRequest, int expectedCalls)
+		{
+			// Arrange
+			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(CreateJobHistoryErrorDto(ErrorType.Item), itemLevelErrorsCount).ToList();
+
+			SetupMassCreate(lessThanItemsPerRequest);
+
+			// Act
+			IEnumerable<int> result = await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, itemLevelErrors).ConfigureAwait(false);
+
+			// Assert
+			result.Should().HaveCount(itemLevelErrorsCount);
+
+			_objectManagerMock.Verify(x => x.CreateAsync(
+				It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
+				It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
+		}
+
+		[Test]
+		public void CreateMassAsync_ShouldThrowException_WhenEvenSingleItemIsTooLargeForObjectManager()
+		{
+			// Arrange
+			const int itemLevelErrorsCount = 3;
+			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(CreateJobHistoryErrorDto(ErrorType.Item), itemLevelErrorsCount).ToList();
+
+			const int lessThanItemsPerRequest = 1;
+			SetupMassCreate(lessThanItemsPerRequest);
+
+			// Act & Assert
+			Func<Task> action = async () => await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, itemLevelErrors).ConfigureAwait(false);
+			
+			action.Should().ThrowAsync<SyncException>();
 		}
 
 		[Test]
@@ -126,19 +167,19 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			const string testErrorMessage = "Job failed. See inner exception for more details.";
 			string testErrorStack = string.Empty;
 
-			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).ReturnsAsync(new ReadResult
+			_objectManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).ReturnsAsync(new ReadResult
 			{
 				Object = new RelativityObject { ArtifactID = _TEST_ERROR_TYPE_JOB_ARTIFACT_ID }
 			});
 
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => new QueryResult
+			_objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => new QueryResult
 			{
 				TotalCount = 1,
 				Objects = new List<RelativityObject> { GetQueryJobHistoryErrorResponse(testJobHistoryErrorArtifactId, testErrorMessage, testErrorStack) }
 			});
 
 			// Act
-			IJobHistoryError actualResult = await _jobHistoryErrorRepository.GetLastJobErrorAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID).ConfigureAwait(false);
+			IJobHistoryError actualResult = await _sut.GetLastJobErrorAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Should().NotBeNull();
@@ -148,8 +189,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			actualResult.StackTrace.Should().BeEmpty();
 			actualResult.ErrorMessage.Should().Be("Job failed. See inner exception for more details.");
 
-			_objectManager.Verify(x => x.ReadAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<ReadRequest>(y => VerifyReadErrorTypeJobRequest(y))), Times.Once);
-			_objectManager.Verify(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(y => VerifyQueryLastJobHistoryErrorRequest(y)), 0, 1), Times.Once);
+			_objectManagerMock.Verify(x => x.ReadAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<ReadRequest>(y => VerifyReadErrorTypeJobRequest(y))), Times.Once);
+			_objectManagerMock.Verify(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(y => VerifyQueryLastJobHistoryErrorRequest(y)), 0, 1), Times.Once);
 		}
 
 		[Test]
@@ -160,19 +201,19 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			const string testErrorMessage = "Job failed. See inner exception for more details.";
 			string testErrorStack = string.Empty;
 
-			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).ReturnsAsync(new ReadResult
+			_objectManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).ReturnsAsync(new ReadResult
 			{
 				Object = new RelativityObject { ArtifactID = _TEST_ERROR_TYPE_JOB_ARTIFACT_ID }
 			});
 
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => new QueryResult
+			_objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => new QueryResult
 			{
 				TotalCount = 0,
 				Objects = new List<RelativityObject> { GetQueryJobHistoryErrorResponse(testJobHistoryErrorArtifactId, testErrorMessage, testErrorStack) }
 			});
 
 			// Act
-			IJobHistoryError actualResult = await _jobHistoryErrorRepository.GetLastJobErrorAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID).ConfigureAwait(false);
+			IJobHistoryError actualResult = await _sut.GetLastJobErrorAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Should().BeNull();
@@ -182,10 +223,10 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldThrowExceptionTest()
 		{
 			// Arrange
-			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).Throws<SyncException>();
+			_objectManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>())).Throws<SyncException>();
 
 			// Act & Assert
-			Assert.ThrowsAsync<SyncException>(async () => await _jobHistoryErrorRepository.GetLastJobErrorAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID).ConfigureAwait(false));
+			Assert.ThrowsAsync<SyncException>(async () => await _sut.GetLastJobErrorAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID).ConfigureAwait(false));
 		}
 
 		private bool VerifyMassCreateRequest(MassCreateRequest request, CreateJobHistoryErrorDto dto)
@@ -285,5 +326,24 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			actualRequest.Fields.Should().HaveCount(expectedNumberOfFieldsInRequest);
 			return true;
 		}
+
+		private void SetupMassCreate(int lessThanItemsPerRequest)
+		{
+			_objectManagerMock.Setup(x => x.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<MassCreateRequest>(req => req.ValueLists.Count >= lessThanItemsPerRequest)))
+				.Throws(new ServiceException(_ENTITY_TOO_LARGE_EXCEPTION));
+			_objectManagerMock.Setup(x => x.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<MassCreateRequest>(req => req.ValueLists.Count < lessThanItemsPerRequest)))
+				.Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(request)));
+		}
+
+		private static MassCreateResult GetResultFrom(MassCreateRequest request)
+		{
+			List<RelativityObjectRef> objects = request.ValueLists.Select((value, index) => new RelativityObjectRef { ArtifactID = index }).ToList();
+
+			return new MassCreateResult
+			{
+				Success = true,
+				Objects = objects.AsReadOnly()
+			};
+		} 
 	}
 }
