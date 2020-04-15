@@ -78,7 +78,7 @@ namespace Relativity.Sync.Tests.System
 			error.ParentObject.ArtifactID.Should().Be(expectedJobHistoryArtifactId);
 		}
 
-		[Test]
+		[IdentifiedTest("737460ff-47c9-4cf3-905a-17439a5e1acb")]
 		public async Task ItemLevelErrorMassCreation_ShouldHandleAllErrors_WhenRequestEntityIsToLarge()
 		{
 			// Arrange
@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.System
 			result.Should().HaveCount(itemLevelErrosCount);
 		}
 
-		private string GetLongTextString(int count) => new string('.', count);
+		private static string GetLongTextString(int count) => new string('.', count);
 
 		private async Task<RelativityObject> QueryForCreatedJobHistoryError(int jobHistoryErrorArtifactId)
 		{

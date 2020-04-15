@@ -81,15 +81,10 @@ namespace Relativity.Sync.Storage
 					_logger.LogInformation("Successfully mass-created item level errors: {count}", createJobHistoryErrorDtos.Count);
 					return result.Objects.Select(x => x.ArtifactID);
 				}
-				catch (ServiceException ex)
+				catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
 				{
-					if(ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
-					{
-						_logger.LogWarning(ex, "Job History Errors mass creation failed. Attempt to retry by creating errors in chunks");
-						return await MassCreateInBatchesAsync(workspaceArtifactId, jobHistoryArtifactId, createJobHistoryErrorDtos).ConfigureAwait(false);
-					}
-
-					throw;
+					_logger.LogWarning(ex, "Job History Errors mass creation failed. Attempt to retry by creating errors in chunks");
+					return await MassCreateInBatchesAsync(workspaceArtifactId, jobHistoryArtifactId, createJobHistoryErrorDtos).ConfigureAwait(false);
 				}
 			}
 		}
