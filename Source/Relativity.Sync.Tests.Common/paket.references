@@ -1,9 +1,0 @@
-Microsoft.CodeAnalysis.FxCopAnalyzers
-CSharpGuidelineAnalyzer
-
-Polly
-Autofac
-
-NUnit
-FluentAssertions
-Moq
