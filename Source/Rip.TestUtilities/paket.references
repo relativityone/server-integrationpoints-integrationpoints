@@ -1,4 +1,5 @@
-﻿kCura.Apps.Common.Utils
+﻿kCura
+kCura.Apps.Common.Utils
 kCura.Relativity.Client
 Relativity.API
 Relativity.IntegrationPoints.Contracts
