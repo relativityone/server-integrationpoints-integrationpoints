@@ -14,8 +14,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 	public class AutomapRunner : IAutomapRunner
 	{
 		private const string _UNIT_OF_MEASURE = "field(s)";
-		private const string _AUTOMAP_ALL_METRIC_NAME = "AutoMapAll";
-		private const string _AUTOMAP_SAVED_SEARCH_METRIC_NAME = "AutoMapSavedSearch";
 		private const string _OBJECT_FIELDS_FOUND_METRIC_NAME = "ObjectFieldsFound";
 		private const string _AUTOMAPPED_COUNT_METRIC_NAME = "AutoMappedCount";
 		private const string _AUTOMAPPED_BY_ID_COUNT_METRIC_NAME = "AutoMappedByIdCount";
@@ -34,8 +32,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
-			_metrics.CountOperation(_AUTOMAP_ALL_METRIC_NAME);
-
 			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
 			List<DocumentFieldInfo> destinationFieldsList = destinationFields.ToList();
 
@@ -65,8 +61,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
 		{
-			_metrics.CountOperation(_AUTOMAP_SAVED_SEARCH_METRIC_NAME);
-
 			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
 			List<DocumentFieldInfo> savedSearchFields;
 
