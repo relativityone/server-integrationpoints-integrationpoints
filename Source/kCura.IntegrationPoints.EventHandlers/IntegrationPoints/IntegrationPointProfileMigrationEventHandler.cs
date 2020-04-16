@@ -32,6 +32,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
+		internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration = @"Following profiles could not be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
+		internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion = @"Following profiles could not be deleted, because they don't exist in created workspace ({workspaceId}): {profiles}";
+
+
 		public IntegrationPointProfileMigrationEventHandler()
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
@@ -63,10 +67,48 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
 				.GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
+			var profilesInCreatedWorkspace = new HashSet<int>(await _integrationPointProfilesQuery.CheckIfProfilesExist(WorkspaceID, allProfiles.Select(x => x.ArtifactId)).ConfigureAwait(false));
+
+
+			profilesToPreserve = CheckProfilesExistInWorkspace(profilesToPreserve, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration);
+			profilesToDelete = CheckProfilesExistInWorkspace(profilesToDelete, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion);
+
 			await Task.WhenAll(
 					DeleteProfilesAsync(profilesToDelete.Select(x => x.ArtifactId).ToList()),
 					UpdateProfilesAsync(profilesToPreserve)
 				).ConfigureAwait(false);
+		}
+
+		/// <summary>
+		/// Checks if profile was copied over form template workspace to prevent crashing
+		///
+		/// https://jira.kcura.com/browse/REL-411909
+		/// </summary>
+		/// <param name="profilesFromTemplateWorkspace"></param>
+		/// <returns>Profiles loaded from created workspace selected by ArtifactId</returns>
+		private List<IntegrationPointProfile> CheckProfilesExistInWorkspace(List<IntegrationPointProfile> profilesToCheck, HashSet<int> allExitsingProfilesArtifactIds, string messageTemplate)
+		{
+			List<IntegrationPointProfile> existingProfiles = new List<IntegrationPointProfile>();
+			List<int> missingProfiles = new List<int>();
+
+			foreach (var profile in profilesToCheck)
+			{
+				if (allExitsingProfilesArtifactIds.Contains(profile.ArtifactId))
+				{
+					existingProfiles.Add(profile);
+				}
+				else
+				{
+					missingProfiles.Add(profile.ArtifactId);
+				}
+			}
+
+			if (existingProfiles.Count != profilesToCheck.Count)
+			{
+				Logger.LogWarning(messageTemplate, WorkspaceID, missingProfiles);
+			}
+
+			return existingProfiles;
 		}
 
 		private async Task DeleteProfilesAsync(IReadOnlyCollection<int> profilesIDs)
@@ -103,7 +145,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			foreach (IntegrationPointProfile profile in profilesToUpdate)
 			{
 				FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
-				bool success = await objectManager.MassUpdateAsync(new[] {profile.ArtifactId}, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
+				bool success = await objectManager.MassUpdateAsync(new[] { profile.ArtifactId }, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
 
 				if (!success)
 				{
@@ -159,7 +201,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					{
 						ArtifactID = destinationProviderArtifactID
 					}
-				}, 
+				},
 				new FieldRefValuePair()
 				{
 					Field = new FieldRef()
@@ -193,7 +235,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			string updatedDestinationConfiguration = destinationConfiguration.ToString(Formatting.None);
 			return updatedDestinationConfiguration;
 		}
-		
+
 		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
 			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceID);
 
