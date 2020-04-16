@@ -31,11 +31,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			_metrics = metrics;
 		}
 
-		private bool ContainsFieldsOfTypeObject(IEnumerable<DocumentFieldInfo> fields)
-		{
-			return fields.Any(x => x.Type == FieldTypeName.SINGLE_OBJECT || x.Type == FieldTypeName.MULTIPLE_OBJECT);
-		}
-
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
@@ -44,7 +39,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
 			List<DocumentFieldInfo> destinationFieldsList = destinationFields.ToList();
 
-			if (ContainsFieldsOfTypeObject(sourceFieldsList) || ContainsFieldsOfTypeObject(destinationFieldsList))
+			if (sourceFieldsList.Any(x => x.IsObjectType()) || destinationFieldsList.Any(x => x.IsObjectType()))
 			{
 				_metrics.CountOperation(_OBJECT_FIELDS_FOUND_METRIC_NAME);
 			}
