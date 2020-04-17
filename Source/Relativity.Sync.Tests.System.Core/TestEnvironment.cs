@@ -70,6 +70,15 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 		}
 
+		public async Task<IEnumerable<WorkspaceRef>> GetWorkspacesAsync(string workspaceName)
+		{
+			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
+			{
+				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
+				return workspaces.Where(ws => ws.Name == workspaceName).ToList();
+			}
+		}
+
 		public async Task<WorkspaceRef> CreateWorkspaceWithFieldsAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
 		{
 			WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
@@ -110,7 +119,7 @@ namespace Relativity.Sync.Tests.System.Core
 					throw new NotFoundException($"Template workspace named: '{workspaceName}' not found.");
 				}
 
-				return result.Objects.First().ArtifactID;
+				return result.Objects.FirstOrDefault()?.ArtifactID ?? 0;
 			}
 		}
 
@@ -122,6 +131,22 @@ namespace Relativity.Sync.Tests.System.Core
 				await Task.WhenAll(_workspaces.Select(w => manager.DeleteAsync(new WorkspaceRef(w.ArtifactID)))).ConfigureAwait(false);
 			}
 			_workspaces.Clear();
+		}
+
+		public async Task DeleteWorkspace(int artifactId)
+		{
+			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
+			{
+				await manager.DeleteAsync(new WorkspaceRef(artifactId)).ConfigureAwait(false);
+			}
+		}
+
+		public async Task DeleteWorkspaces(IEnumerable<int> artifactIds)
+		{
+			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
+			{
+				await Task.WhenAll(artifactIds.Select(id => manager.DeleteAsync(new WorkspaceRef(id)))).ConfigureAwait(false);
+			}
 		}
 
 		public async Task CreateFieldsInWorkspace(int workspaceArtifactId)

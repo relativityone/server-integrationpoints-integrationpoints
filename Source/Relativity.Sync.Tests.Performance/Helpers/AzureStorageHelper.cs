@@ -35,6 +35,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 			await blob.DownloadToFileAsync(outputFile, FileMode.OpenOrCreate).ConfigureAwait(false);
 
+//			return Task.FromResult(outputFile);
 			return outputFile;
 		}
 	}

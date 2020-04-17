@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -60,6 +61,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			var progress = new Progress<SyncJobState>(state =>
 			{
 				result = state;
+				Debug.WriteLine(state);
 			});
 
 			await RunAsync(parameters, userId, progress, cancellationToken).ConfigureAwait(false);

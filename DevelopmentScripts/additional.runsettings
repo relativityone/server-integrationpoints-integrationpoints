@@ -1,11 +1,15 @@
 <RunSettings>
   <TestRunParameters>
-    <Parameter name="RelativityServicesUrl" value="/Relativity.Services" />
+    <Parameter name="RsapiServicesUrl" value="/Relativity.Services" />
     <Parameter name="RelativityRestUrl" value="/Relativity.Rest/api" />
     <Parameter name="RelativityWebApiUrl" value="/RelativityWebAPI" />
     <Parameter name="SuppressCertificateCheck" value="true" />
     <Parameter name="AzureStorageAccount" value="relativitysyncstorage" />
-    <Parameter name="AzureStorageAuthorizationKey" value="HjBqFlighpywrOE+og8gtNA9GqCwcL/6hRH7wCKdvkqD2snOIvTJ3+zgRweVfeXPmCCUZB4clHgueoWVANSglw==" />    
+    <Parameter name="AzureStorageAuthorizationKey" value="HjBqFlighpywrOE+og8gtNA9GqCwcL/6hRH7wCKdvkqD2snOIvTJ3+zgRweVfeXPmCCUZB4clHgueoWVANSglw==" />
     <Parameter name="AzureStoragePerformanceContainer" value="performance-tests" />
+    <Parameter name="RemoteArchivesLocation" value="\\emttest" />
+    <Parameter name="RelativeArchivesLocation" value="DefaultFileRepository\Archives" />
+    <Parameter name="ResourcePoolId" value="1015040" />
+    <Parameter name="PerformanceResultsFilePath" value="S:\results.csv" />
   </TestRunParameters>
 </RunSettings>
