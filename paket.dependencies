@@ -10,16 +10,16 @@ nuget Relativity.IntegrationPoints.SDK 1.0.7
 
 //Main Relativity packages
 nuget kCura 12.0.1
-nuget kCura.Agent 11.2.87.1
-nuget kCura.EventHandler 11.2.87.1
-nuget kCura.Relativity.Client 11.2.87.1
-nuget Relativity.Authentication 11.2.87.1
-nuget Relativity.CustomPages 11.2.87.1
-nuget Relativity.Data 11.2.87.1
+nuget kCura.Agent ~> 11.2.0
+nuget kCura.EventHandler ~> 11.2.0
+nuget kCura.Relativity.Client ~> 11.2.0
+nuget Relativity.Authentication ~> 11.2.0
+nuget Relativity.CustomPages ~> 11.2.0
+nuget Relativity.Data ~> 11.2.0
 nuget Relativity.DataExchange.Client.SDK 1.9.41
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0
-nuget Relativity.Services.Interfaces 11.2.87.1
-nuget Relativity.Services.Interfaces.Private 11.2.87.1
+nuget Relativity.Services.Interfaces ~> 11.2.0
+nuget Relativity.Services.Interfaces.Private ~> 11.2.0
 nuget Relativity.API 12.0.1
 
 //Other Relativity packages
@@ -83,13 +83,13 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync ~> 0.1.31-dev153
+	nuget Relativity.Sync ~> 0.2.0-pre.22
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
 	nuget kCura.Apps.Common.Utils 2.1.9
 	nuget kCura.OutsideIn.FI.Win32 2019.5.3
 	nuget Relativity.Kepler 2.5.0
-	nuget Relativity.Services.DataContracts 11.2.87.1
-	nuget Relativity.Services.Interfaces 11.2.87.1
+	nuget Relativity.Services.DataContracts ~> 11.2.0
+	nuget Relativity.Services.Interfaces ~> 11.2
 	nuget Relativity.Telemetry.APM 2019.1.1
