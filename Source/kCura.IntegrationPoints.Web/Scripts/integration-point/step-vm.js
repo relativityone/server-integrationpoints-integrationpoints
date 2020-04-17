@@ -189,6 +189,9 @@
 			if (model.mappingHasWarnings) {
 				apiUrl = apiUrl + "?mappingHasWarnings=" + model.mappingHasWarnings;
 			}
+			if (model.destinationWorkspaceChanged) {
+				apiUrl = apiUrl + "?destinationWorkspaceChanged=" + model.destinationWorkspaceChanged;
+			}
 
 			IP.data.ajax({ type: 'POST', url: apiUrl, data: JSON.stringify(model) })
 				.then(function (result) {

@@ -73,13 +73,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
-		public HttpResponseMessage Update(int workspaceID, IntegrationPointModel model, bool mappingHasWarnings = false)
+		public HttpResponseMessage Update(int workspaceID, IntegrationPointModel model, bool mappingHasWarnings = false, bool destinationWorkspaceChanged = false)
 		{
 			if (mappingHasWarnings)
 			{
-				_logger.LogWarning("Saving Integration Point {IntegrationPointID} with potentially invalid field mappings.", model.ArtifactID);
+				_logger.LogWarning("Saving Integration Point ArtifactID: {IntegrationPointID} with potentially invalid field mappings.", model.ArtifactID);
 			}
-
+			
+			if (destinationWorkspaceChanged)
+			{
+				_logger.LogInformation("Saving Integration Point Artifact ID: {IntegrationPointID} with changed destination workspace.", model.ArtifactID);
+			}
+			
 			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
 			{
 				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
