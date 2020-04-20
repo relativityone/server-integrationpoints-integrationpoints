@@ -57,8 +57,6 @@
 			return false;
 		}
 
-		public bool IsObjectType() => Type == FieldTypeName.SINGLE_OBJECT || Type == FieldTypeName.MULTIPLE_OBJECT;
-
 		private bool TryGetLengthIfTypeExtendend(out int length)
 		{
 			length = 0;
