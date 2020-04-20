@@ -1,7 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Services;
 using Relativity.API;
-using Relativity.Sync;
+using Relativity.Sync.Utils;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 
