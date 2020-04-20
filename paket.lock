@@ -413,6 +413,7 @@ RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
     Autofac (4.9.4)
+    Banzai (3.0.3)
     Banzai.Autofac (3.0.3)
     Castle.Core (3.3.0)
     kCura.Apps.Common.Utils (2.1.9)
