@@ -16,7 +16,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		private const string _UNIT_OF_MEASURE = "field(s)";
 		private const string _AUTOMAPPED_COUNT_METRIC_NAME = "AutoMappedCount";
 		private const string _AUTOMAPPED_BY_ID_COUNT_METRIC_NAME = "AutoMappedByIdCount";
-		private const string _AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME = "AutoMappedByNameCount";
+		private const string _AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME = "AutoMappedByNameCount"; 
+		private const string _AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME = "FixedLengthTextTooShortInDestinationCount";
 
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IMetricsSender _metrics;
@@ -37,11 +38,13 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 			if (!matchOnlyIdentifiers)
 			{
-				mappingBuilder = mappingBuilder.MapBy(x => x.FieldIdentifier, out int mappedById);
-				mappingBuilder = mappingBuilder.MapBy(x => x.Name, out int mappedByName);
+				mappingBuilder = mappingBuilder
+					.MapBy(x => x.FieldIdentifier, out int mappedById, out int fixedLengthTextFieldsWithDifferentLengthByIdCount)
+					.MapBy(x => x.Name, out int mappedByName, out int fixedLengthTextFieldsWithDifferentLengthByNameCount);
 
 				_metrics.GaugeOperation(_AUTOMAPPED_BY_ID_COUNT_METRIC_NAME, mappedById, _UNIT_OF_MEASURE);
 				_metrics.GaugeOperation(_AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME, mappedByName, _UNIT_OF_MEASURE);
+				_metrics.GaugeOperation(_AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME, fixedLengthTextFieldsWithDifferentLengthByNameCount + fixedLengthTextFieldsWithDifferentLengthByIdCount, _UNIT_OF_MEASURE);
 			}
 
 			_metrics.GaugeOperation(_AUTOMAPPED_COUNT_METRIC_NAME, mappingBuilder.Mapping.Count(), _UNIT_OF_MEASURE);
@@ -93,10 +96,17 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				_destinationFields = destinationFields;
 			}
 
-			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector, out int mappedCount)
+			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector, out int mappedCount, out int fixedLengthTextFieldsWithDifferentLengthCount)
 			{
-				var typeCompatibleFields = _sourceFields
+				var fieldPairs = _sourceFields
 					.Join(_destinationFields, selector, selector, (SourceField, DestinationField) => new { SourceField, DestinationField })
+					.ToArray();
+
+				fixedLengthTextFieldsWithDifferentLengthCount = fieldPairs.Count(x =>
+					x.SourceField.Type.StartsWith(FieldTypeName.FIXED_LENGTH_TEXT) &&
+					x.SourceField.Length != x.DestinationField.Length);
+
+				var typeCompatibleFields = fieldPairs
 					.Where(x => x.SourceField.IsTypeCompatible(x.DestinationField))
 					.ToArray();
 
