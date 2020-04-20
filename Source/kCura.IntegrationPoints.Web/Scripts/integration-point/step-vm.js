@@ -185,12 +185,16 @@
 				return;
 			}
 
-			var apiUrl = IP.utils.generateWebAPIURL(IP.data.params['apiControllerName']);
+			var apiUrl = IP.utils.generateWebAPIURL(IP.data.params['apiControllerName']) + '?';
 			if (model.mappingHasWarnings) {
-				apiUrl = apiUrl + "?mappingHasWarnings=" + model.mappingHasWarnings;
+				apiUrl = apiUrl + "mappingHasWarnings=" + model.mappingHasWarnings + "&";
 			}
 			if (model.destinationWorkspaceChanged) {
-				apiUrl = apiUrl + "?destinationWorkspaceChanged=" + model.destinationWorkspaceChanged;
+				apiUrl = apiUrl + "destinationWorkspaceChanged=" + model.destinationWorkspaceChanged;
+			}
+
+			if (apiUrl.endsWith('&')) {
+				apiUrl = apiUrl.slice(0, -1);
 			}
 
 			IP.data.ajax({ type: 'POST', url: apiUrl, data: JSON.stringify(model) })
