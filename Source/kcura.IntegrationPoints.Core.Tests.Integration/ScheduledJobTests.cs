@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	[Feature.DataTransfer.IntegrationPoints]
 	public class ScheduledJobTests : RelativityProviderTemplate
 	{
-
 		private IJobService _jobService;
 		private IJobManager _jobManager;
 		private long _jobId = 0;
@@ -55,38 +54,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			const int maxWaitTimeInSeconds = 180;
 			var stopwatch = new Stopwatch();
 
-			try
+			//Arrange
+			IntegrationPointModel integrationModel = GetRelativityProviderIntegrationPointModel(
+				GetSourceConfigurationWithProduction(),
+				GetProductionDestinationConfiguration(false),
+				"Billing Test - Production push");
+
+			integrationModel.Scheduler = GetScheduler();
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+
+			Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+			_jobId = jobInitial.JobId;
+
+			Job jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
+
+			stopwatch.Start();
+			while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds &&
+			       jobInitial.StopState == jobProcessed.StopState)
 			{
-				//Arrange
-				IntegrationPointModel integrationModel = GetRelativityProviderIntegrationPointModel(
-					GetSourceConfigurationWithProduction(),
-					GetProductionDestinationConfiguration(false),
-					"Billing Test - Production push");
-
-				integrationModel.Scheduler = GetScheduler();
-				IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
-
-				Job jobInitial = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-				_jobId = jobInitial.JobId;
-
-				Job jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-
-				stopwatch.Start();
-				while (stopwatch.Elapsed.TotalSeconds < maxWaitTimeInSeconds && jobInitial.StopState == jobProcessed.StopState)
-				{
-					Thread.Sleep(delayInMiliseconds);
-					jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
-				}
-
-				//Assert
-				Assert.AreNotEqual(jobInitial.StopState, jobProcessed.StopState);
+				Thread.Sleep(delayInMiliseconds);
+				jobProcessed = _jobService.GetJobs(integrationPoint.ArtifactID).FirstOrDefault();
 			}
-			catch (Exception e)
-			{
-				Assert.Fail(e.Message);
-			}
+
+			//Assert
+			Assert.AreNotEqual(jobInitial.StopState, jobProcessed.StopState);
 		}
-
 
 		[IdentifiedTestCase("DCD3D6A2-96D8-4F79-BD7A-D0C3049A662B")]
 		public void ShouldChangeScheduledJobNextRunTime()
@@ -176,8 +168,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			return Serializer.Serialize(destinationConfiguration);
 		}
 
-
-
 		private string GetSourceConfigurationWithProduction()
 		{
 			var sourceConfiguration = new SourceConfiguration
@@ -186,8 +176,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 				TargetWorkspaceArtifactId = TargetWorkspaceArtifactID,
 				TypeOfExport = SourceConfiguration.ExportType.ProductionSet
 			};
-
-
 
 			sourceConfiguration.SourceProductionId = CreateTargetProductionSet();
 
