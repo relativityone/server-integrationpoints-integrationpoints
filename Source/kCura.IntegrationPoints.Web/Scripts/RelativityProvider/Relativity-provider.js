@@ -336,17 +336,20 @@
 						stateLocal.ProductionArtifactId = null;
 						self.ProductionArtifactId(null);
 					}
-					if (self.TargetWorkspaceArtifactId() !== state.TargetWorkspaceArtifactId) {
+					const selfTargetWorkspaceArtifactId = self.TargetWorkspaceArtifactId();
+					if (selfTargetWorkspaceArtifactId !== state.TargetWorkspaceArtifactId) {
 
 						self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 						self.TargetWorkspaceArtifactId.isModified(false);
 
 						// only set WorkspaceHasChanged when user changed  the workspace if it was set in the model
-                        if (state.TargetWorkspaceArtifactId)
-                        {
+						if (state.TargetWorkspaceArtifactId) {
 							self.WorkspaceHasChanged = true;
-                        }
-                    }
+						}
+					}
+					else {
+						self.WorkspaceHasChanged = false;
+					}
 				});
 			});
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -6,22 +7,33 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
+using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 {
 	public class FieldMappingsController : ApiController
 	{
+		private const string _AUTOMAP_ALL_METRIC_NAME = "AutoMapAll";
+		private const string _AUTOMAP_SAVED_SEARCH_METRIC_NAME = "AutoMapSavedSearch";
+		private const string _INVALID_MAPPING_METRIC_NAME = "InvalidMapping";
+
 		private readonly IFieldsClassifyRunnerFactory _fieldsClassifyRunnerFactory;
 		private readonly IAutomapRunner _automapRunner;
 		private readonly IFieldsMappingValidator _fieldsMappingValidator;
+		private readonly IMetricsSender _metricsSender;
+		private readonly IAPILog _logger;
 
-		public FieldMappingsController(IFieldsClassifyRunnerFactory fieldsClassifyRunnerFactory, IAutomapRunner automapRunner, IFieldsMappingValidator fieldsMappingValidator)
+		public FieldMappingsController(IFieldsClassifyRunnerFactory fieldsClassifyRunnerFactory, IAutomapRunner automapRunner, IFieldsMappingValidator fieldsMappingValidator, IMetricsSender metricsSender,
+			IAPILog logger)
 		{
 			_fieldsClassifyRunnerFactory = fieldsClassifyRunnerFactory;
 			_automapRunner = automapRunner;
 			_fieldsMappingValidator = fieldsMappingValidator;
+			_metricsSender = metricsSender;
+			_logger = logger;
 		}
 
 		[HttpGet]
@@ -52,6 +64,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields")]
 		public HttpResponseMessage AutoMapFields([FromBody] AutomapRequest request)
 		{
+			_metricsSender.CountOperation(_AUTOMAP_ALL_METRIC_NAME);
+
 			return Request.CreateResponse(HttpStatusCode.OK, _automapRunner.MapFields(request.SourceFields, request.DestinationFields, request.MatchOnlyIdentifiers), Configuration.Formatters.JsonFormatter);
 		}
 
@@ -59,6 +73,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields from saved search")]
 		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapRequest request, int sourceWorkspaceID, int savedSearchID)
 		{
+			_metricsSender.CountOperation(_AUTOMAP_SAVED_SEARCH_METRIC_NAME);
+
 			IEnumerable<FieldMap> fieldMap = await _automapRunner
 				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, sourceWorkspaceID, savedSearchID)
 				.ConfigureAwait(false);
@@ -69,7 +85,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while validating mapped fields")]
 		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> request, int workspaceID, int destinationWorkspaceID)
 		{
-			IEnumerable<FieldMap> invalidFieldMaps = await _fieldsMappingValidator.ValidateAsync(request, workspaceID, destinationWorkspaceID).ConfigureAwait(false);
+			List<FieldMap> invalidFieldMaps;
+
+			try
+			{
+				invalidFieldMaps = (await _fieldsMappingValidator.ValidateAsync(request, workspaceID, destinationWorkspaceID).ConfigureAwait(false)).ToList();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Exception occurred when validating fields mapping.");
+				invalidFieldMaps = new List<FieldMap>();
+			}
+
+			if (invalidFieldMaps.Any())
+			{
+				_metricsSender.CountOperation(_INVALID_MAPPING_METRIC_NAME);
+			}
 
 			return Request.CreateResponse(HttpStatusCode.OK, invalidFieldMaps, Configuration.Formatters.JsonFormatter);
 		}

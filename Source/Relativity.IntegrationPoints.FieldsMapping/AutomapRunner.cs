@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 using System.Threading.Tasks;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Search;
 
@@ -12,22 +13,41 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class AutomapRunner : IAutomapRunner
 	{
-		private readonly IServicesMgr _servicesMgr;
+		private const string _UNIT_OF_MEASURE = "field(s)";
+		private const string _AUTOMAPPED_COUNT_METRIC_NAME = "AutoMappedCount";
+		private const string _AUTOMAPPED_BY_ID_COUNT_METRIC_NAME = "AutoMappedByIdCount";
+		private const string _AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME = "AutoMappedByNameCount"; 
+		private const string _AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME = "FixedLengthTextTooShortInDestinationCount";
 
-		public AutomapRunner(IServicesMgr servicesMgr)
+		private readonly IServicesMgr _servicesMgr;
+		private readonly IMetricsSender _metrics;
+
+		public AutomapRunner(IServicesMgr servicesMgr, IMetricsSender metrics)
 		{
 			_servicesMgr = servicesMgr;
+			_metrics = metrics;
 		}
 
 		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
 			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
 		{
-			AutomapBuilder mappingBuilder = new AutomapBuilder(sourceFields, destinationFields).MapByIsIdentifier();
+			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
+			List<DocumentFieldInfo> destinationFieldsList = destinationFields.ToList();
+
+			AutomapBuilder mappingBuilder = new AutomapBuilder(sourceFieldsList, destinationFieldsList).MapByIsIdentifier();
 
 			if (!matchOnlyIdentifiers)
 			{
-				mappingBuilder = mappingBuilder.MapBy(x => x.FieldIdentifier).MapBy(x => x.Name);
+				mappingBuilder = mappingBuilder
+					.MapBy(x => x.FieldIdentifier, out int mappedById, out int fixedLengthTextFieldsWithDifferentLengthByIdCount)
+					.MapBy(x => x.Name, out int mappedByName, out int fixedLengthTextFieldsWithDifferentLengthByNameCount);
+
+				_metrics.GaugeOperation(_AUTOMAPPED_BY_ID_COUNT_METRIC_NAME, mappedById, _UNIT_OF_MEASURE);
+				_metrics.GaugeOperation(_AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME, mappedByName, _UNIT_OF_MEASURE);
+				_metrics.GaugeOperation(_AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME, fixedLengthTextFieldsWithDifferentLengthByNameCount + fixedLengthTextFieldsWithDifferentLengthByIdCount, _UNIT_OF_MEASURE);
 			}
+
+			_metrics.GaugeOperation(_AUTOMAPPED_COUNT_METRIC_NAME, mappingBuilder.Mapping.Count(), _UNIT_OF_MEASURE);
 
 			return mappingBuilder.Mapping.OrderByDescending(x => x.SourceField.IsIdentifier).ThenBy(x => x.SourceField.DisplayName);
 		}
@@ -58,7 +78,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				}
 			}
 
-			return MapFields(savedSearchFields, destinationFields);
+			List<FieldMap> mappedFields = MapFields(savedSearchFields, destinationFields).ToList();
+			return mappedFields;
 		}
 
 		private class AutomapBuilder
@@ -75,20 +96,33 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				_destinationFields = destinationFields;
 			}
 
-			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector)
+			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector, out int mappedCount, out int fixedLengthTextFieldsWithDifferentLengthCount)
 			{
-				FieldMap[] newMappings = _sourceFields.Join(_destinationFields, selector, selector, (SourceField, DestinationField) => new { SourceField, DestinationField })
+				var fieldPairs = _sourceFields
+					.Join(_destinationFields, selector, selector, (SourceField, DestinationField) => new { SourceField, DestinationField })
+					.ToArray();
+
+				fixedLengthTextFieldsWithDifferentLengthCount = fieldPairs.Count(x =>
+					x.SourceField.Type.StartsWith(FieldTypeName.FIXED_LENGTH_TEXT) &&
+					x.SourceField.Length != x.DestinationField.Length);
+
+				var typeCompatibleFields = fieldPairs
 					.Where(x => x.SourceField.IsTypeCompatible(x.DestinationField))
+					.ToArray();
+
+				FieldMap[] newMappings = typeCompatibleFields
 					.Select(x => new FieldMap
 					{
 						SourceField = FieldConvert.ToFieldEntry(x.SourceField),
 						DestinationField = FieldConvert.ToFieldEntry(x.DestinationField),
 						FieldMapType = (x.SourceField.IsIdentifier && x.DestinationField.IsIdentifier) ? FieldMapTypeEnum.Identifier : FieldMapTypeEnum.None
-					}
-					).ToArray();
+					})
+					.ToArray();
 
-				DocumentFieldInfo[] remainingSourceFields = _sourceFields.Where(x => !newMappings.Any(m => m.SourceField.FieldIdentifier == x.FieldIdentifier.ToString())).ToArray();
-				DocumentFieldInfo[] remainingDestinationFields = _destinationFields.Where(x => !newMappings.Any(m => m.DestinationField.FieldIdentifier == x.FieldIdentifier.ToString())).ToArray();
+				mappedCount = newMappings.Length;
+
+				DocumentFieldInfo[] remainingSourceFields = _sourceFields.Where(x => newMappings.All(m => m.SourceField.FieldIdentifier != x.FieldIdentifier.ToString())).ToArray();
+				DocumentFieldInfo[] remainingDestinationFields = _destinationFields.Where(x => newMappings.All(m => m.DestinationField.FieldIdentifier != x.FieldIdentifier.ToString())).ToArray();
 
 				return new AutomapBuilder(
 					remainingSourceFields,
