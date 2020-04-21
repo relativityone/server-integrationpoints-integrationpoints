@@ -47,8 +47,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				int sourceWorkspaceIdArm =
 					await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
 
-//				const int sourceWorkspaceId = 1021707;
-
 				await SetupConfigurationAsync(sourceWorkspaceIdArm).ConfigureAwait(false);
 
 				ConfigurationRdoId = await
