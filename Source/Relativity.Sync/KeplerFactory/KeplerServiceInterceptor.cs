@@ -14,7 +14,7 @@ namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class KeplerServiceInterceptor<TService> : IInterceptor
 	{
-		private int _millisecondsBetweenHttpRetriesBase = 3000;
+		private int _secondsBetweenHttpRetriesBase = 3;
 
 		private const int _MAX_NUMBER_OF_AUTH_TOKEN_RETRIES = 3;
 		private const int _MAX_NUMBER_OF_HTTP_RETRIES = 4;
@@ -95,8 +95,10 @@ namespace Relativity.Sync.KeplerFactory
 					.Or<TimeoutException>()                                                         // Thrown when there is an infrastructure level timeout.
 					.WaitAndRetryAsync(_MAX_NUMBER_OF_HTTP_RETRIES, retryAttempt =>
 				{
-					const int maxJitter = 100;
-					return TimeSpan.FromMilliseconds(Math.Pow(_millisecondsBetweenHttpRetriesBase, retryAttempt)) + TimeSpan.FromMilliseconds(_random.Next(0, maxJitter));
+					const int maxJitterMs = 100;
+					TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(_secondsBetweenHttpRetriesBase, retryAttempt));
+					TimeSpan jitter = TimeSpan.FromMilliseconds(_random.Next(0, maxJitterMs));
+					return delay + jitter;
 				},
 					(ex, waitTime, retryCount, context) =>
 				{
