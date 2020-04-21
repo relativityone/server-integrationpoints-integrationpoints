@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				// Arrange
 				string filePath = await StorageHelper
 					.DownloadFileAsync(armedWorkspaceFileName, Path.GetTempPath()).ConfigureAwait(false);
-//
+
 				int sourceWorkspaceIdArm =
 					await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
 

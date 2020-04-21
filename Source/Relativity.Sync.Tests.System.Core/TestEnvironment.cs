@@ -143,9 +143,16 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public async Task DeleteWorkspaces(IEnumerable<int> artifactIds)
 		{
-			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
+			if (artifactIds.Any())
 			{
-				await Task.WhenAll(artifactIds.Select(id => manager.DeleteAsync(new WorkspaceRef(id)))).ConfigureAwait(false);
+				using (var manager = _serviceFactory.CreateProxy<IObjectManager>())
+				{
+					MassDeleteByObjectIdentifiersRequest request = new MassDeleteByObjectIdentifiersRequest()
+					{
+						Objects = artifactIds.Select(x => new RelativityObjectRef {ArtifactID = x}).ToList()
+					};
+					await manager.DeleteAsync(-1, request).ConfigureAwait(false);
+				}
 			}
 		}
 

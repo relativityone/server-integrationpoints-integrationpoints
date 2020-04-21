@@ -34,6 +34,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private readonly IARMApi _armApi;
 		private readonly FileShareHelper _fileShare;
 		private readonly AzureStorageHelper _storage;
+		private string _INITIAL_BCP_PATH = "BCPPath";
 
 		private static string _RELATIVE_ARCHIVES_LOCATION => AppSettings.RelativeArchivesLocation;
 		private static string REMOTE_ARCHIVES_LOCATION => Path.Combine(AppSettings.RemoteArchivesLocation, _RELATIVE_ARCHIVES_LOCATION);
@@ -71,9 +72,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			if (!_isInitialized)
 			{
 				Debug.WriteLine("ARM is being initialized...");
-				string installedVersion = GetInstalledArmVersion();
-				string rapArmVersion = GetRapArmVersion(GetARMRapPath());
-				if (string.IsNullOrEmpty(installedVersion) || ShouldArmBeInstalledBasedOnVersion(installedVersion, rapArmVersion))
+				if (ShouldBeInstalled())
 				{
 					InstallARM();
 				}
@@ -83,6 +82,13 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				_isInitialized = true;
 				Debug.WriteLine("ARM has been initialized.");
 			}
+		}
+
+		private bool ShouldBeInstalled()
+		{
+			string installedVersion = GetInstalledArmVersion();
+			string rapArmVersion = GetRapArmVersion(GetARMRapPath());
+			return string.IsNullOrEmpty(installedVersion) || ShouldArmBeInstalledBasedOnVersion(installedVersion, rapArmVersion);
 		}
 
 		private static bool ShouldArmBeInstalledBasedOnVersion(string installedVersion, string rapArmVersion)
@@ -176,7 +182,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			Debug.WriteLine("ARM configuration has been started...");
 
 			IOrchestrateInstanceSettings settingOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
-			if (string.IsNullOrEmpty(settingOrchestrator.GetInstanceSetting("BcpShareFolderName", "kCura.ARM").Value))
+			if (settingOrchestrator.GetInstanceSetting("BcpShareFolderName", "kCura.ARM").Value == _INITIAL_BCP_PATH)
 			{
 				settingOrchestrator.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
 			}
