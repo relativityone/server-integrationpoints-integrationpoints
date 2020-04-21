@@ -25,19 +25,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICPHelper _cpHelper;
 		private readonly ICryptographyHelper _cryptographyHelper;
+		private readonly IAPILog _logger;
 
 		public IntegrationPointsAPIController(
 			IServiceFactory serviceFactory,
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
 			ICPHelper cpHelper,
-			ICryptographyHelper cryptographyHelper)
+			ICryptographyHelper cryptographyHelper,
+			IAPILog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_cpHelper = cpHelper;
 			_cryptographyHelper = cryptographyHelper;
+			_logger = logger;
 		}
 
 		[HttpGet]
@@ -70,8 +73,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
-		public HttpResponseMessage Update(int workspaceID, IntegrationPointModel model)
+		public HttpResponseMessage Update(int workspaceID, IntegrationPointModel model, bool mappingHasWarnings = false, bool destinationWorkspaceChanged = false)
 		{
+			if (mappingHasWarnings)
+			{
+				_logger.LogWarning("Saving Integration Point ArtifactID: {IntegrationPointID} with potentially invalid field mappings.", model.ArtifactID);
+			}
+			
+			if (destinationWorkspaceChanged)
+			{
+				_logger.LogInformation("Saving Integration Point Artifact ID: {IntegrationPointID} with changed destination workspace.", model.ArtifactID);
+			}
+			
 			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
 			{
 				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))

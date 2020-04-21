@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
+using Moq;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -58,12 +59,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>())
 				.Returns(Substitute.For<IMetricsManager>());
 
+			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
+
 			_sut = new IntegrationPointsAPIController(
 				_serviceFactory,
 				_relativityUrlHelper,
 				_rdoSynchronizerProvider,
 				_cpHelper,
-				_cryptographyHelper)
+				_cryptographyHelper,
+				loggerFake.Object
+				)
 			{
 				Request = new HttpRequestMessage()
 			};

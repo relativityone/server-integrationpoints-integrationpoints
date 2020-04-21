@@ -29,36 +29,36 @@
 			} else if (step === 1) {
 				if (model.destinationProviderGuid === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
 					IP.stepDefinitionProvider.loadOverride([
-							{
-								text: 'Setup'
-							},
-							{
-								text: 'Source Information'
-							},
-							{
-								text: 'Destination Information'
-							}
+						{
+							text: 'Setup'
+						},
+						{
+							text: 'Source Information'
+						},
+						{
+							text: 'Destination Information'
+						}
 					]);
-				} else if(model.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636") {
-						IP.stepDefinitionProvider.loadDefaults();
-						IP.frameMessaging().subscribe('importType', function (data) {
-							if (data === 0) {
-								IP.stepDefinitionProvider.loadDefaults(2);
-								$.stepProgress.showButtons(true, true, false);
-							}
-							else {							
-								IP.stepDefinitionProvider.loadOverride([
-										{
-											text: 'Setup'
-										},
-										{
-											text: 'Source Information'
-										},
-								],
-                                2);
-								$.stepProgress.showButtons(true, false, true);
-							}
-						});
+				} else if (model.source.selectedType === "548f0873-8e5e-4da6-9f27-5f9cda764636") {
+					IP.stepDefinitionProvider.loadDefaults();
+					IP.frameMessaging().subscribe('importType', function (data) {
+						if (data === 0) {
+							IP.stepDefinitionProvider.loadDefaults(2);
+							$.stepProgress.showButtons(true, true, false);
+						}
+						else {
+							IP.stepDefinitionProvider.loadOverride([
+								{
+									text: 'Setup'
+								},
+								{
+									text: 'Source Information'
+								},
+							],
+								2);
+							$.stepProgress.showButtons(true, false, true);
+						}
+					});
 				} else {
 					IP.stepDefinitionProvider.loadDefaults();
 				}
@@ -185,22 +185,35 @@
 				return;
 			}
 
-			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL(IP.data.params['apiControllerName']), data: JSON.stringify(model) }).then(function (result) {
-				//redirect to page!!
-				IP.unsavedChangesHandler.unregister();
-				$('#save').attr('save', 'true');
-				IP.modal.open(200, $('body'));
-				var prefix = window.top.location.protocol + "//" + window.top.location.host;
-				window.top.location = prefix + result.returnURL;
-			}, function (error) {
-				try{
-					const errPrefix = "Failed to save Integration Point.";
-					const validationResultDto = JSON.parse(error.responseText);
-					IP.message.errorFormatted.raise(validationResultDto.errors, null, errPrefix);
-				}catch (e) {
-					IP.message.error.raise(error);
-				}
-			});
+			var apiUrl = IP.utils.generateWebAPIURL(IP.data.params['apiControllerName']) + '?';
+			if (model.mappingHasWarnings) {
+				apiUrl = apiUrl + "mappingHasWarnings=" + model.mappingHasWarnings + "&";
+			}
+			if (model.destinationWorkspaceChanged) {
+				apiUrl = apiUrl + "destinationWorkspaceChanged=" + model.destinationWorkspaceChanged;
+			}
+
+			if (apiUrl.endsWith('&')) {
+				apiUrl = apiUrl.slice(0, -1);
+			}
+
+			IP.data.ajax({ type: 'POST', url: apiUrl, data: JSON.stringify(model) })
+				.then(function (result) {
+					//redirect to page!!
+					IP.unsavedChangesHandler.unregister();
+					$('#save').attr('save', 'true');
+					IP.modal.open(200, $('body'));
+					var prefix = window.top.location.protocol + "//" + window.top.location.host;
+					window.top.location = prefix + result.returnURL;
+				}, function (error) {
+					try {
+						const errPrefix = "Failed to save Integration Point.";
+						const validationResultDto = JSON.parse(error.responseText);
+						IP.message.errorFormatted.raise(validationResultDto.errors, null, errPrefix);
+					} catch (e) {
+						IP.message.error.raise(error);
+					}
+				});
 		});
 
 		IP.messaging.subscribe('back', function () {
