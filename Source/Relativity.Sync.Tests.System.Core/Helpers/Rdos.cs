@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Utils;
 using Relativity.Services.Folder;
+using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
+using Relativity.Services.User;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.System.Core.Runner;
+using User = Relativity.Services.User.User;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
@@ -432,6 +436,14 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				QueryResult result = await objectManager.QueryAsync(workspaceId, request, 1, 1).ConfigureAwait(false);
 
 				return result.Objects.FirstOrDefault();
+			}
+		}
+
+		public static async Task<User> GetUser(ServiceFactory serviceFactory, int workspaceId)
+		{
+			using (IUserManager userInfoManager = serviceFactory.CreateProxy<IUserManager>())
+			{
+				return await userInfoManager.RetrieveCurrentAsync(workspaceId).ConfigureAwait(false);
 			}
 		}
 

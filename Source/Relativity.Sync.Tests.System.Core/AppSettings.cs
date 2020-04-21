@@ -19,13 +19,15 @@ namespace Relativity.Sync.Tests.System.Core
 			? TestContext.Parameters["RelativityHostAddress"]
 			: ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));
 
-		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl = BuildUri("Relativity"));
+		public static string RelativityServicesAddress => GetAppSettingOrDefaultValue("RsapiServicesHostAddress");
 
-		public static Uri RelativityServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildUri(GetConfigValue("RelativityServicesUrl")));
+		public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl = BuildHostNamedBasedUri("Relativity"));
 
-		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildUri(GetConfigValue("RelativityRestUrl")));
+		public static Uri RsapiServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildServicesBasedUri("Relativity.Services"));
 
-		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildUri(GetConfigValue("RelativityWebApiUrl")));
+		public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildHostNamedBasedUri("Relativity.Rest/api"));
+
+		public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildHostNamedBasedUri("RelativityWebAPI"));
 
 		public static string RelativityUserName => GetConfigValue("AdminUsername");
 
@@ -54,7 +56,15 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static bool SuppressCertificateCheck => bool.Parse(GetConfigValue("SuppressCertificateCheck"));
 
-		private static Uri BuildUri(string path)
+		public static int ResourcePoolId => int.Parse(GetConfigValue("ResourcePoolId"));
+
+		public static string RelativeArchivesLocation => GetConfigValue("RelativeArchivesLocation");
+
+		public static string RemoteArchivesLocation => GetConfigValue("RemoteArchivesLocation");
+
+		public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
+
+		private static Uri BuildHostNamedBasedUri(string path)
 		{
 			if (string.IsNullOrEmpty(RelativityHostName))
 			{
@@ -65,8 +75,17 @@ namespace Relativity.Sync.Tests.System.Core
 			return uriBuilder.Uri;
 		}
 
+		private static Uri BuildServicesBasedUri(string path)
+		{
+			var uriBuilder = new UriBuilder("https", RelativityServicesAddress, -1, path);
+			return uriBuilder.Uri;
+		}
 		private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
 			? TestContext.Parameters[name]
 			: ConfigurationManager.AppSettings.Get(name);
+
+		private static string GetAppSettingOrDefaultValue(string name) => string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get(name))
+			? TestContext.Parameters[name]
+			: RelativityHostName;
 	}
 }
