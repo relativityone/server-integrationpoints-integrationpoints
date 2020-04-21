@@ -7,7 +7,6 @@ properties {
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
-    $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
@@ -16,23 +15,18 @@ Task Analyze -Description "Run build analysis" {
     # Leaving this blank until we are ready to add in analyzers later
 }
 
-Task PaketRestore -Description "Restore the packages needed for this build" {
-    exec { & $PaketExe restore }
-}
-
-Task Compile -Depends PaketRestore -Description "Compile code for this repo" {
+Task Compile -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 
-	dotnet --info
     exec { dotnet @("build", $Solution,
-            ("/property:Configuration=$BuildConfig"),
-            ("/consoleloggerparameters:Summary"),
-            ("/nodeReuse:False"),
-            ("/maxcpucount"),
-            ("/nologo"),
-            ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
-            ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`"")) 
+        ("/property:Configuration=$BuildConfig"),
+        ("/consoleloggerparameters:Summary"),
+        ("/nodeReuse:False"),
+        ("/maxcpucount"),
+        ("/nologo"),
+        ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
+        ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`"")) 
     }
 }
 
@@ -58,12 +52,13 @@ Task Sign -Description "Sign all files" {
 Task Package -Description "Package up the build artifacts" {
     Initialize-Folder $ArtifactsDir -Safe
 
-    # It has to be reconsidered
-    $syncBin = Join-Path $SourceDir "\Relativity.Sync\bin"
-    Move-Output -Source $syncBin -Destination "$syncBin\net462"
-    
-    $NuGetPath = Join-Path $ArtifactsDir "NuGet"
-    & $paketExe pack $NuGetPath --include-referenced-projects --symbols
+    exec { dotnet @("pack", $Solution,
+        ("--no-build"),
+        ("/property:Configuration=$BuildConfig"),
+        ("/consoleloggerparameters:Summary"),
+        ("/maxcpucount"),
+        ("/nologo"))
+    }
 
     Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
 }

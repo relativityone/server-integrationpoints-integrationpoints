@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsMock.Object, stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
 			_sut = dynamicProxyFactory.WrapKeplerService(_stubForInterceptionMock.Object, _stubForInterceptionFactoryFake.Object);
-			const int delayBaseMs = 1;
+			const int delayBaseMs = 0;
 			SetMillisecondsDelayBetweenHttpRetriesBase(_sut, delayBaseMs);
 		}
 
@@ -443,7 +443,12 @@ namespace Relativity.Sync.Tests.Unit
 			System.Reflection.FieldInfo interceptorsField = stub.GetType().GetAllFields().Single(x => x.Name == "__interceptors");
 			IInterceptor[] interceptors = (IInterceptor[])interceptorsField.GetValue(stub);
 			IInterceptor interceptor = interceptors.Single();
-			System.Reflection.FieldInfo millisecondsBetweenHttpRetriesBaseField = interceptor.GetType().GetAllFields().Single(x => x.Name == "_millisecondsBetweenHttpRetriesBase");
+			const string fieldName = "_secondsBetweenHttpRetriesBase";
+			System.Reflection.FieldInfo millisecondsBetweenHttpRetriesBaseField = interceptor.GetType().GetAllFields().SingleOrDefault(x => x.Name == fieldName);
+			if (millisecondsBetweenHttpRetriesBaseField == null)
+			{
+				Assert.Fail($"Cannot find field '{fieldName}' in type '{interceptor.GetType()}'");
+			}
 			millisecondsBetweenHttpRetriesBaseField.SetValue(interceptor, delayBaseMs);
 		}
 
