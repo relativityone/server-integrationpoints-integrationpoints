@@ -175,13 +175,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		}
 
 		[Test]
-		public void ItShouldNotAllowUsingSyncWorkflowWhenRunningScheduledJob()
+		public void ItShouldAllowUsingSyncWorkflowWhenRunningScheduledJob()
 		{
 			_job.ScheduleRuleType = "scheduled rule";
 
 			bool result = _instance.ShouldUseRelativitySync(_job);
 
-			Assert.IsFalse(result);
+			Assert.IsTrue(result);
 		}
 
 		[Test]

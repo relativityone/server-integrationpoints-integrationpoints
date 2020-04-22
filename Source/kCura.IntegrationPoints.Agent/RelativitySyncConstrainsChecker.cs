@@ -38,11 +38,6 @@ namespace kCura.IntegrationPoints.Agent
 			_logger.LogDebug("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
 			try
 			{
-				if (!string.IsNullOrWhiteSpace(job.ScheduleRuleType))
-				{
-					return false;
-				}
-
 				if (IsRetryingErrors(job))
 				{
 					return false;
@@ -83,6 +78,13 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+
+			if (jobHistory == null)
+			{
+				// this means that job is scheduled, so it's not retrying errors
+				return false;
+			}
+
 			return jobHistory.JobType.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors);
 		}
 

@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		}
 
 		public Job Job { get; }
-	
+
 		public long JobId => Job.JobId;
 
 		public int WorkspaceId => Job.WorkspaceID;
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			{
 				if (!_jobHistoryId.HasValue)
 				{
-					_jobHistoryId = _jobHistoryService.GetRdo(JobIdentifier).ArtifactId;
+					_jobHistoryId = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPointModel, JobIdentifier, DateTime.UtcNow).ArtifactId;
 				}
 
 				return _jobHistoryId.Value;
