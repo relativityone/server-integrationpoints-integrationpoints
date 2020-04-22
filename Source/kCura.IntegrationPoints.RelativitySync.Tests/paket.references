@@ -1,6 +1,7 @@
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 kCura.OutsideIn.FI.Win32
+kCura.Apps.Common.Utils
 
 FluentAssertions
 Moq
@@ -8,3 +9,4 @@ NUnit
 
 group Sync
 	Relativity.Sync
+	Banzai

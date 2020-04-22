@@ -1,10 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\sync\Microsoft.NetFramework.Analyzers\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.NetFramework.Analyzers\build\Microsoft.NetFramework.Analyzers.props')" Label="Paket" />
-  <Import Project="..\..\packages\sync\Microsoft.NetCore.Analyzers\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.NetCore.Analyzers\build\Microsoft.NetCore.Analyzers.props')" Label="Paket" />
-  <Import Project="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.CodeQuality.Analyzers\build\Microsoft.CodeQuality.Analyzers.props')" Label="Paket" />
-  <Import Project="..\..\packages\sync\Microsoft.CodeAnalysis.VersionCheckAnalyzer\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\..\packages\sync\Microsoft.CodeAnalysis.VersionCheckAnalyzer\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Label="Paket" />
-  <Import Project="..\..\packages\sync\Microsoft.CodeAnalysis.FxCopAnalyzers\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\..\packages\sync\Microsoft.CodeAnalysis.FxCopAnalyzers\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Label="Paket" />
   <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -92,6 +87,17 @@
         </Reference>
         <Reference Include="FluentAssertions.Core">
           <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Apps.Common.Utils">
+          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -228,50 +234,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="kCura.Apps.Common.Utils">
-          <HintPath>..\..\packages\sync\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\sync\Microsoft.CodeAnalysis.VersionCheckAnalyzer\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\analyzers\dotnet\cs\Humanizer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\sync\Microsoft.CodeQuality.Analyzers\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\sync\Microsoft.NetCore.Analyzers\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\sync\Microsoft.NetCore.Analyzers\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\sync\Microsoft.NetFramework.Analyzers\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\sync\Microsoft.NetFramework.Analyzers\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -465,6 +427,9 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Web.Services">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Sync">
           <HintPath>..\..\packages\sync\Relativity.Sync\lib\net462\Relativity.Sync.dll</HintPath>
           <Private>True</Private>
@@ -573,5 +538,6 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <Import Project="..\..\packages\sync\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\..\packages\sync\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets')" Label="Paket" />
 </Project>
