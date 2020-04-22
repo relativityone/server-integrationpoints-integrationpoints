@@ -1,66 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
 using Relativity.Sync.WorkspaceGenerator.FileGenerating;
-using Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator;
 using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
 	public class DocumentFactory : IDocumentFactory
 	{
-		private readonly GeneratorSettings _settings;
-		private readonly FileGenerator _nativeFileGenerator;
-		private readonly FileGenerator _extractedTextFileGenerator;
-		private readonly List<CustomField> _customFields;
-
-		private readonly List<long> _nativesSizes;
-		private readonly List<long> _extractedTextSizes;
-
+		private readonly TestCase _testCase;
+		private readonly IFileGenerator _nativeSingleFileGenerator;
+		private readonly IFileGenerator _extractedTextSingleFileGenerator;
 		private readonly Random _random;
-
 		private int _currentDocumentIndex = 0;
 
-		public DocumentFactory(GeneratorSettings settings, IFileSizeCalculatorStrategy nativesSizeCalculatorStrategy, IFileSizeCalculatorStrategy extractedTextSizeCalculatorStrategy, FileGenerator nativeFileGenerator, FileGenerator extractedTextFileGenerator, List<CustomField> customFields)
+		public DocumentFactory(TestCase testCase, IFileGenerator nativeSingleFileGenerator, IFileGenerator extractedTextSingleFileGenerator)
 		{
-			_settings = settings;
-			_nativeFileGenerator = nativeFileGenerator;
-			_extractedTextFileGenerator = extractedTextFileGenerator;
-			_customFields = customFields;
-
-			_nativesSizes = nativesSizeCalculatorStrategy.GetSizesInBytes(settings.NumberOfDocuments, settings.TotalNativesSizeInMB).ToList();
-			_extractedTextSizes = extractedTextSizeCalculatorStrategy.GetSizesInBytes(settings.NumberOfDocuments, settings.TotalExtractedTextSizeInMB).ToList();
-
+			_testCase = testCase;
+			_nativeSingleFileGenerator = nativeSingleFileGenerator;
+			_extractedTextSingleFileGenerator = extractedTextSingleFileGenerator;
 			_random = new Random();
 		}
 
 		public async Task<Document> GetNextDocumentAsync()
 		{
-			if (_currentDocumentIndex >= _settings.NumberOfDocuments)
+			if (_currentDocumentIndex >= _testCase.NumberOfDocuments)
 			{
 				return null;
 			}
 
-			Document document = new Document(Guid.NewGuid().ToString());
+			Document document = new Document($"{_testCase.Name}_{Guid.NewGuid().ToString()}");
 			Console.WriteLine($"Generating document: {document.Identifier}");
 
-			if (_settings.GenerateNatives)
+			if (_testCase.GenerateNatives)
 			{
-				document.NativeFile = await _nativeFileGenerator
-					.GenerateAsync(document.Identifier, _nativesSizes[_currentDocumentIndex])
+				document.NativeFile = await _nativeSingleFileGenerator
+					.GenerateAsync()
 					.ConfigureAwait(false);
 			}
 
-			if (_settings.GenerateExtractedText)
+			if (_testCase.GenerateExtractedText)
 			{
-				document.ExtractedTextFile = await _extractedTextFileGenerator
-					.GenerateAsync(document.Identifier, _extractedTextSizes[_currentDocumentIndex])
+				document.ExtractedTextFile = await _extractedTextSingleFileGenerator
+					.GenerateAsync()
 					.ConfigureAwait(false);
 			}
 
-			foreach (CustomField field in _customFields)
+			foreach (CustomField field in _testCase.Fields)
 			{
 				document.CustomFields.Add(new Tuple<string, string>(field.Name, GetFieldValue(field)));
 			}

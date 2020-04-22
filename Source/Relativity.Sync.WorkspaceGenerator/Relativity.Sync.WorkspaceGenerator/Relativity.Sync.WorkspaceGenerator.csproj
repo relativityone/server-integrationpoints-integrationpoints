@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExitCodes.cs" />
+    <Compile Include="FileGenerating\IFileGenerator.cs" />
     <Compile Include="Import\ColumnNames.cs" />
     <Compile Include="CustomField.cs" />
     <Compile Include="RandomFieldsGenerator.cs" />
@@ -166,8 +167,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelativityServices\RelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\WorkspaceService.cs" />
-    <Compile Include="FileGenerating\FileGenerator.cs" />
+    <Compile Include="FileGenerating\SingleFileGenerator.cs" />
     <Compile Include="Settings\LoadFromSettingsFileOptions.cs" />
+    <Compile Include="Settings\TestCase.cs" />
     <Compile Include="WorkspaceGeneratorRunner.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CommandLine;
 using Newtonsoft.Json;
 
 namespace Relativity.Sync.WorkspaceGenerator.Settings
 {
-	[Verb("cli", HelpText = "Reads settings from command line and runs application")]
 	public class GeneratorSettings
 	{
 		private Uri _relativityUri;
@@ -37,17 +38,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 		[Option("testDataDir", Required = true, HelpText = "Directory path where test data (natives and extracted text) will be stored")]
 		public string TestDataDirectoryPath { get; set; }
 
-		[Option("numberOfDocuments", Required = true, HelpText = "Desired number of documents")]
-		public int NumberOfDocuments { get; set; }
-
-		[Option("numberOfFields", Required = true, HelpText = "Desired number of random fields")]
-		public int NumberOfFields { get; set; }
-
-		[Option("nativesSizeInMB", Required = true, HelpText = "Desired total size (in MB) of natives to be generated. Put 0 to disable natives.")]
-		public int TotalNativesSizeInMB { get; set; }
-
-		[Option("textSizeInMB", Required = true, HelpText = "Desired total size of extracted texts (in MB) to be generated. Put 0 to disable extracted text")]
-		public int TotalExtractedTextSizeInMB { get; set; }
+		public List<TestCase> TestCases { get; set; } = new List<TestCase>();
 
 		[JsonIgnore]
 		public Uri RelativityWebApiUri { get; private set; }
@@ -58,13 +49,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 		[JsonIgnore]
 		public Uri RelativityRestApiUri { get; private set; }
 
-		[JsonIgnore]
-		public bool GenerateNatives => TotalNativesSizeInMB > 0;
-
-		[JsonIgnore]
-		public bool GenerateExtractedText => TotalExtractedTextSizeInMB > 0;
-
-		public void WriteToJsonFile(string filePath)
+		public void ToJsonFile(string filePath)
 		{
 			File.WriteAllText(filePath, JsonConvert.SerializeObject(this, Formatting.Indented));
 		}

@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator
+﻿namespace Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator
 {
 	public class EqualFileSizeCalculatorStrategy : IFileSizeCalculatorStrategy
 	{
-		public IEnumerable<long> GetSizesInBytes(int desiredFilesCount, long totalSizeInMB)
+		private readonly long _singleFileSizeInBytes;
+
+		public EqualFileSizeCalculatorStrategy(int desiredFilesCount, long totalSizeInMB)
 		{
 			long totalSizeInBytes = totalSizeInMB * 1024 * 1024;
-			long singleFileSizeInBytes = totalSizeInBytes / desiredFilesCount;
+			_singleFileSizeInBytes = totalSizeInBytes / desiredFilesCount;
+		}
 
-			return Enumerable.Repeat(singleFileSizeInBytes, desiredFilesCount);
+		public long GetNext()
+		{
+			return _singleFileSizeInBytes;
 		}
 	}
 }

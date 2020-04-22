@@ -29,7 +29,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 			RelativityServicesFactory relativityServicesFactory = new RelativityServicesFactory(_settings);
 			WorkspaceService workspaceService = relativityServicesFactory.CreateWorkspaceService();
 
-			List<CustomField> randomFields = new RandomFieldsGenerator().GetRandomFields(_settings.NumberOfFields).ToList();
+			List<CustomField> randomFields = new RandomFieldsGenerator().GetRandomFields(_settings.TestCases).ToList();
 			List<CustomField> fieldsToCreate = new List<CustomField>(randomFields)
 			{
 				new CustomField(ColumnNames.NativeFilePath, FieldType.FixedLengthText)
@@ -39,34 +39,47 @@ namespace Relativity.Sync.WorkspaceGenerator
 				.CreateWorkspaceAsync(_settings.DesiredWorkspaceName, _settings.TemplateWorkspaceName)
 				.ConfigureAwait(false);
 			await workspaceService
-				.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate).ConfigureAwait(false);
+				.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate)
+				.ConfigureAwait(false);
 
 			DirectoryInfo dataDir = new DirectoryInfo(_settings.TestDataDirectoryPath);
 			DirectoryInfo nativesDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"NATIVES"));
 			DirectoryInfo textDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"TEXT"));
 
-			IFileSizeCalculatorStrategy equalFileSizeCalculatorStrategy = new EqualFileSizeCalculatorStrategy();
-			FileGenerator nativesGenerator = new FileGenerator(new RandomNativeFileExtensionProvider(), new NativeFileContentProvider(), nativesDir);
-			FileGenerator textGenerator = new FileGenerator(new TextFileExtensionProvider(), new AsciiExtractedTextFileContentProvider(), textDir);
-
-			IDocumentFactory documentFactory = new DocumentFactory(_settings, equalFileSizeCalculatorStrategy, equalFileSizeCalculatorStrategy, nativesGenerator, textGenerator, randomFields);
-			DataReaderWrapper dataReader = new DataReaderWrapper(documentFactory, _settings.NumberOfDocuments, _settings.GenerateNatives, _settings.GenerateExtractedText, randomFields);
-
-			ImportHelper importHelper = new ImportHelper(workspaceService, _settings);
-			ImportJobResult result = await importHelper.ImportDataAsync(workspace.ArtifactID, dataReader).ConfigureAwait(false);
-
-			if (result.Success)
+			foreach (TestCase testCase in _settings.TestCases)
 			{
-				Console.WriteLine("Completed!");
-			}
-			else
-			{
-				foreach (string error in result.Errors)
+				Console.WriteLine($"Importing documents for test case: {testCase.Name}");
+
+				IFileGenerator nativesGenerator = new SingleFileGenerator(
+					new RandomNativeFileExtensionProvider(),
+					new NativeFileContentProvider(),
+					new EqualFileSizeCalculatorStrategy(testCase.NumberOfDocuments, testCase.TotalNativesSizeInMB).GetNext(),
+					nativesDir);
+				IFileGenerator textGenerator = new SingleFileGenerator(
+					new TextFileExtensionProvider(),
+					new AsciiExtractedTextFileContentProvider(),
+					new EqualFileSizeCalculatorStrategy(testCase.NumberOfDocuments, testCase.TotalExtractedTextSizeInMB).GetNext(),
+					textDir);
+
+				IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator);
+				DataReaderWrapper dataReader = new DataReaderWrapper(documentFactory, testCase);
+
+				ImportHelper importHelper = new ImportHelper(workspaceService, _settings, testCase);
+				ImportJobResult result = await importHelper.ImportDataAsync(workspace.ArtifactID, dataReader).ConfigureAwait(false);
+
+				if (result.Success)
 				{
-					Console.WriteLine($"Import API error: {error}");
+					Console.WriteLine($"Successfully imported documents for test case: {testCase.Name}");
 				}
+				else
+				{
+					foreach (string error in result.Errors)
+					{
+						Console.WriteLine($"Import API error: {error}");
+					}
 
-				return (int)ExitCodes.OtherError;
+					return (int)ExitCodes.OtherError;
+				}
 			}
 
 			Console.WriteLine("\n\nPress [Enter] to exit");

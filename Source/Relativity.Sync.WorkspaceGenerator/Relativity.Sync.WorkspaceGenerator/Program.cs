@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommandLine;
 using Relativity.Sync.WorkspaceGenerator.Settings;
@@ -29,12 +30,19 @@ namespace Relativity.Sync.WorkspaceGenerator
 					DesiredWorkspaceName = "My Test Workspace",
 					TemplateWorkspaceName = "Functional Tests Template",
 					TestDataDirectoryPath = @"C:\Data\WorkspaceGenerator",
-					NumberOfDocuments = 100,
-					NumberOfFields = 15,
-					TotalNativesSizeInMB = 20,
-					TotalExtractedTextSizeInMB = 10
+					TestCases = new List<TestCase>()
+					{
+						new TestCase()
+						{
+							Name = "TestCase1",
+							NumberOfDocuments = 10,
+							NumberOfFields = 15,
+							TotalExtractedTextSizeInMB = 5,
+							TotalNativesSizeInMB = 8
+						}
+					}
 				};
-				defaultSettings.WriteToJsonFile(generateDefaultSettings.OutputSettingsFile);
+				defaultSettings.ToJsonFile(generateDefaultSettings.OutputSettingsFile);
 				Console.WriteLine($"Default settings saved to file: {generateDefaultSettings.OutputSettingsFile}");
 				return (int) ExitCodes.OK;
 
