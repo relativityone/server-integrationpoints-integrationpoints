@@ -141,6 +141,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Consts.cs" />
     <Compile Include="ExitCodes.cs" />
     <Compile Include="FileGenerating\IFileGenerator.cs" />
     <Compile Include="Import\ColumnNames.cs" />

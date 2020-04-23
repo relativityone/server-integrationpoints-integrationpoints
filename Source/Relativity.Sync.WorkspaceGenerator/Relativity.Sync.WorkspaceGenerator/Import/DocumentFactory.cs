@@ -30,7 +30,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 				return null;
 			}
 
-			Document document = new Document($"{_testCase.Name}_{Guid.NewGuid().ToString()}");
+			Document document = new Document($"{_testCase.Name}{Consts.ControlNumberSeparator}{Guid.NewGuid().ToString()}");
 			Console.WriteLine($"Generating document: {document.Identifier}");
 
 			if (_testCase.GenerateNatives)

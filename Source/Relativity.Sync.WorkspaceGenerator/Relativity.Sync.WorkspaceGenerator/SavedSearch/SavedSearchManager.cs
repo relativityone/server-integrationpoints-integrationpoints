@@ -36,7 +36,7 @@ namespace Relativity.Sync.WorkspaceGenerator.SavedSearch
 			CriteriaCollection criteria = new CriteriaCollection();
 			criteria.Conditions.Add(new Criteria()
 			{
-				Condition = new CriteriaCondition(controlNumberField, CriteriaConditionEnum.StartsWith, $"{testCaseName}_")
+				Condition = new CriteriaCondition(controlNumberField, CriteriaConditionEnum.StartsWith, $"{testCaseName}{Consts.ControlNumberSeparator}")
 			});
 
 			KeywordSearch search = new KeywordSearch()
