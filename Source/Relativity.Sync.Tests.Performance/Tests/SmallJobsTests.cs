@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				if (mapExtractedText)
 				{
 					IEnumerable<FieldMap> extractedTextMapping =
-						await GetGetExtractedTextMapping().ConfigureAwait(false);
+						await GetGetExtractedTextMappingAsync().ConfigureAwait(false);
 					Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(extractedTextMapping).ToArray();
 				}
 
