@@ -61,6 +61,8 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		{
 			switch (field.Type)
 			{
+				case FieldType.Date:
+					return GetDate();
 				case FieldType.WholeNumber:
 					return GetWholeNumber();
 				case FieldType.Decimal:
@@ -76,9 +78,15 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			}
 		}
 
+		private string GetDate()
+		{
+			DateTime randomDate = DateTime.Now.Subtract(TimeSpan.FromSeconds(_random.Next(0, int.MaxValue)));
+			return randomDate.ToString();
+		}
+
 		private string GetWholeNumber()
 		{
-			return _random.Next(-99999, 99999).ToString();
+			return _random.Next(int.MinValue, int.MaxValue).ToString();
 		}
 
 		private string GetYesNo()

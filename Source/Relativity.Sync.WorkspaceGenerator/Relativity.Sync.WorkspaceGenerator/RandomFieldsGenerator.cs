@@ -10,6 +10,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 	{
 		private static readonly FieldType[] SupportedTypes = new[]
 		{
+			FieldType.Date,
 			FieldType.Decimal,
 			FieldType.Currency,
 			FieldType.FixedLengthText,

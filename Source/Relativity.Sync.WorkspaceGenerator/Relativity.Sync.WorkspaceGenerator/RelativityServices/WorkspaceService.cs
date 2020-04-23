@@ -15,6 +15,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 	public class WorkspaceService
 	{
 		private readonly IServiceFactory _serviceFactory;
+		private readonly Random _random = new Random();
 
 		private readonly ObjectTypeIdentifier _documentObjectTypeIdentifier = new ObjectTypeIdentifier()
 		{
@@ -96,6 +97,11 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 								.CreateLongTextFieldAsync(workspaceID, CreateLongTextFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
+						case FieldType.Date:
+							await fieldManager
+								.CreateDateFieldAsync(workspaceID, CreateDateFieldRequest(field))
+								.ConfigureAwait(false);
+							break;
 						case FieldType.Decimal:
 							await fieldManager
 								.CreateDecimalFieldAsync(workspaceID, CreateDecimalFieldRequest(field))
@@ -121,6 +127,18 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 					}
 				}
 			}
+		}
+
+		private DateFieldRequest CreateDateFieldRequest(CustomField field)
+		{
+			Formatting formatting = _random.Next(0, int.MaxValue) % 2 == 0 ? Formatting.Date : Formatting.DateTime;
+
+			return new DateFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = field.Name,
+				Formatting = formatting
+			};
 		}
 
 		private FixedLengthFieldRequest CreateFixedLengthFieldRequest(CustomField field)
