@@ -35,11 +35,6 @@ namespace Relativity.Sync.WorkspaceGenerator
 				fields.Add(field);
 			}
 
-			foreach (TestCase testCase in testCases)
-			{
-				testCase.Fields = fields.GetRange(0, testCase.NumberOfFields);
-			}
-
 			return fields;
 		}
 	}

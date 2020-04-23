@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Relativity.Sync.WorkspaceGenerator.FileGenerating.FileExtensionProvider;
 using Relativity.Sync.WorkspaceGenerator.FileGenerating.SizeCalculator;
 using Relativity.Sync.WorkspaceGenerator.Import;
 using Relativity.Sync.WorkspaceGenerator.RelativityServices;
+using Relativity.Sync.WorkspaceGenerator.SavedSearch;
 using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator
@@ -28,6 +30,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 		{
 			RelativityServicesFactory relativityServicesFactory = new RelativityServicesFactory(_settings);
 			WorkspaceService workspaceService = relativityServicesFactory.CreateWorkspaceService();
+			SavedSearchManager savedSearchManager = relativityServicesFactory.CreateSavedSearchManager();
 
 			List<CustomField> randomFields = new RandomFieldsGenerator().GetRandomFields(_settings.TestCases).ToList();
 			List<CustomField> fieldsToCreate = new List<CustomField>(randomFields)
@@ -50,6 +53,8 @@ namespace Relativity.Sync.WorkspaceGenerator
 			{
 				Console.WriteLine($"Importing documents for test case: {testCase.Name}");
 
+				testCase.Fields = randomFields.GetRange(0, testCase.NumberOfFields);
+
 				IFileGenerator nativesGenerator = new SingleFileGenerator(
 					new RandomNativeFileExtensionProvider(),
 					new NativeFileContentProvider(),
@@ -62,7 +67,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 					textDir);
 
 				IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator);
-				DataReaderWrapper dataReader = new DataReaderWrapper(documentFactory, testCase);
+				IDataReader dataReader = new DataReaderWrapper(documentFactory, testCase);
 
 				ImportHelper importHelper = new ImportHelper(workspaceService, _settings, testCase);
 				ImportJobResult result = await importHelper.ImportDataAsync(workspace.ArtifactID, dataReader).ConfigureAwait(false);
@@ -70,6 +75,17 @@ namespace Relativity.Sync.WorkspaceGenerator
 				if (result.Success)
 				{
 					Console.WriteLine($"Successfully imported documents for test case: {testCase.Name}");
+
+					try
+					{
+						Console.WriteLine($"Creating saved search: {testCase.Name}");
+						await savedSearchManager.CreateSavedSearchForTestCaseAsync(workspace.ArtifactID, testCase.Name)
+							.ConfigureAwait(false);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine($"Failed to create saved search:\r\n{ex}");
+					}
 				}
 				else
 				{
@@ -82,7 +98,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 				}
 			}
 
-			Console.WriteLine("\n\nPress [Enter] to exit");
+			Console.WriteLine("\n\nFinished processing all test cases.\r\nPress [Enter] to exit");
 			Console.ReadLine();
 			return (int)ExitCodes.OK;
 		}

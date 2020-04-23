@@ -24,7 +24,8 @@ namespace Relativity.Sync.WorkspaceGenerator
 			{
 				GeneratorSettings defaultSettings = new GeneratorSettings()
 				{
-					RelativityUri = new Uri("http://example.uri"),
+					RelativityUri = new Uri("https://host.name/Relativity"),
+					RelativityServicesUri = new Uri("https://host.name/Relativity/Relativity.Services"),
 					RelativityUserName = "user.name",
 					RelativityPassword = "passwd",
 					DesiredWorkspaceName = "My Test Workspace",
@@ -34,7 +35,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 					{
 						new TestCase()
 						{
-							Name = "TestCase1",
+							Name = "TC1",
 							NumberOfDocuments = 10,
 							NumberOfFields = 15,
 							TotalExtractedTextSizeInMB = 5,
@@ -50,10 +51,6 @@ namespace Relativity.Sync.WorkspaceGenerator
 			else if (settings is LoadFromSettingsFileOptions loadSettingsFromFileOptions)
 			{
 				generatorSettings = GeneratorSettings.FromJsonFile(loadSettingsFromFileOptions.InputSettingsFile);
-			}
-			else if (settings is GeneratorSettings)
-			{
-				generatorSettings = settings as GeneratorSettings;
 			}
 			else
 			{

@@ -18,10 +18,12 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 			{
 				_relativityUri = value;
 				RelativityWebApiUri = new Uri(value, "/RelativityWebAPI");
-				RelativityServicesUri = new Uri(value, "/Relativity.Services");
 				RelativityRestApiUri = new Uri(value, "/Relativity.Rest/api");
 			}
 		}
+
+		[Option("relativityServicesUrl", Required = true, HelpText = "Relativity Services URL e.g. https://host.name/Relativity/Relativity.Services")]
+		public Uri RelativityServicesUri { get; set; }
 
 		[Option("userName", Required = true, HelpText = "Relativity user name")]
 		public string RelativityUserName { get; set; }
@@ -42,9 +44,6 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 
 		[JsonIgnore]
 		public Uri RelativityWebApiUri { get; private set; }
-
-		[JsonIgnore]
-		public Uri RelativityServicesUri { get; private set; }
 
 		[JsonIgnore]
 		public Uri RelativityRestApiUri { get; private set; }

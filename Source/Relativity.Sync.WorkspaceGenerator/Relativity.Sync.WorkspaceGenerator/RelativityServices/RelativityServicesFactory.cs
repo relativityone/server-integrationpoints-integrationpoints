@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.Services.ServiceProxy;
+using Relativity.Sync.WorkspaceGenerator.SavedSearch;
 using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
@@ -18,6 +19,11 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 		public WorkspaceService CreateWorkspaceService()
 		{
 			return new WorkspaceService(_serviceFactory);
+		}
+
+		public SavedSearchManager CreateSavedSearchManager()
+		{
+			return new SavedSearchManager(_serviceFactory);
 		}
 	}
 }

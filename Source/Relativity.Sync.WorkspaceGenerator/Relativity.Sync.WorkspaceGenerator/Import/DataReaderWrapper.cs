@@ -14,7 +14,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
-			new DataColumn(ColumnNames.Identifier, typeof(string))
+			new DataColumn(ColumnNames.ControlNumber, typeof(string))
 		};
 
 		private static IEnumerable<DataColumn> NativesColumns => new[]
@@ -73,7 +73,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			Console.WriteLine($"Importing document ({++_currentDocumentIndex} of {_testCase.NumberOfDocuments}): {_currentDocument.Identifier}");
 
 			_currentRow = _dataTable.NewRow();
-			_currentRow[ColumnNames.Identifier] = _currentDocument.Identifier;
+			_currentRow[ColumnNames.ControlNumber] = _currentDocument.Identifier;
 
 			if (_testCase.GenerateNatives)
 			{
