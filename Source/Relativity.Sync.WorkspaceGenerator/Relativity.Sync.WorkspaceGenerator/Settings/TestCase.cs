@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CommandLine;
 using Newtonsoft.Json;
+using Relativity.Sync.WorkspaceGenerator.Fields;
 
 namespace Relativity.Sync.WorkspaceGenerator.Settings
 {

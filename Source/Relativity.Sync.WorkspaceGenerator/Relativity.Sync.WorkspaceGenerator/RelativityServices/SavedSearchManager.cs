@@ -5,7 +5,7 @@ using Relativity.Services.Field;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 
-namespace Relativity.Sync.WorkspaceGenerator.SavedSearch
+namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 {
 	public class SavedSearchManager : ISavedSearchManager
 	{

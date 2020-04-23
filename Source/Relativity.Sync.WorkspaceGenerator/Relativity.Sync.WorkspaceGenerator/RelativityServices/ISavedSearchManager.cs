@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Relativity.Sync.WorkspaceGenerator.SavedSearch
+namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 {
 	public interface ISavedSearchManager
 	{

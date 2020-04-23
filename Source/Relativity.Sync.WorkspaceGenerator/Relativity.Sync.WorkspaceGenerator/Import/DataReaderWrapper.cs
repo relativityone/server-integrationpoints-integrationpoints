@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Relativity.Sync.WorkspaceGenerator.Fields;
 using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import

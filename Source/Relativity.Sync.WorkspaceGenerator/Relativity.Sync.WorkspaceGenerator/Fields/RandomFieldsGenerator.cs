@@ -4,9 +4,9 @@ using System.Linq;
 using Relativity.Services;
 using Relativity.Sync.WorkspaceGenerator.Settings;
 
-namespace Relativity.Sync.WorkspaceGenerator
+namespace Relativity.Sync.WorkspaceGenerator.Fields
 {
-	public class RandomFieldsGenerator
+	public class RandomFieldsGenerator : IRandomFieldsGenerator
 	{
 		private static readonly FieldType[] SupportedTypes = new[]
 		{

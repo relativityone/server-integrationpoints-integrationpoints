@@ -8,11 +8,12 @@ using Relativity.Services.Workspace;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Sync.WorkspaceGenerator.Fields;
 using FieldType = Relativity.Services.FieldType;
 
 namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 {
-	public class WorkspaceService
+	public class WorkspaceService : IWorkspaceService
 	{
 		private readonly IServiceFactory _serviceFactory;
 		private readonly Random _random = new Random();

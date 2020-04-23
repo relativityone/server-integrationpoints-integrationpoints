@@ -13,11 +13,11 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 	{
 		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
 
-		private readonly WorkspaceService _workspaceService;
+		private readonly IWorkspaceService _workspaceService;
 		private readonly GeneratorSettings _settings;
 		private readonly TestCase _testCase;
 
-		public ImportHelper(WorkspaceService workspaceService, GeneratorSettings settings, TestCase testCase)
+		public ImportHelper(IWorkspaceService workspaceService, GeneratorSettings settings, TestCase testCase)
 		{
 			_workspaceService = workspaceService;
 			_settings = settings;

@@ -1,6 +1,6 @@
 ﻿using Relativity.Services;
 
-namespace Relativity.Sync.WorkspaceGenerator
+namespace Relativity.Sync.WorkspaceGenerator.Fields
 {
 	public class CustomField
 	{

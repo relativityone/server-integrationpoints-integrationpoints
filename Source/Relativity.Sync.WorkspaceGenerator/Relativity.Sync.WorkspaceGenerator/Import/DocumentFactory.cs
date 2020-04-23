@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
+using Relativity.Sync.WorkspaceGenerator.Fields;
 using Relativity.Sync.WorkspaceGenerator.FileGenerating;
 using Relativity.Sync.WorkspaceGenerator.Settings;
 
