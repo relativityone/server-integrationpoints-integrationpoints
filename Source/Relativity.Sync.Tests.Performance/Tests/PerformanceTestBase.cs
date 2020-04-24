@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Api;
-using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 
 			Configuration.FieldsMapping =
-				mapping ?? await GetIdentifierMapping().ConfigureAwait(false);
+				mapping ?? await GetIdentifierMappingAsync().ConfigureAwait(false);
 
 			Configuration.JobHistoryId =
 				await Rdos.CreateJobHistoryInstance(ServiceFactory, SourceWorkspace.ArtifactID)
@@ -118,20 +118,20 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		/// <returns>Mapping with generated fields</returns>
 		public async Task<IEnumerable<FieldMap>> GetMappingAndCreateFieldsInDestinationWorkspaceAsync(int? numberOfMappedFields)
 		{
-			var sourceFields = await GetFieldsFromSourceWorkspace(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+			List<RelativityObject> sourceFields = (await GetFieldsFromSourceWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false)).ToList();
 
 			Regex wasGeneratedRegex = new Regex("^([0-9]+-)");
 
-			sourceFields = sourceFields.Where(f => wasGeneratedRegex.IsMatch(f["Name"].Value.ToString()));
+			sourceFields = sourceFields.Where(f => wasGeneratedRegex.IsMatch(f["Name"].Value.ToString())).ToList();
 
 			if (numberOfMappedFields != null)
 			{
-				sourceFields = sourceFields.Take(numberOfMappedFields.Value);
+				sourceFields = sourceFields.Take(numberOfMappedFields.Value).ToList();
 			}
 
 			sourceFields = sourceFields.ToList();
 
-			IEnumerable<int> createdArtifactIds = await CreateFieldsInDesitnationWorkspace(sourceFields).ConfigureAwait(false);
+			IEnumerable<int> createdArtifactIds = await CreateFieldsInDesitnationWorkspaceAsync(sourceFields).ConfigureAwait(false);
 
 			return sourceFields.Zip(createdArtifactIds, (sourceField, createdId) => new FieldMap
 			{
@@ -151,12 +151,12 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			});
 		}
 
-		private Task<IEnumerable<int>> CreateFieldsInDesitnationWorkspace(IEnumerable<RelativityObject> sourceFields)
+		private Task<IEnumerable<int>> CreateFieldsInDesitnationWorkspaceAsync(IEnumerable<RelativityObject> sourceFields)
 		{
 			return CreateFieldsAsync(TargetWorkspace.ArtifactID, sourceFields);
 		}
 
-		private async Task<IEnumerable<RelativityObject>> GetFieldsFromSourceWorkspace(int sourceWorkspaceArtifactId)
+		private async Task<IEnumerable<RelativityObject>> GetFieldsFromSourceWorkspaceAsync(int sourceWorkspaceArtifactId)
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -183,7 +183,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		}
 
 
-		protected async Task<IEnumerable<FieldMap>> GetIdentifierMapping()
+		protected async Task<IEnumerable<FieldMap>> GetIdentifierMappingAsync()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -214,7 +214,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		protected  async Task<IEnumerable<FieldMap>> GetGetExtractedTextMapping()
+		protected  async Task<IEnumerable<FieldMap>> GetGetExtractedTextMappingAsync()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -295,13 +295,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 			return queryRequest;
 		}
-
-
+		
 		public async Task<IEnumerable<int>> CreateFieldsAsync(int workspaceID, IEnumerable<RelativityObject> fields)
 		{
 			const string typeFieldName = "Field Type";
-
-
+			
 			var artifactIds = new List<int>();
 
 			using (IFieldManager fieldManager = ServiceFactory.CreateProxy<IFieldManager>())
@@ -323,6 +321,13 @@ namespace Relativity.Sync.Tests.Performance.Tests
 						case "Long Text":
 							createdFieldArtifactId = await fieldManager
 								.CreateLongTextFieldAsync(workspaceID, CreateLongTextFieldRequest(field.Name))
+								.ConfigureAwait(false);
+							break;
+						case "Date":
+							Formatting formatting = (await fieldManager
+								.ReadAsync(workspaceID, field.ArtifactID).ConfigureAwait(false)).Formatting;
+							createdFieldArtifactId = await fieldManager
+								.CreateDateFieldAsync(workspaceID, CreateDateFieldRequest(field.Name, formatting))
 								.ConfigureAwait(false);
 							break;
 						case "Decimal":
@@ -372,6 +377,16 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				ObjectType = _documentObjectTypeIdentifier,
 				Name = fieldName,
 				EnableDataGrid = false
+			};
+		}
+
+		private DateFieldRequest CreateDateFieldRequest(string fieldName, Formatting formatting)
+		{
+			return new DateFieldRequest()
+			{
+				ObjectType = _documentObjectTypeIdentifier,
+				Name = fieldName,
+				Formatting = formatting
 			};
 		}
 

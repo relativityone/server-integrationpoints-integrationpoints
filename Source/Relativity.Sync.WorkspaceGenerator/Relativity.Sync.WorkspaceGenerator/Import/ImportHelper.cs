@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
@@ -14,13 +13,15 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 	{
 		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
 
-		private readonly WorkspaceService _workspaceService;
+		private readonly IWorkspaceService _workspaceService;
 		private readonly GeneratorSettings _settings;
+		private readonly TestCase _testCase;
 
-		public ImportHelper(WorkspaceService workspaceService, GeneratorSettings settings)
+		public ImportHelper(IWorkspaceService workspaceService, GeneratorSettings settings, TestCase testCase)
 		{
 			_workspaceService = workspaceService;
 			_settings = settings;
+			_testCase = testCase;
 		}
 
 		public async Task<ImportJobResult> ImportDataAsync(int workspaceArtifactId, IDataReader dataReader)
@@ -48,7 +49,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			importJob.SourceData.SourceData = dataReader;
 
 			// Extracted text fields
-			if (_settings.GenerateExtractedText)
+			if (_testCase.GenerateExtractedText)
 			{
 				importJob.Settings.ExtractedTextFieldContainsFilePath = true;
 				importJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
@@ -59,7 +60,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			}
 
 			// Indicates file path for the native file.
-			if (_settings.GenerateNatives)
+			if (_testCase.GenerateNatives)
 			{
 				importJob.Settings.CopyFilesToDocumentRepository = true;
 				importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;

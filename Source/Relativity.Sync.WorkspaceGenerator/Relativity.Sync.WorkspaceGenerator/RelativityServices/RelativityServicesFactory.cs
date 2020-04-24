@@ -1,10 +1,9 @@
-﻿using System;
-using Relativity.Services.ServiceProxy;
+﻿using Relativity.Services.ServiceProxy;
 using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 {
-	public class RelativityServicesFactory
+	public class RelativityServicesFactory : IRelativityServicesFactory
 	{
 		private readonly ServiceFactory _serviceFactory;
 
@@ -15,9 +14,14 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			_serviceFactory = new ServiceFactory(serviceFactorySettings);
 		}
 
-		public WorkspaceService CreateWorkspaceService()
+		public IWorkspaceService CreateWorkspaceService()
 		{
 			return new WorkspaceService(_serviceFactory);
+		}
+
+		public ISavedSearchManager CreateSavedSearchManager()
+		{
+			return new SavedSearchManager(_serviceFactory);
 		}
 	}
 }

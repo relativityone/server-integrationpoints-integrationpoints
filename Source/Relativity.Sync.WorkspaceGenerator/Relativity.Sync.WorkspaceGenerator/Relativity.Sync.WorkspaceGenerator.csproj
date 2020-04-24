@@ -141,20 +141,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Consts.cs" />
     <Compile Include="ExitCodes.cs" />
+    <Compile Include="Fields\CustomField.cs" />
+    <Compile Include="Fields\IRandomFieldsGenerator.cs" />
+    <Compile Include="Fields\RandomFieldsGenerator.cs" />
+    <Compile Include="FileGenerating\IFileGenerator.cs" />
+    <Compile Include="FileGenerating\SizeCalculator\EqualFileSizeCalculatorStrategy.cs" />
+    <Compile Include="FileGenerating\SizeCalculator\IFileSizeCalculatorStrategy.cs" />
     <Compile Include="Import\ColumnNames.cs" />
-    <Compile Include="CustomField.cs" />
-    <Compile Include="RandomFieldsGenerator.cs" />
     <Compile Include="FileGenerating\FileContentProvider\AsciiExtractedTextFileContentProvider.cs" />
     <Compile Include="FileGenerating\FileContentProvider\IFileContentProvider.cs" />
     <Compile Include="FileGenerating\FileContentProvider\NativeFileContentProvider.cs" />
     <Compile Include="FileGenerating\FileExtensionProvider\IFileExtensionProvider.cs" />
     <Compile Include="FileGenerating\FileExtensionProvider\RandomNativeFileExtensionProvider.cs" />
-    <Compile Include="FileGenerating\SizeCalculator\EqualSizeCalculatorStrategy.cs" />
     <Compile Include="FileGenerating\FileExtensionProvider\TextFileExtensionProvider.cs" />
+    <Compile Include="RelativityServices\IRelativityServicesFactory.cs" />
+    <Compile Include="RelativityServices\ISavedSearchManager.cs" />
+    <Compile Include="RelativityServices\IWorkspaceService.cs" />
+    <Compile Include="RelativityServices\SavedSearchManager.cs" />
     <Compile Include="Settings\GenerateDefaultSettingsFile.cs" />
     <Compile Include="Settings\GeneratorSettings.cs" />
-    <Compile Include="FileGenerating\SizeCalculator\ISizeCalculatorStrategy.cs" />
     <Compile Include="Import\DataReaderWrapper.cs" />
     <Compile Include="Import\DocumentFactory.cs" />
     <Compile Include="Import\IDocumentFactory.cs" />
@@ -166,8 +173,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelativityServices\RelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\WorkspaceService.cs" />
-    <Compile Include="FileGenerating\FileGenerator.cs" />
+    <Compile Include="FileGenerating\SingleFileGenerator.cs" />
     <Compile Include="Settings\LoadFromSettingsFileOptions.cs" />
+    <Compile Include="Settings\TestCase.cs" />
     <Compile Include="WorkspaceGeneratorRunner.cs" />
   </ItemGroup>
   <ItemGroup>

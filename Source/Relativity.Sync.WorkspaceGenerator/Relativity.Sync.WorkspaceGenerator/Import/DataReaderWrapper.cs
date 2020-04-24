@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Relativity.Sync.WorkspaceGenerator.Fields;
+using Relativity.Sync.WorkspaceGenerator.Settings;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
@@ -9,14 +11,11 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private static readonly Type _typeOfString = typeof(string);
 
 		private readonly IDocumentFactory _documentFactory;
-		private readonly int _totalDocumentsCount;
-
-		private readonly bool _withNatives;
-		private readonly bool _withExtractedText;
+		private readonly TestCase _testCase;
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
-			new DataColumn(ColumnNames.Identifier, typeof(string))
+			new DataColumn(ColumnNames.ControlNumber, typeof(string))
 		};
 
 		private static IEnumerable<DataColumn> NativesColumns => new[]
@@ -35,28 +34,26 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private DataTable _dataTable;
 		private DataRow _currentRow;
 
-		public DataReaderWrapper(IDocumentFactory documentFactory, int totalDocumentsCount, bool withNatives, bool withExtractedText, List<CustomField> customFields)
+		public DataReaderWrapper(IDocumentFactory documentFactory, TestCase testCase)
 		{
 			_documentFactory = documentFactory;
-			_totalDocumentsCount = totalDocumentsCount;
+			_testCase = testCase;
 
-			_withNatives = withNatives;
-			_withExtractedText = withExtractedText;
 			_dataTable = new DataTable();
 
 			List<DataColumn> dataColumns = new List<DataColumn>(DefaultColumns);
 
-			if (withNatives)
+			if (_testCase.GenerateNatives)
 			{
 				dataColumns.AddRange(NativesColumns);
 			}
 
-			if (withExtractedText)
+			if (_testCase.GenerateExtractedText)
 			{
 				dataColumns.AddRange(ExtractedTextColumns);
 			}
 
-			foreach (CustomField customField in customFields)
+			foreach (CustomField customField in _testCase.Fields)
 			{
 				dataColumns.Add(new DataColumn(customField.Name, typeof(string)));
 			}
@@ -74,18 +71,18 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 				return false;
 			}
 
-			Console.WriteLine($"Importing document ({++_currentDocumentIndex} of {_totalDocumentsCount}): {_currentDocument.Identifier}");
+			Console.WriteLine($"Importing document ({++_currentDocumentIndex} of {_testCase.NumberOfDocuments}): {_currentDocument.Identifier}");
 
 			_currentRow = _dataTable.NewRow();
-			_currentRow[ColumnNames.Identifier] = _currentDocument.Identifier;
+			_currentRow[ColumnNames.ControlNumber] = _currentDocument.Identifier;
 
-			if (_withNatives)
+			if (_testCase.GenerateNatives)
 			{
 				_currentRow[ColumnNames.FileName] = _currentDocument.NativeFile.Name;
 				_currentRow[ColumnNames.NativeFilePath] = _currentDocument.NativeFile.FullName;
 			}
 
-			if (_withExtractedText)
+			if (_testCase.GenerateExtractedText)
 			{
 				_currentRow[ColumnNames.ExtractedText] = _currentDocument.ExtractedTextFile.FullName;
 			}

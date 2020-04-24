@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommandLine;
 using Relativity.Sync.WorkspaceGenerator.Settings;
@@ -23,18 +24,26 @@ namespace Relativity.Sync.WorkspaceGenerator
 			{
 				GeneratorSettings defaultSettings = new GeneratorSettings()
 				{
-					RelativityUri = new Uri("http://example.uri"),
+					RelativityUri = new Uri("https://host.name/Relativity"),
+					RelativityServicesUri = new Uri("https://host.name/Relativity/Relativity.Services"),
 					RelativityUserName = "user.name",
 					RelativityPassword = "passwd",
 					DesiredWorkspaceName = "My Test Workspace",
 					TemplateWorkspaceName = "Functional Tests Template",
 					TestDataDirectoryPath = @"C:\Data\WorkspaceGenerator",
-					NumberOfDocuments = 100,
-					NumberOfFields = 15,
-					TotalNativesSizeInMB = 20,
-					TotalExtractedTextSizeInMB = 10
+					TestCases = new List<TestCase>()
+					{
+						new TestCase()
+						{
+							Name = "TC1",
+							NumberOfDocuments = 10,
+							NumberOfFields = 15,
+							TotalExtractedTextSizeInMB = 5,
+							TotalNativesSizeInMB = 8
+						}
+					}
 				};
-				defaultSettings.WriteToJsonFile(generateDefaultSettings.OutputSettingsFile);
+				defaultSettings.ToJsonFile(generateDefaultSettings.OutputSettingsFile);
 				Console.WriteLine($"Default settings saved to file: {generateDefaultSettings.OutputSettingsFile}");
 				return (int) ExitCodes.OK;
 
@@ -42,10 +51,6 @@ namespace Relativity.Sync.WorkspaceGenerator
 			else if (settings is LoadFromSettingsFileOptions loadSettingsFromFileOptions)
 			{
 				generatorSettings = GeneratorSettings.FromJsonFile(loadSettingsFromFileOptions.InputSettingsFile);
-			}
-			else if (settings is GeneratorSettings)
-			{
-				generatorSettings = settings as GeneratorSettings;
 			}
 			else
 			{

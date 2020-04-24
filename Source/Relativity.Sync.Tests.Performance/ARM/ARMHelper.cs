@@ -8,7 +8,6 @@ using Relativity.Sync.Tests.Performance.ARM.Contracts;
 using Relativity.Sync.Tests.Performance.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -19,7 +18,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using ARMTestServices.Services.Interfaces;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Core;
 
@@ -27,14 +25,14 @@ namespace Relativity.Sync.Tests.Performance.ARM
 {
 	public class ARMHelper
 	{
+		private string _initialBcpPath = "BCPPath";
+
 		private static bool _isInitialized;
 
-
 		private readonly ApiComponent _component;
-		private readonly IARMApi _armApi;
-		private readonly FileShareHelper _fileShare;
 		private readonly AzureStorageHelper _storage;
-		private string _INITIAL_BCP_PATH = "BCPPath";
+		private readonly FileShareHelper _fileShare;
+		private readonly IARMApi _armApi;
 
 		private static string _RELATIVE_ARCHIVES_LOCATION => AppSettings.RelativeArchivesLocation;
 		private static string REMOTE_ARCHIVES_LOCATION => Path.Combine(AppSettings.RemoteArchivesLocation, _RELATIVE_ARCHIVES_LOCATION);
@@ -182,7 +180,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			Debug.WriteLine("ARM configuration has been started...");
 
 			IOrchestrateInstanceSettings settingOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
-			if (settingOrchestrator.GetInstanceSetting("BcpShareFolderName", "kCura.ARM").Value == _INITIAL_BCP_PATH)
+			if (settingOrchestrator.GetInstanceSetting("BcpShareFolderName", "kCura.ARM").Value == _initialBcpPath)
 			{
 				settingOrchestrator.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
 			}
