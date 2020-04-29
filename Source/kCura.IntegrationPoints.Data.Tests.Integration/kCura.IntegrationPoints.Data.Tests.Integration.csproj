@@ -60,6 +60,7 @@
     <Compile Include="Repositories\CaseRepositoryTest.cs" />
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Repositories\RelativityObjectManager\ExportQueryResultTests.cs" />
     <Compile Include="Repositories\RelativityObjectManager\StreamLongTextAsyncTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
