@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -204,7 +205,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 
 			// Act
-			await _sut.GetNextBlockAsync(startIndex, blockSize);
+			await _sut.GetNextBlockAsync(startIndex, blockSize).ConfigureAwait(false);
 
 			// Assert
 			_objectManagerFacadeMock
