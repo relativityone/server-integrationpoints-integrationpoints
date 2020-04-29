@@ -252,6 +252,36 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		}
 
 		[Test]
+		public void MapFields_ShouldMapIdentifiersWithDifferentLengths()
+		{
+			// Arrange
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				}
+			};
+
+			var destinationFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(50)")
+				{
+					IsIdentifier = true
+				}
+			};
+
+			// Act
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+
+			// Assert
+			mappedFields.Count().Should().Be(1);
+			mappedFields[0].SourceField.DisplayName.Should().Be("Field 1");
+			mappedFields[0].DestinationField.DisplayName.Should().Be("Field 2");
+			mappedFields[0].FieldMapType.Should().Be(FieldMapTypeEnum.Identifier);
+		}
+
+		[Test]
 		public void MapFields_ShouldMapOnlyIdentifiers_When_ParameterIsSet()
 		{
 			// Arrange
@@ -336,7 +366,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				new DocumentFieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
 				new DocumentFieldInfo("4", "Field 2", "Fixed-Length Text(250)")
 			};
-			
+
 			_keywordSearchManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new KeywordSearch()
 				{
@@ -376,7 +406,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			var destinationFields = new[]
-			{  
+			{
 				new DocumentFieldInfo("10", "Control Number", "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
@@ -401,6 +431,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			mappedFields[0].SourceField.DisplayName.Should().Be("Control Number");
 			mappedFields[1].SourceField.DisplayName.Should().Be("Field 2");
 		}
-		
+
 	}
 }
