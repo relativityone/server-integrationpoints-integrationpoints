@@ -157,7 +157,7 @@
 	},
 	{
 		"Jira": "REL-399823",
-		"Exception": "System.AggregateException:*BatchID:*Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
+		"Exception": "System.AggregateException:Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
 	},
 	{
 		"Jira": "REL-399837",
@@ -262,5 +262,13 @@
 	{
 		"Jira": "REL-416663",
 		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.Exception: A Serious Error Occurred Transferring the Requested Files*"
+	},
+	{
+		"Jira": "REL-425869",
+		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException:*at Relativity.Sync.Storage.Batch.<InitializeAsync>*"
+	},
+	{
+		"Jira": "REL-399823",
+		"Exception": "Relativity.Sync.Transfer.FieldNotFoundException: Could not get information on the following fields for artifact type 10 in workspace*"
 	}
 ]
