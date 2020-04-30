@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	using NUnit.Framework;
 	using TestContext = Configuration.TestContext;
 
+	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class RelativityProviderTestsBase : UiTest
 	{
 		protected TestContext DestinationContext { get; set; }
