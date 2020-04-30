@@ -103,14 +103,16 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 			}
 		}
 
-		protected static string ImagePrecedenceEnumToString(ImagePrecedence? value)
+		protected static string ImagePrecedenceToString(RelativityProviderModel model)
 		{
+			ImagePrecedence value = model.GetValueOrDefault(x => x.ImagePrecedence);
+			
 			switch (value)
 			{
 				case ImagePrecedence.OriginalImages:
 					return "Original";
 				case ImagePrecedence.ProducedImages:
-					return "Produced";
+					return $"Produced: {model.SourceProductionName}";
 				default:
 					return "";
 			}

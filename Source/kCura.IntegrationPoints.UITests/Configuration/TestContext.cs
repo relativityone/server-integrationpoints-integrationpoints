@@ -203,13 +203,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			);
 		}
 
-		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
+		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.SmallWithFoldersStructure)
 		{
 			ImportDocumentsHelper.ImportDocuments(withNatives, testDataType);
 			return this;
 		}
 
-		public Task ImportDocumentsAsync(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
+		public Task ImportDocumentsAsync(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.SmallWithFoldersStructure)
 		{
 			return Task.Run(() => ImportDocuments(withNatives, testDataType));
 		}
