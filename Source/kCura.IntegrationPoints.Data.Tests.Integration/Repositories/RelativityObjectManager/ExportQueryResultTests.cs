@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			_relativityObjectManager = CreateObjectManager();
 		}
 
-		[Test]
+		[IdentifiedTest("679b5778-067e-47f2-9cd5-d34185eb9232")]
 		public async Task ExportQueryResult_ShouldDeleteExport_WhenDisposed()
 		{
 			// Arrange
@@ -56,9 +56,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			action.ShouldThrow<IntegrationPointsException>();
 		}
 
-		[TestCase(1)]
-		[TestCase(10)]
-		[TestCase(100)]
+
+		[IdentifiedTestCase("5238a88f-3702-44b3-a908-4efe898e44cc", 1)]
+		[IdentifiedTestCase("1f8b3650-dba8-4bfc-8f20-efe8f447585c", 10)]
+		[IdentifiedTestCase("31e434d6-4ae3-4048-af7c-a134d5d8e335", 100)]
 		public async Task GetNextBlockAsync_ShouldReadFullBlockSize(int blockSize)
 		{
 			// Arrange
@@ -76,7 +77,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			results.Count().Should().Be(blockSize);
 		}
 
-		[Test]
+		[IdentifiedTest("482d0ee0-a06b-4119-8760-2b7c0b4be16e")]
+
 		public async Task GetNextBlockAsync_ShouldReadAllObjects()
 		{
 			// Arrange
@@ -106,7 +108,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			results.Count().Should().Be(expectedNumberOfFields);
 		}
 
-		[Test]
+		[IdentifiedTest("ba8b4e82-407e-452e-ab0e-c560cc6ee2a9")]
+
+
 		public async Task GetAllResultsAsync_ShouldReadAllObjects()
 		{
 			// Arrange
@@ -127,7 +131,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			results.Count().Should().Be(expectedNumberOfFields);
 		}
 
-		[Test]
+		[IdentifiedTest("eb157913-fa6a-4f6f-9c01-12325be5415a")]
 		public async Task GetAllResultsAsync_ShouldReadAllObjectsTwice()
 		{
 			// Arrange
