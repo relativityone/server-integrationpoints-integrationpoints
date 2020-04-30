@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			{
 				await exportQueryResult.GetAllResultsAsync().ConfigureAwait(false);
 
-				RelativityObjectSlim[] secondResults = (await exportQueryResult.GetAllResultsAsync()).ToArray();
+				RelativityObjectSlim[] secondResults = (await exportQueryResult.GetAllResultsAsync().ConfigureAwait(false)).ToArray();
 
 				// Assert
 				secondResults.Length.Should().Be((int)exportQueryResult.ExportResult.RecordCount);
