@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
 
 
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ExportQueryResultTests
 	{
 		private Mock<IObjectManagerFacadeFactory> _objectManagerFacadeFactoryMock;
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_sut.Dispose();
 
 			// Assert
-			_objectManagerFacadeMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, _runID, 0, 0));
+			_objectManagerFacadeMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, _runID, 0, (int)_exportInitializationResults.RecordCount));
 		}
 
 		[Test]
@@ -110,44 +110,35 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public async Task GetNextBlockAsync_ShouldCallFacadeMultipleTimes_WhenBlockIsNotReturnedAtOnce()
 		{
 			// Arrange
-			const int blockSize = 1500;
-			const int firstReturnedBlockSize = 400;
+			const int requestedBlockSize = 1500;
+			const int toReturn = 400;
 
 			_objectManagerFacadeMock
 				.Setup(x =>
 					x.RetrieveResultsBlockFromExportAsync(
 						_WORKSPACE_ID,
 						_runID,
-						blockSize,
-						0))
-				.ReturnsAsync(Enumerable.Repeat(new RelativityObjectSlim(), firstReturnedBlockSize).ToArray());
-
-			_objectManagerFacadeMock
-				.Setup(x =>
-					x.RetrieveResultsBlockFromExportAsync(
-						_WORKSPACE_ID,
-						_runID,
-						blockSize - firstReturnedBlockSize,
-						firstReturnedBlockSize))
-				.ReturnsAsync(Enumerable.Repeat(new RelativityObjectSlim(), blockSize - firstReturnedBlockSize).ToArray());
+						It.IsAny<int>(),
+						It.IsAny<int>()))
+				.Returns(RetrieveResultsBlockFromExportAsyncMock(toReturn));
 
 			// Act
-			RelativityObjectSlim[] block = (await _sut.GetNextBlockAsync(blockSize).ConfigureAwait(false)).ToArray();
+			RelativityObjectSlim[] block = (await _sut.GetNextBlockAsync(0, requestedBlockSize).ConfigureAwait(false)).ToArray();
 
 			// Assert
-			block.Length.Should().Be(blockSize);
+			block.Length.Should().Be(requestedBlockSize);
 
 			_objectManagerFacadeMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
 				_WORKSPACE_ID,
 				_runID,
-				blockSize - firstReturnedBlockSize,
-				firstReturnedBlockSize), Times.Once);
+				requestedBlockSize - toReturn,
+				toReturn), Times.Once);
 
 			_objectManagerFacadeMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
 				_WORKSPACE_ID,
 				_runID,
-				blockSize - firstReturnedBlockSize,
-				firstReturnedBlockSize), Times.Once);
+				requestedBlockSize - toReturn,
+				toReturn), Times.Once);
 		}
 
 		[Test]
@@ -163,11 +154,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						_runID,
 						It.IsAny<int>(),
 						It.IsAny<int>()))
-				.Returns((int workspaceId, Guid runId, int blockSize, int startIndex) =>
-				{
-					var result = Enumerable.Repeat(new RelativityObjectSlim(), Math.Min(blockSize, toReturn)).ToArray();
-					return Task.FromResult(result);
-				});
+				.Returns(RetrieveResultsBlockFromExportAsyncMock(toReturn));
 
 			// Act
 			RelativityObjectSlim[] block = (await _sut.GetAllResultsAsync().ConfigureAwait(false)).ToArray();
@@ -184,6 +171,78 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 						_runID,
 						It.IsAny<int>(),
 						It.IsAny<int>()), Times.Exactly(facadeExpectedCallCount));
+		}
+
+		[TestCase(6000, 0)]
+		[TestCase(1, 6000)]
+		public async Task GetNextBlockAsync_ShouldNotDeleteExportTable(int blockSize, int startIndex)
+		{
+			// export table is deleted when RetrieveResultsBlockFromExportAsync is called with startIndex >= RecordsCount
+
+			// Arrange
+			int toReturn = 1000;
+
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.RetrieveResultsBlockFromExportAsync(
+						_WORKSPACE_ID,
+						_runID,
+						It.IsAny<int>(),
+						It.IsAny<int>()))
+				.Returns(RetrieveResultsBlockFromExportAsyncMock(toReturn));
+
+			// Act
+			await _sut.GetNextBlockAsync(startIndex, blockSize).ConfigureAwait(false);
+
+			// Assert
+
+			_objectManagerFacadeMock
+				.Verify(x =>
+					x.RetrieveResultsBlockFromExportAsync(
+						_WORKSPACE_ID,
+						_runID,
+						It.IsAny<int>(),
+						It.IsInRange((int)_exportInitializationResults.RecordCount, Int32.MaxValue, Range.Inclusive)), Times.Never);
+		}
+
+		[Test]
+		public async Task GetAllResultsAsync_ShouldNotDeleteExportTable()
+		{
+			// export table is deleted when RetrieveResultsBlockFromExportAsync is called with startIndex >= RecordsCount
+
+			// Arrange
+			int toReturn = 1000;
+
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.RetrieveResultsBlockFromExportAsync(
+						_WORKSPACE_ID,
+						_runID,
+						It.IsAny<int>(),
+						It.IsAny<int>()))
+				.Returns(RetrieveResultsBlockFromExportAsyncMock(toReturn));
+
+			// Act
+			await _sut.GetAllResultsAsync().ConfigureAwait(false);
+
+			// Assert
+
+			_objectManagerFacadeMock
+				.Verify(x =>
+					x.RetrieveResultsBlockFromExportAsync(
+						_WORKSPACE_ID,
+						_runID,
+						It.IsAny<int>(),
+						It.IsInRange((int)_exportInitializationResults.RecordCount, Int32.MaxValue, Range.Inclusive)), Times.Never);
+		}
+
+		private static Func<int, Guid, int, int, Task<RelativityObjectSlim[]>> RetrieveResultsBlockFromExportAsyncMock(int toReturn)
+		{
+			return (int workspaceId, Guid runId, int blockSize, int startIndex) =>
+			{
+				var result = Enumerable.Repeat(new RelativityObjectSlim(), Math.Min(blockSize, toReturn)).ToArray();
+				return Task.FromResult(result);
+			};
 		}
 
 		[Test]

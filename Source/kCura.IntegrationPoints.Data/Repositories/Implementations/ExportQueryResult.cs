@@ -12,12 +12,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	/// <inheritdoc />
 	public class ExportQueryResult : IExportQueryResult
 	{
+		private readonly IObjectManagerFacadeFactory _objectManagerFacadeFactory;
+		private readonly Action<Exception, int, int> _exceptionHandler;
+
 		internal readonly ExportInitializationResults _exportResult;
 		internal readonly int _workspaceArtifactId;
 		internal readonly ExecutionIdentity _executionIdentity;
-
-		private readonly IObjectManagerFacadeFactory _objectManagerFacadeFactory;
-		private readonly Action<Exception, int, int> _exceptionHandler;
 
 		internal ExportQueryResult(IObjectManagerFacadeFactory objectManagerFacadeFactory, ExportInitializationResults exportResult, int workspaceArtifactId,
 			ExecutionIdentity executionIdentity, Action<Exception, int, int> exceptionHandler)
@@ -29,15 +29,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_exceptionHandler = exceptionHandler;
 		}
 
-
+		/// <summary>
+		/// Deletes the export table
+		/// </summary>
 		public void Dispose()
 		{
 			// delete the export table
 			using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(_executionIdentity))
 			{
 				client
-					.RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, _exportResult.RunID, 0, 0)
-					.ConfigureAwait(false)
+					.RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, _exportResult.RunID, 0, (int)_exportResult.RecordCount)
 					.GetAwaiter().GetResult();
 			}
 		}
@@ -49,7 +50,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				return Enumerable.Empty<RelativityObjectSlim>();
 			}
-
 
 			using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(_executionIdentity))
 			{
@@ -69,7 +69,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public Guid RunId => _exportResult.RunID;
+		/// <inheritdoc />
+		public ExportInitializationResults ExportResult => _exportResult;
 
 		private async Task<IEnumerable<RelativityObjectSlim>> GetBlockFromExportInternalAsync(int resultsBlockSize, int startIndex, IObjectManagerFacade client)
 		{
@@ -80,7 +81,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-
 				var results = new List<RelativityObjectSlim>(resultsBlockSize);
 				int remainingObjectsCount = resultsBlockSize;
 
@@ -88,15 +88,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				do
 				{
 					partialResults = await client
-						.RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, _exportResult.RunID, remainingObjectsCount,
-							startIndex)
+						.RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, _exportResult.RunID,
+							remainingObjectsCount, startIndex)
 						.ConfigureAwait(false);
 
 					results.AddRange(partialResults);
 					remainingObjectsCount -= partialResults.Length;
 					startIndex += partialResults.Length;
 				}
-				while (remainingObjectsCount > 0 && partialResults.Any());
+				while (remainingObjectsCount > 0 && startIndex < _exportResult.RecordCount && partialResults.Any());
 
 				return results;
 			}
