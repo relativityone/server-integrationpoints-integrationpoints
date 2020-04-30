@@ -7,77 +7,142 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using NUnit.Framework;
+using Relativity;
 using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
+using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.RelativityObjectManager
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints]
 	public class ExportQueryResultTests
 	{
 		private int _workspaceId;
-		private ImportHelper _importHelper;
 		private TestHelper _helper;
 		private IRelativityObjectManager _relativityObjectManager;
-		private int _allDocumentsSavedSearchId;
-		private const string _WORKSPACE_NAME = "RIPExportQueryResultTests";
 
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
 		[OneTimeSetUp]
-		public async Task OneTimeSetUp()
+		public void OneTimeSetUp()
 		{
-			string workspaceName = GetWorkspaceRandomizedName();
-			_workspaceId = Workspace.CreateWorkspace(workspaceName);
-			_importHelper = new ImportHelper();
+			_workspaceId = Workspace.FindWorkspaceByName(Rsapi.CreateRsapiClient(), "Functional Tests Template").ArtifactID;
 			_helper = new TestHelper();
 			_relativityObjectManager = CreateObjectManager();
-			_allDocumentsSavedSearchId = await GetSavedSearchInstance().ConfigureAwait(false);
 		}
 
 		[Test]
 		public async Task ExportQueryResult_ShouldDeleteExport_WhenDisposed()
 		{
 			// Arrange
-			var queryBuilder = new DocumentQueryBuilder();
-			QueryRequest query = queryBuilder.AddSavedSearchCondition(_allDocumentsSavedSearchId).NoFields().Build();
+			QueryRequest query = PrepareFieldsQueryRequest();
 
 			Guid runId = Guid.Empty;
 
 			// Act
-			using (var exportQueryResult = await _relativityObjectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
+			using (IExportQueryResult exportQueryResult = await _relativityObjectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
 			{
-				runId = exportQueryResult.RunId;
-				IEnumerable<RelativityObjectSlim> results = await exportQueryResult.GetAllResultsAsync().ConfigureAwait(false);
+				runId = exportQueryResult.ExportResult.RunID;
 			}
 
-			Func<Task> action = () => _relativityObjectManager.RetrieveResultsBlockFromExportAsync(runId, 10, 0);
+			Func<Task> action = () => _relativityObjectManager.RetrieveResultsBlockFromExportAsync(runId, 1, 0);
 
 			// Assert
-			action.ShouldThrow<Exception>();
+			action.ShouldThrow<IntegrationPointsException>();
 		}
 
-		public async Task<int> GetSavedSearchInstance()
+		[TestCase(1)]
+		[TestCase(10)]
+		[TestCase(100)]
+		public async Task GetNextBlockAsync_ShouldReadFullBlockSize(int blockSize)
 		{
-			const string name = "All Documents";
-			using (IKeywordSearchManager keywordSearchManager = _helper.CreateProxy<IKeywordSearchManager>())
-			{
-				Query request = new Query
-				{
-					Condition = $"(('Name' == '{name}'))"
-				};
-				KeywordSearchQueryResultSet result =
-					await keywordSearchManager.QueryAsync(_workspaceId, request).ConfigureAwait(false);
-				if (result.TotalCount == 0)
-				{
-					throw new InvalidOperationException(
-						$"Cannot find saved search '{name}' in workspace {_workspaceId}");
-				}
+			// Arrange
+			QueryRequest query = PrepareFieldsQueryRequest();
 
-				return result.Results.First().Artifact.ArtifactID;
+			IEnumerable<RelativityObjectSlim> results = null;
+
+			// Act
+			using (IExportQueryResult exportQueryResult = await _relativityObjectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
+			{
+				results = await exportQueryResult.GetNextBlockAsync(0, blockSize).ConfigureAwait(false);
+			}
+
+			// Assert
+			results.Count().Should().Be(blockSize);
+		}
+
+		[Test]
+		public async Task GetNextBlockAsync_ShouldReadAllObjects()
+		{
+			// Arrange
+			const int blockSize = 50;
+			QueryRequest query = PrepareFieldsQueryRequest();
+
+			List<RelativityObjectSlim> results = new List<RelativityObjectSlim>();
+			RelativityObjectSlim[] partialResults = null;
+			int expectedNumberOfFields;
+
+			// Act
+			using (IExportQueryResult exportQueryResult =
+				await _relativityObjectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
+			{
+				expectedNumberOfFields = (int)exportQueryResult.ExportResult.RecordCount;
+				int start = 0;
+				do
+				{
+					partialResults = (await exportQueryResult.GetNextBlockAsync(start, blockSize).ConfigureAwait(false)).ToArray();
+					results.AddRange(partialResults);
+					start += partialResults.Length;
+				}
+				while (partialResults.Any());
+			}
+
+			// Assert
+			results.Count().Should().Be(expectedNumberOfFields);
+		}
+
+		[Test]
+		public async Task GetAllResultsAsync_ShouldReadAllObjects()
+		{
+			// Arrange
+			QueryRequest query = PrepareFieldsQueryRequest();
+
+			List<RelativityObjectSlim> results = new List<RelativityObjectSlim>();
+			int expectedNumberOfFields;
+
+			// Act
+			using (IExportQueryResult exportQueryResult =
+				await _relativityObjectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
+			{
+				expectedNumberOfFields = (int)exportQueryResult.ExportResult.RecordCount;
+				results = (await exportQueryResult.GetAllResultsAsync().ConfigureAwait(false)).ToList();
+			}
+
+			// Assert
+			results.Count().Should().Be(expectedNumberOfFields);
+		}
+
+		[Test]
+		public async Task GetAllResultsAsync_ShouldReadAllObjectsTwice()
+		{
+			// Arrange
+			QueryRequest query = PrepareFieldsQueryRequest();
+
+			// Act
+			using (IExportQueryResult exportQueryResult =
+				await _relativityObjectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
+			{
+				await exportQueryResult.GetAllResultsAsync().ConfigureAwait(false);
+
+				RelativityObjectSlim[] secondResults = (await exportQueryResult.GetAllResultsAsync()).ToArray();
+
+				// Assert
+				secondResults.Length.Should().Be((int)exportQueryResult.ExportResult.RecordCount);
 			}
 		}
 
@@ -87,12 +152,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			return factory.CreateRelativityObjectManager(_workspaceId);
 		}
 
-		private IEnumerable<int> GetArtifactIds(IEnumerable<RelativityObjectSlim> relativityObjects) =>
-			relativityObjects.Select(GetArtifactId);
+		private QueryRequest PrepareFieldsQueryRequest()
+		{
+			int fieldArtifactTypeID = (int)ArtifactType.Field;
+			QueryRequest queryRequest = new QueryRequest()
+			{
+				ObjectType = new ObjectTypeRef()
+				{
+					ArtifactTypeID = fieldArtifactTypeID
+				},
+				Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID}",
+				IncludeNameInQueryResult = true
+			};
 
-		private int GetArtifactId(RelativityObjectSlim relativityObject) => relativityObject.ArtifactID;
-
-		private string GetWorkspaceRandomizedName() =>
-			$"{_WORKSPACE_NAME}{System.DateTime.UtcNow.ToString(@"yyyy_M_d_hh_mm_ss")}";
+			return queryRequest;
+		}
 	}
 }

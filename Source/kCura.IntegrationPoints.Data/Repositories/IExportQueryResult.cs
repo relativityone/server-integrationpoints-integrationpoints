@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.UtilityDTO;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
 	/// <summary>
-	/// Object internally tracks current position in exported set. Provides a way to safely get results in block or all at once.
-	///
-	/// Starting index can be reset by setting the <see cref="NextBlockStartIndex"/> property
+	/// Object provides a way to safely get results from export in block or all at once.
 	///
 	/// Export table is cleared on Dispose
 	/// </summary>
@@ -31,8 +30,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		Task<IEnumerable<RelativityObjectSlim>> GetAllResultsAsync();
 
 		/// <summary>
-		/// Export Guid
+		/// Export Initialization result
 		/// </summary>
-		Guid RunId { get; }
+		ExportInitializationResults ExportResult { get; }
 	}
 }
