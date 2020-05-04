@@ -165,7 +165,7 @@
 	},
 	{
 		"Jira": "REL-409699",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException* Failed to create the associated single-object artifact type '10' because the 'Entity' table contains duplicate records*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException* Failed to create the associated single-object artifact type '10' because the 'Entity' table contains duplicate records*"
 	},
 	{
 		"Jira": "REL-409700",
@@ -270,5 +270,17 @@
 	{
 		"Jira": "REL-399823",
 		"Exception": "Relativity.Sync.Transfer.FieldNotFoundException: Could not get information on the following fields for artifact type 10 in workspace*"
+	},
+	{
+		"Jira": "REL-426968",
+		"Exception": "Relativity.Services.Exceptions.ServiceException: Populate Fields Exception*Relativity.Sync.Storage.Batch.<UpdateFieldValueAsync>*"
+	},
+	{
+		"Jira": "REL-426971",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Item has already been added*"
+	},
+	{
+		"Jira": "REL-426975",
+		"Exception": "Relativity.Services.Exceptions.ServiceException: Cannot run query because the search provider 'dtSearch' * is inactive.*"
 	}
 ]
