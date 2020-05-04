@@ -282,5 +282,13 @@
 	{
 		"Jira": "REL-426975",
 		"Exception": "Relativity.Services.Exceptions.ServiceException: Cannot run query because the search provider 'dtSearch' * is inactive.*"
+	},
+	{
+		"Jira": "REL-426977",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException*Cannot insert duplicate key in object 'EDDSDBO.Domains'*"
+	},
+	{
+		"Jira": "REL-426995",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *The process cannot access the file*"
 	}
 ]
