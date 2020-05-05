@@ -35,9 +35,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private RelativityProviderModel CreateRelativityProviderModelWithProduction()
 		{
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-			model.SourceProductionName = $"Production {DateTime.Now.ToString("yyyy-MM-dd_HH:mm:ss")}";
+			model.SourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
+
+			model.DestinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 			return model;
 		}
+
 		//RelativityProvider_TC_RTR_IMG_01
 		//RelativityProvider_TC_RTR_IMG_02
 		//RelativityProvider_TC_RTR_IMG_03
@@ -51,7 +55,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[IdentifiedTestCase("9b2f2880-d329-4b7c-a1c1-5a09cf888072", RelativityProviderModel.OverwriteModeEnum.AppendOverlay, false)]
 		[IdentifiedTestCase("8ae832f6-830f-4380-b2f9-32974003dac3", RelativityProviderModel.OverwriteModeEnum.AppendOverlay, true)]
 		[RetryOnError]
-		public void ItShouldPushImagesWhenImagePrecedenceIsOriginalImages(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
+		public void ShouldPushImages_WhenImagePrecedenceIsOriginalImages(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
 		{
 			//Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -91,7 +95,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		[IdentifiedTestCase("68331cd1-a2a6-4dca-a86b-45889f3ae8e8", RelativityProviderModel.OverwriteModeEnum.AppendOverlay, true, false)]
 		[IdentifiedTestCase("89d4dcae-bec8-4fe1-85a2-04d356326b30", RelativityProviderModel.OverwriteModeEnum.AppendOverlay, true, true)]
 		[RetryOnError]
-		public void ItShouldPushImagesWhenImagePrecedenceIsProducedImages(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository, bool includeOriginalImagesIfNotProduced )
+		public void ShouldPushImages_WhenImagePrecedenceIsProducedImages(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository, bool includeOriginalImagesIfNotProduced )
 		{
 			// Arrange
 			ImagesSavedSearchToFolderValidator validator = new ImagesSavedSearchToFolderValidator();
@@ -101,14 +105,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = includeOriginalImagesIfNotProduced;
 			model.CopyFilesToRepository = copyFilesToRepository;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-
+			
 			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
 			{
 				DestinationContext.ImportDocuments();
 				DestinationContext.CreateAndRunProduction(model.DestinationProductionName);
 			}
+			
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
