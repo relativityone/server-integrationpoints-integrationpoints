@@ -157,7 +157,7 @@
 	},
 	{
 		"Jira": "REL-399823",
-		"Exception": "System.AggregateException:*BatchID:*Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
+		"Exception": "System.AggregateException:Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
 	},
 	{
 		"Jira": "REL-399837",
@@ -165,7 +165,7 @@
 	},
 	{
 		"Jira": "REL-409699",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException* Failed to create the associated single-object artifact type '10' because the 'Entity' table contains duplicate records*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException* Failed to create the associated single-object artifact type '10' because the 'Entity' table contains duplicate records*"
 	},
 	{
 		"Jira": "REL-409700",
@@ -262,5 +262,41 @@
 	{
 		"Jira": "REL-416663",
 		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.Exception: A Serious Error Occurred Transferring the Requested Files*"
+	},
+	{
+		"Jira": "REL-425869",
+		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException:*at Relativity.Sync.Storage.Batch*"
+	},
+	{
+		"Jira": "REL-399823",
+		"Exception": "Relativity.Sync.Transfer.FieldNotFoundException: Could not get information on the following fields for artifact type 10 in workspace*"
+	},
+	{
+		"Jira": "REL-426968",
+		"Exception": "Relativity.Services.Exceptions.ServiceException: Populate Fields Exception*Relativity.Sync.Storage.Batch.<UpdateFieldValueAsync>*"
+	},
+	{
+		"Jira": "REL-426971",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Item has already been added*"
+	},
+	{
+		"Jira": "REL-426975",
+		"Exception": "Relativity.Services.Exceptions.ServiceException: Cannot run query because the search provider 'dtSearch' * is inactive.*"
+	},
+	{
+		"Jira": "REL-426977",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException*Cannot insert duplicate key in object 'EDDSDBO.Domains'*"
+	},
+	{
+		"Jira": "REL-426995",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *The process cannot access the file*"
+	},
+	{
+		"Jira": "REL-427398",
+		"Exception": "*Relativity.Sync.Executors.RelativitySourceCaseTagRepositoryException:*Relativity.Services.Exceptions.TemporarilyUnavailableException*"
+	},
+	{
+		"Jira": "REL-427400",
+		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter.*Relativity.Services.Exceptions.TemporarilyUnavailableException*"
 	}
 ]
