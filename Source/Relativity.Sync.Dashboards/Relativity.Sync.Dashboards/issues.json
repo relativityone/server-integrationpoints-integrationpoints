@@ -265,7 +265,7 @@
 	},
 	{
 		"Jira": "REL-425869",
-		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException:*at Relativity.Sync.Storage.Batch.<InitializeAsync>*"
+		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException:*at Relativity.Sync.Storage.Batch*"
 	},
 	{
 		"Jira": "REL-399823",
@@ -290,5 +290,13 @@
 	{
 		"Jira": "REL-426995",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *The process cannot access the file*"
+	},
+	{
+		"Jira": "REL-427398",
+		"Exception": "*Relativity.Sync.Executors.RelativitySourceCaseTagRepositoryException:*Relativity.Services.Exceptions.TemporarilyUnavailableException*"
+	},
+	{
+		"Jira": "REL-427400",
+		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter.*Relativity.Services.Exceptions.TemporarilyUnavailableException*"
 	}
 ]
