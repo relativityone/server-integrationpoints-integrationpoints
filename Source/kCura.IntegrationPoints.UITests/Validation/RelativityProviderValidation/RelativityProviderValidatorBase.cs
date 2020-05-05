@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 		protected static string GetExpectedExportType(RelativityProviderModel model)
 		{
 			string expectedStr = "Workspace;";
-			if (model.ImagePrecedence.HasValue)
+			if (model.ImagePrecedence.HasValue || model.CopyImages)
 			{
 				expectedStr += "Images;";
 			}

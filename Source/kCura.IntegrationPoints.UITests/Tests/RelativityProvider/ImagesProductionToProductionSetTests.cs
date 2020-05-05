@@ -29,11 +29,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				RelativityInstance = "This Instance",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				Location = RelativityProviderModel.LocationEnum.ProductionSet,
+
 				DestinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}",
 				CreateSavedSearch = false,
 
 				CopyImages = true,
 			};
+			SourceContext.CreateAndRunProduction(model.SourceProductionName);
 			return model;
 		}
 		//RelativityProvider_TC_RTR_PTP_01
@@ -56,9 +58,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			RelativityProviderModel model = CreateModel();
 			model.Overwrite = overwrite;
 			model.CopyFilesToRepository = copyFilesToRepository;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-
+			
 			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
 			{
 				DestinationContext.ImportDocuments();
