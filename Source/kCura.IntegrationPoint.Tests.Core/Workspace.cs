@@ -17,9 +17,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return CreateWorkspace(workspaceName, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
 		}
 
-		public static async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName, ILogger log = null)
+		public static Task<int> CreateWorkspaceAsync(string workspaceName, string templateName, ILogger log = null)
 		{
-			return await Task.Run(() => CreateWorkspace(workspaceName, templateName, log)).ConfigureAwait(false);
+			return Task.Run(() => CreateWorkspace(workspaceName, templateName, log));
 		}
 
 		public static int CreateWorkspace(string workspaceName, string templateName, ILogger log = null)
