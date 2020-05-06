@@ -140,6 +140,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string SAVE = "F5588DFB-A2AE-46B2-BE02-E1C87AD2F186";
 				public const string VIEW_ERRORS = "C4BADAD9-BA4C-4C8F-9792-AE27882AEB47";
 				public const string STOP = "CB71C18F-E7E1-4BCC-B4B7-8C91BEB234D2";
+				public const string NATIVE_COPY_LINKS_MODE = "437FBCB6-A02F-4D75-ACF9-420E6F2C4730";
 			}
 		}
 
@@ -161,7 +162,6 @@ namespace kCura.IntegrationPoints.Core
 				public const string SCHEDULE = "D036003D-32FF-4297-84D5-2C9009C559BA";
 				public const string NAME = "285F3C4A-1606-4D5A-A720-E65CE70742DD";
 				public const string INTEGRATION_POINT_TYPE = "CAAE365F-2CE7-4C6E-8C68-1BAF8037D717";
-				public const string NATIVE_COPY_LINKS_MODE = "437FBCB6-A02F-4D75-ACF9-420E6F2C4730";
 			}
 		}
 
