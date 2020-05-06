@@ -1,136 +1,61 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using Relativity.Productions.Services;
-using Relativity.Services.Field;
-using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Production
 	{
-		private const int _WAIT_TIME_BETWEEN_RETRIES_IN_MILLISECONDS = 1000;
-
 		private static ITestHelper Helper => new TestHelper();
 
-		public static async Task<int> Create(int workspaceId, string productionName)
+		public static async Task<int> CreateAsync(int workspaceID, string productionName)
 		{
-			const int productionFontSize = 10;
-
-			using (var productionManager = Helper.CreateProxy<IProductionManager>())
+			using (var objectManager = Helper.CreateProxy<IObjectManager>())
 			{
-				var production = new global::Relativity.Productions.Services.Production
+				CreateResult createResult = await objectManager.CreateAsync(workspaceID, new CreateRequest()
 				{
-					Name = productionName,
-					ShouldCopyInstanceOnWorkspaceCreate = false,
-					Details = new ProductionDetails
+					ObjectType = new ObjectTypeRef()
 					{
-						BrandingFontSize = productionFontSize,
-						ScaleBrandingFont = false
+						Name = "Production"
 					},
-					Numbering = new DocumentFieldNumbering
+					FieldValues = new []
 					{
-						NumberingType = NumberingType.DocumentField,
-						NumberingField = new FieldRef
+						new FieldRefValuePair()
 						{
-							ArtifactID = 1003667,
-							ViewFieldID = 0,
-							Name = "Control Number"
-						},
-						AttachmentRelationalField = new FieldRef
-						{
-							ArtifactID = 0,
-							ViewFieldID = 0,
-							Name = ""
-						},
-						BatesPrefix = "PRE",
-						BatesSuffix = "SUF",
-						IncludePageNumbers = false,
-						DocumentNumberPageNumberSeparator = "",
-						NumberOfDigitsForPageNumbering = 0,
-						StartNumberingOnSecondPage = false
+							Field = new FieldRef()
+							{
+								Name = "Name"
+							},
+							Value = productionName
+						}
 					}
-				};
-
-				return await productionManager.CreateSingleAsync(workspaceId, production).ConfigureAwait(false);
-			}
-		}
-
-		public static Task<bool> StageAndWaitForCompletionAsync(int workspaceID, int productionID, int retriesCount)
-		{
-			Func<IProductionManager, Task<ProductionJobResult>> stageProduction =
-				productionManager => productionManager.StageProductionAsync(workspaceID, productionID);
-
-			const string expectedStatus = "Staged";
-			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, stageProduction, expectedStatus, retriesCount);
-		}
-
-		public static Task<bool> RunAndWaitForCompletionAsync(int workspaceID, int productionID, int retriesCount)
-		{
-			Func<IProductionManager, Task<ProductionJobResult>> runProduction =
-				productionManager => productionManager.RunProductionAsync(workspaceID, productionID, suppressWarnings: true);
-
-			const string expectedStatus = "Produced";
-			return ExecuteAndWaitForCompletionAsync(workspaceID, productionID, runProduction, expectedStatus, retriesCount);
-		}
-
-		private static async Task<bool> ExecuteAndWaitForCompletionAsync(
-			int workspaceID,
-			int productionID,
-			Func<IProductionManager, Task<ProductionJobResult>> functionToExecute,
-			string expectedStatus,
-			int retriesCount)
-		{
-			using (var productionManager = Helper.CreateProxy<IProductionManager>())
-			{
-				ProductionJobResult result = await functionToExecute(productionManager).ConfigureAwait(false);
-				if (!result.WasJobCreated)
+				}).ConfigureAwait(false);
+				if (createResult.EventHandlerStatuses.All(x => x.Success))
 				{
-					return false;
+					return createResult.Object.ArtifactID;
+				}
+				else
+				{
+					Debugger.Break();
+					return -1;
 				}
 			}
-			await WaitForProductionStatusAsync(workspaceID, productionID, expectedStatus, retriesCount).ConfigureAwait(false);
-			return true;
 		}
 
-		private static async Task WaitForProductionStatusAsync(int workspaceId, int productionId, string expectedStatus, int retriesCount)
+		public static async Task DeleteAsync(int workspaceID, int productionID)
 		{
-			TimeSpan waitTimeBetweenRetries = TimeSpan.FromMilliseconds(_WAIT_TIME_BETWEEN_RETRIES_IN_MILLISECONDS);
-
-			string status = string.Empty;
-			for (var i = 0; i < retriesCount; i++)
+			using (var objectManager = Helper.CreateProxy<IObjectManager>())
 			{
-				status = await GetProductionStatusAsync(workspaceId, productionId).ConfigureAwait(false);
-
-				if (status == expectedStatus)
+				DeleteResult deleteResult = await objectManager.DeleteAsync(workspaceID, new DeleteRequest()
 				{
-					return;
-				}
-
-				if (HasErrors(status))
-				{
-					throw new TestException("ProductionOperation finished with errors");
-				}
-
-				await Task.Delay(waitTimeBetweenRetries).ConfigureAwait(false);
-			}
-
-			throw new TestException($"ProductionOperation finished with different status than expected. Received {status} expected {expectedStatus}. WorkspaceId={workspaceId}");
-		}
-
-		private static bool HasErrors(string status)
-		{
-			return status.Contains("Error");
-		}
-
-		private static async Task<string> GetProductionStatusAsync(int workspaceId, int productionId)
-		{
-			using (var productionManager = Helper.CreateProxy<IProductionManager>())
-			{
-				global::Relativity.Productions.Services.Production result = await productionManager
-					.ReadSingleAsync(workspaceId, productionId)
-					.ConfigureAwait(false);
-				return result.ProductionMetadata.Status.ToString();
+					Object = new RelativityObjectRef()
+					{
+						ArtifactID = productionID
+					}
+				}).ConfigureAwait(false);
 			}
 		}
 	}
