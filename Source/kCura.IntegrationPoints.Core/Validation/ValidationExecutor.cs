@@ -68,11 +68,15 @@ namespace kCura.IntegrationPoints.Core.Validation
 
 		private void CheckPermissions(ValidationContext validationContext, OperationType operationType)
 		{
-			ValidationResult permissionCheck = ValidatePermission(validationContext, operationType);
-
+			ValidationResult permissionCheck;
 			if (validationContext.UserId == 0)
 			{
+				permissionCheck = new ValidationResult();
 				permissionCheck.Add(Constants.IntegrationPoints.NO_USERID);
+			}
+			else
+			{
+				permissionCheck = ValidatePermission(validationContext, operationType);
 			}
 
 			if (!permissionCheck.IsValid)
