@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(validationModel));
 			}
 
-			foreach (IPermissionValidator validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.NATIVE_COPY_LINKS_MODE])
+			foreach (IPermissionValidator validator in _validatorsMap[Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE])
 			{
 				result.Add(validator.Validate(validationModel));
 			}
