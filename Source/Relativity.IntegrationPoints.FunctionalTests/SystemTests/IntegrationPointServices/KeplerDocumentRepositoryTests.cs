@@ -25,7 +25,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 	[Feature.DataTransfer.IntegrationPoints]
 	public class KeplerDocumentRepositoryTests
 	{
-		private const int _LARGE_DATA_SET_PRODUCTION_RETRY_COUNT = 500;
+		private const string SMALL_SET_DOC_PREFIX = "SMALL_";
+		private const string LARGE_PRODUCTION_SET_DOC_PREFIX = "LARGE_PROD_";
 		private const string LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE = "KEPLER_DOCUMENT_REPOSITORY_LONG";
 
 		private int _workspaceID => SystemTestsSetupFixture.SourceWorkspace.ArtifactID;
@@ -34,17 +35,22 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 		private IDocumentRepository _documentRepository;
 		private IRelativityObjectManager _relativityObjectManager;
 		private IKeywordSearchManager _keywordSearchManager;
-		private ImportHelper _importHelperWithNoNatives;
+		private ImportHelper _importHelperWithoutNatives;
 		private WorkspaceService _workspaceService;
-		private ProductionHelper _productionHelper;
 		private SavedSearchHelper _savedSearchHelper;
 		private LoadFileHelper _loadFileHelper;
+
 		private DocumentsTestData _smallDocumentsTestData;
 		private DocumentsTestData _largeDocumentsTestData;
-		private ProductionCreateResultDto _smallDataSetProductionCreateResult;
-		private ProductionCreateResultDto _largeDataSetProductionCreateResult;
+
+		private DocumentsTestData _smallProductionSetTestData;
+		private DocumentsTestData _largeProductionSetTestData;
+
 		private int _smallDataSetSearchArtifactID;
 		private int _largeDataSetSearchArtifactID;
+
+		private int _smallDataSetProductionID;
+		private int _largeDataSetProductionID;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -53,11 +59,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 			_documentRepository = _container.Resolve<IDocumentRepository>();
 			_relativityObjectManager = _container.Resolve<IRelativityObjectManager>();
 			_keywordSearchManager = _testHelper.CreateProxy<IKeywordSearchManager>();
-			_importHelperWithNoNatives = new ImportHelper(withNatives: false);
+			_importHelperWithoutNatives = new ImportHelper(withNatives: false);
 			_workspaceService = new WorkspaceService(new ImportHelper(withNatives: true));
-			_productionHelper = new ProductionHelper(_workspaceID, _relativityObjectManager, _workspaceService);
 			_savedSearchHelper = new SavedSearchHelper(_workspaceID, _keywordSearchManager);
 			_loadFileHelper = new LoadFileHelper();
+
+			// Saved searches
 
 			ImportSmallDataSet();
 			ImportLargeDataSet();
@@ -68,22 +75,26 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				CriteriaConditionEnum.Is, 
 				LONG_DATA_SET_EMBEDDED_DATA_INFO_VALUE);
 
-			_smallDataSetProductionCreateResult = _productionHelper.CreateAndRunProduction(_smallDataSetSearchArtifactID);
-			_largeDataSetProductionCreateResult = _productionHelper.CreateAndRunProduction(
-				_largeDataSetSearchArtifactID,
-				Productions.Services.ProductionType.ImagesOnly,
-				_LARGE_DATA_SET_PRODUCTION_RETRY_COUNT);
+			// Productions
+
+			_smallDataSetProductionID = kCura.IntegrationPoint.Tests.Core.Production.CreateAsync(_workspaceID, "Small").GetAwaiter().GetResult();
+			_largeDataSetProductionID = kCura.IntegrationPoint.Tests.Core.Production.CreateAsync(_workspaceID, "Large").GetAwaiter().GetResult();
+
+			ImportSmallProductionDataSet(_smallDataSetProductionID);
+			ImportLargeProductionDataSet(_largeDataSetProductionID);
 		}
 
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			_productionHelper.DeleteProduction(_smallDataSetProductionCreateResult);
 			_savedSearchHelper.DeleteSavedSearch(_smallDataSetSearchArtifactID);
+			_savedSearchHelper.DeleteSavedSearch(_largeDataSetSearchArtifactID);
+			kCura.IntegrationPoint.Tests.Core.Production.DeleteAsync(_workspaceID, _smallDataSetProductionID).GetAwaiter().GetResult();
+			kCura.IntegrationPoint.Tests.Core.Production.DeleteAsync(_workspaceID, _largeDataSetProductionID).GetAwaiter().GetResult();
 		}
 
 		[IdentifiedTest("46D66A54-4604-491A-ABBB-A84F1905A1A0")]
-		public async Task DocumentExportFromSavedSearch_ShouldReturnCorrectDocumentFieldValues_ForSmallDataSet()
+		public Task DocumentExportFromSavedSearch_ShouldReturnCorrectDocumentFieldValues_ForSmallDataSet()
 		{
 			string[] fieldNames =
 			{
@@ -91,12 +102,11 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				TestConstants.FieldNames.DOCUMENT_EXTENSION
 			};
 
-			await RunDocumentExportFromSavedSearchTestAsync(_smallDataSetSearchArtifactID, fieldNames, _smallDocumentsTestData)
-				.ConfigureAwait(false);
+			return RunDocumentExportFromSavedSearchTestAsync(_smallDataSetSearchArtifactID, fieldNames, _smallDocumentsTestData);
 		}
 
 		[IdentifiedTest("0FE282D3-61B1-4DF7-837A-8647E25BC0C0")]
-		public async Task DocumentExportFromSavedSearch_ShouldReturnCorrectDocumentFieldValues_ForLargeDataSet()
+		public Task DocumentExportFromSavedSearch_ShouldReturnCorrectDocumentFieldValues_ForLargeDataSet()
 		{
 			string[] fieldNames =
 			{
@@ -108,28 +118,19 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				TestConstants.FieldNames.EMBEDDED_DATA_INFO
 			};
 
-			await RunDocumentExportFromSavedSearchTestAsync(_largeDataSetSearchArtifactID, fieldNames, _largeDocumentsTestData)
-				.ConfigureAwait(false);
+			return RunDocumentExportFromSavedSearchTestAsync(_largeDataSetSearchArtifactID, fieldNames, _largeDocumentsTestData);
 		}
 
 		[IdentifiedTest("175CEB53-3172-4B71-A6DA-686AA0942F2C")]
-		public async Task DocumentExportFromProduction_ShouldReturnCorrentDocumentFieldValues_ForSmallDataSet()
+		public Task DocumentExportFromProduction_ShouldReturnCorrentDocumentFieldValues_ForSmallDataSet()
 		{
-			await RunDocumentExportFromProductionTestAsync(
-					_smallDataSetSearchArtifactID,
-					_smallDataSetProductionCreateResult,
-					_smallDocumentsTestData)
-				.ConfigureAwait(false);
+			return RunDocumentExportFromProductionTestAsync(_smallDataSetProductionID, SMALL_SET_DOC_PREFIX);
 		}
 
 		[IdentifiedTest("E61E48E9-DD0E-46E5-9FC8-C3A2DFF1A0D1")]
-		public async Task DocumentExportFromProduction_ShouldReturnCorrentDocumentFieldValues_ForLargeDataSet()
+		public Task DocumentExportFromProduction_ShouldReturnCorrentDocumentFieldValues_ForLargeDataSet()
 		{
-			await RunDocumentExportFromProductionTestAsync(
-					_largeDataSetSearchArtifactID,
-					_largeDataSetProductionCreateResult,
-					_largeDocumentsTestData)
-				.ConfigureAwait(false);
+			return RunDocumentExportFromProductionTestAsync(_largeDataSetProductionID, LARGE_PRODUCTION_SET_DOC_PREFIX);
 		}
 
 		private async Task RunDocumentExportFromSavedSearchTestAsync(
@@ -164,10 +165,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				fieldNames);
 		}
 
-		private async Task RunDocumentExportFromProductionTestAsync(
-			int searchArtifactID,
-			ProductionCreateResultDto productionCreateResult, 
-			DocumentsTestData documentsTestData)
+		private async Task RunDocumentExportFromProductionTestAsync(int productionID, string productionBegBatesPrefix)
 		{
 			// arrange
 			string[] fieldNames =
@@ -177,15 +175,14 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				TestConstants.FieldNames.PRODUCTION_END_BATES
 			};
 			int[] fieldArtifactIds = fieldNames.Select(RetrieveFieldArtifactID).ToArray();
-			int expectedDocumentCount = documentsTestData.AllDocumentsDataTable.AsEnumerable().Count();
-			IList<RelativityObject> expectedDocuments = await RetrieveExpectedDocuments(
+			IList<RelativityObject> expectedDocuments = await RetrieveExpectedDocumentsForProductionAsync(
 					fieldNames,
-					searchArtifactID)
+					productionBegBatesPrefix)
 				.ConfigureAwait(false);
 
 			// act
 			ExportInitializationResultsDto initializationResults = await _documentRepository
-				.InitializeProductionExportAsync(productionCreateResult.ProductionArtifactID, fieldArtifactIds, 0)
+				.InitializeProductionExportAsync(productionID, fieldArtifactIds, 0)
 				.ConfigureAwait(false);
 
 			IList<RelativityObjectSlimDto> objects = await _documentRepository
@@ -197,10 +194,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 
 			// assert
 			initializationResults.RecordCount
-				.Should().Be((long) expectedDocumentCount);
+				.Should().Be((long)expectedDocuments.Count);
 			initializationResults.FieldNames.ShouldBeEquivalentTo(fieldNames, options => options.WithStrictOrdering());
 
-			objects.Count.Should().Be(expectedDocumentCount);
+			objects.Count.Should().Be(expectedDocuments.Count);
 			AssertDocumentsAreIdenticalForProduction(
 				expectedDocuments,
 				objects,
@@ -210,11 +207,21 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 		private void ImportSmallDataSet()
 		{
 			_smallDocumentsTestData = DocumentTestDataBuilder.BuildTestData(
-				prefix: "KDR_SDS_",
+				prefix: SMALL_SET_DOC_PREFIX,
 				withNatives: true,
 				testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure
 			);
 			_workspaceService.ImportData(_workspaceID, _smallDocumentsTestData);
+		}
+
+		private void ImportSmallProductionDataSet(int productionID)
+		{
+			_smallProductionSetTestData = DocumentTestDataBuilder.BuildTestData(
+				prefix: SMALL_SET_DOC_PREFIX,
+				withNatives: false,
+				testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure
+			);
+			_workspaceService.ImportDataToProduction(_workspaceID, productionID, _smallProductionSetTestData.Images);
 		}
 
 		private void ImportLargeDataSet()
@@ -232,9 +239,26 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				quote,
 				"KeplerDocumentRepository_LargeDataSet");
 
-			_importHelperWithNoNatives.ImportMetadataFromFileWithExtractedTextInFile(
+			_importHelperWithoutNatives.ImportMetadataFromFileWithExtractedTextInFile(
 				_workspaceID,
 				_largeDocumentsTestData.AllDocumentsDataTable);
+		}
+
+		private void ImportLargeProductionDataSet(int productionID)
+		{
+			DocumentsTestData testDataForDocuments = DocumentTestDataBuilder.BuildTestData(
+				prefix: LARGE_PRODUCTION_SET_DOC_PREFIX,
+				withNatives: false, 
+				testDataType: DocumentTestDataBuilder.TestDataType.SaltPepperWithFolderStructure);
+
+			_workspaceService.ImportData(_workspaceID, testDataForDocuments);
+			
+			_largeProductionSetTestData = DocumentTestDataBuilder.BuildTestData(
+				prefix: LARGE_PRODUCTION_SET_DOC_PREFIX,
+				withNatives: false,
+				testDataType: DocumentTestDataBuilder.TestDataType.SaltPepperWithFolderStructure);
+
+			_workspaceService.ImportDataToProduction(_workspaceID, productionID, _largeProductionSetTestData.Images);
 		}
 
 		private int RetrieveFieldArtifactID(string fieldName)
@@ -249,16 +273,16 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 			return result.ArtifactID;
 		}
 
-		private async Task<IList<RelativityObject>> RetrieveExpectedDocuments(IEnumerable<string> fieldNames, int searchArtifactID)
+		private async Task<IList<RelativityObject>> RetrieveExpectedDocumentsForProductionAsync(IEnumerable<string> fieldNames, string productionBegBatesPrefix)
 		{
 			IList<FieldRef> fields = fieldNames
-				.Select(x => new FieldRef {Name = x})
+				.Select(x => new FieldRef { Name = x })
 				.ToList();
 			var request = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) kCura.Relativity.Client.ArtifactType.Document},
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)kCura.Relativity.Client.ArtifactType.Document },
 				Fields = fields,
-				Condition = $"'ArtifactID' IN SAVEDSEARCH {searchArtifactID}"
+				Condition = $"'Production::Begin Bates' STARTSWITH '{productionBegBatesPrefix}'"
 			};
 			IList<RelativityObject> result = await _relativityObjectManager.QueryAsync(request).ConfigureAwait(false);
 			return result;
