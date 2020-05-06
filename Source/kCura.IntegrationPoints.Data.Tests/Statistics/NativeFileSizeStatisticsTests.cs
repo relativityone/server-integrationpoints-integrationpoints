@@ -11,6 +11,8 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
@@ -27,6 +29,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		private IRelativityObjectManager _relativityObjectManager;
 
 		private NativeFileSizeStatistics _instance;
+		private IExportQueryResult _exportResult;
 
 		public override void SetUp()
 		{
@@ -37,6 +40,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			var relativityObjectManagerFactory = Substitute.For<IRelativityObjectManagerFactory>();
 			relativityObjectManagerFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_relativityObjectManager);
 			_helper.GetLoggerFactory().GetLogger().ForContext<NativeFileSizeStatistics>().Returns(_logger);
+
+
+			_exportResult = Substitute.For<IExportQueryResult>();
+
+			_exportResult.ExportResult.Returns(new ExportInitializationResults { FieldData = new List<FieldMetadata>() });
+
+			_relativityObjectManager.QueryWithExportAsync(Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<ExecutionIdentity>())
+				.Returns(_exportResult);
 
 			_instance = new NativeFileSizeStatistics(_helper, relativityObjectManagerFactory);
 		}
@@ -57,8 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				594
 			};
 
-			var queryResult = MockQueryResult(artifactIds);
-			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			MockQueryResult(artifactIds);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
@@ -85,8 +95,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				679
 			};
 
-			var queryResult = MockQueryResult(artifactIds);
-			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			MockQueryResult(artifactIds);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
@@ -113,13 +122,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				907
 			};
 
-			var queryResult = MockQueryResult(artifactIds, ProductionConsts.DocumentFieldGuid);
-			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			MockQueryResult(artifactIds, ProductionConsts.DocumentFieldGuid);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
 					Arg.Is<SqlParameter>(x => x.ParameterName == "@ArtifactIds" && x.TypeName == "IDs"),
-					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType) x.Value == FileType.Native))
+					Arg.Is<SqlParameter>(x => x.ParameterName == "@FileType" && (FileType)x.Value == FileType.Native))
 				.Returns(expectedResult);
 
 			var actualResult = _instance.ForProduction(_WORKSPACE_ID, productionId);
@@ -127,16 +135,30 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
-		private static List<RelativityObject> MockQueryResult(List<int> artifactIds, Guid? guid = null)
+		private void MockQueryResult(List<int> artifactIds, Guid? guid = null)
 		{
+			var relativityObjectSlims = artifactIds.Select(x => new RelativityObjectSlim { ArtifactID = x }).ToList();
+
 			if (guid.HasValue)
 			{
-				return artifactIds.Select(x => new RelativityObject { ArtifactID = x, FieldValues = CreateFieldValues(guid.Value, x) }).ToList();
+				_exportResult.ExportResult.Returns(new ExportInitializationResults()
+				{
+					FieldData = new List<FieldMetadata>
+					{
+						new FieldMetadata
+						{
+							Guids = new List<Guid> {guid.Value}
+						}
+					}
+				});
+
+				foreach (var objectSlim in relativityObjectSlims)
+				{
+					objectSlim.Values = new List<object> { objectSlim.ArtifactID };
+				}
 			}
-			else
-			{
-				return artifactIds.Select(x => new RelativityObject { ArtifactID = x }).ToList();
-			}
+
+			_exportResult.GetAllResultsAsync().Returns(relativityObjectSlims);
 		}
 
 		private static List<FieldValuePair> CreateFieldValues(Guid fieldGuid, int value)

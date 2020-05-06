@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -8,6 +9,8 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
@@ -22,12 +25,18 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		private IRelativityObjectManager _rdoRepository;
 
 		private ImageTotalStatistics _instance;
+		private IExportQueryResult _exportResult;
 
 		public override void SetUp()
 		{
 			_logger = Substitute.For<IAPILog>();
 			_helper = Substitute.For<IHelper>();
 			_rdoRepository = Substitute.For<IRelativityObjectManager>();
+
+			_exportResult = Substitute.For<IExportQueryResult>();
+
+			_rdoRepository.QueryWithExportAsync(Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<ExecutionIdentity>())
+				.Returns(_exportResult);
 
 			var repositoryFactory = Substitute.For<IRelativityObjectManagerFactory>();
 			repositoryFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_rdoRepository);
@@ -45,8 +54,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			int viewId = 398415;
 			bool includeSubfolders = true;
 
-			var queryResult = MockQueryResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
-			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			ConfigureExportResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
 
 			var actualResult = _instance.ForFolder(_WORKSPACE_ID, folderId, viewId, includeSubfolders);
 
@@ -60,8 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 			int savedSearchId = 768974;
 
-			var queryResult = MockQueryResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
-			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			ConfigureExportResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
 
 			var actualResult = _instance.ForSavedSearch(_WORKSPACE_ID, savedSearchId);
 
@@ -75,45 +82,49 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 			int productionId = 998788;
 
-			var queryResult = MockQueryResult(expectedResult, ProductionConsts.ImageCountFieldGuid);
-			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			ConfigureExportResult(expectedResult, ProductionConsts.ImageCountFieldGuid);
 
 			var actualResult = _instance.ForProduction(_WORKSPACE_ID, productionId);
 
 			Assert.That(actualResult, Is.EqualTo(expectedResult));
 		}
 
-		private static List<RelativityObject> MockQueryResult(int expectedResult, Guid fieldGuid)
+		private void ConfigureExportResult(int expectedResult, Guid fieldGuid)
 		{
-			return new List<RelativityObject>
+			_exportResult.ExportResult.Returns(new ExportInitializationResults()
 			{
-				new RelativityObject
+				FieldData = new List<FieldMetadata>
 				{
-					FieldValues = new List<FieldValuePair>
+					new FieldMetadata
 					{
-						new FieldValuePair
-						{
-							Field = new Field
-							{
-								Guids = new List<Guid> { fieldGuid }
-							},
-							Value = expectedResult
-						}
+						Guids = new List<Guid> {fieldGuid}
 					}
 				}
-			};
+			});
+
+			_exportResult.GetAllResultsAsync().Returns(new List<RelativityObjectSlim>
+			{
+				new RelativityObjectSlim
+				{
+					Values = new List<object>
+					{
+						expectedResult
+					}
+				}
+			});
 		}
 
 		[Test]
 		public void ItShouldLogError()
-		{
-			_rdoRepository.Query(Arg.Any<QueryRequest>()).Throws(new Exception());
+			{
+				_rdoRepository.QueryWithExportAsync(Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<ExecutionIdentity>())
+					.Throws(new Exception());
 
-			Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 157, 237, true), Throws.Exception);
-			Assert.That(() => _instance.ForProduction(_WORKSPACE_ID, 465), Throws.Exception);
-			Assert.That(() => _instance.ForSavedSearch(_WORKSPACE_ID, 740), Throws.Exception);
+				Assert.That(() => _instance.ForFolder(_WORKSPACE_ID, 157, 237, true), Throws.Exception);
+				Assert.That(() => _instance.ForProduction(_WORKSPACE_ID, 465), Throws.Exception);
+				Assert.That(() => _instance.ForSavedSearch(_WORKSPACE_ID, 740), Throws.Exception);
 
-			_logger.Received(3).LogError(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<object[]>());
+				_logger.Received(3).LogError(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<object[]>());
+			}
 		}
 	}
-}

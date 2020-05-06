@@ -4,7 +4,6 @@ using Relativity.API;
 using Relativity.Sync;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Utils;
 
 namespace kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup
 {
