@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		private readonly ISerializer _serializer;
 		private readonly IManagerFactory _managerFactory;
 
-		public string Key => Constants.IntegrationPointProfiles.Validation.NATIVE_COPY_LINKS_MODE;
+		public string Key => Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE;
 
 		public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory)
 		{
