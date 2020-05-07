@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 				foreach (var objectSlim in relativityObjectSlims)
 				{
-					objectSlim.Values = new List<object> { objectSlim.ArtifactID };
+					objectSlim.Values = new List<object> { new RelativityObjectValue{ArtifactID = objectSlim.ArtifactID }};
 				}
 			}
 

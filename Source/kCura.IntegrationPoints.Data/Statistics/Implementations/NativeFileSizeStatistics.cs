@@ -54,14 +54,15 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				var queryBuilder = new ProductionInformationQueryBuilder();
 				QueryRequest query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().AddField(ProductionConsts.DocumentFieldGuid).Build();
 				List<RelativityObjectSlim> queryResult = ExecuteQuery(query, workspaceArtifactId, out var fieldsMetadata);
-				IEnumerable<int> artifactIds = queryResult.Select(
-						x => GetFunctionForRetrieveFieldValue(ProductionConsts.DocumentFieldGuid, fieldsMetadata)(x)).Cast<int>();
+				IEnumerable<int> artifactIds = queryResult.Select(GetFunctionForRetrieveFieldValue(ProductionConsts.DocumentFieldGuid, fieldsMetadata)).Cast<RelativityObjectValue>().Select(x => x.ArtifactID);
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_PRODUCTION_ERROR, productionSetId);
-				return 0;
+
+				// just to check what is returned
+				throw;
 			}
 		}
 
@@ -69,7 +70,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			List<FieldMetadata> fieldsMetadata)
 		{
 			int index = fieldsMetadata.FindIndex(field => field.Guids.Contains(fieldGuid));
-			return relativityObject => relativityObject.Values.ElementAtOrDefault(index);
+			return relativityObject =>
+			{
+
+				var value = relativityObject.Values.ElementAtOrDefault(index);
+				_logger.LogError(value?.GetType().FullName ?? "null relativityObjectValue");
+
+				return value;
+			};
 		}
 
 		public long ForSavedSearch(int workspaceArtifactId, int savedSearchId)
