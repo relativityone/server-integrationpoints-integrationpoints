@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -44,13 +45,18 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsMana
 			base.SuiteSetup();
 
 			var workspaceService = new WorkspaceService(new ImportHelper());
-			FolderWithDocumentsIdRetriever folderWithDocumentsIdRetriever = Container.Resolve<FolderWithDocumentsIdRetriever>();
-			_testCaseSettings = new TestCaseSettings();
-
-			_testCaseSettings.DocumentsTestData = DocumentTestDataBuilder.BuildTestData();
+			_testCaseSettings = new TestCaseSettings
+			{
+				ProductionId = workspaceService.CreateProductionAsync(WorkspaceArtifactId, "Production").GetAwaiter().GetResult(),
+				DocumentsTestData = DocumentTestDataBuilder.BuildTestData()
+			};
 
 			workspaceService.ImportData(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData);
-
+			
+			DocumentsTestData testDataForProduction = DocumentTestDataBuilder.BuildTestData();
+			workspaceService.ImportDataToProduction(WorkspaceArtifactId, _testCaseSettings.ProductionId, testDataForProduction.Images);
+			
+			FolderWithDocumentsIdRetriever folderWithDocumentsIdRetriever = Container.Resolve<FolderWithDocumentsIdRetriever>();
 			folderWithDocumentsIdRetriever.UpdateFolderIdsAsync(WorkspaceArtifactId, _testCaseSettings.DocumentsTestData.Documents)
 				.GetAwaiter()
 				.GetResult();
@@ -58,14 +64,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsMana
 			_testCaseSettings.SavedSearchId = SavedSearch.CreateSavedSearch(WorkspaceArtifactId, "All documents");
 			_testCaseSettings.ViewId = workspaceService.GetView(WorkspaceArtifactId, "Documents");
 			_testCaseSettings.FolderId = _testCaseSettings.DocumentsTestData.Documents.Last().FolderId.GetValueOrDefault();
-
-			_testCaseSettings.ProductionId = workspaceService
-				.CreateAndRunProduction(
-					WorkspaceArtifactId, 
-					_testCaseSettings.SavedSearchId, 
-					"Production",
-					Productions.Services.ProductionType.ImagesAndNatives)
-				.ProductionArtifactID;
 		}
 
 		[TestCaseSource(nameof(_testCases))]

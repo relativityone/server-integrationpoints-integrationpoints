@@ -36,17 +36,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
+			Assert.Pass("This test checks export of images and natives from production, but IAPI does not support importing natives into production.");
+
 			string expectedDataFileName = $"{_testConfiguration.ProductionArtifactName}_export.dat";
-			System.Collections.Generic.IEnumerable<FileInfo> dataFiles = directory.EnumerateFiles(expectedDataFileName);
-			Assert.That(dataFiles.Any());
+			IEnumerable<FileInfo> dataFiles = directory.EnumerateFiles(expectedDataFileName);
+			Assert.True(dataFiles.Any());
 
 			List<DirectoryInfo> nativesRootDirectory = directory.EnumerateDirectories("NATIVES", SearchOption.AllDirectories).ToList();
 			IEnumerable<DirectoryInfo> imagesRootDirectory = directory.EnumerateDirectories("IMAGES", SearchOption.AllDirectories);
 
 			// we don expect any images generated for this case
-			Assert.That(imagesRootDirectory.IsNullOrEmpty());
+			Assert.True(imagesRootDirectory.IsNullOrEmpty());
 			
-			Assert.That(!nativesRootDirectory.IsNullOrEmpty());
+			Assert.False(nativesRootDirectory.IsNullOrEmpty());
 
 			int actualFileCount = Directory.EnumerateFiles(nativesRootDirectory[0].FullName, "*", SearchOption.AllDirectories).Count();
 
