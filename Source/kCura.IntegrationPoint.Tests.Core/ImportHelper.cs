@@ -115,7 +115,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			// Indicates filepath for an image.
 			importJob.Settings.FileLocationField = "File";
-			importJob.Settings.BatesNumberField = "Bates Beg";
 			//Indicates that the images must be copied to the document repository
 			importJob.Settings.CopyFilesToDocumentRepository = true;
 			//For testing purpose

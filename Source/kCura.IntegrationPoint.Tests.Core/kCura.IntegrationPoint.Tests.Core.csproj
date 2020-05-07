@@ -163,7 +163,6 @@
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="PermissionValidatorTestsBase.cs" />
     <Compile Include="Placeholder.cs" />
-    <Compile Include="Production.cs" />
     <Compile Include="RelativityApplicationManager.cs" />
     <Compile Include="ResourcePoolHelper.cs" />
     <Compile Include="ResourceServerHelper.cs" />

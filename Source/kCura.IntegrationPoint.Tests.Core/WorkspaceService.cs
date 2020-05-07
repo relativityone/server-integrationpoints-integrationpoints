@@ -4,9 +4,13 @@ using Relativity.Services.Search;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -15,12 +19,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
 		private readonly ImportHelper _importHelper;
-
-		public const int PRODUCTION_MAX_RETRIES_COUNT = 100;
+		private readonly ITestHelper _testHelper;
 
 		public WorkspaceService(ImportHelper importHelper)
 		{
 			_importHelper = importHelper;
+			_testHelper = new TestHelper();
 		}
 
 		public int CreateWorkspace(string name)
@@ -36,7 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			bool importSucceeded = _importHelper.ImportData(workspaceID, documentsTestData);
 			if (!importSucceeded)
 			{
-				string errorsDetails = _importHelper.ErrorMessages.Any() 
+				string errorsDetails = _importHelper.ErrorMessages.Any()
 					? $" Error messages: {string.Join("; ", _importHelper.ErrorMessages)}"
 					: " No error messages.";
 				throw new TestException("Importing documents does not succeeded." + errorsDetails);
@@ -66,6 +70,54 @@ namespace kCura.IntegrationPoint.Tests.Core
 			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
 			{
 				rsapiClient.Repositories.Workspace.DeleteSingle(artifactID);
+			}
+		}
+
+		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
+		{
+			using (var objectManager = _testHelper.CreateProxy<IObjectManager>())
+			{
+				CreateResult createResult = await objectManager.CreateAsync(workspaceID, new CreateRequest()
+				{
+					ObjectType = new ObjectTypeRef()
+					{
+						Name = "Production"
+					},
+					FieldValues = new[]
+					{
+						new FieldRefValuePair()
+						{
+							Field = new global::Relativity.Services.Objects.DataContracts.FieldRef()
+							{
+								Name = "Name"
+							},
+							Value = productionName
+						}
+					}
+				}).ConfigureAwait(false);
+				if (createResult.EventHandlerStatuses.All(x => x.Success))
+				{
+					return createResult.Object.ArtifactID;
+				}
+				else
+				{
+					string errorMessages = string.Join(System.Environment.NewLine, createResult.EventHandlerStatuses.Select(x => x.Message));
+					throw new TestException($"Cannot create production '{productionName}' in workspace {workspaceID}: {errorMessages}");
+				}
+			}
+		}
+
+		public async Task DeleteProductionAsync(int workspaceID, int productionID)
+		{
+			using (var objectManager = _testHelper.CreateProxy<IObjectManager>())
+			{
+				await objectManager.DeleteAsync(workspaceID, new DeleteRequest()
+				{
+					Object = new RelativityObjectRef()
+					{
+						ArtifactID = productionID
+					}
+				}).ConfigureAwait(false);
 			}
 		}
 

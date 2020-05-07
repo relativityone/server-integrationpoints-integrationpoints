@@ -77,8 +77,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 
 			// Productions
 
-			_smallDataSetProductionID = kCura.IntegrationPoint.Tests.Core.Production.CreateAsync(_workspaceID, "Small").GetAwaiter().GetResult();
-			_largeDataSetProductionID = kCura.IntegrationPoint.Tests.Core.Production.CreateAsync(_workspaceID, "Large").GetAwaiter().GetResult();
+			_smallDataSetProductionID = _workspaceService.CreateProductionAsync(_workspaceID, "Small").GetAwaiter().GetResult();
+			_largeDataSetProductionID = _workspaceService.CreateProductionAsync(_workspaceID, "Large").GetAwaiter().GetResult();
 
 			ImportSmallProductionDataSet(_smallDataSetProductionID);
 			ImportLargeProductionDataSet(_largeDataSetProductionID);
@@ -89,8 +89,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 		{
 			_savedSearchHelper.DeleteSavedSearch(_smallDataSetSearchArtifactID);
 			_savedSearchHelper.DeleteSavedSearch(_largeDataSetSearchArtifactID);
-			kCura.IntegrationPoint.Tests.Core.Production.DeleteAsync(_workspaceID, _smallDataSetProductionID).GetAwaiter().GetResult();
-			kCura.IntegrationPoint.Tests.Core.Production.DeleteAsync(_workspaceID, _largeDataSetProductionID).GetAwaiter().GetResult();
+			_workspaceService.DeleteProductionAsync(_workspaceID, _smallDataSetProductionID).GetAwaiter().GetResult();
+			_workspaceService.DeleteProductionAsync(_workspaceID, _largeDataSetProductionID).GetAwaiter().GetResult();
 		}
 
 		[IdentifiedTest("46D66A54-4604-491A-ABBB-A84F1905A1A0")]
