@@ -9,6 +9,7 @@ using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.Productions.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Field.FieldRef;
@@ -64,7 +65,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _importHelper.ImportMetadataFromFileWithExtractedTextInFile(workspaceArtifactID, documentData);
 		}
 
-
 		public void DeleteWorkspace(int artifactID)
 		{
 			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
@@ -75,35 +75,42 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
 		{
-			using (var objectManager = _testHelper.CreateProxy<IObjectManager>())
+			using (var productionManager = _testHelper.CreateProxy<IProductionManager>())
 			{
-				CreateResult createResult = await objectManager.CreateAsync(workspaceID, new CreateRequest()
+				var production = new Production
 				{
-					ObjectType = new ObjectTypeRef()
+					Name = productionName,
+					ShouldCopyInstanceOnWorkspaceCreate = false,
+					Details = new ProductionDetails
 					{
-						Name = "Production"
+						BrandingFontSize = 10,
+						ScaleBrandingFont = false
 					},
-					FieldValues = new[]
+					Numbering = new DocumentFieldNumbering
 					{
-						new FieldRefValuePair()
+						NumberingType = NumberingType.DocumentField,
+						NumberingField = new FieldRef
 						{
-							Field = new global::Relativity.Services.Objects.DataContracts.FieldRef()
-							{
-								Name = "Name"
-							},
-							Value = productionName
-						}
+							ArtifactID = 1003667,
+							ViewFieldID = 0,
+							Name = "Control Number"
+						},
+						AttachmentRelationalField = new FieldRef
+						{
+							ArtifactID = 0,
+							ViewFieldID = 0,
+							Name = ""
+						},
+						BatesPrefix = "PRE",
+						BatesSuffix = "SUF",
+						IncludePageNumbers = false,
+						DocumentNumberPageNumberSeparator = "",
+						NumberOfDigitsForPageNumbering = 0,
+						StartNumberingOnSecondPage = false
 					}
-				}).ConfigureAwait(false);
-				if (createResult.EventHandlerStatuses.All(x => x.Success))
-				{
-					return createResult.Object.ArtifactID;
-				}
-				else
-				{
-					string errorMessages = string.Join(System.Environment.NewLine, createResult.EventHandlerStatuses.Select(x => x.Message));
-					throw new TestException($"Cannot create production '{productionName}' in workspace {workspaceID}: {errorMessages}");
-				}
+				};
+
+				return await productionManager.CreateSingleAsync(workspaceID, production).ConfigureAwait(false);
 			}
 		}
 
