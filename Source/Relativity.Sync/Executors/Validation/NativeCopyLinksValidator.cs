@@ -1,27 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.Services.Group;
 using Relativity.Services.Interfaces.Group;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Permission;
-using Relativity.Services.RestApi.Client;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using User = Relativity.Services.User.User;
-using UserRef = Relativity.Services.User.UserRef;
 
 namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class NativeCopyLinksValidator : IValidator
 	{
-		private const string _COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION = 
-			"You do not have permission to run this import because it uses referential links to files. " + 
+		private const string _COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION =
+			"You do not have permission to run this import because it uses referential links to files. " +
 			"You must either log in as a system administrator or change the settings to upload files to run this import.";
 
 		private readonly IInstanceSettings _instanceSettings;
@@ -29,7 +20,7 @@ namespace Relativity.Sync.Executors.Validation
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		private readonly ISyncLog _logger;
 
-		public NativeCopyLinksValidator(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory,  ISyncLog logger)
+		public NativeCopyLinksValidator(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
 		{
 			_instanceSettings = instanceSettings;
 			_userContext = userContext;
@@ -39,7 +30,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating Native File links copy Restriction");
+			_logger.LogInformation("Validating Native File links copy Restriction");
 
 			var validationResult = new ValidationResult();
 
@@ -51,7 +42,11 @@ namespace Relativity.Sync.Executors.Validation
 				}
 
 				bool isRestrictReferentialFileLinksOnImport = await _instanceSettings.GetRestrictReferentialFileLinksOnImportAsync().ConfigureAwait(false);
-				bool executingUserIsAdmin = await ExecutingUserIsAdminAsync(configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+				bool executingUserIsAdmin = await ExecutingUserIsAdminAsync().ConfigureAwait(false);
+
+				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}",
+					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin);
+
 				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin)
 				{
 					validationResult.Add(_COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION);
@@ -67,39 +62,24 @@ namespace Relativity.Sync.Executors.Validation
 			return validationResult;
 		}
 
-		private async Task<bool> ExecutingUserIsAdminAsync(int workspaceId)
+		private async Task<bool> ExecutingUserIsAdminAsync()
 		{
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			_logger.LogInformation("Check if User {userId} is Admin", _userContext.ExecutingUserId);
+			using (IGroupManager groupManager = await _serviceFactory.CreateProxyAsync<IGroupManager>().ConfigureAwait(false))
 			{
-				using (IPermissionManager permissionManager = await _serviceFactory.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
-				{
-					//TODO: Use IGroupManager.QueryGroupsByUserAsync() as will be implemented
-					QueryRequest request = BuildAdminGroupsQuery();
-					QueryResult queryResult = await objectManager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
-					RelativityObject adminGroup = queryResult.Objects.Single();
+				QueryRequest request = BuildAdminGroupsQuery();
+				QueryResultSlim result = await groupManager.QueryGroupsByUserAsync(request, 0, 1, _userContext.ExecutingUserId).ConfigureAwait(false);
 
-					return await ExecutingUserBelongsToGroupAsync(permissionManager, workspaceId, adminGroup.ArtifactID).ConfigureAwait(false);
-				}
+				return result.Objects.Any();
 			}
-		}
-
-		private async Task<bool> ExecutingUserBelongsToGroupAsync(IPermissionManager permissionManager, int workspaceId, int groupId)
-		{
-			List<UserRef> users = await permissionManager.GetWorkspaceGroupUsersAsync(workspaceId, new GroupRef(groupId)).ConfigureAwait(false);
-			return users.Any(x => x.ArtifactID == _userContext.ExecutingUserId);
 		}
 
 		private static QueryRequest BuildAdminGroupsQuery()
 		{
 			const string adminGroupType = "System Admin";
-			const int groupArtifactTypeId = 3;
 			var request = new QueryRequest()
 			{
-				ObjectType = new ObjectTypeRef()
-				{
-					ArtifactTypeID = groupArtifactTypeId
-				},
-				Condition = $"(('Group Type' == '{adminGroupType}'))",
+				Condition = $"'Group Type' == '{adminGroupType}'",
 			};
 
 			return request;
