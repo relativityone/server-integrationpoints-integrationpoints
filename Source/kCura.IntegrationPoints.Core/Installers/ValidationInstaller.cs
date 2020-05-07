@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IValidator>().ImplementedBy<NameValidator>().LifestyleTransient());
 			container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>().LifestyleTransient());
 			container.Register(Component.For<IValidator>().ImplementedBy<IntegrationPointTypeValidator>().LifestyleTransient());
-			container.Register(Component.For<IValidator>().ImplementedBy<NativeCopyLinksValidator>().LifestyleTransient());
 
 			container.Register(Component.For<IRelativityProviderValidatorsFactory>().ImplementedBy<RelativityProviderValidatorsFactory>().LifestyleTransient());
 			container.Register(Component.For<IValidator>().ImplementedBy<RelativityProviderConfigurationValidator>().LifestyleTransient());
@@ -38,6 +37,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IPermissionValidator>().ImplementedBy<ViewErrorsPermissionValidator>().LifestyleTransient());
 
 			container.Register(Component.For<IPermissionValidator>().ImplementedBy<RelativityProviderPermissionValidator>().LifestyleTransient());
+
+			container.Register(Component.For<IPermissionValidator>().ImplementedBy<NativeCopyLinksValidator>().LifestyleTransient());
 
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>().LifestyleTransient());
 			container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleTransient());

@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
-	public class NativeCopyLinksValidator : IValidator
+	public class NativeCopyLinksValidator : IPermissionValidator
 	{
 		private const string _COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION =
 			"You do not have permission to perform this operation because it uses referential links to files. " +
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		private readonly ISerializer _serializer;
 		private readonly IManagerFactory _managerFactory;
 
-		public string Key => Constants.IntegrationPointProfiles.Validation.NATIVE_COPY_LINKS_MODE;
+		public string Key => Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE;
 
 		public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory)
 		{
