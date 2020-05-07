@@ -48,8 +48,7 @@ namespace Relativity.Sync.Transfer
 
 			if (objectValues.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected elements of input to be deserializable to type {typeof(RelativityObjectValue)}.");
+				throw new SyncItemLevelErrorException($"Invalid Item {itemIdentifier}: Some values in MultiObject field {sanitizingSourceFieldName} are empty.");
 			}
 
 			char multiValueDelimiter = _configuration.MultiValueDelimiter;

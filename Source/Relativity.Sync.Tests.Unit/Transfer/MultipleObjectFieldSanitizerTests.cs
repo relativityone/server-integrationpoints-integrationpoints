@@ -78,15 +78,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
 		}
 
-		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases()
+		private static IEnumerable<TestCaseData> ThrowSyncItemLevelErrorExceptionWhenAnyElementsAreInvalidTestCases()
 		{
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Object\" }, { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Object\" }, { \"test\": 1 }, { \"ArtifactID\": 102, \"Name\": \"Cool Object 2\" } ]"));
 		}
 
-		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases))]
-		public async Task ItShouldThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalid(object initialValue)
+		[TestCaseSource(nameof(ThrowSyncItemLevelErrorExceptionWhenAnyElementsAreInvalidTestCases))]
+		public async Task SanitizeAsync_ShouldThrowSyncItemLevelErrorException_WhenAnyElementsAreInvalid(object initialValue)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfiguration();
@@ -97,9 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
 			// Assert
-			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
-				.Which.Message.Should()
-				.Contain(typeof(RelativityObjectValue).Name);
+			await action.Should().ThrowAsync<SyncItemLevelErrorException>().ConfigureAwait(false);
 		}
 
 		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsMultiValueDelimiterTestCases()

@@ -36,22 +36,19 @@ namespace Relativity.Sync.Executors
 		public async Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch, token);
-			ImportBulkArtifactJob importBulkArtifactJob = await CreateImportBulkArtifactJobAsync(configuration, sourceWorkspaceDataReader).ConfigureAwait(false);
-			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importBulkArtifactJob, sourceWorkspaceDataReader);
-
-			return new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
-		}
-		
-		private async Task<ImportBulkArtifactJob> CreateImportBulkArtifactJobAsync(ISynchronizationConfiguration configuration, ISourceWorkspaceDataReader dataReader, int startingIndex = 0)
-		{
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
 
-			importJob.SourceData.SourceData = dataReader; // This assignment invokes IDataReader.Read immediately!
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+
+			importJob.SourceData.SourceData = sourceWorkspaceDataReader; // This assignment invokes IDataReader.Read immediately!
+			
 			importJob.Settings.ApplicationName = _syncJobParameters.SyncApplicationName;
 			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
-			importJob.Settings.StartRecordNumber = startingIndex;
+			importJob.Settings.StartRecordNumber = 0;
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
 			importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
 			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
@@ -85,7 +82,7 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
 				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, configuration.IdentityFieldId).ConfigureAwait(false);
 
-			return importJob;
+			return job;
 		}
 
 		private async Task<IImportAPI> GetImportApiAsync()
