@@ -21,6 +21,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 	[NotWorkingOnTrident]
 	public class BillingFlagRelativityProviderProductionTests : RelativityProviderTemplate
 	{
+		private readonly ImportHelper _importHelper;
+		private readonly WorkspaceService _workspaceService;
+
 		private IIntegrationPointService _integrationPointService;
 		private int _targetWorkspaceArtifactID;
 
@@ -29,9 +32,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		private int _sourceProductionId;
 		private int _targetProductionId;
 		
+
 		public BillingFlagRelativityProviderProductionTests()
 			: base(sourceWorkspaceName: "IntegrationPoints Billing - Source Productions", targetWorkspaceName: null)
 		{
+			_importHelper = new ImportHelper();
+			_workspaceService = new WorkspaceService(_importHelper);
 		}
 
 		public override void SuiteSetup()
@@ -42,10 +48,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 
-			_sourceProductionId = kCura.IntegrationPoint.Tests.Core.Production.CreateAsync(SourceWorkspaceArtifactID, "Production").GetAwaiter().GetResult();
+			_sourceProductionId = _workspaceService.CreateProductionAsync(SourceWorkspaceArtifactID, "Production").GetAwaiter().GetResult();
 
-			var importHelper = new ImportHelper();
-			importHelper.ImportToProductionSet(
+			_importHelper.ImportToProductionSet(
 				SourceWorkspaceArtifactID,
 				_sourceProductionId,
 				DocumentTestDataBuilder.BuildTestData(testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure).Images);
@@ -56,7 +61,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			base.TestSetup();
 
 			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult();
-			_targetProductionId = kCura.IntegrationPoint.Tests.Core.Production.CreateAsync(_targetWorkspaceArtifactID, "Target Production").GetAwaiter().GetResult();
+			_targetProductionId = _workspaceService.CreateProductionAsync(_targetWorkspaceArtifactID, "Target Production").GetAwaiter().GetResult();
 		}
 
 		public override void TestTeardown()
