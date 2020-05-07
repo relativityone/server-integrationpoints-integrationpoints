@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Group;
+using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
@@ -29,52 +30,27 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryFake;
 
 		private Mock<IValidationConfiguration> _configurationFake;
-		private Mock<IObjectManager> _objectManagerFake;
-		private Mock<IPermissionManager> _permissionManagerFake;
+		private Mock<IGroupManager> _groupManagerFake;
 
-		private const int _SOURCE_WORKSPACE_ID = 10000;
 		private const int _USER_IS_ADMIN_ID = 1;
 		private const int _USER_IS_NON_ADMIN_ID = 2;
-		private const int _ADMIN_GROUP_ID = 100;
-
-		private readonly QueryResult _SOURCE_WORKSPACE_ADMIN_GROUPS = new QueryResult()
-		{
-			Objects = new List<RelativityObject>()
-			{
-				new RelativityObject() { ArtifactID = _ADMIN_GROUP_ID },
-			}
-		};
-
-		private readonly List<UserRef> _USERS_IN_ADMIN_GROUP = new List<UserRef>()
-		{
-			new UserRef(_USER_IS_ADMIN_ID)
-		};
 
 		[SetUp]
 		public void SetUp()
 		{
 			_instanceSettingsFake = new Mock<IInstanceSettings>();
-
 			_userContextFake = new Mock<IUserContextConfiguration>();
-
-			_objectManagerFake = new Mock<IObjectManager>();
-			_objectManagerFake.Setup(m => m.QueryAsync(_SOURCE_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, It.IsAny<int>())).ReturnsAsync(_SOURCE_WORKSPACE_ADMIN_GROUPS);
-
-			_permissionManagerFake = new Mock<IPermissionManager>();
-			_permissionManagerFake.Setup(m => m.GetWorkspaceGroupUsersAsync(_SOURCE_WORKSPACE_ID, It.Is<GroupRef>(g => g.ArtifactID == _ADMIN_GROUP_ID)))
-				.ReturnsAsync(_USERS_IN_ADMIN_GROUP);
+			_groupManagerFake = new Mock<IGroupManager>();
 
 			_serviceFactoryFake = new Mock<ISourceServiceFactoryForAdmin>();
-			_serviceFactoryFake.Setup(s => s.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerFake.Object);
-			_serviceFactoryFake.Setup(s => s.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(_permissionManagerFake.Object);
+			_serviceFactoryFake.Setup(s => s.CreateProxyAsync<IGroupManager>()).ReturnsAsync(_groupManagerFake.Object);
 
 			_configurationFake = new Mock<IValidationConfiguration>();
-			_configurationFake.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
 
 			_sut = new NativeCopyLinksValidator(
-				_instanceSettingsFake.Object, 
-				_userContextFake.Object, 
-				_serviceFactoryFake.Object, 
+				_instanceSettingsFake.Object,
+				_userContextFake.Object,
+				_serviceFactoryFake.Object,
 				new EmptyLogger());
 		}
 
@@ -82,9 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleValidConfiguration_WhenConditionsAreMet()
 		{
 			//arrange
-			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
-			_userContextFake.Setup(c => c.ExecutingUserId).Returns(_USER_IS_ADMIN_ID);
+			SetupValidator(_USER_IS_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
 
 			//act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -98,9 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleInvalidConfiguration_WhenUserIsNonAdmin()
 		{
 			//arrange
-			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(true);
-			_userContextFake.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
+			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
 
 			//act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -116,9 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)
 		{
 			//arrange
-			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.SetFileLinks);
-			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
-			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
+			SetupValidator(userId, ImportNativeFileCopyMode.SetFileLinks, false);
 
 			//act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -134,9 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportNativeFileCopyMode copyMode)
 		{
 			//arrange
-			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
-			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(false);
-			_userContextFake.Setup(c => c.ExecutingUserId).Returns(_USER_IS_NON_ADMIN_ID);
+			SetupValidator(_USER_IS_NON_ADMIN_ID, copyMode, true);
 
 			//act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -144,6 +112,21 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			//assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
+		}
+
+		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly)
+		{
+			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
+			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
+			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(isRestrictedCopyLinksOnly);
+
+			List<RelativityObjectSlim> groups = userId == _USER_IS_ADMIN_ID
+				? new List<RelativityObjectSlim> { new RelativityObjectSlim() }
+				: new List<RelativityObjectSlim>();
+			QueryResultSlim queryResultSlim = new QueryResultSlim { Objects = groups };
+
+			_groupManagerFake.Setup(m => m.QueryGroupsByUserAsync(It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), userId))
+				.Returns(Task.FromResult(queryResultSlim));
 		}
 	}
 }
