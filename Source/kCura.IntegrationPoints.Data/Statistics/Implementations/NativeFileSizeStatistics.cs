@@ -54,29 +54,26 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				var queryBuilder = new ProductionInformationQueryBuilder();
 				QueryRequest query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().AddField(ProductionConsts.DocumentFieldGuid).Build();
 				List<RelativityObjectSlim> queryResult = ExecuteQuery(query, workspaceArtifactId, out var fieldsMetadata);
-				IEnumerable<int> artifactIds = queryResult.Select(GetFunctionForRetrieveFieldValue(ProductionConsts.DocumentFieldGuid, fieldsMetadata)).Cast<RelativityObjectValue>().Select(x => x.ArtifactID);
+				IEnumerable<int> artifactIds = queryResult.Select(RetrieveArtifactIdFromFieldValue(ProductionConsts.DocumentFieldGuid, fieldsMetadata));
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e, _FOR_PRODUCTION_ERROR, productionSetId);
-
-				// just to check what is returned
-				throw;
+				return 0;
 			}
 		}
 
-		private Func<RelativityObjectSlim, object> GetFunctionForRetrieveFieldValue(Guid fieldGuid,
+		private Func<RelativityObjectSlim, int> RetrieveArtifactIdFromFieldValue(Guid fieldGuid,
 			List<FieldMetadata> fieldsMetadata)
 		{
 			int index = fieldsMetadata.FindIndex(field => field.Guids.Contains(fieldGuid));
 			return relativityObject =>
 			{
+				// field values are of type JObject from Newtonsoft, which has dynamic view
+				dynamic value = (dynamic)relativityObject.Values.ElementAtOrDefault(index);
 
-				var value = relativityObject.Values.ElementAtOrDefault(index);
-				_logger.LogError(value?.GetType().FullName ?? "null relativityObjectValue");
-
-				return value;
+				return (int)value.ArtifactID;
 			};
 		}
 

@@ -160,21 +160,5 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 			_exportResult.GetAllResultsAsync().Returns(relativityObjectSlims);
 		}
-
-		private static List<FieldValuePair> CreateFieldValues(Guid fieldGuid, int value)
-		{
-			return new List<FieldValuePair>
-			{
-				new FieldValuePair
-				{
-					Field = new Field
-					{
-						Guids = new List<Guid> {fieldGuid }
-					},
-					Value = new RelativityObjectValue {ArtifactID = value}
-				}
-			};
-		}
-
 	}
 }
