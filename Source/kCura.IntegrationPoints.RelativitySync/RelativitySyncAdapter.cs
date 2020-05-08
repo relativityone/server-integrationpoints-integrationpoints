@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
@@ -178,8 +179,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.IntegrationPointId, _job.JobHistoryId);
-			RelativityServices relativityServices = new RelativityServices(_apmMetrics, _ripContainer.Resolve<IHelper>().GetServicesManager(), ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
+			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.JobHistoryId);
+			RelativityServices relativityServices = new RelativityServices(
+				_apmMetrics,
+				new SyncServiceManagerForRip(_ripContainer.Resolve<IHelper>().GetServicesManager()),
+				ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 			ISyncLog syncLog = new SyncLog(_logger);
 			ISyncJob syncJob = jobFactory.Create(container, parameters, relativityServices, syncLog);
 			return syncJob;
