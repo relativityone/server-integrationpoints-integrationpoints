@@ -55,10 +55,11 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 
 		protected static string GetExpectedSourceDetails(RelativityProviderModel model)
 		{
-			string sourceType = SourceTypeEnumToString(model.GetValueOrDefault(x => x.Source));
-			string savedSearchName = model.GetValueOrDefault(x => x.SavedSearch);  //TODO: only supports saved searches
 
-			return $"{sourceType}: {savedSearchName}";
+			string sourceType = SourceTypeEnumToString(model.GetValueOrDefault(x => x.Source));
+			string sourceDetails = SourceDetailsToString(model);
+
+			return $"{sourceType}: {sourceDetails}";
 		}
 
 		protected static string SourceTypeEnumToString(RelativityProviderModel.SourceTypeEnum? value)
@@ -66,12 +67,25 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 			switch (value)
 			{
 				case RelativityProviderModel.SourceTypeEnum.Production:
-					return "Production";
+					return "Production Set";
 				case RelativityProviderModel.SourceTypeEnum.SavedSearch:
 					return "Saved Search";
 				default: return "";
 			}
 		}
+
+		protected static string SourceDetailsToString(RelativityProviderModel model)
+		{
+			switch (model.Source)
+			{
+				case RelativityProviderModel.SourceTypeEnum.Production:
+					return model.GetValueOrDefault(x => x.SourceProductionName);
+				case RelativityProviderModel.SourceTypeEnum.SavedSearch:
+					return model.GetValueOrDefault(x => x.SavedSearch);
+				default: return "";
+			}
+		}
+
 
 		protected static string OverwriteModeEnumToString(RelativityProviderModel.OverwriteModeEnum? value)
 		{
