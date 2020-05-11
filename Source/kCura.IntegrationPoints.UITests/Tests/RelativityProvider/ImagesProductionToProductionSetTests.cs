@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				CopyImages = true,
 			};
 			SourceContext.CreateAndRunProduction(model.SourceProductionName);
+			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 			return model;
 		}
 		//RelativityProvider_TC_RTR_PTP_01
@@ -62,11 +63,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
 			{
 				DestinationContext.ImportDocuments();
-				DestinationContext.CreateAndRunProduction(model.DestinationProductionName);
-			}
-			else
-			{
-				DestinationContext.CreateProductionSet(model.DestinationProductionName);
 			}
 
 			//Act
