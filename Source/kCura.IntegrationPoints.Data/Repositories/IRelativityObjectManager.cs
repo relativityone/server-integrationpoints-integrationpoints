@@ -51,6 +51,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		Task<ExportInitializationResults> InitializeExportAsync(QueryRequest queryRequest, int start, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 		Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(Guid runID, int resultsBlockSize, int exportIndexID, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
+		Task<IExportQueryResult> QueryWithExportAsync(QueryRequest queryRequest, int start,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+
 		int GetWorkspaceID_Deprecated();
 	}
 }

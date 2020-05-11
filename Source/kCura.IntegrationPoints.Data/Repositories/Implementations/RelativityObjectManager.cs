@@ -482,6 +482,34 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
+		public async Task<IExportQueryResult> QueryWithExportAsync(QueryRequest queryRequest, int start,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				ExportInitializationResults exportResult = await InitializeExportAsync(queryRequest, start, executionIdentity).ConfigureAwait(false);
+
+				void ExceptionHandler(Exception exception, int blockSize, int exportStartIndex)
+				{
+					HandleObjectManagerException(exception,
+							GetRetrieveNextResultsBlockFromExportErrorMessage(_workspaceArtifactId, exportResult.RunID.ToString(), blockSize, exportStartIndex, executionIdentity));
+				}
+
+				return  new ExportQueryResult(_objectManagerFacadeFactory, exportResult, _workspaceArtifactId, executionIdentity, ExceptionHandler);
+			}
+			catch (Exception ex)
+			{
+				string message = GetInitializeExportErrorMessage(
+					_workspaceArtifactId,
+					queryRequest.Condition,
+					start,
+					executionIdentity);
+
+				HandleObjectManagerException(ex, message);
+				throw;
+			}
+		}
+
 		//This method was introduced during migration to SecretStore,
 		//because it was really hard to decide which helper do
 		//we need to use to get proper workspaceID for given case.
