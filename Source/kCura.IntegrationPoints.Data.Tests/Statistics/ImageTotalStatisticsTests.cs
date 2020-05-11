@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				}
 			});
 
-			_exportResult.GetAllResultsAsync().Returns(new List<RelativityObjectSlim>
+			_exportResult.GetNextBlockAsync(0).Returns(new List<RelativityObjectSlim>
 			{
 				new RelativityObjectSlim
 				{

@@ -35,10 +35,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition()
+				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition()
 					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId, out var fieldsMetadata);
-				return SumDocumentImages(queryResult, fieldsMetadata);
+				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
+				return sum;
 			}
 			catch (Exception e)
 			{
@@ -52,10 +52,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
-				var query = queryBuilder.AddProductionSetCondition(productionSetId).AddField(ProductionConsts.ImageCountFieldGuid)
+				QueryRequest query = queryBuilder.AddProductionSetCondition(productionSetId).AddField(ProductionConsts.ImageCountFieldGuid)
 					.Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId, out var fieldsMetadata);
-				return SumProductionImages(queryResult, fieldsMetadata);
+				long sum = ExecuteQuery(query, workspaceArtifactId, SumProductionImages);
+				return sum;
 			}
 			catch (Exception e)
 			{
@@ -69,10 +69,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition()
+				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition()
 					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId, out var fieldsMetadata);
-				return SumDocumentImages(queryResult, fieldsMetadata);
+				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
+				return sum;
 			}
 			catch (Exception e)
 			{
@@ -81,13 +81,28 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId, out List<FieldMetadata> fieldsMetadata)
+		private long ExecuteQuery(QueryRequest query, int workspaceArtifactId, Func<List<RelativityObjectSlim>, List<FieldMetadata>, long> getValueFromChunkFunction)
 		{
 			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
 				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
 			{
-				fieldsMetadata = queryResult.ExportResult.FieldData;
-				return queryResult.GetAllResultsAsync().GetAwaiter().GetResult().ToList();
+				int startIndex = 0;
+				List<RelativityObjectSlim> result;
+
+				long sum = 0;
+				do
+				{
+					result = queryResult.GetNextBlockAsync(startIndex).GetAwaiter().GetResult().ToList();
+					if (result.Any())
+					{
+						sum += getValueFromChunkFunction(result, queryResult.ExportResult.FieldData);
+					}
+
+					startIndex += result.Count;
+				}
+				while (result.Any());
+
+				return sum;
 			}
 		}
 
@@ -101,10 +116,11 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			return SumFieldValues(documents, fieldsMetadata, ProductionConsts.ImageCountFieldGuid);
 		}
 
-		private long SumFieldValues(List<RelativityObjectSlim> documents, List<FieldMetadata> fieldsMetadata, Guid fieldGuid)
+		private long SumFieldValues(List<RelativityObjectSlim> documentsChunk, List<FieldMetadata> fieldsMetadata, Guid fieldGuid)
 		{
 			int index = fieldsMetadata.FindIndex(x => x.Guids.Contains(fieldGuid));
-			return documents.Select(GetFunctionForRetrieveFieldValue(index)).Select(ConvertObjectToLong).Sum();
+
+			return documentsChunk.Select(GetFunctionForRetrieveFieldValue(index)).Select(ConvertObjectToLong).Sum();
 		}
 
 		private Func<RelativityObjectSlim, object> GetFunctionForRetrieveFieldValue(int index)
