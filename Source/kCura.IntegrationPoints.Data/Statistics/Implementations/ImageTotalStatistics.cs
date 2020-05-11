@@ -4,7 +4,9 @@ using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using Relativity.API;
+using Relativity.Data.Cache.Field;
 using Relativity.Services.Objects.DataContracts;
+using FieldMetadata = Relativity.Services.Field.FieldMetadata;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
@@ -33,10 +35,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition()
+				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition()
 					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				return SumDocumentImages(queryResult);
+				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
+				return sum;
 			}
 			catch (Exception e)
 			{
@@ -50,10 +52,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
-				var query = queryBuilder.AddProductionSetCondition(productionSetId).AddField(ProductionConsts.ImageCountFieldGuid)
+				QueryRequest query = queryBuilder.AddProductionSetCondition(productionSetId).AddField(ProductionConsts.ImageCountFieldGuid)
 					.Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				return SumProductionImages(queryResult);
+				long sum = ExecuteQuery(query, workspaceArtifactId, SumProductionImages);
+				return sum;
 			}
 			catch (Exception e)
 			{
@@ -67,10 +69,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition()
+				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition()
 					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				return SumDocumentImages(queryResult);
+				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
+				return sum;
 			}
 			catch (Exception e)
 			{
@@ -79,29 +81,54 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private List<RelativityObject> ExecuteQuery(QueryRequest query, int workspaceArtifactId)
+		private long ExecuteQuery(QueryRequest query, int workspaceArtifactId, Func<List<RelativityObjectSlim>, List<FieldMetadata>, long> getValueFromChunkFunction)
 		{
-			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId).Query(query);
+			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
+				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
+			{
+				int startIndex = 0;
+				List<RelativityObjectSlim> result;
+
+				long sum = 0;
+				do
+				{
+					result = queryResult.GetNextBlockAsync(startIndex).GetAwaiter().GetResult().ToList();
+					if (result.Any())
+					{
+						sum += getValueFromChunkFunction(result, queryResult.ExportResult.FieldData);
+					}
+
+					startIndex += result.Count;
+				}
+				while (result.Any());
+
+				return sum;
+			}
 		}
 
-		private long SumDocumentImages(List<RelativityObject> documents)
+		private long SumDocumentImages(List<RelativityObjectSlim> documents, List<FieldMetadata> fieldsMetadata)
 		{
-			return SumFieldValues(documents, DocumentFieldsConstants.RelativityImageCount);
+			return SumFieldValues(documents, fieldsMetadata, DocumentFieldsConstants.RelativityImageCount);
 		}
 
-		private long SumProductionImages(List<RelativityObject> documents)
+		private long SumProductionImages(List<RelativityObjectSlim> documents, List<FieldMetadata> fieldsMetadata)
 		{
-			return SumFieldValues(documents, ProductionConsts.ImageCountFieldGuid);
+			return SumFieldValues(documents, fieldsMetadata, ProductionConsts.ImageCountFieldGuid);
 		}
 
-		private long SumFieldValues(List<RelativityObject> documents, Guid fieldGuid)
+		private long SumFieldValues(List<RelativityObjectSlim> documentsChunk, List<FieldMetadata> fieldsMetadata, Guid fieldGuid)
 		{
-			return documents.Select(GetFunctionForRetrieveFieldValue(fieldGuid)).Select(ConvertObjectToLong).Sum();
+			int index = fieldsMetadata.FindIndex(x => x.Guids.Contains(fieldGuid));
+
+			return documentsChunk.Select(GetFunctionForRetrieveFieldValue(index)).Select(ConvertObjectToLong).Sum();
 		}
 
-		private Func<RelativityObject, object> GetFunctionForRetrieveFieldValue(Guid fieldGuid)
+		private Func<RelativityObjectSlim, object> GetFunctionForRetrieveFieldValue(int index)
 		{
-			return relativityObject => relativityObject.FieldValues.FirstOrDefault(field => field.Field.Guids.Contains(fieldGuid))?.Value;
+			return relativityObject =>
+			{
+				return relativityObject.Values.ElementAtOrDefault(index);
+			};
 		}
 
 		private long ConvertObjectToLong(object obj)
