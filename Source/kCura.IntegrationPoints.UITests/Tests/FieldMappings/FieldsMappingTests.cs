@@ -283,7 +283,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		}
 
 		[IdentifiedTest("8ad36b14-67df-4b0c-8e09-5a13bdf835c0")]
-		//[RetryOnError]
+		[RetryOnError]
 		public async Task FieldMapping_ShouldDisplayWarning_WhenObjectIdentifierInDestinationTooShort()
 		{
 			try
