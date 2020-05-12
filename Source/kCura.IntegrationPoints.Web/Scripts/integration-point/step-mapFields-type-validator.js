@@ -11,7 +11,7 @@ var StepMapFieldsValidator = (function () {
 
 	var buildFieldsMapTableMessage = function (mappedFields) {
 		var mappedFieldsList = $('<div/>')
-			.html('<p>Mapping of the fields below may fail your job:</p>');
+			.html('<p id="mappedFieldsWarning">Mapping of the fields below may fail your job:</p>');
 
 		$('<ul/>').appendTo(mappedFieldsList);
 
@@ -42,7 +42,7 @@ var StepMapFieldsValidator = (function () {
 		var clearAndProceedLabel = '';
 
 		if (!isObjectIdentifierMapValid) {
-			$('<p/>').html(
+			$('<p id="objectIdentifierWarning"/>').html(
 				'The Source Maximum Length of the Object Identifier is greater than the one in Destination.<br/>' +
 				'If you want to adjust it click Cancel, if not click Proceed to continue with current mapping.'
 			).appendTo(content);

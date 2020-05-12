@@ -94,19 +94,17 @@ namespace kCura.IntegrationPoints.UITests.Pages
         [FindsBy(How = How.Id, Using = "proceedBtn")]
         protected IWebElement ProceedBtn { get; set; }
         
-        [FindsBy(How = How.Id, Using = "clearAndProceedBtn")]
-        protected IWebElement ClearAndProceedBtn { get; set; }
-        
         [FindsBy(How = How.Id, Using = "cancelBtn")]
         protected IWebElement CancelBtn { get; set; }
 
 		[FindsBy(How = How.Id, Using = "page-info-message")]
 		protected IWebElement PageInfoMessage { get; set; }
 
-        [FindsBy(How = How.XPath, Using = "//*[@id='msgDiv']/p")]
-        protected IWebElement PopupTextElement { get; set; }
+		public IWebElement ObjectIdentifierWarning => GetElementByIdOrNull("objectIdentifierWarning");
 
-        public string PopupText => PopupTextElement.Text;
+		public IWebElement MappedFieldsWarning => GetElementByIdOrNull("mappedFieldsWarning");
+
+		public IWebElement ClearAndProceedBtn => GetElementByIdOrNull("clearAndProceedBtn");
 
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
 
@@ -317,6 +315,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			SelectOption(selectElement, textToSearchFor);
 
 			addFieldElement.ClickEx();
+		}
+
+		public IWebElement GetElementByIdOrNull(string id)
+		{
+			return Driver.FindElements(By.Id(id)).FirstOrDefault();
 		}
 
 		private static void SelectOption(SelectElement selectElement, string textToSearchFor)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -136,26 +137,25 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 		{
 			//Arrange
 			const string invalidFieldMappingMessageText = "Mapping of the fields below may fail your job:";
-			List<Tuple<string, string>> FieldsMapping = new List<Tuple<string, string>>
+			List<Tuple<string, string>> fieldsMapping = new List<Tuple<string, string>>
 			{
 				new Tuple<string, string>("Control Number", "Control Number"),
 			};
-			List<Tuple<string, string>> InvalidFieldsMapping = new List<Tuple<string, string>>
+			List<Tuple<string, string>> invalidFieldsMapping = new List<Tuple<string, string>>
 			{
 				new Tuple<string, string>("Alert", "Classification Index")
 			};
-			FieldsMapping.AddRange(InvalidFieldsMapping);
+			fieldsMapping.AddRange(invalidFieldsMapping);
 
 			RelativityProviderModel model = CreateRelativityProviderModel();
 
 			PushToRelativityThirdPage fieldMappingPage =
 				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
-			PointsAction.MapWorkspaceFields(fieldMappingPage, FieldsMapping);
+			PointsAction.MapWorkspaceFields(fieldMappingPage, fieldsMapping);
 			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
-
-
+			
 			//Assert text on popup
-			fieldMappingPage.PopupText.Should().Be(invalidFieldMappingMessageText);
+			fieldMappingPage.MappedFieldsWarning.Text.Should().Be(invalidFieldMappingMessageText);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
@@ -167,8 +167,153 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
 
 			//Assert if fields were removed from mapping
-			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item1));
-			fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(InvalidFieldsMapping.Select(x => x.Item2));
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item1));
+			fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item2));
+		}
+
+		private Task ResizeControlNumberInDestinationAsync(int newLength)
+		{
+			const int controlNumberArtifactID = 1003667;
+			return DestinationFieldManager
+				.UpdateFixedLengthFieldAsync(DestinationContext.GetWorkspaceId(), controlNumberArtifactID, new FixedLengthFieldRequest()
+				{
+					ObjectType = new ObjectTypeIdentifier()
+					{
+						ArtifactTypeID = (int)ArtifactType.Document
+					},
+					Name = "Control Number",
+					Length = newLength
+				});
+		}
+
+		[IdentifiedTest("4a6bbec9-24f5-421d-8233-ffbf9824c371")]
+		[RetryOnError]
+		public void FieldMapping_ShouldClearMapFromInvalidFieldExceptObjectIdentifier_WhenClearButtonIsPressed()
+		{
+			//Arrange
+			const string invalidFieldMappingMessageText = "Mapping of the fields below may fail your job:";
+
+			List<Tuple<string, string>> fieldsMapping = new List<Tuple<string, string>>
+				{
+					new Tuple<string, string>("Control Number", "Control Number"),
+				};
+			List<Tuple<string, string>> invalidFieldsMapping = new List<Tuple<string, string>>
+				{
+					new Tuple<string, string>("Alert", "Classification Index")
+				};
+			fieldsMapping.AddRange(invalidFieldsMapping);
+
+			RelativityProviderModel model = CreateRelativityProviderModel();
+
+			PushToRelativityThirdPage fieldMappingPage = PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+			PointsAction.MapWorkspaceFields(fieldMappingPage, fieldsMapping);
+			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
+
+			//Assert text on popup
+			fieldMappingPage.ObjectIdentifierWarning.Should().BeNull();
+			fieldMappingPage.MappedFieldsWarning.Text.Should().Be(invalidFieldMappingMessageText);
+
+			//Act
+			IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
+
+			PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
+			List<string> fieldsFromSelectedSourceWorkspaceListBox = clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+			List<string> fieldsFromSelectedDestinationWorkspaceListBox = clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+
+			//Assert if fields were removed from mapping
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().OnlyContain(x => x == "Control Number [Object Identifier]");
+			fieldsFromSelectedSourceWorkspaceListBox.Should().OnlyContain(x => x == "Control Number [Object Identifier]");
+
+			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item1));
+			fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item2));
+		}
+
+		[IdentifiedTest("4a6bbec9-24f5-421d-8233-ffbf9824c371")]
+		[RetryOnError]
+		public async Task FieldMapping_ShouldClearMapFromInvalidFieldExceptObjectIdentifier_WhenObjectIdentifierInDestinationTooShort_AndClearButtonIsPressed()
+		{
+			try
+			{
+				//Arrange
+				await ResizeControlNumberInDestinationAsync(50).ConfigureAwait(false);
+
+				string objectIdentifierWarningText = "The Source Maximum Length of the Object Identifier is greater than the one in Destination.\r\n" +
+				                                     "If you want to adjust it click Cancel, if not click Proceed to continue with current mapping.";
+				const string invalidFieldMappingMessageText = "Mapping of the fields below may fail your job:";
+
+				List<Tuple<string, string>> fieldsMapping = new List<Tuple<string, string>>
+				{
+					new Tuple<string, string>("Control Number", "Control Number"),
+				};
+				List<Tuple<string, string>> invalidFieldsMapping = new List<Tuple<string, string>>
+				{
+					new Tuple<string, string>("Alert", "Classification Index")
+				};
+				fieldsMapping.AddRange(invalidFieldsMapping);
+
+				RelativityProviderModel model = CreateRelativityProviderModel();
+
+				PushToRelativityThirdPage fieldMappingPage = PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+				PointsAction.MapWorkspaceFields(fieldMappingPage, fieldsMapping);
+				fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
+
+				//Assert text on popup
+				fieldMappingPage.ObjectIdentifierWarning.Text.Should().Be(objectIdentifierWarningText);
+				fieldMappingPage.MappedFieldsWarning.Text.Should().Be(invalidFieldMappingMessageText);
+
+				//Act
+				IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
+
+				PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
+				List<string> fieldsFromSelectedSourceWorkspaceListBox = clearedMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+				List<string> fieldsFromSelectedDestinationWorkspaceListBox = clearedMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+
+				//Assert if fields were removed from mapping
+				fieldsFromSelectedDestinationWorkspaceListBox.Should().OnlyContain(x => x == "Control Number [Object Identifier]");
+				fieldsFromSelectedSourceWorkspaceListBox.Should().OnlyContain(x => x == "Control Number [Object Identifier]");
+
+				fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item1));
+				fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item2));
+
+			}
+			finally
+			{
+				await ResizeControlNumberInDestinationAsync(255).ConfigureAwait(false);
+			}
+		}
+
+		[IdentifiedTest("8ad36b14-67df-4b0c-8e09-5a13bdf835c0")]
+		//[RetryOnError]
+		public async Task FieldMapping_ShouldDisplayWarning_WhenObjectIdentifierInDestinationTooShort()
+		{
+			try
+			{
+				//Arrange
+				await ResizeControlNumberInDestinationAsync(50).ConfigureAwait(false);
+
+				string objectIdentifierWarningText = "The Source Maximum Length of the Object Identifier is greater than the one in Destination.\r\n" +
+				                                     "If you want to adjust it click Cancel, if not click Proceed to continue with current mapping.";
+
+				List<Tuple<string, string>> fieldsMapping = new List<Tuple<string, string>>
+				{
+					new Tuple<string, string>("Control Number", "Control Number"),
+				};
+
+				RelativityProviderModel model = CreateRelativityProviderModel();
+
+				PushToRelativityThirdPage fieldMappingPage = PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+				PointsAction.MapWorkspaceFields(fieldMappingPage, fieldsMapping);
+				fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
+
+				//Assert
+				fieldMappingPage.ObjectIdentifierWarning.Text.Should().Be(objectIdentifierWarningText);
+				fieldMappingPage.MappedFieldsWarning.Should().BeNull();
+				fieldMappingPage.ClearAndProceedBtn.Should().BeNull();
+			}
+			finally
+			{
+				await ResizeControlNumberInDestinationAsync(255).ConfigureAwait(false);
+			}
 		}
 
 		[Test]
@@ -249,72 +394,72 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				new Tuple<string, string>("Control Number", FieldObject.GetRandomName("Control Number")),
 				new Tuple<string, string>("File Name", FieldObject.GetRandomName("File Name"))
 			};
-            
-            foreach (Tuple<string, string> field in fieldsToBeRenamed)
+
+			foreach (Tuple<string, string> field in fieldsToBeRenamed)
 			{
 				await RenameFieldInSourceWorkspaceAsync(field.Item1, field.Item2).ConfigureAwait(false);
 				await RenameFieldInDestinationWorkspaceAsync(field.Item1, field.Item2).ConfigureAwait(false);
 			}
 
-            try
-            {
-	            await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
-	            await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
-	            SyncFieldMapResults mapAllFieldsUiTestEdition  = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
-            
-	            List<string> expectedInOrderSelectedSourceMappableFieldsList =
-		            mapAllFieldsUiTestEdition.FieldMapSorted.Select(x =>x.SourceFieldObject.DisplayName).ToList();
+			try
+			{
+				await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+				await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+				SyncFieldMapResults mapAllFieldsUiTestEdition = new SyncFieldMapResults(SourceContext.WorkspaceAutoMapAllEnabledFields, DestinationContext.WorkspaceAutoMapAllEnabledFields);
 
-	            FieldMapModel expectedIdentifierMatchedField =
-		            mapAllFieldsUiTestEdition.FieldMap.Single(x =>
-			            x.AutoMapMatchType == TestConstants.FieldMapMatchType.IsIdentifier);
-	            var expectedFieldPairIsIdentifier = new FieldDisplayNamePair(expectedIdentifierMatchedField);
+				List<string> expectedInOrderSelectedSourceMappableFieldsList =
+					mapAllFieldsUiTestEdition.FieldMapSorted.Select(x => x.SourceFieldObject.DisplayName).ToList();
 
-	            List<FieldMapModel> expectedArtifactIDMatchedFields =
-		            mapAllFieldsUiTestEdition.FieldMap.Where(x =>
-			            x.AutoMapMatchType == TestConstants.FieldMapMatchType.ArtifactID).ToList();
-	            List<FieldDisplayNamePair> expectedFieldPairsArtifactIDList = expectedArtifactIDMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
+				FieldMapModel expectedIdentifierMatchedField =
+					mapAllFieldsUiTestEdition.FieldMap.Single(x =>
+						x.AutoMapMatchType == TestConstants.FieldMapMatchType.IsIdentifier);
+				var expectedFieldPairIsIdentifier = new FieldDisplayNamePair(expectedIdentifierMatchedField);
 
-	            List<FieldMapModel> expectedNameMatchedFields =
-		            mapAllFieldsUiTestEdition.FieldMap.Where(x =>
-			            x.AutoMapMatchType == TestConstants.FieldMapMatchType.Name).ToList();
-	            List<FieldDisplayNamePair> expectedFieldPairsNameList = expectedNameMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
+				List<FieldMapModel> expectedArtifactIDMatchedFields =
+					mapAllFieldsUiTestEdition.FieldMap.Where(x =>
+						x.AutoMapMatchType == TestConstants.FieldMapMatchType.ArtifactID).ToList();
+				List<FieldDisplayNamePair> expectedFieldPairsArtifactIDList = expectedArtifactIDMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
 
-	            PushToRelativityThirdPage fieldMappingPage =
-		            PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
-	            //Act
-	            fieldMappingPage = fieldMappingPage.MapAllFields();
+				List<FieldMapModel> expectedNameMatchedFields =
+					mapAllFieldsUiTestEdition.FieldMap.Where(x =>
+						x.AutoMapMatchType == TestConstants.FieldMapMatchType.Name).ToList();
+				List<FieldDisplayNamePair> expectedFieldPairsNameList = expectedNameMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
 
-	            //Assert
-	            List<string> fieldsFromSelectedSourceWorkspaceListBox =
-		            fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
-	            List<string> fieldsFromSelectedDestinationWorkspaceListBox =
-		            fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
+				PushToRelativityThirdPage fieldMappingPage =
+					PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+				//Act
+				fieldMappingPage = fieldMappingPage.MapAllFields();
 
-	            var fieldPairsFromSelectedListBox = new List<FieldDisplayNamePair>();
-	            foreach (string sourceDisplayName in fieldsFromSelectedSourceWorkspaceListBox)
-	            {
-		            int index = fieldsFromSelectedSourceWorkspaceListBox.IndexOf(sourceDisplayName);
-		            string destinationDisplayName = fieldsFromSelectedDestinationWorkspaceListBox[index];
-		            fieldPairsFromSelectedListBox.Add(new FieldDisplayNamePair(sourceDisplayName, destinationDisplayName));
-	            }
+				//Assert
+				List<string> fieldsFromSelectedSourceWorkspaceListBox =
+					fieldMappingPage.GetFieldsFromSelectedSourceWorkspaceListBox();
+				List<string> fieldsFromSelectedDestinationWorkspaceListBox =
+					fieldMappingPage.GetFieldsFromSelectedDestinationWorkspaceListBox();
 
-	            CollectionAssert.AreEqual(fieldsFromSelectedSourceWorkspaceListBox, expectedInOrderSelectedSourceMappableFieldsList);
-			
-	            Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, expectedFieldPairIsIdentifier)));
+				var fieldPairsFromSelectedListBox = new List<FieldDisplayNamePair>();
+				foreach (string sourceDisplayName in fieldsFromSelectedSourceWorkspaceListBox)
+				{
+					int index = fieldsFromSelectedSourceWorkspaceListBox.IndexOf(sourceDisplayName);
+					string destinationDisplayName = fieldsFromSelectedDestinationWorkspaceListBox[index];
+					fieldPairsFromSelectedListBox.Add(new FieldDisplayNamePair(sourceDisplayName, destinationDisplayName));
+				}
 
-	            foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsArtifactIDList)
-	            {
-		            Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
-	            }
+				CollectionAssert.AreEqual(fieldsFromSelectedSourceWorkspaceListBox, expectedInOrderSelectedSourceMappableFieldsList);
 
-	            foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsNameList)
-	            {
-		            Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
-	            }
-            }
-            finally
-            {
+				Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, expectedFieldPairIsIdentifier)));
+
+				foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsArtifactIDList)
+				{
+					Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
+				}
+
+				foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsNameList)
+				{
+					Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
+				}
+			}
+			finally
+			{
 				// Rename fields back to original names
 				foreach (Tuple<string, string> field in fieldsToBeRenamed)
 				{
@@ -392,5 +537,5 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				first.DestinationDisplayName == second.DestinationDisplayName &&
 				first.SourceDisplayName == second.SourceDisplayName;
 		}
-    }
+	}
 }
