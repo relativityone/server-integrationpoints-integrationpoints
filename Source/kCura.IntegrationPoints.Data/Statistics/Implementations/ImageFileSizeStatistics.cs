@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
@@ -78,9 +79,13 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private List<RelativityObject> ExecuteQuery(QueryRequest query, int workspaceArtifactId)
+		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId)
 		{
-			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId).Query(query);
+			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
+				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
+			{
+				return queryResult.GetAllResultsAsync().GetAwaiter().GetResult().ToList();
+			}
 		}
 
 		private long GetTotalFileSize(IList<int> artifactIds, int workspaceArtifactId)

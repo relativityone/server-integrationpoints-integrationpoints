@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			{
 				var queryBuilder = new DocumentQueryBuilder();
 				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
-				List<RelativityObject> queryResult = ExecuteQuery(query, workspaceArtifactId);
+				List<RelativityObjectSlim> queryResult = ExecuteQuery(query, workspaceArtifactId);
 				IEnumerable<int> artifactIds = GetArtifactIds(queryResult);
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
@@ -52,10 +53,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
 				QueryRequest query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().AddField(ProductionConsts.DocumentFieldGuid).Build();
-				List<RelativityObject> queryResult = ExecuteQuery(query, workspaceArtifactId);
-				IEnumerable<int> artifactIds = queryResult.Select(
-						x => (RelativityObjectValue)GetFunctionForRetrieveFieldValue(ProductionConsts.DocumentFieldGuid)(x))
-					.Select(x => x.ArtifactID);
+				List<RelativityObjectSlim> queryResult = ExecuteQuery(query, workspaceArtifactId, out var fieldsMetadata);
+				IEnumerable<int> artifactIds = queryResult.Select(RetrieveArtifactIdFromFieldValue(ProductionConsts.DocumentFieldGuid, fieldsMetadata));
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
@@ -65,9 +64,17 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private Func<RelativityObject, object> GetFunctionForRetrieveFieldValue(Guid fieldGuid)
+		private Func<RelativityObjectSlim, int> RetrieveArtifactIdFromFieldValue(Guid fieldGuid,
+			List<FieldMetadata> fieldsMetadata)
 		{
-			return relativityObject => relativityObject.FieldValues.FirstOrDefault(field => field.Field.Guids.Contains(fieldGuid))?.Value;
+			int index = fieldsMetadata.FindIndex(field => field.Guids.Contains(fieldGuid));
+			return relativityObject =>
+			{
+				// field values are of type JObject from Newtonsoft, which has dynamic view
+				dynamic value = (dynamic)relativityObject.Values.ElementAtOrDefault(index);
+
+				return (int)value.ArtifactID;
+			};
 		}
 
 		public long ForSavedSearch(int workspaceArtifactId, int savedSearchId)
@@ -76,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			{
 				var queryBuilder = new DocumentQueryBuilder();
 				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
-				List<RelativityObject> queryResult = ExecuteQuery(query, workspaceArtifactId);
+				List<RelativityObjectSlim> queryResult = ExecuteQuery(query, workspaceArtifactId);
 				IEnumerable<int> artifactIds = GetArtifactIds(queryResult);
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
@@ -87,15 +94,23 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private List<RelativityObject> ExecuteQuery(QueryRequest query, int workspaceArtifactId)
+		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId, out List<FieldMetadata> fieldsMetadata)
 		{
-			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId).Query(query);
+			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
+				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
+			{
+				fieldsMetadata = queryResult.ExportResult.FieldData;
+				return queryResult.GetAllResultsAsync().GetAwaiter().GetResult().ToList();
+			}
 		}
 
-		private IEnumerable<int> GetArtifactIds(IEnumerable<RelativityObject> relativityObjects) =>
+		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId) =>
+			ExecuteQuery(query, workspaceArtifactId, out _);
+
+		private IEnumerable<int> GetArtifactIds(IEnumerable<RelativityObjectSlim> relativityObjects) =>
 			relativityObjects.Select(GetArtifactId);
 
-		private int GetArtifactId(RelativityObject relativityObject) => relativityObject.ArtifactID;
+		private int GetArtifactId(RelativityObjectSlim relativityObject) => relativityObject.ArtifactID;
 
 		private long GetTotalFileSize(IEnumerable<int> artifactIds, int workspaceArtifactId)
 		{

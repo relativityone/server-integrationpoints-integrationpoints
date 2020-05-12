@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			{
 				var queryBuilder = new DocumentQueryBuilder();
 				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasNativeCondition().NoFields().Build();
-				return ExecuteQuery(query, workspaceArtifactId);
+				return CountQueryResults(query, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
@@ -35,14 +35,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				throw;
 			}
 		}
-		
+
 		public long ForProduction(int workspaceArtifactId, int productionSetId)
 		{
 			try
 			{
 				var queryBuilder = new ProductionInformationQueryBuilder();
 				QueryRequest query = queryBuilder.AddProductionSetCondition(productionSetId).AddHasNativeCondition().NoFields().Build();
-				return ExecuteQuery(query, workspaceArtifactId);
+				return CountQueryResults(query, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			{
 				var queryBuilder = new DocumentQueryBuilder();
 				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasNativeCondition().NoFields().Build();
-				return ExecuteQuery(query, workspaceArtifactId);
+				return CountQueryResults(query, workspaceArtifactId);
 			}
 			catch (Exception e)
 			{
@@ -66,9 +66,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private long ExecuteQuery(QueryRequest query, int workspaceArtifactId)
+		private long CountQueryResults(QueryRequest query, int workspaceArtifactId)
 		{
-			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId).QueryTotalCount(query);
+			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
+				.QueryTotalCount(query);
 		}
 	}
 }
