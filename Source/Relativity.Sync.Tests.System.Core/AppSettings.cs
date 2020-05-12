@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 		private static Uri BuildServicesBasedUri(string path)
 		{
-			var uriBuilder = new UriBuilder("https", RelativityServicesAddress, -1, path);
+			var uriBuilder = new UriBuilder("https", RelativityServicesAddress ?? RelativityHostName, -1, path);
 			return uriBuilder.Uri;
 		}
 		private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
