@@ -9,14 +9,11 @@ var StepMapFieldsValidator = (function () {
 		return fieldMap.sourceField.displayName + ' [' + fieldMap.sourceField.type + ']' + ' : ' + fieldMap.destinationField.displayName + ' [' + fieldMap.destinationField.type + ']';
 	}
 
-	var buildFieldsMapTableMessage = function (mappedFields, isObjectIdentifierMapValid) {
-		var mappedFieldsList = $('<div/>');
+	var buildFieldsMapTableMessage = function (mappedFields) {
+		var mappedFieldsList = $('<div/>')
+			.html('<p>Mapping of the fields below may fail your job:</p>');
 
 		$('<ul/>').appendTo(mappedFieldsList);
-
-		if (!isObjectIdentifierMapValid) {
-			$('<li/>').text('The Source Maximum Length of the Object Identifier is greater than the one in Destination').appendTo(mappedFieldsList);
-		}
 
 		mappedFields.forEach(
 			function (fieldMap) {
@@ -27,12 +24,7 @@ var StepMapFieldsValidator = (function () {
 	}
 
 	var showProceedConfirmationPopup = function (invalidMappedFields, isObjectIdentifierMapValid, proceedCallback, clearAndProceedCallback) {
-		var content = $('<div/>')
-			.html('<p>Mapping of the fields below may fail your job:</p>');
-
-		buildFieldsMapTableMessage(invalidMappedFields, isObjectIdentifierMapValid)
-			.appendTo(content);
-
+				
 		var dialogOptions = {
 			title: "Field Map Validation",
 			messageAsHtml: true,
@@ -45,12 +37,21 @@ var StepMapFieldsValidator = (function () {
 			closeOnEscape: false
 		};
 
+		var content = $('<div/>');
+		var proceedLabel = '';
 		var clearAndProceedLabel = '';
 
+		if (!isObjectIdentifierMapValid) {
+			$('<p/>').html(
+				'The Source Maximum Length of the Object Identifier is greater than the one in Destination.<br/>' +
+				'If you want to adjust it click Cancel, if not click Proceed to continue with current mapping.'
+			).appendTo(content);
+		}
+		
 		if (invalidMappedFields.length > 0) {
-
+			buildFieldsMapTableMessage(invalidMappedFields).appendTo(content);
+			proceedLabel = '<b>Proceed</b>: continue with current mapping <br/> ';
 			clearAndProceedLabel = '<b>Clear and Proceed</b>: filter out the fields above (except Object Identifier) and continue <br/>';
-
 			dialogOptions = Object.assign(dialogOptions, {
 				noText: "Clear and Proceed",
 				noHandle: function (calls) {
@@ -63,7 +64,7 @@ var StepMapFieldsValidator = (function () {
 
 		$('<div/>').html(
 			'<p>' +
-			'<b>Proceed</b>: continue with current mapping <br/> ' +
+			proceedLabel +
 			clearAndProceedLabel +
 			'</p> ').appendTo(content);
 
