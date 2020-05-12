@@ -55,7 +55,6 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 
 		protected static string GetExpectedSourceDetails(RelativityProviderModel model)
 		{
-
 			string sourceType = SourceTypeEnumToString(model.GetValueOrDefault(x => x.Source));
 			string sourceDetails = SourceDetailsToString(model);
 
