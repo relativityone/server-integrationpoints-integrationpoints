@@ -28,23 +28,20 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			new Tuple<string, string>("Title", "Title")
 		};
 
-		private RelativityProviderModel CreateRelativityProviderModel(string name)
+		private RelativityProviderModel CreateRelativityProviderModel(
+			string name = null,
+			RelativityProviderModel.CopyNativeFilesEnum copyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No)
 		{
-			RelativityProviderModel model = new RelativityProviderModel(name)
+			RelativityProviderModel model = new RelativityProviderModel(name ?? TestContext.CurrentContext.Test.Name)
 			{
 				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
 				RelativityInstance = "This Instance",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
-				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No,
+				CopyNativeFiles = copyNativeFiles,
 				FieldMapping = DefaultFieldsMapping
 			};
 
 			return model;
-		}
-
-		private RelativityProviderModel CreateRelativityProviderModel()
-		{
-			return CreateRelativityProviderModel(TestContext.CurrentContext.Test.Name);
 		}
 
 		[SetUp]
@@ -102,6 +99,32 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			//Assert
 			PropertiesTable generalProperties = integrationPointDetailsPage.SelectGeneralPropertiesTable();
 			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName);
+			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
+			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
+		}
+
+		[IdentifiedTest("e4d45cc5-3b75-405d-b6e0-caf151136d02")]
+		[RetryOnError]
+		public void Profile_ShouldCreateNewProfileWithLinksAndIPFromThisProfile()
+		{
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel(copyNativeFiles: RelativityProviderModel.CopyNativeFilesEnum.LinksOnly);
+			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
+
+			const string profileModelName = "Created From Profile";
+			IntegrationPointGeneralModel profileModel = new IntegrationPointGeneralModel(profileModelName)
+			{
+				DestinationProvider = "Relativity",
+				Profile = model.Name
+			};
+
+			//Act
+			IntegrationPointDetailsPage integrationPointDetailsPage =
+				PointsAction.CreateNewRelativityProviderIntegrationPointFromProfile(profileModel);
+
+			//Assert
+			PropertiesTable generalProperties = integrationPointDetailsPage.SelectGeneralPropertiesTable();
+			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName, RelativityProviderModel.CopyNativeFilesEnum.LinksOnly);
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
 			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
 		}
