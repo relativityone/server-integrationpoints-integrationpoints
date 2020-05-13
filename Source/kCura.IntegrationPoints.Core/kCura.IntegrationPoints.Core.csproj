@@ -79,6 +79,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Helpers\ICryptographyHelper.cs" />
     <Compile Include="Helpers\Implementations\CryptographyHelper.cs" />
@@ -203,7 +204,6 @@
     <Compile Include="Services\IFieldService.cs" />
     <Compile Include="Services\IDeleteHistoryService.cs" />
     <Compile Include="Services\IJobTracker.cs" />
-    <Compile Include="Services\IntegrationPoint\IIntegrationPointForSourceService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointExtensions.cs" />
     <Compile Include="Services\IProcessingSourceLocationService.cs" />
     <Compile Include="Services\JobHistory\CachedIntegrationPointProviderTypeService.cs" />
