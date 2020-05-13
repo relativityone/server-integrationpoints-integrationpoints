@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 			TestContext sourceContext, TestContext destinationContext)
 		{
 			base.ValidateGeneralModel(propertiesTableDictionary, model, sourceContext, destinationContext);
-			Assert.AreEqual(ImagePrecedenceEnumToString(model.GetValueOrDefault(x => x.ImagePrecedence)), propertiesTableDictionary["Image Precedence:"]);
+			Assert.AreEqual(ImagePrecedenceToString(model), propertiesTableDictionary["Image Precedence:"]);
 			Assert.AreEqual(model.GetValueOrDefault(x => x.DestinationProductionName), propertiesTableDictionary["Destination Production Set:"]);
 		}
 	}

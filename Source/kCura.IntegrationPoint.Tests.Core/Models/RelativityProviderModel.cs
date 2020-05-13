@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 		[DefaultValue(OverwriteModeEnum.AppendOnly)]
 		public OverwriteModeEnum? Overwrite { get; set; }
 		[DefaultValue(false)]
-		public bool? CopyImages;
+		public bool CopyImages;
 		public ImagePrecedence? ImagePrecedence { get; set; }
 		public CopyNativeFilesEnum? CopyNativeFiles { get; set; }
 		[DefaultValue(MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)]

@@ -20,6 +20,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Relativity.Testing.Identification;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	using Data;
 	using Validation;
 
+	[TestType.UI]
 	public abstract class UiTest
 	{
 		private RemoteWebDriver _driver;
