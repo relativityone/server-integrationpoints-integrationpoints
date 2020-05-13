@@ -1,155 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Models;
+using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity;
-using kCura.Relativity.Client.DTOs;
 using Moq;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianToEntity
 {
 	[TestFixture, Category("Unit")]
-	public class RenameCustodianToEntityForSourceProviderCommandTests
+	public class RenameCustodianToEntityForSourceProviderCommandTests : UpdateConfigurationCommandTestsBase
 	{
-		private Mock<IIntegrationPointForSourceService> _integrationPointForSourceService;
-		private Mock<IIntegrationPointService> _integrationPointService;
-		private string _sourceProviderGuid;
+		private RenameCustodianToEntityForSourceProviderCommand _sut;
+
+		private const string _CONFIGURATION_WITHOUT_CUSTODIAN_PROPERTY = "{\"PropertyA\":\"value\"}";
+		private const string _CONFIGURATION_WITH_CUSTODIAN_PROPERTY = "{\"PropertyA\":\"value\",\"CustodianManagerFieldContainsLink\":\"v2\"}";
+		private const string _CONFIGURATION_WITH_ENTITY_PROPERTY = "{\"PropertyA\":\"value\",\"EntityManagerFieldContainsLink\":\"v2\"}";
+
+		protected override List<string> Names => new List<string> { "Destination Configuration" };
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			_integrationPointForSourceService = new Mock<IIntegrationPointForSourceService>();
-			_integrationPointService = new Mock<IIntegrationPointService>();
-			_sourceProviderGuid = Guid.NewGuid().ToString();
+			base.SetUp();
+
+			_sut = new RenameCustodianToEntityForSourceProviderCommand(It.IsAny<string>(), EHHelperFake.Object, RelativityObjectManagerMock.Object);
 		}
 
 		[Test]
-		public void ItShouldWork_ForEmptyIntegrationPointCollection()
+		public void Execute_ShouldNotProcess_WhenDestinationConfigurationIsNull()
 		{
-			// arrange
-			var sourceIntegrationPoints = new List<Data.IntegrationPoint>();
-			_integrationPointForSourceService.Setup(x => x.GetAllForSourceProvider(_sourceProviderGuid)).Returns(sourceIntegrationPoints);
-			RenameCustodianToEntityForSourceProviderCommand sut = CreateSut(_sourceProviderGuid);
+			// Arrange
+			RelativityObjectSlim objectSlim = PrepareObject(null);
+			
+			SetupRead(objectSlim);
 
-			// act
-			sut.Execute();
+			// Act
+			_sut.Execute();
+
+			// Assert
+			ShouldNotBeUpdated();
+		}
+
+
+		[Test]
+		public void Execute_ShouldNotProcess_WhenConfigurationHasNotBeenChanged()
+		{
+			// Arrange
+			RelativityObjectSlim objectSlim = PrepareObject(_CONFIGURATION_WITHOUT_CUSTODIAN_PROPERTY);
+
+			SetupRead(objectSlim);
+
+			// Act
+			_sut.Execute();
+
+			// Assert
+			ShouldNotBeUpdated();
 		}
 
 		[Test]
-		public void ItShouldUpdateIntegrationPoint_WhenRenamedFieldIsPresentInConfiguration()
+		public void Execute_ShouldProcess_WhenPropertyInConfigurationHasBeenRenamed()
 		{
-			// arrange
-			int artifactId = 53423;
-			var sourceIntegrationPoints = new List<Data.IntegrationPoint> { CreateIntegrationPointWithRenamedProperty(artifactId) };
-			_integrationPointForSourceService.Setup(x => x.GetAllForSourceProvider(_sourceProviderGuid)).Returns(sourceIntegrationPoints);
-			RenameCustodianToEntityForSourceProviderCommand sut = CreateSut(_sourceProviderGuid);
+			// Arrange
+			RelativityObjectSlim objectSlim = PrepareObject(_CONFIGURATION_WITH_CUSTODIAN_PROPERTY);
+			RelativityObjectSlim objectSlimExpected = PrepareObject(_CONFIGURATION_WITH_ENTITY_PROPERTY);
 
-			// act
-			sut.Execute();
+			SetupRead(objectSlim);
 
-			// assert
-			AssertIntegrationPointWasUpdated(artifactId);
+			// Act
+			_sut.Execute();
+
+			// Assert
+			ShouldBeUpdated(objectSlimExpected);
 		}
 
-		[Test]
-		public void ItShouldNotUpdateIntegrationPoint_WhenRenamedFieldIsNotPresentInConfiguration()
+		private RelativityObjectSlim PrepareObject(string destinationConfiguration)
 		{
-			// arrange
-			int artifactId = 3232;
-			var sourceIntegrationPoints = new List<Data.IntegrationPoint> { CreateIntegrationPointWithoutRenamedProperty(artifactId) };
-			_integrationPointForSourceService.Setup(x => x.GetAllForSourceProvider(_sourceProviderGuid)).Returns(sourceIntegrationPoints);
-			RenameCustodianToEntityForSourceProviderCommand sut = CreateSut(_sourceProviderGuid);
-
-			// act
-			sut.Execute();
-
-			// assert
-			AssertIntegrationPointWasNotUpdated(artifactId);
-		}
-
-		[Test]
-		public void ItShouldWork_ForHeterogeneousIntegretionPointCollection()
-		{
-			// arrange
-			int artifactIdForIntegrationPointWithoutCustodian = 4942;
-			int[] artifactsIdForIntegrationPointWithCustodian = { 5432, 98922 };
-
-			var sourceIntegrationPoints = new List<Data.IntegrationPoint>
+			return new RelativityObjectSlim()
 			{
-				CreateIntegrationPointWithRenamedProperty(artifactsIdForIntegrationPointWithCustodian[0]),
-				CreateIntegrationPointWithoutRenamedProperty(artifactIdForIntegrationPointWithoutCustodian),
-				CreateIntegrationPointWithRenamedProperty(artifactsIdForIntegrationPointWithCustodian[1])
+				ArtifactID = 1,
+				Values = new List<object>()
+				{
+					destinationConfiguration
+				}
 			};
-			_integrationPointForSourceService.Setup(x => x.GetAllForSourceProvider(_sourceProviderGuid)).Returns(sourceIntegrationPoints);
-			RenameCustodianToEntityForSourceProviderCommand sut = CreateSut(_sourceProviderGuid);
-
-			// act
-			sut.Execute();
-
-			// assert
-			AssertIntegrationPointWasUpdated(artifactsIdForIntegrationPointWithCustodian[0]);
-			AssertIntegrationPointWasUpdated(artifactsIdForIntegrationPointWithCustodian[1]);
-			AssertIntegrationPointWasNotUpdated(artifactIdForIntegrationPointWithoutCustodian);
-		}
-
-		private RenameCustodianToEntityForSourceProviderCommand CreateSut(string providerGuid)
-		{
-			return new RenameCustodianToEntityForSourceProviderCommand(providerGuid, _integrationPointForSourceService.Object, _integrationPointService.Object);
-		}
-
-		private Data.IntegrationPoint CreateIntegrationPointWithoutRenamedProperty(int artifactId)
-		{
-			Data.IntegrationPoint ip = CreateIntegrationPoint(artifactId);
-			ip.DestinationConfiguration = "{\"PropertyA\":\"value\"}";
-			return ip;
-		}
-
-		private Data.IntegrationPoint CreateIntegrationPointWithRenamedProperty(int artifactId)
-		{
-			Data.IntegrationPoint ip = CreateIntegrationPoint(artifactId);
-			ip.DestinationConfiguration = "{\"PropertyA\":\"value\",\"CustodianManagerFieldContainsLink\":\"v2\"}";
-			return ip;
-		}
-
-		private Data.IntegrationPoint CreateIntegrationPoint(int artifactId)
-		{
-			return new Data.IntegrationPoint
-			{
-				ArtifactId = artifactId,
-				DestinationConfiguration = string.Empty,
-				Name = string.Empty,
-				OverwriteFields = new Choice(1) { Name = string.Empty },
-				SourceConfiguration = string.Empty,
-				SourceProvider = 0,
-				Type = 0,
-				FieldMappings = string.Empty,
-				EnableScheduler = false,
-				DestinationProvider = 0,
-				LogErrors = false,
-				HasErrors = false,
-				EmailNotificationRecipients = string.Empty,
-				LastRuntimeUTC = DateTime.UtcNow,
-				NextScheduledRuntimeUTC = DateTime.UtcNow,
-				SecuredConfiguration = string.Empty,
-				ScheduleRule = string.Empty
-			};
-		}
-
-		private void AssertIntegrationPointWasUpdated(int artifactId)
-		{
-			_integrationPointService.Verify(
-				service => service.SaveIntegration(It.Is<IntegrationPointModel>(ip => ip.ArtifactID == artifactId)),
-				Times.Once,
-				"Integration Point configuration should be updated.");
-		}
-
-		private void AssertIntegrationPointWasNotUpdated(int artifactId)
-		{
-			_integrationPointService.Verify(
-				service => service.SaveIntegration(It.Is<IntegrationPointModel>(ip => ip.ArtifactID == artifactId)),
-				Times.Never,
-				"Integration Point configuration should not be updated.");
 		}
 	}
 }

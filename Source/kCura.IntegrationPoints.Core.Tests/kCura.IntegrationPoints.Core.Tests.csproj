@@ -58,6 +58,7 @@
     <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperRetryDecoratorTests.cs" />
     <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperInstrumentationDecoratorTests.cs" />
     <Compile Include="Authentication\WebApi\WebApiLoginServiceTests.cs" />
+    <Compile Include="Extensions\CollectionExtensionsTests.cs" />
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
