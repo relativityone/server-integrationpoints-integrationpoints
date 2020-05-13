@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
 		}
 
-		[IdentifiedTest("e4d45cc5-3b75-405d-b6e0-caf151136d02")]
+		[IdentifiedTest("b5da0a5e-8720-46c0-a857-656752aa3f34")]
 		[RetryOnError]
 		public void Profile_ShouldCreateNewProfileWithLinksAndIPFromThisProfile()
 		{
