@@ -24,7 +24,7 @@ using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
-	public class IntegrationPointService : IntegrationPointServiceBase, IIntegrationPointService, IIntegrationPointForSourceService
+	public class IntegrationPointService : IntegrationPointServiceBase, IIntegrationPointService
 	{
 		private const string _VALIDATION_FAILED = "Failed to submit integration job. Integration Point validation failed.";
 
@@ -238,13 +238,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			ValidateIntegrationPointBeforeRetryErrors(workspaceArtifactId, integrationPointArtifactId, userId, integrationPoint, sourceProvider, destinationProvider, jobHistory);
 			CreateJob(integrationPoint, sourceProvider, destinationProvider, jobDetails, workspaceArtifactId, userId);
-		}
-
-		public IList<Data.IntegrationPoint> GetAllForSourceProvider(string sourceProviderGuid)
-		{
-			ISourceProviderManager sourceProviderManager = ManagerFactory.CreateSourceProviderManager();
-			int relativityProviderArtifactId = sourceProviderManager.GetArtifactIdFromSourceProviderTypeGuidIdentifier(Context.WorkspaceID, sourceProviderGuid);
-			return _integrationPointRepository.GetIntegrationPointsWithAllFields(new List<int> { relativityProviderArtifactId });
 		}
 
 		public IEnumerable<FieldMap> GetFieldMap(int artifactID)

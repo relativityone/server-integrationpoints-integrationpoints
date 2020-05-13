@@ -74,6 +74,7 @@
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommandTests.cs" />
     <Compile Include="Commands\RemoveSecuredConfigurationFromIntegrationPointServiceTests.cs" />
     <Compile Include="Commands\UpdateFtpConfigurationCommandTests.cs" />
+    <Compile Include="Commands\UpdateIntegrationPointConfigurationCommandBaseTests.cs" />
     <Compile Include="Commands\UpdateLdapConfigurationCommandTests.cs" />
     <Compile Include="Commands\UpdateRelativityConfigurationCommandTests.cs" />
     <Compile Include="Context\EventHandlerWorkspaceContextServiceTests.cs" />
