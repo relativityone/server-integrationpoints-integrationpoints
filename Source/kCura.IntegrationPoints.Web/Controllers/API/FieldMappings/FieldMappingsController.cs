@@ -85,24 +85,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while validating mapped fields")]
 		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> mappedFields, int workspaceID, int destinationWorkspaceID)
 		{
-			FieldMappingValidationResult fieldMappingValidationResult;
-
 			try
 			{
-				fieldMappingValidationResult = (await _fieldsMappingValidator.ValidateAsync(mappedFields, workspaceID, destinationWorkspaceID).ConfigureAwait(false));
+				FieldMappingValidationResult fieldMappingValidationResult = (await _fieldsMappingValidator.ValidateAsync(mappedFields, workspaceID, destinationWorkspaceID).ConfigureAwait(false));
+
+				if (fieldMappingValidationResult.InvalidMappedFields.Any())
+				{
+					_metricsSender.CountOperation(_INVALID_MAPPING_METRIC_NAME);
+				}
+
+				return Request.CreateResponse(HttpStatusCode.OK, fieldMappingValidationResult, Configuration.Formatters.JsonFormatter);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Exception occurred when validating fields mapping.");
-				fieldMappingValidationResult = new FieldMappingValidationResult();
+				return Request.CreateResponse(HttpStatusCode.InternalServerError);
 			}
-
-			if (fieldMappingValidationResult.InvalidMappedFields.Any())
-			{
-				_metricsSender.CountOperation(_INVALID_MAPPING_METRIC_NAME);
-			}
-
-			return Request.CreateResponse(HttpStatusCode.OK, fieldMappingValidationResult, Configuration.Formatters.JsonFormatter);
 		}
 	}
 }

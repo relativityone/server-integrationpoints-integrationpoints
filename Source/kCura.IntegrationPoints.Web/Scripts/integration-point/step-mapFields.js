@@ -1312,16 +1312,11 @@ ko.validation.insertValidationMessage = function (element) {
 
 					this.returnModel.destinationWorkspaceChanged = JSON.parse(this.returnModel.destination).WorkspaceHasChanged;
 
-					var validateMappedFields = root.data.ajax({
-						type: 'POST',
-						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
-						data: JSON.stringify(map)
-					})
-						.fail(function (error) {
-							IP.message.error.raise("Could not validate mapped fields");
-						});
+					var errorCallback = function (error) {
+						IP.message.error.raise("Could not validate mapped fields");
+					};
 
-					const proceedConfirmation = function (validationResult) {
+					var successCallback = function (validationResult) {
 						if (validationResult.invalidMappedFields.length > 0 || !validationResult.isObjectIdentifierMapValid) {
 							var proceedCallback = function () {
 								this.returnModel.mappingHasWarnings = true;
@@ -1339,9 +1334,16 @@ ko.validation.insertValidationMessage = function (element) {
 						} else {
 							d.resolve(this.returnModel);
 						}
-					}
+					};
 
-					validateMappedFields.then(proceedConfirmation.bind(this));
+					var validateMappedFields = root.data.ajax({
+						type: 'POST',
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
+						data: JSON.stringify(map),
+						error: errorCallback.bind(this),
+						success: successCallback.bind(this)
+					});
+
 				} else {
 					d.resolve(this.returnModel);
 				}
