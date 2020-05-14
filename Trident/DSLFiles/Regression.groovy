@@ -30,7 +30,7 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/Inte
         def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
         traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait'()
         traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-            includes('develop release-*')
+            includes('*-test develop release-*')
             excludes('')
         }
         traits << 'jenkins.plugins.git.traits.CleanAfterCheckoutTrait' {
@@ -65,7 +65,7 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/Inte
         def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
         traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait'()
         traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-            includes('develop release-*')
+            includes('*-test develop release-*')
             excludes('')
         }
         traits << 'jenkins.plugins.git.traits.CleanAfterCheckoutTrait' {
