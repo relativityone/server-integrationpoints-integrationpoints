@@ -136,8 +136,6 @@ def isUITest(testType)
 
 def getUITestType()
 {
-	return TestType.uiSyncToggleOn
-	
 	if(isUIImportExport())
 	{
 		return TestType.uiImportExport
