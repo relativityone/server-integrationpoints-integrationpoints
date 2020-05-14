@@ -7,7 +7,7 @@ properties([
 			name: 'RegTestsConfig', 
             choices: ['Reg-B', 'Reg-Zero', 'Reg-A', 'Reg-Prod'],
 			description: '[Required] Set regression environment'
-		)
+		),
 		// string(
 		// 	name: 'AdminUsername', 
 		// 	defaultValue: '', 
@@ -28,12 +28,12 @@ properties([
 		// 	defaultValue: '', 
 		// 	description: 'Filter for tests. In general it narrows tests to run'
 		// ),
-		// choice(
-		// 	name: 'UITestsBrowser',
-		// 	choices: ['chromium-portable', 'chrome', 'chromium', 'firefox'],
-		// 	defaultValue: 'chromium-portable',
-		// 	description: 'Name of browser the UI tests should be run on.'
-		// ),
+		choice(
+			name: 'UITestsBrowser',
+			choices: ['chromium-portable', 'chrome', 'chromium', 'firefox'],
+			defaultValue: 'chromium-portable',
+			description: 'Name of browser the UI tests should be run on.'
+		),
 	])
 ])
 
