@@ -3,7 +3,7 @@
 properties([
 	buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '7', daysToKeepStr: '30', numToKeepStr: '30')),
 	parameters([
-		string(
+		choice(
 			name: 'RegTestsConfig', 
             choices: ['Reg-B', 'Reg-Zero', 'Reg-A', 'Reg-Prod'],
 			description: '[Required] Set regression environment'
@@ -38,7 +38,7 @@ properties([
 ])
 
 timestamps {
-	node("PolandBuild") {
+	node("jobWithSutNode") {
 		timeout(time: 6, unit: 'HOURS') {
 			try {
 				stage('Checkout') {
