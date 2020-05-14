@@ -30,7 +30,7 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/Integra
         def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
         traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait'()
         traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-            includes('Trident develop release-*')
+            includes('*-test develop release-*')
             excludes('')
         }
         traits << 'jenkins.plugins.git.traits.CleanAfterCheckoutTrait' {
