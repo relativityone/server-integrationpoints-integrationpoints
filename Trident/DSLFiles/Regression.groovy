@@ -1,7 +1,7 @@
 folder('IntegrationPoints-Jobs') {
 }
 
-folder('IntegrationPoints-Regression') {
+folder('IntegrationPoints-Jobs/IntegrationPoints-Regression') {
 }
 
 multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/IntegrationPoints-Reg-RIP') {
