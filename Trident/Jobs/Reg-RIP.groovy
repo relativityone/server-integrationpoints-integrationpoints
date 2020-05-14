@@ -30,7 +30,7 @@ properties([
 		choice(
 			name: 'UITestsBrowser',
 			choices: ['chromium-portable', 'chrome', 'chromium', 'firefox'],
-			defaultValue: 'chromium-portable'
+			defaultValue: 'chromium-portable',
 			description: 'Name of browser the UI tests should be run on.'
 		),
 	])
