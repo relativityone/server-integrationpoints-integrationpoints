@@ -89,10 +89,8 @@
     <Compile Include="StatisticsManager\TestCase\GetImagesTotalForProduction.cs" />
     <Compile Include="StatisticsManager\TestCase\GetImagesTotalForFolder.cs" />
     <Compile Include="StatisticsManager\TestCase\GetImagesTotalForSavedSearch.cs" />
-    <Compile Include="StatisticsManager\TestCase\GetNativesFileSizeForProduction.cs" />
     <Compile Include="StatisticsManager\TestCase\GetNativesFileSizeForFolder.cs" />
     <Compile Include="StatisticsManager\TestCase\GetNativesFileSizeForSavedSearch.cs" />
-    <Compile Include="StatisticsManager\TestCase\GetNativesTotalForProduction.cs" />
     <Compile Include="StatisticsManager\TestCase\GetNativesTotalForFolder.cs" />
     <Compile Include="StatisticsManager\TestCase\GetNativesTotalForSavedSearch.cs" />
     <Compile Include="StatisticsManager\TestCase\IStatisticsTestCase.cs" />
