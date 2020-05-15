@@ -8,9 +8,6 @@ properties {
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
     $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
-
-    # <-- Test section -->
-    $TestPrerequisites =  "cat != NotWorkingOnTrident"
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
@@ -120,10 +117,10 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
 }
 
-Task MyTest -Description "Run custom tests based on specified filter" {
+Task CustomTest -Description "Run custom tests based on specified filter" {
     $LogTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
     $LogPath = Join-Path $LogsDir "MyTest_$LogTime.xml"
-    Invoke-Tests -WhereClause $WhereClause -OutputFile $LogPath
+    Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath
 }
 
 function Invoke-Tests
@@ -146,8 +143,6 @@ function Invoke-Tests
 
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
-    
-    $WhereClause = "$WhereClause && $TestPrerequisites"
     
     if($WithCoverage)
     {

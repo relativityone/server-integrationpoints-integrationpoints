@@ -10,5 +10,5 @@ function Invoke-Task ($Task) {
 
 function Invoke-Test ($TestFilter) {
     $TaskRunner = Resolve-Path -Path build.ps1
-    &($TaskRunner) MyTest -Configuration Release -TestFilter $WhereClause
+    &($TaskRunner) CustomTest -Configuration Release -TestFilter $TestFilter
 }
