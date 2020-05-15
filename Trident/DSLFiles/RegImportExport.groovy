@@ -1,13 +1,13 @@
 folder('IntegrationPoints-Jobs') {
 }
 
-folder('IntegrationPoints-Jobs/IntegrationPoints-Nightly') {
+folder('IntegrationPoints-Jobs/IntegrationPoints-Regression') {
 }
 
-multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/IntegrationPoints-UI-Sync') {
+multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/IntegrationPoints-ImportExport') {
     factory {
         workflowBranchProjectFactory {
-            scriptPath('Trident/Jobs/UI-Sync.groovy')
+            scriptPath('Trident/Jobs/Reg-ImportExport.groovy')
         }
     }
     branchSources {
@@ -16,7 +16,7 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/Integra
                 git {
                     remote('ssh://git@git.kcura.com:7999/in/integrationpoints.git')
                     credentialsId('bitbucket-repo-key')
-                    id('IntegrationPoints-UI-Sync')
+                    id('IntegrationPoints-Reg-RIP')
                 }
             }
         }

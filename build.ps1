@@ -39,7 +39,11 @@ param(
 	
 	[Parameter(Mandatory=$False)]
 	[ValidateSet("Debug","Release")]
-	[string]$Configuration = "Debug"
+	[string]$Configuration = "Debug",
+	
+	# <-- Test section -->
+	[Parameter(Mandatory=$False)]
+	[String]$TestFilter
 	)
 	
 Set-StrictMode -Version 2.0
@@ -81,6 +85,8 @@ $Params = @{
 		BuildToolsDir = $ToolsDir
 		RAPVersion = $RAPVersion
 		PackageVersion = $PackageVersion
+		# <-- Test section -->
+		TestFilter = $TestFilter
 	}
 	properties = @{
 		build_config = $Configuration

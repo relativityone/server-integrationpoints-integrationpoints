@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-This script will be used by regression pipeline to compile and run Sync UI tests on regression environment
+This script will be used by regression pipeline to compile and run RIP UI tests on regression environment
 #>
 [CmdletBinding()]
 param(
@@ -14,6 +14,6 @@ Set-RegressionSettings $RegEnv
 
 Invoke-Task Compile
 
-Invoke-Test "cat == ExportToRelativity && cat != NotWorkingOnRegressionEnvironment"
+Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment"
 
 Remove-Module Build-Util

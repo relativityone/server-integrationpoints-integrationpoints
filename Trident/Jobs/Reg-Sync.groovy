@@ -1,5 +1,52 @@
+#!groovy
+
 @Library('ProjectMayhem@v1') _
 
-jobWithSut {
-    jobScript = "Trident/Scripts/Reg-RIP.ps1"
+properties([
+	buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '7', daysToKeepStr: '30', numToKeepStr: '30')),
+	parameters([
+		choice(
+			name: 'RegTestsConfig', 
+            choices: ['Reg-B', 'Reg-Zero', 'Reg-A', 'Reg-Prod'],
+			description: 'Set regression environment config'
+		)
+	])
+])
+
+timestamps {
+	node("jobWithSutNode") {
+		timeout(time: 6, unit: 'HOURS') {
+			try {
+				stage('Checkout') {
+					def scmVars = checkout([
+							$class: 'GitSCM',
+							branches: scm.branches,
+							extensions: scm.extensions + [[$class: 'CleanBeforeCheckout']],
+							userRemoteConfigs: scm.userRemoteConfigs
+					])
+					commitHash = scmVars.GIT_COMMIT
+				}
+
+				stage('Run Job') {
+					withCredentials([usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetSvcPassword', usernameVariable: 'nugetSvcUsername')]) {
+						powershell "./Trident/Scripts/Reg-Sync.ps1 -RegEnv $params.RegTestsConfig"
+					}
+				}
+
+				currentBuild.result = 'SUCCESS'
+			} catch (err) {
+				currentBuild.result = 'FAILURE'
+				error (err.toString())
+			} finally {
+				utils.publishLogs()
+				powershell '''
+					if(Test-Path Modules)
+					{
+						Write-Host "Deleting downloaded modules"
+						Remove-Item .\\Modules -Recurse -Force -ErrorAction SilentlyContinue
+					}
+				'''
+			}
+		}
+	}
 }

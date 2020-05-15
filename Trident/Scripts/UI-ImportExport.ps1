@@ -3,10 +3,7 @@
 This script will be used by nightly pipeline to compile and run UI Web Import/Export tests
 #>
 
-function Invoke-Task ($Task) {
-    $TaskRunner = Resolve-Path -Path build.ps1
-    &($TaskRunner) $Task -Configuration Release
-}
+Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
 
 Invoke-Task Compile
 
@@ -14,4 +11,8 @@ Invoke-Task Test
 
 Invoke-Task Package
 
-Invoke-Task UIWebImportExportTest
+Invoke-Task OneTimeTestsSetup
+
+Invoke-Test "cat == WebImportExport"
+
+Remove-Module Build-Util

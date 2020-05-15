@@ -8,6 +8,9 @@ properties {
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
     $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
+
+    # <-- Test section -->
+    $TestPrerequisites =  "cat != NotWorkingOnTrident"
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
@@ -45,13 +48,10 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests && cat != NotWorkingOnTrident)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
-    
-    $LogPath = Join-Path $LogsDir "IntegrationTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ /Tests\.Integration[\$\.]/ && cat != InQuarantine && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
-    
-    $LogPath = Join-Path $LogsDir "E2ETestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ E2ETests && cat != NotWorkingOnTrident)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "namespace =~ FunctionalTests 
+                            && namespace =~ /Tests\.Integration[\$\.]/ 
+                            && namespace =~ E2ETests" 
+                 -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -115,19 +115,15 @@ Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }
 
-Task OneTimeTestsSetup -Description "Should be run always before running tests that require a deployed environment." {
+Task OneTimeTestsSetup -Description "Should be run always before running tests that require setup in deployed environment." {
     $LogPath = Join-Path $LogsDir "OneTimeTestsSetupResults.xml"
-    Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
 }
 
-Task UIWebImportExportTest -Depends OneTimeTestsSetup -Description "Run UI tests for Web Import/Export" {
-    $LogPath = Join-Path $LogsDir "UIWebImportExportTestResults.xml"
-    Invoke-Tests -WhereClause "cat == WebImportExport && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
-}
-
-Task UIRelativitySyncTest -Depends OneTimeTestsSetup -Description "Run UI tests for RelativitySync toggle On/Off" {
-    $LogPath = Join-Path $LogsDir "UIRelativitySyncTestResults.xml"
-    Invoke-Tests -WhereClause "cat == ExportToRelativity && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+Task MyTest -Description "Run custom tests based on specified filter" {
+    $LogTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
+    $LogPath = Join-Path $LogsDir "MyTest_$LogTime.xml"
+    Invoke-Tests -WhereClause $WhereClause -OutputFile $LogPath
 }
 
 function Invoke-Tests
@@ -144,9 +140,15 @@ function Invoke-Tests
     )
 
     $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner\tools\nunit3-console.exe")
+
+    if(!$TestSettings) { $TestSettings = (Join-Path $PSScriptRoot FunctionalTestSettings) }
     $settings = if($TestSettings) { "@$TestSettings" }
+
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
+    
+    $WhereClause = "$WhereClause && $TestPrerequisites"
+    
     if($WithCoverage)
     {
         $OpenCover = Join-Path $BuildToolsDir "opencover\tools\OpenCover.Console.exe"

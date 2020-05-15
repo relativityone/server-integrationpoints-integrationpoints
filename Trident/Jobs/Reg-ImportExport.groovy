@@ -1,3 +1,5 @@
+#!groovy
+
 @Library('ProjectMayhem@v1') _
 
 properties([
@@ -6,34 +8,8 @@ properties([
 		choice(
 			name: 'RegTestsConfig', 
             choices: ['Reg-B', 'Reg-Zero', 'Reg-A', 'Reg-Prod'],
-			description: '[Required] Set regression environment'
-		),
-		// string(
-		// 	name: 'AdminUsername', 
-		// 	defaultValue: '', 
-		// 	description: '[Required] User used for test'
-		// ),
-		// password(
-		// 	name: 'AdminPassword', 
-		// 	defaultValue: '', 
-		// 	description: '[Required] Password for User'
-		// ),
-		// password(
-		// 	name: 'UseExistingTemplate', 
-		// 	defaultValue: '', 
-		// 	description: 'Set workspace name which would be used as Template Workspace for test cases'
-		// ),
-		// string(
-		// 	name: 'TestsFilter', 
-		// 	defaultValue: '', 
-		// 	description: 'Filter for tests. In general it narrows tests to run'
-		// ),
-		choice(
-			name: 'UITestsBrowser',
-			choices: ['chromium-portable', 'chrome', 'chromium', 'firefox'],
-			defaultValue: 'chromium-portable',
-			description: 'Name of browser the UI tests should be run on.'
-		),
+			description: 'Set regression environment config'
+		)
 	])
 ])
 
@@ -53,7 +29,7 @@ timestamps {
 
 				stage('Run Job') {
 					withCredentials([usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetSvcPassword', usernameVariable: 'nugetSvcUsername')]) {
-						powershell "./Trident/Scripts/Reg-RIP.ps1"
+						powershell "./Trident/Scripts/Reg-ImportExport.ps1 -RegEnv $params.RegTestsConfig"
 					}
 				}
 

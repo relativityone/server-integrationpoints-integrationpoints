@@ -3,10 +3,7 @@
 This script will be used by nightly pipeline to complie and run Integration tests
 #>
 
-function Invoke-Task ($Task) {
-    $TaskRunner = Resolve-Path -Path build.ps1
-    &($TaskRunner) $Task -Configuration Release
-}
+Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
 
 Invoke-Task Compile
 
@@ -14,4 +11,6 @@ Invoke-Task Test
 
 Invoke-Task Package
 
-Invoke-Task FunctionalTest
+Invoke-Test "namespace =~ FunctionalTests && namespace =~ /Tests\.Integration[\$\.]/ && namespace =~ E2ETests"
+
+Remove-Module Build-Util
