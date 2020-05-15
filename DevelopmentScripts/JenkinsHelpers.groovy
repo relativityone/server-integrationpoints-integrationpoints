@@ -991,8 +991,8 @@ private getTestsFilter(testType, params)
 		? unionTestFilters(paramsTestsFilter, withUiTestsNamespace())
 		: unionTestFilters(paramsTestsFilter, exceptUiTestsNamespace())
 	paramsTestsFilter = isNightly()
-		? unionTestFilters(paramsTestsFilter, exceptNightlyOnlyTestsFilter())
-		: paramsTestsFilter
+		? paramsTestsFilter
+		: unionTestFilters(paramsTestsFilter, exceptNightlyOnlyTestsFilter())
 	return paramsTestsFilter
 }
 
