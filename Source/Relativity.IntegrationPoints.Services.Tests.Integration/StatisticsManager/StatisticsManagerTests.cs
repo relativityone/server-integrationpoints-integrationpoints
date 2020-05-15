@@ -28,10 +28,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsMana
 			new TestCaseData (new GetImagesTotalForFolder()).WithId("8C52F86F-C3E4-4DC2-A821-6E2E0347F30F"),
 			new TestCaseData (new GetNativesTotalForFolder()).WithId("5E63B48C-FD48-40F1-AB79-B9422468EA3C"),
 			new TestCaseData (new GetDocumentsTotalForProduction()).WithId("B13EDEEE-0F5D-4CEB-977E-26F1B0CFDA51"),
-			new TestCaseData (new GetNativesTotalForProduction()).WithId("F0AA5856-9F3C-40AC-9C21-A529F7970173"),
 			new TestCaseData (new GetImagesFileSizeForProduction()).WithId("255249E8-879B-4C57-AC85-8A53ABFD50A8"),
 			new TestCaseData (new GetImagesTotalForProduction()).WithId("F4F3E233-CA27-4988-A206-51ED11158E86"),
-			new TestCaseData (new GetNativesFileSizeForProduction()).WithId("7B2A7F99-8B0C-41F2-A654-E01C01BA3BB7"),
 			new TestCaseData (new GetImagesFileSizeForFolder()).WithId("9E3424FC-6ADA-4E26-9246-87E3AAC5A5DC"),
 			new TestCaseData (new GetNativesFileSizeForFolder()).WithId("0FBBDC5E-3BD0-40EF-A60C-A2A5D254F058")
 		};
