@@ -1,15 +1,17 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.Relativity.Client;
-using NUnit.Framework;
-using Relativity.Productions.Services;
 using Relativity.Services.Search;
 using System.Collections.Generic;
-using System.IO;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.Productions.Services;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -18,12 +20,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private const string _SAVED_SEARCH_FOLDER = "Testing Folder";
 		private readonly ImportHelper _importHelper;
-
-		public const int PRODUCTION_MAX_RETRIES_COUNT = 100;
+		private readonly ITestHelper _testHelper;
 
 		public WorkspaceService(ImportHelper importHelper)
 		{
 			_importHelper = importHelper;
+			_testHelper = new TestHelper();
 		}
 
 		public int CreateWorkspace(string name)
@@ -39,10 +41,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 			bool importSucceeded = _importHelper.ImportData(workspaceID, documentsTestData);
 			if (!importSucceeded)
 			{
-				string errorsDetails = _importHelper.ErrorMessages.Any() 
+				string errorsDetails = _importHelper.ErrorMessages.Any()
 					? $" Error messages: {string.Join("; ", _importHelper.ErrorMessages)}"
 					: " No error messages.";
 				throw new TestException("Importing documents does not succeeded." + errorsDetails);
+			}
+		}
+
+		public void ImportDataToProduction(int workspaceID, int productionID, DataTable testData)
+		{
+			bool success = _importHelper.ImportToProductionSet(workspaceID, productionID, testData);
+			if (!success)
+			{
+				string errorsDetails = _importHelper.ErrorMessages.Any() ? $"Error messages: {string.Join("; ", _importHelper.ErrorMessages)}" : "No error messages.";
+				throw new TestException("Importing documents to production failed. " + errorsDetails);
 			}
 		}
 
@@ -53,12 +65,66 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _importHelper.ImportMetadataFromFileWithExtractedTextInFile(workspaceArtifactID, documentData);
 		}
 
-
 		public void DeleteWorkspace(int artifactID)
 		{
 			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
 			{
 				rsapiClient.Repositories.Workspace.DeleteSingle(artifactID);
+			}
+		}
+
+		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
+		{
+			using (var productionManager = _testHelper.CreateProxy<IProductionManager>())
+			{
+				var production = new Production
+				{
+					Name = productionName,
+					ShouldCopyInstanceOnWorkspaceCreate = false,
+					Details = new ProductionDetails
+					{
+						BrandingFontSize = 10,
+						ScaleBrandingFont = false
+					},
+					Numbering = new DocumentFieldNumbering
+					{
+						NumberingType = NumberingType.DocumentField,
+						NumberingField = new FieldRef
+						{
+							ArtifactID = 1003667,
+							ViewFieldID = 0,
+							Name = "Control Number"
+						},
+						AttachmentRelationalField = new FieldRef
+						{
+							ArtifactID = 0,
+							ViewFieldID = 0,
+							Name = ""
+						},
+						BatesPrefix = "PRE",
+						BatesSuffix = "SUF",
+						IncludePageNumbers = false,
+						DocumentNumberPageNumberSeparator = "",
+						NumberOfDigitsForPageNumbering = 0,
+						StartNumberingOnSecondPage = false
+					}
+				};
+
+				return await productionManager.CreateSingleAsync(workspaceID, production).ConfigureAwait(false);
+			}
+		}
+
+		public async Task DeleteProductionAsync(int workspaceID, int productionID)
+		{
+			using (var objectManager = _testHelper.CreateProxy<IObjectManager>())
+			{
+				await objectManager.DeleteAsync(workspaceID, new DeleteRequest()
+				{
+					Object = new RelativityObjectRef()
+					{
+						ArtifactID = productionID
+					}
+				}).ConfigureAwait(false);
 			}
 		}
 
@@ -95,108 +161,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return SavedSearch.Create(workspaceID, search);
 		}
 
-		public int CreateProductionSet(int workspaceArtifactID, string productionSetName)
-		{
-			return CreateProductionSetAsync(workspaceArtifactID, productionSetName).ConfigureAwait(false).GetAwaiter().GetResult();
-		}
-
-		private Task<int> CreateProductionSetAsync(int workspaceArtifactID, string productionSetName)
-		{
-			return Production.Create(workspaceArtifactID, productionSetName);
-		}
-
-		public ProductionCreateResultDto CreateAndRunProduction(
-			int workspaceArtifactID, 
-			int savedSearchID, 
-			string productionName, 
-			ProductionType productionType, 
-			int retriesCount = PRODUCTION_MAX_RETRIES_COUNT)
-		{
-			string placeHolderFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DefaultPlaceholder.tif");
-
-			return CreateAndRunProduction(
-				workspaceArtifactID, 
-				savedSearchID, 
-				productionName, 
-				placeHolderFilePath,
-				productionType, 
-				retriesCount);
-		}
-
-		public ProductionCreateResultDto CreateAndRunProduction(
-			int workspaceArtifactID, 
-			int savedSearchID,
-			string productionName, 
-			string placeHolderFilePath, 
-			ProductionType productionType,
-			int retriesCount = PRODUCTION_MAX_RETRIES_COUNT)
-		{
-			return CreateAndRunProductionAsync(
-				workspaceArtifactID,
-				savedSearchID,
-				productionName,
-				placeHolderFilePath,
-				productionType,
-				retriesCount
-			).GetAwaiter().GetResult();
-		}
-
-		public async Task<ProductionCreateResultDto> CreateAndRunProductionAsync(
-			int workspaceArtifactID, 
-			int savedSearchID,
-			string productionName, 
-			string placeHolderFilePath, 
-			ProductionType productionType,
-			int retriesCount)
-		{
-			byte[] placeHolderFileDataBytes = File.ReadAllBytes(placeHolderFilePath);
-			int productionSetArtifactID = CreateProductionSet(workspaceArtifactID, productionName);
-			int placeholderID = Placeholder.Create(workspaceArtifactID, placeHolderFileDataBytes);
-
-			int dataSourceArtifactID = await ProductionDataSource.CreateDataSourceWithPlaceholderAsync(
-				workspaceArtifactID,
-				productionSetArtifactID,
-				savedSearchID,
-				productionType,
-				UseImagePlaceholderOption.WhenNoImageExists,
-				placeholderID
-			).ConfigureAwait(false);
-
-			await StageProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID, retriesCount).ConfigureAwait(false);
-			await RunProductionAsync(workspaceArtifactID, productionName, productionSetArtifactID, retriesCount).ConfigureAwait(false);
-
-			return new ProductionCreateResultDto(productionSetArtifactID, dataSourceArtifactID);
-		}
-
 		public int GetView(int workspaceID, string viewName)
 		{
 			return View.QueryView(workspaceID, viewName);
-		}
-
-		private static async Task StageProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID, int retriesCount)
-		{
-			bool wasStagedSuccessfully = await Production.StageAndWaitForCompletionAsync(
-				workspaceArtifactID,
-				productionSetArtifactID,
-				retriesCount
-			).ConfigureAwait(false);
-			if (!wasStagedSuccessfully)
-			{
-				throw new TestException($"Error occured while staging production: {productionName}");
-			}
-		}
-
-		private static async Task RunProductionAsync(int workspaceArtifactID, string productionName, int productionSetArtifactID, int retriesCount)
-		{
-			bool wasRanSuccessfully = await Production.RunAndWaitForCompletionAsync(
-				workspaceArtifactID,
-				productionSetArtifactID,
-				retriesCount
-			).ConfigureAwait(false);
-			if (!wasRanSuccessfully)
-			{
-				throw new TestException($"Error occured while running production: {productionName}");
-			}
 		}
 	}
 }
