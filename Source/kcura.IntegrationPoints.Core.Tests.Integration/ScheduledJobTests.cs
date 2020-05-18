@@ -185,10 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		private int CreateTargetProductionSet()
 		{
 			var workspaceService = new WorkspaceService(new ImportHelper());
-			int targetProductionId = workspaceService
-				.CreateProductionSet(
-					TargetWorkspaceArtifactID,
-					"Target Production");
+			int targetProductionId = workspaceService.CreateProductionAsync(TargetWorkspaceArtifactID, "Target Production").GetAwaiter().GetResult();
 
 			return targetProductionId;
 		}
