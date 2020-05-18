@@ -73,7 +73,7 @@ nuget NUnit 3.11 redirects: force
 nuget NSubstitute 1.10.0.0
 nuget Relativity.Testing.Identification 1.20.0
 nuget Selenium.Support 3.141.0
-nuget Selenium.WebDriver.ChromeDriver 81.0.4044.6900
+nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
 nuget Serilog 1.5.14	
 nuget Serilog.Sinks.Seq 1.5.36

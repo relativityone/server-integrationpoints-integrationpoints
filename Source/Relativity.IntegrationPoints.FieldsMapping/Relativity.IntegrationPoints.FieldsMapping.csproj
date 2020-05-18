@@ -63,6 +63,7 @@
     <Compile Include="FieldClassifiers\OpenToAssociationsFieldsClassifier.cs" />
     <Compile Include="FieldClassifiers\RipFieldsClassifier.cs" />
     <Compile Include="FieldClassifiers\SystemFieldsClassifier.cs" />
+    <Compile Include="FieldMappingValidationResult.cs" />
     <Compile Include="FieldsClassifierRunnerFactory.cs" />
     <Compile Include="FieldsClassifierRunner.cs" />
     <Compile Include="FieldsMappingValidator.cs" />

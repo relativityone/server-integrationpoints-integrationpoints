@@ -15,40 +15,47 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			_fieldsClassifyRunnerFactory = fieldsClassifyRunnerFactory;
 		}
 
-		public async Task<IEnumerable<FieldMap>> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID)
+		public async Task<FieldMappingValidationResult> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID)
 		{
-			if (map == null || !map.Any())
+			FieldMappingValidationResult result = new FieldMappingValidationResult();
+
+			List<FieldMap> mappedFields = map?.ToList();
+
+			if (mappedFields == null || !mappedFields.Any())
 			{
-				return Enumerable.Empty<FieldMap>();
+				return result;
 			}
 
-			IList<string> sourceMappedArtifactsIDs = map.Select(x => x.SourceField?.FieldIdentifier).ToList();
+			IList<string> sourceMappedArtifactsIDs = mappedFields.Select(x => x.SourceField?.FieldIdentifier).ToList();
 			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
-			var sourceFields = (await sourceClassifierRunner.ClassifyFieldsAsync(sourceMappedArtifactsIDs, sourceWorkspaceID).ConfigureAwait(false))
+			Dictionary<string, FieldClassificationResult> sourceFields = (await sourceClassifierRunner.ClassifyFieldsAsync(sourceMappedArtifactsIDs, sourceWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 
-			IList<string> destinationMappedArtifactsIDs = map.Select(x => x.DestinationField?.FieldIdentifier).ToList();
+			IList<string> destinationMappedArtifactsIDs = mappedFields.Select(x => x.DestinationField?.FieldIdentifier).ToList();
 			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
-			var destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
+			Dictionary<string, FieldClassificationResult> destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 
-			var invalidMappedFields = new List<FieldMap>();
-
-			foreach (var fieldMap in map)
+			foreach (FieldMap fieldMap in mappedFields)
 			{
 				string sourceFieldFieldIdentifier = fieldMap.SourceField.FieldIdentifier ?? string.Empty;
 				string destinationFieldFieldIdentifier = fieldMap.DestinationField.FieldIdentifier ?? string.Empty;
 
-				var sourceField = sourceFields.ContainsKey(sourceFieldFieldIdentifier) ? sourceFields[sourceFieldFieldIdentifier] : null;
-				var destinationField = destinationFields.ContainsKey(destinationFieldFieldIdentifier) ? destinationFields[destinationFieldFieldIdentifier] : null;
+				FieldClassificationResult sourceField = sourceFields.ContainsKey(sourceFieldFieldIdentifier) ? sourceFields[sourceFieldFieldIdentifier] : null;
+				FieldClassificationResult destinationField = destinationFields.ContainsKey(destinationFieldFieldIdentifier) ? destinationFields[destinationFieldFieldIdentifier] : null;
+
+				if (fieldMap.FieldMapType == FieldMapTypeEnum.Identifier)
+				{
+					result.IsObjectIdentifierMapValid = sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo);
+				}
 
 				if (!IsFieldMapValid(sourceField, destinationField, fieldMap.FieldMapType))
 				{
-					invalidMappedFields.Add(fieldMap);
+					result.InvalidMappedFields.Add(fieldMap);
 				}
 			}
 
-			return invalidMappedFields;
+			return result;
 		}
 
 		private bool IsFieldMapValid(FieldClassificationResult sourceField, FieldClassificationResult destinationField, FieldMapTypeEnum mapType)

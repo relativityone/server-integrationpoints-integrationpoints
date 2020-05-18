@@ -6,6 +6,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public interface IFieldsMappingValidator
 	{
-		Task<IEnumerable<FieldMap>> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID);
+		Task<FieldMappingValidationResult> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID);
 	}
 }
