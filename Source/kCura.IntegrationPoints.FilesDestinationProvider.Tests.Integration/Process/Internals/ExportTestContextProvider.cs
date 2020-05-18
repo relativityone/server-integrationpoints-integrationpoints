@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -7,7 +8,6 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.Utility;
 using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.Contracts.Models;
-using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals
 {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_folderIDRetriever = folderIdRetriever;
 		}
 
-		public void InitializeContext()
+		public async Task InitializeContextAsync()
 		{
 			CreateTestWorkspace();
 			CreateAndImportTestData();
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			AddWorkspaceFieldsToContext();
 			CreateSavedSearch();
 			AddViewIdToContext();
-			CreateAndRunProduction();
+			await CreateAndImportIntoProductionAsync().ConfigureAwait(false);
 
 			Directory.Instance.CreateDirectoryIfNotExist(_testConfiguration.DestinationPath);
 		}
@@ -97,15 +97,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_testContext.ViewID = _workspaceService.GetView(_testContext.WorkspaceID, _testConfiguration.ViewName);
 		}
 
-		private void CreateAndRunProduction()
+		private async Task CreateAndImportIntoProductionAsync()
 		{
-			ProductionCreateResultDto productionCreateResult = _workspaceService.CreateAndRunProduction(
-				_testContext.WorkspaceID,
-				_testContext.ExportedObjArtifactID,
-				_testConfiguration.ProductionArtifactName,
-				ProductionType.ImagesAndNatives);
+			_testContext.ProductionArtifactID = await _workspaceService.CreateProductionAsync(_testContext.WorkspaceID, _testConfiguration.ProductionArtifactName).ConfigureAwait(false);
 
-			_testContext.ProductionArtifactID = productionCreateResult.ProductionArtifactID;
+			DocumentsTestData productionData = DocumentTestDataBuilder.BuildTestData();
+			_workspaceService.ImportDataToProduction(_testContext.WorkspaceID, _testContext.ProductionArtifactID, productionData.Images);
 		}
 	}
 }

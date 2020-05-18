@@ -19,22 +19,26 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
 	[NotWorkingOnTrident]
+	[NightlyOnly]
 	public class BillingFlagRelativityProviderProductionTests : RelativityProviderTemplate
 	{
+		private readonly ImportHelper _importHelper;
+		private readonly WorkspaceService _workspaceService;
+
 		private IIntegrationPointService _integrationPointService;
 		private int _targetWorkspaceArtifactID;
 
 		private const int _ADMIN_USER_ID = 9;
 		private const string _TARGET_WORKSPACE_NAME = "IntegrationPoints Billing - Destination";
-		private int _savedSearchId;
 		private int _sourceProductionId;
 		private int _targetProductionId;
-
+		
 
 		public BillingFlagRelativityProviderProductionTests()
-			: base(sourceWorkspaceName: "IntegrationPoints Billing - Source Productions",
-				   targetWorkspaceName: null)
+			: base(sourceWorkspaceName: "IntegrationPoints Billing - Source Productions", targetWorkspaceName: null)
 		{
+			_importHelper = new ImportHelper();
+			_workspaceService = new WorkspaceService(_importHelper);
 		}
 
 		public override void SuiteSetup()
@@ -45,19 +49,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 
-			var importHelper = new ImportHelper();
-			importHelper.ImportData(
+			_sourceProductionId = _workspaceService.CreateProductionAsync(SourceWorkspaceArtifactID, "Production").GetAwaiter().GetResult();
+
+			_importHelper.ImportToProductionSet(
 				SourceWorkspaceArtifactID,
-				DocumentTestDataBuilder.BuildTestData(testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure));
-			var workspaceService = new WorkspaceService(importHelper);
-			_savedSearchId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, "All documents");
-			_sourceProductionId = workspaceService
-				.CreateAndRunProduction(
-					SourceWorkspaceArtifactID,
-					_savedSearchId,
-					"Production",
-					Productions.Services.ProductionType.ImagesAndNatives)
-				.ProductionArtifactID;
+				_sourceProductionId,
+				DocumentTestDataBuilder.BuildTestData(testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure).Images);
 		}
 
 		public override void TestSetup()
@@ -65,11 +62,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			base.TestSetup();
 
 			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult();
-			var workspaceService = new WorkspaceService(new ImportHelper());
-			_targetProductionId = workspaceService
-				.CreateProductionSet(
-					_targetWorkspaceArtifactID,
-					"Target Production");
+			_targetProductionId = _workspaceService.CreateProductionAsync(_targetWorkspaceArtifactID, "Target Production").GetAwaiter().GetResult();
 		}
 
 		public override void TestTeardown()
@@ -164,8 +157,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 
 			return Serializer.Serialize(destinationConfiguration);
 		}
-
-
 
 		private string GetSourceConfiguration(SourceConfiguration.ExportType exportType)
 		{

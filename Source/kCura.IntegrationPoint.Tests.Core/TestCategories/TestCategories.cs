@@ -7,5 +7,6 @@
 		public const string STRESS_TEST = "StressTest";
 		public const string CONNECTIVITY_TO_TEST_RUNNER_REQUIRED_TEST = "ConnectivityToTestRunnerRequiredTest";
 		public const string NOT_WORKING_ON_TRIDENT = "NotWorkingOnTrident";
+		public const string NIGHTLY_ONLY = "NightlyOnly";
 	}
 }
