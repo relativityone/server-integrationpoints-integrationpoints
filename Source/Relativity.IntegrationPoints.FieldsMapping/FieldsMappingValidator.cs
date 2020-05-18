@@ -46,7 +46,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 				if (fieldMap.FieldMapType == FieldMapTypeEnum.Identifier)
 				{
-					result.IsObjectIdentifierMapValid = sourceField.FieldInfo.Length <= destinationField.FieldInfo.Length;
+					result.IsObjectIdentifierMapValid = sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo);
 				}
 
 				if (!IsFieldMapValid(sourceField, destinationField, fieldMap.FieldMapType))

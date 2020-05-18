@@ -171,21 +171,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item2));
 		}
 
-		private Task ResizeControlNumberInDestinationAsync(int newLength)
-		{
-			const int controlNumberArtifactID = 1003667;
-			return DestinationFieldManager
-				.UpdateFixedLengthFieldAsync(DestinationContext.GetWorkspaceId(), controlNumberArtifactID, new FixedLengthFieldRequest()
-				{
-					ObjectType = new ObjectTypeIdentifier()
-					{
-						ArtifactTypeID = (int)ArtifactType.Document
-					},
-					Name = "Control Number",
-					Length = newLength
-				});
-		}
-
 		[IdentifiedTest("4a6bbec9-24f5-421d-8233-ffbf9824c371")]
 		[RetryOnError]
 		public void FieldMapping_ShouldClearMapFromInvalidFieldExceptObjectIdentifier_WhenClearButtonIsPressed()
@@ -522,6 +507,21 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSourceMappedFields);
 			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappedFields);
+		}
+
+		private Task ResizeControlNumberInDestinationAsync(int newLength)
+		{
+			const int controlNumberArtifactID = 1003667;
+			return DestinationFieldManager
+				.UpdateFixedLengthFieldAsync(DestinationContext.GetWorkspaceId(), controlNumberArtifactID, new FixedLengthFieldRequest()
+				{
+					ObjectType = new ObjectTypeIdentifier()
+					{
+						ArtifactTypeID = (int)ArtifactType.Document
+					},
+					Name = "Control Number",
+					Length = newLength
+				});
 		}
 
 		private List<string> CreateFieldMapListBoxFormatFromObjectManagerFetchedList(List<FieldObject> mappableFieldsListFromObjectManager)
