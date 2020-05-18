@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 				CopyImages = true,
 			};
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
+			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
 			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 			return model;
 		}

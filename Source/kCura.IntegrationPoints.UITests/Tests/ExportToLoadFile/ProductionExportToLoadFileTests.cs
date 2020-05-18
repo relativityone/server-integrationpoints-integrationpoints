@@ -20,14 +20,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 	public class ProductionExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
-		private readonly string PRODUCTION_NAME_BIG = "Big Production under tests";
-		private readonly string PRODUCTION_NAME_SMALL = "Small Production under tests";
+		private readonly string PRODUCTION_NAME = "Production under tests";
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			SourceContext.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_SMALL);
-			SourceContext.CreateAndRunProduction(SAVED_SEARCH_NAME, PRODUCTION_NAME_BIG);
+			SourceContext.CreateProductionAndImportData(PRODUCTION_NAME);
 		}
 
 		[SetUp]
@@ -50,7 +48,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
-			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME_SMALL;
+			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME;
 			model.SourceInformationModel.StartAtRecord = 1;
 			model.SourceInformationModel.SelectAllFields = true;
 
@@ -113,7 +111,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
-			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME_BIG;
+			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME;
 			model.SourceInformationModel.StartAtRecord = 10;
 			model.SourceInformationModel.SelectAllFields = false;
 			// Production::Begin Bates, Production::End Bates are selected by default
@@ -160,7 +158,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
-			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME_SMALL;
+			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME;
 			model.SourceInformationModel.StartAtRecord = 1;
 			model.SourceInformationModel.SelectAllFields = true;
 
@@ -206,7 +204,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
-			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME_BIG;
+			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME;
 			model.SourceInformationModel.StartAtRecord = 1;
 			model.SourceInformationModel.SelectAllFields = false;
 			model.SourceInformationModel.SelectedFields = new List<string> {"Control Number"};
@@ -264,7 +262,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
-			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME_SMALL;
+			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME;
 			model.SourceInformationModel.StartAtRecord = 1;
 			model.SourceInformationModel.SelectAllFields = true;
 
