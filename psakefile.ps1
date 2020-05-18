@@ -47,7 +47,8 @@ Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that requ
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
     Invoke-Tests -WhereClause "namespace =~ FunctionalTests 
                             && namespace =~ /Tests\.Integration[\$\.]/ 
-                            && namespace =~ E2ETests" 
+                            && namespace =~ E2ETests
+                            && cat != NightlyOnly && cat != NotWorkingOnTrident" 
                  -OutputFile $LogPath
 }
 

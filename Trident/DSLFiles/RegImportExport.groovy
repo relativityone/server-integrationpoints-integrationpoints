@@ -16,7 +16,7 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/Inte
                 git {
                     remote('ssh://git@git.kcura.com:7999/in/integrationpoints.git')
                     credentialsId('bitbucket-repo-key')
-                    id('IntegrationPoints-Reg-RIP')
+                    id('IntegrationPoints-Reg-ImportExport')
                 }
             }
         }
