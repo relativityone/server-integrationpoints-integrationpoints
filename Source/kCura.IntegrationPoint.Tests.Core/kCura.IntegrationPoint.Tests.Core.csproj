@@ -140,13 +140,13 @@
     <Compile Include="Models\Import\CopyNativeFiles.cs" />
     <Compile Include="Models\Import\ImportEntitySettingsModel.cs" />
     <Compile Include="Models\Import\ImportDocumentSettingsModel.cs" />
-    <Compile Include="Models\ProductionCreateResultDto.cs" />
     <Compile Include="Models\Shared\ImportSettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\MultiSelectFieldOverlayBehavior.cs" />
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
+    <Compile Include="TestCategories\Attributes\NightlyOnlyAttribute.cs" />
     <Compile Include="TestCategories\Attributes\NotWorkingOnTridentAttribute.cs" />
     <Compile Include="TestRdoGenerator.cs" />
     <Compile Include="TestCategories\Attributes\ConnectivityToTestRunnerRequiredTestAttribute.cs" />
@@ -164,8 +164,6 @@
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="PermissionValidatorTestsBase.cs" />
     <Compile Include="Placeholder.cs" />
-    <Compile Include="Production.cs" />
-    <Compile Include="ProductionDataSource.cs" />
     <Compile Include="RelativityApplicationManager.cs" />
     <Compile Include="ResourcePoolHelper.cs" />
     <Compile Include="ResourceServerHelper.cs" />
@@ -7600,24 +7598,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\A\AZIPPER_0007746.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\A\b\c\AZIPPER_0007299.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\A\b\c\AZIPPER_0007300.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\A\b\c\AZIPPER_0007491.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\A\b\c\AZIPPER_0007494.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\A\b\c\AZIPPER_0007495.htm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\A\b\c\AZIPPER_0007746.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\JWOLFE\JWOLFE_0000989.htm">

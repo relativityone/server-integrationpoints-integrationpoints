@@ -135,10 +135,12 @@
     <Compile Include="Repositories\DTO\MultiObjectReferenceDto.cs" />
     <Compile Include="Models\SecretPath.cs" />
     <Compile Include="Repositories\DTO\SingleChoiceReferenceDto.cs" />
+    <Compile Include="Repositories\Implementations\ExportQueryResult.cs" />
     <Compile Include="Repositories\IApplicationRepository.cs" />
     <Compile Include="Repositories\IAuditRepository.cs" />
     <Compile Include="Repositories\ICaseRepository.cs" />
     <Compile Include="Repositories\IChoiceRepository.cs" />
+    <Compile Include="Repositories\IExportQueryResult.cs" />
     <Compile Include="Repositories\IFileRepository.cs" />
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\CachedChoiceRepository.cs" />
