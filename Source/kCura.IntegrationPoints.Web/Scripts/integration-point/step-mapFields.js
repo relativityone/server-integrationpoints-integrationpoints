@@ -1312,38 +1312,42 @@ ko.validation.insertValidationMessage = function (element) {
 
 					this.returnModel.destinationWorkspaceChanged = JSON.parse(this.returnModel.destination).WorkspaceHasChanged;
 
-					var errorCallback = function (error) {
-						IP.message.error.raise("Could not validate mapped fields");
-					};
+					var validateMappedFields = root.data.ajax({
+						type: 'POST',
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
+						data: JSON.stringify(map)
+					})
+						.fail(function (error) {
+							IP.message.error.raise("Could not validate mapped fields");
+						});
 
-					var successCallback = function (validationResult) {
-						if (validationResult.invalidMappedFields.length > 0 || !validationResult.isObjectIdentifierMapValid) {
-							var proceedCallback = function () {
+					const proceedConfirmation = function(validationResult) {
+						if (validationResult.invalidMappedFields.length > 0 ||
+							!validationResult.isObjectIdentifierMapValid) {
+							var proceedCallback = function() {
 								this.returnModel.mappingHasWarnings = true;
 								d.resolve(this.returnModel);
 							}.bind(this);
 
-							var clearAndProceedCallback = function () {
+							var clearAndProceedCallback = function() {
 								var filteredOutInvalidFields = map.filter(
-									x => validationResult.invalidMappedFields.findIndex(i => StepMapFieldsValidator.isFieldMapEqual(i, x)) == -1);
+									x => validationResult.invalidMappedFields.findIndex(
+										i => StepMapFieldsValidator.isFieldMapEqual(i, x)) ==
+									-1);
 								this.returnModel.map = JSON.stringify(filteredOutInvalidFields);
 								d.resolve(this.returnModel);
 							}.bind(this);
 
-							StepMapFieldsValidator.showProceedConfirmationPopup(validationResult.invalidMappedFields, validationResult.isObjectIdentifierMapValid, proceedCallback, clearAndProceedCallback);
+							StepMapFieldsValidator.showProceedConfirmationPopup(validationResult.invalidMappedFields,
+								validationResult.isObjectIdentifierMapValid,
+								proceedCallback,
+								clearAndProceedCallback);
 						} else {
 							d.resolve(this.returnModel);
 						}
 					};
 
-					var validateMappedFields = root.data.ajax({
-						type: 'POST',
-						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
-						data: JSON.stringify(map),
-						error: errorCallback.bind(this),
-						success: successCallback.bind(this)
-					});
-
+					validateMappedFields.then(proceedConfirmation.bind(this));
 				} else {
 					d.resolve(this.returnModel);
 				}
