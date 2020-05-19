@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		[IdentifiedTest("ebfc56e6-5ac7-4694-9fde-7e474163f87e")]
 		[RetryOnError]
 		[Order(1)]
-		[Category(TestCategory.SMOKE)]
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
 			// Arrange

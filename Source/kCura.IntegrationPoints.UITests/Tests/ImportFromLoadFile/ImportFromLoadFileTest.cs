@@ -57,7 +57,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 				FileCopier.CopyDirectory(sourceLocation, destinationLocation);
 			}
 		}
-		
+
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTest("85d418ab-7bf2-4047-b810-88e0551a1e27")]
 		[RetryOnError]
 		[Order(10)]

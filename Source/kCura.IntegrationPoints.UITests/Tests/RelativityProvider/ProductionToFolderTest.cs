@@ -29,7 +29,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			return model;
 		}
-
+		
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTest("d76ebfc3-cfc6-4afa-be16-bf3154775bb5")]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_PTF_1()
