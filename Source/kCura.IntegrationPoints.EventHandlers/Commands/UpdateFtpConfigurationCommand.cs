@@ -1,5 +1,8 @@
-﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Security;
+using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
@@ -10,9 +13,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 		protected override string[] PropertiesToExtract { get; } = { "username", "password" };
 
-		public UpdateFtpConfigurationCommand(IIntegrationPointForSourceService integrationPointForSourceService, IIntegrationPointService integrationPointService,
-			IEncryptionManager encryptionManager, ISplitJsonObjectService splitJsonObjectService) : 
-			base(integrationPointForSourceService, integrationPointService, encryptionManager, splitJsonObjectService)
+		public UpdateFtpConfigurationCommand(IEHHelper helper, IRelativityObjectManager relativityObjectManager,
+			IEncryptionManager encryptionManager, ISplitJsonObjectService splitJsonObjectService)
+			: base(helper, relativityObjectManager, encryptionManager, splitJsonObjectService)
 		{
 		}
 	}
