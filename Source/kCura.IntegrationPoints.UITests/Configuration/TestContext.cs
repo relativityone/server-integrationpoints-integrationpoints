@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
@@ -104,6 +105,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task CreateTestWorkspaceAsync()
 		{
+			var createDurationStopWatch = new Stopwatch();
+			createDurationStopWatch.Start();
 			WorkspaceName = $"RIP Test Workspace {_timeStamp}";
 			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
@@ -117,8 +120,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 					$"Cannot create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'. Check if Relativity works correctly (services, ...).");
 				throw;
 			}
-
+			createDurationStopWatch.Stop();
 			Log.Information($"Workspace '{WorkspaceName}' was successfully created using template '{templateWorkspaceName}'. WorkspaceId={WorkspaceId}");
+			Log.Information("Workspace created. Duration: {duration} s", createDurationStopWatch.ElapsedMilliseconds/1000 );
 		}
 
 		public void EnableDataGrid(params string[] fieldNames)
@@ -136,13 +140,23 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext CreateProductionSet(string productionName)
 		{
+			Log.Information($"Create production set {productionName}");
+			var sw = new Stopwatch();
+			sw.Start();
 			ProductionHelper.CreateProductionSet(productionName);
+			sw.Stop();
+			Log.Information("Production set created. Duration {productionName} s", sw.ElapsedMilliseconds / 1000);
 			return this;
 		}
 
 		public TestContext CreateAndRunProduction(string productionName)
 		{
+			Log.Information($"Create and Run production {productionName}");
+			var sw = new Stopwatch();
+			sw.Start();
 			ProductionHelper.CreateAndRunProduction(productionName);
+			sw.Stop();
+			Log.Information("Production finished. Duration {productionName} s", sw.ElapsedMilliseconds/1000);
 			return this;
 		}
 
