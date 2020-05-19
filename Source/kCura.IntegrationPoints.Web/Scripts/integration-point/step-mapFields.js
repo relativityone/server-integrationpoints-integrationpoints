@@ -1321,24 +1321,31 @@ ko.validation.insertValidationMessage = function (element) {
 							IP.message.error.raise("Could not validate mapped fields");
 						});
 
-					const proceedConfirmation = function (invalidMappedFields) {
-						if (invalidMappedFields.length > 0) {
-							var proceedCallback = function () {
+					const proceedConfirmation = function(validationResult) {
+						if (validationResult.invalidMappedFields.length > 0 ||
+							!validationResult.isObjectIdentifierMapValid) {
+							var proceedCallback = function() {
 								this.returnModel.mappingHasWarnings = true;
 								d.resolve(this.returnModel);
 							}.bind(this);
 
-							var clearAndProceedCallback = function () {
-								var filteredOutInvalidFields = map.filter(x => invalidMappedFields.findIndex(i => StepMapFieldsValidator.isFieldMapEqual(i, x)) == -1);
+							var clearAndProceedCallback = function() {
+								var filteredOutInvalidFields = map.filter(
+									x => validationResult.invalidMappedFields.findIndex(
+										i => StepMapFieldsValidator.isFieldMapEqual(i, x)) ==
+									-1);
 								this.returnModel.map = JSON.stringify(filteredOutInvalidFields);
 								d.resolve(this.returnModel);
 							}.bind(this);
 
-							StepMapFieldsValidator.showProceedConfirmationPopup(invalidMappedFields, proceedCallback, clearAndProceedCallback);
+							StepMapFieldsValidator.showProceedConfirmationPopup(validationResult.invalidMappedFields,
+								validationResult.isObjectIdentifierMapValid,
+								proceedCallback,
+								clearAndProceedCallback);
 						} else {
 							d.resolve(this.returnModel);
 						}
-					}
+					};
 
 					validateMappedFields.then(proceedConfirmation.bind(this));
 				} else {

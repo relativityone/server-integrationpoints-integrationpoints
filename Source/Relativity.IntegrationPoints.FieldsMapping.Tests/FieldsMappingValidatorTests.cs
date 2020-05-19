@@ -1,10 +1,4 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.FieldsMapping.Helpers;
@@ -12,6 +6,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests
@@ -41,14 +36,51 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			_sut = new FieldsMappingValidator(_fieldsClassifyRunnerFactoryFake.Object);
 		}
 
+		[TestCase(255, 255, true)]
+		[TestCase(255, 50, false)]
+		public async Task ValidateAsync_ShouldValidateObjectIdentifier(int sourceLength, int destinationLength, bool expectValid)
+		{
+			var IDs = new List<string> { "1", "2" };
+			DocumentFieldInfo sourceControlNumber = CreateWithType(IDs[0], $"{FieldTypeName.FIXED_LENGTH_TEXT}({sourceLength})");
+			DocumentFieldInfo destinationControlNumber = CreateWithType(IDs[1], $"{FieldTypeName.FIXED_LENGTH_TEXT}({destinationLength})");
+
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(sourceControlNumber) { ClassificationLevel = ClassificationLevel.AutoMap }
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(destinationControlNumber) { ClassificationLevel = ClassificationLevel.AutoMap},
+			};
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(sourceControlNumber),
+					DestinationField = FieldConvert.ToFieldEntry(destinationControlNumber),
+					FieldMapType = FieldMapTypeEnum.Identifier
+				}
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			// Act
+			FieldMappingValidationResult result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			result.IsObjectIdentifierMapValid.Should().Be(expectValid);
+		}
+
 		[Test]
 		public async Task ValidateAsync_ShouldBeEmpty_WhenFieldMapIsNull()
 		{
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(null, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(null, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 
 			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForSourceWorkspace(), Times.Never);
 			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForDestinationWorkspace(), Times.Never);
@@ -58,10 +90,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public async Task ValidateAsync_ShouldBeEmpty_WhenFieldMapIsEmpty()
 		{
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(Enumerable.Empty<FieldMap>(), _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(Enumerable.Empty<FieldMap>(), _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 
 			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForSourceWorkspace(), Times.Never);
 			_fieldsClassifyRunnerFactoryFake.Verify(m => m.CreateForDestinationWorkspace(), Times.Never);
@@ -112,7 +144,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
 			_fieldClassifierRunnerMock.Verify(m => m.ClassifyFieldsAsync(new List<string>() { "1", "3" }, _SOURCE_WORKSPACE_ID), Times.Once);
@@ -167,10 +199,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 
 		}
 
@@ -221,10 +253,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().NotBeEmpty()
+			result.InvalidMappedFields.Should().NotBeEmpty()
 				.And.HaveCount(fieldMap.Count)
 				.And.Contain(fieldMap);
 		}
@@ -279,10 +311,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 		}
 
 		[Test]
@@ -335,10 +367,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().NotBeEmpty()
+			result.InvalidMappedFields.Should().NotBeEmpty()
 				.And.HaveCount(fieldMap.Count)
 				.And.Contain(fieldMap);
 		}
@@ -390,10 +422,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().NotBeEmpty()
+			result.InvalidMappedFields.Should().NotBeEmpty()
 				.And.HaveCount(fieldMap.Count)
 				.And.Contain(fieldMap);
 		}
@@ -448,10 +480,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().NotBeEmpty()
+			result.InvalidMappedFields.Should().NotBeEmpty()
 				.And.HaveCount(fieldMap.Count)
 				.And.Contain(fieldMap);
 		}
@@ -512,10 +544,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 		}
 
 		[Test]
@@ -564,10 +596,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().NotBeEmpty()
+			result.InvalidMappedFields.Should().NotBeEmpty()
 				.And.Contain(f => f.DestinationField.FieldIdentifier == field2.FieldIdentifier);
 		}
 
@@ -617,10 +649,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().NotBeEmpty()
+			result.InvalidMappedFields.Should().NotBeEmpty()
 				.And.Contain(f => f.DestinationField.FieldIdentifier == field2.FieldIdentifier);
 		}
 
@@ -661,10 +693,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 		}
 
 		[Test]
@@ -715,10 +747,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 		}
 
 		[Test]
@@ -769,10 +801,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var invalidMappedFields = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
 
 			// Assert
-			invalidMappedFields.Should().BeEmpty();
+			result.InvalidMappedFields.Should().BeEmpty();
 		}
 
 		private DocumentFieldInfo CreateWithSampleType(string id)
