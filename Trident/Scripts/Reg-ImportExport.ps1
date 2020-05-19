@@ -18,8 +18,30 @@ function Invoke-Test ($TestFilter) {
     &($TaskRunner) CustomTest -Configuration Release -TestFilter $TestFilter
 }
 
-$path = Test-Path "\\bld-pkgs\Packages\IntegrationPoints"
-$path
+$transferConsole = "C:\_Work\IntegrationPoints\Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe"
+
+$sourcePath = "C:\_Work\IntegrationPoints\Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile"
+$workspaceId = 3026063
+$url = "https://regression-a.r1.kcura.com"
+$userName = "rip.jenkins@rip.com"
+$password = "Test1234!"
+
+& $transferConsole "/interactive:-" "/command:transfer" "/url:""$url""" "/username:""$userName""" "/password:""$password""" "/direction:Upload" "/configuration:""client=Aspera""" "/searchpath:""$sourcePath""" "/targetpath:""Files\EDDS$workspaceId\DataTransfer\Import""" "/workspaceid:$workspaceId"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
 
 # Set-RegressionSettings $RegEnv
