@@ -183,6 +183,7 @@
     <Compile Include="Validation\RelativityProviderValidation\RelativityProviderValidatorBase.cs" />
     <Compile Include="Validation\RelativityProviderValidation\ImagesSavedSearchToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\SavedSearchToFolderValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\ImagesProductionToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\SavedSearchToProductionSetValidator.cs" />
   </ItemGroup>
   <ItemGroup>
