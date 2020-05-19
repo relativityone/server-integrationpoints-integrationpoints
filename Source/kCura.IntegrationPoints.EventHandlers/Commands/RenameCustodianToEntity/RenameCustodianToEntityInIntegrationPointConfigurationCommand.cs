@@ -1,12 +1,15 @@
-﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity
 {
 	public class RenameCustodianToEntityInIntegrationPointConfigurationCommand : IEHCommand
 	{
-		private readonly IIntegrationPointForSourceService _integrationPointForSourceService;
-		private readonly IIntegrationPointService _integrationPointService;
+		private readonly IEHHelper _helper;
+		private readonly IRelativityObjectManager _objectManager;
 
 		private string[] _sourceProviderWithEntityObjectType => new[]
 		{
@@ -15,18 +18,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity
 			Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE
 		};
 
-		public RenameCustodianToEntityInIntegrationPointConfigurationCommand(IIntegrationPointForSourceService integrationPointForSourceService, IIntegrationPointService integrationPointService)
+		public RenameCustodianToEntityInIntegrationPointConfigurationCommand(IEHHelper helper, IRelativityObjectManager objectManager)
 		{
-			_integrationPointForSourceService = integrationPointForSourceService;
-			_integrationPointService = integrationPointService;
+			_helper = helper;
+			_objectManager = objectManager;
 		}
 
 		public void Execute()
 		{
 			foreach (string sourceProviderGuid in _sourceProviderWithEntityObjectType)
 			{
-				var updateCommand = new RenameCustodianToEntityForSourceProviderCommand(sourceProviderGuid,
-					_integrationPointForSourceService, _integrationPointService);
+				var updateCommand = new RenameCustodianToEntityForSourceProviderCommand(sourceProviderGuid, _helper, _objectManager);
 				updateCommand.Execute();
 			}
 		}
