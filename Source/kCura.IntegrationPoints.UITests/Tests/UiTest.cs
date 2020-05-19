@@ -129,14 +129,14 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", SourceContext.WorkspaceName, SourceContext.WorkspaceId);
 			}
 
-			Task installIntegrationPointsTask = SourceContext.InstallIntegrationPointsAsync();
+			//Task installIntegrationPointsTask = SourceContext.InstallIntegrationPointsAsync();
 
-			if (!SharedVariables.UiSkipDocumentImport)
-			{
-				await ImportDocumentsAsync().ConfigureAwait(false);
-			}
+			//if (!SharedVariables.UiSkipDocumentImport)
+			//{
+			//	await ImportDocumentsAsync().ConfigureAwait(false);
+			//}
 
-			await installIntegrationPointsTask.ConfigureAwait(false);
+			//await installIntegrationPointsTask.ConfigureAwait(false);
 		}
 
 		protected virtual Task CreateWorkspaceAsync()
