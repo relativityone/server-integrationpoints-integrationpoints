@@ -26,7 +26,7 @@ $url = "https://regression-a.r1.kcura.com"
 $userName = "rip.jenkins@rip.com"
 $password = "Test1234!"
 
-& $transferConsole "/interactive:-" "/command:transfer" "/url:""$url""" "/username:""$userName""" "/password:""$password""" "/direction:Upload" "/configuration:""client=Aspera""" "/searchpath:""$sourcePath""" "/targetpath:""Files\EDDS$workspaceId\DataTransfer\Import""" "/workspaceid:$workspaceId"
+& $transferConsole "/interactive:-" "/command:transfer" "/url:""$url""" "/username:""$userName""" "/password:""$password""" "/direction:Upload" "/configuration:""client=Aspera""" "/searchpath:""$sourcePath""" "/targetpath:""Files\EDDS$workspaceId\DataTransfer\Import""" "/workspaceid:$workspaceId" "/enforcessl:-"
 
 
 
