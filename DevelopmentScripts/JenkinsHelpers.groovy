@@ -22,6 +22,7 @@ interface Constants
 	final String UI_SYNC_TOGGLE_OFF_JOB_NAME = "IntegrationPointsUI-SyncToggleOff"
 	final String ARTIFACTS_PATH = 'Artifacts'
 	final String QUARANTINED_TESTS_CATEGORY = 'InQuarantine'
+	final String NIGHTLY_ONLY_TESTS_CATEGORY = 'NightlyOnly'
 	final String INTEGRATION_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/IntegrationTestsResults.xml"
 	final String UI_TESTS_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/UITestsResults.xml"
 	final String INTEGRATION_TESTS_IN_QUARANTINE_RESULTS_REPORT_PATH = "$ARTIFACTS_PATH/QuarantineIntegrationTestsResults.xml"
@@ -938,6 +939,14 @@ private exceptQuarantinedTestFilter()
 /*
  * Returns filter for NUnit
  */
+private exceptNightlyOnlyTestsFilter()
+{
+	return "cat != $Constants.NIGHTLY_ONLY_TESTS_CATEGORY"
+}
+
+/*
+ * Returns filter for NUnit
+ */
 private withQuarantinedTestFilter()
 {
 	return "cat == $Constants.QUARANTINED_TESTS_CATEGORY"
@@ -981,6 +990,9 @@ private getTestsFilter(testType, params)
 	paramsTestsFilter = isUITest(testType)
 		? unionTestFilters(paramsTestsFilter, withUiTestsNamespace())
 		: unionTestFilters(paramsTestsFilter, exceptUiTestsNamespace())
+	paramsTestsFilter = isNightly()
+		? paramsTestsFilter
+		: unionTestFilters(paramsTestsFilter, exceptNightlyOnlyTestsFilter())
 	return paramsTestsFilter
 }
 

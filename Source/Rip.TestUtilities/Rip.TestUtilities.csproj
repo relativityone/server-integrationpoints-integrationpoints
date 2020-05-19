@@ -50,7 +50,6 @@
     <Compile Include="FieldMappingBuilder.cs" />
     <Compile Include="IntegrationPointModelBuilder.cs" />
     <Compile Include="LoadFileHelper.cs" />
-    <Compile Include="ProductionHelper.cs" />
     <Compile Include="SavedSearchHelper.cs" />
   </ItemGroup>
   <ItemGroup>
