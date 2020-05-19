@@ -18,12 +18,14 @@ function Invoke-Test ($TestFilter) {
     &($TaskRunner) CustomTest -Configuration Release -TestFilter $TestFilter
 }
 
-Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
+$path = Test-Path "\\bld-pkgs\Packages\IntegrationPoints"
+$path
+# Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
 
-Set-RegressionSettings $RegEnv
+# Set-RegressionSettings $RegEnv
 
-Invoke-Task Compile
+# Invoke-Task Compile
 
-Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment && cat == ImportFromLoadFile"
+# Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment && cat == ImportFromLoadFile"
 
-Remove-Module Build-Util
+# Remove-Module Build-Util
