@@ -73,33 +73,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public async Task<bool> IsApplicationInstalledAndUpToDateAsync(int workspaceArtifactID, Guid guid)
 		{
-			const int batchSize = 100;
-			int currentIndex = 1;
 			using (var applicationInstallManager = _helper.CreateProxy<IApplicationInstallManager>())
 			{
-				GetAllInstallStatusResponse installStatusResponse;
-				do
-				{
-#pragma warning disable CS0618 // Type or member is obsolete
-					installStatusResponse = await applicationInstallManager
-						.GetAllInstallStatusAsync(_ADMIN_CASE_ID, guid, currentIndex, batchSize)
-#pragma warning restore CS0618 // Type or member is obsolete
-						.ConfigureAwait(false);
-
-					GetInstallStatusResponse installStatusResponseForWorkspace = installStatusResponse
-						.Results
-						.FirstOrDefault(x => x.WorkspaceIdentifier.ArtifactID == workspaceArtifactID);
-
-					if (installStatusResponseForWorkspace != null)
-					{
-						return IsInstallSuccessfullyCompleted(installStatusResponseForWorkspace.InstallStatus);
-					}
-
-					currentIndex += batchSize;
-				}
-				while (installStatusResponse.ResultCount == batchSize);
+				GetInstallStatusResponse installStatusResponse;
+				installStatusResponse = await applicationInstallManager.GetStatusAsync(workspaceArtifactID, guid).ConfigureAwait(false);
+				
+				return IsInstallSuccessfullyCompleted(installStatusResponse.InstallStatus);
 			}
-			return false;
 		}
 
 		private string GetLocalRipRapPath()

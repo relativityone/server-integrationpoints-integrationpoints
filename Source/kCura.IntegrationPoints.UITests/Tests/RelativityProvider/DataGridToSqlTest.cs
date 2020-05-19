@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[IdentifiedTest("950ec6af-46a5-42de-9602-685367407032")]
+		[Category(TestCategory.SMOKE)]
 		[RetryOnError]
 		public void RelativityProvider_TC_RTR_NF_01_with_DG()
 		{

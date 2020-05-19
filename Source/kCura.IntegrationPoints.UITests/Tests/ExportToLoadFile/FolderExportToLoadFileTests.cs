@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTest("9968a2a9-148f-48b9-b5c0-71b6269c8d8b")]
 		[RetryOnError]
 		[Order(1)]

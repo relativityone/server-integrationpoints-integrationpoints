@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTest("a244081a-1ead-4a55-a504-1842e89784c8")]
 		[RetryOnError]
 		public void EntityExportToLoadFile_TC_ELF_CUST_1()

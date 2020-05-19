@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		//RelativityProvider_TC_RTR_IMG_01
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTestCase("3c74b1de-c6ca-41e8-81a8-944bf856c0ff", RelativityProviderModel.OverwriteModeEnum.AppendOnly, false)]
 		//RelativityProvider_TC_RTR_IMG_02
 		[IdentifiedTestCase("b2764d2b-d107-4b7a-98e4-238e8ff9f12a", RelativityProviderModel.OverwriteModeEnum.AppendOnly, true)]
