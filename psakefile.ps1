@@ -45,13 +45,13 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests && cat != NotWorkingOnTrident)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests && cat != NotWorkingOnTrident && cat != NightlyOnly)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
     
     $LogPath = Join-Path $LogsDir "IntegrationTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ /Tests\.Integration[\$\.]/ && cat != InQuarantine && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "namespace =~ /Tests\.Integration[\$\.]/ && cat != InQuarantine && cat != NotWorkingOnTrident && cat != NightlyOnly" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
     
     $LogPath = Join-Path $LogsDir "E2ETestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ E2ETests && cat != NotWorkingOnTrident)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "(namespace =~ E2ETests && cat != NotWorkingOnTrident && cat != NightlyOnly)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {
@@ -122,12 +122,12 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
 
 Task UIWebImportExportTest -Depends OneTimeTestsSetup -Description "Run UI tests for Web Import/Export" {
     $LogPath = Join-Path $LogsDir "UIWebImportExportTestResults.xml"
-    Invoke-Tests -WhereClause "cat == WebImportExport && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "cat == WebImportExport && cat != NotWorkingOnTrident && cat != NightlyOnly" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task UIRelativitySyncTest -Depends OneTimeTestsSetup -Description "Run UI tests for RelativitySync toggle On/Off" {
     $LogPath = Join-Path $LogsDir "UIRelativitySyncTestResults.xml"
-    Invoke-Tests -WhereClause "cat == ExportToRelativity && cat != NotWorkingOnTrident" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "cat == ExportToRelativity && cat != NotWorkingOnTrident && cat != NightlyOnly" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 function Invoke-Tests
