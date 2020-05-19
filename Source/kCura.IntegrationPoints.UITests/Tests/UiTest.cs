@@ -1,4 +1,4 @@
-﻿using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -111,9 +111,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		private async Task SetupWorkspaceAsync()
 		{
+			Log.Information("UiTest: SetupWorkspaceAsync - Source");
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
 			{
-				Log.Information("Source context");
 				await CreateWorkspaceAsync().ConfigureAwait(false);
 			}
 			else
