@@ -18,9 +18,9 @@ function Invoke-Test ($TestFilter) {
     &($TaskRunner) CustomTest -Configuration Release -TestFilter $TestFilter
 }
 
-$transferConsole = "C:\_Work\IntegrationPoints\Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe"
+$transferConsole = ".\Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe"
 
-$sourcePath = "C:\_Work\IntegrationPoints\Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile"
+$sourcePath = ".\Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile"
 $workspaceId = 3026063
 $url = "https://regression-a.r1.kcura.com"
 $userName = "rip.jenkins@rip.com"
