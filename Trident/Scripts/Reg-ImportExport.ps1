@@ -24,6 +24,6 @@ Set-RegressionSettings $RegEnv
 
 Invoke-Task Compile
 
-Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment"
+Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment && cat == ImportFromLoadFile"
 
 Remove-Module Build-Util
