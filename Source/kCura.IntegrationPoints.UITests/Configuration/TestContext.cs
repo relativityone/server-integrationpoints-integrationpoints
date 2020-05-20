@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
-		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure;
+		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE = DocumentTestDataBuilder.TestDataType.SmallWithFoldersStructure;
 
 		public ITestHelper Helper => _helperLazy.Value;
 
@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: true,
-				testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE
 			);
 			return this;
 		}
@@ -186,7 +186,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: false,
-				testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE
 			);
 			return this;
 		}
@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: false,
-				testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE
 			);
 			return this;
 		}
