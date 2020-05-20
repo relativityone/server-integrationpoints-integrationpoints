@@ -111,7 +111,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void RelativityProvider_TC_RTR_IPS_04()
 		{
 			//Arrange
-			SourceContext.ImportDocuments();
 			DestinationContext.ImportDocuments();
 
 			var validator = new SavedSearchToProductionSetValidator();
