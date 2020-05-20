@@ -18,36 +18,22 @@ function Invoke-Test ($TestFilter) {
     &($TaskRunner) CustomTest -Configuration Release -TestFilter $TestFilter
 }
 
-$transferConsole = ".\Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe"
-
-$sourcePath = ".\Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile"
-$workspaceId = 3026063
-$url = "https://regression-a.r1.kcura.com"
-$userName = "rip.jenkins@rip.com"
-$password = "Test1234!"
-
-& $transferConsole "/interactive:-" "/command:transfer" "/url:""$url""" "/username:""$userName""" "/password:""$password""" "/direction:Upload" "/configuration:""client=Aspera""" "/searchpath:""$sourcePath""" "/targetpath:""Files\EDDS$workspaceId\DataTransfer\Import""" "/workspaceid:$workspaceId" "/enforcessl:-"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
 
 # Set-RegressionSettings $RegEnv
 
 # Invoke-Task Compile
 
-# Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment && cat == ImportFromLoadFile"
+# Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment && cat == ExportToLoadFile"
 
 # Remove-Module Build-Util
+
+$transferConsole = ".\Source\kCura.IntegrationPoint.Tests.Core\ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe"
+
+$sourcePath = ".\Source\kCura.IntegrationPoint.Tests.Core\TestDataImportFromLoadFile"
+$workspaceId = 15596527
+$url = "https://reg-zero.r1.kcura.com"
+$userName = "rip.jenkins@rip.com"
+$password = "Test1234!"
+
+& $transferConsole "/interactive:-" "/command:transfer" "/url:""$url""" "/username:""$userName""" "/password:""$password""" "/direction:Upload" "/configuration:""client=Aspera""" "/searchpath:""$sourcePath""" "/targetpath:""Files\EDDS$workspaceId\DataTransfer\Import""" "/workspaceid:$workspaceId"
