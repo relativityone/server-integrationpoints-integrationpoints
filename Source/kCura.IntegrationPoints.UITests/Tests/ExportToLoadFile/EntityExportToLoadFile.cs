@@ -29,6 +29,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 		private IRelativityObjectManager ObjectManager => _rsapiService.RelativityObjectManager;
 
+		public EntityExportToLoadFile() : base(shouldImportDocuments: true) 
+		{ }
+
 		[OneTimeSetUp]
 		public async Task OneTimeSetup()
 		{

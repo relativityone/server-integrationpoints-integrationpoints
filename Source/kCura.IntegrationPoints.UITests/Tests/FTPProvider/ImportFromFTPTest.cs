@@ -27,6 +27,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 
 		private const string _CSV_FILEPATH = "upload/ImportFromFtpTest.csv";
 
+		public ImportFromFtpTest() : base(shouldImportDocuments: false)
+		{ }
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{

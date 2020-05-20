@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		private RemoteWebDriver _driver;
 
 		private readonly bool _shouldLoginToRelativity;
+		private readonly bool _shouldImportDocuments;
 
 		private readonly Lazy<ITestHelper> _testHelperLazy;
 
@@ -69,13 +70,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		protected UiTest() : this(shouldLoginToRelativity: true)
-		{
-		}
-
-		protected UiTest(bool shouldLoginToRelativity)
+		protected UiTest(bool shouldLoginToRelativity = true, bool shouldImportDocuments = true)
 		{
 			_shouldLoginToRelativity = shouldLoginToRelativity;
+			_shouldImportDocuments = shouldImportDocuments;
+
 			Container = new WindsorContainer();
 			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
 		}
@@ -129,14 +128,14 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", SourceContext.WorkspaceName, SourceContext.WorkspaceId);
 			}
 
-			//Task installIntegrationPointsTask = SourceContext.InstallIntegrationPointsAsync();
+			Task installIntegrationPointsTask = SourceContext.InstallIntegrationPointsAsync();
 
-			//if (!SharedVariables.UiSkipDocumentImport)
-			//{
-			//	await ImportDocumentsAsync().ConfigureAwait(false);
-			//}
+			if (_shouldImportDocuments)
+			{
+				await ImportDocumentsAsync().ConfigureAwait(false);
+			}
 
-			//await installIntegrationPointsTask.ConfigureAwait(false);
+			await installIntegrationPointsTask.ConfigureAwait(false);
 		}
 
 		protected virtual Task CreateWorkspaceAsync()

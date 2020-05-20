@@ -6,6 +6,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 	{
 		protected const string SAVED_SEARCH_NAME = "All Documents";
 
+		protected ExportToLoadFileTests() : base(shouldImportDocuments: true)
+		{ }
+
 		protected ExportToLoadFileProviderModel CreateExportToLoadFileProviderModel(string name)
 		{
 			var model = new ExportToLoadFileProviderModel(name, SAVED_SEARCH_NAME);

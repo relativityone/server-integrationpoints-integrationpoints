@@ -28,6 +28,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		private IRSAPIService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
 
+		public ImportLdapProviderTest() : base(shouldImportDocuments: false)
+		{ }
+
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{

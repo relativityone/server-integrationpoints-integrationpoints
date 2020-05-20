@@ -27,6 +27,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected IProductionImagesService ProductionImageService { get; set; }
 		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
+		public RelativityProviderTestsBase(bool shouldImportDocuments = true) : base(shouldImportDocuments: shouldImportDocuments)
+		{ }
+
 		[OneTimeSetUp]
 		public virtual async Task OneTimeSetUp()
 		{
