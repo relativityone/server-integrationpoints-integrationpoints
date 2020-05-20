@@ -17,10 +17,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.NOT_WORKING_ON_TRIDENT)] //Remove when REL-389920
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
-	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // no access to FTP from R1
 	public class ImportFromFtpTest : UiTest
 	{
 		private IRSAPIService _service;

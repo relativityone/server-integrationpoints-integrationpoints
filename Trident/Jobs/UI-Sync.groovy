@@ -5,5 +5,5 @@ jobWithSut {
     sutTemplate = "LanceleafAA1"
 	relativityBranch = "develop"
     jobScript = "Trident/Scripts/UI-Sync.ps1"
-    cron = "0 3 * * *"
+    cron = "0 5 * * *"
 }
