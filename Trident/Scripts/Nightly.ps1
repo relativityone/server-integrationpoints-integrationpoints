@@ -19,4 +19,6 @@ Invoke-Task Test
 
 Invoke-Task Package
 
+Invoke-Task OneTimeTestsSetup
+
 Invoke-Test "namespace =~ FunctionalTests && namespace =~ /Tests\.Integration[\$\.]/ && namespace =~ E2ETests && cat != NotWorkingOnTrident"
