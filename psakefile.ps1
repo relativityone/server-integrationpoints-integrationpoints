@@ -140,7 +140,7 @@ function Invoke-Tests
     $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner\tools\nunit3-console.exe")
 
     if(!$TestSettings) { $TestSettings = (Join-Path $PSScriptRoot FunctionalTestSettings) }
-    $settings = if($TestSettings) { "@$TestSettings" }
+    $settings = if(Test-Path $TestSettings) { "@$TestSettings" }
 
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
