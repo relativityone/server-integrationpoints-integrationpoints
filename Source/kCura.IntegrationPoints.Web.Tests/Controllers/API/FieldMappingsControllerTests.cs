@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using FluentAssertions;
-using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Models;
@@ -16,7 +15,6 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping;
-using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -108,20 +106,24 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		{
 			// Arrange
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>();
-			IEnumerable<FieldMap> validationResult = new List<FieldMap>
+			FieldMappingValidationResult validationResult = new FieldMappingValidationResult()
 			{
-				new FieldMap
+				InvalidMappedFields = new List<FieldMap>
 				{
-					SourceField = new FieldEntry
+					new FieldMap
 					{
-						FieldIdentifier = "1"
-					},
-					DestinationField = new FieldEntry
-					{
-						FieldIdentifier = "2"
-					},
-					FieldMapType = FieldMapTypeEnum.None
-				}
+						SourceField = new FieldEntry
+						{
+							FieldIdentifier = "1"
+						},
+						DestinationField = new FieldEntry
+						{
+							FieldIdentifier = "2"
+						},
+						FieldMapType = FieldMapTypeEnum.None
+					}
+				},
+				IsObjectIdentifierMapValid = true
 			};
 
 			_fieldsMappingValidator.Setup(x => x.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID)).ReturnsAsync(validationResult);

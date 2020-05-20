@@ -185,17 +185,19 @@
 				return;
 			}
 
-			var apiUrl = IP.utils.generateWebAPIURL(IP.data.params['apiControllerName']) + '?';
-			if (model.mappingHasWarnings) {
-				apiUrl = apiUrl + "mappingHasWarnings=" + model.mappingHasWarnings + "&";
-			}
-			if (model.destinationWorkspaceChanged) {
-				apiUrl = apiUrl + "destinationWorkspaceChanged=" + model.destinationWorkspaceChanged;
+			var mappingHasWarnings = false;
+			if (model.mappingHasWarnings){
+				mappingHasWarnings = true;
 			}
 
-			if (apiUrl.endsWith('&')) {
-				apiUrl = apiUrl.slice(0, -1);
+			var destinationWorkspaceChanged = false;
+			if (model.destinationWorkspaceChanged) {
+				destinationWorkspaceChanged = true;
 			}
+
+			var apiUrl = IP.utils.generateWebAPIURL(IP.data.params['apiControllerName'])
+				+ '?mappingHasWarnings=' + mappingHasWarnings
+				+ '&destinationWorkspaceChanged=' + destinationWorkspaceChanged;
 
 			IP.data.ajax({ type: 'POST', url: apiUrl, data: JSON.stringify(model) })
 				.then(function (result) {

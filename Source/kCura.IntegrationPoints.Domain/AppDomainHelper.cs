@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Polly;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
 {
 	public class AppDomainHelper : IAppDomainHelper
 	{
+		private const ushort _MAX_NUMBER_OF_DIRECTORY_DELETE_RETRIES = 3;
+		private const ushort _DIRECTORY_DELETE_RETRIES_WAIT_TIME_BASE_IN_SECONDS = 3;
+
 		private AssemblyDomainLoader _appDomainLoader;
 		private readonly IPluginProvider _pluginProvider;
 		private readonly IHelper _helper;
+		private readonly IAPILog _logger;
 		private readonly RelativityFeaturePathService _relativityFeaturePathService;
+		
 
 		public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService)
 		{
 			_pluginProvider = pluginProvider;
 			_helper = helper;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<AppDomainHelper>();
 			_relativityFeaturePathService = relativityFeaturePathService;
 		}
 
@@ -122,7 +129,9 @@ namespace kCura.IntegrationPoints.Domain
 		{
 			if (domain != null)
 			{
-				string domainDirectory = domain.BaseDirectory;
+				string domainName = domain.FriendlyName;
+				string domainPath = domain.BaseDirectory;
+
 				if (_appDomainLoader != null)
 				{
 					try
@@ -130,42 +139,56 @@ namespace kCura.IntegrationPoints.Domain
 						domain.AssemblyResolve -= _appDomainLoader.ResolveAssembly;
 					}
 					catch
-					{
-					}
+					{ }
+
 					_appDomainLoader = null;
 				}
+
 				try
 				{
 					domain.DomainUnload += (sender, args) => { };
 				}
 				catch
-				{
-				}
+				{ }
+
 				AppDomain.Unload(domain);
 
 				try
 				{
-					Directory.Delete(domainDirectory, true);
+					_logger.LogInformation("Removing directory {domainPath} for domain {domainName}.", domainPath, domainName);
+
+					Policy
+						.Handle<Exception>()
+						.WaitAndRetry(
+							_MAX_NUMBER_OF_DIRECTORY_DELETE_RETRIES,
+							(retryAttempt) => TimeSpan.FromSeconds(Math.Pow(_DIRECTORY_DELETE_RETRIES_WAIT_TIME_BASE_IN_SECONDS, retryAttempt)))
+						.Execute(() => Directory.Delete(domainPath, true));
 				}
-				catch
+				catch (Exception ex)
 				{
+					_logger.LogWarning(ex, "Removing directory {domainPath} for domain {domainName} has failed.", domainPath, domainName);
 				}
 			}
 		}
 
 		public virtual AppDomain CreateNewDomain()
 		{
-			AppDomainSetup domaininfo = new AppDomainSetup();
-			var domainPath = Path.Combine(Path.GetTempPath(), "RelativityIntegrationPoints");
-			domainPath = Path.Combine(domainPath, Guid.NewGuid().ToString());
+			string domainPath = Path.Combine(Path.GetTempPath(), "RelativityIntegrationPoints", Guid.NewGuid().ToString());
 			Directory.CreateDirectory(domainPath);
-			domaininfo.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-			domaininfo.ApplicationBase = domainPath;
-			domaininfo.PrivateBinPath =
-				Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+
+			AppDomainSetup domainInfo = new AppDomainSetup
+			{
+				ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
+				ApplicationBase = domainPath,
+				PrivateBinPath = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath)
+			};
+
 			string domainName = Guid.NewGuid().ToString();
-			var newDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
+			AppDomain newDomain = AppDomain.CreateDomain(domainName, null, domainInfo);
+
+			_logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
 			DeployLibraryFiles(domainPath);
+
 			return newDomain;
 		}
 
