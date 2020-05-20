@@ -22,12 +22,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 		public void CreateProductionSetAndImportData(string productionName, DocumentTestDataBuilder.TestDataType testDataType)
 		{
 			int productionID = CreateProductionSet(productionName);
-
-			if (SharedVariables.UiSkipDocumentImport)
-			{
-				ImportDocuments(testDataType);
-			}
-			
+			ImportDocuments(testDataType);
 			DocumentsTestData testDataForProductionImport = DocumentTestDataBuilder.BuildTestData(testDataType: testDataType);
 			_workspaceService.ImportDataToProduction(_testContext.GetWorkspaceId(), productionID, testDataForProductionImport.Images);
 		}
