@@ -7,5 +7,8 @@
     <Parameter name="AdminPassword" value="Test1234!" />
 
     <Parameter name="UI.UseTapiForFileCopy" value="true"/>
+    <Parameter name="UI.Options.Arguments.Headless" value="false"/>
+    <Parameter name="UI.WaitForPageInSec" value="180"/>
+    <Parameter name="UI.BrowserPath" value="..\..\..\buildtools\Relativity.Chromium.Portable\tools\Chrome.exe" />
   </TestRunParameters>
 </RunSettings>
