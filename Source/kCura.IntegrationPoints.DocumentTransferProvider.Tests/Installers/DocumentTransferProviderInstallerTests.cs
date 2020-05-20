@@ -4,6 +4,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.DocumentTransferProvider.Installers;
 using NUnit.Framework;
 using Relativity.API;
@@ -120,7 +121,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 			{
 				CreateDummyObjectRegistration<IWebApiConfig>(),
 				CreateDummyObjectRegistration<IAPILog>(),
-				CreateDummyObjectRegistration<IRepositoryFactory>()
+				CreateDummyObjectRegistration<IRepositoryFactory>(),
+				CreateDummyObjectRegistration<IAuthTokenGenerator>()
 			};
 
 			container.Register(dependencies);
