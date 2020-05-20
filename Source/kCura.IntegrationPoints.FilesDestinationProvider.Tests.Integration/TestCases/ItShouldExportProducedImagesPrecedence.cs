@@ -12,9 +12,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 {
 	public class ItShouldExportProducedImagesPrecedence : ExportTestCaseBase
 	{
-		private const string _PRODUCTION_BATES_PREFIX = "PRE";
-		private const string _PRODUCTION_BATES_SUFFIX = "SUF";
-
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportNatives = true;
@@ -34,31 +31,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			int expectedFilesWithImagesCount = documentsTestData.Images.Rows.Count;
 
 			DataRow[] documentsWithImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{true}'");
-			DataRow[] documentsWithoutImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{false}'");
-			int numberofDocumentsWithoutImages = documentsWithoutImages.Length;
 
-			Assert.AreEqual(totalExportedImagesCount, numberofDocumentsWithoutImages + expectedFilesWithImagesCount);
+			Assert.AreEqual(totalExportedImagesCount, expectedFilesWithImagesCount);
 
 			AssertExportedImagesAreSameAsInputImages(documentsWithImages, documentsTestData.Images.Select(), allExportedImages);
-			AssertExportedFilesWithoutImagesAreSameAsPlaceholder(documentsWithoutImages, allExportedImages);
-		}
-
-		private void AssertExportedFilesWithoutImagesAreSameAsPlaceholder(DataRow[] documentsWithoutImages,
-			FileInfo[] exportedImages)
-		{
-			foreach (var document in documentsWithoutImages)
-			{
-				FileInfo file =
-					exportedImages.SingleOrDefault(f => Path.GetFileNameWithoutExtension(f.Name) == GetProducedImageName(document.ItemArray[0].ToString()));
-
-				Assert.IsNotNull(file);
-				Assert.IsTrue(File.Exists(file.FullName));
-			}
-		}
-
-		private static string GetProducedImageName(string controlNumber)
-		{
-			return $"{_PRODUCTION_BATES_PREFIX}{controlNumber}{_PRODUCTION_BATES_SUFFIX}";
 		}
 
 		private static void AssertExportedImagesAreSameAsInputImages(DataRow[] documentsWithoutImages, DataRow[] inputImages,

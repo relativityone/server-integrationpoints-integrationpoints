@@ -49,9 +49,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			Assert.That(nativesRootDirectory.IsNullOrEmpty());
 
 			int actualFileCount = Directory.EnumerateFiles(imagesRootDirectory.First().FullName, "*", SearchOption.AllDirectories).Count();
-
-			// Production should generate additional image for AZIPPER_0011318
-			int expectedFilesCount = documentsTestData.Images.Rows.Count + 1;
+			int expectedFilesCount = documentsTestData.Images.Rows.Count;
 
 			Assert.That(expectedFilesCount, Is.EqualTo(actualFileCount));
 		}

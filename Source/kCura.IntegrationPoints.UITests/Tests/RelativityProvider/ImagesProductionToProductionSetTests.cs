@@ -22,13 +22,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 		private readonly string _destinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 
-		protected override Task SuiteSpecificOneTimeSetup()
-		{
-			SourceContext.CreateAndRunProduction(_sourceProductionName);
-			return Task.CompletedTask;
-		}
-
-
 		private RelativityProviderModel CreateModel()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
@@ -45,7 +38,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 				CopyImages = true,
 			};
-			DestinationContext.CreateProductionSet(_destinationProductionName);
+			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
+			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 			return model;
 		}
 		

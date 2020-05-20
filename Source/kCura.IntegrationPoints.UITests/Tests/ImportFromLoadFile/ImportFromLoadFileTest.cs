@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 
 			if (SharedVariables.UiUseTapiForFileCopy)
 			{
-				const int tapiTimeoutInSeconds = 60 * 5;
+				const int tapiTimeoutInSeconds = 60 * 3;
 				FileCopier.UploadToImportDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile"),
 					SharedVariables.RelativityBaseAdressUrlValue,
 					SourceContext.GetWorkspaceId(),

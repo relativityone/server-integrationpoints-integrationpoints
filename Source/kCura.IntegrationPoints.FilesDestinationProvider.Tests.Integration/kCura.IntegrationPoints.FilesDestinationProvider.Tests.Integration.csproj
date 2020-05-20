@@ -85,7 +85,6 @@
     <Compile Include="TestCases\ItShouldExportOriginalImagesPrecendence.cs" />
     <Compile Include="TestCases\ItShouldExportProducedImagesPrecedence.cs" />
     <Compile Include="TestCases\ItShouldExportProductionSetWithImages.cs" />
-    <Compile Include="TestCases\ItShouldExportProductionSetWithNatives.cs" />
     <Compile Include="TestCases\ItShouldIncludeNativeFilesPathWithoutExportingNatives.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
@@ -166,9 +165,7 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="paket.references">
     </None>

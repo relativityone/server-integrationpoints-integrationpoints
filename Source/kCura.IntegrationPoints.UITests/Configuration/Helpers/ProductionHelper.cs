@@ -1,17 +1,12 @@
-﻿using System.IO;
-using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
-using Relativity;
-using Relativity.Services.Objects.DataContracts;
-using ProductionType = Relativity.Productions.Services.ProductionType;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 
 namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 {
 	internal class ProductionHelper
 	{
-		private readonly WorkspaceService _workspaceService;
-
 		private readonly TestContext _testContext;
+		private readonly WorkspaceService _workspaceService;
 
 		public ProductionHelper(TestContext testContext)
 		{
@@ -19,50 +14,28 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			_workspaceService = new WorkspaceService(new ImportHelper());
 		}
 
-		public void CreateProductionSet(string productionName)
+		public int CreateProductionSet(string productionName)
 		{
-			_workspaceService.CreateProductionSet(_testContext.GetWorkspaceId(), productionName);
+			return _workspaceService.CreateProductionAsync(_testContext.GetWorkspaceId(), productionName).GetAwaiter().GetResult();
 		}
 
-		public void CreateAndRunProduction(string productionName)
+		public void CreateProductionSetAndImportData(string productionName, DocumentTestDataBuilder.TestDataType testDataType)
 		{
-			int savedSearchId = _workspaceService.CreateSavedSearch(
-				new[] {"Control Number"}, 
-				_testContext.GetWorkspaceId(),
-				$"ForProduction_{productionName}");
+			int productionID = CreateProductionSet(productionName);
 
-			string placeHolderFilePath = Path.Combine(
-				NUnit.Framework.TestContext.CurrentContext.TestDirectory,
-				@"TestData\DefaultPlaceholder.tif");
-
-			_workspaceService.CreateAndRunProduction(
-				_testContext.GetWorkspaceId(), 
-				savedSearchId, 
-				productionName,
-				placeHolderFilePath, 
-				ProductionType.ImagesAndNatives);
-		}
-
-		public void CreateAndRunProduction(string savedSearchName, string productionName)
-		{
-			int savedSearchID = RetrieveSavedSearchID(savedSearchName);
-			_workspaceService.CreateAndRunProduction(
-				_testContext.GetWorkspaceId(), 
-				savedSearchID, 
-				productionName,
-				ProductionType.ImagesAndNatives);
-		}
-
-		private int RetrieveSavedSearchID(string savedSearchName)
-		{
-			var savedSearchRequest = new QueryRequest
+			if (SharedVariables.UiSkipDocumentImport)
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int) ArtifactType.Search },
-				Condition = $"'Name' == '{savedSearchName}'",
-				Fields = new FieldRef[0]
-			};
-			RelativityObject savedSearch = _testContext.ObjectManager.Query(savedSearchRequest).First();
-			return savedSearch.ArtifactID;
+				ImportDocuments(testDataType);
+			}
+			
+			DocumentsTestData testDataForProductionImport = DocumentTestDataBuilder.BuildTestData(testDataType: testDataType);
+			_workspaceService.ImportDataToProduction(_testContext.GetWorkspaceId(), productionID, testDataForProductionImport.Images);
+		}
+
+		private void ImportDocuments(DocumentTestDataBuilder.TestDataType testDataType)
+		{
+			DocumentsTestData testData = DocumentTestDataBuilder.BuildTestData(testDataType: testDataType);
+			_workspaceService.ImportData(_testContext.GetWorkspaceId(), testData);
 		}
 	}
 }

@@ -39,6 +39,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
+		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure;
+
 		public ITestHelper Helper => _helperLazy.Value;
 
 		internal IRelativityObjectManager ObjectManager => _objectManagerLazy.Value;
@@ -149,20 +151,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return this;
 		}
 
-		public TestContext CreateAndRunProduction(string productionName)
+		public TestContext CreateProductionAndImportData(string productionName)
 		{
-			Log.Information($"Create and Run production {productionName}");
-			var sw = new Stopwatch();
-			sw.Start();
-			ProductionHelper.CreateAndRunProduction(productionName);
-			sw.Stop();
-			Log.Information("Production finished. Duration {productionName} s", sw.ElapsedMilliseconds/1000);
-			return this;
-		}
-
-		public TestContext CreateAndRunProduction(string savedSearchName, string productionName)
-		{
-			ProductionHelper.CreateAndRunProduction(savedSearchName, productionName);
+			ProductionHelper.CreateProductionSetAndImportData(productionName, DEFAULT_IMPORT_TEST_DATATYPE);
 			return this;
 		}
 
@@ -217,13 +208,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			);
 		}
 
-		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
+		public TestContext ImportDocuments(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DEFAULT_IMPORT_TEST_DATATYPE)
 		{
 			ImportDocumentsHelper.ImportDocuments(withNatives, testDataType);
 			return this;
 		}
 
-		public Task ImportDocumentsAsync(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure)
+		public Task ImportDocumentsAsync(bool withNatives = true, DocumentTestDataBuilder.TestDataType testDataType = DEFAULT_IMPORT_TEST_DATATYPE)
 		{
 			return Task.Run(() => ImportDocuments(withNatives, testDataType));
 		}

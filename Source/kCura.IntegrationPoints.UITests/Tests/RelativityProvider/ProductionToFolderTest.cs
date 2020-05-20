@@ -20,13 +20,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	{
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 
-		protected override Task SuiteSpecificOneTimeSetup()
-		{
-			SourceContext.CreateAndRunProduction(_sourceProductionName);
-			return Task.CompletedTask;
-		}
-
-
 		private RelativityProviderModel CreateRelativityProviderModelWithProduction()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
@@ -65,6 +58,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				DestinationContext.ImportDocuments();
 			}
 
+			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
+
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
@@ -72,6 +67,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
 			ValidateProductionImagesAndDocumentSource(false, model);
 			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
 		}
@@ -102,6 +98,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			{
 				model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
 			}
+
+			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
 			
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
@@ -113,6 +111,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 
 		#region Validators
+
 		private void ValidateProductionImagesAndDocumentSource(bool expectInRepository, RelativityProviderModel model)
 		{
 			IRelativityObjectManager objectManager = ObjectManagerFactory.CreateRelativityObjectManager(DestinationContext.GetWorkspaceId());

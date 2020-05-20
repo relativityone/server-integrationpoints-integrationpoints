@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[OneTimeSetUp]
-		protected async Task SetupSuite()
+		protected Task SetupSuiteAsync()
 		{
 			LogTestStart();
 			// enable TLS 1.2 for R1 regression environments
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			SourceContext.InitUser();
 			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
-			await Task.WhenAll(agentSetupTask, workspaceSetupTask).ConfigureAwait(false);
+			return Task.WhenAll(agentSetupTask, workspaceSetupTask);
 		}
 
 		[SetUp]

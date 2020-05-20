@@ -88,6 +88,53 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return !HasErrors;
 		}
 
+		public bool ImportToProductionSet(int workspaceID, int productionID, DataTable data)
+		{
+			Messages.Clear();
+			ErrorMessages.Clear();
+
+			var importApi =
+				new ImportAPI(
+					SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword,
+					SharedVariables.RelativityWebApiUrl);
+
+			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
+
+			importJob.OnMessage += ImportJobOnMessage;
+			importJob.OnComplete += ImportJobOnComplete;
+			importJob.OnFatalException += ImportJobOnFatalException;
+
+			importJob.Settings.AutoNumberImages = false;
+
+			importJob.Settings.CaseArtifactId = workspaceID;
+			importJob.Settings.ExtractedTextFieldContainsFilePath = true;
+			importJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
+
+			importJob.Settings.DocumentIdentifierField = "Control Number";
+
+			// Indicates filepath for an image.
+			importJob.Settings.FileLocationField = "File";
+			//Indicates that the images must be copied to the document repository
+			importJob.Settings.CopyFilesToDocumentRepository = true;
+			//For testing purpose
+			importJob.Settings.DisableImageTypeValidation = true;
+
+			// Specifies the ArtifactID of a document identifier field, such as a control number.
+			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
+			importJob.SourceData.SourceData = data;
+
+			// Production settings
+			importJob.Settings.BatesNumberField = TestConstants.FieldNames.BATES_BEG;
+			importJob.Settings.ForProduction = true;
+			importJob.Settings.ProductionArtifactID = productionID;
+
+			importJob.Execute();
+
+			return !HasErrors;
+		}
+
 		private int GetWorkspaceRootFolderID(int workspaceID)
 		{ 
 			Relativity.Client.DTOs.Workspace dto = Workspace.GetWorkspaceDto(workspaceID);
