@@ -67,11 +67,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
 			{
-				if (SharedVariables.UiSkipDocumentImport)
-				{
-					SourceContext.ImportDocuments();
-				}
-
 				DestinationContext.ImportDocuments();
 			}
 
