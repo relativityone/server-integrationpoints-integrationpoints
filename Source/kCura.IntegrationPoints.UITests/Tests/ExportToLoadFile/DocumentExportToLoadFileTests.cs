@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
-		[IdentifiedTest("d6ab4a52-9fce-4053-a46a-3abf5e8ca488")]
+		[IdentifiedTest("d6ab4a52-9fce-4053-a46a-3abf5e8ca488"), Timeout(300000)]
 		[RetryOnError]
 		[Order(1)]
 		[Category(TestCategory.SMOKE)]
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 		
-		[IdentifiedTest("9a7ab644-df2d-43ba-9aa4-e2056c98d1c7")]
+		[IdentifiedTest("9a7ab644-df2d-43ba-9aa4-e2056c98d1c7"), Timeout(300000)]
 		[RetryOnError]
 		[Order(2)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_3()
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[IdentifiedTest("b766eaa1-7343-417d-a87c-cda67d9a6cad")]
+		[IdentifiedTest("b766eaa1-7343-417d-a87c-cda67d9a6cad"), Timeout(300000)]
 		[RetryOnError]
 		[Order(3)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_5()
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[IdentifiedTest("5b081d40-136a-45b9-9504-c75a2d895800")]
+		[IdentifiedTest("5b081d40-136a-45b9-9504-c75a2d895800"), Timeout(300000)]
 		[RetryOnError]
 		[Order(4)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_2()
@@ -243,7 +243,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			validator.ValidateJobStatus(detailsPage, JobStatusChoices.JobHistoryCompleted);
 		}
 
-		[IdentifiedTest("a3a76e7f-0bd4-4403-b675-99567645d755")]
+		[IdentifiedTest("a3a76e7f-0bd4-4403-b675-99567645d755"), Timeout(300000)]
 		[RetryOnError]
 		[Order(5)]
 		public void DocumentExportToLoadFile_TC_ELF_DOC_4()
