@@ -7,12 +7,14 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System;
+using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.Sync.ProductionPush]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
 	{
@@ -27,148 +29,59 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 				RelativityInstance = "This Instance",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				Location = RelativityProviderModel.LocationEnum.ProductionSet,
+
 				DestinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}",
 				CreateSavedSearch = false,
 
 				CopyImages = true,
 			};
+			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
+			DestinationContext.CreateProductionSet(model.DestinationProductionName);
 			return model;
 		}
-
-		[IdentifiedTest("23c8242c-20cb-4c89-ad24-1f50bf84cb0c")]
+		//RelativityProvider_TC_RTR_PTP_01
+		[IdentifiedTestCase("23c8242c-20cb-4c89-ad24-1f50bf84cb0c", RelativityProviderModel.OverwriteModeEnum.AppendOnly, false)]
+		//RelativityProvider_TC_RTR_PTP_02
+		[IdentifiedTestCase("38e8e0fc-5315-4102-9964-5c901c564f3d", RelativityProviderModel.OverwriteModeEnum.AppendOnly, true)]
+		//RelativityProvider_TC_RTR_PTP_03
+		[IdentifiedTestCase("8aa51998-dbff-4c5f-a2af-88de58b287a6", RelativityProviderModel.OverwriteModeEnum.OverlayOnly, false)]
+		//RelativityProvider_TC_RTR_PTP_04
+		[IdentifiedTestCase("a313623e-0c79-4caf-bfb0-7029682d9d1d", RelativityProviderModel.OverwriteModeEnum.OverlayOnly, true)]
+		//RelativityProvider_TC_RTR_PTP_05
+		[IdentifiedTestCase("185de8df-cf4f-4286-975f-ed929c387eea", RelativityProviderModel.OverwriteModeEnum.AppendOverlay, true)]
+		//RelativityProvider_TC_RTR_PTP_06
+		[IdentifiedTestCase("b3e2c155-ac41-43ee-b45d-69d43d6af685", RelativityProviderModel.OverwriteModeEnum.AppendOverlay, false)]
 		[RetryOnError]
-		public void RelativityProvider_TC_RTR_PTP_01()
+		public void ItShouldPushImagesFromProductionToProduction(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
 		{
 			//Arrange
+			ImagesProductionToProductionSetValidator validator = new ImagesProductionToProductionSetValidator();
 			RelativityProviderModel model = CreateModel();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-			model.CopyFilesToRepository = false;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
+			model.Overwrite = overwrite;
+			model.CopyFilesToRepository = copyFilesToRepository;
+			
+			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
+			{
+				DestinationContext.ImportDocuments();
+			}
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			detailsPage.RunIntegrationPoint();
+			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
 			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-
-			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
-		}
-
-		[IdentifiedTest("38e8e0fc-5315-4102-9964-5c901c564f3d")]
-		[RetryOnError]
-		public void RelativityProvider_TC_RTR_PTP_02()
-		{
-			//Arrange
-			RelativityProviderModel model = CreateModel();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOnly;
-			model.CopyFilesToRepository = true;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
-
-			//Act
-			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			detailsPage.RunIntegrationPoint();
-
-			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-
-			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
-		}
-
-		[IdentifiedTest("8aa51998-dbff-4c5f-a2af-88de58b287a6")]
-		[RetryOnError]
-		public void RelativityProvider_TC_RTR_PTP_03()
-		{
-			//Arrange
-			RelativityProviderModel model = CreateModel();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-			model.CopyFilesToRepository = false;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-
-			DestinationContext.ImportDocuments();
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
-
-			//Act
-			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			detailsPage.RunIntegrationPoint();
-
-			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-
-			ValidateOverlayProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
-		}
-
-		[IdentifiedTest("a313623e-0c79-4caf-bfb0-7029682d9d1d")]
-		[RetryOnError]
-		public void RelativityProvider_TC_RTR_PTP_04()
-		{
-			//Arrange
-			RelativityProviderModel model = CreateModel();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.OverlayOnly;
-			model.CopyFilesToRepository = true;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-
-			DestinationContext.ImportDocuments();
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
-
-			//Act
-			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			detailsPage.RunIntegrationPoint();
-
-			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-
-			ValidateOverlayProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
-		}
-
-		[IdentifiedTest("185de8df-cf4f-4286-975f-ed929c387eea")]
-		[RetryOnError]
-		public void RelativityProvider_TC_RTR_PTP_05()
-		{
-			//Arrange
-			RelativityProviderModel model = CreateModel();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-			model.CopyFilesToRepository = false;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
-
-			//Act
-			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			detailsPage.RunIntegrationPoint();
-
-			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-
-			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
-		}
-
-		[IdentifiedTest("b3e2c155-ac41-43ee-b45d-69d43d6af685")]
-		[RetryOnError]
-		public void RelativityProvider_TC_RTR_PTP_06()
-		{
-			//Arrange
-			RelativityProviderModel model = CreateModel();
-			model.Overwrite = RelativityProviderModel.OverwriteModeEnum.AppendOverlay;
-			model.CopyFilesToRepository = true;
-
-			SourceContext.CreateAndRunProduction(model.SourceProductionName);
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
-
-			//Act
-			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			detailsPage.RunIntegrationPoint();
-
-			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
-
-			ValidateProductionImages(model.GetValueOrDefault(x => x.CopyFilesToRepository), model);
+			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
+			
+			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
+			{
+				ValidateOverlayProductionImages(copyFilesToRepository, model);
+			}
+			else
+			{
+				ValidateProductionImages(copyFilesToRepository, model);
+			}
 		}
 
 		private void ValidateProductionImages(bool expectInRepository, RelativityProviderModel model)

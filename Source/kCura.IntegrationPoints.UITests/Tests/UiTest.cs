@@ -1,4 +1,4 @@
-﻿using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -20,6 +20,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Relativity.Testing.Identification;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Tests
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	using Data;
 	using Validation;
 
+	[TestType.UI]
 	public abstract class UiTest
 	{
 		private RemoteWebDriver _driver;
@@ -79,7 +81,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		}
 
 		[OneTimeSetUp]
-		protected async Task SetupSuite()
+		protected Task SetupSuiteAsync()
 		{
 			LogTestStart();
 			// enable TLS 1.2 for R1 regression environments
@@ -94,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			SourceContext.InitUser();
 			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
-			await Task.WhenAll(agentSetupTask, workspaceSetupTask).ConfigureAwait(false);
+			return Task.WhenAll(agentSetupTask, workspaceSetupTask);
 		}
 
 		[SetUp]
