@@ -163,7 +163,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		[IdentifiedTest("69e67a17-8b23-41a8-b120-9a4441171d16")]
 		[SmokeTest]
-		[NotWorkingOnTrident]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
@@ -204,7 +203,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[IdentifiedTest("8a1efb36-117e-4c96-814d-537209d04314")]
-		[NotWorkingOnTrident]
 		public void RetryIntegrationPoint_GoldFlow()
 		{
 			//Arrange
@@ -258,7 +256,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[IdentifiedTest("7d479f10-b1fc-4a52-a081-18332ed91fc0")]
-		[NotWorkingOnTrident]
 		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{
 			//Arrange

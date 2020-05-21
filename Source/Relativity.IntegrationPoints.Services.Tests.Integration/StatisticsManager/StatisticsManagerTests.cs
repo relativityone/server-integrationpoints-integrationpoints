@@ -12,7 +12,6 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsManager
 {
 	[Feature.DataTransfer.IntegrationPoints]
-	[NotWorkingOnTrident]
 	public class StatisticsManagerTests : SourceProviderTemplate
 	{
 		private TestCaseSettings _testCaseSettings;

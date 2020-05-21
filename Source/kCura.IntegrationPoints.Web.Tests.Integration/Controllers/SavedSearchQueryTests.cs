@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-	[NotWorkingOnTrident]
 	public class SavedSearchQueryTests : SourceProviderTemplate
 	{
 		private List<int> _savedSearchesArtifactIds;

@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-	[NotWorkingOnTrident]
 	public class ImportProviderImageControllerTests
 	{
 		private int _workspaceId;
