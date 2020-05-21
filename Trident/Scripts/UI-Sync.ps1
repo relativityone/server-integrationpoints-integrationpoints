@@ -19,6 +19,6 @@ Invoke-Task Test
 
 Invoke-Task Package
 
-Invoke-Task OneTimeTestsSetup
+#Invoke-Task OneTimeTestsSetup
 
 Invoke-Test "cat == ExportToRelativity && cat != NotWorkingOnTrident"

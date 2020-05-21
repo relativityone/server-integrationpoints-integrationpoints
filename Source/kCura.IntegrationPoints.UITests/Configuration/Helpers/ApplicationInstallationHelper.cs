@@ -31,6 +31,14 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			return InstallApplicationAsync(LegalHoldGuid, "Legal Hold");
 		}
 
+		public async Task<bool> IsIntegrationPointsInstalledAsync()
+		{
+			int? workspaceID = _testContext.WorkspaceId;
+
+			return await new RelativityApplicationManager(_testContext.Helper)
+				.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, RipGuid).ConfigureAwait(false);
+		}
+
 		private async Task InstallApplicationAsync(Guid guid, string appName)
 		{
 			int? workspaceID = _testContext.WorkspaceId;

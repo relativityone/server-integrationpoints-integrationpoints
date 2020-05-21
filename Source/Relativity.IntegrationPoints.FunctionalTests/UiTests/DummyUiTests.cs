@@ -12,8 +12,10 @@ namespace kCura.IntegrationPoints.UITests.DummyUiTests
 	public class DummyUiTests
     {
 		private const string _ONE_TIME_TESTS_SETUP = "OneTimeTestsSetup";
+		private const int _TIMEOUT = 15 * 60 * 1000;
 
-		[Test]
+
+		[Test, Timeout(_TIMEOUT)]
 		public void DummyTest()
 		{
 			true.Should().BeTrue();

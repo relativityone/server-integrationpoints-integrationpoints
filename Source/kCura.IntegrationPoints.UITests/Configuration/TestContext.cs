@@ -173,6 +173,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return ApplicationInstallationHelper.InstallIntegrationPointsAsync();
 		}
 
+		public Task<bool> IsIntegrationPointsInstalledAsync()
+		{
+			return ApplicationInstallationHelper.IsIntegrationPointsInstalledAsync();
+		}
+
 		public TestContext ImportDocumentsToRoot()
 		{
 			ImportDocuments(
