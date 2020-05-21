@@ -2,9 +2,7 @@ folder('IntegrationPoints-Jobs') {
 }
 
 folder('IntegrationPoints-Jobs/IntegrationPoints-Regression') {
-    description('Prerequisites:
-     - "Functional Tests Template" workspace must exist
-     - "rip.jenkins@rip.com" with default password must exist')
+    description('Prerequisites: "Functional Tests Template" workspace must exist; "rip.jenkins@rip.com" with default password must exist')
 }
 
 multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/IntegrationPoints-ImportExport') {

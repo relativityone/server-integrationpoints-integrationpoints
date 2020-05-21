@@ -358,7 +358,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		}
 
 		[IdentifiedTest("a69813c2-a1f4-4165-9d3d-efe28398bb4e")]
-		[NotWorkingOnTrident]
 		public void ExpectTempSavedSearchCreatedAndDeleted()
 		{
 			//Arrange
