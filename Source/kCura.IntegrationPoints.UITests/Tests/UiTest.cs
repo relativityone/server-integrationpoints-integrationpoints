@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			bool isIntegrationPointInstalled = await SourceContext.IsIntegrationPointsInstalledAsync().ConfigureAwait(false);
 			if (!isIntegrationPointInstalled)
 			{
-				throw new TestException($"Integration Points should be installed in workspace '{SourceContext.WorkspaceName}'."));
+				throw new TestException($"Integration Points should be installed in workspace '{SourceContext.WorkspaceName}'.");
 			}
 
 			if (_shouldImportDocuments)
@@ -163,7 +163,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[OneTimeTearDown]
 		protected void OneTimeTearDown()
 		{
-			DeleteWorkspace();
+			if(!HasTestFailed())
+			{
+				DeleteWorkspace();
+			}
 			TearDownContext();
 		}
 
