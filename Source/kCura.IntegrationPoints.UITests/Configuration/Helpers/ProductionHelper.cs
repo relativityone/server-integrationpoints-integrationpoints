@@ -1,12 +1,12 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 
 namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 {
 	internal class ProductionHelper
 	{
-		private readonly WorkspaceService _workspaceService;
-
 		private readonly TestContext _testContext;
+		private readonly WorkspaceService _workspaceService;
 
 		public ProductionHelper(TestContext testContext)
 		{
@@ -14,19 +14,23 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			_workspaceService = new WorkspaceService(new ImportHelper());
 		}
 
-		public void CreateProductionSet(string productionName)
+		public int CreateProductionSet(string productionName)
 		{
-			_workspaceService.CreateProductionAsync(_testContext.GetWorkspaceId(), productionName).GetAwaiter().GetResult();
+			return _workspaceService.CreateProductionAsync(_testContext.GetWorkspaceId(), productionName).GetAwaiter().GetResult();
 		}
 
-		public void CreateAndRunProduction(string productionName)
+		public void CreateProductionSetAndImportData(string productionName, DocumentTestDataBuilder.TestDataType testDataType)
 		{
-			CreateProductionSet(productionName);
+			int productionID = CreateProductionSet(productionName);
+			ImportDocuments(testDataType);
+			DocumentsTestData testDataForProductionImport = DocumentTestDataBuilder.BuildTestData(testDataType: testDataType);
+			_workspaceService.ImportDataToProduction(_testContext.GetWorkspaceId(), productionID, testDataForProductionImport.Images);
 		}
 
-		public void CreateAndRunProduction(string savedSearchName, string productionName)
+		private void ImportDocuments(DocumentTestDataBuilder.TestDataType testDataType)
 		{
-			CreateProductionSet(productionName);
+			DocumentsTestData testData = DocumentTestDataBuilder.BuildTestData(testDataType: testDataType);
+			_workspaceService.ImportData(_testContext.GetWorkspaceId(), testData);
 		}
 	}
 }
