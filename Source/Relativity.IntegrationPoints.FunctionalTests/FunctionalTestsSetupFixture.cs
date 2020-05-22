@@ -12,6 +12,8 @@ public class FunctionalTestsSetupFixture
 {
 	private ITestHelper _testHelper;
 
+	public static bool HasPassed = true;
+
 	[OneTimeSetUp]
 	public async Task InitializeFixtureAsync()
 	{
@@ -44,8 +46,14 @@ public class FunctionalTestsSetupFixture
 		}
         Console.WriteLine("Importing RIP RAP to workspace");
 		await applicationManager.InstallRipFromLibraryAsync(workspaceTemplateID)
-			.ContinueWith(t =>
-				InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl))
-			.ConfigureAwait(false);
+			.ContinueWith(async t =>
+			{
+				if(t.IsFaulted)
+				{
+					HasPassed = false;
+					throw t.Exception;
+				}
+				await InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl);
+			}).ConfigureAwait(false);
 	}
 }

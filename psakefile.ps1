@@ -45,8 +45,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ /Tests\.Integration[\$\.]/ || namespace =~ E2ETests) && cat != NightlyOnly && cat != NotWorkingOnTrident" 
-                 -OutputFile $LogPath
+    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ /Tests\.Integration[\$\.]/ || namespace =~ E2ETests) && cat != NightlyOnly && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {

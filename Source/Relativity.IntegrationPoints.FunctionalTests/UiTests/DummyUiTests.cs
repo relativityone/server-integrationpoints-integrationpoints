@@ -13,11 +13,10 @@ namespace kCura.IntegrationPoints.UITests.DummyUiTests
     {
 		private const string _ONE_TIME_TESTS_SETUP = "OneTimeTestsSetup";
 
-
 		[Test]
 		public void DummyTest()
 		{
-			true.Should().BeTrue();
+			FunctionalTestsSetupFixture.HasPassed.Should().BeTrue();
 		}
 	}
 }
