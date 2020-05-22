@@ -118,7 +118,16 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
 }
 
-Task CustomTest -Description "Run custom tests based on specified filter" {
+Task RegTest -Description "Run custom tests based on specified filter on regression environment" {
+    Invoke-MyTest
+}
+
+Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {
+    Invoke-MyTest
+}
+
+function Invoke-MyTest
+{
     $LogTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
     $LogPath = Join-Path $LogsDir "MyTest_$LogTime.xml"
     Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath

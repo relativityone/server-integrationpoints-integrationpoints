@@ -31,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[Category("Test")]
 	public class IntegrationPointServiceTests : RelativityProviderTemplate
 	{
 		private const string _SOURCECONFIG = "Source Config";
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateNothing()
 		{
 			//Arrange
-			const string name = "Resaved Rip";
+			const string name = "SaveIntegration_UpdateNothing";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
@@ -89,10 +90,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
 			//Arrange
-			const string name = "Update Name - OnRanIp";
+			const string name = "SaveIntegration_UpdateName_OnRanIp_ErrorCase";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
-			defaultModel.Name = "newName";
+			defaultModel.Name = "SaveIntegration_UpdateName_OnRanIp_ErrorCase-NewName";
 
 			//Act & Assert
 			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel));
@@ -102,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
 			//Arrange
-			const string name = "Update Map - OnRanIp";
+			const string name = "SaveIntegration_UpdateMap_OnRanIp";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 			defaultModel.Map = CreateSampleFieldsMapWithLongTextField();
@@ -118,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateConfig_OnNewRip()
 		{
 			//Arrange
-			const string name = "Update Source Config - SavedSearch - OnNewRip";
+			const string name = "SaveIntegration_UpdateConfig_OnNewRip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
@@ -133,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateName_OnNewRip()
 		{
 			//Arrange
-			const string name = "Update Name - OnNewRip";
+			const string name = "SaveIntegration_UpdateName_OnNewRip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 			defaultModel.Name = name + " 2";
@@ -146,7 +147,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateMap_OnNewRip()
 		{
 			//Arrange
-			const string name = "Update Map - OnNewRip";
+			const string name = "SaveIntegration_UpdateMap_OnNewRip";
 			IntegrationPointModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationPointModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
@@ -173,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = $"IntegrationPointServiceTest{ DateTime.Now:yy - MM - dd HH - mm - ss}",
+				Name = $"CreateAndRunIntegrationPoint_GoldFlow {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -213,7 +214,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
+				Name = $"RetryIntegrationPoint_GoldFlow {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler()
 				{
@@ -270,7 +271,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
+				Name = $"CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -324,7 +325,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
+				Name = $"CreateScheduledIntegrationPoint_WithInvalidStartDate_ExpectError {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -363,7 +364,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				LogErrors = true,
-				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
+				Name = $"CreateScheduledIntegrationPoint_WithInvalidEndDate_ExpectError {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Scheduler = new Scheduler()
 				{
@@ -400,7 +401,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactID, TemporarySavedSearchId, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,
-				Name = $"IntegrationPointServiceTest{DateTime.Now:yy-MM-dd HH-mm-ss}",
+				Name = $"RunJobWithFailingValidation_ExpectError_SaveJobHistory {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
 				Map = CreateDefaultFieldMap(),
 				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId,
