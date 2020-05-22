@@ -14,15 +14,16 @@ using System.Collections.Generic;
 using System.Security;
 using System.Threading.Tasks;
 using Relativity.Testing.Identification;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.NOT_WORKING_ON_TRIDENT)] //Remove when REL-389924
 	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
 	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // no access to LDAP from R1
+	[NotWorkingOnTrident] //Remove when REL-250027
 	public class ImportLdapProviderTest : UiTest
 	{
 		private IRSAPIService _service;

@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-	[Category("Test")]
 	public class IntegrationPointServiceTests : RelativityProviderTemplate
 	{
 		private const string _SOURCECONFIG = "Source Config";

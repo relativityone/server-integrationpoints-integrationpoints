@@ -19,6 +19,5 @@
 		public const string NOT_WORKING_ON_REGRESSION_ENVIRONMENT = "NotWorkingOnRegressionEnvironment";
 
 		public const string PERFORMANCE_BASELINE = "PerformanceBaseline";
-		public const string NOT_WORKING_ON_TRIDENT = "NotWorkingOnTrident";
 	}
 }

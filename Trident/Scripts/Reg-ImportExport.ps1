@@ -8,22 +8,14 @@ param(
     [string] $RegEnv
 )
 
-function Invoke-Build {
-    $TaskRunner = Resolve-Path -Path build.ps1
-    &($TaskRunner) -Configuration Release
-}
-
-function Invoke-Test ($TestFilter) {
-    $TaskRunner = Resolve-Path -Path build.ps1
-    &($TaskRunner) RegTest -Configuration Release -TestFilter $TestFilter
-}
-
 Import-Module (Join-Path $PSScriptRoot Build-Util.psm1)
 
 Set-RegressionSettings $RegEnv
 
-Invoke-Build
+$TaskRunner = Resolve-Path -Path build.ps1
 
-Invoke-Test "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment"
+&($TaskRunner) -Configuration Release
+
+&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment"
 
 Remove-Module Build-Util
