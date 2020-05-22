@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
 			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME;
-			model.SourceInformationModel.StartAtRecord = 10;
+			model.SourceInformationModel.StartAtRecord = 2;
 			model.SourceInformationModel.SelectAllFields = false;
 			// Production::Begin Bates, Production::End Bates are selected by default
 
