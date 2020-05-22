@@ -191,7 +191,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 1
 			//default
-			model.SourceInformationModel.StartAtRecord = 10;
+			model.SourceInformationModel.StartAtRecord = 2;
 			model.SourceInformationModel.Source = "Saved Search";
 			model.SourceInformationModel.SavedSearch = "All Documents";
 
