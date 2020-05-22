@@ -4,9 +4,10 @@ folder('DataTransfer-Jobs') {
 folder('DataTransfer-Jobs/RelativitySync') {
 }
 
-buildMonitorView('DataTransfer-Jobs/RelativitySync/Nightly/Build monitor') {
-	description(true)
-	jobs {
-		regex('/release-(.*)')
-    }
+buildMonitorView('DataTransfer-Jobs/RelativitySync/Nightly/Monitor') {
+    description('All nightly jobs')
+    recurse(true)
+    jobs {
+        regex('/release-(.*)')
+    }
 }
