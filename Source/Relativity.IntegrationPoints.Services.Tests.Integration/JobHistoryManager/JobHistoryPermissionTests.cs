@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 		public override void SuiteSetup()
 		{
 			base.SuiteSetup();
-			RunDefaultIntegrationPoint().GetAwaiter().GetResult();
+			RunDefaultIntegrationPoint();
 			ModifyJobHistoryItem();
 		}
 
@@ -133,15 +133,14 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 			permissionsForIntegrationPoint.ViewSelected = false;
 		}
 
-		private async Task RunDefaultIntegrationPoint()
+		private void RunDefaultIntegrationPoint()
 		{
 			kCura.IntegrationPoints.Core.Models.IntegrationPointModel ipModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, $"ip_{Utils.FormattedDateTimeNow}", "Append Only");
 			ipModel.Destination = CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactID);
 			kCura.IntegrationPoints.Core.Models.IntegrationPointModel ip = CreateOrUpdateIntegrationPoint(ipModel);
 
 			IIntegrationPointManager integrationPointManager = Helper.CreateProxy<IIntegrationPointManager>();
-			await integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID)
-				.ConfigureAwait(false);
+			integrationPointManager.RunIntegrationPointAsync(SourceWorkspaceArtifactID, ip.ArtifactID).Wait();
 
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, ip.ArtifactID);
 		}

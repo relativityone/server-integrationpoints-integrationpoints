@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Status
 	{
-		public static void WaitForProcessToComplete(IRSAPIClient rsapiClient, Guid processId, int timeoutInSeconds = 600, int sleepIntervalInMilliseconds = 2000, ILogger log = null)
+		public static void WaitForProcessToComplete(IRSAPIClient rsapiClient, Guid processId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500, ILogger log = null)
 		{
 			double timeWaitedInSeconds = 0.0;
 			ProcessInformation processInfo = rsapiClient.GetProcessState(rsapiClient.APIOptions, processId);
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void WaitForIntegrationPointJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 600, int sleepIntervalInMilliseconds = 2000)
+		public static void WaitForIntegrationPointJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
 		{
 			IQueueRepository queueRepository = container.Resolve<IQueueRepository>();
 
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void WaitForIntegrationPointToLeavePendingState(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 600, int sleepIntervalInMilliseconds = 2000)
+		public static void WaitForIntegrationPointToLeavePendingState(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
 		{
 			IQueueRepository queueRepository = container.Resolve<IQueueRepository>();
 
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void WaitForScheduledJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 600, int sleepIntervalInMilliseconds = 2000)
+		public static void WaitForScheduledJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
 		{
 			var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
 
