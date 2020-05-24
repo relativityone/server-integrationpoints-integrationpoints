@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER;
-			model.SourceInformationModel.Folder = "One";
+			model.SourceInformationModel.Folder = "first";
 			model.SourceInformationModel.View = _VIEW_NAME;
 			model.SourceInformationModel.StartAtRecord = 1;
 			model.SourceInformationModel.SelectAllFields = true;
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER_AND_SUBFOLDERS;
-			model.SourceInformationModel.Folder = "One";
+			model.SourceInformationModel.Folder = "first";
 			model.SourceInformationModel.View = _VIEW_NAME;
 			model.SourceInformationModel.StartAtRecord = 2;
 			model.SourceInformationModel.SelectAllFields = true;
