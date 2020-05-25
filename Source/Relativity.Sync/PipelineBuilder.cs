@@ -25,9 +25,9 @@ namespace Relativity.Sync
 
 			flowBuilder.CreateFlow(pipelineName)
 				.AddRoot<SyncRootNode>()
+				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()
-				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
 				.AddChild<DataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()
 				.ForLastChild()

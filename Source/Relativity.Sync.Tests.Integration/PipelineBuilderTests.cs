@@ -182,9 +182,9 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]
 				{
