@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.Testing.Identification;
+using kCura.IntegrationPoints.Domain.Authentication;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 {
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration
 			IWebApiConfig webApiConfig = Substitute.For<IWebApiConfig>();
 			IAPILog logger = Substitute.For<IAPILog>();
 			webApiConfig.GetWebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
-			var importApiFactory = new ImportApiFactory(webApiConfig);
+			var importApiFactory = new ImportApiFactory(webApiConfig, Container.Resolve<IAuthTokenGenerator>());
 
 			var importApiFacade = new ImportApiFacade(importApiFactory, logger);
 			_documentTransferProvider = new DocumentTransferProvider(importApiFacade, Container.Resolve<IRepositoryFactory>(), logger);
