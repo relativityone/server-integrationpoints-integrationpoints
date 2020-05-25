@@ -18,7 +18,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-	[NotWorkingOnTrident]
 	[NightlyOnly]
 	public class BillingFlagRelativityProviderProductionTests : RelativityProviderTemplate
 	{

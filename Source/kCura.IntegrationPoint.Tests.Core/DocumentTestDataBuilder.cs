@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static IList<FolderWithDocuments> GetFoldersWithDocuments(string prefix, string testDirectory, bool withNatives = true)
 		{
 			const string issueDesignation = "Level1\\Level2";
-			bool hasImages = true;
+			bool hasImages = false;
 
 			const string firstFolderName = "first";
 			var firstFolder = new FolderWithDocuments(firstFolderName, CreateDataTableForDocuments());
@@ -152,8 +152,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				hasImages, 
 				secondFolderName,
 				"XLS");
-
-			hasImages = false;
 
 			secondFolder.Documents.Rows.Add(
 				prefix + "AZIPPER_0011318", 

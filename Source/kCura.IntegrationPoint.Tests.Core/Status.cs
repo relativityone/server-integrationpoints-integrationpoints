@@ -41,14 +41,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			double timeWaitedInSeconds = 0.0;
 			int numberOfJobsQueuedOrInProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-			Console.WriteLine($"Number of jobs in queue or progress {numberOfJobsQueuedOrInProgress}");
 
 			while (numberOfJobsQueuedOrInProgress > 0)
 			{
 				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds, nameof(WaitForIntegrationPointJobToComplete));
 				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
 				numberOfJobsQueuedOrInProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-				Console.WriteLine($"Number of jobs in queue or progress {numberOfJobsQueuedOrInProgress}");
 			}
 		}
 

@@ -45,15 +45,15 @@ public class FunctionalTestsSetupFixture
 			await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
 		}
         Console.WriteLine("Importing RIP RAP to workspace");
+
 		await applicationManager.InstallRipFromLibraryAsync(workspaceTemplateID)
 			.ContinueWith(async t =>
 			{
-				if(t.IsFaulted)
+				bool isValid = await InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl);
+				if (t.IsFaulted || !isValid)
 				{
 					HasPassed = false;
-					throw t.Exception;
 				}
-				await InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl);
 			}).ConfigureAwait(false);
 	}
 }

@@ -6,6 +6,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -18,6 +19,7 @@ using Permission = kCura.IntegrationPoint.Tests.Core.Permission;
 namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryManager
 {
 	[Feature.DataTransfer.IntegrationPoints]
+	[NotWorkingOnTrident]
 	public class JobHistoryPermissionTests : RelativityProviderTemplate
 	{
 		private int _groupId;

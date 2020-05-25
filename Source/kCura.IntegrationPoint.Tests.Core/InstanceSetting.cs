@@ -37,13 +37,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static async Task CreateOrUpdateAsync(string section, string name, string value)
+		public static async Task<bool> CreateOrUpdateAsync(string section, string name, string value)
 		{
+			Console.WriteLine($"Updating Instance Setting - Name: {name}, Section: {section} wit Value: {value}");
 			global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting =
 				await QueryAsync(section, name).ConfigureAwait(false);
 
 			if (instanceSetting == null)
 			{
+				Console.WriteLine($"Instance Setting does not exist, create new one");
 				await CreateAsync(section, name, value, ValueType.TrueFalse).ConfigureAwait(false);
 			}
 			else
@@ -51,6 +53,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 				instanceSetting.Value = value;
 				await UpdateAsync(instanceSetting).ConfigureAwait(false);
 			}
+
+			instanceSetting = await QueryAsync(section, name).ConfigureAwait(false);
+
+			return instanceSetting.Value == value;
 		}
 
 		private static Task<int> CreateAsync(string section, string name, string value, ValueType valueType)

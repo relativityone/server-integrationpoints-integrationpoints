@@ -41,6 +41,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE = DocumentTestDataBuilder.TestDataType.SmallWithFoldersStructure;
 
+		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS = DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure;
+
 		public ITestHelper Helper => _helperLazy.Value;
 
 		internal IRelativityObjectManager ObjectManager => _objectManagerLazy.Value;
@@ -182,7 +184,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: true,
-				testDataType: DEFAULT_IMPORT_TEST_DATATYPE
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS
 			);
 			return this;
 		}
@@ -191,7 +193,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: false,
-				testDataType: DEFAULT_IMPORT_TEST_DATATYPE
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS
 			);
 			return this;
 		}
@@ -200,7 +202,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: false,
-				testDataType: DEFAULT_IMPORT_TEST_DATATYPE
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS
 			);
 			return this;
 		}
