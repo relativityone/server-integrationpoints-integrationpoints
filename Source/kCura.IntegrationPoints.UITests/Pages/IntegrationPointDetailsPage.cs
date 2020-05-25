@@ -1,15 +1,21 @@
+using System.Diagnostics;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
+using kCura.IntegrationPoints.UITests.Logging;
+using kCura.IntegrationPoints.UITests.Tests;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
+using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class IntegrationPointDetailsPage : GeneralPage
 	{
+
+		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(IntegrationPointDetailsPage));
 		[FindsBy(How = How.LinkText, Using = "Run")]
 		protected IWebElement RunButton;
 
@@ -56,10 +62,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public PropertiesTable SelectGeneralPropertiesTable()
 		{
+			var sw = new Stopwatch();
+			sw.Start();
 			WaitForPage();
 			var t = new PropertiesTable(Driver.FindElementById("summaryPage"), "General");
 			t.Select();
+			sw.Stop();
+			Log.Information("SelectGeneralPropertiesTable. Duration: {duration} s", sw.ElapsedMilliseconds/1000);
 			return t;
+			
 		}
 
 		public JobHistoryModel GetLatestJobHistoryFromJobStatusTable()

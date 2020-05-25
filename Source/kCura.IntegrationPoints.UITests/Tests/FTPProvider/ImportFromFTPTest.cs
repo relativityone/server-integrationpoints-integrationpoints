@@ -16,7 +16,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.WebImport.ImportFtp]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
 	public class ImportFromFtpTest : UiTest
@@ -35,9 +35,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 			_service = Container.Resolve<IRSAPIService>();
 		}
 
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTest("780e987a-a791-4048-a2c6-780c191a9998")]
 		[RetryOnError]
-		[Order(10)]
 		public void ImportDocumentsFromFtp()
 		{
 			// Arrange

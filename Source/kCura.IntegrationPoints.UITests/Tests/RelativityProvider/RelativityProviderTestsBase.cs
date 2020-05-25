@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
@@ -34,6 +35,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public virtual async Task OneTimeSetUp()
 		{
 			Log.Information("One TimeSetUp");
+			var sw = new Stopwatch();
+			sw.Start();
 			SourceContext.ExecuteRelativityFolderPathScript();
 			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
 			SourceFieldManager = SourceContext.Helper.CreateProxy<IFieldManager>();
@@ -43,6 +46,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
 			await SuiteSpecificOneTimeSetup().ConfigureAwait(false);
 			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+			sw.Stop();
+			Log.Information("One TimeSetUp. Duration: {duration} s", sw.ElapsedMilliseconds/1000);
 		}
 
 		[SetUp]

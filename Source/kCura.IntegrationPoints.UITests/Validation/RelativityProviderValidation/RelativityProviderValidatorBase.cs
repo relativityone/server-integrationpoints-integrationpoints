@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 {
 	public abstract class RelativityProviderValidatorBase : BaseUiValidator
 	{
-		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(RelativityProviderValidatorBase));
 		public void ValidateSummaryPage(PropertiesTable propertiesTable, RelativityProviderModel model, TestContext sourceContext, TestContext destinationContext, bool expectErrors)
 		{
 			var callDurationStopWatch = new Stopwatch();

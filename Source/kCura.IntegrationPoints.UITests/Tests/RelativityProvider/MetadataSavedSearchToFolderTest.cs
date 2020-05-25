@@ -12,7 +12,7 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.Sync.SavedSearch]
 	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class MetadataSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
