@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			const string issueDesignation = "Level1\\Level2";
 			bool hasImages = false;
 
-			const string firstFolderName = "first";
+			const string firstFolderName = "One";
 			var firstFolder = new FolderWithDocuments(firstFolderName, CreateDataTableForDocuments());
 			firstFolder.Documents.Rows.Add(
 				prefix + "AMEYERS_0000757",
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				firstFolderName,
 				"HTM");
 
-			const string firstFolderChildName = "child";
+			const string firstFolderChildName = "Two";
 			var firstFolderChild = new FolderWithDocuments(firstFolderChildName, CreateDataTableForDocuments());
 			firstFolderChild.Documents.Rows.Add(
 				prefix + "AMEYERS_0000975",
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			firstFolderChild.ParentFolderWithDocuments = firstFolder;
 			firstFolder.ChildrenFoldersWithDocument.Add(firstFolderChild);
 
-			const string secondFolderName = "second";
+			const string secondFolderName = "Three";
 			var secondFolder = new FolderWithDocuments(secondFolderName, CreateDataTableForDocuments());
 			secondFolder.Documents.Rows.Add(
 				prefix + "AMEYERS_0001185", 
