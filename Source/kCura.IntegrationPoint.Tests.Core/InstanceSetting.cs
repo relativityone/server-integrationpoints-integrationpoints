@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return instanceSettingUpdated.Value == value;
 		}
 
-		private static Task<int> CreateAsync(string section, string name, string value, ValueType valueType)
+		private static async Task<int> CreateAsync(string section, string name, string value, ValueType valueType)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
 			{
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				try
 				{
-					return instanceSettingManager.CreateSingleAsync(instanceSetting);
+					return await instanceSettingManager.CreateSingleAsync(instanceSetting).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
@@ -83,13 +83,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private static Task UpdateAsync(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
+		private static async Task UpdateAsync(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
 			{
 				try
 				{
-					return instanceSettingManager.UpdateSingleAsync(instanceSetting);
+					await instanceSettingManager.UpdateSingleAsync(instanceSetting).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
