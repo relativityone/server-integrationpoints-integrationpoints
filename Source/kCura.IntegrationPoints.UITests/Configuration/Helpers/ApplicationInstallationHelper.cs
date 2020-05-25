@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		public Task InstallLegalHoldAsync()
 		{
-			return InstallApplicationAsync(LegalHoldGuid, "Legal Hold");
+			return InstallApplicationAsync(LegalHoldGuid, "Relativity Legal Hold");
 		}
 
 		public async Task<bool> IsIntegrationPointsInstalledAsync()
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			try
 			{
 				var ipAppManager = new RelativityApplicationManager(_testContext.Helper);
-				bool isAppInstalledAndUpToDate = await ipAppManager.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, guid).ConfigureAwait(false);
+				bool isAppInstalledAndUpToDate = false; //await ipAppManager.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, guid).ConfigureAwait(false);
 				if (!isAppInstalledAndUpToDate)
 				{
 					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", appName, guid, workspaceName, workspaceID);

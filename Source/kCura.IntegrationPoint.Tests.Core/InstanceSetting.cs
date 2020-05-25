@@ -54,9 +54,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 				await UpdateAsync(instanceSetting).ConfigureAwait(false);
 			}
 
-			instanceSetting = await QueryAsync(section, name).ConfigureAwait(false);
+			var instanceSettingUpdated = await QueryAsync(section, name).ConfigureAwait(false);
 
-			return instanceSetting.Value == value;
+			return instanceSettingUpdated.Value == value;
 		}
 
 		private static Task<int> CreateAsync(string section, string name, string value, ValueType valueType)
