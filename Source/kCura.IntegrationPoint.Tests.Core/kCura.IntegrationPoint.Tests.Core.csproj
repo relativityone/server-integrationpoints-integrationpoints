@@ -85,7 +85,7 @@
     <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
-    <Compile Include="FileshareHelper.cs" />
+    <Compile Include="FileShareHelper.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentsModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\EitherAssertions.cs" />
