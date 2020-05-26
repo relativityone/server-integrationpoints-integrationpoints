@@ -44,9 +44,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		}
 
 		[SetUp]
-		public override void SetUp()
+		public override async Task SetUp()
 		{
-			base.SetUp();
+			await base.SetUp().ConfigureAwait(false);
 			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext);
 		}
 

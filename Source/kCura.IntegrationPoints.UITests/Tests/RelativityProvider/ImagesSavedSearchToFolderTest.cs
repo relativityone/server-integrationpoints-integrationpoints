@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
 using System;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using Relativity.Testing.Identification;
 
@@ -22,7 +23,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	{
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 		private readonly string _destinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+		
+		protected override Task SuiteSpecificOneTimeSetup()
+		{
+			SourceContext.CreateProductionAndImportData(_sourceProductionName);
+			return Task.CompletedTask;
+		}
 
+		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
+		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
+		
 		private RelativityProviderModel CreateRelativityProviderModelWithImages()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
@@ -39,10 +49,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private RelativityProviderModel CreateRelativityProviderModelWithProduction()
 		{
 			RelativityProviderModel model = CreateRelativityProviderModelWithImages();
-			model.SourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
-			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
-
-			model.DestinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+			model.SourceProductionName = _sourceProductionName;
+			model.DestinationProductionName = _destinationProductionName;
 			return model;
 		}
 
@@ -129,6 +137,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
 			{
 				DestinationContext.ImportDocuments();
+				DestinationContext.CreateProductionAndImportData(model.DestinationProductionName);
 			}
 
 			// Act
@@ -168,13 +177,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = includeOriginalImagesIfNotProduced;
 			model.CopyFilesToRepository = copyFilesToRepository;
-
-			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
-			{
-				DestinationContext.ImportDocuments();
-				DestinationContext.CreateProductionAndImportData(model.DestinationProductionName);
-			}
-
+			
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
