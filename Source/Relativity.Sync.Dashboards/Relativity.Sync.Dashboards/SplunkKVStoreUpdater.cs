@@ -41,7 +41,7 @@ namespace Relativity.Sync.Dashboards
 					Status = jiraTicket.Fields.Status.Name,
 					Summary = jiraTicket.Fields.Summary,
 					Labels = jiraTicket.Fields.Labels,
-					FixVersions = jiraTicket.Fields.FixVersions.Select(x => x.Name).ToArray()
+					FixVersions = jiraTicket.Fields.FixVersions?.Select(x => x.Name).ToArray()
 				};
 				await AddSplunkKVItemAsync(kvCollectionItem).ConfigureAwait(false);
 			}
