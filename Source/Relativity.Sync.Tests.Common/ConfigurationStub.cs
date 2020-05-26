@@ -143,6 +143,5 @@ namespace Relativity.Sync.Tests.Common
 		public int TotalRecordsCount { get; set; }
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
-		public string WorkflowId { get; }
 	}
 }
