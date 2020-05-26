@@ -9,6 +9,4 @@ buildMonitorView('DataTransfer-Jobs/RelativitySync/Monitor')
 {
 	description('All nighlty jobs')
 	recurse(true)
-	jobs {
-		regex('release-(.*)')	}
 }
