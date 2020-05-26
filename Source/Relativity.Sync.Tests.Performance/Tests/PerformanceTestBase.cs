@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			else
 			{
 				SourceWorkspace = await Environment.GetWorkspaceAsync(sourceWorkspaceId.Value).ConfigureAwait(false);
-				await Environment.CreateFieldsInWorkspace(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+				await Environment.CreateFieldsInWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			}
 
 			if (targetWorkspaceId == null)
