@@ -12,4 +12,5 @@ buildMonitorView('DataTransfer-Jobs/RelativitySync/Monitor')
 	jobs {
 		regex('(Nightly.*)release-(.*)')	
 	}
+	statusFilter(StatusFilter.ENABLED)
 }
