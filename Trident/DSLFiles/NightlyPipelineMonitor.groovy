@@ -4,7 +4,10 @@ folder('DataTransfer-Jobs') {
 folder('DataTransfer-Jobs/RelativitySync') {
 }
 
-buildMonitorView('DataTransfer-Jobs/RelativitySync/Nightly')
+folder('DataTransfer-Jobs/RelativitySync/Nightly') {
+}
+
+buildMonitorView('DataTransfer-Jobs/RelativitySync/Nightly/Monitor')
 {
 	description('All nighlty jobs')
 	recurse(true)
