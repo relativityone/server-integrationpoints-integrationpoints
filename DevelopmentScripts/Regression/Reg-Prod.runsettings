@@ -5,7 +5,5 @@
     <Parameter name="RsapiServicesHostAddress" value="reg-prod-services.r1.kcura.com" />
     <Parameter name="AdminUsername" value="rip.jenkins@rip.com" />
     <Parameter name="AdminPassword" value="Test1234!" />
-
-    <Parameter name="FileshareLocation" value="\\files\T008\Files" />
   </TestRunParameters>
 </RunSettings>

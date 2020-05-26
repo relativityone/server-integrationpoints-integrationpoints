@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			try
 			{
 				var ipAppManager = new RelativityApplicationManager(_testContext.Helper);
-				bool isAppInstalledAndUpToDate = false; //await ipAppManager.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, guid).ConfigureAwait(false);
+				bool isAppInstalledAndUpToDate = await ipAppManager.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, guid).ConfigureAwait(false);
 				if (!isAppInstalledAndUpToDate)
 				{
 					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", appName, guid, workspaceName, workspaceID);

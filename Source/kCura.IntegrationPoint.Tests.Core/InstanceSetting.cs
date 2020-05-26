@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 using ValueType = Relativity.Services.InstanceSetting.ValueType;

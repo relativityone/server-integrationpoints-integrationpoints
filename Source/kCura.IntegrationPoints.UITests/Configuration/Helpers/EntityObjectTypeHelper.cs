@@ -109,8 +109,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 			return entityObjectType
 				?.FieldValues
-				?.FirstOrDefault(x => x.Field.Name == artifactTypeIdFieldName)
-				?.Value as int?;
+				?.Single(x => x.Field.Name == artifactTypeIdFieldName)
+				.Value as int?;
 		}
 	}
 }

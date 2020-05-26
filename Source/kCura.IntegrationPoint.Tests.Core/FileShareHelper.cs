@@ -1,4 +1,5 @@
 ﻿using ARMTestServices.Services.Interfaces;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Interfaces.Workspace;
@@ -12,11 +13,11 @@ using IWorkspaceManager = Relativity.Services.Workspace.IWorkspaceManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class FileshareHelper
+	public class FileShareHelper
 	{
 		private readonly ITestHelper _helper;
 
-		public FileshareHelper(ITestHelper helper)
+		public FileShareHelper(ITestHelper helper)
 		{
 			_helper = helper;
 		}
@@ -25,17 +26,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			if (!Path.IsPathRooted(destinationPath))
 			{
-				destinationPath = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), destinationPath);
+				throw new TestException($"Path should contain a root: {destinationPath}");
 			}
 
 			string zippedDirectory = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.zip");
 			ZipFile.CreateFromDirectory(directoryPath, zippedDirectory);
 
-			string destinationFile = Path.Combine(destinationPath, Path.GetFileName(zippedDirectory));
-
 			using (var fileShareManager = _helper.CreateProxy<IFileshareManager>())
 			using (var fileManager = _helper.CreateProxy<IFileManager>())
 			{
+				string destinationFile = Path.Combine(destinationPath, Path.GetFileName(zippedDirectory));
+
 				bool fileExists = await fileManager.FileExists(destinationFile).ConfigureAwait(false);
 				if (!fileExists)
 				{

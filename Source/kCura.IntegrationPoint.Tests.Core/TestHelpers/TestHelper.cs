@@ -14,12 +14,11 @@ using Relativity.Services.Search;
 using Relativity.Services.Security;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
-using Relativity.Productions.Services;
 using Relativity.Services.Interfaces.Group;
+using ARMTestServices.Services.Interfaces;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
-	using ARMTestServices.Services.Interfaces;
 	using System.Net;
 	using IFieldManager = global::Relativity.Services.FieldManager.IFieldManager;
 
