@@ -268,7 +268,7 @@
 		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException:*at Relativity.Sync.Storage.Batch*"
 	},
 	{
-		"Jira": "REL-399823",
+		"Jira": "REL-425896",
 		"Exception": "Relativity.Sync.Transfer.FieldNotFoundException: Could not get information on the following fields for artifact type 10 in workspace*"
 	},
 	{
