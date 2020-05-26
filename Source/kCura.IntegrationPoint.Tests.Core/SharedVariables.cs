@@ -316,11 +316,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region Fileshare Configuration Settings
 
-		public static string FileshareLocation =>
-			GetAppSettingStringOrDefault(
-				"fileshareLocation",
-				() => $@"\\{RelativityHostAddress}\fileshare"
-			);
+		public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
+
+		public static string FileshareImportLocation(int workspaceID)
+			=> $"{FileshareLocation}\\EDDS{workspaceID}\\DataTransfer\\Import";
+
+		public static string FileshareLocation => AppSettingString("Fileshare");
 
 		#endregion
 

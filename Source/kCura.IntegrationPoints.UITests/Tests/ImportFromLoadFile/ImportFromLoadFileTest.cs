@@ -27,6 +27,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 	[Category(TestCategory.IMPORT_FROM_LOAD_FILE)]
 	public class ImportFromLoadFileTest : UiTest
 	{
+		private readonly FileshareHelper _fileshare;
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
@@ -35,7 +37,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		}
 
 		public ImportFromLoadFileTest() : base(shouldImportDocuments: false)
-		{ }
+		{
+			_fileshare = new FileshareHelper(Helper);
+		}
 
 		private void CopyFilesToFileshare()
 		{
@@ -44,7 +48,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			if (SharedVariables.UiUseTapiForFileCopy)
 			{
 				const int tapiTimeoutInSeconds = 60 * 3;
-				FileCopier.UploadToImportDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile"),
+				FileCopier.UploadToImportDirectory(sourceLocation,
 					SharedVariables.RelativityBaseAdressUrlValue,
 					SourceContext.GetWorkspaceId(),
 					SharedVariables.RelativityUserName,
@@ -53,10 +57,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			}
 			else
 			{
-				string workspaceFolderName = $"EDDS{SourceContext.GetWorkspaceId()}";
-				string destinationLocation =
-					Path.Combine(SharedVariables.FileshareLocation, workspaceFolderName, "DataTransfer", "Import");
-				FileCopier.CopyDirectory(sourceLocation, destinationLocation);
+				int workspaceId = SourceContext.GetWorkspaceId();
+				_fileshare.UploadDirectory(sourceLocation, SharedVariables.FileshareImportLocation(workspaceId)).Wait();
 			}
 		}
 
@@ -109,7 +111,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[IdentifiedTest("b3ef81f0-f020-462e-94ce-be9e645b389a")]
 		[RetryOnError]
 		[Order(20)]
-		[Ignore("REL-291039, it fails when whole fixture is executed, passes when first test is skipped.")]
 		public void ImportImagesFromLoadFile()
 		{
 			// Arrange
@@ -144,7 +145,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[IdentifiedTest("efc71b8b-9f6e-421d-8dff-e9453eb9ab53")]
 		[RetryOnError]
 		[Order(30)]
-		[Ignore("REL-291039 it fails when whole fixture is executed, passes when first test is skipped.")]
 		public void ImportProductionsFromLoadFile()
 		{
 			// Arrange

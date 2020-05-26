@@ -39,8 +39,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			switch (testDataType)
 			{
 				case TestDataType.SmallWithFoldersStructure:
-					foldersWithDocuments = GetFoldersWithDocuments(prefix, testDirectory, withNatives);
-					images = GetImageDataTable(prefix, testDirectory);
+					foldersWithDocuments = GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(Path.Combine(testDirectory, TestDataNativesPath), withNatives);
+					images = GetImageDataTableForAllNativesInGivenFolder(prefix, testDirectory, TestDataPath);
 					break;
 				case TestDataType.SmallWithoutFolderStructure:
 					foldersWithDocuments = GetDocumentsIntoRootFolder(prefix, Path.Combine(testDirectory, TestDataNativesPath), withNatives);
@@ -110,59 +110,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			table.Columns.Add(TestConstants.FieldNames.FOLDER_PATH, typeof(string));
 			table.Columns.Add(TestConstants.FieldNames.DOCUMENT_EXTENSION, typeof(string));
 			return table;
-		}
-
-		private static IList<FolderWithDocuments> GetFoldersWithDocuments(string prefix, string testDirectory, bool withNatives = true)
-		{
-			const string issueDesignation = "Level1\\Level2";
-			bool hasImages = false;
-
-			const string firstFolderName = "One";
-			var firstFolder = new FolderWithDocuments(firstFolderName, CreateDataTableForDocuments());
-			firstFolder.Documents.Rows.Add(
-				prefix + "AMEYERS_0000757",
-				"AMEYERS_0000757.htm",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000757.htm") : string.Empty, 
-				issueDesignation, 
-				hasImages, 
-				firstFolderName,
-				"HTM");
-
-			const string firstFolderChildName = "Two";
-			var firstFolderChild = new FolderWithDocuments(firstFolderChildName, CreateDataTableForDocuments());
-			firstFolderChild.Documents.Rows.Add(
-				prefix + "AMEYERS_0000975",
-				"AMEYERS_0000975.pdf",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0000975.pdf") : string.Empty, 
-				issueDesignation, 
-				hasImages, 
-				firstFolderName + "\\" + firstFolderChildName,
-				"PDF");
-
-			firstFolderChild.ParentFolderWithDocuments = firstFolder;
-			firstFolder.ChildrenFoldersWithDocument.Add(firstFolderChild);
-
-			const string secondFolderName = "Three";
-			var secondFolder = new FolderWithDocuments(secondFolderName, CreateDataTableForDocuments());
-			secondFolder.Documents.Rows.Add(
-				prefix + "AMEYERS_0001185", 
-				"AMEYERS_0001185.xls",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AMEYERS_0001185.xls") : string.Empty, 
-				issueDesignation, 
-				hasImages, 
-				secondFolderName,
-				"XLS");
-
-			secondFolder.Documents.Rows.Add(
-				prefix + "AZIPPER_0011318", 
-				"AZIPPER_0011318.msg",
-				withNatives ? Path.Combine(testDirectory, @"TestData\NATIVES\AZIPPER_0011318.msg") : string.Empty, 
-				issueDesignation, 
-				hasImages, 
-				secondFolderName,
-				"MSG");
-
-			return new[] { firstFolder, firstFolderChild, secondFolder };
 		}
 
 		private static string GetFoldersPrefix(string folderPath) =>

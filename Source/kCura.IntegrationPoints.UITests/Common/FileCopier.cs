@@ -11,16 +11,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 	{
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(nameof(FileCopier));
 
-		public static void CopyDirectory(string originalPath, string destinationPath)
-		{
-			CopyFilesInDirectory(originalPath, destinationPath);
-		}
-
-		public static void CopyFile(string originalPath, string destinationPath)
-		{
-			File.Copy(originalPath, destinationPath, true);
-		}
-
 		public static void UploadToImportDirectory(string sourcePath, string url, int workspaceId, string userName, string password, int timeoutInSeconds = 90)
 		{
 			string transferCliPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "ExternalDependencies", "TransferConsole");
@@ -85,9 +75,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 				@"/interactive-",
 				@"/command:transfer",
 				@"/direction:Upload",
-				@"/configuration:""client=Aspera""",
+				@"/configuration:""client=Web""",
 				$@"/searchpath:""{sourcePath}""",
-				$@"/targetpath:""Files\EDDS{workspaceId}\DataTransfer\Import""",
+				$@"/targetpath:""DefaultFileRepository\EDDS{workspaceId}\DataTransfer\Import""",
 				$@"/url:""{url}""",
 				$@"/username:""{userName}""",
 				$@"/password:""{password}""",
@@ -95,34 +85,5 @@ namespace kCura.IntegrationPoints.UITests.Common
 			};
 			return string.Join(" ", processArgs);
 		}
-
-		private static void CopyFilesInDirectory(string originalPath, string destinationPath)
-		{
-			if (!Directory.Exists(destinationPath))
-			{
-				Directory.CreateDirectory(destinationPath);
-			}
-
-			var directory = new DirectoryInfo(originalPath);
-
-			FileInfo[] files = directory.GetFiles();
-			foreach (FileInfo file in files)
-			{
-				string fileName = file.Name;
-				string originalFilePath = Path.Combine(originalPath, fileName);
-				string destinationFilePath = Path.Combine(destinationPath, fileName);
-				CopyFile(originalFilePath, destinationFilePath);
-			}
-
-			DirectoryInfo[] subdirectories = directory.GetDirectories();
-			foreach (DirectoryInfo subdirectory in subdirectories)
-			{
-				string subdirectoryName = subdirectory.Name;
-				string originalSubdirectoryPath = Path.Combine(originalPath, subdirectoryName);
-				string destinationSubdirectoryPath = Path.Combine(destinationPath, subdirectoryName);
-				CopyFilesInDirectory(originalSubdirectoryPath, destinationSubdirectoryPath);
-			}
-		}
-
 	}
 }

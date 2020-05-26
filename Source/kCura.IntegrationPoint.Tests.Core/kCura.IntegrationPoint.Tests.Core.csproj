@@ -43,6 +43,7 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -84,6 +85,7 @@
     <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
+    <Compile Include="FileshareHelper.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentsModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\EitherAssertions.cs" />
@@ -7667,17 +7669,17 @@
     <Content Include="TestData\IMAGES\AZIPPER_0011318.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\NATIVES\AMEYERS_0000757.htm">
+    <Content Include="TestData\NATIVES\One\AMEYERS_0000757.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">
+    <Content Include="TestData\NATIVES\One\Two\AMEYERS_0000975.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\NATIVES\AMEYERS_0001185.xls">
+    <Content Include="TestData\NATIVES\Three\AMEYERS_0001185.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -7699,6 +7701,17 @@
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="ARMTestServices.Services.Interfaces">
+          <HintPath>..\..\packages\ARMTestServices\lib\ARMTestServices.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.UITests.DummyUiTests
 		[Test]
 		public void DummyTest()
 		{
-			FunctionalTestsSetupFixture.HasPassed.Should().BeTrue();
+			FunctionalTestsSetupFixture.IsInitialized.Should().BeTrue();
 		}
 	}
 }
