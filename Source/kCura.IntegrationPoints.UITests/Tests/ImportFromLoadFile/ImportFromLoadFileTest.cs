@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 	[Feature.DataTransfer.IntegrationPoints]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	[Category(TestCategory.IMPORT_FROM_LOAD_FILE)]
+	[Category("Test")]
 	public class ImportFromLoadFileTest : UiTest
 	{
 		private readonly FileshareHelper _fileshare;

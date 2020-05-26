@@ -16,6 +16,6 @@ $TaskRunner = Resolve-Path -Path build.ps1
 
 &($TaskRunner) -Configuration Release
 
-&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment"
+&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment && cat == Test"
 
 Remove-Module Build-Util
