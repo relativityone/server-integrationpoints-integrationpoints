@@ -7684,7 +7684,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\NATIVES\AZIPPER_0011318.msg">
+    <Content Include="TestData\NATIVES\Three\AZIPPER_0011318.msg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
