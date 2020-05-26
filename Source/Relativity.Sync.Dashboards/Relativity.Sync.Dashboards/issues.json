@@ -241,7 +241,7 @@
 	},
 	{
 		"Jira": "REL-416542",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"	
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"
 	},
 	{
 		"Jira": "REL-416645",
@@ -298,5 +298,13 @@
 	{
 		"Jira": "REL-427400",
 		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter.*Relativity.Services.Exceptions.TemporarilyUnavailableException*"
+	},
+	{
+		"Jira": "REL-429380",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*Error: SQL Statement Failed*Invalid column name 'TextIdentifier'*"
+	},
+	{
+		"Jira": "REL-433402",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*Error: SQL Statement Failed*Error: Incorrect syntax near*"
 	}
 ]
