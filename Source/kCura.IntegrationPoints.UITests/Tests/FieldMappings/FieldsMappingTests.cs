@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync.FieldMapping]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Category(TestCategory.RIP_SYNC)]
 	[Category(TestCategory.FIELDS_MAPPING)]
 	public class FieldsMappingTests : RelativityProviderTestsBase
 	{

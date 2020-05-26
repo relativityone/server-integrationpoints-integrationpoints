@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync.SavedSearch]
-	[Category(TestCategory.EXPORT_IMAGES)]
+	[Category(TestCategory.RIP_OLD)]
 	public class ImagesSavedSearchToFolderTest : RelativityProviderTestsBase
 	{
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";

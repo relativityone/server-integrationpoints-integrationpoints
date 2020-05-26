@@ -14,9 +14,8 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.Profile
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
-	[Category(TestCategory.PROFILE)]
+	[Feature.DataTransfer.IntegrationPoints.Profiles]
+	[Category(TestCategory.RIP_SYNC)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{
 		private IntegrationPointProfileAction _profileAction;
@@ -45,9 +44,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		}
 
 		[SetUp]
-		public override async Task SetUp()
+		public override void SetUp()
 		{
-			await base.SetUp().ConfigureAwait(false);
+			base.SetUp();
 			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext);
 		}
 

@@ -18,11 +18,10 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.WebImport.ImportLdap]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.NOT_WORKING_ON_TRIDENT)] //Remove when REL-389924
-	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
 	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // no access to LDAP from R1
+	[Category(TestCategory.NOT_WORKING_ON_TRIDENT)] // no access to LDAP from R1
 	public class ImportLdapProviderTest : UiTest
 	{
 		private IRSAPIService _service;

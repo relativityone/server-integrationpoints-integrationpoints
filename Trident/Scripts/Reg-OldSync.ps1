@@ -24,6 +24,6 @@ Set-RegressionSettings $RegEnv
 
 Invoke-Task Compile
 
-Invoke-Test "cat == RIP_SYNC && cat != NotWorkingOnRegressionEnvironment"
+Invoke-Test "cat == RIP_OLD && cat != NotWorkingOnRegressionEnvironment"
 
 Remove-Module Build-Util

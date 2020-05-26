@@ -21,4 +21,4 @@ Invoke-Task Package
 
 Invoke-Task OneTimeTestsSetup
 
-Invoke-Test "cat == RIP_SYNC && cat != NotWorkingOnTrident"
+Invoke-Test "cat == RIP_OLD && cat != NotWorkingOnTrident"

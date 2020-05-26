@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync.ProductionPush]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Category(TestCategory.RIP_OLD)]
 	public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
 	{
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";

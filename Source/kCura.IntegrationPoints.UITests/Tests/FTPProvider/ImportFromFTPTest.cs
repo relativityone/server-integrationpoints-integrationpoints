@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.WebImport.ImportFtp]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
 	public class ImportFromFtpTest : UiTest
 	{
 		private IRSAPIService _service;
