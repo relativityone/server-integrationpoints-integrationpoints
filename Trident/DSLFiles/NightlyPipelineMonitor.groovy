@@ -10,7 +10,7 @@ buildMonitorView('DataTransfer-Jobs/RelativitySync/Monitor')
 	description('All nighlty jobs')
 	recurse(true)
 	jobs {
-		regex('(Nightly.*)release-(.*)')	
+		regex('(Nightly.*)((release(.*))|(develop))')	
 	}
 	statusFilter(StatusFilter.ENABLED)
 }
