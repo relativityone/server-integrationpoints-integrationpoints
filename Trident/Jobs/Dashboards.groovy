@@ -1,3 +1,7 @@
+properties([ 
+	pipelineTriggers([cron('H 21 * * *')]) 
+]) 
+ 
 node('role-build-agent')
 {
     try
