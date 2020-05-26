@@ -11,7 +11,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal abstract class PermissionCheckBase : IPermissionCheck
 	{
-		private readonly IProxyFactory _proxyFactory;
+		protected readonly IProxyFactory _proxyFactory;
 
 		protected PermissionCheckBase(IProxyFactory proxyFactory)
 		{
@@ -54,10 +54,10 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 		protected static List<PermissionRef> GetPermissionRefs(ArtifactTypeIdentifier artifactTypeIdentifier, IEnumerable<PermissionType> permissionTypes)
 		{
-			List<PermissionRef> permissionRefs = permissionTypes.Select(pt => new PermissionRef
+			List<PermissionRef> permissionRefs = permissionTypes.Select(permissionType => new PermissionRef
 			{
 				ArtifactType = artifactTypeIdentifier,
-				PermissionType = pt
+				PermissionType = permissionType
 			}).ToList();
 
 			return permissionRefs;

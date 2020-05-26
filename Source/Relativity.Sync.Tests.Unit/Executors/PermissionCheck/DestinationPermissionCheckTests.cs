@@ -1,52 +1,111 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 {
 	[TestFixture]
 	public class DestinationPermissionCheckTests
 	{
-		private DestinationPermissionCheck _instance;
-		private Mock<ISyncLog> _logger;
-		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactory;
+		private DestinationPermissionCheck _sut;
+		private Mock<IObjectTypeManager> _objectTypeManagerFake;
+		private Mock<ISyncObjectTypeManager> _syncObjectTypeManagerFake;
+		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryFake;
+
+		private const string _SOURCE_WORKSPACE_OBJECT_TYPE_NAME = "Relativity Source Case";
+		private const string _SOURCE_JOB_OBJECT_TYPE_NAME = "Relativity Source Job";
 
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 		private const int _ARTIFACT_TYPE_DOCUMENT = 10;
 		private const int _ARTIFACT_TYPE_FOLDER = 9;
 		private const int _ARTIFACT_TYPE_SEARCH = 15;
-		private const int _EXPECTED_VALUE_FOR_DOCUMENT = 2;
+		private const int _EXPECTED_VALUE_FOR_DOCUMENT = 1;
 		private const int _ARTIFACT_OBJECT_TYPE = 25;
-		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 8;
+		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 9;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 20489;
 		private const int _TEST_FOLDER_ARTIFACT_ID = 20476;
+		private const int _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID = 222;
+		private const int _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID = 444;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_logger = new Mock<ISyncLog>();
-			_destinationServiceFactory = new Mock<IDestinationServiceFactoryForUser>();
-			_instance = new DestinationPermissionCheck(_destinationServiceFactory.Object, _logger.Object);
+			_syncObjectTypeManagerFake = new Mock<ISyncObjectTypeManager>();
+			const int sourceCaseObjectTypeArtifactId = 111;
+			const int sourceJobObjectTypeArtifactId = 333;
+
+			_syncObjectTypeManagerFake
+				.Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(),
+					It.Is<string>(name => name == _SOURCE_WORKSPACE_OBJECT_TYPE_NAME))).ReturnsAsync(new QueryResult()
+				{
+					Objects = new List<RelativityObject>()
+					{
+						new RelativityObject()
+						{
+							ArtifactID = sourceCaseObjectTypeArtifactId
+						}
+					}
+				});
+			_syncObjectTypeManagerFake
+				.Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(),
+					It.Is<string>(name => name == _SOURCE_JOB_OBJECT_TYPE_NAME))).ReturnsAsync(new QueryResult()
+				{
+					Objects = new List<RelativityObject>()
+					{
+						new RelativityObject()
+						{
+							ArtifactID = sourceJobObjectTypeArtifactId
+						}
+					}
+				});
+
+			_objectTypeManagerFake = new Mock<IObjectTypeManager>();
+			_objectTypeManagerFake
+				.Setup(x => x.ReadAsync(It.IsAny<int>(),
+					It.Is<int>(artifactID => artifactID == sourceCaseObjectTypeArtifactId)))
+					.ReturnsAsync(new ObjectTypeResponse()
+				{
+					ArtifactTypeID = _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID
+				});
+			_objectTypeManagerFake
+				.Setup(x => x.ReadAsync(It.IsAny<int>(),
+					It.Is<int>(artifactID => artifactID == sourceJobObjectTypeArtifactId)))
+					.ReturnsAsync(new ObjectTypeResponse()
+				{
+					ArtifactTypeID = _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID
+				});
+
+			_destinationServiceFactoryFake = new Mock<IDestinationServiceFactoryForUser>();
+			_destinationServiceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
+				.ReturnsAsync(_objectTypeManagerFake.Object);
+			_sut = new DestinationPermissionCheck(_destinationServiceFactoryFake.Object,
+				_syncObjectTypeManagerFake.Object, new EmptyLogger());
 		}
 
 		[Test]
-		public async Task ValidateAsyncGoldFlowTest()
+		public async Task Validate_ShouldPassValidation_WhenUserHasAllPermissions()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			//Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeTrue();
@@ -54,18 +113,18 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotHavePermissionToAddObjectType()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToCreateObjectTypes()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
 				It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_OBJECT_TYPE)))).Throws<SyncException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -75,12 +134,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotHavePermissionToAccessDestinationWorkspaceTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHaveAccessToDestinationWorkspace()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock <IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			permissionManager
 				.Setup(x => x.GetPermissionSelectedAsync(-1, It.IsAny<List<PermissionRef>>(), It.IsAny<int>()))
@@ -88,7 +147,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+				await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -99,19 +158,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotHavePermissionToImportInTheDestinationWorkspaceTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToImportInTheDestinationWorkspace()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-					( y => y.Any( z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).Throws<SyncException>();
+					(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+				await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -121,19 +180,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotHaveAllRequiredRdoPermissionTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHaveAllRequiredRdoPermissions()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
 				(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)))).Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+				await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -143,19 +202,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotPermissionToCreateSavedSearchTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToCreateSavedSearch()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
 				(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_SEARCH)))).Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+				await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -165,19 +224,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotPermissionToAccessDestinationWorkspaceTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToAccessDestinationWorkspace()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-				(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)),It.IsAny<int>())).Throws<SyncException>();
+				(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)), It.IsAny<int>())).Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+				await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -188,19 +247,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task UserShouldNotPermissionToAccessDestinationWorkspaceForFolderTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToAccessDestinationFolder()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
 				(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_FOLDER)), It.IsAny<int>())).Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult =
-				await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+				await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			//Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -211,19 +270,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task ExecuteAllowImportPermissionTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHaveImportPermissionIntoDestinationWorkspace()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
-			Mock<IPermissionManager> permissionManager = ArrangeSet();
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
 			var permissionToEdit = new List<PermissionValue> { new PermissionValue { PermissionID = _ALLOW_IMPORT_PERMISSION_ID, Selected = false } };
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID))))
 				.ReturnsAsync(permissionToEdit);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -233,13 +292,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task ExecutePermissionValueListEmptyTest()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionsToAccessDestination()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
 
 			var permissionManager = new Mock<IPermissionManager>();
-			_destinationServiceFactory.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(permissionManager.Object);
+			_destinationServiceFactoryFake.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(permissionManager.Object);
 
 			var permissionValuesDefault = new List<PermissionValue>();
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(),
@@ -251,7 +310,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionValuesDefault);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(configuration.Object).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
 			actualResult.IsValid.Should().BeFalse();
@@ -260,10 +319,41 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Be("User does not have sufficient permissions to access destination workspace. Contact your system administrator.");
 		}
 
-		private Mock<IPermissionManager> ArrangeSet()
+		[Test]
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionsToCreateTagsInDestination()
+		{
+			// Arrange
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
+
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
+
+			var permission = new List<PermissionValue>
+			{
+				new PermissionValue
+				{
+					Selected = false
+				}
+			};
+			permissionManager
+				.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(permissionRefs => permissionRefs.Any(permissionRef =>
+					permissionRef.ArtifactType.ID == _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID ||
+					permissionRef.ArtifactType.ID == _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID))))
+					.ReturnsAsync(permission);
+
+			// Act
+			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
+
+			// Assert
+			actualResult.IsValid.Should().BeFalse();
+			const int expectedNumberOfErrors = 2;
+			actualResult.Messages.Should().HaveCount(expectedNumberOfErrors);
+			actualResult.Messages.All(x => x.ShortMessage.StartsWith("User does not have permissions to create tag", StringComparison.InvariantCulture));
+		}
+
+		private Mock<IPermissionManager> SetupPermissions()
 		{
 			var permissionManager = new Mock<IPermissionManager>();
-			_destinationServiceFactory.Setup(x => x.CreateProxyAsync<IPermissionManager>())
+			_destinationServiceFactoryFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
 				.ReturnsAsync(permissionManager.Object);
 
 			var permissionValueDefault = new List<PermissionValue> { new PermissionValue { Selected = true } };
@@ -279,7 +369,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			return permissionManager;
 		}
 
-		private Mock<IPermissionsCheckConfiguration> ConfigurationSet()
+		private Mock<IPermissionsCheckConfiguration> SetupConfiguration()
 		{
 			Mock<IPermissionsCheckConfiguration> configuration = new Mock<IPermissionsCheckConfiguration>();
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);

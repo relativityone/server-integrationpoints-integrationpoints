@@ -21,7 +21,7 @@ namespace Relativity.Sync.Executors.Validation
 		{
 			try
 			{
-				ValidationResult validationResult = await ValidateAll(configuration, token).ConfigureAwait(false);
+				ValidationResult validationResult = await ValidateAllAsync(configuration, token).ConfigureAwait(false);
 				LogValidationErrors(validationResult);
 
 				if (!validationResult.IsValid)
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors.Validation
 			}
 		}
 
-		private async Task<ValidationResult> ValidateAll(IValidationConfiguration configuration, CancellationToken token)
+		private async Task<ValidationResult> ValidateAllAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
 			ValidationResult result = new ValidationResult();
 
