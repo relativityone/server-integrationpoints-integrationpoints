@@ -46,6 +46,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		public ITestHelper Helper => _testHelperLazy.Value;
 
+		public int SourceWorkspaceId => SourceContext.GetWorkspaceId();
+
 		protected TestConfiguration Configuration { get; set; }
 
 		protected TestContext SourceContext { get; set; }

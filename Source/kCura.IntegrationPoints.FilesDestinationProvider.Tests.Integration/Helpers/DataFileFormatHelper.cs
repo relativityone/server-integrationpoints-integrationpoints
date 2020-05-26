@@ -64,7 +64,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			}
 		}
 
-
 		public static bool LineNumberContains(int lineNumber, string text, FileInfo file)
 		{
 			using (var reader = new StreamReader(file.FullName))

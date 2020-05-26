@@ -6,8 +6,9 @@
     <Parameter name="AdminUsername" value="rip.jenkins@rip.com" />
     <Parameter name="AdminPassword" value="Test1234!" />
 
-    <Parameter name="UI.UseTapiForFileCopy" value="true"/>
-    <Parameter name="UI.WaitForPageInSec" value="180"/>
-    <Parameter name="UI.BrowserPath" value="..\..\..\buildtools\Relativity.Chromium.Portable\tools\Chrome.exe" />
+    <Parameter name="FileshareLocation" value="\\files\T019\Files" />
   </TestRunParameters>
 </RunSettings>
+
+	
+\\files\T019\Files\

@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using System.IO;
 using Relativity.Testing.Identification;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
@@ -33,8 +34,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			Install(SourceContext.GetWorkspaceId());
-			CopyFilesToFileshare();
+			Install(SourceWorkspaceId);
+			CopyFilesToFileshare().Wait();
 		}
 
 		public ImportFromLoadFileTest() : base(shouldImportDocuments: false)
@@ -42,25 +43,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			_fileshare = new FileshareHelper(Helper);
 		}
 
-		private void CopyFilesToFileshare()
+		private async Task CopyFilesToFileshare()
 		{
-			string sourceLocation = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile");
+			string testData = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile");
 
-			if (SharedVariables.UiUseTapiForFileCopy)
-			{
-				const int tapiTimeoutInSeconds = 60 * 3;
-				FileCopier.UploadToImportDirectory(sourceLocation,
-					SharedVariables.RelativityBaseAdressUrlValue,
-					SourceContext.GetWorkspaceId(),
-					SharedVariables.RelativityUserName,
-					SharedVariables.RelativityPassword,
-					tapiTimeoutInSeconds);
-			}
-			else
-			{
-				int workspaceId = SourceContext.GetWorkspaceId();
-				_fileshare.UploadDirectory(sourceLocation, SharedVariables.FileshareImportLocation(workspaceId)).Wait();
-			}
+			string fileSharePath = await _fileshare.GetFilesharePath(SourceWorkspaceId).ConfigureAwait(false);
+			string destinationLocation = Path.Combine(fileSharePath, $"EDDS{SourceWorkspaceId}\\DataTransfer\\Import");
+
+			await _fileshare.UploadDirectoryAsync(testData, destinationLocation).ConfigureAwait(false);
 		}
 
 		[Category(TestCategory.SMOKE)]

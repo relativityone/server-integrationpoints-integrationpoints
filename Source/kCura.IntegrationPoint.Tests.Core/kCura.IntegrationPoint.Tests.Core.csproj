@@ -7674,12 +7674,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\NATIVES\One\Two\AMEYERS_0000975.pdf">
+    <Content Include="TestData\NATIVES\Three\AMEYERS_0000975.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestData\NATIVES\Three\AMEYERS_0001185.xls">
+    <Content Include="TestData\NATIVES\One\Two\AMEYERS_0001185.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

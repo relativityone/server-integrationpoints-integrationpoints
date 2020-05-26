@@ -1,14 +1,14 @@
 ﻿using ARMTestServices.Services.Interfaces;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using Org.BouncyCastle.Apache.Bzip2;
 using Relativity.Kepler.Transport;
+using Relativity.Services.Interfaces.Workspace;
+using Relativity.Services.ResourceServer;
+using Relativity.Services.Workspace;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using IWorkspaceManager = Relativity.Services.Workspace.IWorkspaceManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_helper = helper;
 		}
 
-		public async Task UploadDirectory(string directoryPath, string destinationPath)
+		public async Task UploadDirectoryAsync(string directoryPath, string destinationPath)
 		{
 			if (!Path.IsPathRooted(destinationPath))
 			{
@@ -44,6 +44,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 						await fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).ConfigureAwait(false);
 					}
 				}
+			}
+		}
+
+		public async Task<string> GetFilesharePath(int workspaceId)
+		{
+			using(var proxy = _helper.CreateProxy<IWorkspaceManager>())
+			{
+				WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = workspaceId };
+				
+				FileShareResourceServer server = await proxy.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
+
+				return server.UNCPath;
 			}
 		}
 	}

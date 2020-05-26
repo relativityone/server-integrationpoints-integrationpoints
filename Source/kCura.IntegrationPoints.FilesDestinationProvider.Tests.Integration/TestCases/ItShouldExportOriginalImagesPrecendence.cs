@@ -25,19 +25,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
 			var imagesDirectory = directory.GetDirectories("IMAGES", SearchOption.AllDirectories).First();
-			var exportedFiles = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories);
+			var exportedFiles = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories).OrderBy(x => x.Name).ToArray();
 			var filesCount = exportedFiles.Length;
+			
 			var expectedFilesCount = documentsTestData.Images.Rows.Count;
+			var expectdFiles = documentsTestData.Images.Rows.Cast<DataRow>()
+				.Select(x => new FileInfo((string)x.ItemArray[2])).OrderBy(x => x.Name);
+
 
 			Assert.AreEqual(filesCount, expectedFilesCount);
-
-			for (int i = 0; i < exportedFiles.Length; i++)
-			{
-				var file1 = exportedFiles[i];
-				var file2 = new FileInfo((string)documentsTestData.Images.Rows[i].ItemArray[2]);
-
-				Assert.IsTrue(FileComparer.Compare(file1, file2));
-			}
+			Assert.True(exportedFiles.SequenceEqual(expectdFiles, new FileEqualityComparer()));
 		}
 	}
 }

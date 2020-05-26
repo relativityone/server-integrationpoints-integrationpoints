@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
@@ -27,7 +29,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			FileInfo fileInfo = GetFileInfo(directory);
 			Assert.That(fileInfo.Name, Is.EqualTo($"{ExportSettings.SavedSearchName}_export.{MetadataFormat}"));
 			Assert.That(DataFileFormatHelper.FileStartWith("IM,AMEYERS_0000757", fileInfo));
-		    Assert.AreEqual( ExpectedOutput.IPRO, DataFileFormatHelper.GetContent(fileInfo));
+		    Assert.True(ComparFileByLines(fileInfo, ExpectedOutput.IPRO));
         }
+
+		private bool ComparFileByLines(FileInfo file, string text)
+		{
+			string[] lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+			return File.ReadAllLines(file.FullName).SequenceEqual(lines);
+		}
 	}
 }

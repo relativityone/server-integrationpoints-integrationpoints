@@ -62,7 +62,7 @@
     <Compile Include="Process\Internals\ExportTestContext.cs" />
     <Compile Include="Helpers\ContainerInstaller.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
-    <Compile Include="Helpers\FileComparer.cs" />
+    <Compile Include="Helpers\FileEqualityComparer.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
     <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
     <Compile Include="Helpers\TestLoggingMediator.cs" />

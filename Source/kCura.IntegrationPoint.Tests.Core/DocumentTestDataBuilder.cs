@@ -205,33 +205,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return table;
 		}
 
-		private static DataTable GetImageDataTable(string prefix, string testDirectory)
-		{
-			DataTable table = CreateDataTableForImages();
-
-			table.Rows.Add(
-				prefix + "AMEYERS_0000757", 
-				prefix + "AMEYERS_0000757", 
-				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000757.tif"));
-
-			table.Rows.Add(
-				prefix + "AMEYERS_0000975", 
-				prefix + "AMEYERS_0000975", 
-				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0000975.tif"));
-
-			table.Rows.Add(
-				prefix + "AMEYERS_0001185", 
-				prefix + "AMEYERS_0001185", 
-				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0001185.tif"));
-
-			table.Rows.Add(
-				prefix + "AMEYERS_0001185", 
-				prefix + "AMEYERS_0001185_001", 
-				Path.Combine(testDirectory, @"TestData\IMAGES\AMEYERS_0001185_001.tif"));
-
-			return table;
-		}
-
 		private static DataTable GetImageDataTableForAllNativesInGivenFolder(string prefix, string testDirectory, string testDataDirectory)
 		{
 			string nativesFolderPath = Path.Combine(testDirectory, testDataDirectory, "NATIVES");

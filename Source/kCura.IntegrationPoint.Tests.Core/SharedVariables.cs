@@ -318,11 +318,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
 
-		public static string FileshareImportLocation(int workspaceID)
-			=> $"{FileshareLocation}\\EDDS{workspaceID}\\DataTransfer\\Import";
-
-		public static string FileshareLocation => AppSettingString("Fileshare");
-
 		#endregion
 
 		#region System Tests Settings
