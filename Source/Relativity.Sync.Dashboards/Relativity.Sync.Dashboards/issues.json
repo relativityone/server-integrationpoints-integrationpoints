@@ -157,7 +157,7 @@
 	},
 	{
 		"Jira": "REL-399823",
-		"Exception": "System.AggregateException:Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
+		"Exception": "System.AggregateException:*Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
 	},
 	{
 		"Jira": "REL-399837",
