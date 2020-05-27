@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			string testData = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile");
 
 			string fileSharePath = await _fileshare.GetFilesharePath(SourceWorkspaceId).ConfigureAwait(false);
-			string destinationLocation = Path.Combine(fileSharePath, $"EDDS{SourceWorkspaceId}\\DataTransfer\\Import");
+			string destinationLocation = Path.Combine(fileSharePath, "DataTransfer\\Import");
 
 			await _fileshare.UploadDirectoryAsync(testData, destinationLocation).ConfigureAwait(false);
 		}
