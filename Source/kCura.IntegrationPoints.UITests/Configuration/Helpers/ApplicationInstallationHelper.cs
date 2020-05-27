@@ -50,19 +50,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			try
 			{
-				var ipAppManager = new RelativityApplicationManager(_testContext.Helper);
-				bool isAppInstalledAndUpToDate = await ipAppManager.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, guid).ConfigureAwait(false);
-				if (!isAppInstalledAndUpToDate)
-				{
-					Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", appName, guid, workspaceName, workspaceID);
-					await ipAppManager.InstallApplicationFromLibraryAsync(workspaceID.Value, guid).ConfigureAwait(false);
-					Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.",
-						appName, guid, workspaceName, workspaceID, stopwatch.Elapsed.Seconds);
-				}
-				else
-				{
-					Log.Information("Application '{AppName}' ({AppGUID}) is already installed in workspace '{WorkspaceName}' ({WorkspaceId}).", appName, guid, workspaceName, workspaceID);
-				}
+				Log.Information("Installing application '{AppName}' ({AppGUID}) in workspace '{WorkspaceName}' ({WorkspaceId}).", appName, guid, workspaceName, workspaceID);
+
+				var ipAppManager = new RelativityApplicationManager(_testContext.Helper);		
+				await ipAppManager.InstallApplicationFromLibraryAsync(workspaceID.Value, guid).ConfigureAwait(false);
+				
+				Log.Information("Application '{AppName}' ({AppGUID}) has been installed in workspace '{WorkspaceName}' ({WorkspaceId}) after {AppInstallTime} seconds.",
+					appName, guid, workspaceName, workspaceID, stopwatch.Elapsed.Seconds);
 			}
 			catch (Exception ex)
 			{
