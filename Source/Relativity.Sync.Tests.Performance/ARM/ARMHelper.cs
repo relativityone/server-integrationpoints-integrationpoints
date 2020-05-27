@@ -256,7 +256,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
 				Debug.WriteLine("Restore job has been completed successfully.");
 
-				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByName(workspaceName).ConfigureAwait(true);
+				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByNameAsync(workspaceName).ConfigureAwait(true);
 				return restoredWorkspaceId;
 			}
 			catch (Exception ex)
@@ -293,7 +293,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private static async Task RemoveAllWorkspacesWithName(string workspaceName, TestEnvironment environment)
 		{
 			IEnumerable<WorkspaceRef> workspacesToDelete = await environment.GetWorkspacesAsync(workspaceName).ConfigureAwait(false);
-			await environment.DeleteWorkspaces(workspacesToDelete.Select(x => x.ArtifactID)).ConfigureAwait(false);
+			await environment.DeleteWorkspacesAsync(workspacesToDelete.Select(x => x.ArtifactID)).ConfigureAwait(false);
 		}
 
 		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath, int resourcePoolId)

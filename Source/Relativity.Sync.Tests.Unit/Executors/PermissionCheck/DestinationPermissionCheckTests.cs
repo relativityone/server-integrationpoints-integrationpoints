@@ -34,8 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private const int _ARTIFACT_TYPE_FOLDER = 9;
 		private const int _ARTIFACT_TYPE_SEARCH = 15;
 		private const int _EXPECTED_VALUE_FOR_DOCUMENT = 1;
-		private const int _ARTIFACT_OBJECT_TYPE = 25;
-		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 9;
+		private const int _EXPECTED_VALUE_FOR_ALL_FAILED_VALIDATE = 8;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 20489;
 		private const int _TEST_FOLDER_ARTIFACT_ID = 20476;
 		private const int _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID = 222;
@@ -110,27 +109,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			//Assert
 			actualResult.IsValid.Should().BeTrue();
 			actualResult.Messages.Should().HaveCount(0);
-		}
-
-		[Test]
-		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToCreateObjectTypes()
-		{
-			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
-
-			Mock<IPermissionManager> permissionManager = SetupPermissions();
-
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
-				It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_OBJECT_TYPE)))).Throws<SyncException>();
-
-			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
-
-			// Assert
-			actualResult.IsValid.Should().BeFalse();
-			actualResult.Messages.Should().HaveCount(1);
-			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to add object types in the destination workspace.");
 		}
 
 		[Test]
@@ -231,8 +209,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
 			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-				(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)), It.IsAny<int>())).Throws<SyncException>();
+			permissionManager
+				.Setup(x => x.GetPermissionSelectedAsync(
+					It.IsAny<int>(),
+					It.Is<List<PermissionRef>>(permissionRefs => permissionRefs.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)),
+					It.IsAny<int>()))
+				.Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult =

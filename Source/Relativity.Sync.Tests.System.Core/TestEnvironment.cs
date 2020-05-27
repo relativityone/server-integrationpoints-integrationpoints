@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.System.Core
 				name = Guid.NewGuid().ToString();
 			}
 
-			int templateWorkspaceArtifactId = await GetTemplateWorkspaceArtifactId(templateWorkspaceName).ConfigureAwait(false);
+			int templateWorkspaceArtifactId = await GetTemplateWorkspaceArtifactIdAsync(templateWorkspaceName).ConfigureAwait(false);
 			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
 				WorkspaceSetttings settings = new WorkspaceSetttings { Name = name, TemplateArtifactId = templateWorkspaceArtifactId };
@@ -82,18 +82,18 @@ namespace Relativity.Sync.Tests.System.Core
 		public async Task<WorkspaceRef> CreateWorkspaceWithFieldsAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
 		{
 			WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
-			await CreateFieldsInWorkspace(workspace.ArtifactID).ConfigureAwait(false);
+			await CreateFieldsInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
 			return workspace;
 		}
 
-		private async Task<int> GetTemplateWorkspaceArtifactId(string templateWorkspaceName)
+		private async Task<int> GetTemplateWorkspaceArtifactIdAsync(string templateWorkspaceName)
 		{
 			try
 			{
 				await _templateWorkspaceSemaphore.WaitAsync().ConfigureAwait(false);
 				if (_templateWorkspaceArtifactId == -1)
 				{
-					_templateWorkspaceArtifactId = await GetWorkspaceArtifactIdByName(templateWorkspaceName).ConfigureAwait(false);
+					_templateWorkspaceArtifactId = await GetWorkspaceArtifactIdByNameAsync(templateWorkspaceName).ConfigureAwait(false);
 				}
 				return _templateWorkspaceArtifactId;
 			}
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 		}
 
-		public async Task<int> GetWorkspaceArtifactIdByName(string workspaceName)
+		public async Task<int> GetWorkspaceArtifactIdByNameAsync(string workspaceName)
 		{
 			using (var objectManager = _serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 		}
 
-		public async Task DoCleanup()
+		public async Task DoCleanupAsync()
 		{
 			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
@@ -133,32 +133,25 @@ namespace Relativity.Sync.Tests.System.Core
 			_workspaces.Clear();
 		}
 
-		public async Task DeleteWorkspace(int artifactId)
+		public async Task DeleteWorkspacesAsync(IEnumerable<int> artifactIds)
 		{
-			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
-			{
-				await manager.DeleteAsync(new WorkspaceRef(artifactId)).ConfigureAwait(false);
-			}
-		}
-
-		public async Task DeleteWorkspaces(IEnumerable<int> artifactIds)
-		{
-			if (artifactIds.Any())
+			List<int> artifactIdsList = artifactIds.ToList();
+			if (artifactIdsList.Any())
 			{
 				using (var manager = _serviceFactory.CreateProxy<IObjectManager>())
 				{
 					MassDeleteByObjectIdentifiersRequest request = new MassDeleteByObjectIdentifiersRequest()
 					{
-						Objects = artifactIds.Select(x => new RelativityObjectRef {ArtifactID = x}).ToList()
+						Objects = artifactIdsList.Select(x => new RelativityObjectRef {ArtifactID = x}).ToList()
 					};
 					await manager.DeleteAsync(-1, request).ConfigureAwait(false);
 				}
 			}
 		}
 
-		public async Task CreateFieldsInWorkspace(int workspaceArtifactId)
+		public async Task CreateFieldsInWorkspaceAsync(int workspaceArtifactId)
 		{
-			await InstallHelperAppIfNeeded().ConfigureAwait(false);
+			await InstallHelperAppIfNeededAsync().ConfigureAwait(false);
 			using (var applicationInstallManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
 			{
 				var installApplicationRequest = new InstallApplicationRequest
@@ -178,7 +171,7 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 		}
 
-		private async Task InstallHelperAppIfNeeded()
+		private async Task InstallHelperAppIfNeededAsync()
 		{
 			using (var fileStream = GetHelperApplicationXml())
 			using (var applicationLibraryManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.ILibraryApplicationManager>())
@@ -192,7 +185,7 @@ namespace Relativity.Sync.Tests.System.Core
 				{
 					// Rewinding stream as it will be reused.
 					fileStream.Seek(0, SeekOrigin.Begin);
-					using (var outStream = await CreateRapFileInMemory(fileStream).ConfigureAwait(false))
+					using (var outStream = await CreateRapFileInMemoryAsync(fileStream).ConfigureAwait(false))
 					using (var keplerStream = new KeplerStream(outStream))
 					{
 						var updateLibraryApplicationRequest = new UpdateLibraryApplicationRequest
@@ -208,7 +201,7 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 		}
 
-		private static async Task<MemoryStream> CreateRapFileInMemory(Stream applicationXmlFileStream)
+		private static async Task<MemoryStream> CreateRapFileInMemoryAsync(Stream applicationXmlFileStream)
 		{
 			MemoryStream outStream = new MemoryStream();
 			using (var archive = new ZipArchive(outStream, ZipArchiveMode.Create, true))

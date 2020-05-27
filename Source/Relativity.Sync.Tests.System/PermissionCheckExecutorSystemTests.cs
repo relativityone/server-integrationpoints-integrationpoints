@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
+using Autofac;
+using FluentAssertions;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Platform.Keywords.RSAPI;
-using Relativity.Services;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using Relativity.Services.Workspace;
@@ -30,6 +29,8 @@ namespace Relativity.Sync.Tests.System
 		private int _destinationFolderArtifactId;
 		private User _user;
 
+		private const string TestUserName = "testuser03@relativity.com";
+		private const string TestPassword = "Test1234!";
 		private const string _DESTINATION_FOLDER_NAME = "folderName";
 
 		public static IEnumerable<ObjectPermissionSelection> ObjectPermissionsForSource => new[]
@@ -78,22 +79,34 @@ namespace Relativity.Sync.Tests.System
 		{
 			new ObjectPermissionSelection
 			{
-				ObjectName = "Object Type",
-				AddSelected = true,
-				ViewSelected = true
-			},
-			new ObjectPermissionSelection
-			{
 				ObjectName = "Search",
-				AddSelected = true,
-				ViewSelected = true
+				ViewSelected = true,
+				AddSelected = true
 			},
 			new ObjectPermissionSelection
 			{
 				ObjectName = "Document",
-				AddSelected = true,
 				ViewSelected = true,
+				AddSelected = true,
 				EditSelected = true
+			},
+			new ObjectPermissionSelection
+			{
+				ObjectName = "Folder",
+				ViewSelected = true,
+				AddSelected = true
+			},
+			new ObjectPermissionSelection()
+			{
+				ObjectName = "Relativity Source Case",
+				ViewSelected = true,
+				AddSelected = true
+			},
+			new ObjectPermissionSelection()
+			{
+				ObjectName = "Relativity Source Job",
+				ViewSelected = true,
+				AddSelected = true
 			}
 		};
 
@@ -107,64 +120,54 @@ namespace Relativity.Sync.Tests.System
 			"Allow Import"
 		};
 
-		public static IEnumerable<PermissionValue> DestinationPermissionValues => new []
-		{
-			new PermissionValue
-			{
-				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Document),
-				PermissionType = PermissionType.Add
-			},
-			new PermissionValue
-			{
-				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Folder),
-				PermissionType = PermissionType.Add
-			},
-			new PermissionValue
-			{
-				ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Document),
-				PermissionType = PermissionType.Delete
-			}
-		};
-
 		private GroupRef GroupRef => new GroupRef(_group.ArtifactID);
 
 		[SetUp]
 		public async Task SetUp()
 		{
+			await Task.CompletedTask.ConfigureAwait(false);
 			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
 			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
-			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
-			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
+			_sourceWorkspace = sourceWorkspaceCreationTask.GetAwaiter().GetResult();
+			_destinationWorkspace = destinationWorkspaceCreationTask.GetAwaiter().GetResult();
 			_destinationFolderArtifactId = await Rdos.CreateFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID, _DESTINATION_FOLDER_NAME).ConfigureAwait(false);
 
 			string groupName = Guid.NewGuid().ToString();
-			const string userName = "testuser@relativity.com";
-			const string password = "Test1234!";
 			_group = CreateGroup(groupName);
-			_user = CreateAndSetUpUser(userName, password, _group);
+			_user = CreateAndSetUpUser(TestUserName, TestPassword, _group);
 			await AddGroupToWorkspaceAsync(_sourceWorkspace.ArtifactID, _group).ConfigureAwait(false);
 			await AddGroupToWorkspaceAsync(_destinationWorkspace.ArtifactID, _group).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("bdf02167-6dba-48e1-a2ba-2c14defeb581")]
-		public async Task ItShouldValidatePermission()
+		public async Task Execute_ShouldValidatePermission()
 		{
+			await Task.CompletedTask.ConfigureAwait(false);
 			_configurationStub = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
+				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				DestinationFolderArtifactId = _destinationFolderArtifactId,
-				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
+				ExecutingUserId = _user.ArtifactID
 			};
 
-			await SetUpPermissionsInWorkspace(_sourceWorkspace.ArtifactID, ObjectPermissionsForSource, SelectedAdminPermissionsForSource).ConfigureAwait(false);
-			await SetUpPermissionsInWorkspace(_destinationWorkspace.ArtifactID, ObjectPermissionsForDestination, SelectedAdminPermissionsForDestination).ConfigureAwait(false);
-			await SetUpPermissionsForArtifactInWorkspace(_destinationWorkspace.ArtifactID, DestinationPermissionValues.ToList(), _destinationFolderArtifactId).ConfigureAwait(false);
+			// Initialize container
+			IContainer container = ContainerHelper.Create(_configurationStub);
+
+			// Create object types in destination (DestinationWorkspaceObjectTypesCreationExecutor is always executed in admin context)
+			IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration> executor = container.Resolve<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
+			ExecutionResult result = await executor.ExecuteAsync(_configurationStub, CancellationToken.None).ConfigureAwait(false);
+			result.Status.Should().Be(ExecutionStatus.Completed);
+
+			// Setup permissions for created user
+			await SetUpPermissionsInWorkspaceAsync(_sourceWorkspace.ArtifactID, ObjectPermissionsForSource, SelectedAdminPermissionsForSource).ConfigureAwait(false);
+			await SetUpPermissionsInWorkspaceAsync(_destinationWorkspace.ArtifactID, ObjectPermissionsForDestination, SelectedAdminPermissionsForDestination).ConfigureAwait(false);
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
 
 			// Act-Assert
-			Assert.DoesNotThrowAsync(async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false));
+			Assert.DoesNotThrowAsync(() => syncJob.ExecuteAsync(CancellationToken.None));
 		}
 
 		[TearDown]
@@ -174,7 +177,7 @@ namespace Relativity.Sync.Tests.System
 			UserHelpers.DeleteUser(Client, _user);
 		}
 
-		private async Task SetUpPermissionsInWorkspace(int workspaceArtifactId, IEnumerable<ObjectPermissionSelection> objectPermissionSelections, IEnumerable<string> selectedAdminPermissions)
+		private async Task SetUpPermissionsInWorkspaceAsync(int workspaceArtifactId, IEnumerable<ObjectPermissionSelection> objectPermissionSelections, IEnumerable<string> selectedAdminPermissions)
 		{
 			using (IPermissionManager permissionManager = ServiceFactory.CreateProxy<IPermissionManager>())
 			{
@@ -198,19 +201,6 @@ namespace Relativity.Sync.Tests.System
 				}
 
 				await permissionManager.SetWorkspaceGroupPermissionsAsync(workspaceArtifactId, workspaceGroupPermissions).ConfigureAwait(false);
-			}
-		}
-
-		private async Task SetUpPermissionsForArtifactInWorkspace(int workspaceArtifactId, List<PermissionValue> values, int objectArtifactId)
-		{
-			if (!values.IsNullOrEmpty())
-			{
-				using (IPermissionManager permissionManager = ServiceFactory.CreateProxy<IPermissionManager>())
-				{
-					await permissionManager
-						.SetPermissionSelectedForGroupAsync(workspaceArtifactId, values, GroupRef, objectArtifactId)
-						.ConfigureAwait(false);
-				}
 			}
 		}
 
