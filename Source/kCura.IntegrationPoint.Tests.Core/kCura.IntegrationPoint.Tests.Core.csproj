@@ -54,12 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ExternalDependencies\TransferConsole\LogConfig.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
@@ -284,9 +278,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="paket.references">
     </None>
     <Content Include="TestDataExtended\IMAGES\IMG001\AZIPPER_0007291.txt">
