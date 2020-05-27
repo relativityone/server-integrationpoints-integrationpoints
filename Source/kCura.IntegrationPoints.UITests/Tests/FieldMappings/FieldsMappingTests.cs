@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -36,18 +35,20 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			new Tuple<string, string>("Title", "Title")
 		};
 
-		protected override Task SuiteSpecificOneTimeSetup()
+		protected override async Task SuiteSpecificOneTimeSetup()
 		{
-			return CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext.GetWorkspaceId(), SourceFieldManager);
+			await CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext).ConfigureAwait(false);
+			await CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext).ConfigureAwait(false);
+			
 		}
 
-		protected override Task SuiteSpecificSetup()
-		{
-			return CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager);
-		}
+		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
 
-		protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
+		protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(Configuration.TestContext workspaceContext)
 		{
+			int workspaceID = workspaceContext.GetWorkspaceId();
+			IFieldManager fieldManager = workspaceContext.Helper.CreateProxy<IFieldManager>();
+
 			char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
 			for (int i = 0; i < specialCharacters.Length; i++)
 			{
@@ -112,7 +113,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de58")]
 		[RetryOnError]
-		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInDestinationWorkspaceFieldList()
+		public async Task FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInDestinationWorkspaceFieldList()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -124,6 +125,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
 			List<string> fieldsFromDestinationWorkspaceListBox =
 				fieldMappingPage.GetFieldsFromDestinationWorkspaceListBox();
+			
+			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			List<string> expectedDestinationMappableFields =
 				CreateFieldMapListBoxFormatFromObjectManagerFetchedList(DestinationContext.WorkspaceMappableFields);
 

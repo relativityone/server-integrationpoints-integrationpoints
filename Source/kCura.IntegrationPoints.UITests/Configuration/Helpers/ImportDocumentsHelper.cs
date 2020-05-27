@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		public void ImportDocuments(bool withNatives, DocumentTestDataBuilder.TestDataType testDataType)
 		{
-			Log.Information(@"Importing documents... {testDataType}", testDataType);
+			Log.Information(@"Importing documents... {testDataType} into workspaceId {workspaceId}", testDataType, _testContext.WorkspaceId);
 			var sw = new Stopwatch();
 			sw.Start();
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
