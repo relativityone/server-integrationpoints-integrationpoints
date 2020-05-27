@@ -77,13 +77,19 @@ namespace kCura.IntegrationPoints.UITests.NUnitExtensions
 
 		private static bool IsErrorRetriable(string errorMessage)
 		{
-			return IsSeleniumExceptionMessage(errorMessage);
+			return IsSeleniumExceptionMessage(errorMessage) || IsPollyTimeoutExceptionMessage(errorMessage);
 		}
 
 		private static bool IsSeleniumExceptionMessage(string exceptionMessage)
 		{
 			string seleniumNamespace = typeof(OpenQA.Selenium.IWebDriver).Namespace;
 			return exceptionMessage.Contains(seleniumNamespace);
+		}
+
+		private static bool IsPollyTimeoutExceptionMessage(string exceptionMessage)
+		{
+			string actionTimeout = typeof(Polly.Timeout.TimeoutRejectedException).Namespace;
+			return exceptionMessage.Contains(actionTimeout);
 		}
 
 		private void LogTestFailed(int retryNumber)
