@@ -262,8 +262,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && workspaceContext.WorkspaceId != null)
 				{
 					Workspace.DeleteWorkspace(workspaceContext.GetWorkspaceId());
+					Log.Information("Delete workspace: {workspaceId}", workspaceContext.WorkspaceId);
+					workspaceContext.WorkspaceId = null;
 				}
-
 				workspaceContext.TearDown();
 			}
 			catch (Exception ex)

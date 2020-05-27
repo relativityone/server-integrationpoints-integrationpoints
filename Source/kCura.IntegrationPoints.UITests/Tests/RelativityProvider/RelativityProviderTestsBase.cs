@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
+			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
 			await SuiteSpecificOneTimeSetup().ConfigureAwait(false);
 			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			
@@ -55,9 +56,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public virtual async Task SetUp()
 		{
 			Log.Information("Suite SetUp");
+			
 			await SuiteSpecificSetup().ConfigureAwait(false);
-			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
-			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
 			Log.Information("End Suite SetUp");
 		}
@@ -70,13 +70,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			{
 				return;
 			}
-
+			DestinationContext = new TestContext();
 			await DestinationContext.CreateTestWorkspaceAsync().ConfigureAwait(false);
+			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
 		}
 
 		[TearDown]
 		public virtual async Task TearDownDestinationContext()
 		{
+			Log.Information("TearDownDestinationContext");
 			await SuiteSpecificTearDown().ConfigureAwait(false);
 		}
 
