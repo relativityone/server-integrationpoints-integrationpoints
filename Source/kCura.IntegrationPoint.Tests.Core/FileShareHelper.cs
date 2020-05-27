@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				
 				FileShareResourceServer server = await proxy.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
 
-				return server.UNCPath;
+				return Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
 			}
 		}
 	}
