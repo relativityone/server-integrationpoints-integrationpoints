@@ -2,9 +2,124 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ArtifactViewFields>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001009</ArtifactViewFieldId>
+      <ArtifactViewFieldId>1003322</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
-      <ColumnName>AnalyticsIndex</ColumnName>
+      <ColumnName>AliasBCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003390</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasBCCDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003398</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasBCCPrimaryDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003382</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasBCCType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003316</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003389</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasCCDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003397</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasCCPrimaryDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003381</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasCCType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003340</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasFrom</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003393</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasFromDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003401</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasFromPrimaryDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003385</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasFromType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003334</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasParticipant</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003392</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasParticipantDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003400</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasParticipantPrimaryDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003384</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasParticipantType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003328</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasRecipient</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003391</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasRecipientDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003399</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasRecipientPrimaryDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003383</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasRecipientType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003310</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasTo</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003388</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasToDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003396</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasToPrimaryDomain</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003380</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AliasToType</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1000195</ArtifactViewFieldId>
@@ -30,6 +145,16 @@
       <ArtifactViewFieldId>1000425</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>BatchStatus</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003259</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ClassificationIndex</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001009</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ConceptualIndex</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001464</ArtifactViewFieldId>
@@ -187,6 +312,36 @@
       <ColumnName>Edit</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1003292</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EntityBCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003286</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EntityCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003346</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EntityFrom</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003304</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EntityParticipant</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003298</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EntityRecipient</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003280</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EntityTo</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1000187</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>ExtractedText</ColumnName>
@@ -232,6 +387,21 @@
       <ColumnName>ImagingSet</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1003219</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ImagingWarning</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003257</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ImagingWarningWarningDetails</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003245</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ImagingWarningWarningType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001814</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>JobHistory</ColumnName>
@@ -265,6 +435,11 @@
       <ArtifactViewFieldId>1000615</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>OCRResults</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003218</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>OriginatingImagingDocumentError</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001455</ArtifactViewFieldId>
@@ -397,14 +572,14 @@
       <ColumnName>ProductionImageCount</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001235</ArtifactViewFieldId>
-      <ArtifactTypeId>10</ArtifactTypeId>
-      <ColumnName>ProductionProductionName</ColumnName>
-    </ArtifactViewField>
-    <ArtifactViewField>
       <ArtifactViewFieldId>1001230</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>ProductionProductionType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003201</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionProductionSet</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001232</ArtifactViewFieldId>
@@ -430,6 +605,11 @@
       <ArtifactViewFieldId>1001883</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>PromoteDesignation</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1003258</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>RelativityAttachmentID</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1000470</ArtifactViewFieldId>
@@ -1519,12 +1699,6 @@
   </ArtifactViewFields>
   <Assemblies>
     <Assembly>
-      <ArtifactId>1016740</ArtifactId>
-      <Keywords />
-      <Name>Relativity.IntegrationPoints.Contracts.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1016743</ArtifactId>
       <Keywords />
       <Name>Castle.Windsor.dll</Name>
@@ -1636,12 +1810,6 @@
       <ArtifactId>1016763</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.LDAPProvider.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1016764</ArtifactId>
-      <Keywords />
-      <Name>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -1855,33 +2023,45 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5320851</ArtifactId>
+      <ArtifactId>5375019</ArtifactId>
+      <Keywords />
+      <Name>Relativity.IntegrationPoints.Contracts.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5375020</ArtifactId>
+      <Keywords />
+      <Name>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5375021</ArtifactId>
       <Keywords />
       <Name>Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5320853</ArtifactId>
+      <ArtifactId>5375022</ArtifactId>
       <Keywords />
       <Name>Relativity.IntegrationPoints.Services.dll</Name>
       <Notes />
     </Assembly>
-	<Assembly>
-      <ArtifactId>5321023</ArtifactId>
+    <Assembly>
+      <ArtifactId>5376789</ArtifactId>
       <Keywords />
       <Name>Relativity.AutomatedWorkflows.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
-	<Assembly>
-		<ArtifactId>5349076</ArtifactId>
-		<Keywords />
-		<Name>Relativity.IntegrationPoints.FieldsMapping.dll</Name>
-		<Notes />
-	</Assembly>
+    <Assembly>
+      <ArtifactId>5376790</ArtifactId>
+      <Keywords />
+      <Name>Relativity.IntegrationPoints.FieldsMapping.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2019-10-31T11:20:44.9058711Z</ExtractionDate>
+  <ExtractionDate>2020-05-27T08:38:04.1518782Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -2153,7 +2333,7 @@
           <Notes />
           <RelationalIndexViewArtifactID xsi:nil="true" />
           <SourceFieldArtifactId xsi:nil="true" />
-          <UseUnicodeEncoding>false</UseUnicodeEncoding>
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
           <Width />
           <Wrapping>true</Wrapping>
           <AllowPivot>false</AllowPivot>
@@ -2612,7 +2792,7 @@
           <Notes />
           <RelationalIndexViewArtifactID xsi:nil="true" />
           <SourceFieldArtifactId xsi:nil="true" />
-          <UseUnicodeEncoding>false</UseUnicodeEncoding>
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
           <Width />
           <Wrapping>true</Wrapping>
           <AllowPivot>false</AllowPivot>
@@ -3122,7 +3302,7 @@
           <Notes />
           <RelationalIndexViewArtifactID xsi:nil="true" />
           <SourceFieldArtifactId xsi:nil="true" />
-          <UseUnicodeEncoding>false</UseUnicodeEncoding>
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
           <Width />
           <Wrapping>true</Wrapping>
           <AllowPivot>false</AllowPivot>
@@ -4216,7 +4396,7 @@
           <ArtifactId>1039182</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <LayoutArtifactId>1039182</LayoutArtifactId>
               <Order>0</Order>
               <Title>General</Title>
@@ -4224,11 +4404,11 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1001626</ParentCategory>
+              <ParentCategory>1001766</ParentCategory>
               <Type>0</Type>
             </Category>
             <Category>
-              <CategoryId>1001626</CategoryId>
+              <CategoryId>1001766</CategoryId>
               <LayoutArtifactId>1039182</LayoutArtifactId>
               <Order>0</Order>
               <Title>Layout Group</Title>
@@ -4240,7 +4420,7 @@
               <Type>1</Type>
             </Category>
             <Category>
-              <CategoryId>1001628</CategoryId>
+              <CategoryId>1001768</CategoryId>
               <LayoutArtifactId>1039182</LayoutArtifactId>
               <Order>1</Order>
               <Title>Scheduling</Title>
@@ -4248,7 +4428,7 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1001626</ParentCategory>
+              <ParentCategory>1001766</ParentCategory>
               <Type>0</Type>
             </Category>
           </Categories>
@@ -4257,7 +4437,7 @@
           <LayoutArtifactTypeId>1000051</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038998</FieldArtifactId>
@@ -4273,7 +4453,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039100</FieldArtifactId>
@@ -4290,7 +4470,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039102</FieldArtifactId>
@@ -4306,7 +4486,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039093</FieldArtifactId>
@@ -4323,7 +4503,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039101</FieldArtifactId>
@@ -4340,7 +4520,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039091</FieldArtifactId>
@@ -4356,7 +4536,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039105</FieldArtifactId>
@@ -4372,7 +4552,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039090</FieldArtifactId>
@@ -4388,7 +4568,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001627</CategoryId>
+              <CategoryId>1001767</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039089</FieldArtifactId>
@@ -4404,7 +4584,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001628</CategoryId>
+              <CategoryId>1001768</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039088</FieldArtifactId>
@@ -4420,7 +4600,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001628</CategoryId>
+              <CategoryId>1001768</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039085</FieldArtifactId>
@@ -4437,7 +4617,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001628</CategoryId>
+              <CategoryId>1001768</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039092</FieldArtifactId>
@@ -4453,7 +4633,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001628</CategoryId>
+              <CategoryId>1001768</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039086</FieldArtifactId>
@@ -4868,15 +5048,17 @@
       <SystemViews />
       <Tab>
         <ArtifactId>1039002</ArtifactId>
-        <DisplayOrder>0</DisplayOrder>
         <Guid>4a9d9b4c-cec1-4c68-8a6d-c0f22516f032</Guid>
-        <IsDefault>false</IsDefault>
-        <Name>Integration Points</Name>
+        <ApplicationVersion>11.0.19.198</ApplicationVersion>
         <ObjectArtifactTypeId>1000051</ObjectArtifactTypeId>
-        <ParentArtifactId>1038992</ParentArtifactId>
+        <Name>Integration Points</Name>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.7.0.6</ApplicationVersion>
+        <IsDefault>false</IsDefault>
+        <DisplayOrder>0</DisplayOrder>
+        <ParentTabGuid xsi:nil="true" />
+        <ParentTabName>Integration Points</ParentTabName>
+        <IsShownInSidebar>false</IsShownInSidebar>
       </Tab>
       <Views>
         <View>
@@ -5241,7 +5423,7 @@
           <ArtifactId>1039183</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001629</CategoryId>
+              <CategoryId>1001769</CategoryId>
               <LayoutArtifactId>1039183</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -5257,7 +5439,7 @@
           <LayoutArtifactTypeId>1000052</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001629</CategoryId>
+              <CategoryId>1001769</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039008</FieldArtifactId>
@@ -5770,7 +5952,7 @@
           <ArtifactId>1039184</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001630</CategoryId>
+              <CategoryId>1001770</CategoryId>
               <LayoutArtifactId>1039184</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -5786,7 +5968,7 @@
           <LayoutArtifactTypeId>1000053</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001630</CategoryId>
+              <CategoryId>1001770</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039017</FieldArtifactId>
@@ -7197,7 +7379,7 @@
           <ArtifactId>1039185</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <LayoutArtifactId>1039185</LayoutArtifactId>
               <Order>0</Order>
               <Title>Job Details</Title>
@@ -7208,7 +7390,7 @@
               <Type>0</Type>
             </Category>
             <Category>
-              <CategoryId>1001632</CategoryId>
+              <CategoryId>1001772</CategoryId>
               <LayoutArtifactId>1039185</LayoutArtifactId>
               <Order>10</Order>
               <Title>Import Statistics</Title>
@@ -7224,7 +7406,7 @@
           <LayoutArtifactTypeId>1000054</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039137</FieldArtifactId>
@@ -7240,7 +7422,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039026</FieldArtifactId>
@@ -7256,7 +7438,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039099</FieldArtifactId>
@@ -7272,7 +7454,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039130</FieldArtifactId>
@@ -7288,7 +7470,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039113</FieldArtifactId>
@@ -7305,7 +7487,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039123</FieldArtifactId>
@@ -7321,7 +7503,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001631</CategoryId>
+              <CategoryId>1001771</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039124</FieldArtifactId>
@@ -7337,7 +7519,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001632</CategoryId>
+              <CategoryId>1001772</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039121</FieldArtifactId>
@@ -7353,7 +7535,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001632</CategoryId>
+              <CategoryId>1001772</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039122</FieldArtifactId>
@@ -7766,15 +7948,17 @@
       <SystemViews />
       <Tab>
         <ArtifactId>1039030</ArtifactId>
-        <DisplayOrder>10</DisplayOrder>
         <Guid>677d1324-f251-4cb5-80c1-fb079f05962a</Guid>
-        <IsDefault>false</IsDefault>
-        <Name>Job History</Name>
+        <ApplicationVersion>11.0.19.198</ApplicationVersion>
         <ObjectArtifactTypeId>1000054</ObjectArtifactTypeId>
-        <ParentArtifactId>1038992</ParentArtifactId>
+        <Name>Job History</Name>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.7.0.6</ApplicationVersion>
+        <IsDefault>false</IsDefault>
+        <DisplayOrder>10</DisplayOrder>
+        <ParentTabGuid xsi:nil="true" />
+        <ParentTabName>Integration Points</ParentTabName>
+        <IsShownInSidebar>false</IsShownInSidebar>
       </Tab>
       <Views>
         <View>
@@ -8400,7 +8584,7 @@
           <ArtifactId>1039186</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <LayoutArtifactId>1039186</LayoutArtifactId>
               <Order>0</Order>
               <Title>Error Details</Title>
@@ -8417,7 +8601,7 @@
           <LayoutArtifactTypeId>1000055</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039037</FieldArtifactId>
@@ -8433,7 +8617,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039031</FieldArtifactId>
@@ -8449,7 +8633,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039138</FieldArtifactId>
@@ -8465,7 +8649,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039033</FieldArtifactId>
@@ -8481,7 +8665,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039036</FieldArtifactId>
@@ -8498,7 +8682,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039034</FieldArtifactId>
@@ -8514,7 +8698,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039139</FieldArtifactId>
@@ -8530,7 +8714,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039145</FieldArtifactId>
@@ -8546,7 +8730,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039141</FieldArtifactId>
@@ -8562,7 +8746,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001633</CategoryId>
+              <CategoryId>1001773</CategoryId>
               <ColSpan>2</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039144</FieldArtifactId>
@@ -9018,15 +9202,17 @@
       <SystemViews />
       <Tab>
         <ArtifactId>1039041</ArtifactId>
-        <DisplayOrder>25</DisplayOrder>
         <Guid>fd585dbf-98ea-427b-8ce5-3e09a053dc14</Guid>
-        <IsDefault>false</IsDefault>
-        <Name>Job History Errors</Name>
+        <ApplicationVersion>11.0.19.198</ApplicationVersion>
         <ObjectArtifactTypeId>1000055</ObjectArtifactTypeId>
-        <ParentArtifactId>1038992</ParentArtifactId>
+        <Name>Job History Errors</Name>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.7.0.6</ApplicationVersion>
+        <IsDefault>false</IsDefault>
+        <DisplayOrder>25</DisplayOrder>
+        <ParentTabGuid xsi:nil="true" />
+        <ParentTabName>Integration Points</ParentTabName>
+        <IsShownInSidebar>false</IsShownInSidebar>
       </Tab>
       <Views>
         <View>
@@ -9428,7 +9614,7 @@
           <ArtifactId>1039187</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001634</CategoryId>
+              <CategoryId>1001774</CategoryId>
               <LayoutArtifactId>1039187</LayoutArtifactId>
               <Order>0</Order>
               <Title>Destination Workspace</Title>
@@ -9445,7 +9631,7 @@
           <LayoutArtifactTypeId>1000056</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001634</CategoryId>
+              <CategoryId>1001774</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039047</FieldArtifactId>
@@ -9834,15 +10020,17 @@
       <SystemViews />
       <Tab>
         <ArtifactId>1039051</ArtifactId>
-        <DisplayOrder>30</DisplayOrder>
         <Guid>d04fc871-7a46-47a2-bbe5-83318b2d641e</Guid>
-        <IsDefault>false</IsDefault>
-        <Name>Destination Workspaces</Name>
+        <ApplicationVersion>11.0.19.198</ApplicationVersion>
         <ObjectArtifactTypeId>1000056</ObjectArtifactTypeId>
-        <ParentArtifactId>1038992</ParentArtifactId>
+        <Name>Destination Workspaces</Name>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.7.0.6</ApplicationVersion>
+        <IsDefault>false</IsDefault>
+        <DisplayOrder>30</DisplayOrder>
+        <ParentTabGuid xsi:nil="true" />
+        <ParentTabName>Integration Points</ParentTabName>
+        <IsShownInSidebar>false</IsShownInSidebar>
       </Tab>
       <Views>
         <View>
@@ -10025,7 +10213,7 @@
           <ArtifactId>1039188</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001635</CategoryId>
+              <CategoryId>1001775</CategoryId>
               <LayoutArtifactId>1039188</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -10041,7 +10229,7 @@
           <LayoutArtifactTypeId>1000057</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001635</CategoryId>
+              <CategoryId>1001775</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039057</FieldArtifactId>
@@ -11192,7 +11380,7 @@
           <ArtifactId>1039189</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <LayoutArtifactId>1039189</LayoutArtifactId>
               <Order>0</Order>
               <Title>General</Title>
@@ -11200,11 +11388,11 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1001636</ParentCategory>
+              <ParentCategory>1001776</ParentCategory>
               <Type>0</Type>
             </Category>
             <Category>
-              <CategoryId>1001636</CategoryId>
+              <CategoryId>1001776</CategoryId>
               <LayoutArtifactId>1039189</LayoutArtifactId>
               <Order>0</Order>
               <Title>Layout Group</Title>
@@ -11216,7 +11404,7 @@
               <Type>1</Type>
             </Category>
             <Category>
-              <CategoryId>1001638</CategoryId>
+              <CategoryId>1001778</CategoryId>
               <LayoutArtifactId>1039189</LayoutArtifactId>
               <Order>1</Order>
               <Title>Scheduling</Title>
@@ -11224,7 +11412,7 @@
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory>1001636</ParentCategory>
+              <ParentCategory>1001776</ParentCategory>
               <Type>0</Type>
             </Category>
           </Categories>
@@ -11233,7 +11421,7 @@
           <LayoutArtifactTypeId>1000058</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039066</FieldArtifactId>
@@ -11249,7 +11437,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039161</FieldArtifactId>
@@ -11266,7 +11454,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039163</FieldArtifactId>
@@ -11282,7 +11470,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039158</FieldArtifactId>
@@ -11299,7 +11487,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039169</FieldArtifactId>
@@ -11315,7 +11503,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039171</FieldArtifactId>
@@ -11331,7 +11519,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039156</FieldArtifactId>
@@ -11347,7 +11535,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001637</CategoryId>
+              <CategoryId>1001777</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039168</FieldArtifactId>
@@ -11363,7 +11551,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001638</CategoryId>
+              <CategoryId>1001778</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039159</FieldArtifactId>
@@ -11379,7 +11567,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001638</CategoryId>
+              <CategoryId>1001778</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>2</Column>
               <FieldArtifactId>1039162</FieldArtifactId>
@@ -11396,7 +11584,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001638</CategoryId>
+              <CategoryId>1001778</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1039167</FieldArtifactId>
@@ -11799,15 +11987,17 @@
       <SystemViews />
       <Tab>
         <ArtifactId>1039070</ArtifactId>
-        <DisplayOrder>50</DisplayOrder>
         <Guid>0ac27fca-a6fe-425b-87f0-afb12e40563a</Guid>
-        <IsDefault>false</IsDefault>
-        <Name>Integration Point Profile</Name>
+        <ApplicationVersion>11.0.19.198</ApplicationVersion>
         <ObjectArtifactTypeId>1000058</ObjectArtifactTypeId>
-        <ParentArtifactId>1038992</ParentArtifactId>
+        <Name>Integration Point Profile</Name>
         <TabDisplay>0</TabDisplay>
         <Visible>true</Visible>
-        <ApplicationVersion>9.7.0.6</ApplicationVersion>
+        <IsDefault>false</IsDefault>
+        <DisplayOrder>50</DisplayOrder>
+        <ParentTabGuid xsi:nil="true" />
+        <ParentTabName>Integration Points</ParentTabName>
+        <IsShownInSidebar>false</IsShownInSidebar>
       </Tab>
       <Views>
         <View>
@@ -13083,7 +13273,7 @@
           <ArtifactId>1041923</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001751</CategoryId>
+              <CategoryId>1001779</CategoryId>
               <LayoutArtifactId>1041923</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -13099,7 +13289,7 @@
           <LayoutArtifactTypeId>1001068</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001751</CategoryId>
+              <CategoryId>1001779</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1041920</FieldArtifactId>
@@ -13115,7 +13305,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001751</CategoryId>
+              <CategoryId>1001779</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1041921</FieldArtifactId>
@@ -13953,7 +14143,7 @@
           <ArtifactId>1041933</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001752</CategoryId>
+              <CategoryId>1001780</CategoryId>
               <LayoutArtifactId>1041933</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -13969,7 +14159,7 @@
           <LayoutArtifactTypeId>1001069</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001752</CategoryId>
+              <CategoryId>1001780</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1041930</FieldArtifactId>
@@ -13985,7 +14175,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001752</CategoryId>
+              <CategoryId>1001780</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1041931</FieldArtifactId>
@@ -14667,7 +14857,7 @@
           <ArtifactId>1041992</ArtifactId>
           <Categories>
             <Category>
-              <CategoryId>1001754</CategoryId>
+              <CategoryId>1001781</CategoryId>
               <LayoutArtifactId>1041992</LayoutArtifactId>
               <Order>0</Order>
               <Title>Default Category</Title>
@@ -14683,7 +14873,7 @@
           <LayoutArtifactTypeId>1001071</LayoutArtifactTypeId>
           <LayoutFields>
             <LayoutField>
-              <CategoryId>1001754</CategoryId>
+              <CategoryId>1001781</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1041989</FieldArtifactId>
@@ -14699,7 +14889,7 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1001754</CategoryId>
+              <CategoryId>1001781</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1041990</FieldArtifactId>
@@ -15161,30 +15351,30 @@
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>11.0.98.97</RelativityVersion>
-  <Version>9.7.0.28</Version>
+  <RelativityVersion>11.2.128.19</RelativityVersion>
+  <Version>11.3.10.1</Version>
+  <SchemaVersion>11.3.10.0</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />
   <ApplicationScripts />
   <CustomPages>
     <CustomPage>
-      <ArtifactID>1039208</ArtifactID>
+      <ArtifactID>5377381</ArtifactID>
       <Guid>c2c93191-7b15-4a9b-aa56-6a8c2dac5494</Guid>
-      <ApplicationVersion>9.7.0.6</ApplicationVersion>
+      <ReadinessUrl />
       <Name>Web</Name>
       <FileName>DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip</FileName>
-      <Size>22546259</Size>
+      <Size>25350988</Size>
       <Keywords />
       <Notes />
-      <Hash />
+      <Hash>12-65-9A-CC-27-F6-98-CD-BC-99-2E-F3-45-40-9B-AB-19-25-4E-73</Hash>
     </CustomPage>
   </CustomPages>
   <AgentTypes>
     <AgentType>
-      <ArtifactId>1037899</ArtifactId>
+      <ArtifactId>1016789</ArtifactId>
       <Guid>f37752eb-d204-4f7d-9d6b-f55e64991846</Guid>
-      <ApplicationVersion>9.7.0.25</ApplicationVersion>
       <AgentTypeName>Integration Points Manager</AgentTypeName>
       <FullNameSpace>kCura.IntegrationPoints.Manager.IntegrationPointsManagerAgent</FullNameSpace>
       <DefaultInterval>3600</DefaultInterval>
@@ -15195,16 +15385,10 @@
       <MaxInstanceServer>0</MaxInstanceServer>
       <MinInstanceResourcePool>0</MinInstanceResourcePool>
       <MaxInstanceResourcePool>0</MaxInstanceResourcePool>
-      <AssemblyArtifactID>0</AssemblyArtifactID>
-      <AgentDll>kCura.IntegrationPoints.Management.dll</AgentDll>
-      <Keywords />
-      <Notes />
-      <Description />
     </AgentType>
     <AgentType>
-      <ArtifactId>1037900</ArtifactId>
+      <ArtifactId>1016790</ArtifactId>
       <Guid>08c0ce2d-8191-4e8f-b037-899ceaee493d</Guid>
-      <ApplicationVersion>9.7.0.25</ApplicationVersion>
       <AgentTypeName>Integration Points Agent</AgentTypeName>
       <FullNameSpace>kCura.IntegrationPoints.Agent.Agent</FullNameSpace>
       <DefaultInterval>5</DefaultInterval>
@@ -15215,11 +15399,6 @@
       <MaxInstanceServer>0</MaxInstanceServer>
       <MinInstanceResourcePool>0</MinInstanceResourcePool>
       <MaxInstanceResourcePool>0</MaxInstanceResourcePool>
-      <AssemblyArtifactID>0</AssemblyArtifactID>
-      <AgentDll>kCura.IntegrationPoints.Agent.dll</AgentDll>
-      <Keywords />
-      <Notes />
-      <Description />
     </AgentType>
   </AgentTypes>
   <IsRelativityApplication>true</IsRelativityApplication>
@@ -15233,7 +15412,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>90</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15245,7 +15424,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>130</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15257,7 +15436,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>7</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15269,7 +15448,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>110</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15281,7 +15460,7 @@
       <ExecutionType>18</ExecutionType>
       <Order>25</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15293,7 +15472,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15305,7 +15484,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>70</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15317,7 +15496,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15329,7 +15508,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15341,7 +15520,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>4</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15353,7 +15532,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>6</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15365,7 +15544,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>8</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15377,7 +15556,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15389,7 +15568,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15401,7 +15580,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15413,7 +15592,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15425,7 +15604,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15437,7 +15616,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>140</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15449,7 +15628,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>150</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15461,7 +15640,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>160</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15473,7 +15652,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>26</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15485,7 +15664,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15497,7 +15676,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>180</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15509,7 +15688,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>190</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15521,7 +15700,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>200</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15533,7 +15712,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>15</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15545,7 +15724,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>65</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15557,7 +15736,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>210</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -15569,11 +15748,11 @@
       <ExecutionType>14</ExecutionType>
       <Order>200</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1042026</ArtifactId>
+      <ArtifactId>1042597</ArtifactId>
       <AssemblyArtifactId>1016759</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveBatchesFromOldJobsEventHandler</Name>
       <Guid>65218c51-3a8c-4bcb-9ee7-4a147b24cbfe</Guid>
@@ -15581,7 +15760,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>300</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>9.7.0.28</ApplicationVersion>
+      <ApplicationVersion>11.3.10.0</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
@@ -15845,8 +16024,5 @@
     <Id>1039051</Id>
     <Id>1039070</Id>
   </TabIds>
-  <CustomPageIds>
-    <Id>1039208</Id>
-  </CustomPageIds>
   <Locked>true</Locked>
 </Application>
