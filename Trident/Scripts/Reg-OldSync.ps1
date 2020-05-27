@@ -16,6 +16,6 @@ $TaskRunner = Resolve-Path -Path build.ps1
 
 &($TaskRunner) -Configuration Release
 
-&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == ExportToRelativity && cat != NotWorkingOnRegressionEnvironment"
+&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == RIP_OLD && cat != NotWorkingOnRegressionEnvironment"
 
 Remove-Module Build-Util

@@ -7,4 +7,4 @@ $TaskRunner = Resolve-Path -Path build.ps1
 
 &($TaskRunner) -Configuration Release
 
-&($TaskRunner) MyTest -Configuration Release -TestFilter "cat == ExportToRelativity && cat != NotWorkingOnTrident"
+&($TaskRunner) MyTest -Configuration Release -TestFilter "cat == RIP_OLD && cat != NotWorkingOnTrident"

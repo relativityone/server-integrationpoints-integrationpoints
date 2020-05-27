@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync.FieldMapping]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Category(TestCategory.RIP_SYNC)]
 	[Category(TestCategory.FIELDS_MAPPING)]
 	public class FieldsMappingTests : RelativityProviderTestsBase
 	{
@@ -301,7 +301,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			}
 		}
 
-		[Test]
+		[IdentifiedTest("ea443f17-ee72-40f5-9950-7934374ff5c0")]
 		[RetryOnError]
 		public async Task FieldMapping_ShouldRemapFields_WhenDestinationWorkspaceWasChanged()
 		{

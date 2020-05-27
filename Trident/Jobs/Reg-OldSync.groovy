@@ -29,7 +29,7 @@ timestamps {
 
 				stage('Run Job') {
 					withCredentials([usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetSvcPassword', usernameVariable: 'nugetSvcUsername')]) {
-						powershell "./Trident/Scripts/Reg-Sync.ps1 -RegEnv $params.RegTestsConfig"
+						powershell "./Trident/Scripts/Reg-OldSync.ps1 -RegEnv $params.RegTestsConfig"
 					}
 				}
 

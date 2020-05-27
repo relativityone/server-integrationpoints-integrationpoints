@@ -12,8 +12,8 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Feature.DataTransfer.IntegrationPoints.Sync.SavedSearch]
+	[Category(TestCategory.RIP_SYNC)]
 	public class MetadataSavedSearchToFolderTest: RelativityProviderTestsBase
 	{
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>

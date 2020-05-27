@@ -4,6 +4,6 @@ jobWithSut {
     slackChannel = "cd_trident_rip"
     sutTemplate = "LanceleafAA1"
 	//relativityBranch = "develop"
-    jobScript = "Trident/Scripts/UI-Sync.ps1"
+    jobScript = "Trident/Scripts/UI-NewSync.ps1"
     cron = "0 1 * * *"
 }

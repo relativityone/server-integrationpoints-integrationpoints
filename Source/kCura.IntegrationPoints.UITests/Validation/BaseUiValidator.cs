@@ -6,10 +6,12 @@ using System.Threading;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using Serilog;
 
 
 namespace kCura.IntegrationPoints.UITests.Validation
@@ -18,6 +20,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 	{
 		private const int _DEFAULT_JOB_EXECUTION_TIMEOUT_IN_MINUTES = 10;
 		private readonly int _jobExecutionTimeoutInMinutes;
+		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(BaseUiValidator));
 
 		public BaseUiValidator()
 		{
@@ -26,8 +29,12 @@ namespace kCura.IntegrationPoints.UITests.Validation
 
 		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, params Choice[] expectedJobStatuses)
 		{
+			var sw = new Stopwatch();
+			sw.Start();
 			string actualJobStatusAfterExecuted = WaitUntilJobFinishedAndThenGetStatus(integrationPointDetailsPage, _jobExecutionTimeoutInMinutes);
 			actualJobStatusAfterExecuted.Should().BeOneOf(expectedJobStatuses.Select(js => js.Name));
+			sw.Stop();
+			Log.Information("ValidateJobStatus. Duration: {duration} s", sw.ElapsedMilliseconds / 1000);
 		}
 
 		protected static void ValidateHasErrorsProperty(Dictionary<string, string> generalPropertiesTable, bool expectHasErrors)

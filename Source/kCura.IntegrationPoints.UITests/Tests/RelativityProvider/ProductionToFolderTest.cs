@@ -14,11 +14,20 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Feature.DataTransfer.IntegrationPoints.Sync.ProductionPush]
+	[Category(TestCategory.RIP_OLD)]
 	public class ProductionToFolderTest : RelativityProviderTestsBase
 	{
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+
+		protected override Task SuiteSpecificOneTimeSetup()
+		{
+			SourceContext.CreateProductionAndImportData(_sourceProductionName);
+			return Task.CompletedTask;
+		}
+
+		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
+		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
 
 		private RelativityProviderModel CreateRelativityProviderModelWithProduction()
 		{
@@ -57,8 +66,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			{
 				DestinationContext.ImportDocuments();
 			}
-
-			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
 
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);

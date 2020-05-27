@@ -16,12 +16,21 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync.ProductionPush]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Category(TestCategory.RIP_OLD)]
 	public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
 	{
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 		private readonly string _destinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 
+		protected override Task SuiteSpecificOneTimeSetup()
+		{
+			SourceContext.CreateProductionAndImportData(_sourceProductionName);
+			return Task.CompletedTask;
+		}
+
+		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
+		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
+		
 		private RelativityProviderModel CreateModel()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
@@ -38,17 +47,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 				CopyImages = true,
 			};
-			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
+			DestinationContext.CreateProductionSet(_destinationProductionName);
 			return model;
 		}
 		
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTestCase("0f6503b8-791a-465b-bbf5-0a6dfbab72ed", RelativityProviderModel.OverwriteModeEnum.OverlayOnly, false)]
 		[RetryOnError]
 		public void ShouldPushImagesFromProductionToProduction(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
 		{
 			//Arrange
-			ImagesProductionToProductionSetValidator validator = new ImagesProductionToProductionSetValidator();
 			RelativityProviderModel model = CreateModel();
 			model.Overwrite = overwrite;
 			model.CopyFilesToRepository = copyFilesToRepository;
@@ -91,7 +99,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		public void ShouldDisplayCorrectSummaryPage_WhenImagesFromProductionToProduction(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
 		{
 			//Arrange
-			ImagesProductionToProductionSetValidator validator = new ImagesProductionToProductionSetValidator();
+			var validator = new ImagesProductionToProductionSetValidator();
 			RelativityProviderModel model = CreateModel();
 			model.Overwrite = overwrite;
 			model.CopyFilesToRepository = copyFilesToRepository;

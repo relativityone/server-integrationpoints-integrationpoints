@@ -1,13 +1,14 @@
 folder('IntegrationPoints-Jobs') {
 }
 
-folder('IntegrationPoints-Jobs/IntegrationPoints-Nightly') {
+folder('IntegrationPoints-Jobs/IntegrationPoints-Regression') {
+    description('Prerequisites: "Functional Tests Template" workspace must exist; "rip.jenkins@rip.com" with default password must exist')
 }
 
-multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/IntegrationPoints-UI-Sync') {
+multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/IntegrationPoints-Old-Sync') {
     factory {
         workflowBranchProjectFactory {
-            scriptPath('Trident/Jobs/UI-Sync.groovy')
+            scriptPath('Trident/Jobs/Reg-OldSync.groovy')
         }
     }
     branchSources {
@@ -16,7 +17,7 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/Integra
                 git {
                     remote('ssh://git@git.kcura.com:7999/in/integrationpoints.git')
                     credentialsId('bitbucket-repo-key')
-                    id('IntegrationPoints-UI-Sync')
+                    id('IntegrationPoints-Reg-Old-Sync')
                 }
             }
         }

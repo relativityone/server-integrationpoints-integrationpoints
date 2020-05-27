@@ -19,11 +19,10 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.WebImport.ImportLdap]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
 	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // no access to LDAP from R1
-	[NotWorkingOnTrident] //Remove when REL-250027
+	[NotWorkingOnTrident] // no access to LDAP from R1 (REL-250027)
 	public class ImportLdapProviderTest : UiTest
 	{
 		private IRSAPIService _service;

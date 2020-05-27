@@ -23,9 +23,8 @@ using System.Threading.Tasks;
 namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.WebImport.ImportLoadFile]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.IMPORT_FROM_LOAD_FILE)]
 	public class ImportFromLoadFileTest : UiTest
 	{
 		private readonly FileShareHelper _fileshare;
