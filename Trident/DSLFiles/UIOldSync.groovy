@@ -7,7 +7,7 @@ folder('IntegrationPoints-Jobs/IntegrationPoints-Nightly') {
 multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/IntegrationPoints-UI-Old-Sync') {
     factory {
         workflowBranchProjectFactory {
-            scriptPath('Trident/Jobs/UI-Old-Sync.groovy')
+            scriptPath('Trident/Jobs/UI-OldSync.groovy')
         }
     }
     branchSources {
