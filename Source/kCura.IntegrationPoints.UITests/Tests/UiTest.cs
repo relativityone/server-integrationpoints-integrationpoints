@@ -175,7 +175,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				DeleteWorkspace(SourceContext);
 				DeleteWorkspace(DestinationContext);
 			}
-			TearDownContext();
 		}
 
 		private void LogBrowserLogsIfTestFailed()
