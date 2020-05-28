@@ -66,7 +66,7 @@
 
 		var saveAsProfileModalViewModel = new SaveAsProfileModalViewModel(function (value) {
 			var ajax = IP.data.ajax({
-				url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, value),
+                url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, encodeURIComponent(value)),
 				type: 'POST',
 				success: function () {
 					IP.message.info.raise("Profile has been saved", $("#customRDOWithConsoleWrapper"));
