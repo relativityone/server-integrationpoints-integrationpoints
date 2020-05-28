@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		public void Profile_ShouldCreateNewProfileAndIPFromThisProfile()
 		{
 			//Arrange
-			RelativityProviderModel model = CreateRelativityProviderModel(TestContext.CurrentContext.Test.Name + @"_!@#$%^&*()-+= {}|\/;'<>,.?~`");
+			RelativityProviderModel model = CreateRelativityProviderModel(TestContext.CurrentContext.Test.Name + @"_!@$^&()-+= {};',.~`");
 			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
 
 			string profileModelName = "Created From Profile";
