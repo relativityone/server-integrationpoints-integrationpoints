@@ -54,7 +54,11 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private string GetActionButtonSaveAsProfile(int integrationPointId, string integrationPointName, int workspaceId)
 		{
-			return $"IP.saveAsProfile({integrationPointId},{workspaceId},'{HttpUtility.JavaScriptStringEncode(integrationPointName)}')";
+			string urlEncodedIntegrationPointName = HttpUtility.UrlEncode(integrationPointName);
+
+			string javaScriptStringEncodedIntegrationPointName = HttpUtility.JavaScriptStringEncode(urlEncodedIntegrationPointName);
+
+			return $"IP.saveAsProfile({integrationPointId},{workspaceId},'{javaScriptStringEncodedIntegrationPointName}')";
 		}
 
 		private string GetActionButtonDownloadErrorFile(int integrationPointId, int workspaceId)
