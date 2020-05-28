@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.UITests.NUnitExtensions
 
 		private static bool IsErrorRetriable(string errorMessage)
 		{
-			return IsSeleniumExceptionMessage(errorMessage) || IsPollyTimeoutExceptionMessage(errorMessage);
+			return IsSeleniumExceptionMessage(errorMessage) || IsTimeoutExceptionMessage(errorMessage);
 		}
 
 		private static bool IsSeleniumExceptionMessage(string exceptionMessage)
@@ -86,9 +86,9 @@ namespace kCura.IntegrationPoints.UITests.NUnitExtensions
 			return exceptionMessage.Contains(seleniumNamespace);
 		}
 
-		private static bool IsPollyTimeoutExceptionMessage(string exceptionMessage)
+		private static bool IsTimeoutExceptionMessage(string exceptionMessage)
 		{
-			string actionTimeout = typeof(Polly.Timeout.TimeoutRejectedException).Namespace;
+			string actionTimeout = "Action timed out";
 			return exceptionMessage.Contains(actionTimeout);
 		}
 
