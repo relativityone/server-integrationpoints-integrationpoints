@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Relativity.Services.InternalMetricsCollection;
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace kCura.IntegrationPoints.Core
@@ -117,7 +119,6 @@ namespace kCura.IntegrationPoints.Core
 				public const string APM_HEALTHCHECK = "IntegrationPoints.HealthCheck";
 
 				#endregion
-
 			}
 
 			public static class SourceProviders
