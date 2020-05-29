@@ -103,9 +103,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				using (var keplerStream = new KeplerStream(fileStream))
 				{
+					Console.WriteLine($"Import Application from {appPath}");
 					int appID = await SendUpdateAppRequestAsync(libraryApplicationManager, keplerStream)
 						.ConfigureAwait(false);
 
+					Console.WriteLine($"Application ID has been retrieved: {appID}");
 					Func<Task<GetInstallStatusResponse>> currentInstallStatusGetter =
 						() => libraryApplicationManager.GetLibraryInstallStatusAsync(_ADMIN_CASE_ID, appID);
 
@@ -135,7 +137,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
 			cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(_APP_INSTALLATION_TIMEOUT_IN_MINUTES));
-
+			Console.WriteLine("Wait for installation to complete...");
 			try
 			{
 				await WaitForInstallToCompleteAsync(getCurrentStatus, cancellationTokenSource.Token)
@@ -159,6 +161,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				GetInstallStatusResponse installStatusResponse = await getCurrentStatus().ConfigureAwait(false);
 				installStatus = installStatusResponse.InstallStatus;
+				Console.WriteLine($"Installing... {installStatus.Code}");
 			}
 			while (IsInstallIncomplete(installStatus));
 
