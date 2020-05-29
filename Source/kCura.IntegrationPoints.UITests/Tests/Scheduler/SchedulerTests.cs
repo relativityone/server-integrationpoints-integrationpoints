@@ -32,11 +32,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 			return model;
 		}
 
-		[IdentifiedTest("a754eb8f-8e86-4fa6-8798-1dc4773cb261")]
-		public void Scheduler_ShouldDisplayErrors_WhenFieldsAreEmpty_And_ShouldSuccessfullySave_WhenFieldValuesAreCorrect()
+		private SchedulerModel CreateSchedulerModel(string todayDate)
 		{
-			// Arrange
-			string todayDate = DateTime.Today.ToString("MM/dd/yyyy");
 			SchedulerModel schedulerModel = new SchedulerModel(enable: true)
 			{
 				Frequency = SchedulerModel.FrequencyDaily,
@@ -45,19 +42,41 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 				Time = "2:57",
 				TimeMeridiem = SchedulerModel.TimeMeridiemAM
 			};
+			return schedulerModel;
+		}
+
+		[IdentifiedTest("a754eb8f-8e86-4fa6-8798-1dc4773cb261")]
+		[TestType.Error]
+		public void Scheduler_ShouldDisplayErrors_WhenFieldsAreEmpty()
+		{
+			// Arrange
+			string todayDate = DateTime.Today.ToString("MM/dd/yyyy");
+			SchedulerModel schedulerModel = CreateSchedulerModel(todayDate);
+			RelativityProviderModel model = CreateRelativityProviderModel(schedulerModel);
+
+			// Act
+			ExportFirstPage firstPage = PointsAction.SetupSyncFirstPage(model);
+			firstPage.ClickNext();
+
+			// Assert
+			firstPage.GetGeneralErrorLabel().Text.Should().Be("Resolve all errors before proceeding"); // General error on top of the page
+			List<IWebElement> errors = firstPage.GetErrorLabels();
+			errors.Count(x => x.Text == "This field is required.").Should().Be(2); // Frequency and Scheduled Time
+			errors.Count(x => x.Text == "Please enter a valid date.").Should().Be(1); // Start Date
+		}
+
+		[IdentifiedTest("9f1a90a3-9754-49d2-ae19-0a99ec69e3f6")]
+		[TestType.MainFlow]
+		public void Scheduler_ShouldSuccessfullySave_WhenFieldValuesAreCorrect()
+		{
+			// Arrange
+			string todayDate = DateTime.Today.ToString("MM/dd/yyyy");
+			SchedulerModel schedulerModel = CreateSchedulerModel(todayDate);
 			RelativityProviderModel model = CreateRelativityProviderModel(schedulerModel);
 
 			// Act & Assert
 			ExportFirstPage firstPage = PointsAction.SetupSyncFirstPage(model);
 
-			firstPage.ClickNext();
-
-			// Assert error messages when fields are empty
-			firstPage.GetGeneralErrorLabel().Text.Should().Be("Resolve all errors before proceeding"); // General error on top of the page
-			List<IWebElement> errors = firstPage.GetErrorLabels();
-			errors.Count(x => x.Text == "This field is required.").Should().Be(2); // Frequency and Scheduled Time
-			errors.Count(x => x.Text == "Please enter a valid date.").Should().Be(1); // Start Date
-			
 			// Assert frequency drop-down has correct values
 			IList<string> frequencyOptions = firstPage.SchedulerFrequency.Options.Select(x => x.Text).ToList();
 			frequencyOptions.ShouldBeEquivalentTo(new List<string>()
@@ -107,7 +126,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 			schedulerProperties.Properties["Frequency:"].Should().Be(schedulerModel.Frequency);
 
 			schedulerProperties.Properties["Start Date:"].Should().Be(todayDate);
-			schedulerProperties.Properties["Start Date:"].Should().Be(todayDate);
+			schedulerProperties.Properties["End Date:"].Should().Be(todayDate);
 
 			string[] scheduledTime = schedulerProperties.Properties["Scheduled Time:"].Split(';');
 
