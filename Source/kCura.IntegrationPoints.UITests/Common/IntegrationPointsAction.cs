@@ -117,9 +117,9 @@ namespace kCura.IntegrationPoints.UITests.Common
 				firstPage.ProfileObject = model.Profile;
 			}
 
-			if (model.EnableScheduler.HasValue)
+			if (model.Scheduler.Enable)
 			{
-				firstPage.ToggleScheduler(model.EnableScheduler.Value);
+				firstPage.ToggleScheduler(model.Scheduler.Enable);
 			}
 
 			return firstPage;

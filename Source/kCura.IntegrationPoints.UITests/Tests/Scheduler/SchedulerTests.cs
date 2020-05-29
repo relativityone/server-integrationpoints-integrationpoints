@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 	[Category(TestCategory.SCHEDULER)]
 	public class SchedulerTests : RelativityProviderTestsBase
 	{
-		private RelativityProviderModel CreateRelativityProviderModel()
+		private RelativityProviderModel CreateRelativityProviderModel(SchedulerModel schedulerModel)
 		{
 			RelativityProviderModel model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
 			{
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 				RelativityInstance = "This Instance",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No,
-				EnableScheduler = true
+				Scheduler = schedulerModel
 			};
 
 			return model;
@@ -36,15 +36,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 		public void Scheduler_ShouldDisplayErrors_WhenFieldsAreEmpty_And_ShouldSuccessfullySave_WhenFieldValuesAreCorrect()
 		{
 			// Arrange
-			const string frequencySelect = "Select...";
-			const string frequencyDaily = "Daily";
-			const string frequencyWeekly = "Weekly";
-			const string frequencyMonthly = "Monthly";
-
-			const string timeMeridiemAM = "AM";
-			const string timeMeridiemPM = "PM";
-			
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			string todayDate = DateTime.Today.ToString("MM/dd/yyyy");
+			SchedulerModel schedulerModel = new SchedulerModel(enable: true)
+			{
+				Frequency = SchedulerModel.FrequencyDaily,
+				StartDate = todayDate,
+				EndDate = todayDate,
+				Time = "2:57",
+				TimeMeridiem = SchedulerModel.TimeMeridiemAM
+			};
+			RelativityProviderModel model = CreateRelativityProviderModel(schedulerModel);
 
 			// Act & Assert
 			ExportFirstPage firstPage = PointsAction.SetupSyncFirstPage(model);
@@ -61,14 +62,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 			IList<string> frequencyOptions = firstPage.SchedulerFrequency.Options.Select(x => x.Text).ToList();
 			frequencyOptions.ShouldBeEquivalentTo(new List<string>()
 			{
-				frequencySelect,
-				frequencyDaily,
-				frequencyWeekly,
-				frequencyMonthly
+				SchedulerModel.FrequencySelect,
+				SchedulerModel.FrequencyDaily,
+				SchedulerModel.FrequencyWeekly,
+				SchedulerModel.FrequencyMonthly
 			});
 
 			// Pick frequency
-			firstPage.SchedulerFrequency.SelectByText(frequencyDaily);
+			firstPage.SchedulerFrequency.SelectByText(schedulerModel.Frequency);
 
 			// Pick start date
 			firstPage.SchedulerStartDateTextBox.Click();
@@ -81,16 +82,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 			firstPage.PickSchedulerTodayDate();
 
 			// Set time
-			const string expectedTime = "2:57";
-			firstPage.SetScheduledTime(expectedTime);
+			firstPage.SetScheduledTime(schedulerModel.Time);
 			IList<string> timeMeridiemOptions = firstPage.TimeMeridiem.Options.Select(x => x.Text).ToList();
 
 			timeMeridiemOptions.ShouldAllBeEquivalentTo(new List<string>()
 			{
-				timeMeridiemAM,
-				timeMeridiemPM
+				SchedulerModel.TimeMeridiemAM,
+				SchedulerModel.TimeMeridiemPM
 			});
-			firstPage.TimeMeridiem.SelectByText(timeMeridiemPM);
+			firstPage.TimeMeridiem.SelectByText(schedulerModel.TimeMeridiem);
 
 			// Verify if timezone has been auto selected
 			firstPage.TimeZones.SelectedOption.Text.Should().NotBeNullOrWhiteSpace();
@@ -104,16 +104,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 
 			// Verify Scheduling properties on summary page
 			schedulerProperties.Properties["Enable Scheduler:"].Should().Be("True");
-			schedulerProperties.Properties["Frequency:"].Should().Be(frequencyDaily);
+			schedulerProperties.Properties["Frequency:"].Should().Be(schedulerModel.Frequency);
 
-			string todayDate = DateTime.Today.ToString("MM/dd/yyyy");
 			schedulerProperties.Properties["Start Date:"].Should().Be(todayDate);
 			schedulerProperties.Properties["Start Date:"].Should().Be(todayDate);
 
 			string[] scheduledTime = schedulerProperties.Properties["Scheduled Time:"].Split(';');
 
 			string selectedScheduledTime = scheduledTime[0];
-			selectedScheduledTime.Should().Be($"{expectedTime} {timeMeridiemPM}");
+			selectedScheduledTime.Should().Be($"{schedulerModel.Time} {schedulerModel.TimeMeridiem}");
 
 			string selectedTimeZone = scheduledTime[1];
 			selectedTimeZone.Should().NotBeNullOrWhiteSpace();

@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
         {
 	        DestinationProvider = "Relativity";
         }
-		
+
 		#region "Source Details"
 
 		[DefaultValue(SourceTypeEnum.SavedSearch)]
