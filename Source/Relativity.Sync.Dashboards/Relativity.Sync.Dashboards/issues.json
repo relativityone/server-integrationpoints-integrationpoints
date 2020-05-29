@@ -229,7 +229,7 @@
 	},
 	{
 		"Jira": "REL-416356",
-		"Exception": "Relativity.Sync.Transfer.InvalidExportFieldValueException*Could not retrieve info for user with ArtifactID*"
+		"Exception": "*Relativity.Sync.Transfer.InvalidExportFieldValueException*Could not retrieve info for user with ArtifactID*"
 	},
 	{
 		"Jira": "REL-416376",
@@ -306,5 +306,9 @@
 	{
 		"Jira": "REL-433402",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*Error: SQL Statement Failed*Error: Incorrect syntax near*"
+	},
+	{
+		"Jira": "REL-435646",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*The column*cannot be modified because it is either a computed column or is the result of a UNION operator*"
 	}
 ]
