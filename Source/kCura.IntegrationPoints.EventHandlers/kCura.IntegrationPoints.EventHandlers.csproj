@@ -74,6 +74,8 @@
     <Compile Include="Commands\IRemoveSecuredConfigurationFromIntegrationPointService.cs" />
     <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\ISplitJsonObjectService.cs" />
+    <Compile Include="Commands\Metrics1\RegisterScheduledJobSumMetricsCommand.cs" />
+    <Compile Include="Commands\Metrics1\RegisterSumMetricsCommandFactory.cs" />
     <Compile Include="Commands\MigrateSecretCatalogPathToSecretStorePathCommand.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
@@ -244,6 +246,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Installers\Helpers\" />
+    <Folder Include="Installers\Metrics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\.paket\paket.targets" />
