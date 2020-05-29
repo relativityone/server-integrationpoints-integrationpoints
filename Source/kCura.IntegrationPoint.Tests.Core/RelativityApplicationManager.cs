@@ -154,6 +154,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			Func<Task<GetInstallStatusResponse>> getCurrentStatus,
 			CancellationToken cancellationToken)
 		{
+			const int sleepMilliseconds = 1000;
+
 			InstallStatus installStatus;
 			do
 			{
@@ -162,6 +164,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				GetInstallStatusResponse installStatusResponse = await getCurrentStatus().ConfigureAwait(false);
 				installStatus = installStatusResponse.InstallStatus;
 				Console.WriteLine($"Installing... {installStatus.Code}");
+				Thread.Sleep(sleepMilliseconds);
 			}
 			while (IsInstallIncomplete(installStatus));
 
