@@ -26,6 +26,13 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Context = context;
 		}
 
+		public ExportFirstPage SetupSyncFirstPage(RelativityProviderModel model)
+		{
+			GeneralPage generalPage = GoToWorkspacePage();
+			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
+			return firstPage;
+		}
+
 		public IntegrationPointDetailsPage CreateNewExportEntityToLoadfileIntegrationPoint(
 			EntityExportToLoadFileModel model)
 		{
@@ -110,11 +117,15 @@ namespace kCura.IntegrationPoints.UITests.Common
 				firstPage.ProfileObject = model.Profile;
 			}
 
+			if (model.EnableScheduler.HasValue)
+			{
+				firstPage.ToggleScheduler(model.EnableScheduler.Value);
+			}
+
 			return firstPage;
 		}
 
-		protected PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage,
-			RelativityProviderModel model)
+		public PushToRelativitySecondPage SetupPushToRelativitySecondPage(ExportFirstPage firstPage, RelativityProviderModel model)
 		{
 			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
 			Log.Information("secondPage");
@@ -125,8 +136,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return secondPage;
 		}
 
-		protected PushToRelativityThirdPage SetupPushToRelativityThirdPage(PushToRelativitySecondPage secondPage,
-			RelativityProviderModel model)
+		public PushToRelativityThirdPage SetupPushToRelativityThirdPage(PushToRelativitySecondPage secondPage, RelativityProviderModel model)
 		{
 			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
 			Log.Information("thirdPage");
@@ -211,8 +221,7 @@ namespace kCura.IntegrationPoints.UITests.Common
             return firstPage.GoToNextPagePush().GoToNextPage();
         }
 
-		private ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage,
-			IntegrationPointGeneralModel model)
+		private ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
 		{
 			ExportFirstPage firstPage = GoToFirstPageIntegrationPoints(generalPage);
 			ExportFirstPage firstPageWithModelApplied = ApplyModelToFirstPage(firstPage, model);

@@ -11,6 +11,7 @@
 		public const string PROFILE = "Profile";
 		public const string FIELDS_MAPPING = "FieldMappings";
 		public const string DATA_GRID_RELATED = "DataGridRelated";
+		public const string SCHEDULER = "Scheduler";
 
 		public const string EXPORT_IMAGES = "ExportImages";
 		public const string EXPORT_DOCUMENTS = "ExportDocuments";
