@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Web
 			config.Routes.MapHttpRoute(
 				name: "SaveProfileUsingIP",
 				routeTemplate:
-				"{workspaceID}/api/IntegrationPointProfilesAPI/SaveAsProfile/{integrationPointArtifactId}/{profileName}",
+				"{workspaceID}/api/IntegrationPointProfilesAPI/SaveAsProfile",
 				defaults: new {controller = "IntegrationPointProfilesAPI", action = "SaveUsingIntegrationPoint"}
 			);
 
