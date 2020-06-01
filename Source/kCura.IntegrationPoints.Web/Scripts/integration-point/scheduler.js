@@ -234,7 +234,7 @@
 				}
 				return false;
 			},
-			message: "Incorrect Syntax. Please enter a valid date."
+			message: "Please enter a valid date."
 		}, {
 			validator: function (value) {
 				if (!self.isEnabled()) {
@@ -322,7 +322,7 @@
 
 				return true;
 			},
-			message: "Incorrect Syntax. Please enter a valid date."
+			message: "Please enter a valid date."
 		}, {
 			validator: function (value) {
 				if (!value) {
