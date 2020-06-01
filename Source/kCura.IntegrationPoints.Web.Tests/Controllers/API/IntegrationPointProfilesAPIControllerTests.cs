@@ -132,7 +132,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				.Throws(new IntegrationPointValidationException(validationResult));
 
 			// act
-			HttpResponseMessage response = _sut.SaveUsingIntegrationPoint(_WORKSPACE_ID, integrationPointArtifactID, profileName);
+			HttpResponseMessage response = _sut.SaveUsingIntegrationPoint(_WORKSPACE_ID, new IntegrationPointProfileFromIntegrationPointModel
+			{
+				IntegrationPointArtifactId = integrationPointArtifactID,
+				ProfileName = profileName
+			});
 			string responseContent = response.Content.ReadAsStringAsync().Result;
 			ValidationResultDTO contentAsValidationResult = JsonConvert.DeserializeObject<ValidationResultDTO>(responseContent);
 

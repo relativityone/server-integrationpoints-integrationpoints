@@ -140,11 +140,15 @@
 
 		var saveAsProfileModalViewModel = new SaveAsProfileModalViewModel(function (value) {
 			var ajax = IP.data.ajax({
-				url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile', integrationPointId, value),
-				type: 'POST',
+                url: IP.utils.generateWebAPIURL('IntegrationPointProfilesAPI/SaveAsProfile'),
+                type: 'POST',
+                data: JSON.stringify({
+                    "integrationPointArtifactId": integrationPointId,
+                    "profileName": value
+                }),
 				success: function () {
 					IP.message.info.raise("Profile has been saved", $("#customRDOWithConsoleWrapper"));
-				},
+				}
 			});
 			ajax.fail(function (error) {
 				try {

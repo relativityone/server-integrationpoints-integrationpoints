@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		private string GetActionButtonSaveAsProfile(int integrationPointId, string integrationPointName, int workspaceId)
 		{
-			return $"IP.saveAsProfile({integrationPointId},{workspaceId},'{integrationPointName}')";
+			return $"IP.saveAsProfile({integrationPointId},{workspaceId},'{HttpUtility.JavaScriptStringEncode(integrationPointName)}')";
 		}
 
 		private string GetActionButtonDownloadErrorFile(int integrationPointId, int workspaceId)

@@ -122,13 +122,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to save integration point profile.")]
-		public HttpResponseMessage SaveUsingIntegrationPoint(int workspaceID, int integrationPointArtifactId, string profileName)
+		public HttpResponseMessage SaveUsingIntegrationPoint(int workspaceID, IntegrationPointProfileFromIntegrationPointModel model)
 		{
 			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
 			{
 				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
-					string profileNameHash = _cryptographyHelper.CalculateHash(profileName);
+					string profileNameHash = _cryptographyHelper.CalculateHash(model.ProfileName);
 					var apmMetricProperties = new APMMetric
 					{
 						Name =
@@ -141,10 +141,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
 							Guid.Empty, profileNameHash))
 						{
-							IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
-							IntegrationPointProfileModel model = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, profileName);
+							IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(model.IntegrationPointArtifactId);
+							IntegrationPointProfileModel profileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, model.ProfileName);
 
-							return SaveIntegrationPointProfile(workspaceID, model);
+							return SaveIntegrationPointProfile(workspaceID, profileModel);
 						}
 					}
 				}
