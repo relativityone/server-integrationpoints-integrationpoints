@@ -60,7 +60,7 @@ public class FunctionalTestsSetupFixture
 		if (SharedVariables.UseIpRapFile())
 		{
 			Console.WriteLine("Importing Integration Points to Library...");
-			applicationManager.ImportRipToLibraryAsync().Wait();
+			applicationManager.ImportRipToLibraryAsync().GetAwaiter().GetResult();
 		}
 	}
 
@@ -69,7 +69,7 @@ public class FunctionalTestsSetupFixture
 		Console.WriteLine($"Importing Integration Points to workspace {workspaceID}...");
 		
 		var applicationManager = new RelativityApplicationManager(_testHelper);
-		applicationManager.InstallRipFromLibraryAsync(workspaceID).Wait();
+		applicationManager.InstallRipFromLibraryAsync(workspaceID).GetAwaiter().GetResult();
 	}
 
 	public void ConfigureWebAPI()
@@ -85,9 +85,9 @@ public class FunctionalTestsSetupFixture
 	{
 		Console.WriteLine("Import Fileshare Test Services...");
 
-		InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True").Wait();
+		InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True").GetAwaiter().GetResult();
 
 		var applicationManager = new RelativityApplicationManager(_testHelper);
-		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesPath).Wait();
+		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesPath).GetAwaiter().GetResult();
 	}
 }
