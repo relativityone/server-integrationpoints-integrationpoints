@@ -318,5 +318,9 @@
 	{
 		"Jira": "REL-436107",
 		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter. ---> Relativity.Services.Exceptions.ServiceException: '.', hexadecimal value 0x00, is an invalid character.*"
+	},
+	{
+		"Jira": "REL-436111",
+		"Exception": "System.Threading.Tasks.TaskCanceledException: A task was canceled.*Relativity.Sync.Executors.DataSourceSnapshotExecutor*"
 	}
 ]
