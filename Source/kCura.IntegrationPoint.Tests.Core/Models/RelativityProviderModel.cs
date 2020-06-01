@@ -9,11 +9,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 	{
         public RelativityProviderModel(string ripName) : base(ripName)
         {
-            Scheduler = null;
 	        DestinationProvider = "Relativity";
         }
-		
-        public SchedulerModel Scheduler { get; set; }
 
 		#region "Source Details"
 

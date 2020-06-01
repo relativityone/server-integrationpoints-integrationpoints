@@ -54,12 +54,22 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return new ExportFirstPage(Driver);
         }
 
-		public PropertiesTable SelectGeneralPropertiesTable()
-		{
-			WaitForPage();
-			var t = new PropertiesTable(Driver.FindElementById("summaryPage"), "General");
-			t.Select();
-			return t;
+        public PropertiesTable SelectGeneralPropertiesTable()
+        {
+	        return SelectPropertiesTable("summaryPage", "General");
+        }
+
+        public PropertiesTable SelectSchedulingPropertiesTable()
+        {
+	        return SelectPropertiesTable("schedulerSummaryPage", "Scheduling");
+        }
+
+        private PropertiesTable SelectPropertiesTable(string tableName, string title)
+        {
+	        WaitForPage();
+	        PropertiesTable propertiesTable = new PropertiesTable(Driver.FindElementById(tableName), title);
+	        propertiesTable.Select();
+	        return propertiesTable;
 		}
 
 		public JobHistoryModel GetLatestJobHistoryFromJobStatusTable()
