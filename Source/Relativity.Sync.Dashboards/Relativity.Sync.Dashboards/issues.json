@@ -314,5 +314,9 @@
 	{
 		"Jira": "REL-436101",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.LoadFileBase+CodeCreationException*kCura.WinEDDS.Exceptions.CodeCreationFailedException: Error creating new code*"
+	},
+	{
+		"Jira": "REL-436107",
+		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter. ---> Relativity.Services.Exceptions.ServiceException: '.', hexadecimal value 0x00, is an invalid character.*"
 	}
 ]
