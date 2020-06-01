@@ -110,6 +110,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			}
 
+			if (_wasAgentCreated)
+			{
+				Agent.DeleteAgentAsync(AgentArtifactId).GetAwaiter().GetResult();
+			}
 			base.SuiteTeardown();
 		}
 
