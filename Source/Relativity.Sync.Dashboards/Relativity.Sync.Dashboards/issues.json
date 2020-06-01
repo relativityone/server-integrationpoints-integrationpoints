@@ -322,5 +322,9 @@
 	{
 		"Jira": "REL-436111",
 		"Exception": "System.Threading.Tasks.TaskCanceledException: A task was canceled.*Relativity.Sync.Executors.DataSourceSnapshotExecutor*"
+	},
+	{
+		"Jira": "REL-436119",
+		"Exception": "Relativity.Services.Exceptions.NotFoundException: Not Found.*at Relativity.Sync.Storage.Batch.*UpdateFieldValueAsync*"
 	}
 ]
