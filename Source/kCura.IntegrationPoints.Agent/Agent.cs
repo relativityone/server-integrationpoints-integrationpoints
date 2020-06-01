@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.RelativitySync.Metrics;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -90,6 +91,8 @@ namespace kCura.IntegrationPoints.Agent
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IWindsorContainer>().Instance(ripContainerForSync));
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IMetricsFactory>().ImplementedBy<MetricsFactory>().LifestyleTransient());
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<ISyncJobMetric>().ImplementedBy<SyncJobMetric>().LifestyleTransient());
 
 						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
 						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();

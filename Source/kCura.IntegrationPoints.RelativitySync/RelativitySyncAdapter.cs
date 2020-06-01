@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Core.Telemetry.Metrics;
+using kCura.IntegrationPoints.RelativitySync.Metrics;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -21,11 +21,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private readonly IWindsorContainer _ripContainer;
 		private readonly IAPILog _logger;
 		private readonly IAPM _apmMetrics;
-		private readonly IJobMetric _jobMetric;
+		private readonly ISyncJobMetric _jobMetric;
 		private readonly Guid _correlationId;
 		private readonly IntegrationPointToSyncConverter _converter;
 
-		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics, IJobMetric jobMetric, IntegrationPointToSyncConverter converter)
+		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics, ISyncJobMetric jobMetric, IntegrationPointToSyncConverter converter)
 		{
 			_job = job;
 			_ripContainer = ripContainer;
@@ -45,6 +45,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
 				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
 				using (IContainer container = InitializeSyncContainer(syncConfiguration))
+				using (_jobMetric.SendJobDuration())
 				{
 					metrics.MarkStartTime();
 					await MarkJobAsStartedAsync().ConfigureAwait(false);

@@ -1,23 +1,22 @@
 ﻿using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using System;
 using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Core.Telemetry.Metrics
+namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {
-	public class JobMetric : IJobMetric
+	public class SyncJobMetric : ISyncJobMetric
 	{
-		private readonly IServicesMgr _servicesMgr;
 		private readonly IMetricsFactory _metricsFactory;
 
-		public JobMetric(IServicesMgr servicesMgr, IMetricsFactory metricsFactory)
+		public SyncJobMetric(IMetricsFactory metricsFactory)
 		{
-			_servicesMgr = servicesMgr;
 			_metricsFactory = metricsFactory;
 		}
 
 		public async Task SendJobStartedAsync(Job job)
 		{
-			IMetricCollection metrics = new MetricsCollection(_servicesMgr)
+			IMetricCollection metrics = new MetricsCollection()
 				.AddMetric(_metricsFactory.CreateScheduleJobStartedMetric(job));
 
 			await metrics.SendAsync().ConfigureAwait(false);
@@ -25,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry.Metrics
 
 		public async Task SendJobCompletedAsync(Job job)
 		{
-			IMetricCollection metrics = new MetricsCollection(_servicesMgr)
+			IMetricCollection metrics = new MetricsCollection()
 				.AddMetric(_metricsFactory.CreateScheduleJobCompletedMetric(job));
 
 			await metrics.SendAsync().ConfigureAwait(false);
@@ -33,10 +32,16 @@ namespace kCura.IntegrationPoints.Core.Telemetry.Metrics
 
 		public async Task SendJobFailedAsync(Job job)
 		{
-			IMetricCollection metrics = new MetricsCollection(_servicesMgr)
+			IMetricCollection metrics = new MetricsCollection()
 				.AddMetric(_metricsFactory.CreateScheduleJobFailedMetric(job));
 
 			await metrics.SendAsync().ConfigureAwait(false);
+		}
+
+		public IDisposable SendJobDuration()
+		{
+			return null;
+			//_metricsFactory.
 		}
 }
 }

@@ -1,7 +1,6 @@
-﻿using kCura.IntegrationPoints.Core.Telemetry.Metrics;
-using kCura.ScheduleQueue.Core;
+﻿using kCura.ScheduleQueue.Core;
 
-namespace kCura.IntegrationPoints.Core.Telemetry.Metrics
+namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {
 	public interface IMetricsFactory
 	{

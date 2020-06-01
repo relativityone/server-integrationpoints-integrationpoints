@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 				new MetricIdentifier
 				{
 					Name = SCHEDULE_SYNC_JOB_FAILED,
-					Description = "	Number of Sync scheduled jobs failed"
+					Description = "Number of Sync scheduled jobs failed"
 				}
 			};
 		}

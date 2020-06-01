@@ -122,14 +122,6 @@
     <Compile Include="Tagging\ISourceDocumentsTagger.cs" />
     <Compile Include="Tagging\SourceDocumentsTagger.cs" />
     <Compile Include="Telemetry\MetricsBucket.cs" />
-    <Compile Include="Telemetry\Metrics\IMetricsFactory.cs" />
-    <Compile Include="Telemetry\Metrics\IJobMetric.cs" />
-    <Compile Include="Telemetry\Metrics\IMetric.cs" />
-    <Compile Include="Telemetry\Metrics\IMetricCollection.cs" />
-    <Compile Include="Telemetry\Metrics\MetricsCollection.cs" />
-    <Compile Include="Telemetry\Metrics\MetricsFactory.cs" />
-    <Compile Include="Telemetry\Metrics\ScheduleMetric.cs" />
-    <Compile Include="Telemetry\Metrics\JobMetric.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />

@@ -15584,6 +15584,18 @@
       <ApplicationVersion>9.7.0.28</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1016790</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.Metrics.RegisterScheduleSyncSUMMetricsEventHandler</Name>
+      <Guid>87E4A98B-1EA8-4776-A12C-9AA7F1E29589</Guid>
+      <Guids>3D68E9F8-49E9-4622-A87E-155F124776C1</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>400</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.1.0.0</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
   <SearchContainers />

@@ -74,9 +74,7 @@
     <Compile Include="Commands\IRemoveSecuredConfigurationFromIntegrationPointService.cs" />
     <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\ISplitJsonObjectService.cs" />
-    <Compile Include="Commands\Metrics\IRegisterSumMetricsCommandFactory.cs" />
     <Compile Include="Commands\Metrics\RegisterScheduleJobSumMetricsCommand.cs" />
-    <Compile Include="Commands\Metrics\RegisterSumMetricsCommandFactory.cs" />
     <Compile Include="Commands\MigrateSecretCatalogPathToSecretStorePathCommand.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
