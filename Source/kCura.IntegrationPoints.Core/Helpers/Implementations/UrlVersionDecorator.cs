@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			string parameterCharacter = alreadyContainsParameters ? "&" : "?";
 
-			return $"{url}{parameterCharacter}v={version}";
+			return $"{url}{parameterCharacter}v={Version}";
 		}
 	}
 }

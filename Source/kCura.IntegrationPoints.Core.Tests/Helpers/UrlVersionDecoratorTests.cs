@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			const string url = "someUrl.aspx?param=x";
 
 			// Act
-			var result = UrlVersionDecorator.AppendVersion(url);
+			string result = UrlVersionDecorator.AppendVersion(url);
 
 
 			// Assert
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			const string url = "someUrl.aspx";
 
 			// Act
-			var result = UrlVersionDecorator.AppendVersion(url);
+			string result = UrlVersionDecorator.AppendVersion(url);
 
 
 			// Assert
