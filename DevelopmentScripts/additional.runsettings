@@ -1,0 +1,5 @@
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="SystemTestData" value="SystemTests\SystemTestData" />
+  </TestRunParameters>
+</RunSettings>
