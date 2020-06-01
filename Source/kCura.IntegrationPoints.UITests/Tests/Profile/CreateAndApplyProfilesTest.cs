@@ -55,15 +55,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		public void Profile_ShouldCreateProfileFromExistingIPAndIPFromThisProfile()
 		{
 			//Arrange
-			RelativityProviderModel model = CreateRelativityProviderModel();
+			RelativityProviderModel model = CreateRelativityProviderModel(TestContext.CurrentContext.Test.Name + @"_!@$^&()-+= {};',.~`");
 			IntegrationPointDetailsPage integrationPointDetailsPage =
 				PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			integrationPointDetailsPage.SaveAsAProfileIntegrationPoint();
 
 			string profileModelName = "Created From Profile";
-			IntegrationPointGeneralModel profileModel = new IntegrationPointGeneralModel(profileModelName);
-			profileModel.DestinationProvider = "Relativity";
-			profileModel.Profile = model.Name;
+			IntegrationPointGeneralModel profileModel = new IntegrationPointGeneralModel(profileModelName)
+			{
+				DestinationProvider = "Relativity",
+				Profile = model.Name
+			};
 
 			//Act
 			IntegrationPointDetailsPage integrationPointCreatedFromProfileDetailsPage =
@@ -87,10 +89,12 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
 
 			string profileModelName = "Created From Profile";
-			IntegrationPointGeneralModel profileModel = new IntegrationPointGeneralModel(profileModelName);
-			profileModel.DestinationProvider = "Relativity";
-			profileModel.Profile = model.Name;
-			
+			IntegrationPointGeneralModel profileModel = new IntegrationPointGeneralModel(profileModelName)
+			{
+				DestinationProvider = "Relativity",
+				Profile = model.Name
+			};
+
 			//Act
 			IntegrationPointDetailsPage integrationPointDetailsPage =
 				PointsAction.CreateNewRelativityProviderIntegrationPointFromProfile(profileModel);
