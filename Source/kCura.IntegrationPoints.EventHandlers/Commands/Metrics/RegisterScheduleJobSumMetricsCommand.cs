@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Metrics
 {
-	public class RegisterScheduledJobSumMetricsCommand : IEHCommand
+	public class RegisterScheduleJobSumMetricsCommand : IEHCommand
 	{
 		private readonly IEHHelper _helper;
 		private readonly IAPILog _log;
 
-		public RegisterScheduledJobSumMetricsCommand(IEHHelper helper)
+		public RegisterScheduleJobSumMetricsCommand(IEHHelper helper)
 		{
 			_helper = helper;
-			_log = _helper.GetLoggerFactory().GetLogger().ForContext<RegisterScheduledJobSumMetricsCommand>();
+			_log = _helper.GetLoggerFactory().GetLogger().ForContext<RegisterScheduleJobSumMetricsCommand>();
 		}
 
 		public void Execute()
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Metrics
 
 				retryPolicy.ExecuteAsync(async () => await RegisterCategoryAndMetrics().ConfigureAwait(false)).ConfigureAwait(false).GetAwaiter().GetResult();
 
-				_log.LogDebug("Sync Schedule metrics installed");
+				_log.LogInformation("Sync Schedule metrics installed");
 			}
 			catch (Exception e)
 			{
@@ -44,11 +44,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Metrics
 
 		private async Task RegisterCategoryAndMetrics()
 		{
-			CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(MetricsBucket.Schedule.CATEGORY).ConfigureAwait(false);
+			CategoryRef category = await CreateAndEnableMetricCategoryIfNotExistAsync(MetricsBucket.SyncSchedule.SYNC_SCHEDULE_CATEGORY).ConfigureAwait(false);
 
 			await AddMetricsForCategoryAsync(category).ConfigureAwait(false);
 
-			_log.LogDebug("Integration Points Sync Schedule metrics installed.");
+			_log.LogInformation("Integration Points Sync Schedule metrics installed.");
 		}
 
 		private async Task<CategoryRef> CreateAndEnableMetricCategoryIfNotExistAsync(string categoryName)
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Metrics
 			{
 				using (var manager = _helper.GetServicesManager().CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 				{
-					foreach (MetricIdentifier metricIdentifier in MetricsBucket.Schedule.Metrics)
+					foreach (MetricIdentifier metricIdentifier in MetricsBucket.SyncSchedule.METRICS)
 					{
 						if (metricIdentifier.Categories != null)
 						{

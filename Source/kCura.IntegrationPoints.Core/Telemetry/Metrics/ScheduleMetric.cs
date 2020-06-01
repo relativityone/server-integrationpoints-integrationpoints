@@ -36,14 +36,14 @@ namespace kCura.IntegrationPoints.Core.Telemetry.Metrics
 
 		public static ScheduleMetric CreateScheduleJobStarted(int integrationPointId, long jobId, ExportType type, IScheduleRule scheduleRule)
 			=> IsScheduledDaily(scheduleRule)
-				? new ScheduleMetric(Constants.IntegrationPoints.Telemetry.SCHEDULE_SYNC_JOB_STARTED_DAILY, integrationPointId, jobId, type, scheduleRule)
-				: new ScheduleMetric(Constants.IntegrationPoints.Telemetry.SCHEDULE_SYNC_JOB_STARTED_NIGHTLY, integrationPointId, jobId, type, scheduleRule);
+				? new ScheduleMetric(MetricsBucket.SyncSchedule.SCHEDULE_SYNC_JOB_STARTED_DAILY, integrationPointId, jobId, type, scheduleRule)
+				: new ScheduleMetric(MetricsBucket.SyncSchedule.SCHEDULE_SYNC_JOB_STARTED_NIGHTLY, integrationPointId, jobId, type, scheduleRule);
 
 		public static ScheduleMetric CreateScheduleJobCompleted(int integrationPointId, long jobId, ExportType type, IScheduleRule scheduleRule)
-			=> new ScheduleMetric(Constants.IntegrationPoints.Telemetry.SCHEDULE_SYNC_JOB_COMPLETED, integrationPointId, jobId, type, scheduleRule);
+			=> new ScheduleMetric(MetricsBucket.SyncSchedule.SCHEDULE_SYNC_JOB_COMPLETED, integrationPointId, jobId, type, scheduleRule);
 
 		public static ScheduleMetric CreateScheduleJobFailed(int integrationPointId, long jobId, ExportType type, IScheduleRule scheduleRule)
-			=> new ScheduleMetric(Constants.IntegrationPoints.Telemetry.SCHEDULE_SYNC_JOB_FAILED, integrationPointId, jobId, type, scheduleRule);
+			=> new ScheduleMetric(MetricsBucket.SyncSchedule.SCHEDULE_SYNC_JOB_FAILED, integrationPointId, jobId, type, scheduleRule);
 
 		public async Task SendAsync(IMetricsManager metrics)
 		{

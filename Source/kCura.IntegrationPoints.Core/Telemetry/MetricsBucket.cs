@@ -7,14 +7,14 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 	{
 		public static class SyncSchedule
 		{
-			public const string SCHEDULE_CATEGORY = "Integration Points Sync Schedule";
+			public const string SYNC_SCHEDULE_CATEGORY = "Relativity Sync";
 
 			public const string SCHEDULE_SYNC_JOB_STARTED_DAILY = "Relativity.Sync.Schedule.JobStarted.Daily";
 			public const string SCHEDULE_SYNC_JOB_STARTED_NIGHTLY = "Relativity.Sync.Schedule.JobStarted.Nightly";
 			public const string SCHEDULE_SYNC_JOB_COMPLETED = "Relativity.Sync.Schedule.JobCompleted";
 			public const string SCHEDULE_SYNC_JOB_FAILED = "Relativity.Sync.Schedule.Job.Failed";
 
-			public static readonly List<MetricIdentifier> SCHEDULE_METRICS = new List<MetricIdentifier>
+			public static readonly List<MetricIdentifier> METRICS = new List<MetricIdentifier>
 			{
 				new MetricIdentifier
 				{
