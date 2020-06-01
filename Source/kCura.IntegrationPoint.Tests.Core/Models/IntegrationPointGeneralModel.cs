@@ -30,17 +30,13 @@
 
 		public string Profile { get; set; }
 
-		[DefaultValue(false)]
-		public bool? IncludeInEcaPromote { get; set; }
-
 		[DefaultValue("")]
 		public string EmailNotifications { get; set; }
 
 		[DefaultValue(true)]
 		public bool? LogErrors { get; set; }
 
-		[DefaultValue(false)]
-		public bool? EnableScheduler { get; set; }
+		public SchedulerModel Scheduler { get; set; } = new SchedulerModel(enable: false);
 
 		public IntegrationPointGeneralModel(string name)
 		{

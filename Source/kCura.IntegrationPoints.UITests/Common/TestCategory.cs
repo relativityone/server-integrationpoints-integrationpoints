@@ -10,6 +10,7 @@
 
 		public const string PROFILE = "Profile";
 		public const string FIELDS_MAPPING = "FieldMappings";
+		public const string SCHEDULER = "Scheduler";
 
 		public const string MISCELLANEOUS = "Miscellaneous";
 		public const string NOT_WORKING_ON_REGRESSION_ENVIRONMENT = "NotWorkingOnRegressionEnvironment";

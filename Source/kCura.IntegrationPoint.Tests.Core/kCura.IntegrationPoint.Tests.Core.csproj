@@ -137,11 +137,11 @@
     <Compile Include="Models\Import\CopyNativeFiles.cs" />
     <Compile Include="Models\Import\ImportEntitySettingsModel.cs" />
     <Compile Include="Models\Import\ImportDocumentSettingsModel.cs" />
+    <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\ImportSettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\MultiSelectFieldOverlayBehavior.cs" />
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
-    <Compile Include="Models\SchedulerModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
     <Compile Include="TestCategories\Attributes\NightlyOnlyAttribute.cs" />
     <Compile Include="TestCategories\Attributes\NotWorkingOnTridentAttribute.cs" />
