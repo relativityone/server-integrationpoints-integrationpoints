@@ -1,8 +1,11 @@
 ﻿var IP;
+
 (function (root, $, Q, window) {
 	"use strict";
 	var sessionStorage = window.sessionStorage;
 	var localStorage = window.localStorage;
+
+
 
 	(function (data) {
 		var storage = (function (storageLocation) {
@@ -26,7 +29,19 @@
 		});
 		data.session = storage(sessionStorage);
 		data.local = storage(localStorage);
-		var requestCounter = 0;	
+
+		data.cacheBustUrl = function(urlToBust) {
+            var url = urlToBust;
+            if (url.includes("?") && url.includes("=")) { // already has some parameters
+                url += "&";
+            } else {
+                url += "?";
+            }
+
+            return url + "v=" + IP.assemblyVersion;
+        }
+
+		var requestCounter = 0;
 		data.ajax = function (options, showOverlayWidget) {
 		    if (showOverlayWidget === undefined) {
 		        showOverlayWidget = true;
@@ -42,9 +57,15 @@
 				contentType: 'application/json; charset=utf-8',
 				data: {}
 			};
-			
+
 			var settings = $.extend({}, ajaxDefaults, options);
-			var container = settings.loading.container;
+
+			if (!!settings.url) {
+				settings.url = data.cacheBustUrl(settings.url);
+            }
+
+
+            var container = settings.loading.container;
 
 			var beforeSend = settings.beforeSend;
 			settings.beforeSend = function (request) {
@@ -65,7 +86,7 @@
 
 			settings.complete = function () {
 				if (requestCounter <= 1) {
-					requestCounter = 0; 
+					requestCounter = 0;
 					if (root.modal && root.modal.close) {
 						root.modal.close();
 					}
