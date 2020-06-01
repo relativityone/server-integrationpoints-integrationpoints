@@ -57,8 +57,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 				StopButtonEnabled = true
 			};
 
-
-
 			//Act
 			OnClickEventDTO onClickEvents = _instance.GetOnClickEvents(_workspaceId, _integrationPointId, _integrationPointName, buttonStates);
 

@@ -5,8 +5,6 @@
 	var sessionStorage = window.sessionStorage;
 	var localStorage = window.localStorage;
 
-
-
 	(function (data) {
 		var storage = (function (storageLocation) {
 			return {
