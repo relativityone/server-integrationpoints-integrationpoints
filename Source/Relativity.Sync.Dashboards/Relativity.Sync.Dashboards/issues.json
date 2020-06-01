@@ -310,5 +310,9 @@
 	{
 		"Jira": "REL-435646",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*The column*cannot be modified because it is either a computed column or is the result of a UNION operator*"
+	},
+	{
+		"Jira": "REL-436101",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.LoadFileBase+CodeCreationException*kCura.WinEDDS.Exceptions.CodeCreationFailedException: Error creating new code*"
 	}
 ]
