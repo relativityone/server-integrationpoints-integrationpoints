@@ -9,8 +9,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 {
 	public class FileEqualityComparer : IEqualityComparer<FileInfo>
 	{
-		public bool Equals(FileInfo x, FileInfo y)
-			=> MD5.GenerateHashForStream(x.OpenRead()) == MD5.GenerateHashForStream(y.OpenRead());
+		public bool Equals(FileInfo file1, FileInfo file2)
+		{
+			bool result;
+			using(var stream1 = file1.OpenRead())
+			using(var stream2 = file2.OpenRead())
+			{
+				result = MD5.GenerateHashForStream(file1.OpenRead()) == MD5.GenerateHashForStream(file2.OpenRead());
+			}
+
+			return result;
+		}
 
 		public int GetHashCode(FileInfo obj) => obj.GetHashCode();
 	}
