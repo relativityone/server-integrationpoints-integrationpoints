@@ -24,38 +24,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DocumentsTestData documentsTestData)
 		{
-			DirectoryInfo imagesDirectory = directory.GetDirectories("IMAGES", SearchOption.AllDirectories).First();
-			FileInfo[] allExportedImages = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories);
-			int totalExportedImagesCount = allExportedImages.Length;
+			var imagesDirectory = directory.GetDirectories("IMAGES", SearchOption.AllDirectories).First();
+			var exportedFiles = imagesDirectory.GetFiles("*.*", SearchOption.AllDirectories).OrderBy(x => x.Name).ToArray();
+			var filesCount = exportedFiles.Length;
 
-			int expectedFilesWithImagesCount = documentsTestData.Images.Rows.Count;
+			var expectedFilesCount = documentsTestData.Images.Rows.Count;
+			var expectdFiles = documentsTestData.Images.Rows.Cast<DataRow>()
+				.Select(x => new FileInfo((string)x.ItemArray[2])).OrderBy(x => x.Name);
 
-			DataRow[] documentsWithImages = documentsTestData.AllDocumentsDataTable.Select($"[Has Images] = '{true}'");
 
-			Assert.AreEqual(totalExportedImagesCount, expectedFilesWithImagesCount);
-
-			AssertExportedImagesAreSameAsInputImages(documentsWithImages, documentsTestData.Images.Select(), allExportedImages);
-		}
-
-		private static void AssertExportedImagesAreSameAsInputImages(DataRow[] documentsWithoutImages, DataRow[] inputImages,
-			FileInfo[] exportedImages)
-		{
-			foreach (var document in documentsWithoutImages)
-			{
-				IList<DataRow> imagesWithSameControlNumber =
-					inputImages.Where(x => x.ItemArray[0].ToString() == document.ItemArray[0].ToString()).ToList();
-
-				IList<FileInfo> exportedImagesWithSameControlNumber =
-					exportedImages.Where(f => f.Name.Contains(document.ItemArray[0].ToString())).ToList();
-				
-				for (var i = 0; i < imagesWithSameControlNumber.Count; i++)
-				{
-					FileInfo file1 = exportedImagesWithSameControlNumber[i];
-					var file2 = new FileInfo((string) imagesWithSameControlNumber[i].ItemArray[2]);
-
-					Assert.IsTrue(FileComparer.Compare(file1, file2));
-				}
-			}
+			Assert.AreEqual(filesCount, expectedFilesCount);
+			Assert.True(exportedFiles.SequenceEqual(expectdFiles, new FileEqualityComparer()));
 		}
 	}
 }

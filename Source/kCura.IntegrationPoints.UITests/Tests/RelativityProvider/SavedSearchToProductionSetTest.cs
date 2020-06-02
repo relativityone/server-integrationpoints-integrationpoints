@@ -15,8 +15,8 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Feature.DataTransfer.IntegrationPoints.Sync.ProductionPush]
+	[Category(TestCategory.RIP_OLD)]
 	public class SavedSearchToProductionSetTest : RelativityProviderTestsBase
 	{
 		private RelativityProviderModel CreateModel()

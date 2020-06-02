@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-	[NotWorkingOnTrident]
 	public class SendEmailWorkerTests : SourceProviderTemplate
 	{
 		private IInstanceSettingManager _instanceSettingsManager;

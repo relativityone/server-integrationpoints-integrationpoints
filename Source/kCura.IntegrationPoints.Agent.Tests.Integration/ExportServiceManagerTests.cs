@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
-	[NotWorkingOnTrident]
 	public class ExportServiceManagerTests : RelativityProviderTemplate
 	{
 		private ExportServiceManager _exportManager;

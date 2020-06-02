@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
@@ -21,7 +22,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		public void ImportDocuments(bool withNatives, DocumentTestDataBuilder.TestDataType testDataType)
 		{
-			Log.Information(@"Importing documents... {testDataType}", testDataType);
+			Log.Information(@"Importing documents... {testDataType} into workspaceId {workspaceId}", testDataType, _testContext.WorkspaceId);
+			var sw = new Stopwatch();
+			sw.Start();
 			string testDir = NUnit.Framework.TestContext.CurrentContext.TestDirectory.Replace("kCura.IntegrationPoints.UITests",
 				"kCura.IntegrationPoint.Tests.Core");
 			Log.Information("TestDir for ImportDocuments '{testDir}'", testDir);
@@ -36,7 +39,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 				string suffix = importHelper.Messages.Any() ? " Messages: " + string.Join("; ", importHelper.Messages) : " No messages.";
 				Log.Verbose(@"Documents imported." + suffix);
 			}
-			Log.Information("Documents imported.");
+			sw.Stop();
+			Log.Information("Documents imported. Duration {duration} s", sw.ElapsedMilliseconds/1000);
 		}
 	}
 }

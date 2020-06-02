@@ -16,6 +16,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	{
 		private const int _MILLISECONDSTIMEOUT = 1000;
 
+		public SelectWithSavedSearchTest() : base(shouldImportDocuments: false)
+		{ }
+
 		[IdentifiedTest("36b70022-060d-4ae1-994b-6619b67f02a2")]
 		[RetryOnError]
 		[Order(10)]

@@ -19,9 +19,6 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class FolderExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
@@ -40,6 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTest("9968a2a9-148f-48b9-b5c0-71b6269c8d8b")]
 		[RetryOnError]
 		[Order(1)]
@@ -124,7 +122,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.FOLDER_AND_SUBFOLDERS;
 			model.SourceInformationModel.Folder = "One";
 			model.SourceInformationModel.View = _VIEW_NAME;
-			model.SourceInformationModel.StartAtRecord = 5;
+			model.SourceInformationModel.StartAtRecord = 2;
 			model.SourceInformationModel.SelectAllFields = true;
 
 			// Step 3

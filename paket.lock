@@ -3,6 +3,7 @@ RESTRICTION: == net462
 NUGET
   remote: https://proget.kcura.corp/nuget/NuGet
     Antlr (3.5.0.2)
+    ARMTestServices (1.1.1)
     AutoMapper (4.2.1)
     BCrypt.Net-Core (1.6.0)
     BenchmarkDotNet (0.10.12)

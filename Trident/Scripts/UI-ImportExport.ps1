@@ -3,15 +3,8 @@
 This script will be used by nightly pipeline to compile and run UI Web Import/Export tests
 #>
 
-function Invoke-Task ($Task) {
-    $TaskRunner = Resolve-Path -Path build.ps1
-    &($TaskRunner) $Task -Configuration Release
-}
+$TaskRunner = Resolve-Path -Path build.ps1
 
-Invoke-Task Compile
+&($TaskRunner) -Configuration Release
 
-Invoke-Task Test
-
-Invoke-Task Package
-
-Invoke-Task UIWebImportExportTest
+&($TaskRunner) MyTest -Configuration Release -TestFilter "cat == WebImportExport && cat != NotWorkingOnTrident"

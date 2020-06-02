@@ -79,7 +79,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		public override void SuiteTeardown()
 		{
-			Workspace.DeleteWorkspace(TargetWorkspaceArtifactID);
+			if(!HasTestFailed())
+			{
+				Workspace.DeleteWorkspace(TargetWorkspaceArtifactID);
+			}
 
 			base.SuiteTeardown();
 		}

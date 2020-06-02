@@ -14,9 +14,6 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class ProductionExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
@@ -112,7 +109,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			// Step 2
 			model.SourceInformationModel.Source = ExportToLoadFileSourceConstants.PRODUCTION;
 			model.SourceInformationModel.ProductionSet = PRODUCTION_NAME;
-			model.SourceInformationModel.StartAtRecord = 10;
+			model.SourceInformationModel.StartAtRecord = 2;
 			model.SourceInformationModel.SelectAllFields = false;
 			// Production::Begin Bates, Production::End Bates are selected by default
 

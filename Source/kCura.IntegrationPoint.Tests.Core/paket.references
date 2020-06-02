@@ -20,3 +20,4 @@ Moq
 NUnit
 NSubstitute
 Serilog
+ARMTestServices

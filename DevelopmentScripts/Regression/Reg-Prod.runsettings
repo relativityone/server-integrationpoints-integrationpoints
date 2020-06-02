@@ -1,0 +1,9 @@
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="ServerBindingType" value="https" />
+    <Parameter name="RelativityHostAddress" value="reg-prod.r1.kcura.com" />
+    <Parameter name="RsapiServicesHostAddress" value="reg-prod-services.r1.kcura.com" />
+    <Parameter name="AdminUsername" value="rip.jenkins@rip.com" />
+    <Parameter name="AdminPassword" value="Test1234!" />
+  </TestRunParameters>
+</RunSettings>

@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -87,6 +88,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				throw;
 			}
+		}
+
+		protected static bool HasTestFailed()
+		{
+			return !TestContext.CurrentContext.Result.Outcome.Equals(ResultState.Success);
 		}
 
 		private static void DisableServerCertificateValidation()

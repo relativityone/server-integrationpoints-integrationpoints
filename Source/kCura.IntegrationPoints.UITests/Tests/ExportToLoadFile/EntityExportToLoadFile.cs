@@ -17,9 +17,6 @@ using Relativity.Testing.Identification;
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
@@ -28,6 +25,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		private const string _VIEW_NAME = "RIP_TC_ELF_CUST_UI_TEST";
 
 		private IRelativityObjectManager ObjectManager => _rsapiService.RelativityObjectManager;
+
+		public EntityExportToLoadFile() : base(shouldImportDocuments: true) 
+		{ }
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetup()
@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
 		}
 
+		[Category(TestCategory.SMOKE)]
 		[IdentifiedTest("a244081a-1ead-4a55-a504-1842e89784c8")]
 		[RetryOnError]
 		public void EntityExportToLoadFile_TC_ELF_CUST_1()

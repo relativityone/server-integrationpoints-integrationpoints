@@ -14,9 +14,6 @@ using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.Integratio
 namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.EXPORT_TO_LOAD_FILE)]
 	public class DocumentExportToLoadFileTests : ExportToLoadFileTests
 	{
 		private IntegrationPointsAction _integrationPointsAction;
@@ -191,7 +188,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 
 			// Step 1
 			//default
-			model.SourceInformationModel.StartAtRecord = 10;
+			model.SourceInformationModel.StartAtRecord = 2;
 			model.SourceInformationModel.Source = "Saved Search";
 			model.SourceInformationModel.SavedSearch = "All Documents";
 
