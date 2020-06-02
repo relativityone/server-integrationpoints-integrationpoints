@@ -10,6 +10,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {
 	public class ScheduleMetric : IMetric
 	{
+		private const int _SIX_AM = 6;
+		private const int _SIX_PM = 18;
+
 		private readonly IServicesMgr _servicesMgr;
 
 		private readonly string _bucket;
@@ -54,8 +57,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 		{
 			DateTime scheduleTime = scheduleRule.GetNextUTCRunDateTime().Value;
 
-			TimeSpan startOfDay = new TimeSpan(6, 0, 0);
-			TimeSpan endOfDay = new TimeSpan(18, 0, 0);
+			TimeSpan startOfDay = new TimeSpan(_SIX_AM, 0, 0);
+			TimeSpan endOfDay = new TimeSpan(_SIX_PM, 0, 0);
 
 			return startOfDay <= scheduleTime.TimeOfDay && scheduleTime.TimeOfDay <= endOfDay;
 		}

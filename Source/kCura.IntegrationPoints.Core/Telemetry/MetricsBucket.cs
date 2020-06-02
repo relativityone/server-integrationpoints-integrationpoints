@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			public const string SCHEDULE_SYNC_JOB_STARTED_DAILY = "Relativity.Sync.Schedule.JobStarted.Daily";
 			public const string SCHEDULE_SYNC_JOB_STARTED_NIGHTLY = "Relativity.Sync.Schedule.JobStarted.Nightly";
 			public const string SCHEDULE_SYNC_JOB_COMPLETED = "Relativity.Sync.Schedule.JobCompleted";
-			public const string SCHEDULE_SYNC_JOB_FAILED = "Relativity.Sync.Schedule.Job.Failed";
+			public const string SCHEDULE_SYNC_JOB_FAILED = "Relativity.Sync.Schedule.JobFailed";
 
 			public static readonly List<MetricIdentifier> METRICS = new List<MetricIdentifier>
 			{
@@ -24,17 +24,17 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 				new MetricIdentifier
 				{
 					Name = SCHEDULE_SYNC_JOB_STARTED_NIGHTLY,
-					Description = "Number of Sync jobs scheduled during working day (6:00 PM - 6:00 AM)"
+					Description = "Number of Sync jobs scheduled out of working day (6:00 PM - 6:00 AM)"
 				},
 				new MetricIdentifier
 				{
 					Name = SCHEDULE_SYNC_JOB_COMPLETED,
-					Description = "Number of Sync scheduled jobs completed"
+					Description = "Number of completed Sync scheduled jobs"
 				},
 				new MetricIdentifier
 				{
 					Name = SCHEDULE_SYNC_JOB_FAILED,
-					Description = "Number of Sync scheduled jobs failed"
+					Description = "Number of failed Sync scheduled jobs"
 				}
 			};
 		}

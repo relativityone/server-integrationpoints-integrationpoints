@@ -15,16 +15,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		private readonly IServicesMgr _servicesMgr;
-		//private readonly IAPM _apm;
 
 		public MetricsFactory(ISerializer serializer, IScheduleRuleFactory scheduleRuleFactory,
-			IIntegrationPointService integrationPointService, IServicesMgr servicesMgr/*, IAPM apm*/)
+			IIntegrationPointService integrationPointService, IServicesMgr servicesMgr)
 		{
 			_serializer = serializer;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			_integrationPointService = integrationPointService;
 			_servicesMgr = servicesMgr;
-			//_apm = apm;
 		}
 
 		public IMetric CreateScheduleJobStartedMetric(Job job)

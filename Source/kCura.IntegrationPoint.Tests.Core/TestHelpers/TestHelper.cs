@@ -16,9 +16,11 @@ using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using Relativity.Productions.Services;
 using Relativity.Services.Interfaces.Group;
+using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
+
 	using System.Net;
 	using IFieldManager = global::Relativity.Services.FieldManager.IFieldManager;
 
@@ -82,6 +84,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiUri, SharedVariables.RelativityRestUri, userCredential);
 			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
+		}
+
+		public void InjectProxy<T>(T proxy) where T : IDisposable
+		{
+			_serviceManager.CreateProxy<T>(ExecutionIdentity.System).Returns(proxy);
+			_serviceManager.CreateProxy<T>(ExecutionIdentity.CurrentUser).Returns(proxy);
 		}
 
 		public ISearchManager CreateSearchManager()
@@ -163,6 +171,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		{
 			return _serviceManager;
 		}
+
 
 		public IAuthenticationMgr GetAuthenticationManager()
 		{

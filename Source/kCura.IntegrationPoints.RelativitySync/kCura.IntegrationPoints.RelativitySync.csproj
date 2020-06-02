@@ -59,8 +59,7 @@
     <Compile Include="Metrics\IMetric.cs" />
     <Compile Include="Metrics\IMetricCollection.cs" />
     <Compile Include="Metrics\IMetricsFactory.cs" />
-    <Compile Include="Metrics\ITimedMetric.cs" />
-    <Compile Include="Metrics\JobDurationMetric.cs" />
+    <Compile Include="Metrics\SyncMetricException.cs" />
     <Compile Include="Metrics\SyncJobMetric.cs" />
     <Compile Include="Metrics\MetricsCollection.cs" />
     <Compile Include="Metrics\MetricsFactory.cs" />

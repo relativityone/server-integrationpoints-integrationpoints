@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Domain.Logging;
