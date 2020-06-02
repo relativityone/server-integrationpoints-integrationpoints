@@ -1,36 +1,45 @@
-﻿<!DOCTYPE html>
+﻿@using System.Reflection
+@using System.Text.RegularExpressions
+@using kCura.IntegrationPoints.Web
+<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width" />
-	@Styles.Render("~/Content/fonts/bundleFonts")
-	<title>@ViewBag.Title</title>
-	@Styles.Render("~/Content/styles")
-	<link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
-	@Styles.Render("~/Content/themes/base/css")
-	<link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
-	<link href="~/Content/modals.min.css" rel="stylesheet" />
-	@Scripts.Render("~/bundles/modernizr")
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/fonts/bundleFonts")
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/styles")
+    <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
+    @Styles.Render("~/Content/themes/base/css")
+    <link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
+    <link href="~/Content/modals.min.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-	<div>
-		@RenderBody()
-	</div>
-	@Scripts.Render("~/bundles/jquery")
-	<script src="~/Scripts/jquery-migrate-3.0.1.min.js"></script>
-	<script src="~/Scripts/core/messaging.js"></script>
-	<script src="~/Scripts/select2.js"></script>
-	<script src="~/Scripts/q.js"></script>
-	<script src="~/Scripts/date.js"></script>
-	@Scripts.Render("~/bundles/jqueryui")
-	<script src="~/Scripts/iframeResizer.contentWindow.min.js"></script>
-	@Scripts.Render("~/bundles/messaging")
-	@Scripts.Render("~/bundles/frame-messaging")
-	@Scripts.Render("~/bundles/modals")
-	<script src="~/Scripts/loading-modal.js"></script>
-	@RenderSection("scripts", required: false)
-	<script>
-		Q.longStackSupport = true;
-	</script>
+
+    <div>
+        @RenderBody()
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/jquery-migrate-3.0.1.min.js"></script>
+    <script src="~/Scripts/core/messaging.js"></script>
+    <script src="~/Scripts/select2.js"></script>
+    <script src="~/Scripts/q.js"></script>
+    <script src="~/Scripts/date.js"></script>
+    @Scripts.Render("~/bundles/jqueryui")
+    <script src="~/Scripts/iframeResizer.contentWindow.min.js"></script>
+    @Scripts.Render("~/bundles/messaging")
+    @Scripts.Render("~/bundles/frame-messaging")
+    @Scripts.Render("~/bundles/modals")
+    <script src="~/Scripts/loading-modal.js"></script>
+    @RenderSection("scripts", required: false)
+
+    <script>
+        IP.assemblyVersion = "@Assembly.GetAssembly(typeof(WindsorFilterProvider)).GetName().Version.ToString(4)"
+    </script>
+
+    <script>
+        Q.longStackSupport = true;
+    </script>
 </body>
 </html>

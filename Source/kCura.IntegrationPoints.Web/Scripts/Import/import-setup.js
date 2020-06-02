@@ -35,7 +35,7 @@
 
 	var updateHeaders = function () {
 		if (!(isEmpty(windowObj.RelativityImport.koModel.LoadFile()) || repopulatingSettings)) {
-			$.ajax({
+			IP.data.ajax({
 				url: baseUrlCache + workspaceId + "/api/ImportProviderDocument/LoadFileHeaders",
 				type: 'POST',
 				data: { '': JSON.stringify(windowObj.parent.RelativityImport.GetCurrentUiModel()) },
@@ -299,7 +299,7 @@
 			if (isRoot) {
 				path = self.rootDataTransferLocation;
 			}
-			$.ajax({
+			IP.data.ajax({
 				type: "post",
 				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) + '?isRoot=' + isRoot + '&includeFiles=true',
@@ -344,7 +344,7 @@
 		windowObj.RelativityImport.destinationLocationSelector.reloadWithRootWithData(reloadTree);
 	};
 
-	$.ajax({
+	IP.data.ajax({
 		url: root.utils.getBaseURL() + workspaceId + "/api/ImportProviderDocument/GetAsciiDelimiters",
 		type: 'GET',
 		contentType: "application/json",
@@ -359,7 +359,7 @@
 		}
 	});
 
-	$.ajax({
+	IP.data.ajax({
 		url: root.utils.generateWebAPIURL("Production/GetProductionsForImport", root.utils.getParameterByName("AppID", window.top)),
 		type: "POST",
 		success: function (data) {
@@ -367,7 +367,7 @@
 		}
 	});
 
-	$.ajax({
+	IP.data.ajax({
 		type: 'GET',
 		url: IP.utils.generateWebAPIURL('ImportProviderImage/GetOverlayIdentifierFields'),
 		data: {
@@ -379,7 +379,7 @@
 	});
 
 	windowObj.RelativityImport.setDefaultFileRepo = function () {
-		$.ajax({
+		IP.data.ajax({
 			type: 'GET',
 			url: IP.utils.generateWebAPIURL('ImportProviderImage/GetDefaultFileRepo'),
 			data: {
@@ -391,7 +391,7 @@
 		})
 	};
 
-	$.ajax({
+	IP.data.ajax({
 		type: 'GET',
 		url: IP.utils.generateWebAPIURL('ImportProviderImage/GetFileRepositories'),
 		data: {
@@ -403,7 +403,7 @@
 		}
 	});
 
-	$.ajax({
+	IP.data.ajax({
 		type: 'GET',
 		url: IP.utils.generateWebAPIURL('ImportProviderDocument/IsCloudInstance'),
 		success: function (data) {

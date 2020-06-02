@@ -900,7 +900,7 @@ ko.validation.insertValidationMessage = function (element) {
 			self.CatalogField = {};
 			var destinationWorkspaceID = IP.utils.getParameterByName('AppID', window.top);
 
-			$.ajax({
+			IP.data.ajax({
 				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID),
 				type: 'POST',
 				success: function (data) {

@@ -84,6 +84,8 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Controllers\API\FieldMappings\FieldMappingsController.cs" />
+    <Compile Include="Helpers\IRelativityUrlHelper.cs" />
+    <Compile Include="Helpers\RelativityUrlHelper.cs" />
     <Compile Include="IntegrationPointsServices\TextSanitizer.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -166,7 +168,6 @@
     <Compile Include="Helpers\SummaryPageSelector.cs" />
     <Compile Include="Installers\ControllersRegistration.cs" />
     <Compile Include="Controllers\IntegrationPointProfilesController.cs" />
-    <Compile Include="Helpers\IRelativityUrlHelper.cs" />
     <Compile Include="IntegrationPointsServices\Logging\ICacheHolder.cs" />
     <Compile Include="IntegrationPointsServices\Logging\WebActionContext.cs" />
     <Compile Include="IntegrationPointsServices\Logging\WebActionContextProvider.cs" />
@@ -191,7 +192,6 @@
     <Compile Include="Models\Validation\ValidationResultMapper.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
     <Compile Include="Context\WorkspaceContext\Exceptions\WorkspaceIdNotFoundException.cs" />
-    <Compile Include="Helpers\RelativityUrlHelper.cs" />
     <Compile Include="Extensions\RequestExtensions.cs" />
     <Compile Include="IntegrationPointsServices\ServiceContextHelperForWeb.cs" />
     <Compile Include="Infrastructure\Session\SessionService.cs" />
