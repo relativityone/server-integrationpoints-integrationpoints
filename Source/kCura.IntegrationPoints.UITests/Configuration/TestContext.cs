@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
@@ -38,7 +39,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
-		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE = DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure;
+		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE = DocumentTestDataBuilder.TestDataType.SmallWithFoldersStructure;
+
+		public const DocumentTestDataBuilder.TestDataType DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS = DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure;
 
 		public ITestHelper Helper => _helperLazy.Value;
 
@@ -106,6 +109,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public async Task CreateTestWorkspaceAsync()
 		{
+			var createDurationStopWatch = new Stopwatch();
+			createDurationStopWatch.Start();
 			WorkspaceName = $"RIP Test Workspace {_timeStamp}";
 			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
@@ -119,8 +124,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 					$"Cannot create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'. Check if Relativity works correctly (services, ...).");
 				throw;
 			}
-
+			createDurationStopWatch.Stop();
 			Log.Information($"Workspace '{WorkspaceName}' was successfully created using template '{templateWorkspaceName}'. WorkspaceId={WorkspaceId}");
+			Log.Information("Workspace created. Duration: {duration} s", createDurationStopWatch.ElapsedMilliseconds/1000 );
 		}
 
 		public void EnableDataGrid(params string[] fieldNames)
@@ -138,7 +144,12 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 
 		public TestContext CreateProductionSet(string productionName)
 		{
+			Log.Information($"Create production set {productionName}");
+			var sw = new Stopwatch();
+			sw.Start();
 			ProductionHelper.CreateProductionSet(productionName);
+			sw.Stop();
+			Log.Information("Production set created. Duration {productionName} s", sw.ElapsedMilliseconds / 1000);
 			return this;
 		}
 
@@ -164,11 +175,16 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return ApplicationInstallationHelper.InstallIntegrationPointsAsync();
 		}
 
+		public Task<bool> IsIntegrationPointsInstalledAsync()
+		{
+			return ApplicationInstallationHelper.IsIntegrationPointsInstalledAsync();
+		}
+
 		public TestContext ImportDocumentsToRoot()
 		{
 			ImportDocuments(
 				withNatives: true,
-				testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS
 			);
 			return this;
 		}
@@ -177,7 +193,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: false,
-				testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithoutFoldersStructure
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS
 			);
 			return this;
 		}
@@ -186,7 +202,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		{
 			ImportDocuments(
 				withNatives: false,
-				testDataType: DocumentTestDataBuilder.TestDataType.ModerateWithFoldersStructure
+				testDataType: DEFAULT_IMPORT_TEST_DATATYPE_WITHOUT_FOLDERS
 			);
 			return this;
 		}

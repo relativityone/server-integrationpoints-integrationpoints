@@ -3,15 +3,18 @@
 This script will be used by nightly pipeline to complie and run Integration tests
 #>
 
-function Invoke-Task ($Task) {
-    $TaskRunner = Resolve-Path -Path build.ps1
-    &($TaskRunner) $Task -Configuration Release
+function Invoke-Build {
+
+    &($TaskRunner) -Configuration Release
 }
 
-Invoke-Task Compile
+function Invoke-Test ($TestFilter) {
+    $TaskRunner = Resolve-Path -Path build.ps1
+    &($TaskRunner) MyTest -Configuration Release -TestFilter $TestFilter
+}
 
-Invoke-Task Test
+$TaskRunner = Resolve-Path -Path build.ps1
 
-Invoke-Task Package
+&($TaskRunner) -Configuration Release
 
-Invoke-Task FunctionalTest
+&($TaskRunner) MyTest -Configuration Release -TestFilter "(namespace =~ FunctionalTests || namespace =~ /Tests\.Integration[\$\.]/ || namespace =~ E2ETests) && cat != NotWorkingOnTrident"

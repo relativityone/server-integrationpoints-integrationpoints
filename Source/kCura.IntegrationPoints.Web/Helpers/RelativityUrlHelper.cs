@@ -1,5 +1,8 @@
-﻿using kCura.IntegrationPoints.Core.Services;
+﻿using System.Reflection;
+using System.Resources;
+using kCura.IntegrationPoints.Core.Services;
 using System.Web;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Web.Extensions;
 
 namespace kCura.IntegrationPoints.Web.Helpers
@@ -23,13 +26,13 @@ namespace kCura.IntegrationPoints.Web.Helpers
 			string applicationRoot = _httpRequest.GetApplicationRootPath();
 			int typeID = _service.GetObjectTypeID(objectTypeName);
 
-			return string.Format(
+			return UrlVersionDecorator.AppendVersion(string.Format(
 				VIEW_URL_TEMPLATE,
 				applicationRoot,
 				workspaceID,
 				artifactID,
 				typeID
-			);
+			));
 		}
 	}
 }

@@ -1,4 +1,4 @@
-using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		private RemoteWebDriver _driver;
 
 		private readonly bool _shouldLoginToRelativity;
+		private readonly bool _shouldImportDocuments;
 
 		private readonly Lazy<ITestHelper> _testHelperLazy;
 
@@ -48,6 +49,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		protected TestConfiguration Configuration { get; set; }
 
 		protected TestContext SourceContext { get; set; }
+		
+		protected TestContext DestinationContext { get; set; }
 
 		/// <summary>
 		/// Value is assigned during SetUp phase, before each test is executed.
@@ -69,13 +72,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		protected UiTest() : this(shouldLoginToRelativity: true)
-		{
-		}
-
-		protected UiTest(bool shouldLoginToRelativity)
+		protected UiTest(bool shouldLoginToRelativity = true, bool shouldImportDocuments = true)
 		{
 			_shouldLoginToRelativity = shouldLoginToRelativity;
+			_shouldImportDocuments = shouldImportDocuments;
+
 			Container = new WindsorContainer();
 			_testHelperLazy = new Lazy<ITestHelper>(() => new TestHelper());
 		}
@@ -96,7 +97,10 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			SourceContext.InitUser();
 			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
-			return Task.WhenAll(agentSetupTask, workspaceSetupTask);
+			DestinationContext = new TestContext();
+			Task destinationContextWorkspaceTask = DestinationContext.CreateTestWorkspaceAsync();
+
+			return Task.WhenAll(agentSetupTask, workspaceSetupTask, destinationContextWorkspaceTask);
 		}
 
 		[SetUp]
@@ -111,9 +115,9 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 		private async Task SetupWorkspaceAsync()
 		{
+			Log.Information("UiTest: SetupWorkspaceAsync - Source");
 			if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
 			{
-				Log.Information("Source context");
 				await CreateWorkspaceAsync().ConfigureAwait(false);
 			}
 			else
@@ -129,14 +133,16 @@ namespace kCura.IntegrationPoints.UITests.Tests
 				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", SourceContext.WorkspaceName, SourceContext.WorkspaceId);
 			}
 
-			Task installIntegrationPointsTask = SourceContext.InstallIntegrationPointsAsync();
+			bool isIntegrationPointInstalled = await SourceContext.IsIntegrationPointsInstalledAsync().ConfigureAwait(false);
+			if (!isIntegrationPointInstalled)
+			{
+				throw new TestException($"Integration Points should be installed in workspace '{SourceContext.WorkspaceName}'.");
+			}
 
-			if (!SharedVariables.UiSkipDocumentImport)
+			if (_shouldImportDocuments)
 			{
 				await ImportDocumentsAsync().ConfigureAwait(false);
 			}
-
-			await installIntegrationPointsTask.ConfigureAwait(false);
 		}
 
 		protected virtual Task CreateWorkspaceAsync()
@@ -162,8 +168,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		[OneTimeTearDown]
 		protected void OneTimeTearDown()
 		{
-			DeleteWorkspace();
-			TearDownContext();
+			if(!HasTestFailed())
+			{
+				DeleteWorkspace(SourceContext);
+				DeleteWorkspace(DestinationContext);
+			}
 		}
 
 		private void LogBrowserLogsIfTestFailed()
@@ -244,30 +253,21 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			}
 		}
 
-		private void TearDownContext()
+		protected void DeleteWorkspace(TestContext workspaceContext)
 		{
 			try
 			{
-				SourceContext.TearDown();
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex, "Error in SourceContext TearDown.");
-			}
-		}
-
-		private void DeleteWorkspace()
-		{
-			try
-			{
-				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && SourceContext.WorkspaceId != null)
+				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && workspaceContext.WorkspaceId != null)
 				{
-					Workspace.DeleteWorkspace(SourceContext.GetWorkspaceId());
+					Workspace.DeleteWorkspace(workspaceContext.GetWorkspaceId());
+					Log.Information("Delete workspace: {workspaceId}", workspaceContext.WorkspaceId);
+					workspaceContext.WorkspaceId = null;
 				}
+				workspaceContext.TearDown();
 			}
 			catch (Exception ex)
 			{
-				Log.Error(ex, "Error during deleting workspace.");
+				Log.Error(ex, "Error during deleting workspace: {workspaceName}", workspaceContext.WorkspaceName);
 			}
 		}
 

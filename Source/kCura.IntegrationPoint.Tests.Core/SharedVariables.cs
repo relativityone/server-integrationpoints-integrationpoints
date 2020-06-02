@@ -255,7 +255,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
 
 		private static string RsapiServerAddress =>
-			GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress).NullIfEmpty() ?? AppSettingString("RsapiServicesHostAddress"); //REL-390973
+			AppSettingString("RsapiServicesHostAddress") ?? GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress).NullIfEmpty(); //REL-390973
 
 		#endregion Relativity Settings
 
@@ -316,11 +316,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#region Fileshare Configuration Settings
 
-		public static string FileshareLocation =>
-			GetAppSettingStringOrDefault(
-				"fileshareLocation",
-				() => $@"\\{RelativityHostAddress}\fileshare"
-			);
+		public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
 
 		#endregion
 

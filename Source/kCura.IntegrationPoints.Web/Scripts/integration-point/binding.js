@@ -118,7 +118,7 @@ ko.bindingHandlers.select2lazySearchable = {
 			select2 = ko.utils.unwrapObservable(allBindings.select2lazySearchable),
 			$element = $(el);
 
-		var optionsUrl = allBindings.optionsUrl;
+		var optionsUrl = IP.data.cacheBustUrl(allBindings.optionsUrl);
 		var itemDetailsIdParameterName = allBindings.itemDetailsIdParameterName;
 
 		var optionsPlaceholder = 'Select ...';

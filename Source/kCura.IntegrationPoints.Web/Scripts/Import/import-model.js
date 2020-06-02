@@ -159,7 +159,7 @@
 		self.ExtractedTextFieldContainsFilePath = ko.observable("false");
 
 		self._UpdateFileEncodingTypeList = function () {
-			$.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
 				function Group(label, children) {
 					this.label = ko.observable(label);
 					this.children = ko.observableArray(children);

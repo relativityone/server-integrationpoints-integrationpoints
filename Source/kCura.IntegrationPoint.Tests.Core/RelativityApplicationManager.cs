@@ -73,33 +73,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public async Task<bool> IsApplicationInstalledAndUpToDateAsync(int workspaceArtifactID, Guid guid)
 		{
-			const int batchSize = 100;
-			int currentIndex = 1;
 			using (var applicationInstallManager = _helper.CreateProxy<IApplicationInstallManager>())
 			{
-				GetAllInstallStatusResponse installStatusResponse;
-				do
-				{
-#pragma warning disable CS0618 // Type or member is obsolete
-					installStatusResponse = await applicationInstallManager
-						.GetAllInstallStatusAsync(_ADMIN_CASE_ID, guid, currentIndex, batchSize)
-#pragma warning restore CS0618 // Type or member is obsolete
-						.ConfigureAwait(false);
-
-					GetInstallStatusResponse installStatusResponseForWorkspace = installStatusResponse
-						.Results
-						.FirstOrDefault(x => x.WorkspaceIdentifier.ArtifactID == workspaceArtifactID);
-
-					if (installStatusResponseForWorkspace != null)
-					{
-						return IsInstallSuccessfullyCompleted(installStatusResponseForWorkspace.InstallStatus);
-					}
-
-					currentIndex += batchSize;
-				}
-				while (installStatusResponse.ResultCount == batchSize);
+				GetInstallStatusResponse installStatusResponse;
+				installStatusResponse = await applicationInstallManager.GetStatusAsync(workspaceArtifactID, guid).ConfigureAwait(false);
+				
+				return IsInstallSuccessfullyCompleted(installStatusResponse.InstallStatus);
 			}
-			return false;
 		}
 
 		private string GetLocalRipRapPath()
@@ -123,9 +103,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				using (var keplerStream = new KeplerStream(fileStream))
 				{
+					Console.WriteLine($"Import Application from {appPath}");
 					int appID = await SendUpdateAppRequestAsync(libraryApplicationManager, keplerStream)
 						.ConfigureAwait(false);
 
+					Console.WriteLine($"Application ID has been retrieved: {appID}");
 					Func<Task<GetInstallStatusResponse>> currentInstallStatusGetter =
 						() => libraryApplicationManager.GetLibraryInstallStatusAsync(_ADMIN_CASE_ID, appID);
 
@@ -155,7 +137,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
 			cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(_APP_INSTALLATION_TIMEOUT_IN_MINUTES));
-
+			Console.WriteLine("Wait for installation to complete...");
 			try
 			{
 				await WaitForInstallToCompleteAsync(getCurrentStatus, cancellationTokenSource.Token)
@@ -172,6 +154,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			Func<Task<GetInstallStatusResponse>> getCurrentStatus,
 			CancellationToken cancellationToken)
 		{
+			const int sleepMilliseconds = 1000;
+
 			InstallStatus installStatus;
 			do
 			{
@@ -179,6 +163,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				GetInstallStatusResponse installStatusResponse = await getCurrentStatus().ConfigureAwait(false);
 				installStatus = installStatusResponse.InstallStatus;
+				Console.WriteLine($"Installing... {installStatus.Code}");
+				Thread.Sleep(sleepMilliseconds);
 			}
 			while (IsInstallIncomplete(installStatus));
 

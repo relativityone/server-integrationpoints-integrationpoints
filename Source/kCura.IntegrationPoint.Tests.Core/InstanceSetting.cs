@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 using ValueType = Relativity.Services.InstanceSetting.ValueType;
@@ -37,13 +36,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static async Task CreateOrUpdateAsync(string section, string name, string value)
+		public static async Task<bool> CreateOrUpdateAsync(string section, string name, string value)
 		{
+			Console.WriteLine($"Updating Instance Setting - Name: {name}, Section: {section} wit Value: {value}");
 			global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting =
 				await QueryAsync(section, name).ConfigureAwait(false);
 
 			if (instanceSetting == null)
 			{
+				Console.WriteLine($"Instance Setting does not exist, create new one");
 				await CreateAsync(section, name, value, ValueType.TrueFalse).ConfigureAwait(false);
 			}
 			else
@@ -51,9 +52,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 				instanceSetting.Value = value;
 				await UpdateAsync(instanceSetting).ConfigureAwait(false);
 			}
+
+			var instanceSettingUpdated = await QueryAsync(section, name).ConfigureAwait(false);
+
+			return instanceSettingUpdated.Value == value;
 		}
 
-		private static Task<int> CreateAsync(string section, string name, string value, ValueType valueType)
+		private static async Task<int> CreateAsync(string section, string name, string value, ValueType valueType)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
 			{
@@ -68,7 +73,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				try
 				{
-					return instanceSettingManager.CreateSingleAsync(instanceSetting);
+					return await instanceSettingManager.CreateSingleAsync(instanceSetting).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
@@ -77,13 +82,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private static Task UpdateAsync(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
+		private static async Task UpdateAsync(global::Relativity.Services.InstanceSetting.InstanceSetting instanceSetting)
 		{
 			using (IInstanceSettingManager instanceSettingManager = Helper.CreateProxy<IInstanceSettingManager>())
 			{
 				try
 				{
-					return instanceSettingManager.UpdateSingleAsync(instanceSetting);
+					await instanceSettingManager.UpdateSingleAsync(instanceSetting).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{

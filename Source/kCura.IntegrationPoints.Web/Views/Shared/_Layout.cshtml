@@ -1,57 +1,62 @@
-﻿@using System.Text.RegularExpressions
+﻿@using System.Reflection
+@using System.Text.RegularExpressions
+@using kCura.IntegrationPoints.Web
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width" />
-	@Styles.Render("~/Content/fonts/bundleFonts")
-	<title>@ViewBag.Title</title>
-	@Styles.Render("~/Content/themes/base/css")
-	@Styles.Render("~/Content/styles")
-	<link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
-	<link href="~/Content/themes/default/style.min.css" rel="stylesheet" />
-	<link href="~/Content/jstree-fluid.css" rel="stylesheet" />
-	<link href="~/Content/modals.min.css" rel="stylesheet" />
-	@Scripts.Render("~/bundles/modernizr")
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/fonts/bundleFonts")
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/themes/base/css")
+    @Styles.Render("~/Content/styles")
+    <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
+    <link href="~/Content/themes/default/style.min.css" rel="stylesheet" />
+    <link href="~/Content/jstree-fluid.css" rel="stylesheet" />
+    <link href="~/Content/modals.min.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-	<div id="headerContainer">
-		@RenderSection("header", required: false)
-	</div>
-	<div id="bodyContainer">
-		@RenderBody()
-	</div>
-	@Scripts.Render("~/bundles/jquery")
-	<script src="~/Scripts/jquery-migrate-3.0.1.min.js"></script>
-	<script src="~/Scripts/select2.js"></script>
-	<script src="~/Scripts/jstree.min.js"></script>
-	<script src="~/Scripts/q.js"></script>
-	<script src="~/Scripts/date.js"></script>
-	@Scripts.Render("~/bundles/jqueryui")
-	<script src="~/Scripts/core/messaging.js"></script>
-	@Scripts.Render("~/bundles/messaging")
-	@Scripts.Render("~/bundles/frame-messaging")
-	@Scripts.Render("~/bundles/modals")
-	<script src="~/Scripts/loading-modal.js"></script>
-	<script src="~/Scripts/moment.js"></script>
-	<script src="~/Scripts/moment-with-locales.js"></script>
-	<script src="~/Scripts/moment-timezone-with-data.js"></script>
-	<script async type="text/javascript" src="/Relativity/Scripts/click-tracking.min.js"></script>
+    <div id="headerContainer">
+        @RenderSection("header", required: false)
+    </div>
+    <div id="bodyContainer">
+        @RenderBody()
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/jquery-migrate-3.0.1.min.js"></script>
+    <script src="~/Scripts/select2.js"></script>
+    <script src="~/Scripts/jstree.min.js"></script>
+    <script src="~/Scripts/q.js"></script>
+    <script src="~/Scripts/date.js"></script>
+    @Scripts.Render("~/bundles/jqueryui")
+    <script src="~/Scripts/core/messaging.js"></script>
+    @Scripts.Render("~/bundles/messaging")
+    @Scripts.Render("~/bundles/frame-messaging")
+    @Scripts.Render("~/bundles/modals")
+    <script src="~/Scripts/loading-modal.js"></script>
+    <script src="~/Scripts/moment.js"></script>
+    <script src="~/Scripts/moment-with-locales.js"></script>
+    <script src="~/Scripts/moment-timezone-with-data.js"></script>
+    <script async type="text/javascript" src="/Relativity/Scripts/click-tracking.min.js"></script>
+    <script>
+        IP.assemblyVersion = "@Assembly.GetAssembly(typeof(WindsorFilterProvider)).GetName().Version.ToString(4)"
+    </script>
 
-	@*User-Agent of IE11 is
-		'"Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729; InfoPath.3; rv:11.0) like Gecko"'
-		If Request.UserAgent matches regular expression then we render shims that provider ES6 features backwards compatibility.
-		We don't check other IE versions because IE11 is only one supported now.
-	*@
-	@if (Regex.IsMatch(Request.UserAgent, @"Trident/7.*rv:11"))
-	{
-		<script src="~/Scripts/es5-shim.min.js"></script>
-		<script src="~/Scripts/es6-shim.min.js"></script>
-	}
+    @*User-Agent of IE11 is
+        '"Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729; InfoPath.3; rv:11.0) like Gecko"'
+        If Request.UserAgent matches regular expression then we render shims that provider ES6 features backwards compatibility.
+        We don't check other IE versions because IE11 is only one supported now.
+    *@
+    @if (Regex.IsMatch(Request.UserAgent, @"Trident/7.*rv:11"))
+    {
+        <script src="~/Scripts/es5-shim.min.js"></script>
+        <script src="~/Scripts/es6-shim.min.js"></script>
+    }
 
-	@RenderSection("scripts", required: false)
-	<script>
+    @RenderSection("scripts", required: false)
+    <script>
 		Q.longStackSupport = true;
-	</script>
+    </script>
 </body>
 </html>

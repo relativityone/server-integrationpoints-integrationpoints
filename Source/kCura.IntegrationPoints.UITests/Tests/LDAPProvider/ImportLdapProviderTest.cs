@@ -14,19 +14,22 @@ using System.Collections.Generic;
 using System.Security;
 using System.Threading.Tasks;
 using Relativity.Testing.Identification;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 
 namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 {
 	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+	[Feature.DataTransfer.IntegrationPoints.WebImport.ImportLdap]
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
-	[Category(TestCategory.NOT_WORKING_ON_TRIDENT)] //Remove when REL-389924
-	[Category(TestCategory.IMPORT_FROM_FTP_AND_LDAP)]
 	[Category(TestCategory.NOT_WORKING_ON_REGRESSION_ENVIRONMENT)] // no access to LDAP from R1
+	[NotWorkingOnTrident] // no access to LDAP from R1 (REL-250027)
 	public class ImportLdapProviderTest : UiTest
 	{
 		private IRSAPIService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
+
+		public ImportLdapProviderTest() : base(shouldImportDocuments: false)
+		{ }
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
@@ -46,7 +49,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		[IdentifiedTest("ebfc56e6-5ac7-4694-9fde-7e474163f87e")]
 		[RetryOnError]
 		[Order(1)]
-		[Category(TestCategory.SMOKE)]
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
 			// Arrange

@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Logging;
+using kCura.IntegrationPoints.UITests.Tests;
 using NUnit.Framework;
+using Relativity.Kepler.Logging;
+using Serilog;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
 namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation
@@ -13,10 +18,14 @@ namespace kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidatio
 	{
 		public void ValidateSummaryPage(PropertiesTable propertiesTable, RelativityProviderModel model, TestContext sourceContext, TestContext destinationContext, bool expectErrors)
 		{
+			var callDurationStopWatch = new Stopwatch();
+			callDurationStopWatch.Start();
 			Dictionary<string, string> propertiesTableDictionary = propertiesTable.Properties;
 
 			ValidateHasErrorsProperty(propertiesTableDictionary, expectErrors);
 			ValidateGeneralModel(propertiesTableDictionary, model, sourceContext, destinationContext);
+			callDurationStopWatch.Stop();
+			Log.Information("Validation finished. Duration: {duration} s", callDurationStopWatch.ElapsedMilliseconds/1000);
 		}
 
 		protected virtual void ValidateGeneralModel(Dictionary<string, string> propertiesTableDictionary, RelativityProviderModel model, TestContext sourceContext, TestContext destinationContext)

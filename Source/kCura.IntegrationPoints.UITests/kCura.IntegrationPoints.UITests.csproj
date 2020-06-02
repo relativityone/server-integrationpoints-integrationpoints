@@ -60,7 +60,6 @@
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
     <Compile Include="Common\CustodianToEntityUtils.cs" />
-    <Compile Include="Common\FileCopier.cs" />
     <Compile Include="BrandNew\GeneralPanelActions.cs" />
     <Compile Include="BrandNew\CreateIntegrationPointPage.cs" />
     <Compile Include="BrandNew\FirstPage.cs" />
@@ -184,6 +183,7 @@
     <Compile Include="Validation\RelativityProviderValidation\RelativityProviderValidatorBase.cs" />
     <Compile Include="Validation\RelativityProviderValidation\ImagesSavedSearchToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\SavedSearchToFolderValidator.cs" />
+    <Compile Include="Validation\RelativityProviderValidation\ImagesProductionToFolderValidator.cs" />
     <Compile Include="Validation\RelativityProviderValidation\SavedSearchToProductionSetValidator.cs" />
   </ItemGroup>
   <ItemGroup>

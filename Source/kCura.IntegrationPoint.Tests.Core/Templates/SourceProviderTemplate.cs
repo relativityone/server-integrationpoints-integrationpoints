@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		public override void SuiteTeardown()
 		{
-			if (CreatingWorkspaceEnabled && WorkspaceArtifactId != 0)
+			if (CreatingWorkspaceEnabled && WorkspaceArtifactId != 0 && !HasTestFailed())
 			{
 				Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			}

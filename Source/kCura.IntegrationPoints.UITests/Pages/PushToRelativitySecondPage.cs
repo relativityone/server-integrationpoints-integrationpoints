@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			Driver.SwitchTo().ParentFrame();
 			Driver.SwitchTo().ParentFrame();
-			Driver.SwitchTo().Frame("externalPage");
+			Driver.SwitchTo().Frame(_mainFrameNameOldUi);
 
 			Thread.Sleep(TimeSpan.FromMilliseconds(200));
 			NextButton.ClickEx();

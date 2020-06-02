@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using Relativity.Testing.Identification;
@@ -15,30 +16,73 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync.ProductionPush]
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
+	[Category(TestCategory.RIP_OLD)]
 	public class ImagesProductionToProductionSetTests : RelativityProviderTestsBase
 	{
+		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+		private readonly string _destinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 
+		protected override Task SuiteSpecificOneTimeSetup()
+		{
+			SourceContext.CreateProductionAndImportData(_sourceProductionName);
+			return Task.CompletedTask;
+		}
+
+		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
+		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
+		
 		private RelativityProviderModel CreateModel()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
 			{
 				Source = RelativityProviderModel.SourceTypeEnum.Production,
-				SourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}",
+				SourceProductionName = _sourceProductionName,
 
 				RelativityInstance = "This Instance",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				Location = RelativityProviderModel.LocationEnum.ProductionSet,
 
-				DestinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}",
+				DestinationProductionName = _destinationProductionName,
 				CreateSavedSearch = false,
 
 				CopyImages = true,
 			};
-			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
-			DestinationContext.CreateProductionSet(model.DestinationProductionName);
+			DestinationContext.CreateProductionSet(_destinationProductionName);
 			return model;
 		}
+		
+		[Category(TestCategory.SMOKE)]
+		[IdentifiedTestCase("0f6503b8-791a-465b-bbf5-0a6dfbab72ed", RelativityProviderModel.OverwriteModeEnum.OverlayOnly, false)]
+		[RetryOnError]
+		public void ShouldPushImagesFromProductionToProduction(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
+		{
+			//Arrange
+			RelativityProviderModel model = CreateModel();
+			model.Overwrite = overwrite;
+			model.CopyFilesToRepository = copyFilesToRepository;
+
+			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
+			{
+				DestinationContext.ImportDocuments();
+			}
+
+			//Act
+			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
+			detailsPage.RunIntegrationPoint();
+
+			// Assert
+			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
+
+			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
+			{
+				ValidateOverlayProductionImages(copyFilesToRepository, model);
+			}
+			else
+			{
+				ValidateProductionImages(copyFilesToRepository, model);
+			}
+		}
+
 		//RelativityProvider_TC_RTR_PTP_01
 		[IdentifiedTestCase("23c8242c-20cb-4c89-ad24-1f50bf84cb0c", RelativityProviderModel.OverwriteModeEnum.AppendOnly, false)]
 		//RelativityProvider_TC_RTR_PTP_02
@@ -52,38 +96,23 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		//RelativityProvider_TC_RTR_PTP_06
 		[IdentifiedTestCase("b3e2c155-ac41-43ee-b45d-69d43d6af685", RelativityProviderModel.OverwriteModeEnum.AppendOverlay, false)]
 		[RetryOnError]
-		public void ItShouldPushImagesFromProductionToProduction(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
+		public void ShouldDisplayCorrectSummaryPage_WhenImagesFromProductionToProduction(RelativityProviderModel.OverwriteModeEnum overwrite, bool copyFilesToRepository)
 		{
 			//Arrange
-			ImagesProductionToProductionSetValidator validator = new ImagesProductionToProductionSetValidator();
+			var validator = new ImagesProductionToProductionSetValidator();
 			RelativityProviderModel model = CreateModel();
 			model.Overwrite = overwrite;
 			model.CopyFilesToRepository = copyFilesToRepository;
 			
-			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
-			{
-				DestinationContext.ImportDocuments();
-			}
-
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
-			detailsPage.RunIntegrationPoint();
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
 
 			// Assert
-			WaitForJobToFinishAndValidateCompletedStatus(detailsPage);
 			validator.ValidateSummaryPage(generalProperties, model, SourceContext, DestinationContext, false);
-			
-			if (overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.OverlayOnly))
-			{
-				ValidateOverlayProductionImages(copyFilesToRepository, model);
-			}
-			else
-			{
-				ValidateProductionImages(copyFilesToRepository, model);
-			}
 		}
 
+		#region Validators
 		private void ValidateProductionImages(bool expectInRepository, RelativityProviderModel model)
 		{
 			ValidateIncludingHasImages(CreateDocumentsEmptyValidator(), expectInRepository, model);
@@ -116,5 +145,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			IRelativityObjectManager objectManager = ObjectManagerFactory.CreateRelativityObjectManager(DestinationContext.GetWorkspaceId());
 			return new DocumentSourceJobNameValidator(objectManager, model.Name);
 		}
+
+		#endregion
+
 	}
 }

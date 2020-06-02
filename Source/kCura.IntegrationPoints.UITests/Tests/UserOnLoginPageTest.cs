@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 	[Category(TestCategory.MISCELLANEOUS)]
 	public class UserOnLoginPageTest : UiTest
 	{
-		public UserOnLoginPageTest() : base(shouldLoginToRelativity: false)
+		public UserOnLoginPageTest() : base(shouldLoginToRelativity: false, shouldImportDocuments: false)
 		{
 		}
 

@@ -1,6 +1,5 @@
 <RunSettings>
   <TestRunParameters>
     <Parameter name="SystemTestData" value="SystemTests\SystemTestData" />
-    <Parameter name="UI.BrowserPath" value="..\..\..\buildtools\Relativity.Chromium.Portable\tools\Chrome.exe" />
   </TestRunParameters>
 </RunSettings>

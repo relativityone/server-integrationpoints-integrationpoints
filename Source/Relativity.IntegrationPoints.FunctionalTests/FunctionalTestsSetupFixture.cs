@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
+using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
@@ -12,40 +14,80 @@ public class FunctionalTestsSetupFixture
 {
 	private ITestHelper _testHelper;
 
+	public static bool IsInitialized = true;
+
 	[OneTimeSetUp]
-	public async Task InitializeFixtureAsync()
+	public void InitializeFixture()
 	{
 		_testHelper = new TestHelper();
 
-		await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
+		if (!FunctionalTemplateWorkspaceExists())
+		{
+			SetupTemplateWorkspace();
+		}
 	}
 
-	private async Task CreateTemplateWorkspaceAsync()
+	private void SetupTemplateWorkspace()
 	{
-		bool templateExists = Workspace.CheckIfWorkspaceExists(
-			WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME
-		);
-
-		if (templateExists)
+		try
 		{
-			return;
+			int workspaceID = CreateFunctionalTemplateWorkspace();
+
+			ImportIntegrationPointsToLibrary();
+
+			InstallIntegrationPointsFromLibrary(workspaceID);
+
+			ConfigureWebAPI();
+
+			ConfigureFileShareServices();
 		}
+		catch(Exception ex)
+		{
+			Console.WriteLine($"Setup Functional Tests Template Workspace failed with error: {ex.Message}");
+			IsInitialized = false;
+		}
+	}
 
-		int workspaceTemplateID = Workspace.CreateWorkspace(
-			WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
-			WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME
-		);
+	public bool FunctionalTemplateWorkspaceExists() =>
+		Workspace.CheckIfWorkspaceExists(WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
 
+	public int CreateFunctionalTemplateWorkspace() =>
+			Workspace.CreateWorkspace(WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME, WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME);
+
+	public void ImportIntegrationPointsToLibrary()
+	{
 		var applicationManager = new RelativityApplicationManager(_testHelper);
 		if (SharedVariables.UseIpRapFile())
 		{
-			Console.WriteLine("Importing RIP RAP to Library...");
-			await applicationManager.ImportRipToLibraryAsync().ConfigureAwait(false);
+			Console.WriteLine("Importing Integration Points to Library...");
+			applicationManager.ImportRipToLibraryAsync().GetAwaiter().GetResult();
 		}
-        Console.WriteLine("Importing RIP RAP to workspace");
-		await applicationManager.InstallRipFromLibraryAsync(workspaceTemplateID)
-			.ContinueWith(t =>
-				InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl))
-			.ConfigureAwait(false);
+	}
+
+	public void InstallIntegrationPointsFromLibrary(int workspaceID)
+	{
+		Console.WriteLine($"Importing Integration Points to workspace {workspaceID}...");
+		
+		var applicationManager = new RelativityApplicationManager(_testHelper);
+		applicationManager.InstallRipFromLibraryAsync(workspaceID).GetAwaiter().GetResult();
+	}
+
+	public void ConfigureWebAPI()
+	{
+		Console.WriteLine("Configure Web API Path...");
+
+		bool isValid = InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl).Result;
+		if (!isValid)
+			throw new TestException("Upgrading Web API Path has been failed");	
+	}
+
+	public void ConfigureFileShareServices()
+	{
+		Console.WriteLine("Import Fileshare Test Services...");
+
+		InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True").GetAwaiter().GetResult();
+
+		var applicationManager = new RelativityApplicationManager(_testHelper);
+		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesPath).GetAwaiter().GetResult();
 	}
 }

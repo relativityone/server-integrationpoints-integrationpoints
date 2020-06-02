@@ -65,7 +65,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	};
 
 	function getDocsTotalForSavedSearch(workspaceId, savedSearchId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForSavedSearchAsync"),
 			success: self.documents,
@@ -73,10 +73,10 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.documents("Error occured");
 			}
-		}));
+		}), false);
 	};
 	function getDocsTotalForProduction(workspaceId, productionId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetDocumentsTotalForProductionAsync"),
 			success: self.documents,
@@ -84,10 +84,10 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.documents("Error occured");
 			}
-		}));
+		}), false);
 	};
 	function getNativesTotal(workspaceId, savedSearchId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetNativesTotalForSavedSearchAsync"),
 			success: self.nativesTotal,
@@ -95,10 +95,10 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.nativesTotal(-1);
 			}
-		}));
+		}), false);
 	};
 	function getNativesSize(workspaceId, savedSearchId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetNativesFileSizeForSavedSearchAsync"),
 			success: self.nativesSize,
@@ -106,10 +106,10 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.nativesSize(-1);
 			}
-		}));
+		}), false);
 	};
 	function getImagesTotal(workspaceId, savedSearchId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesTotalForSavedSearchAsync"),
 			success: self.imagesTotal,
@@ -117,10 +117,10 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.imagesTotal(-1);
 			}
-		}));
+		}), false);
 	};
 	function getImagesTotalForProduction(workspaceId, productionId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesTotalForProductionAsync"),
 			success: self.imagesTotal,
@@ -128,10 +128,10 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.imagesTotal(-1);
 			}
-		}));
+		}), false);
 	};
 	function getImagesSize(workspaceId, savedSearchId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, savedSearchId: savedSearchId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForSavedSearchAsync"),
 			success: self.imagesSize,
@@ -139,10 +139,10 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.imagesSize(-1);
 			}
-		}));
+		}), false);
 	};
 	function getImagesSizeForProduction(workspaceId, productionId) {
-		$.ajax(jQuery.extend(self.defaultSettings(), {
+		IP.data.ajax(jQuery.extend(self.defaultSettings(), {
 			data: JSON.stringify({ WorkspaceArtifactId: workspaceId, productionSetId: productionId }),
 			url: ("/Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Statistics%20Manager/GetImagesFileSizeForProductionAsync"),
 			success: self.imagesSize,
@@ -150,7 +150,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				console.log(err);
 				self.imagesSize(-1);
 			}
-		}));
+		}), false);
 	};
 
 	function formatBytes(bytes) {

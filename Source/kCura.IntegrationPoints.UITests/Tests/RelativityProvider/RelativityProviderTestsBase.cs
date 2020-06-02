@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
@@ -14,10 +15,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	using NUnit.Framework;
 	using TestContext = Configuration.TestContext;
 
-	[Category(TestCategory.EXPORT_TO_RELATIVITY)]
 	public class RelativityProviderTestsBase : UiTest
 	{
-		protected TestContext DestinationContext { get; set; }
+		
 		protected IntegrationPointsAction PointsAction { get; private set; }
 		protected IFolderManager FolderManager { get; set; }
 		protected IFieldManager SourceFieldManager { get; set; }
@@ -27,10 +27,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected IProductionImagesService ProductionImageService { get; set; }
 		protected IRelativityObjectManagerFactory ObjectManagerFactory { get; set; }
 
+		public RelativityProviderTestsBase(bool shouldImportDocuments = true) : base(shouldImportDocuments: shouldImportDocuments)
+		{ }
+
 		[OneTimeSetUp]
 		public virtual async Task OneTimeSetUp()
 		{
 			Log.Information("One TimeSetUp");
+			var sw = new Stopwatch();
+			sw.Start();
+			
 			SourceContext.ExecuteRelativityFolderPathScript();
 			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
 			SourceFieldManager = SourceContext.Helper.CreateProxy<IFieldManager>();
@@ -38,40 +44,49 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ImageService = new ImagesService(SourceContext.Helper);
 			ProductionImageService = new ProductionImagesService(SourceContext.Helper);
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
+			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
 			await SuiteSpecificOneTimeSetup().ConfigureAwait(false);
 			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
+			
+			sw.Stop();
+			Log.Information("One TimeSetUp. Duration: {duration} s", sw.ElapsedMilliseconds/1000);
 		}
 
 		[SetUp]
 		public virtual async Task SetUp()
 		{
 			Log.Information("Suite SetUp");
-			DestinationContext = new TestContext().CreateTestWorkspace();
-			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
+			
 			await SuiteSpecificSetup().ConfigureAwait(false);
-			await DestinationContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
 			Log.Information("End Suite SetUp");
 		}
 
-		[TearDown]
-		public void TearDownDestinationContext()
-		{
-			Log.Information("Tear Down");
-			if (DestinationContext != null)
-			{
-				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace))
-				{
-					Workspace.DeleteWorkspace(DestinationContext.GetWorkspaceId());
-				}
-
-				DestinationContext.TearDown();
-			}
-		}
-		
 		protected virtual Task SuiteSpecificOneTimeSetup() => Task.CompletedTask;
 
-		protected virtual Task SuiteSpecificSetup() => Task.CompletedTask;
+		protected virtual async Task SuiteSpecificSetup()
+		{
+			if (DestinationContext.WorkspaceId.HasValue)
+			{
+				return;
+			}
+			DestinationContext = new TestContext();
+			await DestinationContext.CreateTestWorkspaceAsync().ConfigureAwait(false);
+			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
+		}
+
+		[TearDown]
+		public virtual async Task TearDownDestinationContext()
+		{
+			Log.Information("TearDownDestinationContext");
+			await SuiteSpecificTearDown().ConfigureAwait(false);
+		}
+
+		protected virtual Task SuiteSpecificTearDown()
+		{
+			DeleteWorkspace(DestinationContext);
+			return Task.CompletedTask;
+		}
 
 		public Task RenameFieldInSourceWorkspaceAsync(string fieldName, string newFieldName)
 		{
