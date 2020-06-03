@@ -40,7 +40,6 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="FunctionalTestsSetupFixture.cs" />
-    <Compile Include="MetricTests\ScheduleJobMetricsTests.cs" />
     <Compile Include="SystemTests\EventHandlers\IntegrationPointProfileMigrationEventHandlerTest.cs" />
     <Compile Include="SystemTests\IntegrationPointServices\IntegrationPointServiceTests.cs" />
     <Compile Include="SystemTests\IntegrationPointServices\KeplerDocumentRepositoryTests.cs" />
