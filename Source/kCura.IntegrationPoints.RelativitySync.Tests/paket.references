@@ -4,6 +4,7 @@ kCura.OutsideIn.FI.Win32
 kCura.Apps.Common.Utils
 
 FluentAssertions
+NSubstitute
 Moq
 NUnit
 

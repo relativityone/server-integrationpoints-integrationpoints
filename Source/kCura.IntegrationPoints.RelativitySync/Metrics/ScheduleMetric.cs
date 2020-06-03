@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 		{
 			using (var metrics = _servicesMgr.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
 			{
-				await metrics.LogCountAsync(_bucket, Guid.Empty, GetWorkflowId(), 1);
+				await metrics.LogCountAsync(_bucket, Guid.Empty, GetWorkflowId(), 1).ConfigureAwait(false);
 			}
 		}
 
