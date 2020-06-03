@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
-				await _jobMetric.SendJobFailedAsync(_job.Job);
+				await _jobMetric.SendJobFailedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
 			{
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
-				await _jobMetric.SendJobStartedAsync(_job.Job);
+				await _jobMetric.SendJobStartedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
 			{
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
-				await _jobMetric.SendJobCompletedAsync(_job.Job);
+				await _jobMetric.SendJobCompletedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
 			{
@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
-				await _jobMetric.SendJobFailedAsync(_job.Job);
+				await _jobMetric.SendJobFailedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
 			{
