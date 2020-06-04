@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_userInfoManagerMock = new Mock<IUserInfoManager>();
 			_userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
-				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID),
 				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_EXISTING_USER_ARTIFACT_ID})"),
 				It.Is<int>(start => start == 0),
 				It.Is<int>(length => length == 1)
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				DataResults = new [] { new UserInfo { ArtifactID = _EXISTING_USER_ARTIFACT_ID, Email = _EXISTING_USER_EMAIL }  }
 			});
 			_userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
-				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID),
 				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_NON_EXISTING_USER_ARTIFACT_ID})"),
 				It.Is<int>(start => start == 0),
 				It.Is<int>(length => length == 1)

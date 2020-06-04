@@ -43,15 +43,15 @@ namespace Relativity.Sync.Transfer
 					Condition = $@"('ArtifactID' == {userArtifactId})"
 				};
 
-				UserInfoQueryResultSet users = await userInfoManager.RetrieveUsersBy(-1, userQuery, 0, 1).ConfigureAwait(false);
+				UserInfoQueryResultSet users = await userInfoManager.RetrieveUsersBy(workspaceArtifactId, userQuery, 0, 1).ConfigureAwait(false);
 				if (users?.ResultCount == 1)
 				{
 					return users.DataResults.Single().Email;
 				}
 			}
 
-			throw new InvalidExportFieldValueException($"Could not retrieve info for user with ArtifactID {userArtifactId}. If this workspace was restored using ARM, verify if " +
-				$"user has been properly mapped during workspace restore.");
+			throw new InvalidExportFieldValueException($"Could not retrieve info for user with ArtifactID {userArtifactId}. " +
+				$"If this workspace was restored using ARM, verify if user has been properly mapped during workspace restore.");
 		}
 
 		private int GetUserArtifactId(object initialValue)
