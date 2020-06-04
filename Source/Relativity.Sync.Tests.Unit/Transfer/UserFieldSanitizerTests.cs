@@ -117,13 +117,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var sut = new UserFieldSanitizer(_serviceFactoryStub.Object);
 
 			// Act
-			Func<Task> sanitizeAsync = async () => await sut.SanitizeAsync(
+			Func<Task> sanitizeAsync = () => sut.SanitizeAsync(
 				_WORKSPACE_ID,
 				_ITEM_IDENTIFIER_SOURCE_FIELD_NAME,
 				_ITEM_IDENTIFIER,
 				_SANITIZING_SOURCE_FIELD_NAME,
 				JsonHelpers.DeserializeJson($"{{\"ArtifactID\": {_NON_EXISTING_USER_ARTIFACT_ID}}}")
-			).ConfigureAwait(false);
+			);
 
 			// Assert
 			await sanitizeAsync.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false);

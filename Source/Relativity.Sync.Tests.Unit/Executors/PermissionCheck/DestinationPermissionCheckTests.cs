@@ -214,7 +214,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 					It.IsAny<int>(),
 					It.Is<List<PermissionRef>>(permissionRefs => permissionRefs.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)),
 					It.IsAny<int>()))
-				.Throws<SyncException>();
+					.Throws<SyncException>();
 
 			// Act
 			ValidationResult actualResult =

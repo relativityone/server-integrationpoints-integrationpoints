@@ -174,12 +174,24 @@ namespace Relativity.Sync.Transfer
 					}
 					catch (SyncItemLevelErrorException ex)
 					{
-						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.Message);
+						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), GetExceptionMessages(ex));
 						continue;
 					}
 					yield return row;
 				}
 			}
+		}
+
+		private string GetExceptionMessages(Exception ex)
+		{
+			string message = ex.Message;
+
+			if (ex.InnerException != null)
+			{
+				message += $"{Environment.NewLine}{GetExceptionMessages(ex.InnerException)}";
+			}
+
+			return message;
 		}
 
 		private IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> CreateSpecialFieldRowValuesBuilders()
@@ -231,7 +243,14 @@ namespace Relativity.Sync.Transfer
 			object sanitizedValue = initialValue;
 			if (_exportDataSanitizer.ShouldSanitize(field.RelativityDataType))
 			{
-				sanitizedValue = _exportDataSanitizer.SanitizeAsync(_sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).GetAwaiter().GetResult();
+				try
+				{
+					sanitizedValue = _exportDataSanitizer.SanitizeAsync(_sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).GetAwaiter().GetResult();
+				}
+				catch (InvalidExportFieldValueException ex)
+				{
+					throw new SyncItemLevelErrorException($"Could not sanitize field of type: {field.RelativityDataType}", ex);
+				}
 			}
 
 			return sanitizedValue;

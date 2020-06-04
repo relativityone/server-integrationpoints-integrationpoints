@@ -7,7 +7,7 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		protected override InvalidExportFieldValueException CreateException(string message, Exception innerException)
 		{
-			return new InvalidExportFieldValueException(string.Empty, string.Empty, message, innerException);
+			return new InvalidExportFieldValueException(message, innerException);
 		}
 	}
 }
