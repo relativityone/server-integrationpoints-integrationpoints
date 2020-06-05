@@ -16,6 +16,6 @@ $TaskRunner = Resolve-Path -Path build.ps1
 
 &($TaskRunner) -Configuration Release
 
-&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == RIP_OLD && cat == SCHEDULER && cat != NotWorkingOnTrident"
+&($TaskRunner) RegTest -Configuration Release -TestFilter "(cat == RIP_OLD || cat == SCHEDULER ) && cat != NotWorkingOnTrident"
 
 Remove-Module Build-Util
