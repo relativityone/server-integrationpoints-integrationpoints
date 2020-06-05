@@ -14,7 +14,6 @@ using FluentAssertions;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
-	[Parallelizable(ParallelScope.All)]
 	internal class UserFieldSanitizerTests
 	{
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryStub;
@@ -92,7 +91,51 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public async Task SanitizeAsync_ShouldReturnEmail_WhenUserExists()
+		public async Task SanitizeAsync_ShouldReturnEmail_WhenUserExistsInInstance()
+		{
+			// Arrange
+			Mock<IUserInfoManager> userInfoManagerMock = new Mock<IUserInfoManager>();
+
+			userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
+				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_EXISTING_USER_ARTIFACT_ID})"),
+				It.Is<int>(start => start == 0),
+				It.Is<int>(length => length == 1)
+			)).ReturnsAsync(new UserInfoQueryResultSet()
+			{
+				ResultCount = 1,
+				DataResults = new[] { new UserInfo { ArtifactID = _EXISTING_USER_ARTIFACT_ID, Email = _EXISTING_USER_EMAIL } }
+			});
+
+			Mock<ISourceServiceFactoryForAdmin> serviceFactoryStub = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryStub.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
+				.ReturnsAsync(userInfoManagerMock.Object);
+
+			var sut = new UserFieldSanitizer(serviceFactoryStub.Object);
+
+			// Act
+			object sanitizedValue = await sut.SanitizeAsync(
+				_WORKSPACE_ID,
+				_ITEM_IDENTIFIER_SOURCE_FIELD_NAME,
+				_ITEM_IDENTIFIER,
+				_SANITIZING_SOURCE_FIELD_NAME,
+				JsonHelpers.DeserializeJson($"{{\"ArtifactID\": {_EXISTING_USER_ARTIFACT_ID}}}")
+			).ConfigureAwait(false);
+
+			// Assert
+			sanitizedValue.Should().Be(_EXISTING_USER_EMAIL);
+
+			userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == -1), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
+
+			userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Never);
+		}
+
+		[Test]
+		public async Task SanitizeAsync_ShouldReturnEmail_WhenUserExistsInWorkspace()
 		{
 			// Arrange
 			var sut = new UserFieldSanitizer(_serviceFactoryStub.Object);
@@ -108,6 +151,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			sanitizedValue.Should().Be(_EXISTING_USER_EMAIL);
+
+			_userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == -1), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
+			
+			_userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
 		}
 
 		[Test]
