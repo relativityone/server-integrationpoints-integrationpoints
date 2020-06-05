@@ -46,50 +46,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			return CreateFixedLengthFieldsWithSpecialCharactersAsync(DestinationContext.GetWorkspaceId(), DestinationFieldManager);
 		}
 
-		protected async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
-		{
-			char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
-			for (int i = 0; i < specialCharacters.Length; i++)
-			{
-				char special = specialCharacters[i];
-				string generatedFieldName = $"aaaaa{special}{i}";
-				var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
-				{
-					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)global::Relativity.ArtifactType.Document },
-					Name = $"{generatedFieldName} FLT",
-					Length = 255
-				};
-
-				var longTextFieldRequest = new LongTextFieldRequest
-				{
-					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)global::Relativity.ArtifactType.Document },
-					Name = $"{generatedFieldName} LTF"
-				};
-
-				await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
-				await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
-			}
-		}
-
-		private RelativityProviderModel CreateRelativityProviderModel(string name)
-		{
-			RelativityProviderModel model = new RelativityProviderModel(name)
-			{
-				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
-				RelativityInstance = "This Instance",
-				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
-				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No,
-				FieldMapping = DefaultFieldsMapping
-			};
-
-			return model;
-		}
-
-		private RelativityProviderModel CreateRelativityProviderModel()
-		{
-			return CreateRelativityProviderModel(TestContext.CurrentContext.Test.Name);
-		}
-
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de57")]
 		[RetryOnError]
 		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInSourceWorkspaceFieldList()
@@ -507,6 +463,50 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 			fieldsFromSelectedSourceWorkspaceListBox.Should().ContainInOrder(expectedSourceMappedFields);
 			fieldsFromSelectedDestinationWorkspaceListBox.Should().ContainInOrder(expectedDestinationMappedFields);
+		}
+
+		private async Task CreateFixedLengthFieldsWithSpecialCharactersAsync(int workspaceID, IFieldManager fieldManager)
+		{
+			char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
+			for (int i = 0; i < specialCharacters.Length; i++)
+			{
+				char special = specialCharacters[i];
+				string generatedFieldName = $"aaaaa{special}{i}";
+				var fixedLengthTextFieldRequest = new FixedLengthFieldRequest
+				{
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)global::Relativity.ArtifactType.Document },
+					Name = $"{generatedFieldName} FLT",
+					Length = 255
+				};
+
+				var longTextFieldRequest = new LongTextFieldRequest
+				{
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)global::Relativity.ArtifactType.Document },
+					Name = $"{generatedFieldName} LTF"
+				};
+
+				await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
+				await fieldManager.CreateFixedLengthFieldAsync(workspaceID, fixedLengthTextFieldRequest).ConfigureAwait(false);
+			}
+		}
+
+		private RelativityProviderModel CreateRelativityProviderModel(string name)
+		{
+			RelativityProviderModel model = new RelativityProviderModel(name)
+			{
+				Source = RelativityProviderModel.SourceTypeEnum.SavedSearch,
+				RelativityInstance = "This Instance",
+				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
+				CopyNativeFiles = RelativityProviderModel.CopyNativeFilesEnum.No,
+				FieldMapping = DefaultFieldsMapping
+			};
+
+			return model;
+		}
+
+		private RelativityProviderModel CreateRelativityProviderModel()
+		{
+			return CreateRelativityProviderModel(TestContext.CurrentContext.Test.Name);
 		}
 
 		private Task ResizeControlNumberInDestinationAsync(int newLength)
