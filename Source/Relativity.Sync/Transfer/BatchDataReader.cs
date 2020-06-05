@@ -5,6 +5,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Globalization;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Transfer
 {
@@ -174,24 +175,12 @@ namespace Relativity.Sync.Transfer
 					}
 					catch (SyncItemLevelErrorException ex)
 					{
-						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), GetExceptionMessages(ex));
+						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.GetExceptionMessages());
 						continue;
 					}
 					yield return row;
 				}
 			}
-		}
-
-		private string GetExceptionMessages(Exception ex)
-		{
-			string message = ex.Message;
-
-			if (ex.InnerException != null)
-			{
-				message += $"{Environment.NewLine}{GetExceptionMessages(ex.InnerException)}";
-			}
-
-			return message;
 		}
 
 		private IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> CreateSpecialFieldRowValuesBuilders()
