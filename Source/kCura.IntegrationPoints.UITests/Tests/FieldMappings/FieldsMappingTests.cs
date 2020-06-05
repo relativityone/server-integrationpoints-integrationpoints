@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item2));
 		}
 
-		[IdentifiedTest("4a6bbec9-24f5-421d-8233-ffbf9824c371")]
+		[IdentifiedTest("8a191344-a730-11ea-bb37-0242ac130002")]
 		[RetryOnError]
 		public async Task FieldMapping_ShouldClearMapFromInvalidFieldExceptObjectIdentifier_WhenObjectIdentifierInDestinationTooShort_AndClearButtonIsPressed()
 		{
@@ -367,7 +367,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de59")]
 		[RetryOnError]
-		[NUnit.Framework.Category(TestCategory.SMOKE)]
+		[Category(TestCategory.SMOKE)]
 		public async Task FieldMapping_ShouldAutoMapAllValidFields_WhenMapFieldsButtonIsPressed()
 		{
 			//Arrange
@@ -459,7 +459,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("65917e62-2387-4b1e-afee-721bac33b1c0")]
 		[RetryOnError]
-		[NUnit.Framework.Category(TestCategory.SMOKE)]
+		[Category(TestCategory.SMOKE)]
 		public async Task FieldMapping_ShouldAutoMapFieldsFromSavedSearch_WhenAutoMapSavedSearchIsPressed()
 		{
 			//Arrange
