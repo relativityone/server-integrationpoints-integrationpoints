@@ -274,14 +274,14 @@ namespace Relativity.Sync.Tests.Integration
 			FieldInfoDto sanitizingSourceField = DefaultField();
 			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleObject;
 			object initialValue = ObjectValueJArrayFromNames("Cool Name", $"Test{_MULTI_DELIM} Name", "Other Name", $"This{_NESTED_DELIM} Guy", $"Some{_MULTI_DELIM}{_MULTI_DELIM} Other");
-			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
-				.ConfigureAwait(false);
+			Func<Task> action = () => instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
-					.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'\\.$").And
-					.Contain(sanitizingSourceField.SourceFieldName);
+					.Be("Unable to parse data from Relativity Export API: " +
+					    "The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII 30'). " +
+					    "Rename these objects to not contain delimiter.");
 		}
 
 		[Test]
@@ -294,14 +294,14 @@ namespace Relativity.Sync.Tests.Integration
 			FieldInfoDto sanitizingSourceField = DefaultField();
 			sanitizingSourceField.RelativityDataType = RelativityDataType.MultipleChoice;
 			object initialValue = ChoiceJArrayFromNames("Cool Name", $"Test{_MULTI_DELIM} Name", "Other Name", $"This{_NESTED_DELIM} Guy", $"Some{_MULTI_DELIM}{_MULTI_DELIM} Other");
-			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue)
-				.ConfigureAwait(false);
+			Func<Task> action = () => instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, sanitizingSourceField, initialValue);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
 				.Which.Message.Should()
-				.MatchRegex($": 'Test{_MULTI_DELIM} Name', 'This{_NESTED_DELIM} Guy', 'Some{_MULTI_DELIM}{_MULTI_DELIM} Other'\\.$").And
-				.Contain(sanitizingSourceField.SourceFieldName);
+				.Be("Unable to parse data from Relativity Export API: " +
+				    "The identifiers of the choices contain the character specified as the multi-value delimiter ('ASCII 30') or " +
+				    "nested value delimiter ('ASCII 29'). Rename choices to not contain delimiters.");
 		}
 
 		private void SetupStreamTestCase(string value, Encoding fieldEncoding)
