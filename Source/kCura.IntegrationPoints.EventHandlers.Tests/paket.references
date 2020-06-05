@@ -11,3 +11,5 @@ FluentAssertions
 Moq
 NUnit
 NSubstitute
+Relativity.Services.Interfaces.Private
+Relativity.Telemetry.MetricsCollection

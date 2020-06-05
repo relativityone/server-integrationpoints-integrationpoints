@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
+using kCura.IntegrationPoints.EventHandlers.Commands.Metrics;
 using kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity;
 using kCura.IntegrationPoints.EventHandlers.Context;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
@@ -120,6 +121,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IOldBatchesCleanupServiceFactory>().ImplementedBy<OldBatchesCleanupServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IOldBatchesCleanupService>().UsingFactoryMethod(c => c.Resolve<IOldBatchesCleanupServiceFactory>().Create()).LifestyleTransient());
 			container.Register(Component.For<RemoveBatchesFromOldJobsCommand>().ImplementedBy<RemoveBatchesFromOldJobsCommand>().LifestyleTransient());
+			
+			container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
 
 			container.AddSecretStoreMigrator();
 		}

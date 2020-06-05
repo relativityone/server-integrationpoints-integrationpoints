@@ -111,7 +111,6 @@
     <Compile Include="Services\JobHistory\UnfinishedJobServiceTests.cs" />
     <Compile Include="Services\JobTrackerTests.cs" />
     <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactoryTests.cs" />
-    <Compile Include="JobHelper.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
     <Compile Include="Helpers\ArtifactTreeCreatorTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeCreatorTests.cs" />

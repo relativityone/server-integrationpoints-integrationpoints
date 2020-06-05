@@ -51,6 +51,9 @@
     </Compile>
     <Compile Include="FieldMapHelperTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Metrics\MetricsFactoryTests.cs" />
+    <Compile Include="Metrics\ScheduleMetricTests.cs" />
+    <Compile Include="Metrics\SyncJobMetricTests.cs" />
     <Compile Include="OldBatchesCleanup\OldBatchesCleanupServiceFactoryTests.cs" />
     <Compile Include="OldBatchesCleanup\OldBatchesCleanupServiceTests.cs" />
     <Compile Include="OldBatchesCleanup\ServiceFactoryForAdminTests.cs" />
@@ -60,9 +63,21 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
@@ -71,6 +86,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
       <Project>{b606c8b4-d106-4a1f-a794-9ded7b02de3e}</Project>
       <Name>kCura.IntegrationPoints.RelativitySync</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
       <Project>{faff9dbe-b607-45b3-8392-469b5eec5259}</Project>

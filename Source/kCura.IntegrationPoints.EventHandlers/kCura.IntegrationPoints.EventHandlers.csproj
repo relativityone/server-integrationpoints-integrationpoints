@@ -74,6 +74,7 @@
     <Compile Include="Commands\IRemoveSecuredConfigurationFromIntegrationPointService.cs" />
     <Compile Include="Commands\ISourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\ISplitJsonObjectService.cs" />
+    <Compile Include="Commands\Metrics\RegisterScheduleJobSumMetricsCommand.cs" />
     <Compile Include="Commands\MigrateSecretCatalogPathToSecretStorePathCommand.cs" />
     <Compile Include="Commands\PreCascadeDeleteIntegrationPointCommand.cs" />
     <Compile Include="Commands\RemoveAgentJobLogTableCommand.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="EncryptionManager\DefaultEncryptionManager.cs" />
     <Compile Include="EncryptionManager\IEncryptionManager.cs" />
     <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
+    <Compile Include="Installers\Metrics\RegisterScheduleSyncSUMMetricsEventHandler.cs" />
     <Compile Include="Installers\MigrateSecretCatalogPathToSecretStorePathInstaller.cs" />
     <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
     <Compile Include="Installers\RegisterDestinationProviders.cs" />
@@ -491,6 +493,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.SecretCatalog">
+          <HintPath>..\..\packages\Relativity.SecretCatalog\lib\Relativity.SecretCatalog.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Services.DataContracts">
           <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
           <Private>True</Private>
@@ -513,6 +526,33 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces.Private\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Layout.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.Layout.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\Relativity.Services.Layout.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Telemetry.APM">
           <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
           <Private>True</Private>
@@ -526,6 +566,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.DataContracts.Shared">
           <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.MetricsCollection">
+          <HintPath>..\..\packages\Relativity.Telemetry.MetricsCollection\lib\net462\Relativity.Telemetry.MetricsCollection.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

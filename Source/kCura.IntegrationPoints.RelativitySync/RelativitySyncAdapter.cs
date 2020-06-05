@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.RelativitySync.Metrics;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -20,15 +21,17 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private readonly IWindsorContainer _ripContainer;
 		private readonly IAPILog _logger;
 		private readonly IAPM _apmMetrics;
+		private readonly ISyncJobMetric _jobMetric;
 		private readonly Guid _correlationId;
 		private readonly IntegrationPointToSyncConverter _converter;
 
-		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics, IntegrationPointToSyncConverter converter)
+		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics, ISyncJobMetric jobMetric, IntegrationPointToSyncConverter converter)
 		{
 			_job = job;
 			_ripContainer = ripContainer;
 			_logger = logger;
 			_apmMetrics = apmMetrics;
+			_jobMetric = jobMetric;
 			_converter = converter;
 			_correlationId = Guid.NewGuid();
 		}
@@ -92,6 +95,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
+				await _jobMetric.SendJobFailedAsync(_job.Job).ConfigureAwait(false);
+			}
+			catch (SyncMetricException e)
+			{
+				_logger.LogError(e, "Failed to send job failed metric");
 			}
 			catch (Exception e)
 			{
@@ -108,7 +116,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to update job status.");
 			}
 		}
 
@@ -118,10 +126,15 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
+				await _jobMetric.SendJobStartedAsync(_job.Job).ConfigureAwait(false);
+			}
+			catch (SyncMetricException e)
+			{
+				_logger.LogError(e, "Failed to send job started metric");
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+				_logger.LogError(e, "Failed to mark job as started.");
 			}
 		}
 
@@ -131,10 +144,15 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
+				await _jobMetric.SendJobCompletedAsync(_job.Job).ConfigureAwait(false);
+			}
+			catch (SyncMetricException e)
+			{
+				_logger.LogError(e, "Failed to send job completed metric");
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as stopped.");
+				_logger.LogError(e, "Failed to mark job as completed.");
 			}
 		}
 
@@ -157,6 +175,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			try
 			{
 				await JobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
+				await _jobMetric.SendJobFailedAsync(_job.Job).ConfigureAwait(false);
+			}
+			catch (SyncMetricException e)
+			{
+				_logger.LogError(e, "Failed to send job failed metric");
 			}
 			catch (Exception e)
 			{

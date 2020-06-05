@@ -122,6 +122,7 @@
     <Compile Include="Services\SourceTypes\SourceType.cs" />
     <Compile Include="Tagging\ISourceDocumentsTagger.cs" />
     <Compile Include="Tagging\SourceDocumentsTagger.cs" />
+    <Compile Include="Telemetry\MetricsBucket.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />
