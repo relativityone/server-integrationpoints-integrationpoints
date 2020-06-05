@@ -37,11 +37,13 @@ namespace Relativity.Sync.Tests.Integration
 		private const int _USER_ARTIFACT_ID = 9;
 		private const string _USER_FULL_NAME = "Admin, Relativity";
 		private const string _USER_EMAIL = "relativity.admin@kcura.com";
+		private const int _WORKSPACE_ID = 12345;
 
 		public void SetUp(int batchSize)
 		{
 			_configuration = new ConfigurationStub
 			{
+				SourceWorkspaceArtifactId = _WORKSPACE_ID,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None
 			};
 
@@ -56,7 +58,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			Mock<IUserInfoManager> userInfoManagerMock = new Mock<IUserInfoManager>();
 			userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
-				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID),
 				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_USER_ARTIFACT_ID})"),
 				It.Is<int>(start => start == 0),
 				It.Is<int>(length => length == 1)

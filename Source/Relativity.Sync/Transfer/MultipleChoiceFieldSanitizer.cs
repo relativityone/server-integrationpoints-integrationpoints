@@ -46,15 +46,13 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
+				throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
 					ex);
 			}
 
 			if (choices.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected elements of input to be deserializable to type {typeof(Choice)}.");
+				throw new InvalidExportFieldValueException($"Expected elements of input to be deserializable to type {typeof(Choice)}.");
 			}
 
 			char multiValueDelimiter = _configuration.MultiValueDelimiter;

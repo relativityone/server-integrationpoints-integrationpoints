@@ -34,9 +34,8 @@ namespace Relativity.Sync.Transfer
 				return initialValue;
 			}
 
-			int userArtifactId = GetUserArtifactId(itemIdentifier, sanitizingSourceFieldName, initialValue);
+			int userArtifactId = GetUserArtifactId(initialValue);
 			
-
 			using (IUserInfoManager userInfoManager = await _serviceFactory.CreateProxyAsync<IUserInfoManager>().ConfigureAwait(false))
 			{
 				QueryRequest userQuery = new QueryRequest
@@ -44,18 +43,18 @@ namespace Relativity.Sync.Transfer
 					Condition = $@"('ArtifactID' == {userArtifactId})"
 				};
 
-				UserInfoQueryResultSet users = await userInfoManager.RetrieveUsersBy(-1, userQuery, 0, 1).ConfigureAwait(false);
+				UserInfoQueryResultSet users = await userInfoManager.RetrieveUsersBy(workspaceArtifactId, userQuery, 0, 1).ConfigureAwait(false);
 				if (users?.ResultCount == 1)
 				{
 					return users.DataResults.Single().Email;
 				}
 			}
 
-			throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-				$"Could not retrieve info for user with ArtifactID {userArtifactId}.");
+			throw new InvalidExportFieldValueException($"Could not retrieve info for user with ArtifactID {userArtifactId}. " +
+				$"If this workspace was restored using ARM, verify if user has been properly mapped during workspace restore.");
 		}
 
-		private int GetUserArtifactId(string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
+		private int GetUserArtifactId(object initialValue)
 		{
 			UserInfo userFieldValue;
 			try
@@ -64,9 +63,7 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(UserInfo)}, but instead type was {initialValue.GetType()}.",
-					ex);
+				throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(UserInfo)}, but instead type was {initialValue.GetType()}.", ex);
 			}
 
 			return userFieldValue.ArtifactID;
