@@ -2061,7 +2061,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2020-06-02T13:46:11.1835518Z</ExtractionDate>
+  <ExtractionDate>2020-06-03T08:37:23.1935931Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -15352,7 +15352,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>11.2.128.19</RelativityVersion>
-  <Version>11.3.10.3</Version>
+  <Version>11.3.10.8</Version>
   <SchemaVersion>11.3.10.1</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
@@ -15394,7 +15394,7 @@
       <DefaultInterval>5</DefaultInterval>
       <DefaultLogging>1</DefaultLogging>
       <MinInstanceEnvironment>0</MinInstanceEnvironment>
-      <MaxInstanceEnvironment>4</MaxInstanceEnvironment>
+      <MaxInstanceEnvironment>6</MaxInstanceEnvironment>
       <MinInstanceServer>0</MinInstanceServer>
       <MaxInstanceServer>0</MaxInstanceServer>
       <MinInstanceResourcePool>0</MinInstanceResourcePool>
