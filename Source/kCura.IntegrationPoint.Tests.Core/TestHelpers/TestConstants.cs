@@ -48,7 +48,6 @@
         public enum FieldMapMatchType
         {
             IsIdentifier,
-            ArtifactID,
             Name
         }
 
