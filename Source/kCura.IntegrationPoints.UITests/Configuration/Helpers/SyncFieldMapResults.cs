@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
                 sourceWorkspaceFields = sourceWorkspaceFields.Except(FieldMap.Select(x => x.SourceFieldObject)).ToList();
                 destinationWorkspaceFields = destinationWorkspaceFields.Except(FieldMap.Select(x => x.DestinationFieldObject)).ToList();
             }
+
             //ArtifactID
             foreach (var swf in sourceWorkspaceFields)
             {

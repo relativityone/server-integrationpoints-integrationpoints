@@ -18,6 +18,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 	{
 		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
 		private Mock<IServicesMgr> _servicesMgrFake;
+		private Mock<IMetricsSender> _metricsSenderMock;
 		private AutomapRunner _sut;
 
 		[SetUp]
@@ -28,8 +29,11 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			_servicesMgrFake.Setup(x => x.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_keywordSearchManagerFake.Object);
 
-			Mock<IMetricsSender> metricsSenderFake = new Mock<IMetricsSender>();
-			_sut = new AutomapRunner(_servicesMgrFake.Object, metricsSenderFake.Object);
+			_metricsSenderMock = new Mock<IMetricsSender>();
+			_metricsSenderMock.Setup(x => x.GaugeOperation(
+				It.IsAny<string>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
+
+			_sut = new AutomapRunner(_servicesMgrFake.Object, _metricsSenderMock.Object);
 		}
 
 		[Test]
@@ -64,7 +68,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		}
 
 		[Test]
-		public void MapFields_ShouldMapFieldsWithTheSameIdentifierAndDifferentName()
+		public void MapFields_ShouldNotMapFieldsWithDifferentNameButTheSameIdentifier()
 		{
 			// Arrange
 			var sourceFields = new[]
@@ -83,46 +87,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
 
 			// Assert
-			mappedFields.Count().Should().Be(2);
-
-			mappedFields[0].SourceField.FieldIdentifier.Should().Be(mappedFields[0].DestinationField.FieldIdentifier);
-			mappedFields[0].SourceField.Type.Should().Be(mappedFields[0].DestinationField.Type);
-			mappedFields[0].FieldMapType.Should().Be(FieldMapTypeEnum.None);
-
-			mappedFields[1].SourceField.FieldIdentifier.Should().Be(mappedFields[1].DestinationField.FieldIdentifier);
-			mappedFields[1].SourceField.Type.Should().Be(mappedFields[1].DestinationField.Type);
-			mappedFields[1].FieldMapType.Should().Be(FieldMapTypeEnum.None);
-		}
-
-		[Test]
-		public void MapFields_ShouldMapFieldsWithTheSameIdentifierBeforeName()
-		{
-			// Arrange
-			var sourceFields = new[]
-			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Type 2")
-			};
-
-			var destinationFields = new[]
-			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 2", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Type 2")
-			};
-
-			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
-
-			// Assert
-			mappedFields.Count().Should().Be(2);
-
-			mappedFields[0].SourceField.FieldIdentifier.Should().Be(mappedFields[0].DestinationField.FieldIdentifier);
-			mappedFields[0].SourceField.Type.Should().Be(mappedFields[0].DestinationField.Type);
-			mappedFields[0].FieldMapType.Should().Be(FieldMapTypeEnum.None);
-
-			mappedFields[1].SourceField.FieldIdentifier.Should().Be(mappedFields[1].DestinationField.FieldIdentifier);
-			mappedFields[1].SourceField.Type.Should().Be(mappedFields[1].DestinationField.Type);
-			mappedFields[1].FieldMapType.Should().Be(FieldMapTypeEnum.None);
+			mappedFields.Should().BeEmpty();
 		}
 
 		[Test]
@@ -282,7 +247,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		}
 
 		[Test]
-		public void MapFields_ShouldMapOnlyIdentifiers_When_ParameterIsSet()
+		public void MapFields_ShouldMapOnlyIdentifiers_WhenParameterIsSet()
 		{
 			// Arrange
 			var sourceFields = new[]
@@ -430,6 +395,99 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			mappedFields.Length.Should().Be(2);
 			mappedFields[0].SourceField.DisplayName.Should().Be("Control Number");
 			mappedFields[1].SourceField.DisplayName.Should().Be("Field 2");
+		}
+
+		[Test]
+		public void MapFields_ShouldAlwaysSendAutomappedCountMetric()
+		{
+			// Arrange
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
+			};
+
+			var destinationFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
+			};
+
+			// Act
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, true).ToArray();
+
+			// Assert
+			_metricsSenderMock.Verify(x => x.GaugeOperation("AutoMappedCount", mappedFields.Length, It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()), Times.Once);
+		}
+
+		[Test]
+		public void MapFields_ShouldSendMapByNameAndDifferentLengthMetric()
+		{
+			// Arrange
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
+			};
+
+			var destinationFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
+			};
+
+			// Act
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+
+			// Assert
+			_metricsSenderMock.Verify(x => x.GaugeOperation("AutoMappedByNameCount", It.IsAny<long>(), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()), Times.Once);
+
+			_metricsSenderMock.Verify(x => x.GaugeOperation("FixedLengthTextTooShortInDestinationCount", It.IsAny<long>(), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()), Times.Once);
+		}
+
+		[Test]
+		public void MapFields_ShouldNotSendMapByNameMetrics_WhenParameterIsSet()
+		{
+			// Arrange
+			var sourceFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
+			};
+
+			var destinationFields = new[]
+			{
+				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
+			};
+
+			// Act
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, true).ToArray();
+
+			// Assert
+			_metricsSenderMock.Verify(x => x.GaugeOperation("AutoMappedByNameCount", It.IsAny<long>(), It.IsAny<string>(),
+				It.IsAny<Dictionary<string, object>>()), Times.Never);
 		}
 
 	}
