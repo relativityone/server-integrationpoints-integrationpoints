@@ -106,7 +106,7 @@ namespace Relativity.Sync.Transfer
 
 		public object GetValue(int i)
 		{
-			object value = _batchEnumerator?.Current?.GetValue(i);
+			object value = _batchEnumerator.Current[i];
 
 			if (value != null && GetFieldType(i) == _typeOfString)
 			{
@@ -130,7 +130,7 @@ namespace Relativity.Sync.Transfer
 
 		public bool IsDBNull(int i)
 		{
-			return _batchEnumerator?.Current?.GetValue(i) is null;
+			return _batchEnumerator.Current[i] is null;
 		}
 
 		public bool NextResult()
