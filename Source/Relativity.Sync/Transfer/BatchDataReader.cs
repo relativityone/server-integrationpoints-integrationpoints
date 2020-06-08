@@ -120,7 +120,7 @@ namespace Relativity.Sync.Transfer
 		{
 			int columnIndex = 0;
 
-			for (; columnIndex < values.Length && columnIndex < _batchEnumerator?.Current?.Length; columnIndex++)
+			for (; columnIndex < values.Length && columnIndex < _batchEnumerator.Current.Length; columnIndex++)
 			{
 				values[columnIndex] = _batchEnumerator.Current[columnIndex];
 			}
