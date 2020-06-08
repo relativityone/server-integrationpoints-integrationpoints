@@ -356,11 +356,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 						x.AutoMapMatchType == TestConstants.FieldMapMatchType.IsIdentifier);
 				var expectedFieldPairIsIdentifier = new FieldDisplayNamePair(expectedIdentifierMatchedField);
 
-				List<FieldMapModel> expectedArtifactIDMatchedFields =
-					mapAllFieldsUiTestEdition.FieldMap.Where(x =>
-						x.AutoMapMatchType == TestConstants.FieldMapMatchType.ArtifactID).ToList();
-				List<FieldDisplayNamePair> expectedFieldPairsArtifactIDList = expectedArtifactIDMatchedFields.Select(fieldPair => new FieldDisplayNamePair(fieldPair)).ToList();
-
 				List<FieldMapModel> expectedNameMatchedFields =
 					mapAllFieldsUiTestEdition.FieldMap.Where(x =>
 						x.AutoMapMatchType == TestConstants.FieldMapMatchType.Name).ToList();
@@ -389,14 +384,16 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 				Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, expectedFieldPairIsIdentifier)));
 
-				foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsArtifactIDList)
+				//Fields with the same name should be mapped
+				foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsNameList)
 				{
 					Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
 				}
 
-				foreach (FieldDisplayNamePair fieldDisplayNamePair in expectedFieldPairsNameList)
+				//Fields with different name but the same id should not be mapped
+				foreach (FieldDisplayNamePair fieldDisplayNamePair in fieldsToBeRenamed.Select(x => new FieldDisplayNamePair(x.Item1, x.Item2)))
 				{
-					Assert.IsTrue(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
+					Assert.IsFalse(fieldPairsFromSelectedListBox.Exists(x => CompareFieldDisplayNamePair(x, fieldDisplayNamePair)));
 				}
 			}
 			finally
