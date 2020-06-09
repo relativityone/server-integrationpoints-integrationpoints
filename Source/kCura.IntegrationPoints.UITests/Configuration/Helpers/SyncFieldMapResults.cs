@@ -30,14 +30,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
                 sourceWorkspaceFields = sourceWorkspaceFields.Except(FieldMap.Select(x => x.SourceFieldObject)).ToList();
                 destinationWorkspaceFields = destinationWorkspaceFields.Except(FieldMap.Select(x => x.DestinationFieldObject)).ToList();
             }
-            //ArtifactID
-            foreach (var swf in sourceWorkspaceFields)
-            {
-                foreach (var dwf in destinationWorkspaceFields.Where(dwf => swf.ArtifactID == dwf.ArtifactID && IsFieldTypeMatch(swf, dwf)))
-                {
-                    FieldMap.Add(new FieldMapModel{ SourceFieldObject = swf, DestinationFieldObject = dwf, AutoMapMatchType = TestConstants.FieldMapMatchType.ArtifactID});
-                }
-            }
 
             sourceWorkspaceFields = sourceWorkspaceFields.Except(FieldMap.Select(x =>x.SourceFieldObject)).ToList();
             destinationWorkspaceFields = destinationWorkspaceFields.Except(FieldMap.Select(x => x.DestinationFieldObject)).ToList();
