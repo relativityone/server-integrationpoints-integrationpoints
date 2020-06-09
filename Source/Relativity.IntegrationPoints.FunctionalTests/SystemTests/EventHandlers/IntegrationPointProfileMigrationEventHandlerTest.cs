@@ -27,6 +27,7 @@ using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 {
 	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Profiles]
 	public class IntegrationPointProfileMigrationEventHandlerTest
 	{
 		private ISerializer _serializer;
