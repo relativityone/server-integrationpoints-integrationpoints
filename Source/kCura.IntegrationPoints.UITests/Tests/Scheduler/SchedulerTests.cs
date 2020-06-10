@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
@@ -44,6 +45,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 			};
 			return schedulerModel;
 		}
+
+		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
+		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
+		
 
 		[IdentifiedTest("a754eb8f-8e86-4fa6-8798-1dc4773cb261")]
 		[TestType.Error]

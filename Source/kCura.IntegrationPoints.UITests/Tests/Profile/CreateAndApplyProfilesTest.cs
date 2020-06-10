@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Profiles]
 	[Category(TestCategory.RIP_SYNC)]
+	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{
 		private IntegrationPointProfileAction _profileAction;
@@ -42,6 +43,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 
 			return model;
 		}
+
+		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
+		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
+
 
 		[SetUp]
 		public override async Task SetUp()
@@ -82,6 +87,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		[IdentifiedTest("e4d45cc5-3b75-405d-b6e0-caf151136d02")]
 		[RetryOnError]
 		[Category(TestCategory.SMOKE)]
+		[TestType.MainFlow]
 		public void Profile_ShouldCreateNewProfileAndIPFromThisProfile()
 		{
 			//Arrange
@@ -108,6 +114,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 
 		[IdentifiedTest("b5da0a5e-8720-46c0-a857-656752aa3f34")]
 		[RetryOnError]
+		[TestType.EdgeCase]
 		public void Profile_ShouldCreateNewProfileWithLinksAndIPFromThisProfile()
 		{
 			//Arrange
