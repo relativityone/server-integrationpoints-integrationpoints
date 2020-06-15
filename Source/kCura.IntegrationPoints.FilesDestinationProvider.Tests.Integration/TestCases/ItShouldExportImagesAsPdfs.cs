@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
@@ -28,8 +28,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 			var expectedFiles = documentsTestData.Images
 				.AsEnumerable()
-				.GroupBy(r => r.Field<string>("DocumentIdentifier"))
-				.Select(r => new FileInfo(Path.ChangeExtension(r.First().Field<string>("FileLocation"), ".pdf")))
+				.GroupBy(r => r.Field<string>(TestConstants.FieldNames.CONTROL_NUMBER))
+				.Select(r => new FileInfo(Path.ChangeExtension(r.First().Field<string>(TestConstants.FieldNames.FILE), ".pdf")))
 				.ToList();
 
 			Assert.That(actualFiles.Count, Is.GreaterThan(0));
