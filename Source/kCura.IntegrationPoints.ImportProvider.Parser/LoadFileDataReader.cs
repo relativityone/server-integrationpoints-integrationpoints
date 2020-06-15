@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			return ((IArtifactReader)_loadFileReader).ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName);
 		}
 
-		public long CountRecords()
+		public long? CountRecords()
 		{
 			return _loadFileReader.CountRecords();
 		}
@@ -176,6 +176,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		{
 			throw new NotImplementedException("IArtifactReader calls should not be made to LoadFileDataReader");
 		}
+
+		public void ValidateColumnNames(Action<string> invalidNameAction)
+		{ }
 
 		public string SourceIdentifierValue()
 		{
