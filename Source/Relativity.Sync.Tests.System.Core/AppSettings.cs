@@ -64,6 +64,8 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
 
+		public static bool UseLogger => !bool.TryParse(GetConfigValue("SuppressCertificateCheck"), out bool useLogger) || useLogger;
+
 		private static Uri BuildHostNamedBasedUri(string path)
 		{
 			if (string.IsNullOrEmpty(RelativityHostName))

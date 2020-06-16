@@ -4,7 +4,7 @@
 	{
 		private const int _RELATIVITY_TEMPLATE_MATTER_ARTIFACT_ID = 1000002;
 		private const int _DEFAULT_FILE_REPOSITORY_ID = 1014887;
-		private const int _DATABASE_SERVER_ID = 1015096;
+		private const int _DATABASE_SERVER_ID = 1017224;
 		private const int _DEFAULT_CACHE_LOCATION_ID = 1015534;
 
 		public int JobId { get; set; }
@@ -15,6 +15,8 @@
 		public int DatabaseServerId { get; set; }
 		public int FileRepositoryId { get; set; }
 		public int CacheLocationId { get; set; }
+		public bool AutoMapUsers { get; } = true;
+		public bool AutoMapGroups { get; } = true;
 
 		public static ContractEnvelope<RestoreJob> GetRequest(string archivedWorkspacePath, int resourcePoolId)
 		{

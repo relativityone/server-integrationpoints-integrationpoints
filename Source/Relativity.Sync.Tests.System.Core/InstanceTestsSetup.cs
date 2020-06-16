@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.System.Core.Helpers;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -14,6 +16,13 @@ namespace Relativity.Sync.Tests.System.Core
 	[SetUpFixture]
 	public class InstanceTestsSetup
 	{
+		protected ISyncLog Logger { get; }
+
+		public InstanceTestsSetup()
+		{
+			Logger = TestLogHelper.GetLogger();
+		}
+
 		[OneTimeSetUp]
 		public virtual async Task RunBeforeAnyTests()
 		{
@@ -32,11 +41,13 @@ namespace Relativity.Sync.Tests.System.Core
 
 		private void OverrideBanzaiLogger()
 		{
-			LogWriter.SetFactory(new SyncLogWriterFactory(new EmptyLogger()));
+			Logger.LogInformation("Overriding Banzai logger");
+			LogWriter.SetFactory(new SyncLogWriterFactory(AppSettings.UseLogger ? (ISyncLog)new ConsoleLogger() : new EmptyLogger()));
 		}
 
-		private static async Task ConfigureRequiredInstanceSettings()
+		private async Task ConfigureRequiredInstanceSettings()
 		{
+			Logger.LogInformation("Configuring instance settings");
 			await CreateInstanceSettingIfNotExist("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
 			await CreateInstanceSettingIfNotExist("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True").ConfigureAwait(false);
 		}

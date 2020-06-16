@@ -18,5 +18,8 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		[Post("/Relativity.ARM/Jobs/Status/ReadJob")]
 		Task<JobStatus> GetJobStatus(Job job);
+
+		[Post("/Relativity.ARM/Configuration/GetConfigurationData")]
+		Task<ArmConfiguration> GetConfigurationData();
 	}
 }

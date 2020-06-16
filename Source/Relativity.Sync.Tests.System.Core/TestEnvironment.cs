@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				name = Guid.NewGuid().ToString();
+				name = "SyncTests-" + Guid.NewGuid();
 			}
 
 			int templateWorkspaceArtifactId = await GetTemplateWorkspaceArtifactIdAsync(templateWorkspaceName).ConfigureAwait(false);

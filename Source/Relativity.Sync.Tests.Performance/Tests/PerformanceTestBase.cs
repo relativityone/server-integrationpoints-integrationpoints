@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using FluentAssertions;
+using NUnit.Framework;
 using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Api;
-using Relativity.Services.Interfaces.Field;
-using Relativity.Services.Interfaces.Field.Models;
-using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -20,18 +21,20 @@ using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
+using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	public class PerformanceTestBase : SystemTest
 	{
+		private int _sourceWorkspaceIdArm;
+
 		private readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-		private readonly ObjectTypeIdentifier _documentObjectTypeIdentifier = new ObjectTypeIdentifier()
-		{
-			ArtifactTypeID = (int)ArtifactType.Document
-		};
+		private readonly IDictionary<string, TimeSpan> _testTimes = new ConcurrentDictionary<string, TimeSpan>();
 
+		public string ArmedWorkspaceFilename { get; }
 
 		public ApiComponent Component { get; }
 		public ARMHelper ARMHelper { get; }
@@ -43,8 +46,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		public FullSyncJobConfiguration Configuration { get; set; }
 
-		public PerformanceTestBase()
+		public int ConfigurationRdoId { get; set; }
+
+		public PerformanceTestBase(string armedWorkspaceFilename)
 		{
+			ArmedWorkspaceFilename = armedWorkspaceFilename;
 			RelativityFacade.Instance.RelyOn<ApiComponent>();
 
 			Component = RelativityFacade.Instance.GetComponent<ApiComponent>();
@@ -66,6 +72,112 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			};
 		}
 
+		[OneTimeSetUp]
+		public async Task SetUp()
+		{
+			ARMHelper.EnableAgents();
+
+			string filePath = await StorageHelper
+				.DownloadFileAsync(ArmedWorkspaceFilename, Path.GetTempPath()).ConfigureAwait(false);
+
+			Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
+			_sourceWorkspaceIdArm = await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
+		}
+
+
+		[OneTimeTearDown]
+		public async Task OneTimeTearDown()
+		{
+			if (SourceWorkspace != null)
+			{
+				using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
+				{
+					// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
+					await manager.DeleteAsync(SourceWorkspace).ConfigureAwait(false);
+				}
+			}
+
+			if (!string.IsNullOrEmpty(AppSettings.PerformanceResultsFilePath))
+			{
+				File.WriteAllLines(AppSettings.PerformanceResultsFilePath,
+					_testTimes.Select(pair => $"{pair.Key};{pair.Value.TotalSeconds.ToString("0.##", CultureInfo.InvariantCulture)}\n"));
+			}
+		}
+
+		protected async Task RunTestCase(PerformanceTestCase testCase)
+		{
+			Logger.LogInformation("In test case: " + testCase.TestCaseName);
+			try
+			{
+				// Arrange
+				Configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
+				Configuration.ImportNativeFileCopyMode = testCase.CopyMode;
+
+				await SetupConfigurationAsync(_sourceWorkspaceIdArm, null, testCase.TestCaseName).ConfigureAwait(false);
+
+				ConfigurationRdoId = await
+					Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
+						.ConfigureAwait(false);
+
+				IEnumerable<FieldMap> generatedFields =
+					await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: null)
+						.ConfigureAwait(false);
+
+				Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(generatedFields).ToArray();
+
+				if (testCase.MapExtractedText)
+				{
+					IEnumerable<FieldMap> extractedTextMapping =
+						await GetGetExtractedTextMapping().ConfigureAwait(false);
+					Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(extractedTextMapping).ToArray();
+				}
+
+				Logger.LogInformation("Fields mapping ready");
+
+				ConfigurationRdoId = await
+					Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
+						.ConfigureAwait(false);
+
+				Logger.LogInformation("Configuration RDO created");
+
+				SyncJobParameters args = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID,
+					Configuration.JobHistoryId);
+
+				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
+					new NullAPM(), TestLogHelper.GetLogger());
+
+				Logger.LogInformation("Staring the job");
+
+				// Act
+				Stopwatch stopwatch = Stopwatch.StartNew();
+				SyncJobState jobState = await syncRunner.RunAsync(args, User.ArtifactID).ConfigureAwait(false);
+
+				stopwatch.Stop();
+				var elapsedTime = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
+				_testTimes.Add(testCase.TestCaseName, elapsedTime);
+
+				Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
+
+				RelativityObject jobHistory = await Rdos
+					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryId)
+					.ConfigureAwait(false);
+
+				// Assert
+				Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
+
+				int totalItems = (int)jobHistory["Total Items"].Value;
+				int itemsTranferred = (int)jobHistory["Items Transferred"].Value;
+
+				itemsTranferred.Should().Be(totalItems);
+				itemsTranferred.Should().Be(testCase.ExpectedItemsTransferred);
+			}
+			catch (Exception e)
+			{
+				Debugger.Break();
+				Assert.Fail(e.Message);
+			}
+		}
+
 		/// <summary>
 		///	Creates needed objects in Relativity
 		/// </summary>
@@ -73,6 +185,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		public async Task SetupConfigurationAsync(int? sourceWorkspaceId = null, int? targetWorkspaceId = null, string savedSearchName = "All Documents",
 			IEnumerable<FieldMap> mapping = null, bool useRootWorkspaceFolder = true)
 		{
+			Logger.LogInformation("Setting up configuration");
 			if (sourceWorkspaceId == null)
 			{
 				SourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
@@ -85,7 +198,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 			if (targetWorkspaceId == null)
 			{
-				TargetWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
+				Logger.LogInformation("Creating target workspace");
+				TargetWorkspace = await Environment.CreateWorkspaceWithFieldsAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
 			}
 			else
 			{
@@ -98,7 +212,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 
 			Configuration.FieldsMapping =
-				mapping ?? await GetIdentifierMappingAsync().ConfigureAwait(false);
+				mapping ?? await GetIdentifierMapping().ConfigureAwait(false);
 
 			Configuration.JobHistoryId =
 				await Rdos.CreateJobHistoryInstance(ServiceFactory, SourceWorkspace.ArtifactID)
@@ -109,6 +223,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				Configuration.DestinationFolderArtifactId =
 					await Rdos.GetRootFolderInstance(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			}
+
+			Logger.LogInformation("Configuration done");
 		}
 
 		/// <summary>
@@ -118,22 +234,14 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		/// <returns>Mapping with generated fields</returns>
 		public async Task<IEnumerable<FieldMap>> GetMappingAndCreateFieldsInDestinationWorkspaceAsync(int? numberOfMappedFields)
 		{
-			List<RelativityObject> sourceFields = (await GetFieldsFromSourceWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false)).ToList();
+			var sourceFields = await GetFieldsFromSourceWorkspace(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+			sourceFields = FilterTestCaseFields(sourceFields, numberOfMappedFields);
 
-			Regex wasGeneratedRegex = new Regex("^([0-9]+-)");
 
-			sourceFields = sourceFields.Where(f => wasGeneratedRegex.IsMatch(f["Name"].Value.ToString())).ToList();
+			IEnumerable<RelativityObject> destinationFields = await GetFieldsFromSourceWorkspace(TargetWorkspace.ArtifactID).ConfigureAwait(false);
+			destinationFields = FilterTestCaseFields(destinationFields, numberOfMappedFields);
 
-			if (numberOfMappedFields != null)
-			{
-				sourceFields = sourceFields.Take(numberOfMappedFields.Value).ToList();
-			}
-
-			sourceFields = sourceFields.ToList();
-
-			IEnumerable<int> createdArtifactIds = await CreateFieldsInDesitnationWorkspaceAsync(sourceFields).ConfigureAwait(false);
-
-			return sourceFields.Zip(createdArtifactIds, (sourceField, createdId) => new FieldMap
+			return sourceFields.Zip(destinationFields, (sourceField, destinationField) => new FieldMap
 			{
 				FieldMapType = FieldMapType.None,
 				SourceField = new FieldEntry
@@ -145,18 +253,27 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				DestinationField = new FieldEntry
 				{
 					DisplayName = sourceField["Name"].Value.ToString(),
-					FieldIdentifier = createdId,
+					FieldIdentifier = destinationField.ArtifactID,
 					IsIdentifier = false
 				}
 			});
 		}
 
-		private Task<IEnumerable<int>> CreateFieldsInDesitnationWorkspaceAsync(IEnumerable<RelativityObject> sourceFields)
+		private static IEnumerable<RelativityObject> FilterTestCaseFields(IEnumerable<RelativityObject> fields, int? numberOfMappedFields)
 		{
-			return CreateFieldsAsync(TargetWorkspace.ArtifactID, sourceFields);
+			Regex wasGeneratedRegex = new Regex("^([0-9]+-)");
+
+			var filteredfields = fields.Where(f => wasGeneratedRegex.IsMatch(f["Name"].Value.ToString()));
+
+			if (numberOfMappedFields != null)
+			{
+				filteredfields = filteredfields.Take(numberOfMappedFields.Value);
+			}
+
+			return filteredfields.ToList();
 		}
 
-		private async Task<IEnumerable<RelativityObject>> GetFieldsFromSourceWorkspaceAsync(int sourceWorkspaceArtifactId)
+		private async Task<IEnumerable<RelativityObject>> GetFieldsFromSourceWorkspace(int sourceWorkspaceArtifactId)
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -182,8 +299,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-
-		protected async Task<IEnumerable<FieldMap>> GetIdentifierMappingAsync()
+		protected async Task<IEnumerable<FieldMap>> GetIdentifierMapping()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -214,7 +330,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		protected  async Task<IEnumerable<FieldMap>> GetGetExtractedTextMappingAsync()
+		protected async Task<IEnumerable<FieldMap>> GetGetExtractedTextMapping()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -241,7 +357,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 						FieldMapType = FieldMapType.None
 					}
 				};
-
 			}
 		}
 
@@ -255,7 +370,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					ArtifactTypeID = fieldArtifactTypeID
 				},
 				Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Is Identifier' == true",
-				Fields = new[] { new FieldRef { Name = "Name" }},
+				Fields = new[] { new FieldRef { Name = "Name" } },
 				IncludeNameInQueryResult = true
 			};
 
@@ -294,136 +409,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			};
 
 			return queryRequest;
-		}
-		
-		public async Task<IEnumerable<int>> CreateFieldsAsync(int workspaceID, IEnumerable<RelativityObject> fields)
-		{
-			const string typeFieldName = "Field Type";
-			
-			var artifactIds = new List<int>();
-
-			using (IFieldManager fieldManager = ServiceFactory.CreateProxy<IFieldManager>())
-			{
-				foreach (RelativityObject field in fields)
-				{
-					string fieldType = field[typeFieldName].Value.ToString();
-					Debug.WriteLine($"Creating field in workspace. Field name: '{field.Name}'\t\tType: '{fieldType}'");
-
-					int createdFieldArtifactId = 0;
-
-					switch (fieldType)
-					{
-						case "Fixed-Length Text":
-							createdFieldArtifactId = await fieldManager
-								.CreateFixedLengthFieldAsync(workspaceID, CreateFixedLengthFieldRequest(field.Name))
-								.ConfigureAwait(false);
-							break;
-						case "Long Text":
-							createdFieldArtifactId = await fieldManager
-								.CreateLongTextFieldAsync(workspaceID, CreateLongTextFieldRequest(field.Name))
-								.ConfigureAwait(false);
-							break;
-						case "Date":
-							Formatting formatting = (await fieldManager
-								.ReadAsync(workspaceID, field.ArtifactID).ConfigureAwait(false)).Formatting;
-							createdFieldArtifactId = await fieldManager
-								.CreateDateFieldAsync(workspaceID, CreateDateFieldRequest(field.Name, formatting))
-								.ConfigureAwait(false);
-							break;
-						case "Decimal":
-							createdFieldArtifactId = await fieldManager
-								.CreateDecimalFieldAsync(workspaceID, CreateDecimalFieldRequest(field.Name))
-								.ConfigureAwait(false);
-							break;
-						case "Currency":
-							createdFieldArtifactId = await fieldManager
-								.CreateCurrencyFieldAsync(workspaceID, CreateCurrencyFieldRequest(field.Name))
-								.ConfigureAwait(false);
-							break;
-						case "Whole Number":
-							createdFieldArtifactId = await fieldManager
-								.CreateWholeNumberFieldAsync(workspaceID, CreateWholeNumberFieldRequest(field.Name))
-								.ConfigureAwait(false);
-							break;
-						case "Yes/No":
-							createdFieldArtifactId = await fieldManager
-								.CreateYesNoFieldAsync(workspaceID, CreateYesNoFieldRequest(field.Name))
-								.ConfigureAwait(false);
-							break;
-					}
-
-					artifactIds.Add(createdFieldArtifactId);
-				}
-
-				return artifactIds;
-			}
-		}
-
-		private FixedLengthFieldRequest CreateFixedLengthFieldRequest(string fieldName)
-		{
-			const int length = 255;
-			return new FixedLengthFieldRequest()
-			{
-				ObjectType = _documentObjectTypeIdentifier,
-				Name = fieldName,
-				Length = length
-			};
-		}
-
-		private LongTextFieldRequest CreateLongTextFieldRequest(string fieldName)
-		{
-			return new LongTextFieldRequest()
-			{
-				ObjectType = _documentObjectTypeIdentifier,
-				Name = fieldName,
-				EnableDataGrid = false
-			};
-		}
-
-		private DateFieldRequest CreateDateFieldRequest(string fieldName, Formatting formatting)
-		{
-			return new DateFieldRequest()
-			{
-				ObjectType = _documentObjectTypeIdentifier,
-				Name = fieldName,
-				Formatting = formatting
-			};
-		}
-
-		private DecimalFieldRequest CreateDecimalFieldRequest(string fieldName)
-		{
-			return new DecimalFieldRequest()
-			{
-				ObjectType = _documentObjectTypeIdentifier,
-				Name = fieldName
-			};
-		}
-
-		private CurrencyFieldRequest CreateCurrencyFieldRequest(string fieldName)
-		{
-			return new CurrencyFieldRequest()
-			{
-				ObjectType = _documentObjectTypeIdentifier,
-				Name = fieldName
-			};
-		}
-
-		private WholeNumberFieldRequest CreateWholeNumberFieldRequest(string fieldName)
-		{
-			return new WholeNumberFieldRequest()
-			{
-				ObjectType = _documentObjectTypeIdentifier,
-				Name = fieldName
-			};
-		}
-
-		private YesNoFieldRequest CreateYesNoFieldRequest(string fieldName)
-		{
-			return new YesNoFieldRequest()
-			{
-				ObjectType = _documentObjectTypeIdentifier,
-				Name = fieldName
-			};
 		}
 	}
 }

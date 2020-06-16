@@ -12,6 +12,7 @@ public class PerformanceTestsSetup : InstanceTestsSetup
 {
 	public override async Task RunBeforeAnyTests()
 	{
+		Logger.LogInformation("PerformanceTestsSetup: BeforeAnyTests");
 		await base.RunBeforeAnyTests().ConfigureAwait(false);
 
 		if (!AppSettings.IsSettingsFileSet)
