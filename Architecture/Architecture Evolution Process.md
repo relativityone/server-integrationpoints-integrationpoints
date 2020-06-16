@@ -13,7 +13,7 @@ Contents:
 
 [C4 model](https://c4model.com/) has been chosen as a way to visualize the architecture going forward.
 
-C4 model doesn't require any specific tooling. Current Relativity standard is Lucidchart and we are going to stick to it. The *C4 Diagrams* folder should contain diagrams exported as SVG and an idex file with links to Lucidchart originals. The diagrams should follow below naming convention:
+C4 model doesn't require any specific tooling. Current Relativity standard is Lucidchart and we are going to stick to it. The *C4 Diagrams* folder should contain diagrams exported as SVG and an index file with links to Lucidchart originals. The diagrams should follow below naming convention:
 
 > [TYPE] Diagram Desciption.svg
 
