@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using User = Relativity.Services.User.User;
@@ -16,6 +17,8 @@ namespace Relativity.Sync.Tests.System.Core
 
 		protected User User { get; private set; }
 
+		protected ISyncLog Logger { get; private set; }
+
 		[OneTimeSetUp]
 		public async Task SuiteSetup()
 		{
@@ -23,6 +26,9 @@ namespace Relativity.Sync.Tests.System.Core
 			ServiceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			User = await Rdos.GetUser(ServiceFactory, 0).ConfigureAwait(false);
 			Environment = new TestEnvironment();
+			Logger = TestLogHelper.GetLogger();
+
+			Logger.LogInformation("Invoking ChildSuiteSetup");
 			await ChildSuiteSetup().ConfigureAwait(false);
 		}
 

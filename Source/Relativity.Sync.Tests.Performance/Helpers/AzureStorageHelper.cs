@@ -32,7 +32,6 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			}
 
 			string outputFile = Path.Combine(destinationPath, Path.GetFileName(filePath));
-
 			await blob.DownloadToFileAsync(outputFile, FileMode.OpenOrCreate).ConfigureAwait(false);
 
 			return outputFile;

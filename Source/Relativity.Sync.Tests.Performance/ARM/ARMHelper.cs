@@ -7,7 +7,6 @@ using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Sync.Tests.Performance.ARM.Contracts;
 using Relativity.Sync.Tests.Performance.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -15,27 +14,27 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using kCura.Utility.Extensions;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
 	public class ARMHelper
 	{
-		private string _initialBcpPath = "BCPPath";
-
 		private static bool _isInitialized;
 
+
 		private readonly ApiComponent _component;
-		private readonly AzureStorageHelper _storage;
-		private readonly FileShareHelper _fileShare;
 		private readonly IARMApi _armApi;
+		private readonly FileShareHelper _fileShare;
+		private readonly AzureStorageHelper _storage;
+		private readonly string _INITIAL_BCP_PATH = "BCPPath";
 
 		private static string _RELATIVE_ARCHIVES_LOCATION => AppSettings.RelativeArchivesLocation;
-		private static string REMOTE_ARCHIVES_LOCATION => Path.Combine(AppSettings.RemoteArchivesLocation, _RELATIVE_ARCHIVES_LOCATION);
 
 
 		private ARMHelper(IARMApi armApi, FileShareHelper fileShare, AzureStorageHelper storage)
@@ -45,7 +44,11 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			_armApi = armApi;
 			_fileShare = fileShare;
 			_storage = storage;
+
+			Logger = TestLogHelper.GetLogger();
 		}
+
+		protected ISyncLog Logger { get; }
 
 		public static ARMHelper CreateInstance()
 		{
@@ -69,18 +72,66 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
 			if (!_isInitialized)
 			{
-				Debug.WriteLine("ARM is being initialized...");
+				Logger.LogInformation("ARM is being initialized...");
 				if (ShouldBeInstalled())
 				{
 					InstallARM();
 				}
 
-				ConfigureARM();
+				EnsureConfiguration().GetAwaiter().GetResult();
 
 				_isInitialized = true;
-				Debug.WriteLine("ARM has been initialized.");
+				Logger.LogInformation("ARM has been initialized.");
 			}
 		}
+
+		private async Task EnsureConfiguration()
+		{
+			Logger.LogInformation("Checking BCP path ARM configuration");
+
+			IOrchestrateInstanceSettings settingOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
+			if (settingOrchestrator.GetInstanceSetting("BcpShareFolderName", "kCura.ARM").Value == _INITIAL_BCP_PATH)
+			{
+				Logger.LogInformation("ARM BCP path not set, using default value");
+
+				settingOrchestrator.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
+			}
+
+			Logger.LogInformation("Checking ARM locations");
+			var currentArmConfiguration = await _armApi.GetConfigurationData().ConfigureAwait(false);
+
+			bool configurationNeedsUpdating = false;
+
+			if (currentArmConfiguration.ArmArchiveLocations.IsNullOrEmpty())
+			{
+				configurationNeedsUpdating = true;
+				Logger.LogInformation("Remote ARM location not configured, creating default");
+				await _fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
+
+				Logger.LogInformation(
+					$"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
+
+				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _RELATIVE_ARCHIVES_LOCATION }, };
+			}
+
+			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM")?.Value;
+
+			if (webApiPath == null)
+			{
+				configurationNeedsUpdating = true;
+				Logger.LogInformation("kCura.ARM.RelativityWebApiUrl instance setting not found, reverting to AppSettings");
+				currentArmConfiguration.RelativityWebApiUrl = AppSettings.RelativityWebApiUrl.AbsoluteUri;
+			}
+
+			if (configurationNeedsUpdating)
+			{
+				Logger.LogInformation("Updating ARM configuration");
+				ContractEnvelope<ArmConfiguration> request = new ContractEnvelope<ArmConfiguration> { Contract = currentArmConfiguration };
+
+				await _armApi.SetConfigurationAsync(request).ConfigureAwait(false);
+			}
+		}
+
 
 		private bool ShouldBeInstalled()
 		{
@@ -154,53 +205,25 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 			string rapPath = GetARMRapPath();
 
-			Debug.WriteLine("Installing ARM...");
+			Logger.LogInformation("Installing ARM...");
 			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true, };
 			applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
-			Debug.WriteLine("ARM has been successfully installed.");
+			Logger.LogInformation("ARM has been successfully installed.");
 		}
 
 		private string GetARMRapPath()
 		{
-			Debug.WriteLine("Trying to get ARM RAP path...");
+			Logger.LogInformation("Trying to get ARM RAP path...");
 			string rapPath = Path.Combine(Path.GetTempPath(), @"ARM.rap");
 			if (!File.Exists(rapPath))
 			{
-				Debug.WriteLine("ARM RAP doesn't exist. Trying to download ARM from AzureStorage...");
+				Logger.LogInformation("ARM RAP doesn't exist. Trying to download ARM from AzureStorage...");
 				rapPath = _storage.DownloadFileAsync(@"ARM\ARM.rap", Path.GetTempPath()).Result;
-				Debug.WriteLine("ARM has been downloaded.");
+				Logger.LogInformation("ARM has been downloaded.");
 			}
 
-			Debug.WriteLine($"ARM Rap is located in path {rapPath}");
+			Logger.LogInformation($"ARM Rap is located in path {rapPath}");
 			return rapPath;
-		}
-
-		private void ConfigureARM()
-		{
-			Debug.WriteLine("ARM configuration has been started...");
-
-			IOrchestrateInstanceSettings settingOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
-			if (settingOrchestrator.GetInstanceSetting("BcpShareFolderName", "kCura.ARM").Value == _initialBcpPath)
-			{
-				settingOrchestrator.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
-			}
-
-			_fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).GetAwaiter().GetResult();
-			Debug.WriteLine($"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
-
-			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM")?.Value;
-
-			if (webApiPath == null)
-			{
-				Debug.WriteLine("kCura.ARM.RelativityWebApiUrl instance setting not found, reverting to AppSettings");
-				webApiPath = AppSettings.RelativityWebApiUrl.AbsoluteUri;
-			}
-
-			ContractEnvelope<ArmConfiguration> request = ArmConfiguration.GetRequest(webApiPath, REMOTE_ARCHIVES_LOCATION);
-
-			_armApi.SetConfigurationAsync(request).GetAwaiter().GetResult();
-
-			Debug.WriteLine("ARM has been successfully configured.");
 		}
 
 		public void EnableAgents(bool ensureNew = false)
@@ -237,33 +260,53 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			try
 			{
 				var workspaceName = GetWorkspaceNameFromArmZip(archivedWorkspaceLocalPath);
-				Debug.WriteLine($"Removing all workspaces with name {workspaceName}");
-				await RemoveAllWorkspacesWithName(workspaceName, environment).ConfigureAwait(false);
 
-				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, _RELATIVE_ARCHIVES_LOCATION)
+				await ThrowIfWorkspaceAlreadyExists(workspaceName, environment).ConfigureAwait(false);
+
+				string remoteLocation = await GetRemoteLocation().ConfigureAwait(false);
+
+				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, remoteLocation)
 					.ConfigureAwait(false);
-				Debug.WriteLine("Archived workspace has been uploaded to fileshare.");
+				Logger.LogInformation($"Archived workspace has been uploaded to fileshare ({uploadedFile})");
 
-				string archivedWorkspacePath = Path.Combine(REMOTE_ARCHIVES_LOCATION,
+				string archivedWorkspacePath = Path.Combine(remoteLocation,
 					Path.GetFileNameWithoutExtension(uploadedFile));
 
+				Logger.LogInformation($"Restoring workspace from: {archivedWorkspacePath}");
+
 				Job job = await CreateRestoreJobAsync(archivedWorkspacePath, AppSettings.ResourcePoolId).ConfigureAwait(false);
-				Debug.WriteLine($"Restore job {job.JobId} has been created");
+				Logger.LogInformation($"Restore job {job.JobId} has been created");
 
 				await RunJobAsync(job).ConfigureAwait(false);
-				Debug.WriteLine($"Job {job.JobId} is running...");
+				Logger.LogInformation($"Job {job.JobId} is running...");
 
 				await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
-				Debug.WriteLine("Restore job has been completed successfully.");
+				Logger.LogInformation("Restore job has been completed successfully.");
 
 				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByName(workspaceName).ConfigureAwait(true);
+
+				Logger.LogInformation($"Restored workspace {workspaceName} with ArtifactId {restoredWorkspaceId}");
 				return restoredWorkspaceId;
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine(ex.Message);
+				Logger.LogInformation(ex.Message);
 				throw;
 			}
+		}
+
+		private static async Task ThrowIfWorkspaceAlreadyExists(string workspaceName, TestEnvironment environment)
+		{
+			WorkspaceRef workspace = await environment.GetWorkspaceAsync(workspaceName).ConfigureAwait(false);
+			if (workspace != null)
+			{
+				throw new SyncException($"Workspace {workspaceName} already exists. Delete it or rename it to run the tests");
+			}
+		}
+
+		private async Task<string> GetRemoteLocation()
+		{
+			return (await _armApi.GetConfigurationData().ConfigureAwait(false)).ArmArchiveLocations.First().Location;
 		}
 
 		private static string GetWorkspaceNameFromArmZip(string archivedWorkspaceLocalPath)
@@ -290,15 +333,10 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private static async Task RemoveAllWorkspacesWithName(string workspaceName, TestEnvironment environment)
-		{
-			IEnumerable<WorkspaceRef> workspacesToDelete = await environment.GetWorkspacesAsync(workspaceName).ConfigureAwait(false);
-			await environment.DeleteWorkspaces(workspacesToDelete.Select(x => x.ArtifactID)).ConfigureAwait(false);
-		}
-
 		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath, int resourcePoolId)
 		{
 			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId);
+
 			return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
 		}
 
@@ -315,7 +353,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			do
 			{
 				jobStatus = await _armApi.GetJobStatus(job).ConfigureAwait(false);
-				Debug.WriteLine($"Job is still processing ({jobStatus.Status})...");
+				Logger.LogInformation($"Job is still processing ({jobStatus.Status})...");
 				if (jobStatus.Status == "Errored")
 				{
 					throw new InvalidOperationException("Error occured during restoring workspace");

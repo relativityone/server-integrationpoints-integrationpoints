@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 					{
 						new ArchiveLocation()
 						{
-							Location = location				
+							Location = location
 						}
 					},
 					EmailNotificationSettings = Enumerable.Empty<object>()

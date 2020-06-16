@@ -58,14 +58,20 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		public async Task<SyncJobState> RunAsync(SyncJobParameters parameters, int userId, CancellationToken cancellationToken)
 		{
 			SyncJobState result = null;
+			const int second = 1000;
+			long prevoiusStep = 0;
+
+			Stopwatch stopwatch = Stopwatch.StartNew();
 			var progress = new Progress<SyncJobState>(state =>
 			{
 				result = state;
-				Debug.WriteLine(state);
+				_logger.LogInformation(state.ToString());
+				_logger.LogInformation($"Elapsed time: {(stopwatch.ElapsedMilliseconds / second)}; From previous step: {(stopwatch.ElapsedMilliseconds - prevoiusStep) / second}");
+				prevoiusStep = stopwatch.ElapsedMilliseconds;
 			});
 
 			await RunAsync(parameters, userId, progress, cancellationToken).ConfigureAwait(false);
-
+			stopwatch.Stop();
 			return result;
 		}
 
