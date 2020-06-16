@@ -135,7 +135,7 @@ namespace Relativity.Sync.Tests.Common
 			SourceWorkspaceTagName = name;
 		}
 
-		public int ExecutingUserId => _ADMIN_ID;
+		public int ExecutingUserId { get; set; } = _ADMIN_ID;
 		public bool SendEmails { get; set; }
 
 		public IEnumerable<string> GetEmailRecipients() => _emailRecipients;

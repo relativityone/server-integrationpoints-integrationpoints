@@ -157,7 +157,7 @@
 	},
 	{
 		"Jira": "REL-399823",
-		"Exception": "System.AggregateException:Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
+		"Exception": "System.AggregateException:*Relativity.Sync.SyncException: Failed to tag synchronized documents in workspace.*"
 	},
 	{
 		"Jira": "REL-399837",
@@ -229,7 +229,7 @@
 	},
 	{
 		"Jira": "REL-416356",
-		"Exception": "Relativity.Sync.Transfer.InvalidExportFieldValueException*Could not retrieve info for user with ArtifactID*"
+		"Exception": "*Relativity.Sync.Transfer.InvalidExportFieldValueException*Could not retrieve info for user with ArtifactID*"
 	},
 	{
 		"Jira": "REL-416376",
@@ -241,7 +241,7 @@
 	},
 	{
 		"Jira": "REL-416542",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"	
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Failed to start executing import job.*System.Net.WebException: The operation has timed out*FieldQuery.RetrieveAllMappable*"
 	},
 	{
 		"Jira": "REL-416645",
@@ -268,7 +268,7 @@
 		"Exception": "Relativity.Services.Exceptions.TemporarilyUnavailableException:*at Relativity.Sync.Storage.Batch*"
 	},
 	{
-		"Jira": "REL-399823",
+		"Jira": "REL-425896",
 		"Exception": "Relativity.Sync.Transfer.FieldNotFoundException: Could not get information on the following fields for artifact type 10 in workspace*"
 	},
 	{
@@ -298,5 +298,33 @@
 	{
 		"Jira": "REL-427400",
 		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter.*Relativity.Services.Exceptions.TemporarilyUnavailableException*"
+	},
+	{
+		"Jira": "REL-429380",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*Error: SQL Statement Failed*Invalid column name 'TextIdentifier'*"
+	},
+	{
+		"Jira": "REL-433402",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*Error: SQL Statement Failed*Error: Incorrect syntax near*"
+	},
+	{
+		"Jira": "REL-435646",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*The column*cannot be modified because it is either a computed column or is the result of a UNION operator*"
+	},
+	{
+		"Jira": "REL-436101",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.LoadFileBase+CodeCreationException*kCura.WinEDDS.Exceptions.CodeCreationFailedException: Error creating new code*"
+	},
+	{
+		"Jira": "REL-436107",
+		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter. ---> Relativity.Services.Exceptions.ServiceException: '.', hexadecimal value 0x00, is an invalid character.*"
+	},
+	{
+		"Jira": "REL-436111",
+		"Exception": "System.Threading.Tasks.TaskCanceledException: A task was canceled.*Relativity.Sync.Executors.DataSourceSnapshotExecutor*"
+	},
+	{
+		"Jira": "REL-436119",
+		"Exception": "Relativity.Services.Exceptions.NotFoundException: Not Found.*at Relativity.Sync.Storage.Batch.*UpdateFieldValueAsync*"
 	}
 ]

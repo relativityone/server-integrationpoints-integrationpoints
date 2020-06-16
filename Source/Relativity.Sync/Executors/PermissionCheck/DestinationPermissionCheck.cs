@@ -22,7 +22,6 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			"User does not have permissions to view, edit, and add Documents in the destination workspace.";
 		private const string _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION =
 			"User does not have permission to create saved searches in the destination workspace.";
-		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object types in the destination workspace.";
 
 		private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 		private readonly ISyncLog _logger;
@@ -44,14 +43,11 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 			validationResult.Add(await ValidateUserCanCreateTagsInDestinationWorkspaceAsync(configuration).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration,
-				(int)ArtifactType.Document, new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Document,
+				new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration,
-				(int)ArtifactType.Search, new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
-
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.ObjectType,
-				new[] { PermissionType.Add }, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Search,
+				new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
 
 			validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, (int)ArtifactType.Document,
 				PermissionType.Add).ConfigureAwait(false));

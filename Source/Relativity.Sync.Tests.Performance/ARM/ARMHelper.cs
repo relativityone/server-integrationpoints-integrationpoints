@@ -283,7 +283,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
 				Logger.LogInformation("Restore job has been completed successfully.");
 
-				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByName(workspaceName).ConfigureAwait(true);
+				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByNameAsync(workspaceName).ConfigureAwait(true);
 
 				Logger.LogInformation($"Restored workspace {workspaceName} with ArtifactId {restoredWorkspaceId}");
 				return restoredWorkspaceId;

@@ -46,15 +46,13 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
+				throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
 					ex);
 			}
 
 			if (choices.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected elements of input to be deserializable to type {typeof(Choice)}.");
+				throw new InvalidExportFieldValueException($"One or more choices are null or contain only white-space characters.");
 			}
 
 			char multiValueDelimiter = _configuration.MultiValueDelimiter;
@@ -64,15 +62,13 @@ namespace Relativity.Sync.Transfer
 			List<string> names = choices.Select(x => x.Name).ToList();
 			if (names.Any(ContainsDelimiter))
 			{
-				string violatingNameList = string.Join(", ", names.Where(ContainsDelimiter).Select(x => $"'{x}'"));
-				throw new SyncException(
-					$"The identifiers of the following choices referenced by object '{itemIdentifier}' in field '{sanitizingSourceFieldName}' " +
-					$"contain the character specified as the multi-value delimiter ('{multiValueDelimiter}') or the one specified as the nested value " +
-					$"delimiter ('{nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}.");
+				throw new InvalidExportFieldValueException(
+					$"The identifiers of the choices contain the character specified as the multi-value delimiter ('ASCII {(int)multiValueDelimiter}')" +
+					$" or nested value delimiter ('ASCII {(int)nestedValueDelimiter}'). Rename choices to not contain delimiters.");
 			}
 
 			IList<ChoiceWithParentInfo> choicesFlatList = await _choiceCache.GetChoicesWithParentInfoAsync(choices).ConfigureAwait(false);
-			IList<ChoiceWithChildInfo> choicesTree = BuildChoiceTree(choicesFlatList, null);	// start with null to designate the roots of the tree
+			IList<ChoiceWithChildInfo> choicesTree = BuildChoiceTree(choicesFlatList, null); // start with null to designate the roots of the tree
 
 			string treeString = _choiceTreeConverter.ConvertTreeToString(choicesTree);
 			return treeString;

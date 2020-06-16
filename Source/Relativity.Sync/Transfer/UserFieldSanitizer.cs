@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Sync.Utils;
@@ -34,28 +33,39 @@ namespace Relativity.Sync.Transfer
 				return initialValue;
 			}
 
-			int userArtifactId = GetUserArtifactId(itemIdentifier, sanitizingSourceFieldName, initialValue);
+			int userArtifactId = GetUserArtifactId(initialValue);
 			
-
 			using (IUserInfoManager userInfoManager = await _serviceFactory.CreateProxyAsync<IUserInfoManager>().ConfigureAwait(false))
 			{
-				QueryRequest userQuery = new QueryRequest
+				string instanceUserEmail = await GetUserEmailAsync(userInfoManager, -1, userArtifactId).ConfigureAwait(false);
+				if (!string.IsNullOrEmpty(instanceUserEmail))
 				{
-					Condition = $@"('ArtifactID' == {userArtifactId})"
-				};
+					return instanceUserEmail;
+				}
 
-				UserInfoQueryResultSet users = await userInfoManager.RetrieveUsersBy(-1, userQuery, 0, 1).ConfigureAwait(false);
-				if (users?.ResultCount == 1)
+				string workspaceUserEmail = await GetUserEmailAsync(userInfoManager, workspaceArtifactId, userArtifactId).ConfigureAwait(false);
+				if (!string.IsNullOrEmpty(workspaceUserEmail))
 				{
-					return users.DataResults.Single().Email;
+					return workspaceUserEmail;
 				}
 			}
 
-			throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-				$"Could not retrieve info for user with ArtifactID {userArtifactId}.");
+			throw new InvalidExportFieldValueException($"Could not retrieve info for user with ArtifactID {userArtifactId}. " +
+				$"If this workspace was restored using ARM, verify if user has been properly mapped during workspace restore.");
 		}
 
-		private int GetUserArtifactId(string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
+		private async Task<string> GetUserEmailAsync(IUserInfoManager userInfoManager, int workspaceArtifactId, int userArtifactId)
+		{
+			QueryRequest userQuery = new QueryRequest
+			{
+				Condition = $@"('ArtifactID' == {userArtifactId})"
+			};
+
+			UserInfoQueryResultSet instanceUserQueryResult = await userInfoManager.RetrieveUsersBy(workspaceArtifactId, userQuery, 0, 1).ConfigureAwait(false);
+			return instanceUserQueryResult?.DataResults?.SingleOrDefault()?.Email;
+		}
+
+		private int GetUserArtifactId(object initialValue)
 		{
 			UserInfo userFieldValue;
 			try
@@ -64,9 +74,7 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(UserInfo)}, but instead type was {initialValue.GetType()}.",
-					ex);
+				throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(UserInfo)}, but instead type was {initialValue.GetType()}.", ex);
 			}
 
 			return userFieldValue.ArtifactID;

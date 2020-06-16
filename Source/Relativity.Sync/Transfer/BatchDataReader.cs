@@ -5,6 +5,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Globalization;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Transfer
 {
@@ -174,7 +175,7 @@ namespace Relativity.Sync.Transfer
 					}
 					catch (SyncItemLevelErrorException ex)
 					{
-						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.Message);
+						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.GetExceptionMessages());
 						continue;
 					}
 					yield return row;
@@ -231,7 +232,14 @@ namespace Relativity.Sync.Transfer
 			object sanitizedValue = initialValue;
 			if (_exportDataSanitizer.ShouldSanitize(field.RelativityDataType))
 			{
-				sanitizedValue = _exportDataSanitizer.SanitizeAsync(_sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).GetAwaiter().GetResult();
+				try
+				{
+					sanitizedValue = _exportDataSanitizer.SanitizeAsync(_sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).GetAwaiter().GetResult();
+				}
+				catch (InvalidExportFieldValueException ex)
+				{
+					throw new SyncItemLevelErrorException($"Could not sanitize field of type: {field.RelativityDataType}", ex);
+				}
 			}
 
 			return sanitizedValue;

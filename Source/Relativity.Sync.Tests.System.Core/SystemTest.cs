@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			ChildSuiteTeardown();
 
-			await Environment.DoCleanup().ConfigureAwait(false);
+			await Environment.DoCleanupAsync().ConfigureAwait(false);
 			Client?.Dispose();
 			Client = null;
 		}
