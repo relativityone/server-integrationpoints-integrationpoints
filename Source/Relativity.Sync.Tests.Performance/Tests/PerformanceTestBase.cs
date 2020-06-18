@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	public class PerformanceTestBase : SystemTest
 	{
-		private int _sourceWorkspaceIdArm;
+		protected int _sourceWorkspaceIdArm;
 
 		private readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		protected async Task RunTestCase(PerformanceTestCase testCase)
+		protected async Task RunTestCaseAsync(PerformanceTestCase testCase)
 		{
 			Logger.LogInformation("In test case: " + testCase.TestCaseName);
 			try
@@ -128,7 +128,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				if (testCase.MapExtractedText)
 				{
 					IEnumerable<FieldMap> extractedTextMapping =
-						await GetGetExtractedTextMapping().ConfigureAwait(false);
+						await GetGetExtractedTextMappingAsync().ConfigureAwait(false);
 					Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(extractedTextMapping).ToArray();
 				}
 
@@ -212,7 +212,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 
 			Configuration.FieldsMapping =
-				mapping ?? await GetIdentifierMapping().ConfigureAwait(false);
+				mapping ?? await GetIdentifierMappingAsync().ConfigureAwait(false);
 
 			Configuration.JobHistoryId =
 				await Rdos.CreateJobHistoryInstance(ServiceFactory, SourceWorkspace.ArtifactID)
@@ -234,11 +234,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		/// <returns>Mapping with generated fields</returns>
 		public async Task<IEnumerable<FieldMap>> GetMappingAndCreateFieldsInDestinationWorkspaceAsync(int? numberOfMappedFields)
 		{
-			var sourceFields = await GetFieldsFromSourceWorkspace(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+			var sourceFields = await GetFieldsFromSourceWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			sourceFields = FilterTestCaseFields(sourceFields, numberOfMappedFields);
 
 
-			IEnumerable<RelativityObject> destinationFields = await GetFieldsFromSourceWorkspace(TargetWorkspace.ArtifactID).ConfigureAwait(false);
+			IEnumerable<RelativityObject> destinationFields = await GetFieldsFromSourceWorkspaceAsync(TargetWorkspace.ArtifactID).ConfigureAwait(false);
 			destinationFields = FilterTestCaseFields(destinationFields, numberOfMappedFields);
 
 			return sourceFields.Zip(destinationFields, (sourceField, destinationField) => new FieldMap
@@ -273,7 +273,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			return filteredfields.ToList();
 		}
 
-		private async Task<IEnumerable<RelativityObject>> GetFieldsFromSourceWorkspace(int sourceWorkspaceArtifactId)
+		private async Task<IEnumerable<RelativityObject>> GetFieldsFromSourceWorkspaceAsync(int sourceWorkspaceArtifactId)
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -299,7 +299,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		protected async Task<IEnumerable<FieldMap>> GetIdentifierMapping()
+		protected async Task<IEnumerable<FieldMap>> GetIdentifierMappingAsync()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -330,7 +330,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		protected async Task<IEnumerable<FieldMap>> GetGetExtractedTextMapping()
+		protected async Task<IEnumerable<FieldMap>> GetGetExtractedTextMappingAsync()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{

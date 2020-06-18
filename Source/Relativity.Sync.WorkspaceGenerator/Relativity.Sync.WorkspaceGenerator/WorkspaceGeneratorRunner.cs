@@ -107,8 +107,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 				dataDir.Delete(recursive: true);
 			}
 
-			Console.WriteLine("\n\nFinished processing all test cases.\r\nPress [Enter] to exit");
-			Console.ReadLine();
+			Console.WriteLine("\n\nFinished processing all test cases.");
 			return (int)ExitCodes.OK;
 		}
 	}
