@@ -37,6 +37,8 @@ namespace Relativity.Sync.Tests.System
 
 		private const int _USER_FIELD_ID = 1039900;
 		private const string _USER_FIELD_DISPLAY_NAME = "Relativity Sync Test User";
+
+		private const int _BATCH_COUNT_FOR_TAGGING = 3;
 		
 		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
 		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
@@ -120,6 +122,52 @@ namespace Relativity.Sync.Tests.System
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
 				.ConfigureAwait(false));
+		}
+
+		[IdentifiedTest("")]
+		public async Task ItShouldTagInBatches()
+		{
+			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync($"Source.{Guid.NewGuid()}").ConfigureAwait(false);
+
+			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
+			int destinationWorkspaceArtifactId = await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
+
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(Dataset, extractedText: true, natives: true);
+			ImportJobErrors importErrors = await new ImportHelper(ServiceFactory).ImportDataAsync(
+				sourceWorkspaceArtifactId,
+				dataTableWrapper
+			).ConfigureAwait(false);
+			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");
+
+			UpdateNativeFilePathToLocalIfNeeded(sourceWorkspaceArtifactId);
+
+			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+
+			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings,
+				(int)Math.Ceiling((double)dataTableWrapper.Data.Rows.Count / _BATCH_COUNT_FOR_TAGGING), dataTableWrapper.Data.Rows.Count).ConfigureAwait(false);
+
+			IContainer container = CreateContainer(configuration);
+
+			// Replacing DocumentTagRepository with TrackingDocumentTagRepository. I need a shower when I'm done...
+			ContainerBuilder overrideContainerBuilder = new ContainerBuilder();
+			container.ComponentRegistry.Registrations.Where(cr => cr.Activator.LimitType != typeof(DocumentTagRepository)).ForEach(cr => overrideContainerBuilder.RegisterComponent(cr));
+			container.ComponentRegistry.Sources.ForEach(rs => overrideContainerBuilder.RegisterSource(rs));
+			overrideContainerBuilder.RegisterTypes(typeof(TrackingDocumentTagRepository)).As<IDocumentTagRepository>();
+
+			container = overrideContainerBuilder.Build();
+
+			await ExecutePreSynchronizationExecutorsAsync(container, configuration, sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
+
+			// ACT
+			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(container, configuration).ConfigureAwait(false);
+
+			// ASSERT
+			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
+				.ConfigureAwait(false));
+
+			IList<int> batchesTransferredItemsCounts = await GetBatchesTransferredItemsCountsAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+			CollectionAssert.AreEqual(batchesTransferredItemsCounts, TrackingDocumentTagRepository.TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts);
+			CollectionAssert.AreEqual(batchesTransferredItemsCounts, TrackingDocumentTagRepository.TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts);
 		}
 
 		[IdentifiedTest("06cacb9a-4d8c-4cd2-8de6-2aa249925eb7")]
@@ -343,9 +391,9 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private async Task<int> GetBatchesTransferredItemsCountAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		private async Task<IList<int>> GetBatchesTransferredItemsCountsAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			int batchesTransferredItemsCount = 0;
+			List<int> batchesTransferredItemsCounts = new List<int>();
 
 			var serviceFactory = new ServiceFactoryStub(ServiceFactory);
 
@@ -365,7 +413,7 @@ namespace Relativity.Sync.Tests.System
 				{
 					IEnumerable<int> batchesArtifactsIds = batchesArtifactsIdsQueryResult.Objects.Select(x => x.ArtifactID);
 
-					foreach(int batchArtifactId in batchesArtifactsIds)
+					foreach (int batchArtifactId in batchesArtifactsIds)
 					{
 						QueryRequest transferredItemsCountQueryRequest = new QueryRequest
 						{
@@ -384,12 +432,19 @@ namespace Relativity.Sync.Tests.System
 						};
 						QueryResult transferredItemsCountQueryResult = await objectManager.QueryAsync(workspaceArtifactId, transferredItemsCountQueryRequest, start: 0, length: 1).ConfigureAwait(false);
 
-						batchesTransferredItemsCount += (int) (transferredItemsCountQueryResult.Objects.Single()[TransferredItemsCountField].Value ?? default(int));
+						batchesTransferredItemsCounts.Add((int)(transferredItemsCountQueryResult.Objects.Single()[TransferredItemsCountField].Value ?? default(int)));
 					};
 				}
 			}
 
-			return batchesTransferredItemsCount;
+			return batchesTransferredItemsCounts;
+		}
+
+		private async Task<int> GetBatchesTransferredItemsCountAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		{
+			IList<int> batchesTransferredItemsCounts = await GetBatchesTransferredItemsCountsAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
+
+			return batchesTransferredItemsCounts.Sum();
 		}
 
 		private static void UpdateNativeFilePathToLocalIfNeeded(int sourceWorkspaceArtifactId)
