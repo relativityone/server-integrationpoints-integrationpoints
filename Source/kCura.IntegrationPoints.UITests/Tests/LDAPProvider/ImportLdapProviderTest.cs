@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			model.General.TransferredObject = TransferredObjectConstants.ENTITY;
 
 			// Step 2
-			model.Source.Authentication = LdapAuthenticationType.SecureSocketLayer;
+			model.Source.Authentication = LdapAuthenticationType.FastBind;
 			model.Source.ConnectionPath = SharedVariables.LdapConnectionPath;
 			model.Source.ObjectFilterString = "(objectClass=organizationalPerson)";
 			model.Source.ImportNestedItems = false;
