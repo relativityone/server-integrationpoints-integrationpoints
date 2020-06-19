@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Banzai;
+using Banzai.Factories;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using Relativity.API;
@@ -13,6 +15,7 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Transfer;
 using Relativity.Telemetry.APM;
 
@@ -50,6 +53,19 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				.Where(t => t.BaseType?.IsConstructedGenericType ?? false)
 				.Where(t => t.BaseType.GetGenericTypeDefinition() == typeof(SyncNode<>))
 				.ToList();
+		}
+
+		public static FlowComponent<SyncExecutionContext>[] GetSyncNodesFromRegisteredPipeline(IContainer container, Type pipelineType)
+		{
+			FlowComponent<SyncExecutionContext>[] GetChildTypes(FlowComponent<SyncExecutionContext> flowComponent)
+			{
+				var childTypes = flowComponent.Children.SelectMany(x => GetChildTypes(x)).ToArray();
+				return new[] {flowComponent}.Concat(childTypes).ToArray();
+			}
+
+			FlowComponent<SyncExecutionContext> flows = container.ResolveNamed<FlowComponent<SyncExecutionContext>>(pipelineType.Name);
+
+			return GetChildTypes(flows).Where(x => !x.IsFlow && x.Type?.BaseType?.GetGenericTypeDefinition() == typeof(SyncNode<>)).ToArray();
 		}
 
 		/// <summary>
