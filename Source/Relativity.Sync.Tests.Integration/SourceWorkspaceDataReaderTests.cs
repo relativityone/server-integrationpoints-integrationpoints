@@ -81,7 +81,6 @@ namespace Relativity.Sync.Tests.Integration
 			IRelativityExportBatcher batcher = CreateExporterForGivenBatchSize(batchSize);
 			IBatchDataReaderBuilder batchDataReaderBuilder = _container.Resolve<IBatchDataReaderBuilder>();
 			IFieldManager fieldManager = _container.Resolve<IFieldManager>();
-			IItemStatusMonitor itemStatusMonitor = _container.Resolve<IItemStatusMonitor>();
 			ISyncLog syncLog = Mock.Of<ISyncLog>();
 
 			return new SourceWorkspaceDataReader(
@@ -89,7 +88,7 @@ namespace Relativity.Sync.Tests.Integration
 				_configuration,
 				batcher,
 				fieldManager,
-				itemStatusMonitor,
+				new ItemStatusMonitor(),
 				syncLog,
 				CancellationToken.None
 			);

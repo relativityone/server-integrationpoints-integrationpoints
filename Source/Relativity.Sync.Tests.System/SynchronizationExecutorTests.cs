@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.System
 				.ConfigureAwait(false));
 		}
 
-		[IdentifiedTest("")]
+		[IdentifiedTest("4150991e-5679-4e6f-afdd-a25c1ed4b9af")]
 		public async Task ItShouldTagInBatches()
 		{
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync($"Source.{Guid.NewGuid()}").ConfigureAwait(false);
