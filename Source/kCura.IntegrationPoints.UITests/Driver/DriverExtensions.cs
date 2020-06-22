@@ -19,9 +19,9 @@ namespace kCura.IntegrationPoints.UITests.Driver
 	{
 		private const int _DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS = 20;
 
-		public static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromSeconds(60);
+		public static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromSeconds(30);
 
-		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
+		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
 		public static IWebElement ClickEx(this IWebElement element, TimeSpan? timeout = null)
 		{
