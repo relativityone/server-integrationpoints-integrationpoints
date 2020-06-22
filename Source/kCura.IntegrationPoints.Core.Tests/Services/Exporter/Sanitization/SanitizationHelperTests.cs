@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		private void ItShouldReturnProperResultWhenDeserializationSucceeds<T>(object initialValue, T expectedResult)
 		{
 			// Act
-			T result = _sut.DeserializeAndValidateExportFieldValue<T>("bar", "baz", initialValue);
+			T result = _sut.DeserializeAndValidateExportFieldValue<T>(initialValue);
 
 			// Assert
 			result.Should().Be(expectedResult);
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		private void ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails<T>(object initialValue)
 		{
 			// Act
-			Action action = () => _sut.DeserializeAndValidateExportFieldValue<T>("bar", "baz", initialValue);
+			Action action = () => _sut.DeserializeAndValidateExportFieldValue<T>(initialValue);
 
 			// Assert
 			action.ShouldThrow<InvalidExportFieldValueException>()
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		private void ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails<T>(object initialValue)
 		{
 			// Act
-			Action action = () => _sut.DeserializeAndValidateExportFieldValue<T>("bar", "baz", initialValue);
+			Action action = () => _sut.DeserializeAndValidateExportFieldValue<T>(initialValue);
 
 			// Assert
 			action.ShouldThrow<InvalidExportFieldValueException>()

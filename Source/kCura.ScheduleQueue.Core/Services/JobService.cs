@@ -298,14 +298,12 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void LogOnCreateJob(int workspaceId, int relatedObjectArtifactId, string taskType, string jobDetails, int submittedBy)
 		{
-			string message =
-				$"Attempting to create Job in {nameof(JobService)}.{Environment.NewLine}" +
-				$"WorkspaceId: ({workspaceId}).{Environment.NewLine}" +
-				$" RelatedObjectArtifactID: ({relatedObjectArtifactId}).{Environment.NewLine}" +
-				$" Task types: {taskType}.{Environment.NewLine}" +
-				$" Job details: ({jobDetails}).{Environment.NewLine}" +
-				$" Submitted by: {submittedBy}";
-			_log.LogInformation(message);
+			_log.LogInformation("Attempting to create Job in {service} " +
+			                    "WorkspaceID: {workspaceId} " +
+			                    "RelatedObjectArtifactID: {relatedObjectArtifactId} " +
+			                    "Task types: {taskType} " +
+			                    "Submitted by: {submittedBy}",
+				nameof(JobService), workspaceId, relatedObjectArtifactId, taskType, submittedBy);
 		}
 
 		public void LogOnDeleteJob(long jobId)

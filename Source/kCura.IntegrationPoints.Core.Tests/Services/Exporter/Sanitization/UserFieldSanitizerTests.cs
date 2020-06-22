@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		{
 			_userInfoManagerMock = new Mock<IUserInfoManager>();
 			_userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
-				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID),
 				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_EXISTING_USER_ARTIFACT_ID})"),
 				It.Is<int>(start => start == 0),
 				It.Is<int>(length => length == 1)
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 				DataResults = new[] { new UserInfo { ArtifactID = _EXISTING_USER_ARTIFACT_ID, Email = _EXISTING_USER_EMAIL } }
 			});
 			_userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
-				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID),
 				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_NON_EXISTING_USER_ARTIFACT_ID})"),
 				It.Is<int>(start => start == 0),
 				It.Is<int>(length => length == 1)
@@ -67,11 +67,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 
 			JSONSerializer jsonSerializer = new JSONSerializer();
 			_sanitizationHelperStub = new Mock<ISanitizationDeserializer>();
-			_sanitizationHelperStub.Setup(x => x.DeserializeAndValidateExportFieldValue<UserInfo>(
-					It.IsAny<string>(),
-					It.IsAny<string>(),
-					It.IsAny<object>()))
-				.Returns((string x, string y, object serializedObject) =>
+			_sanitizationHelperStub.Setup(x => x.DeserializeAndValidateExportFieldValue<UserInfo>(It.IsAny<object>()))
+				.Returns((object serializedObject) =>
 					jsonSerializer.Deserialize<UserInfo>(serializedObject.ToString()));
 		}
 
@@ -108,7 +105,55 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		}
 
 		[Test]
-		public async Task SanitizeAsync_ShouldReturnEmail_WhenUserExists()
+		public async Task SanitizeAsync_ShouldReturnEmail_WhenUserExistsInInstance()
+		{
+			// Arrange
+			Mock<IUserInfoManager> userInfoManagerMock = new Mock<IUserInfoManager>();
+
+			userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
+				It.Is<int>(workspaceId => workspaceId == -1),
+				It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_EXISTING_USER_ARTIFACT_ID})"),
+				It.Is<int>(start => start == 0),
+				It.Is<int>(length => length == 1)
+			)).ReturnsAsync(new UserInfoQueryResultSet()
+			{
+				ResultCount = 1,
+				DataResults = new[] { new UserInfo { ArtifactID = _EXISTING_USER_ARTIFACT_ID, Email = _EXISTING_USER_EMAIL } }
+			});
+
+			Mock<IServicesMgr> servicesMgrStub = new Mock<IServicesMgr>();
+			servicesMgrStub.Setup(x => x.CreateProxy<IUserInfoManager>(ExecutionIdentity.System))
+				.Returns(userInfoManagerMock.Object);
+
+			Mock<IHelper> helperStub = new Mock<IHelper>();
+			helperStub.Setup(x => x.GetServicesManager())
+				.Returns(servicesMgrStub.Object);
+
+			var sut = new UserFieldSanitizer(helperStub.Object, _sanitizationHelperStub.Object);
+
+			// Act
+			object sanitizedValue = await sut.SanitizeAsync(
+				_WORKSPACE_ID,
+				_ITEM_IDENTIFIER_SOURCE_FIELD_NAME,
+				_ITEM_IDENTIFIER,
+				_SANITIZING_SOURCE_FIELD_NAME,
+				SanitizationTestUtils.DeserializeJson($"{{\"ArtifactID\": {_EXISTING_USER_ARTIFACT_ID}}}")
+			).ConfigureAwait(false);
+
+			// Assert
+			sanitizedValue.Should().Be(_EXISTING_USER_EMAIL);
+
+			userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == -1), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
+
+			userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Never);
+		}
+
+		[Test]
+		public async Task SanitizeAsync_ShouldReturnEmail_WhenUserExistsInWorkspace()
 		{
 			// Arrange
 			var sut = new UserFieldSanitizer(_helperStub.Object, _sanitizationHelperStub.Object);
@@ -124,6 +169,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 
 			// Assert
 			sanitizedValue.Should().Be(_EXISTING_USER_EMAIL);
+
+			_userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == -1), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
+
+			_userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
 		}
 
 		[Test]
