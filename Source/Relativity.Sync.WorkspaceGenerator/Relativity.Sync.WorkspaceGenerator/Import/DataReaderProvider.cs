@@ -6,7 +6,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 {
 	public class DataReaderProvider : IDataReaderProvider
 	{
-		private const int _MAX_READER_SIZE = 25000;
+		private const int _MAX_READER_SIZE = 10000;
 
 		private readonly IDocumentFactory _documentFactory;
 		private readonly TestCase _testCase;
