@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 using Relativity.Services;
 using Relativity.Services.Workspace;
 using Relativity.Sync.WorkspaceGenerator.Fields;
@@ -71,12 +72,13 @@ namespace Relativity.Sync.WorkspaceGenerator
 						textDir);
 
 					IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator);
-					IDataReader dataReader = new DataReaderWrapper(documentFactory, testCase);
+					IDataReaderProvider dataReaderProvider = new DataReaderProvider(documentFactory, testCase);
 
-					ImportHelper importHelper = new ImportHelper(workspaceService, _settings, testCase);
-					ImportJobResult result = await importHelper.ImportDataAsync(workspace.ArtifactID, dataReader).ConfigureAwait(false);
+					ImportHelper importHelper = new ImportHelper(workspaceService, dataReaderProvider, _settings, testCase);
+					IList<ImportJobResult> results = await importHelper.ImportDataAsync(workspace.ArtifactID).ConfigureAwait(false);
 
-					if (result.Success)
+					var errorResults = results.Where(x => !x.Success);
+					if (!errorResults.Any())
 					{
 						Console.WriteLine($"Successfully imported documents for test case: {testCase.Name}");
 
@@ -93,9 +95,12 @@ namespace Relativity.Sync.WorkspaceGenerator
 					}
 					else
 					{
-						foreach (string error in result.Errors)
+						foreach (var result in errorResults)
 						{
-							Console.WriteLine($"Import API error: {error}");
+							foreach(string error in result.Errors)
+							{
+								Console.WriteLine($"Import API error: {error}");
+							}
 						}
 
 						return (int)ExitCodes.OtherError;
