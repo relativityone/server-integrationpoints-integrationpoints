@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 using Relativity.Services;
 using Relativity.Services.Workspace;
 using Relativity.Sync.WorkspaceGenerator.Fields;
