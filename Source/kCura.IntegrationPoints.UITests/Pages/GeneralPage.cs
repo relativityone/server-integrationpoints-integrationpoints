@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			policy.Execute(() =>
 			{
-				Console.WriteLine($"Go to {pageName}...");
+				Console.WriteLine($"Load {pageName} with retries...");
 				WaitForPage();
 				QuickNavigationInput.SendKeys(pageName);
 				IWebElement resultLinkLinkName = Driver.FindElementByLinkText(pageName);
