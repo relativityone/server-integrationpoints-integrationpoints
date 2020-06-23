@@ -287,8 +287,8 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
 		{
-			_log.LogInformation("Attempting to finalize job with ID: ({jobid}) in {TypeName}. Job details: {Jobdetails}. Exceptions: {Exceptions}",
-				jobJobId, nameof(JobService), jobJobDetails, JsonConvert.SerializeObject(taskResult.Exceptions));
+			_log.LogInformation("Attempting to finalize job with ID: ({jobid}) in {TypeName}. Exceptions: {Exceptions}",
+				jobJobId, nameof(JobService), JsonConvert.SerializeObject(taskResult.Exceptions));
 		}
 
 		public void LogOnUnlockJobs(int agentId)
