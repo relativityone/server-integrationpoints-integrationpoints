@@ -2,7 +2,7 @@
 
 jobWithSut {
     slackChannel = "cd_trident_rip"
-    sutTemplate = "LanceleafEA"
+    sutTemplate = "aio-lanceleaf-ea"
 	relativityBranch = "develop"
     jobScript = "Trident/Scripts/UI-ImportExport.ps1"
     cron = "0 1 * * *"
