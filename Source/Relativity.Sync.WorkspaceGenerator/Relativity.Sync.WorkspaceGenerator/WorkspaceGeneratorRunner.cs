@@ -72,7 +72,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 						textDir);
 
 					IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator);
-					IDataReaderProvider dataReaderProvider = new DataReaderProvider(documentFactory, testCase);
+					IDataReaderProvider dataReaderProvider = new DataReaderProvider(documentFactory, testCase, _settings.BatchSize);
 
 					ImportHelper importHelper = new ImportHelper(workspaceService, dataReaderProvider, _settings, testCase);
 					IList<ImportJobResult> results = await importHelper.ImportDataAsync(workspace.ArtifactID).ConfigureAwait(false);
