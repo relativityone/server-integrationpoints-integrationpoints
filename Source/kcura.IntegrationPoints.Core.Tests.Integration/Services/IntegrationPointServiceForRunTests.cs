@@ -50,6 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		[IdentifiedTest("69e67a17-8b23-41a8-b120-9a4441171d16")]
 		[Order(1)]
 		[SmokeTest]
+		[NotWorkingOnTrident]
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
