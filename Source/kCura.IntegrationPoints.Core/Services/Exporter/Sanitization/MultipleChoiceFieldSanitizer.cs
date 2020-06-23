@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
@@ -41,17 +40,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			ChoiceDto[] choices = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(
-				itemIdentifier, 
-				sanitizingSourceFieldName, 
-				initialValue);
+			ChoiceDto[] choices = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(initialValue);
 
 			if (choices.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier, 
-					sanitizingSourceFieldName,
-					$"Expected elements of input to be deserializable to type {typeof(ChoiceDto)}.");
+				throw new InvalidExportFieldValueException($"One or more choices are null or contain only white-space characters.");
 			}
 
 			bool ContainsDelimiter(string x) => x.Contains(_multiValueDelimiter) || x.Contains(_nestedValueDelimiter);
@@ -59,11 +52,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			List<string> names = choices.Select(x => x.Name).ToList();
 			if (names.Any(ContainsDelimiter))
 			{
-				string violatingNameList = string.Join(", ", names.Where(ContainsDelimiter).Select(x => $"'{x}'"));
-				throw new IntegrationPointsException(
-					$"The identifiers of the following choices referenced by object '{itemIdentifier}' in field '{sanitizingSourceFieldName}' " +
-					$"contain the character specified as the multi-value delimiter ('{_multiValueDelimiter}') or the one specified as the nested value " +
-					$"delimiter ('{_nestedValueDelimiter}'). Rename these choices or choose a different delimiter: {violatingNameList}.");
+				throw new InvalidExportFieldValueException(
+					$"The identifiers of the choices contain the character specified as the multi-value delimiter ('ASCII {(int)_multiValueDelimiter}')" +
+					$" or nested value delimiter ('ASCII {(int)_nestedValueDelimiter}'). Rename choices to not contain delimiters.");
 			}
 
 			IList<ChoiceWithParentInfoDto> choicesFlatList = await _choiceCache.QueryChoiceWithParentInfoAsync(choices, choices).ConfigureAwait(false);

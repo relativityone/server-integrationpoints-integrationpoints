@@ -29,10 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
 			RelativityObjectValue objectValue =
-				_sanitizationDeserializer.DeserializeAndValidateExportFieldValue<RelativityObjectValue>(
-					itemIdentifier,
-					sanitizingSourceFieldName, 
-					initialValue);
+				_sanitizationDeserializer.DeserializeAndValidateExportFieldValue<RelativityObjectValue>(initialValue);
 
 			// If a Single Object field is not set, Object Manager returns a valid object with an ArtifactID of 0 instead of a null value.
 			if (objectValue.ArtifactID == default(int))
@@ -42,10 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 
 			if (string.IsNullOrWhiteSpace(objectValue.Name))
 			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier, 
-					sanitizingSourceFieldName,
-					$"Expected input to be deserializable to type {typeof(RelativityObjectValue)} and name to not be null or empty.");
+				throw new InvalidExportFieldValueException($"Expected input to be deserializable to type {typeof(RelativityObjectValue)} and name to not be null or empty.");
 			}
 
 			string value = objectValue.Name;

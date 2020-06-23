@@ -22,11 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			_sanitizationHelper = new Mock<ISanitizationDeserializer>();
 			var jsonSerializer = new JSONSerializer();
 			_sanitizationHelper
-				.Setup(x => x.DeserializeAndValidateExportFieldValue<RelativityObjectValue>(
-					It.IsAny<string>(),
-					It.IsAny<string>(), 
-					It.IsAny<object>()))
-				.Returns((string x, string y, object serializedObject) =>
+				.Setup(x => x.DeserializeAndValidateExportFieldValue<RelativityObjectValue>(It.IsAny<object>()))
+				.Returns((object serializedObject) =>
 					jsonSerializer.Deserialize<RelativityObjectValue>(serializedObject.ToString()));
 		}
 

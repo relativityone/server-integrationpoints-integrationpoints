@@ -26,11 +26,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			_sanitizationHelper = new Mock<ISanitizationDeserializer>();
 			var jsonSerializer = new JSONSerializer();
 			_sanitizationHelper
-				.Setup(x => x.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(
-					It.IsAny<string>(),
-					It.IsAny<string>(), 
-					It.IsAny<object>()))
-				.Returns((string x, string y, object serializedObject) =>
+				.Setup(x => x.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(It.IsAny<object>()))
+				.Returns((object serializedObject) =>
 					jsonSerializer.Deserialize<RelativityObjectValue[]>(serializedObject.ToString()));
 		}
 
@@ -54,27 +51,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			var sut = new MultipleObjectFieldSanitizer(_sanitizationHelper.Object);
 
 			// Act
-			Func<Task> action = async () =>
-				await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
-				.Which.Message.Should()
-				.Contain(typeof(RelativityObjectValue).Name);
+			action.ShouldThrow<InvalidExportFieldValueException>();
 		}
 
-		[TestCaseSource(nameof(ThrowSyncExceptionWhenNameContainsMultiValueDelimiterTestCases))]
-		public void ItShouldThrowSyncExceptionWhenNameContainsMultiValueDelimiter(object initialValue, string expectedViolators)
+		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenNameContainsMultiValueDelimiterTestCases))]
+		public void ItShouldThrowInvalidExportFieldValueExceptionWhenNameContainsMultiValueDelimiter(object initialValue)
 		{
 			// Arrange
 			var sut = new MultipleObjectFieldSanitizer(_sanitizationHelper.Object);
 
 			// Act
-			Func<Task> action = async () => await sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
-			action.ShouldThrow<IntegrationPointsException>()
-				.Which.Message.Should().MatchRegex($" {expectedViolators}\\.$");
+			action.ShouldThrow<InvalidExportFieldValueException>();
 		}
 
 		[TestCaseSource(nameof(CombineNamesIntoReturnValueTestCases))]
@@ -97,23 +90,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			yield return new TestCaseData(SanitizationTestUtils.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Object\" }, { \"test\": 1 }, { \"ArtifactID\": 102, \"Name\": \"Cool Object 2\" } ]"));
 		}
 
-		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsMultiValueDelimiterTestCases()
+		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenNameContainsMultiValueDelimiterTestCases()
 		{
-			yield return new TestCaseData(
-				ObjectValueJArrayFromNames($"{_MUTLI_DELIM} Sick Name"),
-				$"'{_MUTLI_DELIM} Sick Name'")
+			yield return new TestCaseData(ObjectValueJArrayFromNames($"{_MUTLI_DELIM} Sick Name"))
 			{
 				TestName = "Singleton violating name"
 			};
-			yield return new TestCaseData(
-				ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", "Awesome Name"),
-				$"'Cool{_MUTLI_DELIM} Name'")
+			yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", "Awesome Name"))
 			{
 				TestName = "Single violating name in larger collection"
 			};
-			yield return new TestCaseData(
-				ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", $"Awesome{_MUTLI_DELIM} Name"),
-				$"'Cool{_MUTLI_DELIM} Name', 'Awesome{_MUTLI_DELIM} Name'")
+			yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", $"Awesome{_MUTLI_DELIM} Name"))
 			{
 				TestName = "Many violating names in larger collection"
 			};

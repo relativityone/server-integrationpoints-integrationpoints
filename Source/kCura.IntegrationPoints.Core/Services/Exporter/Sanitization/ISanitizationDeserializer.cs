@@ -2,6 +2,6 @@
 {
 	internal interface ISanitizationDeserializer
 	{
-		T DeserializeAndValidateExportFieldValue<T>(string itemIdentifier, string sanitizingSourceFieldName, object initialValue);
+		T DeserializeAndValidateExportFieldValue<T>(object initialValue);
 	}
 }

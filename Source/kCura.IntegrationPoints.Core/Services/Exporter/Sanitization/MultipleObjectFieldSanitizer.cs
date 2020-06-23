@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
@@ -33,18 +32,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			RelativityObjectValue[] objectValues =
-				_sanitizationDeserializer.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(
-					itemIdentifier,
-					sanitizingSourceFieldName, 
-					initialValue);
+			RelativityObjectValue[] objectValues = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<RelativityObjectValue[]>(initialValue);
 
 			if (objectValues.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier, 
-					sanitizingSourceFieldName,
-					$"Expected elements of input to be deserializable to type {typeof(RelativityObjectValue)}.");
+				throw new InvalidExportFieldValueException($"Some values in MultiObject field are null or contain only white-space characters.");
 			}
 
 			bool ContainsDelimiter(string x) => x.Contains(_multiValueDelimiter);
@@ -52,11 +44,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			List<string> names = objectValues.Select(x => x.Name).ToList();
 			if (names.Any(ContainsDelimiter))
 			{
-				string violatingNameList = string.Join(", ", names.Where(ContainsDelimiter).Select(x => $"'{x}'"));
-				throw new IntegrationPointsException(
-					$"The identifiers of the following objects referenced by object '{itemIdentifier}' in field '{sanitizingSourceFieldName}' " +
-					$"contain the character specified as the multi-value delimiter ('{_multiValueDelimiter}'). Rename these objects or choose " +
-					$"a different delimiter: {violatingNameList}.");
+				throw new InvalidExportFieldValueException(
+					$"The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII {(int)_multiValueDelimiter}'). " +
+					$"Rename these objects to not contain delimiter.");
 			}
 
 			string multiValueDelimiterString = char.ToString(_multiValueDelimiter);

@@ -22,11 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			_sanitizationHelper = new Mock<ISanitizationDeserializer>();
 			var jsonSerializer = new JSONSerializer();
 			_sanitizationHelper
-				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto>(
-					It.IsAny<string>(),
-					It.IsAny<string>(), 
-					It.IsAny<object>()))
-				.Returns((string x, string y, object serializedObject) =>
+				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto>(It.IsAny<object>()))
+				.Returns((object serializedObject) =>
 					jsonSerializer.Deserialize<ChoiceDto>(serializedObject.ToString()));
 		}
 
@@ -64,12 +61,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 
 			// Act
 			object initialValue = SanitizationTestUtils.DeserializeJson("{ \"ArtifactID\": 10123, \"Foo\": \"Bar\" }");
-			Func<Task> action = async () => await sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue);
 
 			// Assert
 			action.ShouldThrow<InvalidExportFieldValueException>()
 				.Which.Message.Should()
-					.Contain(typeof(ChoiceDto).Name);
+					.NotContain(typeof(ChoiceDto).Name);
 		}
 
 		[Test]

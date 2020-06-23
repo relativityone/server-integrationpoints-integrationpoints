@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 		}
 
 		// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-		public T DeserializeAndValidateExportFieldValue<T>(string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
+		public T DeserializeAndValidateExportFieldValue<T>(object initialValue)
 		{
 			T fieldValue;
 			try
@@ -23,11 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier,
-					sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(T)}, but instead type was {initialValue.GetType()}.",
-					ex);
+				throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(T)}, but instead type was {initialValue.GetType()}.", ex);
 			}
 
 			return fieldValue;
