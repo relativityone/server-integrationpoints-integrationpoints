@@ -200,9 +200,10 @@ namespace Relativity.Sync.Tests.Integration
 				new[] {typeof(IJobStatusConsolidationConfiguration)},
 				new[]
 				{
-					typeof(IJobCleanupConfiguration),
-					typeof(INotificationConfiguration)
-				}
+					typeof(INotificationConfiguration),
+					typeof(IAutomatedWorkflowTriggerConfiguration)
+				},
+				new[] {typeof(IJobCleanupConfiguration) }
 			};
 		}
 

@@ -41,12 +41,14 @@ namespace Relativity.Sync.Nodes
 			ExecutionResult[] executionResults = ExecuteTasksInParallelWithContextSync(context,
 				ReportJobEndMetricsAsync,
 				RunNotificationCommandAsync,
-				RunJobCleanupAsync,
 				RunJobAutomatedWorkflowTriggerAsync);
 			LogFailures(executionResults);
 
+			ExecutionResult jobCleanupExecutionResult = RunJobCleanupAsync(context).GetAwaiter().GetResult();
+			LogFailures(jobCleanupExecutionResult);
+
 			List<SyncException> syncExceptions = executionResults
-				.Concat(new[] { jobStatusConsolidationExecutionResult })
+				.Concat(new[] { jobStatusConsolidationExecutionResult, jobCleanupExecutionResult })
 				.Where(result => result.Status == ExecutionStatus.Failed)
 				.Select(result => new SyncException(result.Message, result.Exception))
 				.ToList();
@@ -109,8 +111,11 @@ namespace Relativity.Sync.Nodes
 		}
 
 		private Task<ExecutionResult> RunNotificationCommandAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_notificationCommand, context);
+		
 		private Task<ExecutionResult> RunJobStatusConsolidationAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobStatusConsolidationCommand, context);
+		
 		private Task<ExecutionResult> RunJobCleanupAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobCleanupCommand, context);
+		
 		private Task<ExecutionResult> RunJobAutomatedWorkflowTriggerAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_automatedWfTriggerCommand, context);
 
 		private static async Task<ExecutionResult> ExecuteCommandIfCanExecuteAsync<T>(ICommand<T> command, IExecutionContext<SyncExecutionContext> context) where T : IConfiguration
