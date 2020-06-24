@@ -93,6 +93,8 @@ Task Rebuild -Description "Do a rebuild" {
     }
 }
 
+Task Nightly -Depends Default, FunctionalTest -Description "Build and run all tests. All the steps for a nightly build with deployed environemnt.";
+
 Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
 }
