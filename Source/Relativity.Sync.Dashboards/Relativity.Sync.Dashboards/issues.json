@@ -189,7 +189,7 @@
 	},
 	{
 		"Jira": "REL-409732",
-		"Exception": "*Relativity.Services.Exceptions.ServiceException: One or more long-text fields in this saved search were migrated to Data Grid. This saved search must be updated.*DataSourceSnapshotExecutor*"
+		"Exception": "*Relativity.Services.Exceptions.*: One or more long-text fields in this saved search were migrated to Data Grid. This saved search must be updated.*DataSourceSnapshotExecutor*"
 	},
 	{
 		"Jira": "REL-410131",
@@ -330,10 +330,6 @@
 	{
 		"Jira": "REL-444039",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*The given name * matches at least two names in the collection object with different cases, but does not match either of them with the same case.*"
-	},
-	{
-		"Jira": "REL-444057",
-		"Exception": "Relativity.Services.Exceptions.InvalidInputException: One or more long-text fields in this saved search were migrated to Data Grid. This saved search must be updated.*"
 	},
 	{
 		"Jira": "REL-444066",
