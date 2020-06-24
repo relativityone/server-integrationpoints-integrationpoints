@@ -19,9 +19,9 @@ namespace kCura.IntegrationPoints.UITests.Driver
 	{
 		private const int _DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS = 20;
 
-		public static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromSeconds(30);
+		public static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromSeconds(10);
 
-		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
 		public static IWebElement ClickEx(this IWebElement element, TimeSpan? timeout = null)
 		{
@@ -112,6 +112,7 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			}
 			catch (Exception ex)
 			{
+				Console.WriteLine("Action timed out.");
 				throw new UiTestException("Action timed out.", ex);
 			}
 		}

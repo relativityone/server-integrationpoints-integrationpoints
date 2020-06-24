@@ -58,12 +58,8 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement tree = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
-			OpenAllNodes(tree);
+			IWebElement folderIcon = GetNode(name);
 
-			Thread.Sleep(TimeSpan.FromMilliseconds(2000));
-
-			IWebElement folderIcon = tree.FindElementsEx(By.CssSelector(".jstree-anchor")).First(el => el.Text == name);
 			folderIcon.ScrollIntoView();
 			Thread.Sleep(TimeSpan.FromSeconds(1));
 			folderIcon.ClickEx();
@@ -71,24 +67,32 @@ namespace kCura.IntegrationPoints.UITests.Components
 			return this;
 		}
 
-		private void OpenAllNodes(IWebElement tree)
+		private IWebElement GetNode(string name)
 		{
-			while (true)
-			{
-				Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-				ICollection<IWebElement> closedNodes = tree.FindElementsEx(By.CssSelector(".jstree-closed"));
-				if (closedNodes.Count == 0)
-				{
-					break;
-				}
-				foreach (var closedNode in closedNodes)
-				{
-					IWebElement button = closedNode.FindElementEx(By.TagName("i"));
-					button.ScrollIntoView();
-					button.ClickEx();
-				}
-			}
-		}
+			IWebElement tree = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
 
+			IWebElement node = null;
+			while (node == null)
+			{
+				node = tree.FindElementsEx(By.CssSelector(".jstree-anchor")).FirstOrDefault(el => el.Text == name);
+				if(node == null)
+				{
+					Thread.Sleep(TimeSpan.FromSeconds(1));
+					ICollection<IWebElement> closedNodes = tree.FindElementsEx(By.CssSelector(".jstree-closed"));
+					if (closedNodes.Count == 0)
+					{
+						break;
+					}
+					foreach (var closedNode in closedNodes)
+					{
+						IWebElement button = closedNode.FindElementEx(By.TagName("i"));
+						button.ScrollIntoView();
+						button.ClickEx();
+					}
+				}
+			};
+
+			return node;
+		}
 	}
 }

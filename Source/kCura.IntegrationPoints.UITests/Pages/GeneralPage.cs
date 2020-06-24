@@ -2,11 +2,14 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using kCura.EDDS.WebAPI.DocumentManagerBase;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
+using Polly;
 using SeleniumExtras.PageObjects;
 using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
@@ -97,10 +100,19 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		private void GoToPage(string pageName)
 		{
-			WaitForPage();
-			QuickNavigationInput.SendKeys(pageName);
-			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(pageName);
-			resultLinkLinkName.ClickEx();
+			const int retryCount = 3;
+			Policy policy = Policy
+				.Handle<UiTestException>()
+				.Retry(retryCount, (ex, retry) => Refresh());
+
+			policy.Execute(() =>
+			{
+				Console.WriteLine($"Load {pageName} with retries...");
+				WaitForPage();
+				QuickNavigationInput.SendKeys(pageName);
+				IWebElement resultLinkLinkName = Driver.FindElementByLinkText(pageName);
+				resultLinkLinkName.ClickEx();
+			});
 		}
 	}
 }

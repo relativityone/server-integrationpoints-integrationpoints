@@ -28,32 +28,41 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 				return initialValue;
 			}
 
-			int userArtifactId = GetUserArtifactId(itemIdentifier, sanitizingSourceFieldName, initialValue);
+			int userArtifactId = GetUserArtifactId(initialValue);
 
 			using (IUserInfoManager userInfoManager = _helper.GetServicesManager().CreateProxy<IUserInfoManager>(ExecutionIdentity.System))
 			{
-				QueryRequest userQuery = new QueryRequest
+				string instanceUserEmail = await GetUserEmailAsync(userInfoManager, -1, userArtifactId).ConfigureAwait(false);
+				if (!string.IsNullOrEmpty(instanceUserEmail))
 				{
-					Condition = $@"('ArtifactID' == {userArtifactId})"
-				};
+					return instanceUserEmail;
+				}
 
-				UserInfoQueryResultSet users = await userInfoManager.RetrieveUsersBy(-1, userQuery, 0, 1).ConfigureAwait(false);
-				if (users?.ResultCount == 1)
+				string workspaceUserEmail = await GetUserEmailAsync(userInfoManager, workspaceArtifactID, userArtifactId).ConfigureAwait(false);
+				if (!string.IsNullOrEmpty(workspaceUserEmail))
 				{
-					return users.DataResults.Single().Email;
+					return workspaceUserEmail;
 				}
 			}
 
-			throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName, $"Could not retrieve info for user with ArtifactID {userArtifactId}.");
+			throw new InvalidExportFieldValueException($"Could not retrieve info for user with ArtifactID {userArtifactId}. " +
+			                                           $"If this workspace was restored using ARM, verify if user has been properly mapped during workspace restore.");
 		}
 
-		private int GetUserArtifactId(string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
+		private async Task<string> GetUserEmailAsync(IUserInfoManager userInfoManager, int workspaceArtifactId, int userArtifactId)
 		{
-			UserInfo userFieldValue = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<UserInfo>(
-				itemIdentifier,
-				sanitizingSourceFieldName,
-				initialValue);
+			QueryRequest userQuery = new QueryRequest
+			{
+				Condition = $@"('ArtifactID' == {userArtifactId})"
+			};
 
+			UserInfoQueryResultSet instanceUserQueryResult = await userInfoManager.RetrieveUsersBy(workspaceArtifactId, userQuery, 0, 1).ConfigureAwait(false);
+			return instanceUserQueryResult?.DataResults?.SingleOrDefault()?.Email;
+		}
+
+		private int GetUserArtifactId(object initialValue)
+		{
+			UserInfo userFieldValue = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<UserInfo>(initialValue.ToString());
 			return userFieldValue.ArtifactID;
 		}
 	}

@@ -85,7 +85,7 @@ public class FunctionalTestsSetupFixture
 	{
 		Console.WriteLine("Import Fileshare Test Services...");
 
-		InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True").GetAwaiter().GetResult();
+		InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True", Relativity.Services.InstanceSetting.ValueType.TrueFalse).GetAwaiter().GetResult();
 
 		var applicationManager = new RelativityApplicationManager(_testHelper);
 		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesPath).GetAwaiter().GetResult();

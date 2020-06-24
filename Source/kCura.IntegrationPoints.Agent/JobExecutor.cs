@@ -160,8 +160,12 @@ namespace kCura.IntegrationPoints.Agent
 				details += exception.Message + Environment.NewLine + exception.StackTrace;
 			}
 
-			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}",
-				new JobLogInformation { Job = job, State = state, Details = details });
+			_logger.LogInformation("Integration Points job status update: {@JobLogInformation}", new JobLogInformation
+			{
+				Job = job.RemoveSensitiveData(), 
+				State = state,
+				Details = details
+			});
 		}
 
 		private void LogOnStartJobProcessing(string agentMessage, long nextJobJobId, int nextJobWorkspaceId,

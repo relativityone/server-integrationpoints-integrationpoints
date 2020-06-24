@@ -34,11 +34,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 			_sanitizationHelper = new Mock<ISanitizationDeserializer>();
 			var jsonSerializer = new JSONSerializer();
 			_sanitizationHelper
-				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(
-					It.IsAny<string>(),
-					It.IsAny<string>(), 
-					It.IsAny<object>()))
-				.Returns((string x, string y, object serializedObject) =>
+				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto[]>(It.IsAny<object>()))
+				.Returns((object serializedObject) =>
 					jsonSerializer.Deserialize<ChoiceDto[]>(serializedObject.ToString()));
 			_sut = new MultipleChoiceFieldSanitizer(
 				_choiceCache.Object, 
@@ -60,23 +57,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 		public void ItShouldThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalid(object initialValue)
 		{
 			// Act
-			Func<Task> action = async () => await _sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => _sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
-				.Which.Message.Should()
-				.Contain(typeof(ChoiceDto).Name);
+			action.ShouldThrow<InvalidExportFieldValueException>();
 		}
 
 		[TestCaseSource(nameof(ThrowIPExceptionWhenNameContainsDelimiterTestCases))]
-		public void ItShouldThrowIPExceptionWhenNameContainsDelimiter(object initialValue, string expectedViolators)
+		public void ItShouldThrowIPExceptionWhenNameContainsDelimiter(object initialValue)
 		{
 			// Act
-			Func<Task> action = async () => await _sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => _sut.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
 			action.ShouldThrow<IntegrationPointsException>()
-				.Which.Message.Should().MatchRegex($" {expectedViolators}\\.$");
+				.Which.Message.Should().Be("Unable to parse data from Relativity Export API: " +
+				                           "The identifiers of the choices contain the character specified as the" +
+				                           " multi-value delimiter ('ASCII 59') or nested value delimiter ('ASCII 47'). " +
+				                           "Rename choices to not contain delimiters.");
 		}
 
 		[Test]
@@ -114,47 +112,33 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 
 		private static IEnumerable<TestCaseData> ThrowIPExceptionWhenNameContainsDelimiterTestCases()
 		{
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames($"{_MULTI_VALUE} Sick Choice"),
-				$"'{_MULTI_VALUE} Sick Choice'")
+			yield return new TestCaseData(ChoiceJArrayFromNames($"{_MULTI_VALUE} Sick Choice"))
 			{
 				TestName = "MultiValue - Singleton"
 			};
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", "Awesome Name"),
-				$"'Cool{_MULTI_VALUE} Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", "Awesome Name"))
 			{
 				TestName = "MultiValue - Single violating name in larger collection"
 			};
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"),
-				$"'Cool{_MULTI_VALUE} Name', 'Awesome{_MULTI_VALUE} Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"))
 			{
 				TestName = "MultiValue - Many violating names in larger collection"
 			};
 
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames($"{_NESTED_VALUE} Sick Choice"),
-				$"'{_NESTED_VALUE} Sick Choice'")
+			yield return new TestCaseData(ChoiceJArrayFromNames($"{_NESTED_VALUE} Sick Choice"))
 			{
 				TestName = "NestedValue - Singleton"
 			};
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", "Awesome Name"),
-				$"'Cool{_NESTED_VALUE} Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", "Awesome Name"))
 			{
 				TestName = "NestedValue - Single violating name in larger collection"
 			};
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_NESTED_VALUE} Name"),
-				$"'Cool{_NESTED_VALUE} Name', 'Awesome{_NESTED_VALUE} Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_NESTED_VALUE} Name"))
 			{
 				TestName = "NestedValue - Many violating names in larger collection"
 			};
 
-			yield return new TestCaseData(
-				ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"),
-				$"'Cool{_NESTED_VALUE} Name', 'Awesome{_MULTI_VALUE} Name'")
+			yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"))
 			{
 				TestName = "Combined - Many violating names in larger collection"
 			};

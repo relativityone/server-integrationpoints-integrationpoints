@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using Relativity;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
@@ -28,17 +29,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 			}
 
 			// We have to re-serialize and deserialize the value from Export API due to REL-250554.
-			ChoiceDto choice = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<ChoiceDto>(
-				itemIdentifier, 
-				sanitizingSourceFieldName, 
-				initialValue);
+			ChoiceDto choice = _sanitizationDeserializer.DeserializeAndValidateExportFieldValue<ChoiceDto>(initialValue);
 
 			if (string.IsNullOrWhiteSpace(choice.Name))
 			{
-				throw new InvalidExportFieldValueException(
-					itemIdentifier, 
-					sanitizingSourceFieldName,
-					$"Expected input to be deserializable to type {typeof(ChoiceDto)} and name to not be null or empty.");
+				throw new InvalidExportFieldValueException($"Expected input to be deserializable to type {typeof(Choice)} and name to not be null or empty.");
 			}
 
 			string value = choice.Name;
