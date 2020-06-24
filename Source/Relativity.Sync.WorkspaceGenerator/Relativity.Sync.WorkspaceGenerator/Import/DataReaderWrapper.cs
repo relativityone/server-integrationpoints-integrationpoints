@@ -12,6 +12,8 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		private readonly IDocumentFactory _documentFactory;
 		private readonly TestCase _testCase;
+		private readonly DataTable _dataTable;
+		private readonly int _batchSize;
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
@@ -31,13 +33,13 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		private int _currentDocumentIndex = 0;
 		private Document _currentDocument;
-		private DataTable _dataTable;
 		private DataRow _currentRow;
 
-		public DataReaderWrapper(IDocumentFactory documentFactory, TestCase testCase)
+		public DataReaderWrapper(IDocumentFactory documentFactory, TestCase testCase, int batchSize)
 		{
 			_documentFactory = documentFactory;
 			_testCase = testCase;
+			_batchSize = batchSize;
 
 			_dataTable = new DataTable();
 
@@ -63,15 +65,13 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		public bool Read()
 		{
-			_currentRow?.Delete();
-			_currentDocument = _documentFactory.GetNextDocumentAsync().GetAwaiter().GetResult();
-
-			if (_currentDocument == null)
+			if(_currentDocumentIndex >= _batchSize)
 			{
 				return false;
 			}
 
-			Console.WriteLine($"Importing document ({++_currentDocumentIndex} of {_testCase.NumberOfDocuments}): {_currentDocument.Identifier}");
+			_currentRow?.Delete();
+			_currentDocument = _documentFactory.GetNextDocumentAsync().GetAwaiter().GetResult();
 
 			_currentRow = _dataTable.NewRow();
 			_currentRow[ColumnNames.ControlNumber] = _currentDocument.Identifier;
@@ -91,6 +91,8 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			{
 				_currentRow[customFieldValuePair.Item1] = customFieldValuePair.Item2;
 			}
+
+			_currentDocumentIndex++;
 
 			return true;
 		}

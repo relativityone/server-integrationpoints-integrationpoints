@@ -156,6 +156,8 @@
     <Compile Include="FileGenerating\FileExtensionProvider\IFileExtensionProvider.cs" />
     <Compile Include="FileGenerating\FileExtensionProvider\RandomNativeFileExtensionProvider.cs" />
     <Compile Include="FileGenerating\FileExtensionProvider\TextFileExtensionProvider.cs" />
+    <Compile Include="Import\DataReaderProvider.cs" />
+    <Compile Include="Import\IDataReaderProvider.cs" />
     <Compile Include="RelativityServices\IRelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\ISavedSearchManager.cs" />
     <Compile Include="RelativityServices\IWorkspaceService.cs" />
