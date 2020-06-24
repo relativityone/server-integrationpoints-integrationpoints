@@ -8,7 +8,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 	{
 		private readonly IDocumentFactory _documentFactory;
 		private readonly TestCase _testCase;
-		private readonly int _batchSize = 10000;
+		private readonly int _batchSize;
 
 		private int _totalRecordsProvided = 0;
 

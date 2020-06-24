@@ -13,7 +13,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private readonly IDocumentFactory _documentFactory;
 		private readonly TestCase _testCase;
 		private readonly DataTable _dataTable;
-		private readonly int _size;
+		private readonly int _batchSize;
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
@@ -35,11 +35,11 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private Document _currentDocument;
 		private DataRow _currentRow;
 
-		public DataReaderWrapper(IDocumentFactory documentFactory, TestCase testCase, int size)
+		public DataReaderWrapper(IDocumentFactory documentFactory, TestCase testCase, int batchSize)
 		{
 			_documentFactory = documentFactory;
 			_testCase = testCase;
-			_size = size;
+			_batchSize = batchSize;
 
 			_dataTable = new DataTable();
 
@@ -65,7 +65,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		public bool Read()
 		{
-			if(_currentDocumentIndex >= _size)
+			if(_currentDocumentIndex >= _batchSize)
 			{
 				return false;
 			}
