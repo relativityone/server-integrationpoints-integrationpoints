@@ -11,7 +11,9 @@ namespace Relativity.Sync.Tests.System.Core
 {
 	public abstract class SystemTest : IDisposable
 	{
+#pragma warning disable CS0618 // Type or member is obsolete
 		protected IRSAPIClient Client { get; private set; }
+#pragma warning restore CS0618 // Type or member is obsolete
 		protected ServiceFactory ServiceFactory { get; private set; }
 		protected TestEnvironment Environment { get; private set; }
 

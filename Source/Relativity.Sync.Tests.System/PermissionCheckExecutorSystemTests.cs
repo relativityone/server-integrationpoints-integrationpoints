@@ -16,6 +16,7 @@ using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
+#pragma warning disable CS0612 // Type or member is obsolete
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
