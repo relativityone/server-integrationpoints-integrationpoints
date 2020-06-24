@@ -14,7 +14,6 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private readonly IFileGenerator _nativeSingleFileGenerator;
 		private readonly IFileGenerator _extractedTextSingleFileGenerator;
 		private readonly Random _random;
-		private int _currentDocumentIndex = 0;
 
 		public DocumentFactory(TestCase testCase, IFileGenerator nativeSingleFileGenerator, IFileGenerator extractedTextSingleFileGenerator)
 		{
@@ -26,13 +25,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		public async Task<Document> GetNextDocumentAsync()
 		{
-			if (_currentDocumentIndex >= _testCase.NumberOfDocuments)
-			{
-				return null;
-			}
-
 			Document document = new Document($"{_testCase.Name}{Consts.ControlNumberSeparator}{Guid.NewGuid().ToString()}");
-			Console.WriteLine($"Generating document: {document.Identifier}");
 
 			if (_testCase.GenerateNatives)
 			{
@@ -52,8 +45,6 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			{
 				document.CustomFields.Add(new Tuple<string, string>(field.Name, GetFieldValue(field)));
 			}
-
-			_currentDocumentIndex++;
 
 			return document;
 		}

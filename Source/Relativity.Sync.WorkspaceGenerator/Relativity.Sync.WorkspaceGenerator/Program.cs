@@ -31,6 +31,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 					DesiredWorkspaceName = "My Test Workspace",
 					TemplateWorkspaceName = "Functional Tests Template",
 					TestDataDirectoryPath = @"C:\Data\WorkspaceGenerator",
+					BatchSize = 10000,
 					TestCases = new List<TestCase>()
 					{
 						new TestCase()

@@ -40,6 +40,9 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 		[Option("testDataDir", Required = true, HelpText = "Directory path where test data (natives and extracted text) will be stored")]
 		public string TestDataDirectoryPath { get; set; }
 
+		[Option("batchSize", HelpText = "Size of batch for documents import", Default = 10000)]
+		public int BatchSize { get; set; }
+
 		public List<TestCase> TestCases { get; set; } = new List<TestCase>();
 
 		[JsonIgnore]
