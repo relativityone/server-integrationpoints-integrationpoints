@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.System
 		[IdentifiedTest("c74612fc-2216-4ecb-af58-23e28826bdc0")]
 		public async Task ItShouldCreateTagIfItDoesNotExist()
 		{
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.System
 		[IdentifiedTest("c70961bc-dbdf-4dce-a59d-a017c92b3282")]
 		public async Task ItShouldUpdateTagIfItDoesExist()
 		{
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{

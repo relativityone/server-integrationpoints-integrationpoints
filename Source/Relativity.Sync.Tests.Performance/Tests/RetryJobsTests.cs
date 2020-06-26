@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -30,16 +30,10 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			{
 				new PerformanceTestCase
 				{
-					TestCaseName = "Retry-Links",
+					TestCaseName = "Retry",
 					CopyMode = ImportNativeFileCopyMode.SetFileLinks,
-					NumberOfMappedFields = 100,
-				},
-				//new PerformanceTestCase
-				//{
-				//	TestCaseName = "Retry-CopyNatives",
-				//	CopyMode = ImportNativeFileCopyMode.CopyFiles,
-				//	NumberOfMappedFields = 100,
-				//},
+					NumberOfMappedFields = 100
+				}
 			};
 
 			return testCases.Select(x => new TestCaseData(x)
@@ -49,56 +43,65 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
+		
+		private async Task SetupAsync(PerformanceTestCase testCase, int? targetWorkspaceId, string savedSearchName)
+		{
+			Configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
+			Configuration.ImportNativeFileCopyMode = testCase.CopyMode;
+
+			await SetupConfigurationAsync(
+				sourceWorkspaceId: _sourceWorkspaceIdArm,
+				targetWorkspaceId: targetWorkspaceId,
+				savedSearchName: savedSearchName).ConfigureAwait(false);
+
+			IEnumerable<FieldMap> generatedFields = await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: null).ConfigureAwait(false);
+			Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(generatedFields).ToArray());
+			if (testCase.MapExtractedText)
+			{
+				IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync().ConfigureAwait(false);
+				Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
+			}
+			Logger.LogInformation("Fields mapping ready");
+		}
 
 		[TestCaseSource(nameof(TestCases))]
 		public async Task Run(PerformanceTestCase testCase)
 		{
 			// Arrange
-			Configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
-			Configuration.ImportNativeFileCopyMode = testCase.CopyMode;
+			
+			//
+			_sourceWorkspaceIdArm = 1024345;
+			int targetWorkspaceId = 1024388;
+			//
+			
+			// Sync 30% Of All Documents
+			await SetupAsync(testCase, targetWorkspaceId, "30% Of All Documents").ConfigureAwait(false);
+			await RunJobAsync().ConfigureAwait(false);
 
-			await SetupConfigurationAsync(
-				sourceWorkspaceId: _sourceWorkspaceIdArm, 
-				targetWorkspaceId: null,
-				savedSearchName: "30% Of All Documents").ConfigureAwait(false);
+			// Sync All Documents using AppendOnly to create item level errors
+			await SetupAsync(testCase, TargetWorkspace.ArtifactID, "All Documents").ConfigureAwait(false);
+			await RunJobAsync().ConfigureAwait(false);
 
-			int targetWorkspaceId = TargetWorkspace.ArtifactID;
+			// Retry 
+			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceIdArm).ConfigureAwait(false);
+			Configuration.JobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceIdArm).ConfigureAwait(false);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(Configuration);
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
-			ConfigurationRdoId = await
-				Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
-					.ConfigureAwait(false);
+			// ASSERT
+		}
 
-			IEnumerable<FieldMap> generatedFields =
-				await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: null)
-					.ConfigureAwait(false);
-
-			Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(generatedFields).ToArray();
-
-			if (testCase.MapExtractedText)
-			{
-				IEnumerable<FieldMap> extractedTextMapping =
-					await GetGetExtractedTextMappingAsync().ConfigureAwait(false);
-				Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(extractedTextMapping).ToArray();
-			}
-
-			Logger.LogInformation("Fields mapping ready");
-
-			ConfigurationRdoId = await
-				Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
-					.ConfigureAwait(false);
-
+		private async Task RunJobAsync()
+		{
+			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
 			Logger.LogInformation("Configuration RDO created");
 
-			SyncJobParameters args = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID,
-				Configuration.JobHistoryId);
+			SyncJobParameters jobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId);
+			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger());
 
-			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
-				new NullAPM(), TestLogHelper.GetLogger());
-
-			Logger.LogInformation("Staring the job");
-
-			// Act
-			SyncJobState jobState = await syncRunner.RunAsync(args, User.ArtifactID).ConfigureAwait(false);
+			Logger.LogInformation("Starting the job");
+			SyncJobState syncJobState = await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);
 		}
+
 	}
 }

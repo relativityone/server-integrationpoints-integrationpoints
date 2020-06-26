@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +16,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.System.Core;
@@ -42,7 +43,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		public WorkspaceRef SourceWorkspace { get; set; }
 
-		public FullSyncJobConfiguration Configuration { get; set; }
+		internal ConfigurationStub Configuration { get; set; }
 
 		public int ConfigurationRdoId { get; set; }
 
@@ -57,17 +58,17 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 			ARMHelper = ARMHelper.CreateInstance();
 
-			Configuration = new FullSyncJobConfiguration()
+			Configuration = new ConfigurationStub()
 			{
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
-				CreateSavedSearchForTagging = false,
-				EmailNotificationRecipients = "",
+				CreateSavedSearchForTags = false,
 				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
 				FolderPathSourceFieldName = "Document Folder Path",
 				ImportNativeFileCopyMode = ImportNativeFileCopyMode.DoNotImportNativeFiles,
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				MoveExistingDocuments = false,
 			};
+			Configuration.SetEmailNotificationRecipients(string.Empty);
 		}
 
 		[OneTimeSetUp]
@@ -113,21 +114,17 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 				await SetupConfigurationAsync(_sourceWorkspaceIdArm, null, testCase.TestCaseName).ConfigureAwait(false);
 
-				ConfigurationRdoId = await
-					Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
-						.ConfigureAwait(false);
-
 				IEnumerable<FieldMap> generatedFields =
 					await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: null)
 						.ConfigureAwait(false);
 
-				Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(generatedFields).ToArray();
+				Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(generatedFields).ToList());
 
 				if (testCase.MapExtractedText)
 				{
 					IEnumerable<FieldMap> extractedTextMapping =
-						await GetGetExtractedTextMappingAsync().ConfigureAwait(false);
-					Configuration.FieldsMapping = Configuration.FieldsMapping.Concat(extractedTextMapping).ToArray();
+						await GetExtractedTextMappingAsync().ConfigureAwait(false);
+					Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
 				}
 
 				Logger.LogInformation("Fields mapping ready");
@@ -139,7 +136,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				Logger.LogInformation("Configuration RDO created");
 
 				SyncJobParameters args = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID,
-					Configuration.JobHistoryId);
+					Configuration.JobHistoryArtifactId);
 
 				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
 					new NullAPM(), TestLogHelper.GetLogger());
@@ -157,7 +154,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
 
 				RelativityObject jobHistory = await Rdos
-					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryId)
+					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId)
 					.ConfigureAwait(false);
 
 				// Assert
@@ -204,22 +201,15 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				TargetWorkspace = await Environment.GetWorkspaceAsync(targetWorkspaceId.Value).ConfigureAwait(false);
 			}
 
-			Configuration.TargetWorkspaceArtifactId = TargetWorkspace.ArtifactID;
-
+			Configuration.DestinationWorkspaceArtifactId = TargetWorkspace.ArtifactID;
 			Configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).ConfigureAwait(false);
-
-
-			Configuration.FieldsMapping =
-				mapping ?? await GetIdentifierMapping(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
-
-			Configuration.JobHistoryId =
-				await Rdos.CreateJobHistoryInstance(ServiceFactory, SourceWorkspace.ArtifactID)
-					.ConfigureAwait(false);
+			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
+			Configuration.SetFieldMappings(fieldsMapping.ToList());
+			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now.ToString("yyyy MMMM dd HH.mm.ss.fff")}").ConfigureAwait(false);
 
 			if (useRootWorkspaceFolder)
 			{
-				Configuration.DestinationFolderArtifactId =
-					await Rdos.GetRootFolderInstance(ServiceFactory, TargetWorkspace.ArtifactID).ConfigureAwait(false);
+				Configuration.DestinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, TargetWorkspace.ArtifactID).ConfigureAwait(false);
 			}
 
 			Logger.LogInformation("Configuration done");
@@ -297,9 +287,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-
-
-		protected async Task<IEnumerable<FieldMap>> GetGetExtractedTextMapping()
+		protected async Task<IEnumerable<FieldMap>> GetExtractedTextMappingAsync()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{

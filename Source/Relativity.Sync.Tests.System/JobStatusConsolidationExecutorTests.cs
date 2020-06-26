@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task SyncJob_ShouldConsolidateJobStatusAndUpdateJobHistory()
 		{
 			// Arrange
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 
 			var configuration = new ConfigurationStub

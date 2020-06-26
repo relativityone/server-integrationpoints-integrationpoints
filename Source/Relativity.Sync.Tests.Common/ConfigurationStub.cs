@@ -22,6 +22,7 @@ namespace Relativity.Sync.Tests.Common
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
 
+		private string _emailNotificationRecipients;
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
 
 		public string DataDestinationName { get; set; }
@@ -63,7 +64,14 @@ namespace Relativity.Sync.Tests.Common
 			_jobName = jobName;
 		}
 
-		public string GetNotificationEmails() => String.Empty;
+		public IEnumerable<string> GetEmailRecipients() => _emailRecipients;
+
+		public string GetNotificationEmails() => _emailNotificationRecipients;
+
+		public void SetEmailNotificationRecipients(string emailNotificationRecipients)
+		{
+			_emailNotificationRecipients = emailNotificationRecipients;
+		}
 
 		public int SourceWorkspaceArtifactId { get; set; }
 		public string TriggerName { get; }
@@ -137,8 +145,6 @@ namespace Relativity.Sync.Tests.Common
 
 		public int ExecutingUserId { get; set; } = _ADMIN_ID;
 		public bool SendEmails { get; set; }
-
-		public IEnumerable<string> GetEmailRecipients() => _emailRecipients;
 
 		public int TotalRecordsCount { get; set; }
 		public int BatchSize { get; set; }

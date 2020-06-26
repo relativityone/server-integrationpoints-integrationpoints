@@ -10,6 +10,6 @@
     <Parameter name="RemoteArchivesLocation" value="\\emttest" />
     <Parameter name="RelativeArchivesLocation" value="DefaultFileRepository\Archives" />
     <Parameter name="ResourcePoolId" value="1015040" />
-    <Parameter name="PerformanceResultsFilePath" value="S:\results.csv" />
+    <Parameter name="PerformanceResultsFilePath" value="C:\results.csv" />
   </TestRunParameters>
 </RunSettings>

@@ -52,8 +52,8 @@ namespace Relativity.Sync.Tests.System
 		[IdentifiedTest("e1a6bd86-8e32-4900-a810-b0566416e3e5")]
 		public async Task ItShouldCreateSnapshot()
 		{
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
-			int jobHistoryToRetryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryToRetryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{

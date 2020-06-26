@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.System
 			int workspaceArtifactId = _sourceWorkspace.ArtifactID;
 			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, workspaceArtifactId, jobHistoryName).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, workspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 			ConfigurationStub configuration = new ConfigurationStub
 			{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			Client = new RSAPIClient(AppSettings.RsapiServicesUrl, new kCura.Relativity.Client.UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword));
 			ServiceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
-			User = await Rdos.GetUser(ServiceFactory, 0).ConfigureAwait(false);
+			User = await Rdos.GetUserAsync(ServiceFactory, 0).ConfigureAwait(false);
 			Environment = new TestEnvironment();
 			Logger = TestLogHelper.GetLogger();
 
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 		}
 
-		protected async Task<IEnumerable<FieldMap>> GetIdentifierMapping(int sourceWorkspaceId, int targetWorkspaceId)
+		protected async Task<IEnumerable<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId)
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{

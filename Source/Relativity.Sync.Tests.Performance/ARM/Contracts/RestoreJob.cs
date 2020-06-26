@@ -1,4 +1,4 @@
-﻿namespace Relativity.Sync.Tests.Performance.ARM.Contracts
+namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 {
 	public class RestoreJob
 	{
@@ -15,8 +15,6 @@
 		public int DatabaseServerId { get; set; }
 		public int FileRepositoryId { get; set; }
 		public int CacheLocationId { get; set; }
-		public bool AutoMapUsers { get; } = true;
-		public bool AutoMapGroups { get; } = true;
 
 		public static ContractEnvelope<RestoreJob> GetRequest(string archivedWorkspacePath, int resourcePoolId)
 		{

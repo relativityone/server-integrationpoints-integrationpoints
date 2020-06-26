@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItShouldCreateJobHistoryError()
 		{
 			// Arrange
-			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspace.ArtifactID, "Totally unique job history name").ConfigureAwait(false);
+			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID, "Totally unique job history name").ConfigureAwait(false);
 			ErrorType expectedErrorType = ErrorType.Item;
 			ErrorStatus expErrorStatus = ErrorStatus.New;
 			string expectedErrorMessage = "Mayday, mayday";
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItemLevelErrorMassCreation_ShouldHandleAllErrors_WhenRequestEntityIsToLarge()
 		{
 			// Arrange
-			int jobHistoryArtifactID = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactID = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
 			const int errorMsgSize = 10;
 			const int stackTraceSize = errorMsgSize * 10;
 			const int itemLevelErrosCount = 20000;

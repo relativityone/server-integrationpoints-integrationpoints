@@ -261,7 +261,7 @@ namespace Relativity.Sync.Tests.System
 			int batchSize,
 			int totalRecordsCount)
 		{
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, sourceWorkspaceArtifactId, $"JobHistory.{Guid.NewGuid()}").ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, $"JobHistory.{Guid.NewGuid()}").ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{

@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItShouldSuccessfullyValidateJob()
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
-			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
+			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
 			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
