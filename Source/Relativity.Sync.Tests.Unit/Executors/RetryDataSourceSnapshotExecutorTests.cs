@@ -1,5 +1,7 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,12 +24,12 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	internal sealed class DataSourceSnapshotExecutorTests
+	internal sealed class RetryDataSourceSnapshotExecutorTests
 	{
-		private DataSourceSnapshotExecutor _instance;
+		private RetryDataSourceSnapshotExecutor _instance;
 
 		private Mock<IObjectManager> _objectManager;
-		private Mock<IDataSourceSnapshotConfiguration> _configuration;
+		private Mock<IRetryDataSourceSnapshotConfiguration> _configuration;
 		private Mock<IJobProgressUpdater> _jobProgressUpdater;
 		private Mock<INativeFileRepository> _nativeFileRepository;
 		private IJobStatisticsContainer _jobStatisticsContainer;
@@ -35,6 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private const int _WORKSPACE_ID = 458712;
 		private const int _DATA_SOURCE_ID = 485219;
+		private const int _JOB_HISOTRY_TO_RETRY_ID = 987654;
 
 		[SetUp]
 		public void SetUp()
@@ -47,9 +50,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
 
-			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
+			_configuration = new Mock<IRetryDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
+			_configuration.Setup(x => x.JobHistoryToRetryId).Returns(_JOB_HISOTRY_TO_RETRY_ID);
 			_configuration.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 
 			_nativeFileRepository = new Mock<INativeFileRepository>();
@@ -59,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-			_instance = new DataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, jobProgressUpdaterFactory.Object,
+			_instance = new RetryDataSourceSnapshotExecutor(serviceFactory.Object, _fieldManager.Object, jobProgressUpdaterFactory.Object,
 				_nativeFileRepository.Object, _jobStatisticsContainer, new EmptyLogger());
 		}
 
@@ -117,7 +121,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int documentArtifactTypeId = (int) ArtifactType.Document;
 			queryRequest.ObjectType.ArtifactTypeID.Should().Be(documentArtifactTypeId);
 
-			queryRequest.Condition.Should().Be($"(('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}))");
+			queryRequest.Condition.Should().Be($"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_JOB_HISOTRY_TO_RETRY_ID}])) AND ('Artifact ID' IN SAVEDSEARCH {_DATA_SOURCE_ID})");
+
 			return true;
 		}
 
@@ -192,6 +197,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// ASSERT
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertFieldMapping(qr, field1Id, field2Id)), 1));
+		}
+
+		[TestCase(ImportOverwriteMode.AppendOverlay)]
+		[TestCase(ImportOverwriteMode.AppendOnly)]
+		[TestCase(ImportOverwriteMode.OverlayOnly)]
+		public async Task ItShouldSetOverrideModeToAppendOverlay(ImportOverwriteMode previousOverrideMode)
+		{
+			// Arrange
+			_configuration.SetupProperty(x => x.ImportOverwriteMode, previousOverrideMode);
+
+			// Act
+			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			_configuration.Object.ImportOverwriteMode.Should().Be(ImportOverwriteMode.AppendOverlay);
 		}
 
 		private bool AssertFieldMapping(QueryRequest queryRequest, string field1Name, string field2Name)

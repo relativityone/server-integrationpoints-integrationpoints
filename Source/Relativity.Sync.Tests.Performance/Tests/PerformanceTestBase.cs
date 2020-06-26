@@ -30,8 +30,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	{
 		protected int _sourceWorkspaceIdArm;
 
-		private readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-
 		private readonly IDictionary<string, TimeSpan> _testTimes = new ConcurrentDictionary<string, TimeSpan>();
 
 		public string ArmedWorkspaceFilename { get; }
@@ -212,7 +210,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 
 			Configuration.FieldsMapping =
-				mapping ?? await GetIdentifierMappingAsync().ConfigureAwait(false);
+				mapping ?? await GetIdentifierMapping(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
 
 			Configuration.JobHistoryId =
 				await Rdos.CreateJobHistoryInstance(ServiceFactory, SourceWorkspace.ArtifactID)
@@ -221,7 +219,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			if (useRootWorkspaceFolder)
 			{
 				Configuration.DestinationFolderArtifactId =
-					await Rdos.GetRootFolderInstance(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
+					await Rdos.GetRootFolderInstance(ServiceFactory, TargetWorkspace.ArtifactID).ConfigureAwait(false);
 			}
 
 			Logger.LogInformation("Configuration done");
@@ -299,38 +297,9 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		protected async Task<IEnumerable<FieldMap>> GetIdentifierMappingAsync()
-		{
-			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				QueryRequest query = PrepareIdentifierFieldsQueryRequest();
-				QueryResult sourceQueryResult = await objectManager.QueryAsync(SourceWorkspace.ArtifactID, query, 0, 1).ConfigureAwait(false);
-				QueryResult destinationQueryResult = await objectManager.QueryAsync(TargetWorkspace.ArtifactID, query, 0, 1).ConfigureAwait(false);
 
-				return new FieldMap[]
-				{
-					new FieldMap
-					{
-						SourceField = new FieldEntry
-						{
-							DisplayName = sourceQueryResult.Objects.First()["Name"].Value.ToString(),
-							FieldIdentifier =  sourceQueryResult.Objects.First().ArtifactID,
-							IsIdentifier = true
-						},
-						DestinationField = new FieldEntry
-						{
-							DisplayName = destinationQueryResult.Objects.First()["Name"].Value.ToString(),
-							FieldIdentifier =  destinationQueryResult.Objects.First().ArtifactID,
-							IsIdentifier = true
-						},
-						FieldMapType = FieldMapType.Identifier
-					}
-				};
 
-			}
-		}
-
-		protected async Task<IEnumerable<FieldMap>> GetGetExtractedTextMappingAsync()
+		protected async Task<IEnumerable<FieldMap>> GetGetExtractedTextMapping()
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -358,23 +327,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					}
 				};
 			}
-		}
-
-		private QueryRequest PrepareIdentifierFieldsQueryRequest()
-		{
-			int fieldArtifactTypeID = (int)ArtifactType.Field;
-			QueryRequest queryRequest = new QueryRequest()
-			{
-				ObjectType = new ObjectTypeRef()
-				{
-					ArtifactTypeID = fieldArtifactTypeID
-				},
-				Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Is Identifier' == true",
-				Fields = new[] { new FieldRef { Name = "Name" } },
-				IncludeNameInQueryResult = true
-			};
-
-			return queryRequest;
 		}
 
 		private QueryRequest PrepareExtractedTextFieldsQueryRequest()

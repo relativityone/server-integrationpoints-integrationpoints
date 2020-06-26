@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,27 +17,37 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private readonly IWorkspaceService _workspaceService;
 		private readonly GeneratorSettings _settings;
 		private readonly TestCase _testCase;
+		private readonly IDataReaderProvider _dataReaderProvider;
 
-		public ImportHelper(IWorkspaceService workspaceService, GeneratorSettings settings, TestCase testCase)
+		public ImportHelper(IWorkspaceService workspaceService, IDataReaderProvider dataReaderProvider, GeneratorSettings settings, TestCase testCase)
 		{
 			_workspaceService = workspaceService;
 			_settings = settings;
 			_testCase = testCase;
+			_dataReaderProvider = dataReaderProvider;
 		}
 
-		public async Task<ImportJobResult> ImportDataAsync(int workspaceArtifactId, IDataReader dataReader)
+		public async Task<IList<ImportJobResult>> ImportDataAsync(int workspaceArtifactId)
 		{
-			Console.WriteLine("Creating ImportAPI client");
-			var importApi =
-				new ImportAPI(
-					_settings.RelativityUserName,
-					_settings.RelativityPassword,
-					_settings.RelativityWebApiUri.ToString());
+			IList<ImportJobResult> jobResults = new List<ImportJobResult>();
 
-			Console.WriteLine("Importing documents");
-			ImportJobResult result = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataReader, importApi).ConfigureAwait(false);
+			IDataReader dataReader;
+			while((dataReader = _dataReaderProvider.GetNextDataReader()) != null)
+			{
+				Console.WriteLine("Creating ImportAPI client");
+				var importApi =
+					new ImportAPI(
+						_settings.RelativityUserName,
+						_settings.RelativityPassword,
+						_settings.RelativityWebApiUri.ToString());
 
-			return result;
+				Console.WriteLine("Importing documents");
+				ImportJobResult result = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataReader, importApi).ConfigureAwait(false);
+
+				jobResults.Add(result);
+			}
+			
+			return jobResults;
 		}
 
 		private async Task<ImportJobResult> ConfigureAndRunImportApiJobAsync(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi)

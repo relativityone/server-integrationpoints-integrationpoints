@@ -16,6 +16,7 @@ using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
+#pragma warning disable CS0612 // Type or member is obsolete
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
@@ -29,8 +30,8 @@ namespace Relativity.Sync.Tests.System
 		private int _destinationFolderArtifactId;
 		private User _user;
 
-		private const string TestUserName = "testuser03@relativity.com";
-		private const string TestPassword = "Test1234!";
+		private const string _TEST_USER_NAME = "testuser03@relativity.com";
+		private const string _TEST_PASSWORD = "Test1234!";
 		private const string _DESTINATION_FOLDER_NAME = "folderName";
 
 		public static IEnumerable<ObjectPermissionSelection> ObjectPermissionsForSource => new[]
@@ -135,7 +136,7 @@ namespace Relativity.Sync.Tests.System
 
 			string groupName = Guid.NewGuid().ToString();
 			_group = CreateGroup(groupName);
-			_user = CreateAndSetUpUser(TestUserName, TestPassword, _group);
+			_user = CreateAndSetUpUser(_TEST_USER_NAME, _TEST_PASSWORD, _group);
 			await AddGroupToWorkspaceAsync(_sourceWorkspace.ArtifactID, _group).ConfigureAwait(false);
 			await AddGroupToWorkspaceAsync(_destinationWorkspace.ArtifactID, _group).ConfigureAwait(false);
 		}

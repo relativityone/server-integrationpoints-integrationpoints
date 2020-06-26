@@ -116,7 +116,6 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();
-			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(container.Resolve<IItemStatusMonitor>());
 			_dataReaderFactory = container.Resolve<ISourceWorkspaceDataReaderFactory>();
 			_executor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
 		}
@@ -134,6 +133,7 @@ namespace Relativity.Sync.Tests.Integration
 			IList<int> documentIds = Enumerable.Range(startIndex, totalItemsCount).ToList();
 			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
 			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(dataReader.ItemStatusMonitor);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				for (int i = 0; i < totalItemsCount; i++)
@@ -178,6 +178,7 @@ namespace Relativity.Sync.Tests.Integration
 			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
 			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
 			List<RelativityObjectSlim> failedDocuments = exportBlock.Take(numberOfErrors).ToList();
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(dataReader.ItemStatusMonitor);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				foreach (RelativityObjectSlim document in failedDocuments)
@@ -234,7 +235,9 @@ namespace Relativity.Sync.Tests.Integration
 			const int totalItemsCount = 10;
 
 			SetupNewBatch(newBatchArtifactId, totalItemsCount);
-			
+
+			ItemStatusMonitor itemStatusMonitor = new ItemStatusMonitor();
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(itemStatusMonitor);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, _emptyJobStatistsics);

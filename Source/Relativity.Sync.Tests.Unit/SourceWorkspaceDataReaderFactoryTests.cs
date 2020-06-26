@@ -23,10 +23,9 @@ namespace Relativity.Sync.Tests.Unit
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
 			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
 			Mock<IBatchDataReaderBuilder> readerBuilder = new Mock<IBatchDataReaderBuilder>();
-			Mock<IItemStatusMonitor> itemStatusMonitor = new Mock<IItemStatusMonitor>();
 
 			_instance = new SourceWorkspaceDataReaderFactory(_exportBatcherFactory.Object, fieldManager.Object, configuration.Object,
-				readerBuilder.Object, itemStatusMonitor.Object, new EmptyLogger());
+				readerBuilder.Object, new EmptyLogger());
 		}
 
 		[Test]
