@@ -153,7 +153,7 @@
 	},
 	{
 		"Jira": "REL-399822",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.* An existing connection was forcibly closed by the remote host* kCura.WinEDDS.BulkLoadFileImporter.WriteDocumentField*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*An existing connection was forcibly closed by the remote host*kCura.WinEDDS.BulkLoadFileImporter.WriteDocumentField*"
 	},
 	{
 		"Jira": "REL-399823",
@@ -189,7 +189,7 @@
 	},
 	{
 		"Jira": "REL-409732",
-		"Exception": "*Relativity.Services.Exceptions.ServiceException: One or more long-text fields in this saved search were migrated to Data Grid. This saved search must be updated.*DataSourceSnapshotExecutor*"
+		"Exception": "*Relativity.Services.Exceptions.*: One or more long-text fields in this saved search were migrated to Data Grid. This saved search must be updated.*DataSourceSnapshotExecutor*"
 	},
 	{
 		"Jira": "REL-410131",
@@ -326,5 +326,21 @@
 	{
 		"Jira": "REL-436119",
 		"Exception": "Relativity.Services.Exceptions.NotFoundException: Not Found.*at Relativity.Sync.Storage.Batch.*UpdateFieldValueAsync*"
+	},
+	{
+		"Jira": "REL-444039",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*The given name * matches at least two names in the collection object with different cases, but does not match either of them with the same case.*"
+	},
+	{
+		"Jira": "REL-444066",
+		"Exception": "Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter.*Relativity.Services.Exceptions.ConflictException: Create Failed*"
+	},
+	{
+		"Jira": "REL-444068",
+		"Exception": "Relativity.Services.Exceptions.ConflictException: An error occured while executing query*Relativity.Sync.Executors.SynchronizationExecutor*"
+	},
+	{
+		"Jira": "REL-444071",
+		"Exception": "*Relativity.Transfer.TransferException: This operation cannot be performed and considered fatal because the workspace * does not exist. Please ensure the the supplied workspace is valid and resubmit the request.*Relativity.Transfer.TransferClientBase*"
 	}
 ]
