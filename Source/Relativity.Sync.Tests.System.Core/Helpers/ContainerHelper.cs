@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
@@ -26,6 +27,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 
 			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
+			containerBuilder.RegisterType<PipelineSelectorConfigurationStub>().As<IPipelineSelectorConfiguration>();
 
 			return containerBuilder.Build();
 		}

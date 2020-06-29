@@ -37,6 +37,8 @@ namespace Relativity.Sync.Tests.Common
 				containerBuilder.RegisterInstance(new ConfigurationStub()).As(type);
 			}
 
+			containerBuilder.RegisterType<PipelineSelectorConfigurationStub>().As<IPipelineSelectorConfiguration>();
+
 			containerBuilder.RegisterInstance(executorTypes).As<List<Type>>();
 		}
 

@@ -16,6 +16,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 using Relativity.Telemetry.APM;
 
@@ -81,6 +82,8 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
 			MockSearchManagerFactory(containerBuilder);
+
+			containerBuilder.RegisterType<PipelineSelectorConfigurationStub>().As<IPipelineSelectorConfiguration>();
 
 			return containerBuilder;
 		}

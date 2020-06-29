@@ -20,6 +20,8 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
+		private static readonly Guid JobHistoryToRetryArtifactIdGuid = new Guid("2fee1c74-7e5b-4034-9721-984b0b9c1fef");
+
 
 		public int SourceWorkspaceArtifactId { get; }
 
@@ -38,6 +40,8 @@ namespace Relativity.Sync.Storage
 
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue<string>(NativesBehaviorGuid).GetEnumFromDescription<ImportNativeFileCopyMode>();
 
+		public int? JobHistoryToRetryId => _cache.GetFieldValue<int?>(JobHistoryToRetryArtifactIdGuid);
+
 		public ValidationConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
@@ -48,7 +52,7 @@ namespace Relativity.Sync.Storage
 		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).Name;
 
 		public string GetNotificationEmails() => _cache.GetFieldValue<string>(EmailNotificationRecipientsGuid);
-		
+
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 
 		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
