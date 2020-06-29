@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			// ARRANGE
 			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
-			List<Type[]> expectedOrder = ExpectedExecutionOrder(pipelineType);
+			List<Type[]> expectedOrder = PipelinesNodeHelper.GetExpectedNodesInExecutionOrder(pipelineType);
 
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
@@ -228,69 +228,6 @@ namespace Relativity.Sync.Tests.Integration
 
 				offset += expectedSteps.Length;
 			}
-		}
-
-		private static List<Type[]> ExpectedExecutionOrder(Type pipelineType)
-		{
-			if (pipelineType == typeof(SyncDocumentRetryPipeline))
-			{
-				return new List<Type[]>
-				{
-					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
-					new[] {typeof(IPermissionsCheckConfiguration)},
-					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IRetryDataSourceSnapshotConfiguration)},
-					new[]
-					{
-						typeof(ISumReporterConfiguration),
-						typeof(ISourceWorkspaceTagsCreationConfiguration),
-						typeof(IDestinationWorkspaceTagsCreationConfiguration),
-						typeof(IDataDestinationInitializationConfiguration)
-					},
-					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-					new[] {typeof(ISnapshotPartitionConfiguration)},
-					new[] {typeof(ISynchronizationConfiguration)},
-					new[] {typeof(IDataDestinationFinalizationConfiguration)},
-					new[] {typeof(IJobStatusConsolidationConfiguration)},
-					new[]
-					{
-						typeof(INotificationConfiguration),
-						typeof(IAutomatedWorkflowTriggerConfiguration)
-					},
-					new[] {typeof(IJobCleanupConfiguration) }
-				};
-			}
-
-			if (pipelineType == typeof(SyncDocumentRunPipeline))
-			{
-				return new List<Type[]>
-				{
-					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
-					new[] {typeof(IPermissionsCheckConfiguration)},
-					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IDataSourceSnapshotConfiguration)},
-					new[]
-					{
-						typeof(ISumReporterConfiguration),
-						typeof(ISourceWorkspaceTagsCreationConfiguration),
-						typeof(IDestinationWorkspaceTagsCreationConfiguration),
-						typeof(IDataDestinationInitializationConfiguration)
-					},
-					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-					new[] {typeof(ISnapshotPartitionConfiguration)},
-					new[] {typeof(ISynchronizationConfiguration)},
-					new[] {typeof(IDataDestinationFinalizationConfiguration)},
-					new[] {typeof(IJobStatusConsolidationConfiguration)},
-					new[]
-					{
-					typeof(INotificationConfiguration),
-					typeof(IAutomatedWorkflowTriggerConfiguration)
-				},
-				new[] {typeof(IJobCleanupConfiguration) }
-				};
-			}
-
-			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");
 		}
 
 		private static Type GetSnaphotNodeType(Type pipelineType)

@@ -83,8 +83,6 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 			MockSearchManagerFactory(containerBuilder);
 
-			containerBuilder.RegisterType<PipelineSelectorConfigurationStub>().As<IPipelineSelectorConfiguration>();
-
 			return containerBuilder;
 		}
 

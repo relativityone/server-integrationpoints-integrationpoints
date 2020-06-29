@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface IPipelineSelectorConfiguration : IDisposable
+	internal interface IPipelineSelectorConfiguration : IConfiguration
 	{
 		int? JobHistoryToRetryId { get; }
 	}

@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 
 			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
-			containerBuilder.RegisterType<PipelineSelectorConfigurationStub>().As<IPipelineSelectorConfiguration>();
 
 			return containerBuilder.Build();
 		}
