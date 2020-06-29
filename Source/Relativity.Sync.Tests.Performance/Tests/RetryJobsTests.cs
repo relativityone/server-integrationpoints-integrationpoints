@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Performance.Helpers;
@@ -18,7 +23,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	public class RetryJobsTests : PerformanceTestBase
 	{
 		public RetryJobsTests() 
-			: base("1035267_Sync_Retries_-_100k_Docs,_10GB_Natives_20200618144941.zip")
+			: base("1069067_Sync_Retries_100k_docs,_30k_item_level_errors__20200629104448.zip")
 		{
 		}
 
@@ -30,7 +35,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			{
 				new PerformanceTestCase
 				{
-					TestCaseName = "Retry",
+					TestCaseName = "Retry 30k docs",
 					CopyMode = ImportNativeFileCopyMode.SetFileLinks,
 					NumberOfMappedFields = 100
 				}
@@ -68,27 +73,42 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		public async Task Run(PerformanceTestCase testCase)
 		{
 			// Arrange
-			
-			//
-			_sourceWorkspaceIdArm = 1024345;
-			int targetWorkspaceId = 1024388;
-			//
-			
+			const int expectedTotalItems = 100000;
+			const int expectedItemsWithErrors = 30000;
+
 			// Sync 30% Of All Documents
-			await SetupAsync(testCase, targetWorkspaceId, "30% Of All Documents").ConfigureAwait(false);
+			await SetupAsync(testCase, null, "30% Of All Documents").ConfigureAwait(false);
 			await RunJobAsync().ConfigureAwait(false);
 
 			// Sync All Documents using AppendOnly to create item level errors
 			await SetupAsync(testCase, TargetWorkspace.ArtifactID, "All Documents").ConfigureAwait(false);
 			await RunJobAsync().ConfigureAwait(false);
 
+			RelativityObject jobHistory = await Rdos.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId).ConfigureAwait(false);
+
+			int totalItems = (int)jobHistory["Total Items"].Value;
+			int itemsTranferred = (int)jobHistory["Items Transferred"].Value;
+			int itemsWithErrors = (int)jobHistory["Items with Errors"].Value;
+
+			totalItems.Should().Be(expectedTotalItems);
+			itemsTranferred.Should().Be(expectedTotalItems - expectedItemsWithErrors);
+			itemsWithErrors.Should().Be(expectedItemsWithErrors);
+
 			// Retry 
+			Configuration.JobHistoryToRetryId = Configuration.JobHistoryArtifactId;
 			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceIdArm).ConfigureAwait(false);
-			Configuration.JobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceIdArm).ConfigureAwait(false);
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(Configuration);
+
+			Stopwatch stopwatch = Stopwatch.StartNew();
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			stopwatch.Stop();
+			TimeSpan elapsedTime = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
+			_testTimes.Add(testCase.TestCaseName, elapsedTime);
+
+			Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
 
 			// ASSERT
+			Configuration.TotalRecordsCount.Should().Be(expectedItemsWithErrors);
 		}
 
 		private async Task RunJobAsync()

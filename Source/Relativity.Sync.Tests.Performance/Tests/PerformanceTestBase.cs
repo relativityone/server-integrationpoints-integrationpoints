@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	{
 		protected int _sourceWorkspaceIdArm;
 
-		private readonly IDictionary<string, TimeSpan> _testTimes = new ConcurrentDictionary<string, TimeSpan>();
+		protected readonly IDictionary<string, TimeSpan> _testTimes = new ConcurrentDictionary<string, TimeSpan>();
 
 		public string ArmedWorkspaceFilename { get; }
 
@@ -201,8 +201,10 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				TargetWorkspace = await Environment.GetWorkspaceAsync(targetWorkspaceId.Value).ConfigureAwait(false);
 			}
 
+			Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
 			Configuration.DestinationWorkspaceArtifactId = TargetWorkspace.ArtifactID;
 			Configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).ConfigureAwait(false);
+			Configuration.DataSourceArtifactId = Configuration.SavedSearchArtifactId;
 			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
 			Configuration.SetFieldMappings(fieldsMapping.ToList());
 			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now.ToString("yyyy MMMM dd HH.mm.ss.fff")}").ConfigureAwait(false);
