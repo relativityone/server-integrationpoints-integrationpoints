@@ -20,7 +20,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
-		private static readonly Guid JobHistoryToRetryArtifactIdGuid = new Guid("2fee1c74-7e5b-4034-9721-984b0b9c1fef");
+		private static readonly Guid JobHistoryToRetryArtifactIdGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 
 
 		public int SourceWorkspaceArtifactId { get; }

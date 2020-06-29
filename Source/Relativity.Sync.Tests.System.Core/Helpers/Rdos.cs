@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static readonly Guid CreateSavedSearchInDestinationGuid =
 			new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 
-		private static readonly Guid JobHistoryToRetryArtifactIdGuid = new Guid("2fee1c74-7e5b-4034-9721-984b0b9c1fef");
+		private static readonly Guid JobHistoryToRetryArtifactIdGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 
 
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
