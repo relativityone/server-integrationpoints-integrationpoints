@@ -15,6 +15,8 @@ namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 		public int DatabaseServerId { get; set; }
 		public int FileRepositoryId { get; set; }
 		public int CacheLocationId { get; set; }
+		public bool AutoMapUsers { get; private set; }
+		public bool AutoMapGroups { get; private set; }
 
 		public static ContractEnvelope<RestoreJob> GetRequest(string archivedWorkspacePath, int resourcePoolId)
 		{
@@ -29,7 +31,9 @@ namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 					ResourcePoolId = resourcePoolId,
 					DatabaseServerId = _DATABASE_SERVER_ID,
 					FileRepositoryId = _DEFAULT_FILE_REPOSITORY_ID,
-					CacheLocationId = _DEFAULT_CACHE_LOCATION_ID
+					CacheLocationId = _DEFAULT_CACHE_LOCATION_ID,
+					AutoMapGroups = true,
+					AutoMapUsers = true
 				}
 			};
 		}
