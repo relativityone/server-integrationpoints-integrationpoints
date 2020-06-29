@@ -261,9 +261,9 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			{
 				var workspaceName = GetWorkspaceNameFromArmZip(archivedWorkspaceLocalPath);
 
-				await ThrowIfWorkspaceAlreadyExists(workspaceName, environment).ConfigureAwait(false);
+				await ThrowIfWorkspaceAlreadyExistsAsync(workspaceName, environment).ConfigureAwait(false);
 
-				string remoteLocation = await GetRemoteLocation().ConfigureAwait(false);
+				string remoteLocation = await GetRemoteLocationAsync().ConfigureAwait(false);
 
 				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, remoteLocation)
 					.ConfigureAwait(false);
@@ -295,7 +295,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private static async Task ThrowIfWorkspaceAlreadyExists(string workspaceName, TestEnvironment environment)
+		private static async Task ThrowIfWorkspaceAlreadyExistsAsync(string workspaceName, TestEnvironment environment)
 		{
 			WorkspaceRef workspace = await environment.GetWorkspaceAsync(workspaceName).ConfigureAwait(false);
 			if (workspace != null)
@@ -304,7 +304,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private async Task<string> GetRemoteLocation()
+		private async Task<string> GetRemoteLocationAsync()
 		{
 			return (await _armApi.GetConfigurationData().ConfigureAwait(false)).ArmArchiveLocations.First().Location;
 		}

@@ -82,8 +82,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
 			_sourceWorkspaceIdArm = await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
 		}
-
-
+		
 		[OneTimeTearDown]
 		public async Task OneTimeTearDown()
 		{

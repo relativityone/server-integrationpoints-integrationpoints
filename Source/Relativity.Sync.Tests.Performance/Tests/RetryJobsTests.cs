@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	public class RetryJobsTests : PerformanceTestBase
 	{
 		public RetryJobsTests() 
-			: base("1069067_Sync_Retries_100k_docs,_30k_item_level_errors__20200629104448.zip")
+			: base("TODO")
 		{
 		}
 
