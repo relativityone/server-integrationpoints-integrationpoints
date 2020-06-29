@@ -1,30 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Workspace;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Performance.Helpers;
-using Relativity.Sync.Tests.System.Core;
-using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Sync.Tests.System.Core.Runner;
-using Relativity.Sync.Tests.System.Core.Stubs;
-using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
+	[Category("SMALL_Jobs")]
 	public class SmallJobsTests : PerformanceTestBase
 	{
-		public SmallJobsTests() : base("1066387_Small_jobs_tests_20200603140140.zip")
+		public SmallJobsTests() : base("1066387_Small_jobs_tests_20200603140140.zip", null)
 		{
 		}
 
