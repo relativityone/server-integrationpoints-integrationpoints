@@ -7,9 +7,10 @@ using Relativity.Sync.Tests.Performance.Helpers;
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
+	[Category("SMALL_Jobs")]
 	public class SmallJobsTests : PerformanceTestBase
 	{
-		public SmallJobsTests() : base("1066387_Small_jobs_tests_20200603140140.zip")
+		public SmallJobsTests() : base("1066387_Small_jobs_tests_20200603140140.zip", null)
 		{
 		}
 

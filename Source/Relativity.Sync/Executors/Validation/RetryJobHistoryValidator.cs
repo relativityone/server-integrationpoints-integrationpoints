@@ -16,6 +16,7 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
+		private readonly Guid _jobHistoryGuid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
 
 		public RetryJobHistoryValidator(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
 		{
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Executors.Validation
 						{
 							ObjectType = new ObjectTypeRef
 							{
-								Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")
+								Guid = _jobHistoryGuid
 							},
 							Condition = $"'ArtifactId' == {configuration.JobHistoryToRetryId.Value}"
 						};
@@ -59,7 +60,7 @@ namespace Relativity.Sync.Executors.Validation
 				}
 				catch (Exception e)
 				{
-					string message= "Failed to validate JobHistoryToRetry (ArtifactId = {artifactID})";
+					string message = "Failed to validate JobHistoryToRetry (ArtifactId = {artifactID})";
 					_logger.LogError(e, message, configuration.JobHistoryToRetryId.Value);
 					validationResult.Add(string.Format($"Failed to validate JobHistoryToRetry (ArtifactId = {configuration.JobHistoryToRetryId.Value}"));
 				}
