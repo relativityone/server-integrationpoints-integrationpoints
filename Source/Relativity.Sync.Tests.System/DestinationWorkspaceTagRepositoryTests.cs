@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.System
 			IList<int> documentsToTag = await UploadDocumentsAsync(numDocuments).ConfigureAwait(false);
 
 			string jobHistoryName = Guid.NewGuid().ToString();
-			int jobHistoryId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
+			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			string destinationWorkspaceTagName = Guid.NewGuid().ToString();
 			int destinationWorkspaceTagId = await Rdos.CreateDestinationWorkspaceTagInstance(ServiceFactory, _sourceWorkspaceArtifactId, 0, destinationWorkspaceTagName).ConfigureAwait(false);
 

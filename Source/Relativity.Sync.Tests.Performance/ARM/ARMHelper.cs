@@ -78,14 +78,14 @@ namespace Relativity.Sync.Tests.Performance.ARM
 					InstallARM();
 				}
 
-				EnsureConfiguration().GetAwaiter().GetResult();
+				EnsureConfigurationAsync().GetAwaiter().GetResult();
 
 				_isInitialized = true;
 				Logger.LogInformation("ARM has been initialized.");
 			}
 		}
 
-		private async Task EnsureConfiguration()
+		private async Task EnsureConfigurationAsync()
 		{
 			Logger.LogInformation("Checking BCP path ARM configuration");
 
@@ -218,7 +218,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			if (!File.Exists(rapPath))
 			{
 				Logger.LogInformation("ARM RAP doesn't exist. Trying to download ARM from AzureStorage...");
-				rapPath = _storage.DownloadFileAsync(@"ARM\ARM.rap", Path.GetTempPath()).Result;
+				rapPath = _storage.DownloadFileAsync(@"ARM\ARM.rap", Path.GetTempPath()).GetAwaiter().GetResult();
 				Logger.LogInformation("ARM has been downloaded.");
 			}
 
@@ -261,9 +261,9 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			{
 				var workspaceName = GetWorkspaceNameFromArmZip(archivedWorkspaceLocalPath);
 
-				await ThrowIfWorkspaceAlreadyExists(workspaceName, environment).ConfigureAwait(false);
+				await ThrowIfWorkspaceAlreadyExistsAsync(workspaceName, environment).ConfigureAwait(false);
 
-				string remoteLocation = await GetRemoteLocation().ConfigureAwait(false);
+				string remoteLocation = await GetRemoteLocationAsync().ConfigureAwait(false);
 
 				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, remoteLocation)
 					.ConfigureAwait(false);
@@ -280,7 +280,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				await RunJobAsync(job).ConfigureAwait(false);
 				Logger.LogInformation($"Job {job.JobId} is running...");
 
-				await WaitUntilJobIsCompleted(job).ConfigureAwait(false);
+				await WaitUntilJobIsCompletedAsync(job).ConfigureAwait(false);
 				Logger.LogInformation("Restore job has been completed successfully.");
 
 				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByNameAsync(workspaceName).ConfigureAwait(true);
@@ -295,7 +295,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private static async Task ThrowIfWorkspaceAlreadyExists(string workspaceName, TestEnvironment environment)
+		private static async Task ThrowIfWorkspaceAlreadyExistsAsync(string workspaceName, TestEnvironment environment)
 		{
 			WorkspaceRef workspace = await environment.GetWorkspaceAsync(workspaceName).ConfigureAwait(false);
 			if (workspace != null)
@@ -304,7 +304,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private async Task<string> GetRemoteLocation()
+		private async Task<string> GetRemoteLocationAsync()
 		{
 			return (await _armApi.GetConfigurationData().ConfigureAwait(false)).ArmArchiveLocations.First().Location;
 		}
@@ -337,15 +337,28 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
 			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId);
 
-			return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
+			try
+			{
+				return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
+			}
+			catch (ApiException ex)
+			{
+				Logger.LogError(ex, "API Exception occurred during ARM restore. Content: {content}", ex.Content);
+				throw;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Exception occurred during ARM restore");
+				throw;
+			}
 		}
 
-		private async Task RunJobAsync(Job job)
+		private Task RunJobAsync(Job job)
 		{
-			await _armApi.RunJobAsync(job).ConfigureAwait(false);
+			return _armApi.RunJobAsync(job);
 		}
 
-		private async Task WaitUntilJobIsCompleted(Job job)
+		private async Task WaitUntilJobIsCompletedAsync(Job job)
 		{
 			// restoring workspaces takes a long time
 			const int delay = 30000;

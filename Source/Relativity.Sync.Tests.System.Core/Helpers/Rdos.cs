@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Sync.Utils;
 using Relativity.Services.Folder;
-using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
@@ -13,7 +11,7 @@ using Relativity.Services.ServiceProxy;
 using Relativity.Services.User;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.System.Core.Runner;
+using Relativity.Sync.Tests.Common;
 using User = Relativity.Services.User.User;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
@@ -90,8 +88,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
 
-		public static async Task<int> CreateJobHistoryInstance(ServiceFactory serviceFactory, int workspaceId,
-			string name = "Name")
+		public static async Task<int> CreateJobHistoryInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -376,7 +373,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		}
 
 		public static async Task<int> CreateSyncConfigurationRDOAsync(ServiceFactory serviceFactory, int workspaceId,
-			FullSyncJobConfiguration configuration, ISerializer serializer = null)
+			ConfigurationStub configuration, ISerializer serializer = null)
 		{
 			CreateRequest request =
 				PrepareSyncConfigurationCreateRequestAsync(configuration, serializer ?? new JSONSerializer());
@@ -442,7 +439,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<User> GetUser(ServiceFactory serviceFactory, int workspaceId)
+		public static async Task<User> GetUserAsync(ServiceFactory serviceFactory, int workspaceId)
 		{
 			using (IUserManager userInfoManager = serviceFactory.CreateProxy<IUserManager>())
 			{
@@ -450,8 +447,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		private static CreateRequest PrepareSyncConfigurationCreateRequestAsync(FullSyncJobConfiguration configuration,
-			ISerializer serializer)
+		private static CreateRequest PrepareSyncConfigurationCreateRequestAsync(ConfigurationStub configuration, ISerializer serializer)
 		{
 			return new CreateRequest
 			{
@@ -461,7 +457,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				},
 				ParentObject = new RelativityObjectRef
 				{
-					ArtifactID = configuration.JobHistoryId
+					ArtifactID = configuration.JobHistoryArtifactId
 				},
 				FieldValues = new[]
 				{
@@ -471,7 +467,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 						{
 							Guid = CreateSavedSearchInDestinationGuid
 						},
-						Value = configuration.CreateSavedSearchForTagging
+						Value = configuration.CreateSavedSearchForTags
 					},
 					new FieldRefValuePair
 					{
@@ -527,7 +523,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 						{
 							Guid = DestinationWorkspaceArtifactIdGuid
 						},
-						Value = configuration.TargetWorkspaceArtifactId
+						Value = configuration.DestinationWorkspaceArtifactId
 					},
 					new FieldRefValuePair
 					{
@@ -535,7 +531,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 						{
 							Guid = EmailNotificationRecipientsGuid
 						},
-						Value = configuration.EmailNotificationRecipients
+						Value = configuration.GetNotificationEmails()
 					},
 					new FieldRefValuePair
 					{
@@ -543,7 +539,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 						{
 							Guid = FieldMappingsGuid
 						},
-						Value = serializer.Serialize(configuration.FieldsMapping)
+						Value = serializer.Serialize(configuration.GetFieldMappings())
 					},
 					new FieldRefValuePair
 					{

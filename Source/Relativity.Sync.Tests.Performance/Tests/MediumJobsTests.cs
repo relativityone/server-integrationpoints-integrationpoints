@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		[TestCaseSource(nameof(Cases))]
 		public async Task RunJob(PerformanceTestCase testCase)
 		{
-			await RunTestCase(testCase).ConfigureAwait(false);
+			await RunTestCaseAsync(testCase).ConfigureAwait(false);
 		}
 	}
 }

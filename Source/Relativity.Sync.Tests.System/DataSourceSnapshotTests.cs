@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.System
 		[IdentifiedTest("237f44ed-e319-473f-9ac0-8dbc8d5d8aaa")]
 		public async Task ItShouldCreateSnapshot()
 		{
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
