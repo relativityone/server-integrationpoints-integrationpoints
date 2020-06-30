@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	public class RetryJobsTests : PerformanceTestBase
 	{
 		public RetryJobsTests() 
-			: base("TODO")
+			: base("TODO", null)
 		{
 		}
 
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Configuration.ImportNativeFileCopyMode = testCase.CopyMode;
 
 			await SetupConfigurationAsync(
-				sourceWorkspaceId: _sourceWorkspaceIdArm,
+				sourceWorkspaceId: _sourceWorkspaceId,
 				targetWorkspaceId: targetWorkspaceId,
 				savedSearchName: savedSearchName).ConfigureAwait(false);
 
@@ -96,7 +96,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 			// Retry 
 			Configuration.JobHistoryToRetryId = Configuration.JobHistoryArtifactId;
-			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceIdArm).ConfigureAwait(false);
+			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceId).ConfigureAwait(false);
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(Configuration);
 
 			Stopwatch stopwatch = Stopwatch.StartNew();

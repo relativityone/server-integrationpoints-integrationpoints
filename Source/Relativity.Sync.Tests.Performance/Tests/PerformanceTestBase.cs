@@ -29,8 +29,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	public class PerformanceTestBase : SystemTest
 	{
-		private int _sourceWorkspaceId;
-		private int _destinationWorkspaceId;
+		protected int _sourceWorkspaceId;
+		protected int _destinationWorkspaceId;
 
 		protected readonly IDictionary<string, TimeSpan> _testTimes = new ConcurrentDictionary<string, TimeSpan>();
 
