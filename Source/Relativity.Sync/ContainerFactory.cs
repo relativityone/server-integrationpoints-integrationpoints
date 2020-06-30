@@ -4,9 +4,12 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
 using Relativity.Telemetry.APM;
@@ -38,9 +41,6 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
 			containerBuilder.RegisterType<JobEndMetricsService>().As<IJobEndMetricsService>();
 
-			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
-			pipelineBuilder.RegisterFlow(containerBuilder);
-
 			const string command = "command";
 			containerBuilder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));
 			containerBuilder.RegisterGenericDecorator(typeof(CommandWithMetrics<>), typeof(ICommand<>), command);
@@ -50,6 +50,12 @@ namespace Relativity.Sync
 			{
 				installer.Install(containerBuilder);
 			}
+
+			containerBuilder.RegisterType<PipelineSelectorConfiguration>().As<IPipelineSelectorConfiguration>();
+			containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces();
+
+			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
+			pipelineBuilder.RegisterFlow(containerBuilder);
 
 			Type[] validatorTypes = GetValidatorTypesExcept<ValidatorWithMetrics>();
 			foreach (Type validatorType in validatorTypes)

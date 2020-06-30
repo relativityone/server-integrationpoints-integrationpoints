@@ -23,5 +23,6 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
 		public bool MoveExistingDocuments { get; set; }
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
+		public int? JobHistoryToRetryId { get; set; }
 	}
 }

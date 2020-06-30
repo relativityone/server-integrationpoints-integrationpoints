@@ -13,21 +13,19 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class DataSourceSnapshotExecutor : IExecutor<IDataSourceSnapshotConfiguration>
+	internal sealed class RetryDataSourceSnapshotExecutor : IExecutor<IRetryDataSourceSnapshotConfiguration>
 	{
-
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
 		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
 
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IFieldManager _fieldManager;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly INativeFileRepository _nativeFileRepository;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
-		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IFieldManager fieldManager, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
+		public RetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IFieldManager fieldManager, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
 			INativeFileRepository nativeFileRepository, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
@@ -38,23 +36,28 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
+			_logger.LogInformation("Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode, ImportOverwriteMode.AppendOverlay);
+			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;
+			_logger.LogInformation("{ImportOverwriteMode} successfully to {appendOverlay}", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode);
+
+
 			_logger.LogInformation("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
 				configuration.DataSourceArtifactId, configuration.GetFieldMappings());
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
 			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentFieldsAsync(token).ConfigureAwait(false);
-			IEnumerable<FieldRef> documentFieldRefs = documentFields.Select(f => new FieldRef {Name = f.SourceFieldName});
+			IEnumerable<FieldRef> documentFieldRefs = documentFields.Select(f => new FieldRef { Name = f.SourceFieldName });
 
-			QueryRequest queryRequest = new QueryRequest
+			var queryRequest = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
+					ArtifactTypeID = (int)ArtifactType.Document
 				},
-				Condition = $"(('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}))",
+				Condition = $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{configuration.JobHistoryToRetryId}])) AND ('Artifact ID' IN SAVEDSEARCH {configuration.DataSourceArtifactId})",
 				Fields = documentFieldRefs.ToList()
 			};
 
@@ -81,7 +84,7 @@ namespace Relativity.Sync.Executors
 			await configuration.SetSnapshotDataAsync(results.RunID, (int)results.RecordCount).ConfigureAwait(false);
 
 			IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();
-			await jobProgressUpdater.SetTotalItemsCountAsync((int) results.RecordCount).ConfigureAwait(false);
+			await jobProgressUpdater.SetTotalItemsCountAsync((int)results.RecordCount).ConfigureAwait(false);
 
 			return ExecutionResult.Success();
 		}

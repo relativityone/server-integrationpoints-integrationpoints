@@ -1,0 +1,185 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Moq;
+using NUnit.Framework;
+using Relativity.Services.DataContracts.DTOs;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.KeplerFactory;
+
+namespace Relativity.Sync.Tests.Unit.Executors.Validation
+{
+	[TestFixture]
+	public class RetryJobHistoryValidatorTests
+	{
+		private CancellationToken _cancellationToken;
+
+		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUser;
+		private Mock<ISyncLog> _syncLog;
+		private Mock<IObjectManager> _objectManager;
+		private Mock<IValidationConfiguration> _validationConfiguration;
+
+		private RetryJobHistoryValidator _instance;
+
+		private const int _TEST_JOB_HISTORY_TO_RETRY_ID = 101345;
+		private const int _TEST_WORKSPACE_ARTIFACT_ID = 101202;
+		private const string _EXPECTED_QUERY_FIELD_TYPE = "Owner";
+
+		[SetUp]
+		public void SetUp()
+		{
+			_cancellationToken = CancellationToken.None;
+
+			_sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			_syncLog = new Mock<ISyncLog>();
+			_objectManager = new Mock<IObjectManager>();
+			_validationConfiguration = new Mock<IValidationConfiguration>();
+
+			_validationConfiguration.SetupGet(x => x.JobHistoryToRetryId).Returns(_TEST_JOB_HISTORY_TO_RETRY_ID);
+			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
+
+			_instance = new RetryJobHistoryValidator(_sourceServiceFactoryForUser.Object, _syncLog.Object);
+
+			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
+		}
+
+		[Test]
+		public async Task ValidateAsyncGoldFlowTest()
+		{
+			// Arrange
+			QueryResult queryResult = BuildQueryResult("");
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+				.ReturnsAsync(queryResult);
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			Assert.IsTrue(actualResult.IsValid);
+
+			VerifyObjectManagerQueryRequest();
+
+			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
+			_objectManager.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		public async Task ValidateAsync_Should_SkipValidation_When_JobHistoryToRetryIsNull()
+		{
+			// Arrange
+			_validationConfiguration.SetupGet(x => x.JobHistoryToRetryId).Returns((int?)null);
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			_sourceServiceFactoryForUser.Verify(x => x.CreateProxyAsync<IObjectManager>(), Times.Never);
+
+			_syncLog.Verify(x => x.LogInformation("Skipping JobHistoryToRetry validation because it's not set in configuration"), Times.Once);
+		}
+
+		[Test]
+		public async Task ValidateAsync_Should_ReturnInvalid_WhenQueryReturnsNoObject()
+		{
+			// Arrange
+			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
+
+			QueryResult queryResult = new QueryResult { Objects = new List<RelativityObject>() };
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+				.ReturnsAsync(queryResult);
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			Assert.IsFalse(actualResult.IsValid);
+			Assert.IsNotEmpty(actualResult.Messages);
+			Assert.AreEqual(1, actualResult.Messages.Count());
+
+			VerifyObjectManagerQueryRequest();
+
+			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
+			_objectManager.Verify(x => x.Dispose(), Times.Once);
+		}
+
+		[Test]
+		public async Task ValidateAsync_Should_ReturnInvalied_When_CreateProxyThrowsExceptionTest()
+		{
+			// Arrange
+			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			Assert.IsFalse(actualResult.IsValid);
+			Assert.IsNotEmpty(actualResult.Messages);
+			Assert.AreEqual(1, actualResult.Messages.Count());
+
+			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
+			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.Is<string>(y => y.StartsWith("Failed to validate JobHistoryToRetry", StringComparison.InvariantCulture)), +_TEST_JOB_HISTORY_TO_RETRY_ID), Times.Once());
+		}
+
+		[Test]
+		public async Task ValidateAsync_Should_ReturnInvalid_When_QueryAsyncThrowsExceptionTest()
+		{
+			// Arrange
+			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
+
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+				.Throws<InvalidOperationException>();
+
+			// Act
+			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			Assert.IsFalse(actualResult.IsValid);
+			Assert.IsNotEmpty(actualResult.Messages);
+			Assert.AreEqual(1, actualResult.Messages.Count());
+
+			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
+			_objectManager.Verify(x => x.Dispose(), Times.Once);
+			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), _TEST_JOB_HISTORY_TO_RETRY_ID), Times.AtLeastOnce());
+		}
+
+		private QueryResult BuildQueryResult(string testFieldValue)
+		{
+			var queryResult = new QueryResult
+			{
+				Objects = new List<RelativityObject>
+				{
+					new RelativityObject
+					{
+						FieldValues = new List<FieldValuePair>
+						{
+							new FieldValuePair
+							{
+								Field = new Field
+								{
+									Name = _EXPECTED_QUERY_FIELD_TYPE
+								},
+								Value = testFieldValue
+							}
+						}
+					}
+				},
+				ResultCount = 1
+			};
+			return queryResult;
+		}
+
+		private void VerifyObjectManagerQueryRequest()
+		{
+			Guid searchArtifactTypeId = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
+
+			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
+				It.Is<QueryRequest>(y => y.ObjectType.Guid == searchArtifactTypeId && y.Condition == $"'ArtifactId' == {_TEST_JOB_HISTORY_TO_RETRY_ID}"),
+				It.Is<int>(y => y == 1), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
+		}
+	}
+}
