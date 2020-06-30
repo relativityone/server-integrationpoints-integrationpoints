@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;

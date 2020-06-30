@@ -4,26 +4,32 @@ namespace Relativity.Sync.Pipelines
 {
 	internal class PipelineSelector : IPipelineSelector
 	{
-		private readonly IRetryDataSourceSnapshotConfiguration _retryDataSourceSnapshotConfiguration;
+		private readonly IPipelineSelectorConfiguration _pipelineSelectorConfiguration;
+		private readonly ISyncLog _logger;
 
-		public PipelineSelector(IRetryDataSourceSnapshotConfiguration retryDataSourceSnapshotConfiguration)
+		public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, ISyncLog logger)
 		{
-			_retryDataSourceSnapshotConfiguration = retryDataSourceSnapshotConfiguration;
+			_pipelineSelectorConfiguration = pipelineSelectorConfiguration;
+			_logger = logger;
 		}
 
 		public ISyncPipeline GetPipeline()
 		{
+			_logger.LogInformation("Getting pipeline type");
+			const string messageTemplate = "Returning {pipelineType}";
 			if (IsDocumentRetry())
 			{
+				_logger.LogInformation(messageTemplate, nameof(SyncDocumentRetryPipeline));
 				return new SyncDocumentRetryPipeline();
 			}
 
+			_logger.LogInformation(messageTemplate, nameof(SyncDocumentRunPipeline));
 			return new SyncDocumentRunPipeline();
 		}
 
 		private bool IsDocumentRetry()
 		{
-			return _retryDataSourceSnapshotConfiguration.JobHistoryToRetryId != null;
+			return _pipelineSelectorConfiguration.JobHistoryToRetryId != null;
 		}
 	}
 }

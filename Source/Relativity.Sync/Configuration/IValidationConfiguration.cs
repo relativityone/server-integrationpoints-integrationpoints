@@ -21,6 +21,8 @@ namespace Relativity.Sync.Configuration
 
 		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 
+		int? JobHistoryToRetryId { get; }
+
 		string GetJobName();
 
 		string GetNotificationEmails();

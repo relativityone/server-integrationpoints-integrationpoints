@@ -77,7 +77,7 @@ namespace Relativity.Sync.Transfer
 			long nativesTotalSize = 0;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				List<int> allDocumentsArtifactIds = await GetAllDocumentsArtifactIds(workspaceId, objectManager, request).ConfigureAwait(false);
+				List<int> allDocumentsArtifactIds = await GetAllDocumentsArtifactIdsAsync(workspaceId, objectManager, request).ConfigureAwait(false);
 				IEnumerable<IList<int>> documentArtifactIdBatches = allDocumentsArtifactIds.SplitList(_BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
 
 				foreach (IList<int> batch in documentArtifactIdBatches)
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Transfer
 			return nativesTotalSize;
 		}
 
-		private static async Task<List<int>> GetAllDocumentsArtifactIds(int workspaceId, IObjectManager objectManager, QueryRequest allDocumentsQueryRequest)
+		private static async Task<List<int>> GetAllDocumentsArtifactIdsAsync(int workspaceId, IObjectManager objectManager, QueryRequest allDocumentsQueryRequest)
 		{
 			QueryRequest allDocumentsArtifactIdsQueryRequest = new QueryRequest
 			{

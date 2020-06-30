@@ -16,6 +16,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 using Relativity.Telemetry.APM;
 

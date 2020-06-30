@@ -15,16 +15,15 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class RetryDataSourceSnapshotExecutor : IExecutor<IRetryDataSourceSnapshotConfiguration>
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
 		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
 
-		private ISourceServiceFactoryForUser _serviceFactory;
-		private IFieldManager _fieldManager;
-		private IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
-		private INativeFileRepository _nativeFileRepository;
-		private IJobStatisticsContainer _jobStatisticsContainer;
-		private ISyncLog _logger;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly IFieldManager _fieldManager;
+		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
+		private readonly INativeFileRepository _nativeFileRepository;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
+		private readonly ISyncLog _logger;
 
 		public RetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IFieldManager fieldManager, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
 			INativeFileRepository nativeFileRepository, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
@@ -39,8 +38,10 @@ namespace Relativity.Sync.Executors
 
 		public async Task<ExecutionResult> ExecuteAsync(IRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogInformation("Setting {ImportOverwriteMode} to {appendOverlay} for job retry", nameof(configuration.ImportOverwriteMode), ImportOverwriteMode.AppendOverlay);
+			_logger.LogInformation("Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode, ImportOverwriteMode.AppendOverlay);
 			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;
+			_logger.LogInformation("{ImportOverwriteMode} successfully to {appendOverlay}", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode);
+
 
 			_logger.LogInformation("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
 				configuration.DataSourceArtifactId, configuration.GetFieldMappings());
