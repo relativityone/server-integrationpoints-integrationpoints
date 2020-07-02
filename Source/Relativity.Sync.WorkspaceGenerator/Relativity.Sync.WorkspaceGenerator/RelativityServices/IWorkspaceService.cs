@@ -12,5 +12,6 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 		Task<WorkspaceRef> CreateWorkspaceAsync(string name, string templateWorkspaceName);
 		Task<int> GetRootFolderArtifactIDAsync(int workspaceID);
 		Task CreateFieldsAsync(int workspaceID, IEnumerable<CustomField> fields);
+		Task EnableExtractedTextFieldForDataGridAsync(int workspaceID);
 	}
 }
