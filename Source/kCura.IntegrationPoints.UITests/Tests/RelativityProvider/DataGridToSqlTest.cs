@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.Testing.Identification;
 
 
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected override async Task CreateWorkspaceAsync()
 		{
 			await base.CreateWorkspaceAsync().ConfigureAwait(false);
-			SourceContext.EnableDataGrid("Extracted Text");
+			await SourceContext.EnableDataGridForFieldAsync(TestConstants.FieldNames.EXTRACTED_TEXT).ConfigureAwait(false);
 		}
 
 		protected override Task ImportDocumentsAsync()
