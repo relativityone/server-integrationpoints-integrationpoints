@@ -42,6 +42,9 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 
 		[Option("batchSize", HelpText = "Size of batch for documents import", Default = 10000)]
 		public int BatchSize { get; set; }
+		
+		[Option("enabledDataGridForExtractedText", HelpText = "Should Extracted Text be store in DataGrid (if False, it will be in SQL)", Default = true)]
+		public bool enabledDataGridForExtractedText { get; set; }
 
 		public List<TestCase> TestCases { get; set; } = new List<TestCase>();
 
