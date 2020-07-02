@@ -142,16 +142,13 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Workspace.EnableDataGrid(GetWorkspaceId());
 			foreach (var fieldName in fieldNames)
 			{
-				int _fieldArtifactId;
 				using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
+				using (IFieldManager fieldManager = Helper.CreateProxy<IFieldManager>())
 				{
 					QueryRequest fieldRequest = Fields.CreateObjectManagerArtifactIdQueryRequest(fieldName);
 					QueryResult fieldQueryResult = await objectManager.QueryAsync(workspaceID, fieldRequest, 0, 1).ConfigureAwait(false);
-					_fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
-				}
-
-				using (IFieldManager fieldManager = Helper.CreateProxy<IFieldManager>())
-				{
+					int fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
+				
 					var enableDataGridOnLongTextFieldRequest = new LongTextFieldRequest()
 					{
 						ObjectType = new ObjectTypeIdentifier()
@@ -165,7 +162,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 						AvailableInViewer = true,
 						HasUnicode = true
 					};
-					await fieldManager.UpdateLongTextFieldAsync(workspaceID, _fieldArtifactId, enableDataGridOnLongTextFieldRequest).ConfigureAwait(false);
+					await fieldManager.UpdateLongTextFieldAsync(workspaceID, fieldArtifactId, enableDataGridOnLongTextFieldRequest).ConfigureAwait(false);
 				}
 			}
 		}
