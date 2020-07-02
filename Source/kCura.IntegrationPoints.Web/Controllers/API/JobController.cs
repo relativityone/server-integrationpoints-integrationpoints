@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
 				errorMessage = $"{exception.Message} : {String.Join(",", innerExceptions)}";
 				httpStatusCode = HttpStatusCode.BadRequest;
-				CreateRelativityError(errorMessage, exception.FlattenErrorMessages(), payload.AppId);
+				CreateRelativityError(errorMessage, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
 			}
 			catch (IntegrationPointValidationException exception)
 			{
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				errorMessage = exception.Message;
 				httpStatusCode = HttpStatusCode.BadRequest;
-				CreateRelativityError(errorMessage, exception.FlattenErrorMessages(), payload.AppId);
+				CreateRelativityError(errorMessage, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
 			}
 
 			HttpResponseMessage response = Request.CreateResponse(httpStatusCode);

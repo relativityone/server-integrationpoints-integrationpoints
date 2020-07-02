@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -12,6 +14,49 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal static class JobHistoryHelper
 	{
+		public static async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID,
+			int integrationPointArtifactID, IHelper helper)
+		{
+			using (IObjectManager objectManager =
+				helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				string integrationPointCondition = $"('{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{integrationPointArtifactID}])";
+				string notRunningCondition = $"('{JobHistoryFields.EndTimeUTC}' ISSET)";
+				string jobStatusCondition = $"('{JobHistoryFields.JobStatus}' IN CHOICE [{JobStatusChoices.JobHistoryCompletedWithErrorsGuid}, {JobStatusChoices.JobHistoryErrorJobFailedGuid}])";
+				string condition = $"{integrationPointCondition} AND {notRunningCondition} AND {jobStatusCondition}";
+
+				var queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef()
+					{
+						Guid = ObjectTypeGuids.JobHistoryGuid
+					},
+					Condition = condition,
+					Fields = new[]
+					{
+						new FieldRef
+						{
+							Guid = JobHistoryFieldGuids.IntegrationPointGuid
+						}
+					},
+					Sorts = new List<Sort>
+					{
+						new Sort
+						{
+							Direction = SortEnum.Descending,
+							FieldIdentifier = new FieldRef
+							{
+								Guid = JobHistoryFieldGuids.EndTimeUTCGuid
+							}
+						}
+					}
+				};
+
+				QueryResult result = await objectManager.QueryAsync(workspaceID, queryRequest, 0, 1).ConfigureAwait(false);
+				return result.Objects.FirstOrDefault();
+			}
+		}
+
 		public static async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job, IHelper helper)
 		{
 			using (IObjectManager manager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
@@ -135,9 +180,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return queryResult.ResultCount > 0;
 		}
 
-		private static async Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
+		private static Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
 		{
-			await UpdateFinishedJobAsync(job, JobFailedStateRef(), manager, true).ConfigureAwait(false);
+			return UpdateFinishedJobAsync(job, JobFailedStateRef(), manager, true);
 		}
 
 		private static async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, IObjectManager manager, bool hasErrors)
@@ -161,11 +206,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 				}
 			};
 			await manager.UpdateAsync(job.WorkspaceId, jobHistoryUpdateRequest).ConfigureAwait(false);
-			await UpdateIntegrationPointLastRuntimeUtc(job, manager, currentTimeUtc).ConfigureAwait(false);
+			await UpdateIntegrationPointLastRuntimeUtcAsync(job, manager, currentTimeUtc).ConfigureAwait(false);
 			await UpdateIntegrationPointHasErrorsAsync(job, manager, hasErrors).ConfigureAwait(false);
 		}
 
-		private static async Task UpdateIntegrationPointLastRuntimeUtc(IExtendedJob job, IObjectManager manager, DateTime currentTimeUtc)
+		private static Task UpdateIntegrationPointLastRuntimeUtcAsync(IExtendedJob job, IObjectManager manager, DateTime currentTimeUtc)
 		{
 			UpdateRequest integrationPointUpdateRequest = new UpdateRequest
 			{
@@ -179,10 +224,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 					},
 				}
 			};
-			await manager.UpdateAsync(job.WorkspaceId, integrationPointUpdateRequest).ConfigureAwait(false);
+			return manager.UpdateAsync(job.WorkspaceId, integrationPointUpdateRequest);
 		}
 
-		private static async Task UpdateIntegrationPointHasErrorsAsync(IExtendedJob job, IObjectManager manager, bool hasErrors)
+		private static Task UpdateIntegrationPointHasErrorsAsync(IExtendedJob job, IObjectManager manager, bool hasErrors)
 		{
 			UpdateRequest integrationPointUpdateRequest = new UpdateRequest
 			{
@@ -196,7 +241,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					},
 				}
 			};
-			await manager.UpdateAsync(job.WorkspaceId, integrationPointUpdateRequest).ConfigureAwait(false);
+			return manager.UpdateAsync(job.WorkspaceId, integrationPointUpdateRequest);
 		}
 
 		private static FieldRef JobIdRef()
@@ -303,7 +348,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private static async Task AddJobHistoryErrorAsync(IExtendedJob job, IObjectManager manager, Exception e)
+		private static Task AddJobHistoryErrorAsync(IExtendedJob job, IObjectManager manager, Exception e)
 		{
 			CreateRequest createRequest = new CreateRequest
 			{
@@ -311,7 +356,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				ParentObject = JobHistoryRef(job),
 				FieldValues = JobHistoryErrorFields(e)
 			};
-			await manager.CreateAsync(job.WorkspaceId, createRequest).ConfigureAwait(false);
+			return manager.CreateAsync(job.WorkspaceId, createRequest);
 		}
 
 		private static ObjectTypeRef JobHistoryErrorTypeRef()
@@ -334,7 +379,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 		}
 
-		private static FieldRefValuePair ErrorField(Exception e)
+		private static FieldRefValuePair ErrorField(Exception ex)
 		{
 			return new FieldRefValuePair
 			{
@@ -342,7 +387,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				{
 					Guid = JobHistoryErrorFieldGuids.ErrorGuid
 				},
-				Value = e.Message
+				Value = ex.FlattenErrorMessages()
 			};
 		}
 

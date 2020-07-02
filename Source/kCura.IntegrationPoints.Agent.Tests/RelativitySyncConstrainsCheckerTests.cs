@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_jobHistoryService = new Mock<IJobHistoryService>();
 
 			_instance = new RelativitySyncConstrainsChecker(_integrationPointService.Object,
-				_providerTypeService.Object, _jobHistoryService.Object, _configurationDeserializer.Object, log.Object);
+				_providerTypeService.Object, _configurationDeserializer.Object, log.Object);
 		}
 
 		[Test]
@@ -186,7 +186,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		}
 
 		[Test]
-		public void ItShouldNotAllowUsingSyncWorkflowWhenRetryingJob()
+		public void ItShouldAllowUsingSyncWorkflowWhenRetryingJob()
 		{
 			JobHistory jobHistory = new JobHistory()
 			{
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			bool result = _instance.ShouldUseRelativitySync(_job);
 
-			Assert.IsFalse(result);
+			Assert.IsTrue(result);
 		}
 	}
 }

@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Agent.Logging
 
 		public void Execute(Job job, Exception ex, string source)
 		{
-			Execute(job.WorkspaceID, source, ex.Message, ex.FlattenErrorMessages());
+			Execute(job.WorkspaceID, source, ex.Message, ex.FlattenErrorMessagesWithStackTrace());
 		}
 
 		public void Execute(Job job, IntegrationPointsException ex)
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Logging
 			if (ex.ShouldAddToErrorsTab)
 			{
 				string source = ex.ExceptionSource;
-				Execute(job.WorkspaceID, source, ex.Message, ex.FlattenErrorMessages());
+				Execute(job.WorkspaceID, source, ex.Message, ex.FlattenErrorMessagesWithStackTrace());
 			}
 		}
 
