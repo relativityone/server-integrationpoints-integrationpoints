@@ -9,8 +9,15 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
+using Relativity;
+using Relativity.Services.Interfaces.Field;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.UITests.Configuration
@@ -129,11 +136,38 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Log.Information("Workspace created. Duration: {duration} s", createDurationStopWatch.ElapsedMilliseconds/1000 );
 		}
 
-		public void EnableDataGrid(params string[] fieldNames)
+		public async Task EnableDataGridAsync(params string[] fieldNames)
 		{
+			int workspaceID = GetWorkspaceId();
 			Workspace.EnableDataGrid(GetWorkspaceId());
+			foreach (var fieldName in fieldNames)
+			{
+				int _fieldArtifactId;
+				using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
+				{
+					QueryRequest fieldRequest = Fields.CreateObjectManagerArtifactIdQueryRequest(fieldName);
+					QueryResult fieldQueryResult = await objectManager.QueryAsync(workspaceID, fieldRequest, 0, 1).ConfigureAwait(false);
+					_fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
+				}
 
-			// TODO change implementation to IFieldManager Kepler service
+				using (IFieldManager fieldManager = Helper.CreateProxy<IFieldManager>())
+				{
+					var enableDataGridOnLongTextFieldRequest = new LongTextFieldRequest()
+					{
+						ObjectType = new ObjectTypeIdentifier()
+						{
+							ArtifactTypeID = (int)ArtifactType.Document
+						},
+						Name = $"{fieldName}",
+						EnableDataGrid = true,
+						IncludeInTextIndex = false,
+						FilterType = FilterType.None,
+						AvailableInViewer = true,
+						HasUnicode = true
+					};
+					await fieldManager.UpdateLongTextFieldAsync(workspaceID, _fieldArtifactId, enableDataGridOnLongTextFieldRequest).ConfigureAwait(false);
+				}
+			}
 		}
 
 		public TestContext InitUser()

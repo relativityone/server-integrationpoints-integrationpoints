@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -62,6 +63,19 @@ namespace kCura.IntegrationPoint.Tests.Core
         public static bool GetFieldValueBoolByFieldName(RelativityObject fieldObject, string fieldName)//return based on type
         {
             return (bool) fieldObject.FieldValues.First(fv => fv.Field.Name == fieldName).Value;
+        }
+        public static QueryRequest CreateObjectManagerArtifactIdQueryRequest(string fieldName)
+        {
+	        QueryRequest artifactIdRequest = new QueryRequest
+	        {
+		        ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+		        Condition = $"'Object Type Artifact Type ID' == 10 AND 'Name' == '{fieldName}'",
+		        Fields = new[]
+		        {
+			        new FieldRef {Name = "ArtifactID"}
+		        }
+	        };
+	        return artifactIdRequest;
         }
 	}
 }
