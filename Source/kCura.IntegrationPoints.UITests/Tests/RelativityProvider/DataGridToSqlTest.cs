@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		protected override async Task CreateWorkspaceAsync()
 		{
 			await base.CreateWorkspaceAsync().ConfigureAwait(false);
-			await SourceContext.EnableDataGridAsync(TestConstants.FieldNames.EXTRACTED_TEXT).ConfigureAwait(false);
+			await SourceContext.EnableDataGridForFieldAsync(TestConstants.FieldNames.EXTRACTED_TEXT).ConfigureAwait(false);
 		}
 
 		protected override Task ImportDocumentsAsync()

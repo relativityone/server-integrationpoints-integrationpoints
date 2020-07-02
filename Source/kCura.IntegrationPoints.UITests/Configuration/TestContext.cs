@@ -136,34 +136,31 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Log.Information("Workspace created. Duration: {duration} s", createDurationStopWatch.ElapsedMilliseconds/1000 );
 		}
 
-		public async Task EnableDataGridAsync(params string[] fieldNames)
+		public async Task EnableDataGridForFieldAsync(string fieldName)
 		{
-			int workspaceID = GetWorkspaceId();
+			int workspaceId = GetWorkspaceId();
 			Workspace.EnableDataGrid(GetWorkspaceId());
-			foreach (var fieldName in fieldNames)
+			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
+			using (IFieldManager fieldManager = Helper.CreateProxy<IFieldManager>())
 			{
-				using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
-				using (IFieldManager fieldManager = Helper.CreateProxy<IFieldManager>())
+				QueryRequest fieldRequest = Fields.CreateObjectManagerArtifactIdQueryRequest(fieldName);
+				QueryResult fieldQueryResult = await objectManager.QueryAsync(workspaceId, fieldRequest, 0, 1).ConfigureAwait(false);
+				int fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
+			
+				var enableDataGridOnLongTextFieldRequest = new LongTextFieldRequest()
 				{
-					QueryRequest fieldRequest = Fields.CreateObjectManagerArtifactIdQueryRequest(fieldName);
-					QueryResult fieldQueryResult = await objectManager.QueryAsync(workspaceID, fieldRequest, 0, 1).ConfigureAwait(false);
-					int fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
-				
-					var enableDataGridOnLongTextFieldRequest = new LongTextFieldRequest()
+					ObjectType = new ObjectTypeIdentifier()
 					{
-						ObjectType = new ObjectTypeIdentifier()
-						{
-							ArtifactTypeID = (int)ArtifactType.Document
-						},
-						Name = $"{fieldName}",
-						EnableDataGrid = true,
-						IncludeInTextIndex = false,
-						FilterType = FilterType.None,
-						AvailableInViewer = true,
-						HasUnicode = true
-					};
-					await fieldManager.UpdateLongTextFieldAsync(workspaceID, fieldArtifactId, enableDataGridOnLongTextFieldRequest).ConfigureAwait(false);
-				}
+						ArtifactTypeID = (int)ArtifactType.Document
+					},
+					Name = $"{fieldName}",
+					EnableDataGrid = true,
+					IncludeInTextIndex = false,
+					FilterType = FilterType.None,
+					AvailableInViewer = true,
+					HasUnicode = true
+				};
+				await fieldManager.UpdateLongTextFieldAsync(workspaceId, fieldArtifactId, enableDataGridOnLongTextFieldRequest).ConfigureAwait(false);
 			}
 		}
 
