@@ -20,7 +20,6 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 		private readonly IServiceFactory _serviceFactory;
 		private readonly Random _random = new Random();
 		
-
 		private readonly ObjectTypeIdentifier _documentObjectTypeIdentifier = new ObjectTypeIdentifier()
 		{
 			ArtifactTypeID = (int)ArtifactType.Document
@@ -85,7 +84,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 		public async Task EnableExtractedTextFieldForDataGridAsync(int workspaceID)
 		{
 			int _fieldArtifactId;
-			string fieldName = Consts._EXTRACTED_TEXT_FIELD_NAME;
+			string fieldName = Consts.ExtractedTextFieldName;
 
 			using (IObjectManager objectManager = _serviceFactory.CreateProxy<IObjectManager>())
 			{

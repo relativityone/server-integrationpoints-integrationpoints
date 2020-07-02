@@ -3,6 +3,6 @@
 	public class Consts
 	{
 		public const string ControlNumberSeparator = "-";
-		public const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
+		public const string ExtractedTextFieldName = "Extracted Text";
 	}
 }

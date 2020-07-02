@@ -46,13 +46,13 @@ namespace Relativity.Sync.WorkspaceGenerator
 			await workspaceService
 				.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate)
 				.ConfigureAwait(false);
+			
 			if (_settings.enabledDataGridForExtractedText)
 			{
 				await workspaceService
 					.EnableExtractedTextFieldForDataGridAsync(workspace.ArtifactID)
 					.ConfigureAwait(false);
 			}
-			
 
 			DirectoryInfo dataDir = new DirectoryInfo(_settings.TestDataDirectoryPath);
 			DirectoryInfo nativesDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"NATIVES"));
