@@ -83,18 +83,15 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 
 		public async Task EnableExtractedTextFieldForDataGridAsync(int workspaceID)
 		{
-			int _fieldArtifactId;
 			string fieldName = Consts.ExtractedTextFieldName;
 
 			using (IObjectManager objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+			using (IFieldManager fieldManager = _serviceFactory.CreateProxy<IFieldManager>())
 			{
 				QueryRequest fieldRequest = CreateObjectManagerArtifactIdQueryRequest(fieldName);
 				QueryResult fieldQueryResult= await objectManager.QueryAsync(workspaceID,fieldRequest,0,1).ConfigureAwait(false);
-				_fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
-			}
+				var fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
 
-			using (IFieldManager fieldManager = _serviceFactory.CreateProxy<IFieldManager>())
-			{
 				var longTextFieldRequest = new LongTextFieldRequest()
 				{
 					ObjectType = new ObjectTypeIdentifier()
@@ -108,7 +105,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 					AvailableInViewer = true,
 					HasUnicode = true
 				};
-				await fieldManager.UpdateLongTextFieldAsync(workspaceID, _fieldArtifactId, longTextFieldRequest).ConfigureAwait(false);
+				await fieldManager.UpdateLongTextFieldAsync(workspaceID, fieldArtifactId, longTextFieldRequest).ConfigureAwait(false);
 			}
 		}
 		
