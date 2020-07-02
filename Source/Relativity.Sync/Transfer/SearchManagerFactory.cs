@@ -5,6 +5,7 @@ using Castle.DynamicProxy;
 using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
+using Relativity.DataExchange;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Authentication;
 
@@ -53,7 +54,10 @@ namespace Relativity.Sync.Transfer
 			string authToken = await _tokenGenerator.GetAuthTokenAsync(_userContextConfiguration.ExecutingUserId).ConfigureAwait(false);
 
 			CookieContainer cookieContainer = new CookieContainer();
-			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, authToken, cookieContainer);
+			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, authToken, cookieContainer, new RunningContext()
+			{
+				ApplicationName = "Relativity.Sync"
+			});
 
 			return new SearchManager(credentials, cookieContainer);
 		}

@@ -51,7 +51,7 @@
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
-    <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="[1.9.46]" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="[1.11.1]" />
   </ItemGroup>
   <!-- Third Party Packages -->
   <ItemGroup>
