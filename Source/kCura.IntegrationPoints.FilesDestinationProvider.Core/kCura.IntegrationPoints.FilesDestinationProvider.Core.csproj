@@ -52,7 +52,6 @@
     <Compile Include="ExportManagers\Factories\FileDownloaderFactory.cs" />
     <Compile Include="ExportManagers\Factories\IExportFileDownloaderFactory.cs" />
     <Compile Include="Helpers\FieldConverter.cs" />
-    <Compile Include="Helpers\CoreViewFieldInfo.cs" />
     <Compile Include="Helpers\LongPathDirectoryHelper.cs" />
     <Compile Include="Helpers\LongPathFileHelper.cs" />
     <Compile Include="Installer\CoreServicesForExportRegistration.cs" />
