@@ -10,6 +10,11 @@ namespace Relativity.Sync.Executors.Validation
 	[Serializable]
 	public sealed class ValidationResult
 	{
+		private static readonly ValidationResult _invalid = new ValidationResult()
+		{
+			IsValid = false
+		};
+
 		private readonly List<ValidationMessage> _messages = new List<ValidationMessage>();
 
 		/// <summary>
@@ -100,5 +105,7 @@ namespace Relativity.Sync.Executors.Validation
 			IEnumerable<string> messageStrings = _messages.Select(m => m.ToString());
 			return string.Join(Environment.NewLine, messageStrings);
 		}
+
+		internal static ValidationResult Invalid => _invalid;
 	}
 }

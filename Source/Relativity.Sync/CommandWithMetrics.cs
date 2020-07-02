@@ -19,22 +19,17 @@ namespace Relativity.Sync
 			_stopwatch = stopwatch;
 		}
 
-		public async Task<bool> CanExecuteAsync(CancellationToken token)
+		public Task<bool> CanExecuteAsync(CancellationToken token)
 		{
-			return await MeasureExecutionTime(async () => 
-				await _innerCommand.CanExecuteAsync(token).ConfigureAwait(false),
-				token).ConfigureAwait(false);
+			return MeasureExecutionTimeAsync(() => _innerCommand.CanExecuteAsync(token), token);
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(CancellationToken token)
 		{
-			return await MeasureExecutionTime(async () =>
-			{
-				return await _innerCommand.ExecuteAsync(token).ConfigureAwait(false);
-			}, token).ConfigureAwait(false);
+			return MeasureExecutionTimeAsync(() => _innerCommand.ExecuteAsync(token), token);
 		}
 
-		private async Task<TResult> MeasureExecutionTime<TResult>(Func<Task<TResult>> action, CancellationToken token)
+		private async Task<TResult> MeasureExecutionTimeAsync<TResult>(Func<Task<TResult>> action, CancellationToken token)
 		{
 			ExecutionStatus status = ExecutionStatus.None;
 			_stopwatch.Start();
