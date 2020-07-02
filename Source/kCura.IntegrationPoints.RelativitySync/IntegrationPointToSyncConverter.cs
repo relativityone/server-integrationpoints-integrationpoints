@@ -2,8 +2,13 @@
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -13,6 +18,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 	public sealed class IntegrationPointToSyncConverter
 	{
 		private readonly ISerializer _serializer;
+		private readonly IJobHistoryService _jobHistoryService;
 
 		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
@@ -29,10 +35,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
+		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 
-		public IntegrationPointToSyncConverter(ISerializer serializer)
+		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService)
 		{
 			_serializer = serializer;
+			_jobHistoryService = jobHistoryService;
 		}
 
 		public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job, IHelper helper)
@@ -42,10 +50,31 @@ namespace kCura.IntegrationPoints.RelativitySync
 				SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
 				ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
 				FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointModel.DestinationConfiguration);
-				CreateRequest request = await PrepareCreateRequestAsync(job, sourceConfiguration, importSettings, folderConf, objectManager).ConfigureAwait(false);
+
+				RelativityObject jobHistoryToRetry = null;
+				if (IsRetryingErrors(job.Job))
+				{
+					jobHistoryToRetry = await JobHistoryHelper.GetLastJobHistoryWithErrorsAsync(sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId, helper).ConfigureAwait(false);
+				}
+				
+				CreateRequest request = await PrepareCreateRequestAsync(job, sourceConfiguration, importSettings, folderConf, objectManager, jobHistoryToRetry).ConfigureAwait(false);
 				CreateResult result = await objectManager.CreateAsync(job.WorkspaceId, request).ConfigureAwait(false);
 				return result.Object.ArtifactID;
 			}
+		}
+
+		private bool IsRetryingErrors(Job job)
+		{
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+
+			if (jobHistory == null)
+			{
+				// this means that job is scheduled, so it's not retrying errors 
+				return false;
+			}
+
+			return jobHistory.JobType.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors);
 		}
 
 		private static string DestinationFolderStructureBehavior(FolderConf folderConf)
@@ -95,8 +124,15 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return result.Objects[0].Values[0].ToString();
 		}
 
-		private async Task<CreateRequest> PrepareCreateRequestAsync(IExtendedJob job, SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf, IObjectManager objectManager)
+		private async Task<CreateRequest> PrepareCreateRequestAsync(IExtendedJob job, 
+			SourceConfiguration sourceConfiguration,
+			ImportSettings importSettings, 
+			FolderConf folderConf, 
+			IObjectManager objectManager,
+			RelativityObject jobHistoryToRetry)
 		{
+			string folderPathSourceFieldName = await GetFolderPathSourceFieldNameAsync(folderConf.FolderPathSourceField, sourceConfiguration.SourceWorkspaceArtifactId, objectManager).ConfigureAwait(false);
+
 			return new CreateRequest
 			{
 				ObjectType = new ObjectTypeRef
@@ -163,7 +199,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 						{
 							Guid = FolderPathSourceFieldNameGuid
 						},
-						Value = await GetFolderPathSourceFieldNameAsync(folderConf.FolderPathSourceField, sourceConfiguration.SourceWorkspaceArtifactId, objectManager).ConfigureAwait(false)
+						Value = folderPathSourceFieldName
 					},
 					new FieldRefValuePair
 					{
@@ -228,7 +264,15 @@ namespace kCura.IntegrationPoints.RelativitySync
 							Guid = RdoArtifactTypeIdGuid
 						},
 						Value = 10
-					}
+					},
+					new FieldRefValuePair
+					{
+						Field = new FieldRef
+						{
+							Guid = JobHistoryToRetryGuid
+						},
+						Value = jobHistoryToRetry
+					},
 				}
 			};
 		}

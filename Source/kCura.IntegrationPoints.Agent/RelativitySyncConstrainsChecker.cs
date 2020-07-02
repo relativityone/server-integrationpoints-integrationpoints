@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -19,16 +18,15 @@ namespace kCura.IntegrationPoints.Agent
 		private readonly IAPILog _logger;
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IJobHistoryService _jobHistoryService;
 		private readonly ISerializer _serializer;
 
 		public RelativitySyncConstrainsChecker(IIntegrationPointService integrationPointService,
 			IProviderTypeService providerTypeService,
-			IJobHistoryService jobHistoryService, ISerializer serializer, IAPILog logger)
+			ISerializer serializer,
+			IAPILog logger)
 		{
 			_integrationPointService = integrationPointService;
 			_providerTypeService = providerTypeService;
-			_jobHistoryService = jobHistoryService;
 			_serializer = serializer;
 			_logger = logger;
 		}
@@ -38,11 +36,6 @@ namespace kCura.IntegrationPoints.Agent
 			_logger.LogDebug("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
 			try
 			{
-				if (IsRetryingErrors(job))
-				{
-					return false;
-				}
-
 				IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
 				ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
 					integrationPoint.DestinationProvider ?? 0);
@@ -72,20 +65,6 @@ namespace kCura.IntegrationPoints.Agent
 				_logger.LogError(ex, "Error occurred when checking if Integration Point should use Relativity Sync workflow");
 				return false;
 			}
-		}
-
-		private bool IsRetryingErrors(Job job)
-		{
-			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
-
-			if (jobHistory == null)
-			{
-				// this means that job is scheduled, so it's not retrying errors
-				return false;
-			}
-
-			return jobHistory.JobType.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors);
 		}
 
 		private IntegrationPoint GetIntegrationPoint(int integrationPointId)

@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Services
 							: $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Identifier: {x.SourceUniqueID}    Error: {x.Error}").ToList();
 
 					string allErrors = string.Join(Environment.NewLine, errorList.ToArray());
-					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessages());
+					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessagesWithStackTrace());
 
 					LogCommittingErrorsFailed(ex, allErrors);
 
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void AddError(Choice errorType, Exception ex)
 		{
-			string message = ex.FlattenErrorMessages();
+			string message = ex.FlattenErrorMessagesWithStackTrace();
 
 			if (ex is IntegrationPointValidationException)
 			{
