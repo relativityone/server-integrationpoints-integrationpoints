@@ -46,7 +46,7 @@ nuget kCura.OutsideIn.FI.Win32 ~> 2020.3 content: none 		//Relativity.DataExchan
 
 //Other packages
 nuget AutoMapper 4.2.1
-nuget Castle.Windsor 3.3.0
+nuget Castle.Windsor 4.1.1
 nuget LanguageExt.Core 3.1.15
 nuget Microsoft.AspNet.Mvc 5.2.3
 nuget Microsoft.AspNet.SignalR.Core 2.2.0

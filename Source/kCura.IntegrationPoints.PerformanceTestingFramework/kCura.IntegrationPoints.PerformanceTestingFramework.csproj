@@ -125,7 +125,10 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Xml">
+        <Reference Include="System.Runtime.Remoting">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Castle.Windsor">
@@ -417,6 +420,9 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="System.Drawing">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Xml">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="mscorlib">
