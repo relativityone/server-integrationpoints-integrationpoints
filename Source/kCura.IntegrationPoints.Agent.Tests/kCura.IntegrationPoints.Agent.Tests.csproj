@@ -175,12 +175,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Runtime.Remoting">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Web">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="Castle.Windsor">
           <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
           <Private>True</Private>
@@ -500,6 +494,9 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Microsoft.VisualBasic">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="System.Web.Services">

@@ -46,7 +46,8 @@ nuget kCura.OutsideIn.FI.Win32 ~> 2020.3 content: none 		//Relativity.DataExchan
 
 //Other packages
 nuget AutoMapper 4.2.1
-nuget Castle.Windsor 4.1.1
+nuget Castle.Core 3.3.0
+nuget Castle.Windsor 3.3.0 // don't change this version - Agent Framework always loads version 3.3, no matter which version is in resource files
 nuget LanguageExt.Core 3.1.15
 nuget Microsoft.AspNet.Mvc 5.2.3
 nuget Microsoft.AspNet.SignalR.Core 2.2.0
@@ -84,9 +85,9 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.3.0-pre.39
+	nuget Relativity.Sync 0.3.0-pre.40
 	nuget Autofac 4.9.4
-	nuget Castle.Core 4.2.0
+	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
 	nuget Banzai ~> 3.0
 	nuget kCura.Apps.Common.Utils 2.1.9

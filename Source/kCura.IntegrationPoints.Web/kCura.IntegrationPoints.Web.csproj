@@ -814,7 +814,7 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Runtime.Remoting">
+        <Reference Include="System.Core">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Castle.Windsor">
@@ -1155,9 +1155,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Core">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="System.XML">
           <Paket>True</Paket>
         </Reference>

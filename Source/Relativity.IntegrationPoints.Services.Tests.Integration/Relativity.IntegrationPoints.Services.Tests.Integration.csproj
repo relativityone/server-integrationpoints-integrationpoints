@@ -154,9 +154,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Configuration">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="Castle.Core">
           <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
           <Private>True</Private>
@@ -168,10 +165,10 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Runtime.Remoting">
+        <Reference Include="System.Core">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="System.Web">
+        <Reference Include="System.Xml">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Castle.Windsor">
@@ -190,9 +187,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Xml">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="System.Xml.Linq">
           <Paket>True</Paket>
         </Reference>
@@ -325,6 +319,9 @@
         <Reference Include="Microsoft.VisualBasic">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="System.Web">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="System.Web.Services">
           <Paket>True</Paket>
         </Reference>
@@ -373,9 +370,6 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Core">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="System.Data.DataSetExtensions">
@@ -645,6 +639,9 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Configuration">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="System.Drawing">
           <Paket>True</Paket>
         </Reference>
