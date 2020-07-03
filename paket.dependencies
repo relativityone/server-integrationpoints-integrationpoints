@@ -10,12 +10,12 @@ nuget Relativity.IntegrationPoints.SDK 1.0.7
 
 //Main Relativity packages
 nuget kCura 12.0.1
-nuget kCura.Agent ~> 11.2.0
-nuget kCura.EventHandler ~> 11.2.0
-nuget kCura.Relativity.Client ~> 11.2.0
-nuget Relativity.Authentication ~> 11.2.0
-nuget Relativity.CustomPages ~> 11.2.0
-nuget Relativity.Data ~> 11.2.0
+nuget kCura.Agent ~> 11.3.0
+nuget kCura.EventHandler ~> 11.3.0
+nuget kCura.Relativity.Client ~> 11.3.0
+nuget Relativity.Authentication ~> 11.3.0
+nuget Relativity.CustomPages ~> 11.3.0
+nuget Relativity.Data ~> 11.3.0
 nuget Relativity.DataExchange.Client.SDK 1.11.1
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0
 nuget Relativity.Services.Interfaces ~> 13.2
@@ -84,7 +84,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.2.0
+	nuget Relativity.Sync 0.3.0-pre.39
 	nuget Autofac 4.9.4
 	nuget Castle.Core 4.2.0
 	nuget Polly 5.9

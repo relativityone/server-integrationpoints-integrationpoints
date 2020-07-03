@@ -310,7 +310,6 @@
     <Compile Include="Services\JobHistory\IDestinationParser.cs" />
     <Compile Include="Services\ProviderTypeService.cs" />
     <Compile Include="Tagging\TagsCreator.cs" />
-    <Compile Include="Toggles\UseOldExportVolumeManagerToggle.cs" />
     <Compile Include="Utils\FileSizeUtils.cs" />
     <Compile Include="Utils\JsonUtils.cs" />
     <Compile Include="Validation\Abstract\BaseIntegrationPointValidator.cs" />

@@ -40,8 +40,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		private const bool _TAPI_FORCE_HTTP_CLIENT = false;
 
-		private const bool _USE_OLD_EXPORT = false;
-
 		public static WindsorContainer CreateContainer(ExportTestConfiguration testConfiguration, ExportTestContext testContext)
 		{
 			var windsorContainer = new WindsorContainer();
