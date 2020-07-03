@@ -11,11 +11,12 @@ using Relativity.Sync.Authentication;
 
 namespace Relativity.Sync.Transfer
 {
-	internal class SearchManagerFactory: ISearchManagerFactory
+	internal class SearchManagerFactory : ISearchManagerFactory
 	{
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
 		private readonly IInstanceSettings _instanceSettings;
+		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IAuthTokenGenerator _tokenGenerator;
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly Lazy<Task<ISearchManager>> _searchManagerFactoryLazy;
@@ -25,9 +26,10 @@ namespace Relativity.Sync.Transfer
 		// https://github.com/castleproject/Core/blob/master/docs/dynamicproxy.md
 		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
 
-		public SearchManagerFactory(IInstanceSettings instanceSettings, IAuthTokenGenerator tokenGenerator, IUserContextConfiguration userContextConfiguration)
+		public SearchManagerFactory(IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IAuthTokenGenerator tokenGenerator, IUserContextConfiguration userContextConfiguration)
 		{
 			_instanceSettings = instanceSettings;
+			_syncJobParameters = syncJobParameters;
 			_tokenGenerator = tokenGenerator;
 			_userContextConfiguration = userContextConfiguration;
 
@@ -54,10 +56,11 @@ namespace Relativity.Sync.Transfer
 			string authToken = await _tokenGenerator.GetAuthTokenAsync(_userContextConfiguration.ExecutingUserId).ConfigureAwait(false);
 
 			CookieContainer cookieContainer = new CookieContainer();
-			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, authToken, cookieContainer, new RunningContext()
+			IRunningContext runningContext = new RunningContext()
 			{
-				ApplicationName = "Relativity.Sync"
-			});
+				ApplicationName = _syncJobParameters.SyncApplicationName
+			};
+			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, authToken, cookieContainer, runningContext);
 
 			return new SearchManager(credentials, cookieContainer);
 		}
