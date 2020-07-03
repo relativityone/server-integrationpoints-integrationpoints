@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Core;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
@@ -39,3 +41,5 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 		}
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

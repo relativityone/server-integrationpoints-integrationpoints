@@ -1,4 +1,6 @@
-﻿using System;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
@@ -74,3 +76,5 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		#endregion
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

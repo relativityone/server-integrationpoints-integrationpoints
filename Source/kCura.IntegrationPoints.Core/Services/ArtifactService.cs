@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client;
@@ -64,3 +66,5 @@ namespace kCura.IntegrationPoints.Core.Services
 		#endregion
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

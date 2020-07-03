@@ -1,4 +1,6 @@
-﻿using System;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using System;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Domain.Authentication;
 
@@ -26,3 +28,5 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 		}
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

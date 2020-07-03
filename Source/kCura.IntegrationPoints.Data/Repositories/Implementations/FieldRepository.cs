@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Data.Repositories.Implementations.DTO;
+﻿#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+using kCura.IntegrationPoints.Data.Repositories.Implementations.DTO;
 using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.Client.DTOs;
@@ -9,6 +11,7 @@ using System;
 using System.Linq;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.Relativity.Client;
 using Field = kCura.Relativity.Client.DTOs.Field;
 using FieldType = kCura.Relativity.Client.FieldType;
 
@@ -74,7 +77,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Width = "100"
 			};
 
-			using (var rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
+			using (IRSAPIClient rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -92,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateObjectTypeField(Field field)
 		{
-			using (var proxy = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
+			using (IRSAPIClient proxy = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
 			{
 				proxy.APIOptions.WorkspaceID = _workspaceArtifactId;
 
@@ -163,3 +166,5 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

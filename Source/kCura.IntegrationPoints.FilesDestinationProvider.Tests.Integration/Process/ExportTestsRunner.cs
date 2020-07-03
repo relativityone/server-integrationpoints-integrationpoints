@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
@@ -166,3 +168,5 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
