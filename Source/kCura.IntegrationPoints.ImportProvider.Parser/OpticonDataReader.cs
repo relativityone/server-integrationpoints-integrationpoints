@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public long CountRecords()
 		{
-			return _opticonFileReader.CountRecords();
+			return _opticonFileReader.CountRecords() ?? 0;
 		}
 
 		public override int FieldCount

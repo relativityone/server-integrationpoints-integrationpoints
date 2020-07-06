@@ -1,4 +1,6 @@
-﻿using Castle.Facilities.TypedFactory;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using Castle.Facilities.TypedFactory;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -32,7 +34,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 	internal static class ContainerInstaller
 	{
 		private const int _EXPORT_BATCH_SIZE = 1000;
-		private const int _EXPORT_THREAD_COUNT = 4;
 
 		private const int _EXPORT_IO_ERROR_WAIT_TIME = 1;
 		private const int _EXPORT_IO_ERROR_NUMBER_OF_RETRIES = 1;
@@ -40,8 +41,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const int _EXPORT_ERROR_WAIT_TIME = 10;
 
 		private const bool _TAPI_FORCE_HTTP_CLIENT = false;
-
-		private const bool _USE_OLD_EXPORT = false;
 
 		public static WindsorContainer CreateContainer(ExportTestConfiguration testConfiguration, ExportTestContext testContext)
 		{
@@ -126,7 +125,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			IExportConfig exportConfig = Substitute.For<IExportConfig>();
 
 			exportConfig.ExportBatchSize.Returns(_EXPORT_BATCH_SIZE);
-			exportConfig.ExportThreadCount.Returns(_EXPORT_THREAD_COUNT);
 
 			exportConfig.ExportIOErrorWaitTime.Returns(_EXPORT_IO_ERROR_WAIT_TIME);
 			exportConfig.ExportIOErrorNumberOfRetries.Returns(_EXPORT_IO_ERROR_NUMBER_OF_RETRIES);
@@ -134,9 +132,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			exportConfig.ExportErrorWaitTime.Returns(_EXPORT_ERROR_WAIT_TIME);
 
 			exportConfig.TapiForceHttpClient.Returns(_TAPI_FORCE_HTTP_CLIENT);
-
-			exportConfig.UseOldExport.Returns(_USE_OLD_EXPORT);
-
+			
 			return exportConfig;
 		}
 
@@ -188,3 +184,5 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		}
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

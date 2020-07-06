@@ -275,7 +275,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return sourceArtifactReader?.ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName);
 		}
 
-		public long CountRecords()
+		public long? CountRecords()
 		{
 			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
 		}
@@ -289,6 +289,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			throw new NotImplementedException("IArtifactReader calls should not be made to RelativityReaderDecorator");
 		}
+
+		public void ValidateColumnNames(Action<string> invalidNameAction)
+		{ }
 
 		public string SourceIdentifierValue()
 		{

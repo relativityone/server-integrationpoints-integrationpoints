@@ -1,4 +1,6 @@
-﻿using kCura.Apps.Common.Data;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -657,3 +659,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

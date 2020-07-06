@@ -1,4 +1,6 @@
-﻿using Castle.MicroKernel.Registration;
+#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
+using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
@@ -391,3 +393,5 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 	}
 }
+#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
+#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

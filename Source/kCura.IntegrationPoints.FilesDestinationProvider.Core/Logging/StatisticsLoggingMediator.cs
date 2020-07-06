@@ -106,18 +106,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		{
 			var message = new JobProgressMessage();
 			BuildJobApmMessageBase(message);
-			message.FileThroughput = e.Statistics.FileThroughput;
-			message.MetadataThroughput = e.Statistics.MetadataThroughput;
+			message.FileThroughput = e.Statistics.FileTransferThroughput;
+			message.MetadataThroughput = e.Statistics.MetadataTransferThroughput;
 			_messageService.Send(message);
 		}
 
 		private void SendEndStatistics(ExportEventArgs e)
 		{
-			long jobSizeInBytes = e.Statistics.FileBytes + e.Statistics.MetadataBytes;
+			long jobSizeInBytes = e.Statistics.FileTransferredBytes + e.Statistics.MetadataTransferredBytes;
 			TimeSpan duration = _dateTimeHelper.Now() - _startTime;
 			double bytesPerSecond = duration.TotalSeconds > 0 ? jobSizeInBytes / duration.TotalSeconds : 0;
 
-			SendJobStatisticsMessage(e.Statistics.FileBytes, e.Statistics.MetadataBytes);
+			SendJobStatisticsMessage(e.Statistics.FileTransferredBytes, e.Statistics.MetadataTransferredBytes);
 			SendJobThroughputBytesMessage(bytesPerSecond);
 		}
 
