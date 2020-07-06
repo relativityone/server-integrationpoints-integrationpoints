@@ -109,7 +109,7 @@ namespace Relativity.Sync.Tests.System
 			int configurationID = await Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
 				.ConfigureAwait(false);
 
-			await TagDocumentsInSource(Configuration.JobHistoryToRetryId.Value, numberOfTaggedDocuemnts).ConfigureAwait(false);
+			await TagDocumentsInSourceAsync(Configuration.JobHistoryToRetryId.Value, numberOfTaggedDocuemnts).ConfigureAwait(false);
 
 			var runner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger());
 
@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.System
 			itemsTranferred.Should().Be(_dataSet.Data.Rows.Count - numberOfTaggedDocuemnts);
 		}
 
-		private async Task TagDocumentsInSource(int jobHistoryArtifactId, int numberOfDocuments = 1)
+		private async Task TagDocumentsInSourceAsync(int jobHistoryArtifactId, int numberOfDocuments = 1)
 		{
 			UpdateRequest GetRequest(int documentArtifactId)
 			{
@@ -154,18 +154,18 @@ namespace Relativity.Sync.Tests.System
 				};
 			}
 
-			foreach (var documentArtifactId in (await GetDocumentsArtifactIds(SourceWorkspace.ArtifactID)).Take(numberOfDocuments))
+			foreach (var documentArtifactId in (await GetDocumentsArtifactIdsAsync(SourceWorkspace.ArtifactID)).Take(numberOfDocuments))
 			{
 				var updateRequest = GetRequest(documentArtifactId);
 				using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 				{
-					var result = await objectManager.UpdateAsync(SourceWorkspace.ArtifactID, updateRequest)
+					await objectManager.UpdateAsync(SourceWorkspace.ArtifactID, updateRequest)
 						.ConfigureAwait(false);
 				}
 			}
 		}
 
-		private async Task<IEnumerable<int>> GetDocumentsArtifactIds(int workspaceId)
+		private async Task<IEnumerable<int>> GetDocumentsArtifactIdsAsync(int workspaceId)
 		{
 			var query = new QueryRequest
 			{
