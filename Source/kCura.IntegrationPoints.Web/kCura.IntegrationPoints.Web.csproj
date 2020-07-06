@@ -362,7 +362,9 @@
     <Content Include="Content\fonts\open-sans-v15-latin-regular.woff2">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="app.config" />
     <None Include="oi\unmanaged\cmmap000.bin" />
+    <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="oi\unmanaged\oilink.exe" />
     <None Include="oi\unmanaged\oilink.jar" />
@@ -406,6 +408,8 @@
     <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
+    <Content Include="Scripts\knockout-3.5.1.debug.js" />
+    <Content Include="Scripts\knockout-3.5.1.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
@@ -461,8 +465,6 @@
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
     <Content Include="Scripts\jstree.js" />
     <Content Include="Scripts\jstree.min.js" />
-    <Content Include="Scripts\knockout-3.4.0.debug.js" />
-    <Content Include="Scripts\knockout-3.4.0.js" />
     <Content Include="Scripts\RelativityProvider\Relativity-provider.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
     <Content Include="Scripts\EventHandlers\integration-points-view-destination.js" />
