@@ -167,7 +167,8 @@
 		if (windowObj.parent.$(windowObj.RelativityImport.UI.idSelector(windowObj.parent.RelativityImport.PreviewOptions.UI.Elements.CUSTOM_BUTTON)).length === 0) {
 
 			//Create custom btn - Preview Options
-			windowObj.parent.RelativityImport.PreviewOptions.UI.initCustomDropdown();
+			// Hide "Preview Options" - see comments in REL-423738
+			// windowObj.parent.RelativityImport.PreviewOptions.UI.initCustomDropdown();
 
 			//Overwritting the CSS for the progressbuttons for Preview Options
 			windowObj.parent.RelativityImport.PreviewOptions.UI.repositionProgressButtons();
