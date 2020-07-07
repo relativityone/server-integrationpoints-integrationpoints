@@ -223,7 +223,7 @@ function protocol_onchange() {
 			ftpConfigDetailsTooltipViewModel.open(event);
 		};
 	}
-	ko.applyBindings(toolTipViewModel);
+	ko.applyBindings(toolTipViewModel, document.documentElement);
 
 })();
 //toggle port based on protocol if it's not modified by the user
