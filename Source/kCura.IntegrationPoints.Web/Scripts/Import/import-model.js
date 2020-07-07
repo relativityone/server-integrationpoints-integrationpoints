@@ -199,6 +199,6 @@
 	}
 	windowObj.RelativityImport.koModel = new viewModel();
 	windowObj.RelativityImport.koErrors = ko.validation.group(windowObj.RelativityImport.koModel);
-	ko.applyBindings(windowObj.RelativityImport.koModel);
+	ko.applyBindings(windowObj.RelativityImport.koModel, document.documentElement);
 
 })(this, IP, ko);
