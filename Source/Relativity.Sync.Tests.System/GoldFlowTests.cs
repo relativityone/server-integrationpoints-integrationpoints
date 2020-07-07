@@ -62,14 +62,18 @@ namespace Relativity.Sync.Tests.System
 			_configuration.DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID;
 			_configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			_configuration.DataSourceArtifactId = _configuration.SavedSearchArtifactId;
-			IEnumerable<FieldMap> fieldsMapping = await GetIdentifierMappingAsync(_sourceWorkspace.ArtifactID, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			_configuration.SetFieldMappings(fieldsMapping.ToList());
+
+			IEnumerable<FieldMap> identifierMapping = await GetIdentifierMappingAsync(_sourceWorkspace.ArtifactID, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(_sourceWorkspace.ArtifactID, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+
+			_configuration.SetFieldMappings(identifierMapping.Concat(extractedTextMapping).ToList());
+
 			_configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now.ToString("yyyy MMMM dd HH.mm.ss.fff")}").ConfigureAwait(false);
 			_configuration.DestinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
-
 		}
 
 		[IdentifiedTest("25b723da-82fe-4f56-ae9f-4a8b2a4d60f4")]
+		[TestType.MainFlow]
 		public async Task SyncJob_Should_SyncDocuments()
 		{
 			// Arrange
@@ -99,17 +103,18 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[IdentifiedTest("e4451454-ea17-4d0e-b45a-a2c43ad35add")]
+		[TestType.MainFlow]
 		public async Task SyncJob_Should_RetryDocuments()
 		{
 			// Arrange
-			const int numberOfTaggedDocuemnts = 2;
+			const int numberOfTaggedDocuments = 2;
 			_configuration.JobHistoryToRetryId = await Rdos
 				.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
 			int configurationID = await Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, _sourceWorkspace.ArtifactID, _configuration)
 				.ConfigureAwait(false);
 
-			await TagDocumentsInSourceAsync(_configuration.JobHistoryToRetryId.Value, numberOfTaggedDocuemnts).ConfigureAwait(false);
+			await TagDocumentsInSourceAsync(_configuration.JobHistoryToRetryId.Value, numberOfTaggedDocuments).ConfigureAwait(false);
 
 			var runner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger());
 
@@ -130,7 +135,7 @@ namespace Relativity.Sync.Tests.System
 			int itemsTranferred = (int)jobHistory["Items Transferred"].Value;
 
 			itemsTranferred.Should().Be(totalItems);
-			itemsTranferred.Should().Be(_dataSet.Data.Rows.Count - numberOfTaggedDocuemnts);
+			itemsTranferred.Should().Be(_dataSet.Data.Rows.Count - numberOfTaggedDocuments);
 		}
 
 		private async Task TagDocumentsInSourceAsync(int jobHistoryArtifactId, int numberOfDocuments = 1)
