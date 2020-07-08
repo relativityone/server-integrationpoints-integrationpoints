@@ -56,6 +56,7 @@
     <Compile Include="OldBatchesCleanup\ServiceFactoryForAdminTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
