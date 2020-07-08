@@ -2,5 +2,6 @@
 {
 	internal interface ISumReporterConfiguration : IConfiguration
 	{
+		int? JobHistoryToRetryId { get; }
 	}
 }

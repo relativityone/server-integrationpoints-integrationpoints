@@ -183,9 +183,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			natives = natives ?? new List<INativeFile>
 			{
-				new NativeFile(123,@"\\test1\test2",  "test3.txt", 11),
-				new NativeFile(456,@"\\test2\test3",  "test5.txt", 12),
-				new NativeFile(789,@"\\test3\test4",  "test6.html", 13)
+				new NativeFile(123, @"\\test1\test2",  "test3.txt", 11),
+				new NativeFile(456, @"\\test2\test3",  "test5.txt", 12),
+				new NativeFile(789, @"\\test3\test4",  "test6.html", 13)
 			};
 
 			DataTable dataTable = new DataTable("Table");

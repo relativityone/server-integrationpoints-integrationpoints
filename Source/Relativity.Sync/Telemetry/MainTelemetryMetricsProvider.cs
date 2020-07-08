@@ -19,6 +19,16 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
+				Name = TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE,
+				Description = "The name of the Integration Points provider for this retry job."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS,
+				Description = "The end status of the Integration Points retry job."
+			},
+			new MetricIdentifier
+			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED,
 				Description = "The number of fields mapped for the Integration Points job."
 			},

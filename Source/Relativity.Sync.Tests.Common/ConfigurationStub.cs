@@ -17,12 +17,12 @@ namespace Relativity.Sync.Tests.Common
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
 		private string _sourceJobTagName = String.Empty;
+		private string _emailNotificationRecipients;
 
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
 
-		private string _emailNotificationRecipients;
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
 
 		public string DataDestinationName { get; set; }
