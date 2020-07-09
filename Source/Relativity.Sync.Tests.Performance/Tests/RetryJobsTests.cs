@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[TestFixture]
 	public class RetryJobsTests : PerformanceTestBase
 	{
-		public RetryJobsTests() 
+		public RetryJobsTests()
 			: base("TODO", null)
 		{
 		}
@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
-		
+
 		private async Task SetupAsync(PerformanceTestCase testCase, int? targetWorkspaceId, string savedSearchName)
 		{
 			Configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(generatedFields).ToArray());
 			if (testCase.MapExtractedText)
 			{
-				IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync().ConfigureAwait(false);
+				IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
 				Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
 			}
 			Logger.LogInformation("Fields mapping ready");

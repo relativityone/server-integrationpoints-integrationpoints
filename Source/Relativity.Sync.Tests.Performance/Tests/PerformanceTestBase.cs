@@ -130,7 +130,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				if (testCase.MapExtractedText)
 				{
 					IEnumerable<FieldMap> extractedTextMapping =
-						await GetExtractedTextMappingAsync().ConfigureAwait(false);
+						await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
 					Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
 				}
 
@@ -294,53 +294,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 				return result;
 			}
-		}
-
-		protected async Task<IEnumerable<FieldMap>> GetExtractedTextMappingAsync()
-		{
-			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				QueryRequest query = PrepareExtractedTextFieldsQueryRequest();
-				QueryResult sourceQueryResult = await objectManager.QueryAsync(SourceWorkspace.ArtifactID, query, 0, 1).ConfigureAwait(false);
-				QueryResult destinationQueryResult = await objectManager.QueryAsync(TargetWorkspace.ArtifactID, query, 0, 1).ConfigureAwait(false);
-
-				return new FieldMap[]
-				{
-					new FieldMap
-					{
-						SourceField = new FieldEntry
-						{
-							DisplayName = sourceQueryResult.Objects.First()["Name"].Value.ToString(),
-							FieldIdentifier =  sourceQueryResult.Objects.First().ArtifactID,
-							IsIdentifier = false
-						},
-						DestinationField = new FieldEntry
-						{
-							DisplayName = destinationQueryResult.Objects.First()["Name"].Value.ToString(),
-							FieldIdentifier =  destinationQueryResult.Objects.First().ArtifactID,
-							IsIdentifier = false
-						},
-						FieldMapType = FieldMapType.None
-					}
-				};
-			}
-		}
-
-		private QueryRequest PrepareExtractedTextFieldsQueryRequest()
-		{
-			int fieldArtifactTypeID = (int)ArtifactType.Field;
-			QueryRequest queryRequest = new QueryRequest()
-			{
-				ObjectType = new ObjectTypeRef()
-				{
-					ArtifactTypeID = fieldArtifactTypeID
-				},
-				Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Name' == 'Extracted Text'",
-				Fields = new[] { new FieldRef { Name = "Name" } },
-				IncludeNameInQueryResult = true
-			};
-
-			return queryRequest;
 		}
 
 		private QueryRequest PrepareGeneratedFieldsQueryRequest()

@@ -92,6 +92,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 			}
 		}
+
 		private QueryRequest PrepareIdentifierFieldsQueryRequest()
 		{
 			int fieldArtifactTypeID = (int)ArtifactType.Field;
@@ -102,6 +103,53 @@ namespace Relativity.Sync.Tests.System.Core
 					ArtifactTypeID = fieldArtifactTypeID
 				},
 				Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Is Identifier' == true",
+				Fields = new[] { new FieldRef { Name = "Name" } },
+				IncludeNameInQueryResult = true
+			};
+
+			return queryRequest;
+		}
+
+		protected async Task<IEnumerable<FieldMap>> GetExtractedTextMappingAsync(int sourceWorkspaceId, int destinationWorkspaceId)
+		{
+			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryRequest query = PrepareExtractedTextFieldsQueryRequest();
+				Services.Objects.DataContracts.QueryResult sourceQueryResult = await objectManager.QueryAsync(sourceWorkspaceId, query, 0, 1).ConfigureAwait(false);
+				Services.Objects.DataContracts.QueryResult destinationQueryResult = await objectManager.QueryAsync(destinationWorkspaceId, query, 0, 1).ConfigureAwait(false);
+
+				return new FieldMap[]
+				{
+					new FieldMap
+					{
+						SourceField = new FieldEntry
+						{
+							DisplayName = sourceQueryResult.Objects.First()["Name"].Value.ToString(),
+							FieldIdentifier =  sourceQueryResult.Objects.First().ArtifactID,
+							IsIdentifier = false
+						},
+						DestinationField = new FieldEntry
+						{
+							DisplayName = destinationQueryResult.Objects.First()["Name"].Value.ToString(),
+							FieldIdentifier =  destinationQueryResult.Objects.First().ArtifactID,
+							IsIdentifier = false
+						},
+						FieldMapType = FieldMapType.None
+					}
+				};
+			}
+		}
+
+		private QueryRequest PrepareExtractedTextFieldsQueryRequest()
+		{
+			int fieldArtifactTypeID = (int)ArtifactType.Field;
+			QueryRequest queryRequest = new QueryRequest()
+			{
+				ObjectType = new ObjectTypeRef()
+				{
+					ArtifactTypeID = fieldArtifactTypeID
+				},
+				Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Name' == 'Extracted Text'",
 				Fields = new[] { new FieldRef { Name = "Name" } },
 				IncludeNameInQueryResult = true
 			};
