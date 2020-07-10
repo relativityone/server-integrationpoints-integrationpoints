@@ -63,10 +63,10 @@ namespace Relativity.Sync.Tests.Common
 					new[] {typeof(IJobStatusConsolidationConfiguration)},
 					new[]
 					{
-					typeof(INotificationConfiguration),
-					typeof(IAutomatedWorkflowTriggerConfiguration)
-				},
-				new[] {typeof(IJobCleanupConfiguration) }
+						typeof(INotificationConfiguration),
+						typeof(IAutomatedWorkflowTriggerConfiguration)
+					},
+					new[] {typeof(IJobCleanupConfiguration) }
 				};
 			}
 
