@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("MEDIUM_Jobs")]
 	public class MediumJobsTests : PerformanceTestBase
 	{
-		public MediumJobsTests() : base("Medium_jobs_tests.zip", "Medium_jobs_tests_-_Destination.zip")
+		public MediumJobsTests() : base(WorkspaceType.ARM, "Medium_jobs_tests.zip", "Medium_jobs_tests_-_Destination.zip")
 		{
 		}
 

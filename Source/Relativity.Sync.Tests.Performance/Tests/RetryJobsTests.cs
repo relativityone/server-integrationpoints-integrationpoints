@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	public class RetryJobsTests : PerformanceTestBase
 	{
 		public RetryJobsTests()
-			: base("TODO", null)
+			: base(WorkspaceType.Relativity, "TODO", null)
 		{
 		}
 

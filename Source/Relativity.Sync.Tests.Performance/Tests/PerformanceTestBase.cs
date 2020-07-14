@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Api;
@@ -34,8 +35,13 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		protected readonly IDictionary<string, TimeSpan> _testTimes = new ConcurrentDictionary<string, TimeSpan>();
 
+		private readonly WorkspaceType _workspaceType;
+
 		public string ArmedSourceWorkspaceFileName { get; }
 		public string ArmedDestinationWorkspaceFileName { get; }
+
+		public string SourceWorkspaceName { get; }
+		public string DestinationWorkspaceName { get; }
 
 		public ApiComponent Component { get; }
 		public ARMHelper ARMHelper { get; }
@@ -49,18 +55,27 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		public int ConfigurationRdoId { get; set; }
 
-		public PerformanceTestBase(string armedSourceWorkspaceFileName, string armedDestinationWorkspaceFileName)
+		public PerformanceTestBase(WorkspaceType workspaceType, string sourceWorkspace, string destinationWorkspace)
 		{
-			ArmedSourceWorkspaceFileName = armedSourceWorkspaceFileName;
-			ArmedDestinationWorkspaceFileName = armedDestinationWorkspaceFileName;
-
 			RelativityFacade.Instance.RelyOn<ApiComponent>();
 
 			Component = RelativityFacade.Instance.GetComponent<ApiComponent>();
 
-			StorageHelper = AzureStorageHelper.CreateFromTestConfig();
+			_workspaceType = workspaceType;
+			if (_workspaceType == WorkspaceType.ARM)
+			{
+				ArmedSourceWorkspaceFileName = sourceWorkspace;
+				ArmedDestinationWorkspaceFileName = destinationWorkspace;
 
-			ARMHelper = ARMHelper.CreateInstance();
+				StorageHelper = AzureStorageHelper.CreateFromTestConfig();
+
+				ARMHelper = ARMHelper.CreateInstance();
+			}
+			else
+			{
+				SourceWorkspaceName = sourceWorkspace;
+				DestinationWorkspaceName = destinationWorkspace;
+			}
 
 			Configuration = new ConfigurationStub()
 			{
@@ -78,13 +93,25 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		[OneTimeSetUp]
 		public async Task SetUp()
 		{
-			ARMHelper.EnableAgents();
-
-			_sourceWorkspaceId = await RestoreWorkspaceAsync(ArmedSourceWorkspaceFileName).ConfigureAwait(false);
-
-			if(!string.IsNullOrEmpty(ArmedDestinationWorkspaceFileName))
+			if(_workspaceType == WorkspaceType.ARM)
 			{
-				_destinationWorkspaceId = await RestoreWorkspaceAsync(ArmedDestinationWorkspaceFileName).ConfigureAwait(false);
+				ARMHelper.EnableAgents();
+
+				_sourceWorkspaceId = await RestoreWorkspaceAsync(ArmedSourceWorkspaceFileName).ConfigureAwait(false);
+
+				if (!string.IsNullOrEmpty(ArmedDestinationWorkspaceFileName))
+				{
+					_destinationWorkspaceId = await RestoreWorkspaceAsync(ArmedDestinationWorkspaceFileName).ConfigureAwait(false);
+				}
+			}
+			else
+			{
+				_sourceWorkspaceId = await Environment.GetWorkspaceArtifactIdByNameAsync(SourceWorkspaceName).ConfigureAwait(false);
+
+				if (!string.IsNullOrEmpty(DestinationWorkspaceName))
+				{
+					_destinationWorkspaceId = await Environment.GetWorkspaceArtifactIdByNameAsync(DestinationWorkspaceName).ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -315,21 +342,24 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		private async Task CleanUpWorkspacesAsync()
 		{
-			if (SourceWorkspace != null)
+			if(_workspaceType == WorkspaceType.ARM)
 			{
-				using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
+				if (SourceWorkspace != null)
 				{
-					// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
-					await manager.DeleteAsync(SourceWorkspace).ConfigureAwait(false);
+					using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
+					{
+						// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
+						await manager.DeleteAsync(SourceWorkspace).ConfigureAwait(false);
+					}
 				}
-			}
 
-			if (TargetWorkspace != null)
-			{
-				using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
+				if (TargetWorkspace != null)
 				{
-					// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
-					await manager.DeleteAsync(TargetWorkspace).ConfigureAwait(false);
+					using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
+					{
+						// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
+						await manager.DeleteAsync(TargetWorkspace).ConfigureAwait(false);
+					}
 				}
 			}
 		}
