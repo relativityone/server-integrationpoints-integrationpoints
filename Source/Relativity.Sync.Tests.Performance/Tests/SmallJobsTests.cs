@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("SMALL_Jobs")]
 	public class SmallJobsTests : PerformanceTestBase
 	{
-		public SmallJobsTests() : base("1066387_Small_jobs_tests_20200603140140.zip", null)
+		public SmallJobsTests() : base(WorkspaceType.ARM, "1066387_Small_jobs_tests_20200603140140.zip", null)
 		{
 		}
 

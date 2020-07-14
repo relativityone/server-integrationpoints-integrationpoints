@@ -183,6 +183,13 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Resources\TestCases\Small.json" />
+    <None Include="Resources\TestCases\Medium.json" />
+    <None Include="Resources\TestCases\Large5.json" />
+    <None Include="Resources\TestCases\Large4.json" />
+    <None Include="Resources\TestCases\Large3.json" />
+    <None Include="Resources\TestCases\Large2.json" />
+    <None Include="Resources\TestCases\Large1.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SupportedFileTypes.txt">
