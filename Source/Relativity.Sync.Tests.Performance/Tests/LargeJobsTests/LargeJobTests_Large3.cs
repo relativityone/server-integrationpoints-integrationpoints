@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				NumberOfMappedFields = 100,
 			};
 
-			await RunTestCase(testCase).ConfigureAwait(false);
+			await RunTestCaseAsync(testCase).ConfigureAwait(false);
 		}
 	}
 }

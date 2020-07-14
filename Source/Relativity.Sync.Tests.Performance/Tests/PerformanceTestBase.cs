@@ -106,11 +106,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 			else
 			{
-				_sourceWorkspaceId = await Environment.GetWorkspaceArtifactIdByName(SourceWorkspaceName).ConfigureAwait(false);
+				_sourceWorkspaceId = await Environment.GetWorkspaceArtifactIdByNameAsync(SourceWorkspaceName).ConfigureAwait(false);
 
 				if (!string.IsNullOrEmpty(DestinationWorkspaceName))
 				{
-					_destinationWorkspaceId = await Environment.GetWorkspaceArtifactIdByName(DestinationWorkspaceName).ConfigureAwait(false);
+					_destinationWorkspaceId = await Environment.GetWorkspaceArtifactIdByNameAsync(DestinationWorkspaceName).ConfigureAwait(false);
 				}
 			}
 		}
