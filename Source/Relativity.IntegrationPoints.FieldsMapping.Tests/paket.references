@@ -2,6 +2,11 @@ Relativity
 Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 NUnit
 FluentAssertions
 Moq

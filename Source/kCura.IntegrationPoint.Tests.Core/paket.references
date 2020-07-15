@@ -15,6 +15,11 @@ Relativity.Services.Interfaces.Private
 Relativity.Toggles
 Relativity.Logging
 kCura.FreeImage
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 FluentAssertions
 Moq
 NUnit

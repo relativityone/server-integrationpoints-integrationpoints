@@ -5,3 +5,7 @@ Relativity.IntegrationPoints.SDK
 Castle.Windsor
 Relativity.DataGrid
 Relativity.DataTransfer.MessageService
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll

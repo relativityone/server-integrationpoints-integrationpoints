@@ -8,3 +8,7 @@ FluentAssertions
 Moq
 Relativity.Testing.Identification
 Serilog
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll

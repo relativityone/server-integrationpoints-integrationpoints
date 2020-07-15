@@ -55,7 +55,6 @@
     <Compile Include="Models\ValidationResponse.cs" />
     <Compile Include="SettingsManager.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
@@ -71,9 +70,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Configuration">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="Castle.Core">
           <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
           <Private>True</Private>

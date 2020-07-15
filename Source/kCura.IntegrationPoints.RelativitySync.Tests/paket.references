@@ -3,6 +3,10 @@ Relativity.IntegrationPoints.Contracts
 kCura.OutsideIn.FI.Win32
 kCura.Apps.Common.Utils
 
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 FluentAssertions
 Moq
 NUnit

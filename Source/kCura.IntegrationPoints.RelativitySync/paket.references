@@ -8,5 +8,9 @@ Relativity.Telemetry.APM
 kCura.OutsideIn.FI.Win32
 Relativity.IntegrationPoints.Contracts
 
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 group Sync
 Relativity.Sync

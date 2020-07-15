@@ -4,3 +4,7 @@ kCura.Relativity.Client
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Services.Interfaces
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll

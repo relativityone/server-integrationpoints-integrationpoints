@@ -5,6 +5,9 @@ Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
 Relativity.Logging
 
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
 
 FluentAssertions
 Moq

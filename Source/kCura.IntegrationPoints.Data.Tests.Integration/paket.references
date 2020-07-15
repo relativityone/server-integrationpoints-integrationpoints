@@ -13,6 +13,11 @@ relativity.transfer.client
 Relativity.OAuth2Client
 Relativity.Logging.Interfaces
 Relativity.Kepler.Client
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 FluentAssertions
 Moq
 NSubstitute

@@ -14,3 +14,7 @@ NUnit
 NSubstitute
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.MetricsCollection
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll

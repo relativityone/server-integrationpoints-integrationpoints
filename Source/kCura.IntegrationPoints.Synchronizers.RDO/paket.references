@@ -6,3 +6,7 @@ Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll

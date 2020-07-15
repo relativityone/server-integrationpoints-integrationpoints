@@ -9,18 +9,18 @@ nuget Relativity.IntegrationPoints.Contracts 1.0.7
 nuget Relativity.IntegrationPoints.SDK 1.0.7
 
 //Main Relativity packages
-nuget kCura 12.0.1
-nuget kCura.Agent ~> 11.3.0
-nuget kCura.EventHandler ~> 11.3.0
-nuget kCura.Relativity.Client ~> 11.3.0
-nuget Relativity.Authentication ~> 11.3.0
-nuget Relativity.CustomPages ~> 11.3.0
-nuget Relativity.Data ~> 11.3.0
+nuget kCura 13.1.0
+nuget kCura.Agent ~> 13.1
+nuget kCura.EventHandler ~> 11.3 // update to version 13.1 requires update packages in Relativity.IntegrationPoints.SDK
+nuget kCura.Relativity.Client ~> 13.1
+nuget Relativity.Authentication ~> 11.3
+nuget Relativity.CustomPages ~> 13.1
+nuget Relativity.Data ~> 13.1
 nuget Relativity.DataExchange.Client.SDK 1.11.1
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0
 nuget Relativity.Services.Interfaces ~> 13.2
 nuget Relativity.Services.Interfaces.Private ~> 13.1
-nuget Relativity.API 12.0.1
+nuget Relativity.API 13.1.0
 
 //Other Relativity packages
 nuget kCura.Apps.Common.Config 2.1.9
@@ -28,7 +28,7 @@ nuget kCura.FreeImage 3.17.0.1
 nuget kCura.LongPath 1.0.20
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-nuget Relativity.Kepler  2.7.0
+nuget Relativity.Kepler 2.7.0
 nuget Relativity.Kepler.Client 2.7.0
 nuget Relativity.Logging 2018.11.8
 nuget Relativity.Logging.Interfaces 2018.11.8
@@ -46,7 +46,6 @@ nuget kCura.OutsideIn.FI.Win32 ~> 2020.3 content: none 		//Relativity.DataExchan
 
 //Other packages
 nuget AutoMapper 4.2.1
-nuget Castle.Core 3.3.0
 nuget Castle.Windsor 3.3.0 // don't change this version - Agent Framework always loads version 3.3, no matter which version is in resource files
 nuget LanguageExt.Core 3.1.15
 nuget Microsoft.AspNet.Mvc 5.2.3
@@ -85,7 +84,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.3.0-pre.40
+    nuget Relativity.Sync 0.5.0-pre.3
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9

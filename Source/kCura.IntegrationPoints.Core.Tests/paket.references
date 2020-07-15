@@ -11,6 +11,11 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataGrid
 SystemWrapper.Interfaces
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 FluentAssertions
 Moq
 NUnit

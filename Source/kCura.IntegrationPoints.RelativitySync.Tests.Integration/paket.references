@@ -7,6 +7,11 @@ kCura.Relativity.Client
 Polly
 Relativity.Toggles
 kCura.OutsideIn.FI.Win32
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 Moq
 relativity.testing.identification
 Serilog

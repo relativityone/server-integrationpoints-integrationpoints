@@ -11,6 +11,11 @@ Relativity.OAuth2Client
 Relativity.Services.Interfaces.Private
 Relativity.Toggles
 Relativity.Kepler.Client
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 FluentAssertions
 NSubstitute
 Selenium.WebDriver

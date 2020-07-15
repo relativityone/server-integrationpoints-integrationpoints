@@ -13,3 +13,7 @@ Relativity.IntegrationPoints.SDK
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.MetricsCollection
 Polly
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll

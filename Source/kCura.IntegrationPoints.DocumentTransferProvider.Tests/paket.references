@@ -6,6 +6,11 @@ Relativity.API
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.DataTransfer.MessageService
+
+Relativity.Kepler.Service
+    exclude kCura.Vendor.Castle.Core.dll
+    exclude kCura.Vendor.Castle.Windsor.dll
+
 FluentAssertions
 Moq
 NUnit
