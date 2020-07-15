@@ -28,8 +28,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private const string _NON_DOCUMENT_SPECIAL_FIELD_1_NAME = "NonDocumentSpecialField1";
 		private const string _NON_DOCUMENT_SPECIAL_FIELD_2_NAME = "NonDocumentSpecialField2";
 		private const string _MAPPED_FIELD_1_SOURCE_NAME = "MappedField1Source";
+		private const string _MAPPED_FIELD_1_SOURCE_NAME_LOWER_CASE = "mappedfield1source";
 		private const string _MAPPED_FIELD_2_SOURCE_NAME = "MappedField2Source";
 		private const string _MAPPED_FIELD_1_DESTINATION_NAME = "MappedField1Destination";
+		private const string _MAPPED_FIELD_1_DESTINATION_NAME_LOWER_CASE = "mappedfield1destination";
 		private const string _MAPPED_FIELD_2_DESTINATION_NAME = "MappedField2Destination";
 		private const int _FIRST_DOCUMENT = 1;
 		private const int _SECOND_DOCUMENT = 2;
@@ -185,16 +187,22 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}
 
-		[Test]
-		public async Task ItShouldMergeDocumentSpecialFieldWithMappedField()
+		private static IEnumerable<TestCaseData> SpecialFieldAndDocumentFieldHasSameDestinationAndSourceNamesTestCases()
+		{
+			yield return new TestCaseData(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+			yield return new TestCaseData(_MAPPED_FIELD_1_SOURCE_NAME_LOWER_CASE, _MAPPED_FIELD_1_DESTINATION_NAME_LOWER_CASE, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+		}
+
+		[TestCaseSource(nameof(SpecialFieldAndDocumentFieldHasSameDestinationAndSourceNamesTestCases))]
+		public async Task ItShouldMergeDocumentSpecialFieldWithMappedField(string mappedFieldSourceName, string mappedFieldDestinationName, string specialFieldSourceName, string specialFieldDestinationName)
 		{
 			// Arrange
 			const bool isSpecialDocumentField = true;
 			const SpecialFieldType specialFieldType = SpecialFieldType.FolderPath;
 
-			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+			MockFieldMappingsToReturnOneMapping(mappedFieldSourceName, mappedFieldDestinationName);
 
-			FieldInfoDto specialField = new FieldInfoDto(specialFieldType, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, false, isSpecialDocumentField);
+			FieldInfoDto specialField = new FieldInfoDto(specialFieldType, specialFieldSourceName, specialFieldDestinationName, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] { specialField });
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
@@ -204,8 +212,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			FieldInfoDto returnedField = result.Single();
-			returnedField.SourceFieldName.Should().Be(_MAPPED_FIELD_1_SOURCE_NAME);
-			returnedField.DestinationFieldName.Should().Be(_MAPPED_FIELD_1_DESTINATION_NAME);
+			returnedField.SourceFieldName.Should().Be(mappedFieldSourceName);
+			returnedField.DestinationFieldName.Should().Be(mappedFieldDestinationName);
 			returnedField.IsDocumentField.Should().Be(isSpecialDocumentField);
 			returnedField.SpecialFieldType.Should().Be(SpecialFieldType.FolderPath);
 		}
@@ -237,13 +245,19 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().Contain(specialField);
 		}
 
-		[Test]
-		public async Task ItShouldThrowWhenSpecialFieldAndDocumentFieldHasSameDestinationNameAndDifferentSourceNames()
+		private static IEnumerable<TestCaseData> SpecialFieldAndDocumentFieldHasSameDestinationNameAndDifferentSourceNamesTestCases()
+		{
+			yield return new TestCaseData(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, _DOCUMENT_SPECIAL_FIELD_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+			yield return new TestCaseData(_MAPPED_FIELD_1_SOURCE_NAME_LOWER_CASE, _MAPPED_FIELD_1_DESTINATION_NAME_LOWER_CASE, _DOCUMENT_SPECIAL_FIELD_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+		}
+
+		[TestCaseSource(nameof(SpecialFieldAndDocumentFieldHasSameDestinationNameAndDifferentSourceNamesTestCases))]
+		public async Task ItShouldThrowWhenSpecialFieldAndDocumentFieldHasSameDestinationNameAndDifferentSourceNames(string mappedFieldSourceName, string mappedFieldDestinationName, string specialFieldSourceName, string specialFieldDestinationName)
 		{
 			// Arrange
-			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+			MockFieldMappingsToReturnOneMapping(mappedFieldSourceName, mappedFieldDestinationName);
 
-			FieldInfoDto specialField = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _DOCUMENT_SPECIAL_FIELD_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+			FieldInfoDto specialField = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, specialFieldSourceName, specialFieldDestinationName);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
@@ -255,15 +269,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			(await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false)).Which.Message.Should().StartWith("Special field destination name conflicts with mapped field destination name.");
 		}
 
-		[Test]
-		public async Task ItShouldThrowWhenSpecialFieldIsNotDocumentFieldAndHasSameSourceAndDestinationFields()
+		[TestCaseSource(nameof(SpecialFieldAndDocumentFieldHasSameDestinationAndSourceNamesTestCases))]
+		public async Task ItShouldThrowWhenSpecialFieldIsNotDocumentFieldAndHasSameSourceAndDestinationFields(string mappedFieldSourceName, string mappedFieldDestinationName, string specialFieldSourceName, string specialFieldDestinationName)
 		{
 			// Arrange
 			const bool isSpecialDocumentField = false;
 
-			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+			MockFieldMappingsToReturnOneMapping(mappedFieldSourceName, mappedFieldDestinationName);
 
-			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME, false, isSpecialDocumentField);
+			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, specialFieldSourceName, specialFieldDestinationName, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
@@ -275,15 +289,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			(await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false)).Which.Message.Should().StartWith("Special field destination name conflicts with mapped field destination name.");
 		}
 
-		[Test]
-		public async Task ItShouldNotThrowWhenSpecialFieldIsDocumentFieldAndHasSameSourceAndDestinationFields()
+		[TestCaseSource(nameof(SpecialFieldAndDocumentFieldHasSameDestinationAndSourceNamesTestCases))]
+		public async Task ItShouldNotThrowWhenSpecialFieldIsDocumentFieldAndHasSameSourceAndDestinationFields(string mappedFieldSourceName, string mappedFieldDestinationName, string specialFieldSourceName, string specialFieldDestinationName)
 		{
 			// Arrange
 			const bool isSpecialDocumentField = true;
 
-			MockFieldMappingsToReturnOneMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
+			MockFieldMappingsToReturnOneMapping(mappedFieldSourceName, mappedFieldDestinationName);
 
-			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, _MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_SOURCE_NAME, false, isSpecialDocumentField);
+			FieldInfoDto specialField = new FieldInfoDto(SpecialFieldType.None, specialFieldSourceName, specialFieldDestinationName, false, isSpecialDocumentField);
 			Mock<ISpecialFieldBuilder> builder = CreateSpecialFieldBuilderMockWithBuildColumnsReturning(new[] {specialField});
 
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
