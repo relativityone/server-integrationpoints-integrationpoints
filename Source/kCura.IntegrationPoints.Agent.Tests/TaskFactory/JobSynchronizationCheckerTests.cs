@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -46,8 +45,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_sut = new JobSynchronizationChecker(helper, _jobService, managerFactory, taskFactoryJobHistoryServiceFactory);
 		}
 
-		[TestCaseSource(nameof(GetAllTasksWithSynchronizedAttribute))]
-		public void ItShouldThrowExceptionWhenOtherTaskIsExecutingForSynchronizedTask(Type taskType)
+		[Test]
+		public void ItShouldThrowExceptionWhenOtherTaskIsExecutingForSynchronizedTask()
 		{
 			// Arrange
 			int jobId = 53243;
@@ -62,11 +61,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_queueManager.HasJobsExecuting(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<long>(), Arg.Any<DateTime>()).Returns(true);
 
 			// Act & Assert
-			Assert.Throws<AgentDropJobException>(() => _sut.CheckForSynchronization(taskType, job, ip, _agentBase));
+			Assert.Throws<AgentDropJobException>(() => _sut.CheckForSynchronization(job, ip, _agentBase));
 		}
 
-		[TestCaseSource(nameof(GetAllTasksWithSynchronizedAttribute))]
-		public void ItShouldNotThrowExceptionWhenOtherTaskIsNotExecutingForSynchronizedTask(Type taskType)
+		[Test]
+		public void ItShouldNotThrowExceptionWhenOtherTaskIsNotExecutingForSynchronizedTask()
 		{
 			// Arrange
 			int jobId = 53243;
@@ -81,30 +80,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_queueManager.HasJobsExecuting(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<long>(), Arg.Any<DateTime>()).Returns(false);
 
 			// Act & Assert
-			_sut.CheckForSynchronization(taskType, job, ip, _agentBase);
+			_sut.CheckForSynchronization(job, ip, _agentBase);
 		}
 
-		[TestCaseSource(nameof(GetAllTasksWithoutSynchronizedAttribute))]
-		public void ItShouldNotThrowExceptionWhenOtherTaskIsExecutinForSynchronizedTask(Type taskType)
-		{
-			// Arrange
-			int jobId = 53243;
-			Job job = new JobBuilder().WithJobId(jobId).Build();
-
-			int integrationPointArtifactId = 434641;
-			var ip = new Data.IntegrationPoint
-			{
-				ArtifactId = integrationPointArtifactId
-			};
-
-			_queueManager.HasJobsExecuting(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<long>(), Arg.Any<DateTime>()).Returns(true);
-
-			// Act & Assert
-			_sut.CheckForSynchronization(taskType, job, ip, _agentBase);
-		}
-
-		[TestCaseSource(nameof(GetAllTasksWithoutSynchronizedAttribute))]
-		public void ItShouldNotThrowExceptionWhenOtherTaskIsNotExecutinForSynchronizedTask(Type taskType)
+		[Test]
+		public void ItShouldNotThrowExceptionWhenOtherTaskIsNotExecutinForSynchronizedTask()
 		{
 			// Arrange
 			int jobId = 53243;
@@ -119,11 +99,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_queueManager.HasJobsExecuting(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<long>(), Arg.Any<DateTime>()).Returns(false);
 
 			// Act & Assert
-			_sut.CheckForSynchronization(taskType, job, ip, _agentBase);
+			_sut.CheckForSynchronization(job, ip, _agentBase);
 		}
 
-		[TestCaseSource(nameof(GetAllTasksWithSynchronizedAttribute))]
-		public void ItShouldRescheduleScheduledJobInCaseOfDrop(Type taskType)
+		[Test]
+		public void ItShouldRescheduleScheduledJobInCaseOfDrop()
 		{
 			// Arrange
 			int jobId = 53243;
@@ -140,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			// Act
 			try
 			{
-				_sut.CheckForSynchronization(taskType, job, ip, _agentBase);
+				_sut.CheckForSynchronization(job, ip, _agentBase);
 			}
 			catch (AgentDropJobException) { }
 
@@ -150,8 +130,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 				Arg.Any<TaskResult>());
 		}
 
-		[TestCaseSource(nameof(GetAllTasksWithSynchronizedAttribute))]
-		public void ItShouldRemovedJobHistoryFromUnscheduledJobInCaseOfDrop(Type taskType)
+		[Test]
+		public void ItShouldRemovedJobHistoryFromUnscheduledJobInCaseOfDrop()
 		{
 			// Arrange
 			int jobId = 53243;
@@ -168,35 +148,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			// Act
 			try
 			{
-				_sut.CheckForSynchronization(taskType, job, ip, _agentBase);
+				_sut.CheckForSynchronization(job, ip, _agentBase);
 			}
 			catch (AgentDropJobException) { }
 
 
 			// Assert
 			_jobHistoryService.Received().RemoveJobHistoryFromIntegrationPoint(Arg.Is<Job>(x => x.JobId == jobId));
-		}
-
-		private static IEnumerable<TestCaseData> GetAllTasksWithSynchronizedAttribute()
-		{
-			return GetAllTaskImplementations()
-				.Where(type => type.GetCustomAttributes(false).Any(attribute => attribute is SynchronizedTaskAttribute))
-				.Select(type => new TestCaseData(type) { TestName = type.ToString() });
-		}
-
-		private static IEnumerable<TestCaseData> GetAllTasksWithoutSynchronizedAttribute()
-		{
-			return GetAllTaskImplementations()
-				.Where(type => !type.GetCustomAttributes(false).Any(attribute => attribute is SynchronizedTaskAttribute))
-				.Select(type => new TestCaseData(type) { TestName = type.ToString() });
-		}
-
-		private static IEnumerable<Type> GetAllTaskImplementations()
-		{
-			var taskInterface = typeof(ITask);
-			var assemblyWithTasks = typeof(SyncManager).Assembly;
-			return assemblyWithTasks.GetTypes()
-				.Where(type => type.IsClass && taskInterface.IsAssignableFrom(type));
 		}
 
 		private class AgentMock : ScheduleQueueAgentBase
