@@ -7,6 +7,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
 	public interface IJobSynchronizationChecker
 	{
-		void CheckForSynchronization(Type type, Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase);
+		void CheckForSynchronization(Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase);
 	}
 }

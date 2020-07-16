@@ -38,7 +38,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private">
+      <HintPath>..\..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />

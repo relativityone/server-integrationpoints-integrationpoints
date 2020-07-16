@@ -70,6 +70,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		[Test]
 		public void ItShouldCheckForSynchronization()
 		{
+			TaskType taskType = TaskType.ExportManager;
+			int relatedId = 453245;
+			int jobId = 342343;
+			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithTaskType(taskType)
+				.WithRelatedObjectArtifactId(relatedId)
+				.Build();
+
+			_instance.CreateTask(job, agentBase);
+
+			_jobSynchronizationChecker.Received().CheckForSynchronization(job, Arg.Any<Data.IntegrationPoint>(), agentBase);
+		}
+
+		[Test]
+		public void ItShouldNotCheckForSynchronizationForEmailWorker()
+		{
 			TaskType taskType = TaskType.SendEmailWorker;
 			int relatedId = 453245;
 			int jobId = 342343;
@@ -83,7 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
 			_instance.CreateTask(job, agentBase);
 
-			_jobSynchronizationChecker.Received().CheckForSynchronization(typeof(SendEmailWorker), job, Arg.Any<Data.IntegrationPoint>(), agentBase);
+			_jobSynchronizationChecker.DidNotReceive().CheckForSynchronization(job, Arg.Any<Data.IntegrationPoint>(), agentBase);
 		}
 
 		[Test]
