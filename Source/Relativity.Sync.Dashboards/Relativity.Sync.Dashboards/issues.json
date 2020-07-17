@@ -317,7 +317,7 @@
 	},
 	{
 		"Jira": "REL-436107",
-		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter. ---> Relativity.Services.Exceptions.ServiceException: '.', hexadecimal value 0x00, is an invalid character.*"
+		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter. ---> Relativity.Services.Exceptions.ServiceException: '*', hexadecimal value *, is an invalid character.*"
 	},
 	{
 		"Jira": "REL-436111",
@@ -342,5 +342,9 @@
 	{
 		"Jira": "REL-444071",
 		"Exception": "*Relativity.Transfer.TransferException: This operation cannot be performed and considered fatal because the workspace * does not exist. Please ensure the the supplied workspace is valid and resubmit the request.*Relativity.Transfer.TransferClientBase*"
+	},
+	{
+		"Jira": "REL-450392",
+		"Exception": "*System.Web.Services.Protocols.SoapException: SHUTDOWN is in progress.*"
 	}
 ]
