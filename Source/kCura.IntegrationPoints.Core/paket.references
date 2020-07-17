@@ -6,6 +6,7 @@ kCura.LongPath
 kCura.Relativity.Client
 LanguageExt.Core
 Mono.TextTransform
+Relativity
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.SDK

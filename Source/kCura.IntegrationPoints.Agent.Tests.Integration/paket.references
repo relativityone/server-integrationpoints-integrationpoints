@@ -10,6 +10,7 @@ Relativity.Data
 Relativity.DataTransfer.MessageService
 Relativity.Logging
 Relativity.OAuth2Client
+Relativity.Services.DataContracts
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 relativity.transfer.client

@@ -494,22 +494,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Services.Layout.DataContracts">
-          <HintPath>..\..\packages\sync\Relativity.Services.Layout.Interfaces\lib\net462\Relativity.Services.Layout.DataContracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Services.Layout.Interfaces">
-          <HintPath>..\..\packages\sync\Relativity.Services.Layout.Interfaces\lib\net462\Relativity.Services.Layout.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Relativity.Sync">
           <HintPath>..\..\packages\sync\Relativity.Sync\lib\net462\Relativity.Sync.dll</HintPath>
           <Private>True</Private>

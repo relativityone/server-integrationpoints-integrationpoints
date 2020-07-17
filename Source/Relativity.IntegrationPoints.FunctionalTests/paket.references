@@ -6,6 +6,7 @@ Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Productions.Services.Interfaces
+Relativity
 Relativity.Services.Interfaces.Private 
 Relativity.Toggles
 Relativity.DataTransfer.MessageService

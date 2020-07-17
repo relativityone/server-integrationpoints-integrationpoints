@@ -1,3 +1,5 @@
+Microsoft.CodeAnalysis.Common
+
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
