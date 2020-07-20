@@ -9,6 +9,9 @@ using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
 using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.Field;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.Profile
@@ -19,6 +22,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{
+		public CreateAndApplyProfilesTest() : base(false) { }
+
 		private IntegrationPointProfileAction _profileAction;
 
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
@@ -42,6 +47,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			};
 
 			return model;
+		}
+
+		protected override async Task SuiteSpecificOneTimeSetup()
+		{
+			int numberOfAdditionalFields = 100;
+			await CreateLongTextFieldsAsync(SourceContext, numberOfAdditionalFields).ConfigureAwait(false);
+			await CreateLongTextFieldsAsync(DestinationContext, numberOfAdditionalFields).ConfigureAwait(false);
+
 		}
 
 		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
@@ -137,6 +150,52 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName, RelativityProviderModel.CopyNativeFilesEnum.LinksOnly);
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
 			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
+		}
+		[IdentifiedTest("E181441F-44D8-483A-8115-8D2A0537B026")]
+		[RetryOnError]
+		[TestType.EdgeCase]
+		public void Profile_ShouldCreateNewProfileHugeMappingAndIPFromThisProfile()
+		{
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderModel();
+			//to use auto map on all created fields.
+			model.FieldMapping = null;
+			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
+
+			string profileModelName = "Created From Profile";
+			IntegrationPointGeneralModel profileModel = new IntegrationPointGeneralModel(profileModelName)
+			{
+				DestinationProvider = "Relativity",
+				Profile = model.Name
+			};
+
+			//Act
+			IntegrationPointDetailsPage integrationPointDetailsPage =
+				PointsAction.CreateNewRelativityProviderIntegrationPointFromProfile(profileModel);
+
+			//Assert
+			PropertiesTable generalProperties = integrationPointDetailsPage.SelectGeneralPropertiesTable();
+			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName);
+			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
+			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
+		}
+		protected async Task CreateLongTextFieldsAsync(Configuration.TestContext workspaceContext, int numberOfFields)
+		{
+			int workspaceID = workspaceContext.GetWorkspaceId();
+			IFieldManager fieldManager = workspaceContext.Helper.CreateProxy<IFieldManager>();
+
+			
+			for (int i = 0; i < numberOfFields; i++)
+			{
+				string generatedFieldName = $"Field_{i}";
+				var longTextFieldRequest = new LongTextFieldRequest
+				{
+					ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)global::Relativity.ArtifactType.Document },
+					Name = $"{generatedFieldName} LTF"
+				};
+
+				await fieldManager.CreateLongTextFieldAsync(workspaceID, longTextFieldRequest).ConfigureAwait(false);
+			}
 		}
 	}
 }
