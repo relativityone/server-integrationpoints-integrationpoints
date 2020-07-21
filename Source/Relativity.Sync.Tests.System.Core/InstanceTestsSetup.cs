@@ -7,6 +7,8 @@ using Relativity.Services.Environmental;
 using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using System.Data.SqlClient;
+using System.Security;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -82,12 +84,35 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 		}
 
-		private static async Task SetToggleAsync(string toggleName, bool value)
+		private static async Task SetToggleAsync(string toggleName, bool toggleValue)
 		{
-			ServiceFactory serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
-			using (IToggleService toggleService = serviceFactory.CreateProxy<IToggleService>())
+			SecureString password = new NetworkCredential("", AppSettings.SqlPassword).SecurePassword;
+			password.MakeReadOnly();
+
+			SqlCredential credential = new SqlCredential(AppSettings.SqlUsername, password);
+
+			using (SqlConnection connection = new SqlConnection($"Data Source={AppSettings.SqlServer};Initial Catalog=EDDS", credential))
 			{
-				await toggleService.SetAsync(toggleName, value).ConfigureAwait(false);
+				connection.Open();
+
+				SqlCommand toggleExistsCommand = new SqlCommand(@"SELECT Count(*) FROM [EDDS].[eddsdbo].[Toggle] WHERE Name = @toggleName", connection);
+				toggleExistsCommand.Parameters.AddWithValue("toggleName", toggleName);
+				if ((int) await toggleExistsCommand.ExecuteScalarAsync() > 0)
+				{
+					SqlCommand toggleUpdateCommand = new SqlCommand(@"UPDATE [EDDS].[eddsdbo].[Toggle] SET IsEnabled = @toggleValue WHERE Name = @toggleName", connection);
+					toggleUpdateCommand.Parameters.AddWithValue("toggleValue", toggleValue);
+					toggleUpdateCommand.Parameters.AddWithValue("toggleName", toggleName);
+
+					await toggleUpdateCommand.ExecuteNonQueryAsync();
+				}
+				else
+				{
+					SqlCommand toggleInsertCommand = new SqlCommand(@"INSERT INTO [EDDS].[eddsdbo].[Toggle] (Name, IsEnabled) VALUES (@toggleName, @toggleValue", connection);
+					toggleInsertCommand.Parameters.AddWithValue("toggleName", toggleName);
+					toggleInsertCommand.Parameters.AddWithValue("toggleValue", toggleValue);
+
+					await toggleInsertCommand.ExecuteNonQueryAsync();
+				}
 			}
 		}
 	}
