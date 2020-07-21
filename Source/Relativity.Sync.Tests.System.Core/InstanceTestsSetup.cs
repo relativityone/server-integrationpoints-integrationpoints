@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.System.Core
 				}
 				else
 				{
-					SqlCommand toggleInsertCommand = new SqlCommand(@"INSERT INTO [EDDS].[eddsdbo].[Toggle] (Name, IsEnabled) VALUES (@toggleName, @toggleValue", connection);
+					SqlCommand toggleInsertCommand = new SqlCommand(@"INSERT INTO [EDDS].[eddsdbo].[Toggle] (Name, IsEnabled) VALUES (@toggleName, @toggleValue)", connection);
 					toggleInsertCommand.Parameters.AddWithValue("toggleName", toggleName);
 					toggleInsertCommand.Parameters.AddWithValue("toggleValue", toggleValue);
 
