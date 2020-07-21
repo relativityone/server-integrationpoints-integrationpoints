@@ -10,6 +10,9 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
+using FluentAssertions;
+using System;
+using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -70,6 +73,72 @@ namespace Relativity.Sync.Tests.System
 
 			// assert
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+		}
+
+		[IdentifiedTest("E070BD2B-BEAB-4304-A175-434D8EBA7348")]
+		public async Task ItShouldMarkJobAsInvalid_WhenFieldHasBeenRenamed()
+		{
+			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
+			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
+			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+
+			const string fieldsMap =
+				@"[
+					{
+						""sourceField"": { 
+							""displayName"":""Control Number"",
+							""isIdentifier"":true,
+							""fieldIdentifier"":""1003667"",
+							""isRequired"":true,
+						},
+						""destinationField"": {
+							""displayName"":""Control Number"",
+							""isIdentifier"":true,
+							""fieldIdentifier"":""1003667"",
+							""isRequired"":true,
+						},
+						""fieldMapType"":""Identifier""
+					},
+					{
+						""sourceField"": {
+							""displayName"":""Extracted Text"",
+							""isIdentifier"":false,
+							""fieldIdentifier"":""1003668"",
+							""isRequired"":false,
+						},
+						""destinationField"": {
+							""displayName"":""Extracted Text - RENAMED"",
+							""isIdentifier"":false,
+							""fieldIdentifier"":""1003668"",
+							""isRequired"":false,
+						},
+						""fieldMapType"":""None""
+					}
+				]";
+
+			ConfigurationStub configuration = new ConfigurationStub
+			{
+				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
+				SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
+				JobHistoryArtifactId = expectedJobHistoryArtifactId,
+				SavedSearchArtifactId = savedSearchArtifactId,
+				DestinationFolderArtifactId = destinationFolderArtifactId,
+				FolderPathSourceFieldName = folderPathSourceFieldName,
+				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings
+			};
+			configuration.SetFieldMappings(_serializer.Deserialize<List<FieldMap>>(fieldsMap));
+			configuration.SetJobName(_JOB_HISTORY_NAME);
+
+			// act
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
+			Func<Task> executeJob = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			executeJob.Should().Throw<ValidationException>();
 		}
 	}
 }
