@@ -12,12 +12,14 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -211,11 +213,19 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
 		private async Task<IEnumerable<int>> CreateTestProfilesAsync(int workspaceID)
 		{
-			IRelativityObjectManager objectManager = CreateRelativityObjectManagerForWorkspace(workspaceID);
-			List<IntegrationPointProfile> profilesToCreate = await GetProfilesToCreateAsync(workspaceID).ConfigureAwait(false);
-			IEnumerable<Task<int>> profilesCreationTasks = profilesToCreate.Select(profile => Task.Run(() => objectManager.Create(profile)));
-			int[] profilesArtifactIds = await Task.WhenAll(profilesCreationTasks).ConfigureAwait(false);
-			return profilesArtifactIds;
+			using(IObjectManager objectManager = CreateObjectManager())
+			{
+				List<IntegrationPointProfile> profilesToCreate = await GetProfilesToCreateAsync(workspaceID).ConfigureAwait(false);
+				MassCreateRequest createRequest = new MassCreateRequest()
+				{
+					ObjectType = new ObjectTypeRef() { Guid = ObjectTypeGuids.IntegrationPointProfileGuid },
+					Fields = profilesToCreate.First().ToFieldValues().Select(x => x.Field).ToList(),
+					ValueLists = profilesToCreate.Select(x => x.ToFieldValues().Select(f => f.Value).ToList()).ToList()
+				};
+				var result = await objectManager.CreateAsync(workspaceID, createRequest);
+
+				return result.Objects.Select(x => x.ArtifactID);
+			}
 		}
 
 		private async Task<List<IntegrationPointProfile>> GetProfilesToCreateAsync(int workspaceID)
@@ -359,6 +369,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		{
 			return SystemTestsSetupFixture.Container.Resolve<IRelativityObjectManagerFactory>().CreateRelativityObjectManager(workspaceID);
 		}
+
+		private static IObjectManager CreateObjectManager()
+			=> SystemTestsSetupFixture.Container.Resolve<IHelper>().GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System);
 
 		private string CreateSourceConfigurationJson(SourceConfiguration.ExportType exportType)
 		{
