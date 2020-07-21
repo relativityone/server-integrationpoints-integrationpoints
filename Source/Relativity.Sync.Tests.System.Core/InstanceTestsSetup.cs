@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
-using Relativity.Services.InstanceSetting;
 using Relativity.Services.ServiceProxy;
+using Relativity.Services.Environmental;
+using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Core.Helpers;
 
@@ -27,7 +27,12 @@ namespace Relativity.Sync.Tests.System.Core
 		public virtual async Task RunBeforeAnyTests()
 		{
 			SuppressCertificateCheckingIfConfigured();
+
+			// REL-451648
+			await SetToggleAsync("Relativity.Core.Api.TogglePerformance.ObjectManagerUseStaticStatelessValidators", false).ConfigureAwait(false);
+
 			await ConfigureRequiredInstanceSettings().ConfigureAwait(false);
+
 			OverrideBanzaiLogger();
 		}
 
@@ -74,6 +79,15 @@ namespace Relativity.Sync.Tests.System.Core
 					};
 					await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
 				}
+			}
+		}
+
+		private static async Task SetToggleAsync(string toggleName, bool value)
+		{
+			ServiceFactory serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
+			using (IToggleService toggleService = serviceFactory.CreateProxy<IToggleService>())
+			{
+				await toggleService.SetAsync(toggleName, value).ConfigureAwait(false);
 			}
 		}
 	}
