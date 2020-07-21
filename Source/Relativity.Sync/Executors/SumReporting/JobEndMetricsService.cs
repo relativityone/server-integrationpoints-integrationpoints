@@ -36,6 +36,7 @@ namespace Relativity.Sync.Executors.SumReporting
 				int totalTransferred = 0;
 				int totalFailed = 0;
 				int totalRequested = 0;
+				long allNativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
 
 				IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 				foreach (IBatch batch in batches)
@@ -64,7 +65,6 @@ namespace Relativity.Sync.Executors.SumReporting
 					_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, _jobStatisticsContainer.TotalBytesTransferred);
 				}
 
-				long allNativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
 				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, allNativesSize);
 			}
 			catch (Exception e)
