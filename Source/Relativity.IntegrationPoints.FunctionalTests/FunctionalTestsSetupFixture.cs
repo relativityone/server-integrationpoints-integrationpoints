@@ -17,6 +17,9 @@ public class FunctionalTestsSetupFixture
 	{
 		_testHelper = new TestHelper();
 
+		// REL-451648
+		await ToggleHelper.SetToggleAsync("Relativity.Core.Api.TogglePerformance.ObjectManagerUseStaticStatelessValidators", false).ConfigureAwait(false);
+
 		await CreateTemplateWorkspaceAsync().ConfigureAwait(false);
 	}
 

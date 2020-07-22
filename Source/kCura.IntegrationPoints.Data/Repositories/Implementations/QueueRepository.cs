@@ -85,8 +85,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			WHERE [WorkspaceID] = @workspaceId 
 				AND [RelatedObjectArtifactID] = @integrationPointId 
 				AND [LockedByAgentID] is not null 
-				AND [NextRunTime] <= @dateValue 
-				AND [JobID] != @jobId";
+				AND CAST([NextRunTime] as DATE) <= CAST(@dateValue as DATE)
+				AND [TaskType] <> 'SendEmailWorker'
+			    AND [JobID] != @jobId";
+			
+			// SendEmailWorker task is very light, so no need to synchronize
+			// It's hard coded to prevent adding dependency to Agent project
 
 			IEnumerable<SqlParameter> parameters = new List<SqlParameter>
 			{
