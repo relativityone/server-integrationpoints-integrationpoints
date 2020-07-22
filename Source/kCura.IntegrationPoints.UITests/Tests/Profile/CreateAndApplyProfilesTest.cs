@@ -151,6 +151,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
 			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
 		}
+
 		[IdentifiedTest("E181441F-44D8-483A-8115-8D2A0537B026")]
 		[RetryOnError]
 		[TestType.EdgeCase]
@@ -179,6 +180,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
 			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
 		}
+
 		protected async Task CreateLongTextFieldsAsync(Configuration.TestContext workspaceContext, int numberOfFields)
 		{
 			int workspaceID = workspaceContext.GetWorkspaceId();

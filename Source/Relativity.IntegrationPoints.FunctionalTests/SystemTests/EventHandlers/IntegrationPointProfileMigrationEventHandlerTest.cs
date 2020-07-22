@@ -264,7 +264,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					DestinationProvider = relativityDestinationProviderArtifactID,
 					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
 					//11k size
-					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false, copyImages: true, useImagePrecedence: true)
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false, copyImages: true, useImagePrecedence: true),
+					FieldMappings = null
 				},
 				// Profiles to delete
 				new IntegrationPointProfile
@@ -274,7 +275,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
 					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
-					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true),
+					FieldMappings = null
 				},
 				new IntegrationPointProfile
 				{
@@ -283,7 +285,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
 					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
-					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true)
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: true),
+					FieldMappings = null
 				},
 				new IntegrationPointProfile
 				{
@@ -292,7 +295,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
 					SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.ProductionSet),
-					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false)
+					DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false),
+					FieldMappings = null
 				},
 				new IntegrationPointProfile
 				{
@@ -302,7 +306,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					DestinationProvider = loadFileDestinationProviderArtifactID,
 					SourceConfiguration = emptyJson,
 					DestinationConfiguration = emptyJson,
-					FieldMappings = new string('o',10000)
+					FieldMappings = null
 				},
 				new IntegrationPointProfile
 				{
@@ -311,7 +315,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceProvider = relativitySourceProviderArtifactID,
 					DestinationProvider = loadFileDestinationProviderArtifactID,
 					SourceConfiguration = emptyJson,
-					DestinationConfiguration = emptyJson
+					DestinationConfiguration = emptyJson,
+					FieldMappings = new string('o',10000)
 				},
 				new IntegrationPointProfile
 				{
@@ -320,7 +325,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceProvider = ftpSourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
 					SourceConfiguration = emptyJson,
-					DestinationConfiguration = emptyJson
+					DestinationConfiguration = emptyJson,
+					FieldMappings = null
 				},
 				new IntegrationPointProfile
 				{
@@ -329,7 +335,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceProvider = loadFileSourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
 					SourceConfiguration = emptyJson,
-					DestinationConfiguration = emptyJson
+					DestinationConfiguration = emptyJson,
+					FieldMappings = null
 				},
 				new IntegrationPointProfile
 				{
@@ -338,7 +345,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					SourceProvider = ldapSourceProviderArtifactID,
 					DestinationProvider = relativityDestinationProviderArtifactID,
 					SourceConfiguration = emptyJson,
-					DestinationConfiguration = emptyJson
+					DestinationConfiguration = emptyJson,
+					FieldMappings = null
 				}
 			};
 
