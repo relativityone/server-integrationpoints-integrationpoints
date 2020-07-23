@@ -144,8 +144,14 @@ namespace kCura.IntegrationPoints.UITests.Common
 			if (model.GetValueOrDefault(m => m.Source) != RelativityProviderModel.SourceTypeEnum.Production &&
 			    model.GetValueOrDefault(m => m.Location) != RelativityProviderModel.LocationEnum.ProductionSet)
 			{
-				MapWorkspaceFields(thirdPage, model.FieldMapping);
-				thirdPage.SelectCopyImages(model.CopyImages);
+				if (model.CopyImages)
+				{
+					thirdPage.SelectCopyImages(model.CopyImages);
+				}
+				else
+				{
+					MapWorkspaceFields(thirdPage, model.FieldMapping);
+				}
 			}
 
 
