@@ -16,7 +16,8 @@ namespace Relativity.Sync.KeplerFactory
 		// If you have a long running process and you have to create many dynamic proxies, you should make sure to reuse the same ProxyGenerator instance.
 		// If not, be aware that you will then bypass the caching mechanism. Side effects are high CPU usage and constant increase in memory consumption.
 		// https://github.com/castleproject/Core/blob/master/docs/dynamicproxy.md
-		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
+		// We also have to set disableSignedModule to true to prevent Castle from signing the dynamic proxy dll which can lead to FileLoadException
+		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator(true);
 
 		public DynamicProxyFactory(ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch, IRandom random, ISyncLog logger)
 		{
