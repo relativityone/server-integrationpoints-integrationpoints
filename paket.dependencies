@@ -32,8 +32,8 @@ nuget kCura.FreeImage 3.17.0.1
 nuget kCura.LongPath 1.0.20
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-nuget Relativity.Kepler 2.7.0
-nuget Relativity.Kepler.Client 2.7.0
+nuget Relativity.Kepler 2.8.1
+nuget Relativity.Kepler.Client 2.8.1
 nuget Relativity.Logging 2018.11.8
 nuget Relativity.Logging.Interfaces 2018.11.8
 nuget Relativity.OAuth2Client 1.5.2
@@ -88,12 +88,12 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-    nuget Relativity.Sync 0.4.11
+    nuget Relativity.Sync 0.4.18
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
 	nuget Banzai ~> 3.0
 	nuget kCura.Apps.Common.Utils 2.1.9
-	nuget Relativity.Kepler 2.7.0
+	nuget Relativity.Kepler 2.8.1
 	nuget Relativity.Services.Interfaces 13.2.0
 	nuget Relativity.Telemetry.APM 2019.1.1
