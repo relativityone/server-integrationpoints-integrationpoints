@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 		}
 
 		[IdentifiedTest("9f1a90a3-9754-49d2-ae19-0a99ec69e3f6")]
+		[Category(TestCategory.SMOKE)]
 		[TestType.MainFlow]
 		public void Scheduler_ShouldSuccessfullySave_WhenFieldValuesAreCorrect()
 		{

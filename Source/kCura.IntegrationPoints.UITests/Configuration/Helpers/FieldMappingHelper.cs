@@ -72,23 +72,23 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
             return fieldsFromWorkspace;
 		}
 
-        private List<FieldObject> RemoveSystemFieldObjects(List<FieldObject> fieldsFromWorkspace)
+        private void RemoveSystemFieldObjects(List<FieldObject> fieldsFromWorkspace)
 		{
-			fieldsFromWorkspace.RemoveAll(fo => fo.Keywords == "System" && !_fieldMapWhiteList.Contains(fo.Name));
-			return fieldsFromWorkspace;
+			fieldsFromWorkspace.RemoveAll(fo => fo.Keywords.Contains("System") && !_fieldMapWhiteList.Contains(fo.Name));
 		}
 
-		private List<FieldObject> RemoveOpenToAssociationFieldObjects(List<FieldObject> fieldsFromWorkspace)
+		private void RemoveFieldsWithDoubleColonsFieldObjects(List<FieldObject> fieldsFromWorkspace)
 		{
 			fieldsFromWorkspace.RemoveAll(fo => fo.Name.Contains("::"));
-            fieldsFromWorkspace.RemoveAll(fo => fo.OpenToAssociations);
-			return fieldsFromWorkspace;
+		}
+		private void RemoveOpenToAssociationFieldObjects(List<FieldObject> fieldsFromWorkspace)
+		{
+			fieldsFromWorkspace.RemoveAll(fo => fo.OpenToAssociations);
 		}
 
-		private List<FieldObject> RemoveBlackListedFieldObjects(List<FieldObject> fieldsFromWorkspace)
+		private void RemoveBlackListedFieldObjects(List<FieldObject> fieldsFromWorkspace)
 		{
 			fieldsFromWorkspace.RemoveAll(fo => _fieldMapBlackList.Contains(fo.Name));
-			return fieldsFromWorkspace;
 		}
         private List<FieldObject> RemoveObjectTypeFieldObjects(List<FieldObject> fieldsFromWorkspace)
         {
@@ -100,9 +100,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 		{
 			List<FieldObject> fieldsFromWorkspace =
 				await RetrieveAllDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
-			fieldsFromWorkspace = RemoveSystemFieldObjects(fieldsFromWorkspace);
-			fieldsFromWorkspace = RemoveOpenToAssociationFieldObjects(fieldsFromWorkspace);
-			fieldsFromWorkspace = RemoveBlackListedFieldObjects(fieldsFromWorkspace);
+			RemoveSystemFieldObjects(fieldsFromWorkspace);
+			RemoveFieldsWithDoubleColonsFieldObjects(fieldsFromWorkspace);
+			RemoveBlackListedFieldObjects(fieldsFromWorkspace);
 			return fieldsFromWorkspace;
 		}
 
@@ -111,6 +111,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
             List<FieldObject> mappableFieldsFromWorkspace =
                 await GetFilteredDocumentsFieldsFromWorkspaceAsync().ConfigureAwait(false);
             List<FieldObject> autoMapAllEnabledFields = RemoveObjectTypeFieldObjects(mappableFieldsFromWorkspace);
+            RemoveOpenToAssociationFieldObjects(autoMapAllEnabledFields);
             return autoMapAllEnabledFields;
         }
 	}
