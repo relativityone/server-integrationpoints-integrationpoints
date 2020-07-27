@@ -16,8 +16,14 @@ var StepMapFieldsValidator = (function () {
 		$('<ul/>').appendTo(mappedFieldsList);
 
 		mappedFields.forEach(
-			function (fieldMap) {
-				$('<li/>').text(getMismatchedFieldsAsString(fieldMap)).appendTo(mappedFieldsList);
+			function (invalidMap) {
+				$('<li/>').text(getMismatchedFieldsAsString(invalidMap.fieldMap)).appendTo(mappedFieldsList);
+				reasonList = $('<ul/>')
+				reasonList.appendTo(mappedFieldsList);
+				invalidMap.invalidReasons.forEach(
+					function (reason) {
+						$('<li/>').text(reason).appendTo(reasonList);
+					});
 			});
 
 		return mappedFieldsList;
