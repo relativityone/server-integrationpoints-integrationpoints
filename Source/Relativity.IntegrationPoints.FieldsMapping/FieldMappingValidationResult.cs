@@ -5,7 +5,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class FieldMappingValidationResult
 	{
-		public List<FieldMap> InvalidMappedFields { get; set; } = new List<FieldMap>();
+		public IList<InvalidFieldMap> InvalidMappedFields { get; set; } = new List<InvalidFieldMap>();
 		public bool IsObjectIdentifierMapValid { get; set; }
 	}
 }

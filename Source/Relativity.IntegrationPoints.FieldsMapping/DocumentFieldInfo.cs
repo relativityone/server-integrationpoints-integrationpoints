@@ -11,6 +11,7 @@
 		public bool IsRequired { get; set; }
 		public bool? OpenToAssociations { get; set; }
 		public string AssociativeObjectType { get; set; }
+		public bool Unicode { get; set; }
 
 		public string DisplayType => Type.Equals(FieldTypeName.FIXED_LENGTH_TEXT) && Length != 0 ? $"{Type}({Length})" : Type;
 

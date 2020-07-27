@@ -74,6 +74,7 @@
     <Compile Include="IFieldsClassifierRunner.cs" />
     <Compile Include="IFieldsMappingValidator.cs" />
     <Compile Include="IFieldsRepository.cs" />
+    <Compile Include="InvalidFieldMap.cs" />
     <Compile Include="Metrics\IMetricsSender.cs" />
     <Compile Include="Metrics\IMetricsSink.cs" />
     <Compile Include="Metrics\Metric.cs" />
@@ -86,6 +87,7 @@
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

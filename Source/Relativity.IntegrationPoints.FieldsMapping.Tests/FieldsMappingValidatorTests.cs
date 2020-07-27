@@ -102,7 +102,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		[Test]
 		public async Task ValidateAsync_ShouldAlwaysCallFieldClassificationForMappedFieldsOnly()
 		{
-			List<string> IDs = new List<string> { "1", "2", "3", "4","5"};
+			List<string> IDs = new List<string> { "1", "2", "3", "4", "5" };
 			var field1 = CreateWithType(IDs[0], FieldTypeName.DATE);
 			var field2 = CreateWithType(IDs[1], FieldTypeName.DECIMAL);
 			var field3 = CreateWithType(IDs[2], $"{FieldTypeName.FIXED_LENGTH_TEXT}(255)");
@@ -257,8 +257,64 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			result.InvalidMappedFields.Should().NotBeEmpty()
-				.And.HaveCount(fieldMap.Count)
-				.And.Contain(fieldMap);
+				.And.HaveCount(fieldMap.Count);
+			result.InvalidMappedFields.Select(x => x.FieldMap)
+				.Should().Contain(fieldMap);
+		}
+
+		public static IEnumerable<TestCaseData> UnicodeDependentTestCaseSource()
+		{
+			yield return new TestCaseData(
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.MULTIPLE_CHOICE) { Unicode = true },
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.MULTIPLE_CHOICE) { Unicode = false }
+			);
+			yield return new TestCaseData(
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.SINGLE_CHOICE) { Unicode = true },
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.SINGLE_CHOICE) { Unicode = false }
+			);
+			yield return new TestCaseData(
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.LONG_TEXT) { Unicode = true },
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.LONG_TEXT) { Unicode = false }
+			);
+			yield return new TestCaseData(
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.FIXED_LENGTH_TEXT) { Unicode = true },
+				new DocumentFieldInfo("1", "Field1", FieldTypeName.FIXED_LENGTH_TEXT) { Unicode = false }
+			);
+		}
+
+		[TestCaseSource(nameof(UnicodeDependentTestCaseSource))]
+		public async Task ValidateAsync_ShouldReturnInvalidFields_WhenUnicodeIsDifferentAndTypeIsUnicodeDependent(DocumentFieldInfo sourceField, DocumentFieldInfo destinationField)
+		{
+			// Arrange
+			var sourceClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(sourceField) { ClassificationLevel = ClassificationLevel.AutoMap},
+			};
+
+			var destinationClassifiedFields = new List<FieldClassificationResult>()
+			{
+				new FieldClassificationResult(destinationField) { ClassificationLevel = ClassificationLevel.AutoMap},
+			};
+
+			LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
+
+			var fieldMap = new List<FieldMap>()
+			{
+				new FieldMap()
+				{
+					SourceField = FieldConvert.ToFieldEntry(sourceField),
+					DestinationField = FieldConvert.ToFieldEntry(destinationField)
+				}
+			};
+
+			// Act
+			var result = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+			result.InvalidMappedFields.Should().NotBeEmpty()
+				.And.HaveCount(fieldMap.Count);
+			result.InvalidMappedFields.Select(x => x.FieldMap)
+				.Should().Contain(fieldMap);
 		}
 
 		[Test]
@@ -371,8 +427,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			result.InvalidMappedFields.Should().NotBeEmpty()
-				.And.HaveCount(fieldMap.Count)
-				.And.Contain(fieldMap);
+				.And.HaveCount(fieldMap.Count);
+			result.InvalidMappedFields.Select(x => x.FieldMap)
+				.Should().Contain(fieldMap);
 		}
 
 		[Test]
@@ -426,8 +483,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			result.InvalidMappedFields.Should().NotBeEmpty()
-				.And.HaveCount(fieldMap.Count)
-				.And.Contain(fieldMap);
+				.And.HaveCount(fieldMap.Count);
+			result.InvalidMappedFields.Select(x => x.FieldMap)
+				.Should().Contain(fieldMap);
 		}
 
 		[Test]
@@ -484,8 +542,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			result.InvalidMappedFields.Should().NotBeEmpty()
-				.And.HaveCount(fieldMap.Count)
-				.And.Contain(fieldMap);
+				.And.HaveCount(fieldMap.Count);
+			result.InvalidMappedFields.Select(x => x.FieldMap)
+				.Should().Contain(fieldMap);
 		}
 
 		[Test]
@@ -600,7 +659,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			result.InvalidMappedFields.Should().NotBeEmpty()
-				.And.Contain(f => f.DestinationField.FieldIdentifier == field2.FieldIdentifier);
+				.And.Contain(f => f.FieldMap.DestinationField.FieldIdentifier == field2.FieldIdentifier);
 		}
 
 		[Test]
@@ -653,7 +712,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Assert
 			result.InvalidMappedFields.Should().NotBeEmpty()
-				.And.Contain(f => f.DestinationField.FieldIdentifier == field2.FieldIdentifier);
+				.And.Contain(f => f.FieldMap.DestinationField.FieldIdentifier == field2.FieldIdentifier);
 		}
 
 		[Test]
