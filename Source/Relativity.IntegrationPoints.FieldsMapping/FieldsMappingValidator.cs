@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
@@ -9,6 +10,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 	public class FieldsMappingValidator : IFieldsMappingValidator
 	{
 		private readonly IFieldsClassifyRunnerFactory _fieldsClassifyRunnerFactory;
+
+		private readonly IList<string> _unicodeDependentFieldsTypes = new List<string>()
+		{
+			FieldTypeName.FIXED_LENGTH_TEXT,
+			FieldTypeName.LONG_TEXT,
+			FieldTypeName.SINGLE_CHOICE,
+			FieldTypeName.MULTIPLE_CHOICE
+		};
 
 		public FieldsMappingValidator(IFieldsClassifyRunnerFactory fieldsClassifyRunnerFactory)
 		{
@@ -49,37 +58,84 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 					result.IsObjectIdentifierMapValid = sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo);
 				}
 
-				if (!IsFieldMapValid(sourceField, destinationField, fieldMap.FieldMapType))
+				var fieldMapValidation = IsFieldMapValid(sourceField, destinationField, fieldMap.FieldMapType);
+				if (!fieldMapValidation.IsValid)
 				{
-					result.InvalidMappedFields.Add(fieldMap);
+					result.InvalidMappedFields.Add(new InvalidFieldMap()
+					{
+						FieldMap = fieldMap,
+						InvalidReasons = fieldMapValidation.Reasons
+					});
 				}
 			}
 
 			return result;
 		}
 
-		private bool IsFieldMapValid(FieldClassificationResult sourceField, FieldClassificationResult destinationField, FieldMapTypeEnum mapType)
+		private MapValidationResult IsFieldMapValid(FieldClassificationResult sourceField, FieldClassificationResult destinationField, FieldMapTypeEnum mapType)
 		{
 			switch(mapType)
 			{
 				case FieldMapTypeEnum.Identifier:
-					return sourceField.FieldInfo.IsIdentifier && destinationField.FieldInfo.IsIdentifier;
+					return sourceField.FieldInfo.IsIdentifier && destinationField.FieldInfo.IsIdentifier
+						? MapValidationResult.Valid : new MapValidationResult(InvalidMappingReasons._FIELD_IDENTIFIERS_NOT_MAPPED);
 				case FieldMapTypeEnum.FolderPathInformation:
-					return destinationField == null
-						|| CanBeMapped(sourceField, destinationField);
+					return destinationField == null ? MapValidationResult.Valid : CanBeMapped(sourceField, destinationField);
 				case FieldMapTypeEnum.None:
-					return sourceField != null && destinationField != null
-						&& CanBeMapped(sourceField, destinationField);
+					return CanBeMapped(sourceField, destinationField);
 				default:
-					return true;
+					return MapValidationResult.Valid;
 			}
 		}
 
-		private bool CanBeMapped(FieldClassificationResult sourceField, FieldClassificationResult destinationField)
+		private MapValidationResult CanBeMapped(FieldClassificationResult sourceField, FieldClassificationResult destinationField)
 		{
-			return sourceField.ClassificationLevel == ClassificationLevel.AutoMap
-				&& destinationField.ClassificationLevel == ClassificationLevel.AutoMap
-				&& sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo);
+			var result = MapValidationResult.Valid;
+
+			if(sourceField == null || destinationField == null)
+			{
+				result.AddInvalidReason(InvalidMappingReasons._FIELD_IS_MISSING);
+				return result;
+			}
+
+			bool unsupported = sourceField.ClassificationLevel == ClassificationLevel.AutoMap 
+				&& destinationField.ClassificationLevel == ClassificationLevel.AutoMap;
+			if (!unsupported)
+			{
+				result.AddInvalidReason(InvalidMappingReasons._UNSUPORTED_TYPES);
+			}
+
+			if(!sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo))
+			{
+				result.AddInvalidReason(InvalidMappingReasons._INCOMPATIBLE_TYPES);
+			}
+
+			if(!UnicodeIsSame(sourceField, destinationField))
+			{
+				result.AddInvalidReason(InvalidMappingReasons._UNICODE_DIFFERENCE);
+			}
+
+			return result;
+		}
+
+		private bool UnicodeIsSame(FieldClassificationResult sourceField, FieldClassificationResult destinationField)
+			=> !_unicodeDependentFieldsTypes.Contains(sourceField.FieldInfo.Type) || sourceField.FieldInfo.Unicode == destinationField.FieldInfo.Unicode;
+
+		private class MapValidationResult
+		{
+			public IList<string> Reasons { get; set; } = new List<string>();
+			public bool IsValid => !Reasons.Any();
+
+			private MapValidationResult() { }
+
+			public MapValidationResult(string reason)
+			{
+				Reasons.Add(reason);
+			}
+
+			public void AddInvalidReason(string reason) => Reasons.Add(reason);
+
+			public static MapValidationResult Valid => new MapValidationResult();
 		}
 	}
 }

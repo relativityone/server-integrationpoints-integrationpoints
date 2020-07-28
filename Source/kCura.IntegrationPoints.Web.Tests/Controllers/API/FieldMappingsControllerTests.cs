@@ -108,20 +108,24 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>();
 			FieldMappingValidationResult validationResult = new FieldMappingValidationResult()
 			{
-				InvalidMappedFields = new List<FieldMap>
+				InvalidMappedFields = new List<InvalidFieldMap>
 				{
-					new FieldMap
+					new InvalidFieldMap
 					{
-						SourceField = new FieldEntry
+						FieldMap = new FieldMap
 						{
-							FieldIdentifier = "1"
+							SourceField = new FieldEntry
+							{
+								FieldIdentifier = "1"
+							},
+							DestinationField = new FieldEntry
+							{
+								FieldIdentifier = "2"
+							},
+							FieldMapType = FieldMapTypeEnum.None
 						},
-						DestinationField = new FieldEntry
-						{
-							FieldIdentifier = "2"
-						},
-						FieldMapType = FieldMapTypeEnum.None
-					}
+						InvalidReasons = new List<string>() { "Some invalid fields reason" }
+					},
 				},
 				IsObjectIdentifierMapValid = true
 			};
