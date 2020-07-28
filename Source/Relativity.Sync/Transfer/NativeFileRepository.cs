@@ -73,7 +73,7 @@ namespace Relativity.Sync.Transfer
 		/// </summary>
 		public async Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request)
 		{
-			_logger.LogInformation("Initializing calculating total natives size (in chunks of {batchSize}", _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
+			_logger.LogInformation("Initializing calculating total natives size (in chunks of {batchSize} )", _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
 			long nativesTotalSize = 0;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
