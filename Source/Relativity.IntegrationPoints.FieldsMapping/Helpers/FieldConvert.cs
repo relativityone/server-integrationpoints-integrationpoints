@@ -32,6 +32,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Helpers
 				IsRequired = GetValueOrDefault<bool>(fieldObject, "Is Required"),
 				OpenToAssociations = ValueExists(fieldObject, "Open To Associations") ? (bool?)GetValueOrDefault<bool>(fieldObject, "Open To Associations") : null,
 				AssociativeObjectType = GetValueOrDefault<string>(fieldObject, "Associative Object Type"),
+				Unicode = GetValueOrDefault<bool>(fieldObject, "Unicode"),
 			};
 		}
 
