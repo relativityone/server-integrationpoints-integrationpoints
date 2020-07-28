@@ -66,6 +66,7 @@ namespace Relativity.Sync.Executors
 			{
 				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
+					_logger.LogInformation("Retrieving documents from saved search {savedSearch} using following OM query {queryCondition}", configuration.DataSourceArtifactId, queryRequest.Condition);
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					_logger.LogInformation("Retrieved {documentsCount} documents from saved search.", results.RecordCount);
 
