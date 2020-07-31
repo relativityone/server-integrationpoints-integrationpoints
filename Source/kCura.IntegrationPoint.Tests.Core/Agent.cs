@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public static class Agent
 	{
 		private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
-		private const int _MAX_NUMBER_OF_AGENTS_TO_CREATE = 4;
+		private const int _MAX_NUMBER_OF_AGENTS_TO_CREATE = 6;
 
 		private static ITestHelper Helper => new TestHelper();
 
@@ -33,6 +33,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 
 			return await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
+		}
+
+		public static async Task<bool> CreateMaxIntegrationPointAgents()
+		{
+			global::Relativity.Services.Agent.Agent[] agents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
+
+			int agentsToCreate = _MAX_NUMBER_OF_AGENTS_TO_CREATE - agents.Length;
+			for (int i = 0; i < agentsToCreate; ++i)
+			{
+				Result agent = await CreateIntegrationPointAgentInternalAsync();
+				if(!agent.Success)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		public static async Task<Result> CreateIntegrationPointAgentIfNotExistsAsync()
@@ -68,16 +85,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new TestException($"Error: Failed deleting agent. Exception: {ex.Message}", ex);
 				}
 			}
-		}
-
-		public static Task EnableAllIntegrationPointsAgentsAsync()
-		{
-			return ChangeAllIntegrationPointAgentsEnabledStatusAsync(isEnabled: true);
-		}
-
-		public static Task DisableAllIntegrationPointsAgentsAsync()
-		{
-			return ChangeAllIntegrationPointAgentsEnabledStatusAsync(isEnabled: false);
 		}
 
 		private static async Task ChangeAllIntegrationPointAgentsEnabledStatusAsync(bool isEnabled)

@@ -45,8 +45,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			base.SuiteSetup();
 
-			Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 
 			_sourceProductionId = _workspaceService.CreateProductionAsync(SourceWorkspaceArtifactID, "Production").GetAwaiter().GetResult();

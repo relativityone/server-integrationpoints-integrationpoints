@@ -28,8 +28,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobService = Container.Resolve<IJobService>();
 			_queueContext = new QueueDBContext(Helper, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME);

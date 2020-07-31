@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Import
 	{
-		public static void ImportNewDocuments(int workspaceId, DataTable importTable)
+		public static void ImportNewDocuments(int workspaceId, DataTable importTable, FieldMap[] additionalFieldMaps = null)
 		{
 			IAPILog logger = Substitute.For<IAPILog>();
 			ISystemEventLoggingService systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
@@ -67,10 +67,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			FieldMap[] allFieldMaps = { mapIdentifier };
 
+			if (additionalFieldMaps != null)
+			{
+				allFieldMaps = allFieldMaps.Concat(additionalFieldMaps).ToArray();
+			}
 			DataTableReader reader = importTable.CreateDataReader();
 			var context = new DefaultTransferContext(reader);
 			rdoSynchronizer.SyncData(context, allFieldMaps, settings);
 		}
+
 
 		public static DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
 		{

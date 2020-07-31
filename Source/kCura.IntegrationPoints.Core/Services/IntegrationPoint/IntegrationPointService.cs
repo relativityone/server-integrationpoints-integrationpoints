@@ -308,6 +308,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			{
 				IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 				int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
+
+				Console.WriteLine($"[GettingJobHistory] Trying to get JobHistory with Id {lastJobHistoryArtifactId}");
+
 				lastJobHistory = ObjectManager.Read<Data.JobHistory>(lastJobHistoryArtifactId);
 			}
 			catch (Exception exception)

@@ -106,6 +106,10 @@
       <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
+      <Project>{FAFF9DBE-B607-45B3-8392-469B5EEC5259}</Project>
+      <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />

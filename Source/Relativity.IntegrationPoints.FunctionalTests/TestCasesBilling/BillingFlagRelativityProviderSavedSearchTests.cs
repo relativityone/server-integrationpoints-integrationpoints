@@ -35,8 +35,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			base.SuiteSetup();
 
-			kCura.IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 
 			var importHelper = new ImportHelper();

@@ -36,8 +36,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		{
 			base.SuiteSetup();
 
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-
 			_jobService = Container.Resolve<IJobService>();
 			_jobManager = Container.Resolve<IJobManager>();
 		}

@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	[TestFixture]
 	public abstract class SourceProviderTemplate : IntegrationTestBase
 	{
-		private bool _wasAgentCreated = true;
 		private readonly string _workspaceName;
 		private readonly string _workspaceTemplate;
 
@@ -94,8 +93,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			InitializeIocContainer();
 
-			Task.Run(async () => await SetupAsync().ConfigureAwait(false)).Wait();
-
 			CaseContext = Container.Resolve<ICaseServiceContext>();
 			ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
 			IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
@@ -112,10 +109,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Workspace.DeleteWorkspace(WorkspaceArtifactId);
 			}
 
-			if (_wasAgentCreated)
-			{
-				Agent.DeleteAgentAsync(AgentArtifactId).GetAwaiter().GetResult();
-			}
 			base.SuiteTeardown();
 		}
 
@@ -348,18 +341,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			foreach (var agentIdToUnlock in agentsIDsToUnlock)
 			{
 				jobServiceManager.UnlockJobs(agentIdToUnlock);
-			}
-		}
-
-		private async Task SetupAsync()
-		{
-			await AddAgentServerToResourcePool().ConfigureAwait(false);
-
-			if (CreatingAgentEnabled)
-			{
-				Result agentCreatedResult = await Agent.CreateIntegrationPointAgentAsync().ConfigureAwait(false);
-				AgentArtifactId = agentCreatedResult.ArtifactID;
-				_wasAgentCreated = agentCreatedResult.Success;
 			}
 		}
 

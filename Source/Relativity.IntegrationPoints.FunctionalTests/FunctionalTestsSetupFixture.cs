@@ -17,9 +17,12 @@ public class FunctionalTestsSetupFixture
 	public static bool IsInitialized = true;
 
 	[OneTimeSetUp]
-	public void InitializeFixture()
+	public async Task InitializeFixture()
 	{
 		_testHelper = new TestHelper();
+
+		// REL-451648
+		await ToggleHelper.SetToggleAsync("Relativity.Core.Api.TogglePerformance.ObjectManagerUseStaticStatelessValidators", false).ConfigureAwait(false);
 
 		if (!FunctionalTemplateWorkspaceExists())
 		{
@@ -36,6 +39,8 @@ public class FunctionalTestsSetupFixture
 			ImportIntegrationPointsToLibrary();
 
 			InstallIntegrationPointsFromLibrary(workspaceID);
+
+			CreateIntegrationPointAgents();
 
 			ConfigureWebAPI();
 
@@ -72,13 +77,26 @@ public class FunctionalTestsSetupFixture
 		applicationManager.InstallRipFromLibraryAsync(workspaceID).GetAwaiter().GetResult();
 	}
 
+	private void CreateIntegrationPointAgents()
+	{
+		Console.WriteLine("Creating Integration Point Agents...");
+
+		var success = Agent.CreateMaxIntegrationPointAgents().GetAwaiter().GetResult();
+		if(!success)
+		{
+			throw new TestException("Creating Integration Point Agents has been failed");
+		}
+	}
+
 	public void ConfigureWebAPI()
 	{
 		Console.WriteLine("Configure Web API Path...");
 
 		bool isValid = InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl).Result;
 		if (!isValid)
-			throw new TestException("Upgrading Web API Path has been failed");	
+		{
+			throw new TestException("Upgrading Web API Path has been failed");
+		}
 	}
 
 	public void ConfigureFileShareServices()

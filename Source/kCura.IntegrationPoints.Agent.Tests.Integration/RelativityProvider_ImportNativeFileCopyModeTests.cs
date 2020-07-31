@@ -46,22 +46,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			base(_SOURCE_WORKSPACE_NAME, _TARGET_WORKSPACE_NAME)
 		{ }
 
-		public override void SuiteSetup()
-		{
-			base.SuiteSetup();
-			IntegrationPoint.Tests.Core.Agent.DisableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-		}
-
 		protected override void InitializeIocContainer()
 		{
 			base.InitializeIocContainer();
 			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>().LifestyleTransient());
-		}
-
-		public override void SuiteTeardown()
-		{
-			IntegrationPoint.Tests.Core.Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-			base.SuiteTeardown();
 		}
 
 		public override void TestSetup()

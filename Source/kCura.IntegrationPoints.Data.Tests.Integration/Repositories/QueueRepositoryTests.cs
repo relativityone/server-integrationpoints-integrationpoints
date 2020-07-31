@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_helper = new TestHelper();
 			_queueRepo = new QueueRepository(_helper);
 
-			Agent.DisableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
 			ClearScheduleQueue();
 		}
 
@@ -206,54 +205,46 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[IdentifiedTest("c5eca681-6859-441e-84b0-634c41570f12"), Timeout(300000)]
 		[Description("This test takes sometime to process. It requires the IP agent to be running.")]
 		[NotWorkingOnTrident]
-		public async Task OneExecutedScheduledJobInTheQueue_ExpectCountZero()
+		public void OneExecutedScheduledJobInTheQueue_ExpectCountZero()
 		{
-			await Agent.EnableAllIntegrationPointsAgentsAsync().ConfigureAwait(false);
-			try
+			// arrange
+			var model = new IntegrationPointModel
 			{
-				// arrange
-				var model = new IntegrationPointModel
+				SourceProvider = RelativityProvider.ArtifactId,
+				Name = "OneExecutingScheduledJobInTheQueue",
+				DestinationProvider = RelativityDestinationProviderArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
+				Map = CreateDefaultFieldMap(),
+				Scheduler = new Scheduler()
 				{
-					SourceProvider = RelativityProvider.ArtifactId,
-					Name = "OneExecutingScheduledJobInTheQueue",
-					DestinationProvider = RelativityDestinationProviderArtifactId,
-					SourceConfiguration = CreateDefaultSourceConfig(),
-					Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
-					Map = CreateDefaultFieldMap(),
-					Scheduler = new Scheduler()
-					{
-						EnableScheduler = true,
-						EndDate = DateTime.UtcNow.AddYears(1000).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-						Reoccur = 2,
-						StartDate = DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-						ScheduledTime = DateTime.UtcNow.AddMinutes(1).TimeOfDay.ToString(),
-						SelectedFrequency = ScheduleInterval.Daily.ToString(),
-						TimeZoneId = TimeZoneInfo.Utc.Id
-					},
-					SelectedOverwrite = "Append Only",
-					Type = Container.Resolve<IIntegrationPointTypeService>()
-						.GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
-						.ArtifactId
-				};
+					EnableScheduler = true,
+					EndDate = DateTime.UtcNow.AddYears(1000).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+					Reoccur = 2,
+					StartDate = DateTime.UtcNow.AddDays(-1).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+					ScheduledTime = DateTime.UtcNow.AddMinutes(1).TimeOfDay.ToString(),
+					SelectedFrequency = ScheduleInterval.Daily.ToString(),
+					TimeZoneId = TimeZoneInfo.Utc.Id
+				},
+				SelectedOverwrite = "Append Only",
+				Type = Container.Resolve<IIntegrationPointTypeService>()
+					.GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
+					.ArtifactId
+			};
 
-				// act
-				IntegrationPointModel result = CreateOrUpdateIntegrationPoint(model);
-				while (!result.LastRun.HasValue)
-				{
-					Thread.Sleep(200);
-					result = RefreshIntegrationModel(result);
-				}
-
-				int count = _queueRepo.GetNumberOfJobsExecutingOrInQueue(SourceWorkspaceArtifactID,
-					_RipObjectArtifactId);
-
-				// assert
-				Assert.AreEqual(0, count);
-			}
-			finally
+			// act
+			IntegrationPointModel result = CreateOrUpdateIntegrationPoint(model);
+			while (!result.LastRun.HasValue)
 			{
-				await Agent.DisableAllIntegrationPointsAgentsAsync().ConfigureAwait(false);
+				Thread.Sleep(200);
+				result = RefreshIntegrationModel(result);
 			}
+
+			int count = _queueRepo.GetNumberOfJobsExecutingOrInQueue(SourceWorkspaceArtifactID,
+				_RipObjectArtifactId);
+
+			// assert
+			Assert.AreEqual(0, count);
 		}
 
 		[IdentifiedTest("046454d4-1d10-45fa-9c1a-148d259192c5")]

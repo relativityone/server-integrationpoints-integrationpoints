@@ -97,12 +97,11 @@ namespace kCura.IntegrationPoints.UITests.Tests
 
 			SourceContext = new TestContext();
 			SourceContext.InitUser();
-			Task agentSetupTask = Agent.CreateIntegrationPointAgentIfNotExistsAsync();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 			DestinationContext = new TestContext();
 			Task destinationContextWorkspaceTask = DestinationContext.CreateTestWorkspaceAsync();
 
-			return Task.WhenAll(agentSetupTask, workspaceSetupTask, destinationContextWorkspaceTask);
+			return Task.WhenAll(workspaceSetupTask, destinationContextWorkspaceTask);
 		}
 
 		[SetUp]

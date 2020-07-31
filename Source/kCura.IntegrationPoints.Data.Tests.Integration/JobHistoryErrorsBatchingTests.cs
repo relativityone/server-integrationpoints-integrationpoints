@@ -56,8 +56,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		{
 			base.SuiteSetup();
 
-			Agent.EnableAllIntegrationPointsAgentsAsync().GetAwaiter().GetResult();
-
 			ResolveServices();
 		}
 
