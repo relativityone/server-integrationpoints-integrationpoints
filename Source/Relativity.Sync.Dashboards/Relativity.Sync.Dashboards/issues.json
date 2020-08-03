@@ -145,11 +145,15 @@
 	},
 	{
 		"Jira": "REL-399819",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error reading documents from Data Grid file system*because it is being used by another process.*at Relativity.Sync.Transfer.SourceWorkspaceDataReader.Read**"
+		"Exception": "*Error reading documents from Data Grid file system*because it is being used by another process.*at Relativity.Sync.Transfer.SourceWorkspaceDataReader.Read*"
 	},
 	{
 		"Jira": "REL-399820",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error reading documents from Data Grid file system*An unexpected network error occurred.*at Relativity.Sync.Transfer.SourceWorkspaceDataReader.Read**"
+		"Exception": "*Error reading documents from Data Grid file system*An unexpected network error occurred.*at Relativity.Sync.Transfer.SourceWorkspaceDataReader.Read*"
+	},
+	{
+		"Jira": "REL-457384",
+		"Exception": "*Error reading documents from Data Grid file system*Could not find file*at Relativity.Sync.Transfer.SourceWorkspaceDataReader.Read*"
 	},
 	{
 		"Jira": "REL-399822",
@@ -321,7 +325,7 @@
 	},
 	{
 		"Jira": "REL-436111",
-		"Exception": "System.Threading.Tasks.TaskCanceledException: A task was canceled.*Relativity.Sync.Executors.DataSourceSnapshotExecutor*"
+		"Exception": "*System.Threading.Tasks.TaskCanceledException: A task was canceled.*Relativity.Sync.Transfer.SourceWorkspaceDataReader*"
 	},
 	{
 		"Jira": "REL-436119",
