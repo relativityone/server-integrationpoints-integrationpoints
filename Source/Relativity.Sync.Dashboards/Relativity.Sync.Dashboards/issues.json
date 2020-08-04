@@ -350,5 +350,17 @@
 	{
 		"Jira": "REL-450392",
 		"Exception": "*System.Web.Services.Protocols.SoapException: SHUTDOWN is in progress.*"
+	},
+	{
+		"Jira": "REL-457784",
+		"Exception": "kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Exception: Unknown failure during authentication*Relativity.DataExchange.HttpServiceException: The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 404 status code.*"
+	},
+	{
+		"Jira": "REL-457785",
+		"Exception": "kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Exception: Login failed*"
+	},
+	{
+		"Jira": "REL-457786",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: The given key was not present in the dictionary.*"
 	}
 ]
