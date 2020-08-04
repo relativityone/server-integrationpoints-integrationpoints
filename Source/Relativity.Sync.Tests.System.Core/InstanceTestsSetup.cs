@@ -30,9 +30,6 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			SuppressCertificateCheckingIfConfigured();
 
-			// REL-451648
-			await SetToggleAsync("Relativity.Core.Api.TogglePerformance.ObjectManagerUseStaticStatelessValidators", false).ConfigureAwait(false);
-
 			await ConfigureRequiredInstanceSettings().ConfigureAwait(false);
 
 			OverrideBanzaiLogger();
