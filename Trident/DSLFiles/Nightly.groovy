@@ -23,7 +23,8 @@ multibranchPipelineJob('DataTransfer-Jobs/RelativitySync/Nightly') {
     }
     orphanedItemStrategy {
         discardOldItems {
-            numToKeep(20)
+            daysToKeep(1)
+            numToKeep(10)
         }
     }
     configure {
