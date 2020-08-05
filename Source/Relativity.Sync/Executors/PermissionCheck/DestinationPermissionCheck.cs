@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
@@ -11,37 +15,45 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal sealed class DestinationPermissionCheck : PermissionCheckBase
 	{
+		private const string _SOURCE_WORKSPACE_OBJECT_TYPE_NAME = "Relativity Source Case";
+		private const string _SOURCE_JOB_OBJECT_TYPE_NAME = "Relativity Source Job";
+
 		private const string _MISSING_DESTINATION_RDO_PERMISSIONS =
 			"User does not have permissions to view, edit, and add Documents in the destination workspace.";
 		private const string _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION =
 			"User does not have permission to create saved searches in the destination workspace.";
-		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object types in the destination workspace.";
 
+		private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 		private readonly ISyncLog _logger;
 
-		public DestinationPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncLog logger) : base(destinationServiceFactory)
+		public DestinationPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncObjectTypeManager syncObjectTypeManager, ISyncLog logger)
+			: base(destinationServiceFactory)
 		{
+			_syncObjectTypeManager = syncObjectTypeManager;
 			_logger = logger;
 		}
 
 		public override async Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration)
 		{
 			var validationResult = new ValidationResult();
+
 			validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
+
 			validationResult.Add(await ValidateUserCanImportHasPermissionAsync(configuration).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration,
-				ArtifactType.Document, new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration,
-				ArtifactType.Search, new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ArtifactType.ObjectType,
-				new[] { PermissionType.Add }, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Document,
+			validationResult.Add(await ValidateUserCanCreateTagsInDestinationWorkspaceAsync(configuration).ConfigureAwait(false));
+
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Document,
+				new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
+
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Search,
+				new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
+
+			validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, (int)ArtifactType.Document,
 				PermissionType.Add).ConfigureAwait(false));
-			validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Folder,
+
+			validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, (int)ArtifactType.Folder,
 				PermissionType.Add).ConfigureAwait(false));
-			validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, ArtifactType.Document,
-				PermissionType.Delete).ConfigureAwait(false));
 
 			return validationResult;
 		}
@@ -69,27 +81,59 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 		private async Task<ValidationResult> ValidateUserCanImportHasPermissionAsync(IPermissionsCheckConfiguration configuration)
 		{
-			const int permissionId = 158; // 158 is the artifact id of the "Allow Import" permission
-			List<PermissionRef> permissionRefs = GetPermissionRefs(permissionId);
+			const int allowImportPermissionArtifactID = 158;
+			List<PermissionRef> permissionRefs = GetPermissionRefs(allowImportPermissionArtifactID);
 			bool userHasViewPermissions = false;
 			try
 			{
 				IList<PermissionValue> permissions = await GetPermissionsAsync(configuration.DestinationWorkspaceArtifactId, permissionRefs).ConfigureAwait(false);
-				userHasViewPermissions = DoesUserHavePermissions(permissions, permissionId);
+				userHasViewPermissions = DoesUserHavePermissions(permissions, allowImportPermissionArtifactID);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "{PermissionCheck}: user does not have allow import permission in destination workspace {ArtifactId}.", 
+				_logger.LogInformation(ex, "{PermissionCheck}: user does not have allow import permission in destination workspace {ArtifactId}.",
 					nameof(DestinationPermissionCheck), configuration.DestinationWorkspaceArtifactId);
 			}
 			const string errorMessage = "User does not have permission to import in the destination workspace.";
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
 
-		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
-			ArtifactType artifactTypeIdentifier, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
+		private async Task<ValidationResult> ValidateUserCanCreateTagsInDestinationWorkspaceAsync(IPermissionsCheckConfiguration configuration)
 		{
-			var typeIdentifier = new ArtifactTypeIdentifier((int)artifactTypeIdentifier);
+			ValidationResult validationResult = new ValidationResult();
+			validationResult.Add(await ValidateUserCanCreateTagInDestinationWorkspaceAsync(configuration, _SOURCE_WORKSPACE_OBJECT_TYPE_NAME).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserCanCreateTagInDestinationWorkspaceAsync(configuration, _SOURCE_JOB_OBJECT_TYPE_NAME).ConfigureAwait(false));
+			return validationResult;
+		}
+
+		private async Task<ValidationResult> ValidateUserCanCreateTagInDestinationWorkspaceAsync(IPermissionsCheckConfiguration configuration, string objectTypeName)
+		{
+			QueryResult objectTypeQueryResult = await _syncObjectTypeManager
+				.QueryObjectTypeByNameAsync(configuration.DestinationWorkspaceArtifactId, objectTypeName).ConfigureAwait(false);
+
+			if (objectTypeQueryResult.Objects.Any())
+			{
+				using (var objectTypeManager = await _proxyFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
+				{
+					ObjectTypeResponse objectType = await objectTypeManager
+						.ReadAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID)
+						.ConfigureAwait(false);
+
+					return await ValidateUserHasArtifactTypePermissionAsync(configuration,
+						objectType.ArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
+						$"User does not have permissions to create tag: {objectTypeName}").ConfigureAwait(false);
+				}
+			}
+			else
+			{
+				throw new ValidationException($"Cannot find Object Type: {objectTypeName} in Destination Workspace Artifact ID: {configuration.DestinationWorkspaceArtifactId}");
+			}
+		}
+
+		private async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+			int artifactTypeID, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
+		{
+			var typeIdentifier = new ArtifactTypeIdentifier(artifactTypeID);
 			List<PermissionRef> permissionRefs = GetPermissionRefs(typeIdentifier, artifactPermissions);
 
 			bool userHasViewPermissions = false;
@@ -100,16 +144,16 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "{PermissionCheck}: user does not have artifact type {ArtifactTypeIdentifier} permission(s) in destination workspace {ArtifactId}.", 
-					nameof(DestinationPermissionCheck), artifactTypeIdentifier, configuration.DestinationWorkspaceArtifactId);
+				_logger.LogInformation(ex, "{PermissionCheck}: user does not have artifact type {ArtifactTypeIdentifier} permission(s) in destination workspace {ArtifactId}.",
+					nameof(DestinationPermissionCheck), artifactTypeID, configuration.DestinationWorkspaceArtifactId);
 			}
 			return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
 		}
 
 		private async Task<ValidationResult> ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(IPermissionsCheckConfiguration configuration,
-			ArtifactType artifactTypeIdentifier, PermissionType artifactPermissions)
+			int artifactTypeID, PermissionType artifactPermissions)
 		{
-			List<PermissionRef> permissionRefs = GetPermissionRefs(new ArtifactTypeIdentifier((int)artifactTypeIdentifier), artifactPermissions);
+			List<PermissionRef> permissionRefs = GetPermissionRefs(new ArtifactTypeIdentifier(artifactTypeID), artifactPermissions);
 
 			bool userHasViewPermissions = false;
 			try
@@ -120,7 +164,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			}
 			catch (Exception ex)
 			{
-				_logger.LogInformation(ex, "{PermissionCheck}: user does not have permission to access destination folder {FolderArtifactId} in destination workspace {ArtifactId}.", 
+				_logger.LogInformation(ex, "{PermissionCheck}: user does not have permission to access destination folder {FolderArtifactId} in destination workspace {ArtifactId}.",
 					nameof(DestinationPermissionCheck), configuration.DestinationFolderArtifactId, configuration.DestinationWorkspaceArtifactId);
 			}
 			const string errorCode = "20.009";

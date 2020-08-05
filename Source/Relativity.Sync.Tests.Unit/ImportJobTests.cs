@@ -12,6 +12,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -25,8 +26,6 @@ namespace Relativity.Sync.Tests.Unit
 
 		private ImportJob _importJob;
 
-		private const string _IDENTIFIER_COLUMN = "Identifier";
-		private const string _MESSAGE_COLUMN = "Message";
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
 		private const int _JOB_HISTORY_ARTIFACT_ID = 2;
 
@@ -51,11 +50,10 @@ namespace Relativity.Sync.Tests.Unit
 
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				_syncImportBulkArtifactJob.Raise(x => x.OnError += null, new Dictionary<string, string>()
-				{
-					{_IDENTIFIER_COLUMN, identifier},
-					{_MESSAGE_COLUMN, message}
-				});
+				_syncImportBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
+					identifier,
+					message
+				));
 				_syncImportBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
 			});
 
@@ -76,11 +74,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				JobReport jobReport = CreateJobReport();
-				PropertyInfo fatalException = jobReport.GetType().GetProperty(nameof(jobReport.FatalException));
-				InvalidOperationException ex = new InvalidOperationException();
-				fatalException?.SetValue(jobReport, ex, BindingFlags.NonPublic | BindingFlags.Instance, null, null, CultureInfo.InvariantCulture);
-
+				ImportApiJobStatistics jobReport = CreateJobReport(exception: new InvalidOperationException());
 				_syncImportBulkArtifactJob.Raise(x => x.OnFatalException += null, jobReport);
 			});
 
@@ -149,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Raises(x => x.OnComplete += null, CreateJobReport());
 
 			// act
-			Func<Task<ImportJobResult>> action = async () => await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task<ImportJobResult>> action = () => _importJob.RunAsync(CancellationToken.None);
 
 			// assert
 			action.Should().NotThrow();
@@ -164,7 +158,7 @@ namespace Relativity.Sync.Tests.Unit
 			token.Cancel();
 
 			// act
-			Func<Task> action = async () => await _importJob.RunAsync(token.Token).ConfigureAwait(false);
+			Func<Task> action = () => _importJob.RunAsync(token.Token);
 
 			// assert
 			action.Should().NotThrow<OperationCanceledException>();
@@ -185,11 +179,10 @@ namespace Relativity.Sync.Tests.Unit
 			_importJob?.Dispose();
 		}
 
-		private static JobReport CreateJobReport()
+		private static ImportApiJobStatistics CreateJobReport(int totalItems = 0, int errorItems = 0, long metadataBytes = 0, long fileBytes = 0,
+			Exception exception = null)
 		{
-			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
-			return jobReport;
+			return new ImportApiJobStatistics(totalItems, errorItems, metadataBytes, fileBytes, exception);
 		}
-
 	}
 }

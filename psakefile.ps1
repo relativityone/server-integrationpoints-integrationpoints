@@ -7,7 +7,6 @@ properties {
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
-    $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
@@ -16,23 +15,18 @@ Task Analyze -Description "Run build analysis" {
     # Leaving this blank until we are ready to add in analyzers later
 }
 
-Task PaketRestore -Description "Restore the packages needed for this build" {
-    exec { & $PaketExe restore }
-}
-
-Task Compile -Depends PaketRestore -Description "Compile code for this repo" {
+Task Compile -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 
-	dotnet --info
     exec { dotnet @("build", $Solution,
-            ("/property:Configuration=$BuildConfig"),
-            ("/consoleloggerparameters:Summary"),
-            ("/nodeReuse:False"),
-            ("/maxcpucount"),
-            ("/nologo"),
-            ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
-            ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`"")) 
+        ("/property:Configuration=$BuildConfig"),
+        ("/consoleloggerparameters:Summary"),
+        ("/nodeReuse:False"),
+        ("/maxcpucount"),
+        ("/nologo"),
+        ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
+        ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`"")) 
     }
 }
 
@@ -43,7 +37,7 @@ Task Test -Description "Run Unit and Integration Tests without coverage" {
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "SystemTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath
+    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {
@@ -57,13 +51,15 @@ Task Sign -Description "Sign all files" {
 
 Task Package -Description "Package up the build artifacts" {
     Initialize-Folder $ArtifactsDir -Safe
+
     exec { dotnet @("pack", $Solution,
-            ("--no-build"),
-            ("/property:Configuration=$BuildConfig"),
-            ("/consoleloggerparameters:Summary"),
-            ("/maxcpucount"),
-            ("/nologo"))
+        ("--no-build"),
+        ("/property:Configuration=$BuildConfig"),
+        ("/consoleloggerparameters:Summary"),
+        ("/maxcpucount"),
+        ("/nologo"))
     }
+
     Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
 }
 
@@ -96,6 +92,8 @@ Task Rebuild -Description "Do a rebuild" {
             ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
     }
 }
+
+Task Nightly -Depends Default, FunctionalTest -Description "Build and run all tests. All the steps for a nightly build with deployed environemnt.";
 
 Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
@@ -138,5 +136,27 @@ function Invoke-Tests
             "--result=$OutputFile" `
             $settings
         }
+    }
+}
+
+function Move-Output
+{
+    param (
+        [Parameter(Mandatory=$true)]
+        [String] $Source,
+        [Parameter(Mandatory=$true)]
+        [String] $Destination
+    )
+
+    if(Test-Path $Destination) {
+        Remove-Item $Destination -Force -Recurse
+    }
+
+    $childItems = Get-ChildItem $Source
+
+    New-Item $Destination -ItemType Directory
+
+    $childItems | ForEach-Object {
+        Copy-Item -Path $_.FullName -Destination $Destination -Recurse -Force
     }
 }

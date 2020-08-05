@@ -105,14 +105,12 @@ namespace Relativity.Sync.Executors.Validation
 
 			ValidationMessage validationMessage = null;
 
-			List<int> fieldIds = fieldMaps.Select(x => x.DestinationField.FieldIdentifier).ToList();
-			IList<int> missingFields = await GetMissingFieldsAsync(_destinationServiceFactoryForUser, fieldIds, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
+			IDictionary<int, string> mappedFieldIdNames = fieldMaps.ToDictionary(x => x.DestinationField.FieldIdentifier, x => x.DestinationField.DisplayName);
+			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_destinationServiceFactoryForUser, mappedFieldIdNames, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
 			if (missingFields.Count > 0)
 			{
-				IEnumerable<string> fieldNames =
-					fieldMaps.Where(fm => missingFields.Contains(fm.DestinationField.FieldIdentifier)).Select(fm => $"'{fm.DestinationField.DisplayName}'");
 				validationMessage =
-					new ValidationMessage("20.005", $"Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
+					new ValidationMessage("20.005", $"Destination field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", missingFields.Values)}.");
 			}
 
 			return validationMessage;
@@ -124,22 +122,20 @@ namespace Relativity.Sync.Executors.Validation
 
 			ValidationMessage validationMessage = null;
 
-			List<int> fieldIds = fieldMaps.Select(x => x.SourceField.FieldIdentifier).ToList();
-			IList<int> missingFields = await GetMissingFieldsAsync(_sourceServiceFactoryForUser, fieldIds, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
+			IDictionary<int, string> mappedFieldIdNames = fieldMaps.ToDictionary(x => x.SourceField.FieldIdentifier, x => x.SourceField.DisplayName);
+			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_sourceServiceFactoryForUser, mappedFieldIdNames, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
 			if (missingFields.Count > 0)
 			{
-				IEnumerable<string> fieldNames =
-					fieldMaps.Where(fm => missingFields.Contains(fm.SourceField.FieldIdentifier)).Select(fm => $"'{fm.SourceField.DisplayName}'");
 				validationMessage =
-					new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", fieldNames)}.");
+					new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", missingFields.Values)}.");
 			}
 
 			return validationMessage;
 		}
 
-		private static async Task<IList<int>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IList<int> fieldIds, int workspaceArtifactId, CancellationToken token)
+		private static async Task<IDictionary<int, string>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IDictionary<int, string> mappedFieldIdNames, int workspaceArtifactId, CancellationToken token)
 		{
-			string fieldArtifactIds = string.Join(",", fieldIds);
+			string fieldArtifactIds = string.Join(",", mappedFieldIdNames.Keys);
 			using (IObjectManager objectManager = await proxyFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = new QueryRequest()
@@ -153,10 +149,11 @@ namespace Relativity.Sync.Executors.Validation
 				};
 
 				const int start = 0;
-				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, start, fieldIds.Count, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
-				IEnumerable<int> artifactIds = queryResult.Objects.Select(x => x.ArtifactID);
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, start, mappedFieldIdNames.Count, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+				IDictionary<int, string> refFieldIdNames = queryResult.Objects.ToDictionary(x => x.ArtifactID, x => x.Name);
 
-				List<int> missingFields = fieldIds.Except(artifactIds).ToList();
+				var missingFields = mappedFieldIdNames.Except(refFieldIdNames).ToDictionary(x => x.Key, x => x.Value);
+
 				return missingFields;
 			}
 		}

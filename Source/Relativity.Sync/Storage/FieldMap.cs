@@ -6,7 +6,7 @@ namespace Relativity.Sync.Storage
 	/// Defines the mapping of fields in the data source to fields in a workspace.
 	/// </summary>
 	[Serializable]
-	internal sealed class FieldMap
+	public sealed class FieldMap
 	{
 		/// <summary>
 		/// Gets or sets the field in the source where the data is stored.
@@ -23,6 +23,10 @@ namespace Relativity.Sync.Storage
 		/// </summary>
 		public FieldMapType FieldMapType { get; set; }
 
+		/// <summary>
+		/// Returns string representation of the FieldMap
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString()
 		{
 			return FieldMapType + ": " + (SourceField?.FieldIdentifier ?? -1) + "<-->" + (DestinationField?.FieldIdentifier ?? -1);

@@ -1,13 +1,18 @@
-﻿using kCura.Relativity.DataReaderClient;
-using Relativity.Sync.Transfer;
+﻿using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
 {
-	internal interface ISyncImportBulkArtifactJob : IImportNotifier
+	internal delegate void SyncJobEventHandler<T>(T argument);
+
+	internal interface ISyncImportBulkArtifactJob
 	{
 		IItemStatusMonitor ItemStatusMonitor { get; }
 
-		event ImportBulkArtifactJob.OnErrorEventHandler OnError;
+		event SyncJobEventHandler<ItemLevelError> OnItemLevelError;
+		event SyncJobEventHandler<ImportApiJobProgress> OnProgress; 
+		event SyncJobEventHandler<ImportApiJobStatistics> OnComplete;
+		event SyncJobEventHandler<ImportApiJobStatistics> OnFatalException;
 
 		void Execute();
 	}

@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
@@ -16,7 +21,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal sealed class NativeFileRepositoryTests
 	{
 		private Mock<ISearchManager> _searchManager;
+		private Mock<IObjectManager> _objectManager;
+
 		private NativeFileRepository _instance;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
 
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _LOCATION_COLUMN_NAME = "Location";
@@ -27,12 +35,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_searchManager = new Mock<ISearchManager>();
+			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_objectManager = new Mock<IObjectManager>();
+
+			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+
 
 			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
 			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
 				.Returns(Task.FromResult(_searchManager.Object));
 
-			_instance = new NativeFileRepository(searchManagerFactory.Object, new EmptyLogger());
+			_instance = new NativeFileRepository(searchManagerFactory.Object, _serviceFactory.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -100,7 +113,42 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_searchManager.Verify(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
 		}
 
-#pragma warning disable RG2009 // With the exception of zero and one, never hard-code a numeric value; always declare a constant instead
+
+		[Test]
+		public async Task ItShouldCalculateNativesSize()
+		{
+			// Arrange
+			List<INativeFile> allNatives = new List<INativeFile>()
+			{
+				new NativeFile(0, string.Empty, string.Empty, 10),
+				new NativeFile(1, string.Empty, string.Empty, 20),
+				new NativeFile(2, string.Empty, string.Empty, 30)
+			};
+
+			_searchManager.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.Is<string>(ids => ids == string.Join(",", allNatives.Select(d => d.DocumentArtifactId.ToString())))))
+				.Returns(CreateSampleDataSet(allNatives))
+				.Verifiable();
+
+			ExportInitializationResults exportResult = new ExportInitializationResults()
+			{
+				RecordCount = allNatives.Count
+			};
+
+			_objectManager.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>())).ReturnsAsync(exportResult);
+
+			RelativityObjectSlim[] resultsBlock = allNatives.Select(native => new RelativityObjectSlim() { ArtifactID = native.DocumentArtifactId }).ToArray();
+			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns((int workspaceId, Guid runId, int resultsBlockSize, int exportIndexId) => Task.FromResult(resultsBlockSize > 0 ? resultsBlock : Array.Empty<RelativityObjectSlim>()));
+
+			// Act
+			long nativesSize = await _instance.CalculateNativesTotalSizeAsync(1, new QueryRequest()).ConfigureAwait(false);
+
+			// Assert
+			long expectedTotalSize = allNatives.Sum(x => x.Size);
+			nativesSize.Should().Be(expectedTotalSize);
+		}
+#pragma warning restore RG2009 // Hardcoded Numeric Value
+
 
 		private static IEnumerable<TestCaseData> TransformResponsesCorrectlyCases()
 		{
@@ -115,7 +163,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			};
 
 			DataSet response = CreateSampleDataSet();
-			
+
 			NativeFile[] expectedNativeFiles =
 			{
 				new NativeFile(123, @"\\test1\test2", "test3.txt", 11),
@@ -129,8 +177,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			};
 		}
 
-		private static DataSet CreateSampleDataSet()
+		private static DataSet CreateSampleDataSet() => CreateSampleDataSet(null);
+
+		private static DataSet CreateSampleDataSet(IEnumerable<INativeFile> natives)
 		{
+			natives = natives ?? new List<INativeFile>
+			{
+				new NativeFile(123, @"\\test1\test2",  "test3.txt", 11),
+				new NativeFile(456, @"\\test2\test3",  "test5.txt", 12),
+				new NativeFile(789, @"\\test3\test4",  "test6.html", 13)
+			};
+
 			DataTable dataTable = new DataTable("Table");
 			dataTable.Columns.AddRange(new[]
 			{
@@ -139,9 +196,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
 				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
 			});
-			dataTable.Rows.Add(CreateRow(dataTable, 123, @"\\test1\test2", "test3.txt", 11));
-			dataTable.Rows.Add(CreateRow(dataTable, 456, @"\\test2\test3", "test5.txt", 12));
-			dataTable.Rows.Add(CreateRow(dataTable, 789, @"\\test3\test4", "test6.html", 13));
+
+			foreach (var nativeFile in natives)
+			{
+				dataTable.Rows.Add(CreateRow(dataTable, nativeFile.DocumentArtifactId, nativeFile.Location, nativeFile.Filename, nativeFile.Size));
+			}
+
 			DataSet dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
 			return dataSet;

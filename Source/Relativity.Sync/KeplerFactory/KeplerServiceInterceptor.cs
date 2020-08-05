@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
-using Castle.DynamicProxy;
 using Polly;
-using Polly.Retry;
 using Polly.Wrap;
+using Polly.Retry;
+using Castle.DynamicProxy;
+using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class KeplerServiceInterceptor<TService> : IInterceptor
 	{
-		private int _millisecondsBetweenHttpRetriesBase = 3000;
+		private int _secondsBetweenHttpRetriesBase = 3;
 
 		private const int _MAX_NUMBER_OF_AUTH_TOKEN_RETRIES = 3;
 		private const int _MAX_NUMBER_OF_HTTP_RETRIES = 4;
 
-		private const string _AUTH_TOKEN_EXPIRATION_COUNT_METRIC_NAME = "AuthTokenRetries";
-		private const string _EXCEPTION_METRIC_NAME = "KeplerException";
-		private const string _KEPLER_RETRIES_COUNT_METRIC_NAME = "KeplerRetries";
 		private readonly Func<IStopwatch> _stopwatch;
 		private readonly Func<Task<TService>> _keplerServiceFactory;
 		private readonly IRandom _random;
@@ -81,27 +77,35 @@ namespace Relativity.Sync.KeplerFactory
 
 		private async Task<TResult> HandleExceptionsAsync<TResult>(IInvocation invocation)
 		{
-			ExecutionStatus status = ExecutionStatus.Completed;
-			Exception exception = null;
-			int keplerRetries = 0;
+			string invocationKepler = invocation.Method.ReflectedType?.Name;
+			ExecutionStatus invocationStatus = ExecutionStatus.Completed;
+
+			int httpRetries = 0;
 			int authTokenRetries = 0;
+
 			IStopwatch stopwatch = _stopwatch();
 			stopwatch.Start();
 
 			try
 			{
 				RetryPolicy httpErrorsPolicy = Policy
-					.Handle<HttpRequestException>() // Thrown when remote endpoint cannot be resolved - connection error
-					.Or<SocketException>()
+					.Handle<ServiceNotFoundException>()                                             // Thrown when the service does not exist, the service isn't running yet or there are bad routing entries.
+					.Or<TemporarilyUnavailableException>()                                          // Thrown when the service is temporarily unavailable.
+					.Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route"))   // Thrown when there are bad routing entries.
+					.Or<TimeoutException>()                                                         // Thrown when there is an infrastructure level timeout.
 					.WaitAndRetryAsync(_MAX_NUMBER_OF_HTTP_RETRIES, retryAttempt =>
 				{
-					const int maxJitter = 100;
-					return TimeSpan.FromMilliseconds(Math.Pow(_millisecondsBetweenHttpRetriesBase, retryAttempt)) + TimeSpan.FromMilliseconds(_random.Next(0, maxJitter));
+					const int maxJitterMs = 100;
+					TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(_secondsBetweenHttpRetriesBase, retryAttempt));
+					TimeSpan jitter = TimeSpan.FromMilliseconds(_random.Next(0, maxJitterMs));
+					return delay + jitter;
 				},
 					(ex, waitTime, retryCount, context) =>
 				{
-					_logger.LogWarning(ex, "Encountered HTTP or socket connection transient error, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
-					keplerRetries = retryCount;
+					_logger.LogWarning(ex, "Encountered HTTP or socket connection transient error for {IKepler}, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)",
+						invocationKepler, retryCount, waitTime.TotalMilliseconds);
+
+					httpRetries = retryCount;
 				});
 
 				RetryPolicy authTokenPolicy = Policy
@@ -109,8 +113,11 @@ namespace Relativity.Sync.KeplerFactory
 					.RetryAsync(_MAX_NUMBER_OF_AUTH_TOKEN_RETRIES,
 						async (ex, retryCount, context) =>
 					{
-						_logger.LogWarning(ex, "Auth token has expired, attempting to generate new token and retry. Retry count: {retryCount}", retryCount);
+						_logger.LogWarning(ex, "Auth token has expired for {IKepler}, attempting to generate new token and retry. Retry count: {retryCount}",
+							invocationKepler, retryCount);
+						
 						authTokenRetries = retryCount;
+
 						IChangeProxyTarget changeProxyTarget = invocation as IChangeProxyTarget;
 						if (changeProxyTarget != null)
 						{
@@ -135,6 +142,7 @@ namespace Relativity.Sync.KeplerFactory
 						invocation.Proceed();
 						await ((Task)invocation.ReturnValue).ConfigureAwait(false);
 					}).ConfigureAwait(false);
+
 					return default(TResult);
 				}
 				else
@@ -147,18 +155,28 @@ namespace Relativity.Sync.KeplerFactory
 					}).ConfigureAwait(false);
 				}
 			}
-			catch (Exception e)
+			catch (Exception invocationException)
 			{
-				status = ExecutionStatus.Failed;
-				exception = e;
-				throw;
+				invocationStatus = ExecutionStatus.Failed;
+
+				if (httpRetries == _MAX_NUMBER_OF_HTTP_RETRIES)
+				{
+					throw new SyncMaxKeplerRetriesException(invocationKepler, httpRetries, invocationException);
+				}
+				else
+				{
+					throw;
+				}
 			}
 			finally
 			{
 				stopwatch.Stop();
+
+				LogIfExecutionSuccessfullyRetried(invocationKepler, invocationStatus, httpRetries, authTokenRetries);
+
 				try
 				{
-					_syncMetrics.TimedOperation(GetMetricName(invocation), stopwatch.Elapsed, status, CreateCustomData(keplerRetries, authTokenRetries, exception));
+					ReportMetrics(invocationKepler, invocationStatus, stopwatch.Elapsed, httpRetries, authTokenRetries);
 				}
 				catch (Exception e)
 				{
@@ -189,24 +207,42 @@ namespace Relativity.Sync.KeplerFactory
 			AsyncFunction
 		}
 
-		private static Dictionary<string, object> CreateCustomData(int numberOfHttpRetries, int authTokenExpirationCount, Exception exception)
+		private void LogIfExecutionSuccessfullyRetried(string invocationKepler, ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
-			Dictionary<string, object> dictionary = new Dictionary<string, object>
+			if (status == ExecutionStatus.Completed)
 			{
-				{_KEPLER_RETRIES_COUNT_METRIC_NAME, numberOfHttpRetries},
-				{_AUTH_TOKEN_EXPIRATION_COUNT_METRIC_NAME, authTokenExpirationCount}
-			};
-			if (exception != null)
-			{
-				dictionary.Add(_EXCEPTION_METRIC_NAME, exception);
-			}
+				if (numberOfHttpRetries > 0)
+				{
+					_logger.LogInformation("HTTP or socket connection transient error for {IKepler} has been successfully retried. Error retry count: {retryCount}",
+						invocationKepler, numberOfHttpRetries);
+				}
 
-			return dictionary;
+				if (authTokenExpirationCount > 0)
+				{
+					_logger.LogInformation("Auth token expiration for {IKepler} has been successfully retried. Auth token retry count: {retryCount}",
+						invocationKepler, authTokenExpirationCount);
+				}
+			}
 		}
 
-		private static string GetMetricName(IInvocation invocation)
+		private void ReportMetrics(string invocationKepler, ExecutionStatus status, TimeSpan duration, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
-			return $"{invocation.Method.ReflectedType?.FullName}.{invocation.Method.Name}";
+			_syncMetrics.TimedOperation(
+				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX}", 
+				duration, status);
+
+			_syncMetrics.LogPointInTimeLong(
+				status == ExecutionStatus.Completed
+					? $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX}"
+					: $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX}", 
+					numberOfHttpRetries);
+
+			if (authTokenExpirationCount > 0)
+			{
+				_syncMetrics.LogPointInTimeLong(
+					$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX}",
+					authTokenExpirationCount);
+			}
 		}
 	}
 }

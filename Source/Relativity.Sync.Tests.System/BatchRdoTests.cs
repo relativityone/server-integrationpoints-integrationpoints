@@ -5,7 +5,9 @@ using NUnit.Framework;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
@@ -27,7 +29,7 @@ namespace Relativity.Sync.Tests.System
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspaceId).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
 			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryArtifactId).ConfigureAwait(false);
 		}
 

@@ -115,12 +115,12 @@ namespace Relativity.Sync.Transfer
 				{
 					SpecialField = specialField,
 					DocumentField = mappedDocumentFields.SingleOrDefault(mdf =>
-						mdf.DestinationFieldName == specialField.DestinationFieldName)
+						mdf.DestinationFieldName.Equals(specialField.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase))
 				})
 				.FirstOrDefault(field =>
-					field.DocumentField != null && (!field.SpecialField.IsDocumentField ||
-					                                field.SpecialField.SourceFieldName !=
-					                                field.DocumentField.SourceFieldName))?.SpecialField;
+					field.DocumentField != null
+					&& (!field.SpecialField.IsDocumentField || !field.SpecialField.SourceFieldName.Equals(field.DocumentField.SourceFieldName, StringComparison.InvariantCultureIgnoreCase))
+					)?.SpecialField;
 
 			if (invalidSpecialField != null)
 			{
@@ -132,7 +132,8 @@ namespace Relativity.Sync.Transfer
 
 		private static bool FieldInfosHaveSameSourceAndDestination(FieldInfoDto first, FieldInfoDto second)
 		{ 
-			return first.SourceFieldName == second.SourceFieldName && first.DestinationFieldName == second.DestinationFieldName;
+			return first.SourceFieldName.Equals(second.SourceFieldName, StringComparison.InvariantCultureIgnoreCase)
+			       && first.DestinationFieldName.Equals(second.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)

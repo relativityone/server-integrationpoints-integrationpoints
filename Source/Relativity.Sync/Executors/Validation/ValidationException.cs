@@ -15,21 +15,24 @@ namespace Relativity.Sync.Executors.Validation
 		/// <summary>
 		/// Holds information about validation.
 		/// </summary>
-		public ValidationResult ValidationResult { get; } = new ValidationResult();
+		public ValidationResult ValidationResult { get; }
 
 		/// <inheritdoc />
 		public ValidationException()
 		{
+			ValidationResult = ValidationResult.Invalid;
 		}
 
 		/// <inheritdoc />
 		public ValidationException(string message) : base(message)
 		{
+			ValidationResult = ValidationResult.Invalid;
 		}
 
 		/// <inheritdoc />
 		public ValidationException(string message, Exception innerException) : base(message, innerException)
 		{
+			ValidationResult = ValidationResult.Invalid;
 		}
 
 		/// <inheritdoc />

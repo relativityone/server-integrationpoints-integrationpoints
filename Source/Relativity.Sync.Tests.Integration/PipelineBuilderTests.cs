@@ -5,11 +5,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Banzai;
+using Banzai.Factories;
 using FluentAssertions;
+using FluentAssertions.Common;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
@@ -19,8 +24,18 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public sealed class PipelineBuilderTests
 	{
+		private readonly Mock<IPipelineSelector> _pipelineSelector = new Mock<IPipelineSelector>();
+
 		private List<Type> _executorTypesInActualExecutionOrder;
 		private ContainerBuilder _containerBuilder;
+
+		public static IEnumerable<TestCaseData> PipelineTypes()
+		{
+			var types = typeof(ISyncPipeline).Assembly.GetTypes()
+				.Where(x => x.Implements(typeof(ISyncPipeline)) && !x.IsAbstract).ToArray();
+
+			return types.Select(x => new TestCaseData(x));
+		}
 
 		[SetUp]
 		public void SetUp()
@@ -28,15 +43,18 @@ namespace Relativity.Sync.Tests.Integration
 			_executorTypesInActualExecutionOrder = new List<Type>();
 
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			_containerBuilder.RegisterInstance(_pipelineSelector.Object).As<IPipelineSelector>();
 
 			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
 			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypesInActualExecutionOrder);
 		}
 
-		[Test]
-		public async Task PipelineStepsShouldBeInOrder()
+		[TestCaseSource(nameof(PipelineTypes))]
+		public async Task PipelineStepsShouldBeInOrder(Type pipelineType)
 		{
-			List<Type[]> expectedOrder = ExpectedExecutionOrder();
+			// ARRANGE
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+			List<Type[]> expectedOrder = PipelinesNodeHelper.GetExpectedNodesInExecutionOrder(pipelineType);
 
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
@@ -47,9 +65,12 @@ namespace Relativity.Sync.Tests.Integration
 			AssertExecutionOrder(expectedOrder, _executorTypesInActualExecutionOrder);
 		}
 
-		[Test]
-		public async Task NotificationShouldBeExecutedInCaseOfSuccessfulPipeline()
+		[TestCaseSource(nameof(PipelineTypes))]
+		public async Task NotificationShouldBeExecutedInCaseOfSuccessfulPipeline(Type pipelineType)
 		{
+			// ARRANGE
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
@@ -59,9 +80,12 @@ namespace Relativity.Sync.Tests.Integration
 			_executorTypesInActualExecutionOrder.Should().Contain(typeof(INotificationConfiguration));
 		}
 
-		[Test]
-		public void NotificationShouldBeExecutedInCaseOfFailedPipeline()
+		[TestCaseSource(nameof(PipelineTypes))]
+		public void NotificationShouldBeExecutedInCaseOfFailedPipeline(Type pipelineType)
 		{
+			// ARRANGE
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+
 			_containerBuilder.RegisterType<FailingExecutorStub<IValidationConfiguration>>().As<IExecutor<IValidationConfiguration>>();
 
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
@@ -74,9 +98,12 @@ namespace Relativity.Sync.Tests.Integration
 			_executorTypesInActualExecutionOrder.Should().Contain(typeof(INotificationConfiguration));
 		}
 
-		[Test]
-		public async Task MetricShouldBeReportedWhileRunningPipeline()
+		[TestCaseSource(nameof(PipelineTypes))]
+		public async Task MetricShouldBeReportedWhileRunningPipeline(Type pipelineType)
 		{
+			// ARRANGE
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+
 			Mock<ISyncMetrics> syncMetrics = new Mock<ISyncMetrics>();
 			_containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
@@ -88,46 +115,66 @@ namespace Relativity.Sync.Tests.Integration
 			syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>()));
 		}
 
-		[Test]
-		public async Task ProgressShouldBeCalledOnEachStep()
+		[TestCaseSource(nameof(PipelineTypes))]
+		public async Task ProgressShouldBeCalledOnEachStep(Type pipelineType)
 		{
+			// ARRANGE
 			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+
 			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
-			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
-			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			// We're expecting at least two invocations per node; there will be more for notification steps, etc.
-			List<Type> nodes = ContainerHelper.GetSyncNodeImplementationTypes();
-			const int two = 2;
-			progress.Verify(x => x.Report(It.IsAny<SyncJobState>()), Times.AtLeast(nodes.Count * two));
-		}
-
-		[Test]
-		public async Task ItShouldCreateCompletedProgressStates()
-		{
-			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
-			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
-			IContainer container = _containerBuilder.Build();
+			var container = _containerBuilder.Build();
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			INode<SyncExecutionContext>[] allSyncNodeImplementations = ContainerHelper.GetSyncNodeImplementationTypes()
-				.Select(x => (INode<SyncExecutionContext>)container.Resolve(x)).ToArray();
-			AssertNodesReportedCompleted(progress, allSyncNodeImplementations);
+			// We're expecting at least two invocations per node; there will be more for notification steps, etc.
+			var flowComponents = ContainerHelper.GetSyncNodesFromRegisteredPipeline(container, pipelineType);
+
+			const int two = 2;
+			progress.Verify(x => x.Report(It.IsAny<SyncJobState>()), Times.AtLeast(flowComponents.Length * two));
 		}
 
-		[Test]
-		public void ItShouldCreateFailedProgressState()
+		[TestCaseSource(nameof(PipelineTypes))]
+		public async Task ItShouldCreateCompletedProgressStates(Type pipelineType)
 		{
+			// ARRANGE
 			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+
+			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
+			_containerBuilder.RegisterInstance(_pipelineSelector.Object).As<IPipelineSelector>();
+
+			var container = _containerBuilder.Build();
+
+			ISyncJob syncJob = container.Resolve<ISyncJob>();
+
+			// ACT
+			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+			var flowComponents = ContainerHelper.GetSyncNodesFromRegisteredPipeline(container, pipelineType);
+
+			var nodes = flowComponents
+				.Select(x => container.Resolve(x.Type) as INode<SyncExecutionContext>).ToArray();
+
+			// ASSERT
+			AssertNodesReportedCompleted(progress, nodes);
+		}
+
+		[TestCaseSource(nameof(PipelineTypes))]
+		public void ItShouldCreateFailedProgressState(Type pipelineType)
+		{
+			// ARRANGE
+			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+
 			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
 			IntegrationTestsContainerBuilder.MockFailingStep<IDataSourceSnapshotConfiguration>(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockFailingStep<IRetryDataSourceSnapshotConfiguration>(_containerBuilder);
 			IContainer container = _containerBuilder.Build();
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
@@ -140,15 +187,20 @@ namespace Relativity.Sync.Tests.Integration
 				container.ResolveNode<IPermissionsCheckConfiguration>(),
 				container.ResolveNode<IValidationConfiguration>(),
 				container.ResolveNode<IDestinationWorkspaceObjectTypesCreationConfiguration>());
-			AssertNodesReportedFailed(progress, container.ResolveNode<IDataSourceSnapshotConfiguration>());
+
+			AssertNodesReportedFailed(progress, container.Resolve(GetSnaphotNodeType(pipelineType)) as INode<SyncExecutionContext>);
 		}
 
-		[Test]
-		public async Task ItShouldCreateCompletedWithErrorsProgressState()
+		[TestCaseSource(nameof(PipelineTypes))]
+		public async Task ItShouldCreateCompletedWithErrorsProgressState(Type pipelineType)
 		{
+			// ARRANGE
 			Mock<IProgress<SyncJobState>> progress = new Mock<IProgress<SyncJobState>>();
+			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
+
 			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
 			IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep<IDataSourceSnapshotConfiguration>(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep<IRetryDataSourceSnapshotConfiguration>(_containerBuilder);
 			IContainer container = _containerBuilder.Build();
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
@@ -156,12 +208,12 @@ namespace Relativity.Sync.Tests.Integration
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			INode<SyncExecutionContext>[] completedNodes = ContainerHelper.GetSyncNodeImplementationTypes()
-				.Where(x => x.BaseType != typeof(SyncNode<IDataSourceSnapshotConfiguration>))
-				.Select(x => (INode<SyncExecutionContext>)container.Resolve(x))
-				.ToArray();
+			INode<SyncExecutionContext>[] completedNodes = ContainerHelper.GetSyncNodesFromRegisteredPipeline(container, pipelineType)
+				.Where(x => x.Type != GetSnaphotNodeType(pipelineType))
+				.Select(x => container.Resolve(x.Type) as INode<SyncExecutionContext>).ToArray();
 			AssertNodesReportedCompleted(progress, completedNodes);
-			AssertNodesReportedCompletedWithErrors(progress, container.ResolveNode<IDataSourceSnapshotConfiguration>());
+			AssertNodesReportedCompletedWithErrors(progress,
+				container.Resolve(GetSnaphotNodeType(pipelineType)) as INode<SyncExecutionContext>);
 		}
 
 		private static void AssertExecutionOrder(IReadOnlyCollection<Type[]> expectedExecutionOrder, IReadOnlyCollection<Type> actualExecutionOrder)
@@ -178,37 +230,33 @@ namespace Relativity.Sync.Tests.Integration
 			}
 		}
 
-		private static List<Type[]> ExpectedExecutionOrder()
+		private static Type GetSnaphotNodeType(Type pipelineType)
 		{
-			return new List<Type[]>
+			if (pipelineType == typeof(SyncDocumentRetryPipeline))
 			{
-				new[] {typeof(IPermissionsCheckConfiguration)},
-				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
-				new[] {typeof(IDataSourceSnapshotConfiguration)},
-				new[]
-				{
-					typeof(ISumReporterConfiguration),
-					typeof(ISourceWorkspaceTagsCreationConfiguration),
-					typeof(IDestinationWorkspaceTagsCreationConfiguration),
-					typeof(IDataDestinationInitializationConfiguration)
-				},
-				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-				new[] {typeof(ISnapshotPartitionConfiguration)},
-				new[] {typeof(ISynchronizationConfiguration)},
-				new[] {typeof(IDataDestinationFinalizationConfiguration)},
-				new[] {typeof(IJobStatusConsolidationConfiguration)},
-				new[]
-				{
-					typeof(IJobCleanupConfiguration),
-					typeof(INotificationConfiguration)
-				}
-			};
+				return typeof(RetryDataSourceSnapshotNode);
+			}
+
+			if (pipelineType == typeof(SyncDocumentRunPipeline))
+			{
+				return typeof(DataSourceSnapshotNode);
+			}
+
+			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");
 		}
 
 		private static void AssertNodesReportedCompleted(Mock<IProgress<SyncJobState>> progress, params INode<SyncExecutionContext>[] nodes)
 		{
 			foreach (INode<SyncExecutionContext> node in nodes)
+			{
+				SyncJobState expected = SyncJobState.Completed(node.Id, string.Empty);
+				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));
+			}
+		}
+
+		private static void AssertNodesReportedCompleted(Mock<IProgress<SyncJobState>> progress, params FlowComponent<SyncExecutionContext>[] nodes)
+		{
+			foreach (FlowComponent<SyncExecutionContext> node in nodes)
 			{
 				SyncJobState expected = SyncJobState.Completed(node.Id, string.Empty);
 				progress.Verify(x => x.Report(It.Is<SyncJobState>(v => Equals(expected, v))));

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {

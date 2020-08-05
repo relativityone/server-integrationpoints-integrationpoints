@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
 			_configuration.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
-			
+
 			_nativeFileRepository = new Mock<INativeFileRepository>();
 			_jobStatisticsContainer = new JobStatisticsContainer();
 
@@ -68,31 +68,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 			// Arrange
-			List<INativeFile> allNatives = new List<INativeFile>()
-			{
-				new NativeFile(0, string.Empty, string.Empty, 10),
-				new NativeFile(1, string.Empty, string.Empty, 20),
-				new NativeFile(2, string.Empty, string.Empty, 30)
-			};
-			_nativeFileRepository.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>())).ReturnsAsync(allNatives);
+			const long expectedNativesSize = 50;
 
-			ExportInitializationResults exportResult = new ExportInitializationResults()
-			{
-				RecordCount = allNatives.Count
-			};
-			_objectManager.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>())).ReturnsAsync(exportResult);
+			ExportInitializationResults exportInitializationResults = new ExportInitializationResults();
 
-			RelativityObjectSlim[] resultsBlock = allNatives.Select(native => new RelativityObjectSlim() { ArtifactID = native.DocumentArtifactId }).ToArray();
-			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns((int workspaceId, Guid runId, int resultsBlockSize, int exportIndexId) => Task.FromResult(resultsBlockSize > 0 ? resultsBlock : Array.Empty<RelativityObjectSlim>()));
+			_nativeFileRepository
+				.Setup(x => x.CalculateNativesTotalSizeAsync(It.IsAny<int>(), It.IsAny<QueryRequest>()))
+				.Returns(Task.FromResult(expectedNativesSize));
+
+			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			// Act
 			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 			long nativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
 
 			// Assert
-			long expectedTotalSize = allNatives.Sum(x => x.Size);
-			nativesSize.Should().Be(expectedTotalSize);
+			nativesSize.Should().Be(expectedNativesSize);
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
 

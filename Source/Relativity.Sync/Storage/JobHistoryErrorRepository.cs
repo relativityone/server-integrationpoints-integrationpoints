@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
 	internal sealed class JobHistoryErrorRepository : IJobHistoryErrorRepository
 	{
+		private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
+
 		private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 
 		private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
@@ -59,22 +63,52 @@ namespace Relativity.Sync.Storage
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				var request = new MassCreateRequest
+				try
 				{
-					ObjectType = GetObjectTypeRef(),
-					ParentObject = GetParentObject(jobHistoryArtifactId),
-					Fields = GetFields(),
-					ValueLists = values
-				};
-				MassCreateResult result = await objectManager.CreateAsync(workspaceArtifactId, request).ConfigureAwait(false);
-				if (!result.Success)
-				{
-					throw new SyncException($"Mass creation of item level errors was not successful. Message: {result.Message}");
-				}
+					var request = new MassCreateRequest
+					{
+						ObjectType = GetObjectTypeRef(),
+						ParentObject = GetParentObject(jobHistoryArtifactId),
+						Fields = GetFields(),
+						ValueLists = values
+					};
 
-				_logger.LogInformation("Successfully mass-created item level errors: {count}", createJobHistoryErrorDtos.Count);
-				return result.Objects.Select(x => x.ArtifactID);
+					MassCreateResult result = await objectManager.CreateAsync(workspaceArtifactId, request).ConfigureAwait(false);
+					if (!result.Success)
+					{
+						throw new SyncException($"Mass creation of item level errors was not successful. Message: {result.Message}");
+					}
+
+					_logger.LogInformation("Successfully mass-created item level errors: {count}", createJobHistoryErrorDtos.Count);
+					return result.Objects.Select(x => x.ArtifactID);
+				}
+				catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
+				{
+					_logger.LogWarning(ex, "Job History Errors mass creation failed. Attempt to retry by creating errors in chunks");
+					return await MassCreateInBatchesAsync(workspaceArtifactId, jobHistoryArtifactId, createJobHistoryErrorDtos).ConfigureAwait(false);
+				}
 			}
+		}
+
+		private async Task<IEnumerable<int>> MassCreateInBatchesAsync(int workspaceArtifactId, int jobHistoryArtifactId, IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
+		{
+			List<int> result = new List<int>();
+
+			const double numOfBatches = 2;
+			int batchSize = (int)Math.Ceiling(createJobHistoryErrorDtos.Count() / numOfBatches);
+
+			if(batchSize == createJobHistoryErrorDtos.Count())
+			{
+				throw new SyncException($"Mass creation of item level errors failed, because single item is still to large");
+			}
+
+			foreach (var errorsBatchList in createJobHistoryErrorDtos.SplitList(batchSize))
+			{
+				IEnumerable<int> artifactIDs = await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, errorsBatchList).ConfigureAwait(false);
+				result.AddRange(artifactIDs);
+			}
+
+			return result;
 		}
 
 		public async Task<int> CreateAsync(int workspaceArtifactId, int jobHistoryArtifactId, CreateJobHistoryErrorDto createJobHistoryErrorDto)

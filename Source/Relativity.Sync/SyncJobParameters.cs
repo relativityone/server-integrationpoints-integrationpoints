@@ -20,11 +20,6 @@ namespace Relativity.Sync
 		public int WorkspaceId { get; }
 
 		/// <summary>
-		/// ID of integration point job
-		/// </summary>
-		public int IntegrationPointArtifactId { get; }
-
-		/// <summary>
 		/// Build version of Sync
 		/// </summary>
 		public string SyncBuildVersion { get; }
@@ -57,13 +52,12 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int integrationPointArtifactId, int jobHistoryArtifactId)
+		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int jobHistoryArtifactId)
 		{
 			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
-			IntegrationPointArtifactId = integrationPointArtifactId;
 			SyncBuildVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			WorkflowId = new Lazy<string>(() => $"{TelemetryConstants.PROVIDER_NAME}_{integrationPointArtifactId}_{jobHistoryArtifactId}");
+			WorkflowId = new Lazy<string>(() => $"{TelemetryConstants.PROVIDER_NAME}_{jobHistoryArtifactId}");
 		}
 	}
 }

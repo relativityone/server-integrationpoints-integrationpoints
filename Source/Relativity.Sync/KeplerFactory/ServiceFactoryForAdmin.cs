@@ -6,10 +6,10 @@ namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class ServiceFactoryForAdmin : ISourceServiceFactoryForAdmin, IDestinationServiceFactoryForAdmin
 	{
-		private readonly IServicesMgr _servicesMgr;
+		private readonly ISyncServiceManager _servicesMgr;
 		private readonly IDynamicProxyFactory _proxyFactory;
 
-		public ServiceFactoryForAdmin(IServicesMgr servicesMgr, IDynamicProxyFactory proxyFactory)
+		public ServiceFactoryForAdmin(ISyncServiceManager servicesMgr, IDynamicProxyFactory proxyFactory)
 		{
 			_servicesMgr = servicesMgr;
 			_proxyFactory = proxyFactory;

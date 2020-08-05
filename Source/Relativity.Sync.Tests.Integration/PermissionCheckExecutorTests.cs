@@ -6,8 +6,13 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
@@ -19,10 +24,13 @@ namespace Relativity.Sync.Tests.Integration
 	public class PermissionCheckExecutorTests
 	{
 		private IContainer _container;
-		private Mock<IPermissionManager> _permissionManager;
-		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactory;
-		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactory;
-		private ConfigurationStub _configurationStub;
+		private Mock<IPermissionManager> _permissionManagerFake;
+		private Mock<IObjectManager> _objectManagerFake;
+		private Mock<IObjectTypeManager> _objectTypeManagerFake;
+		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUserFake;
+		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryForUserFake;
+		private Mock<IDestinationServiceFactoryForAdmin> _destinationServiceFactoryForAdminFake;
+		private ConfigurationStub _configurationStubFake;
 
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
@@ -34,55 +42,94 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_destinationServiceFactory = new Mock<IDestinationServiceFactoryForUser>();
-			_permissionManager = new Mock<IPermissionManager>();
-			_container = ContainerHelper.CreateContainer(cb =>
-			{
-				cb.RegisterInstance(_sourceServiceFactory.Object).As<ISourceServiceFactoryForUser>();
-				cb.RegisterInstance(_destinationServiceFactory.Object).As<IDestinationServiceFactoryForUser>();
-				cb.RegisterType<SourcePermissionCheck>().As<IPermissionCheck>();
-				cb.RegisterType<DestinationPermissionCheck>().As<IPermissionCheck>();
-			});
-
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(_permissionManager.Object);
-			_destinationServiceFactory.Setup(x => x.CreateProxyAsync<IPermissionManager>())
-				.ReturnsAsync(_permissionManager.Object);
-
-			_configurationStub = new ConfigurationStub
+			_configurationStubFake = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
 				DestinationFolderArtifactId = _DATA_DESTINATION_ARTIFACT_ID,
 				DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID
 			};
-			_permissionManager = SetUpPermissionManager();
+
+			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
+
+			_objectManagerFake = new Mock<IObjectManager>();
+			_objectTypeManagerFake = new Mock<IObjectTypeManager>();
+			_sourceServiceFactoryForUserFake = new Mock<ISourceServiceFactoryForUser>();
+			_destinationServiceFactoryForUserFake = new Mock<IDestinationServiceFactoryForUser>();
+			_destinationServiceFactoryForAdminFake = new Mock<IDestinationServiceFactoryForAdmin>();
+			_permissionManagerFake = new Mock<IPermissionManager>();
+
+			containerBuilder.RegisterInstance(_sourceServiceFactoryForUserFake.Object)
+				.As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(_destinationServiceFactoryForUserFake.Object)
+				.As<IDestinationServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(_destinationServiceFactoryForAdminFake.Object)
+				.As<IDestinationServiceFactoryForAdmin>();
+			containerBuilder.RegisterType<SourcePermissionCheck>().As<IPermissionCheck>();
+			containerBuilder.RegisterType<DestinationPermissionCheck>().As<IPermissionCheck>();
+			containerBuilder.RegisterType<SyncObjectTypeManager>().As<ISyncObjectTypeManager>();
+
+			_sourceServiceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
+				.ReturnsAsync(_permissionManagerFake.Object);
+
+			_destinationServiceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
+				.ReturnsAsync(_permissionManagerFake.Object);
+
+			_destinationServiceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
+				.ReturnsAsync(_objectTypeManagerFake.Object);
+
+			_destinationServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
+				.ReturnsAsync(_objectManagerFake.Object);
+
+			const int tagArtifactId = 111;
+			_objectManagerFake.Setup(x =>
+					x.QueryAsync(It.IsAny<int>(),
+						It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int) ArtifactType.ObjectType),
+						It.IsAny<int>(), It.IsAny<int>()))
+						.ReturnsAsync(new QueryResult()
+					{
+						Objects = new List<RelativityObject>()
+						{
+							new RelativityObject()
+							{
+								ArtifactID = tagArtifactId
+							}
+						}
+					});
+
+			_objectTypeManagerFake.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new ObjectTypeResponse());
+
+			_container = containerBuilder.Build();
+
+			_permissionManagerFake = SetUpPermissionManager();
 		}
 
 		[Test]
-		public async Task ValidationResultShouldReturnCompleted()
+		public async Task Execute_ShouldReturnCompleted()
 		{
 			// Arrange
 			IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
 			
 			// Act
-			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStub, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CancellationToken.None).ConfigureAwait(false);
 
 			//Assert
 			validationResult.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public async Task ValidationResultShouldReturnFailed()
+		public async Task Execute_ShouldReturnFailed()
 		{
 			// Arrange
 			var permissionToImport = new List<PermissionValue> { new PermissionValue { Selected = false, PermissionID = _ALLOW_IMPORT_PERMISSION_ID } };
-			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+			_permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
 				It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionToImport);
 
 			IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
 
 			// Act
-			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStub, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CancellationToken.None).ConfigureAwait(false);
 
 			//Assert
 			validationResult.Status.Should().Be(ExecutionStatus.Failed);
@@ -92,21 +139,21 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IPermissionManager> SetUpPermissionManager()
 		{
 			var permissionValue = new List<PermissionValue> { new PermissionValue { Selected = true } };
-			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(), It.IsAny<int>()))
+			_permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(), It.IsAny<int>()))
 				.ReturnsAsync(permissionValue);
-			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValue);
+			_permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValue);
 			var permissionToExport = new List<PermissionValue> { new PermissionValue { PermissionID = _ALLOW_EXPORT_PERMISSION_ID, Selected = true } };
-			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_EXPORT_PERMISSION_ID))))
+			_permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_EXPORT_PERMISSION_ID))))
 				.ReturnsAsync(permissionToExport);
 
 			var permissionToEdit = new List<PermissionValue> { new PermissionValue { PermissionID = _EDIT_DOCUMENT_PERMISSION_ID, Selected = true } };
-			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _EDIT_DOCUMENT_PERMISSION_ID))))
+			_permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _EDIT_DOCUMENT_PERMISSION_ID))))
 				.ReturnsAsync(permissionToEdit);
 			var permissionToImport = new List<PermissionValue> { new PermissionValue { Selected = true, PermissionID = _ALLOW_IMPORT_PERMISSION_ID } };
-			_permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+			_permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
 				It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionToImport);
 
-			return _permissionManager;
+			return _permissionManagerFake;
 		}
 	}
 }

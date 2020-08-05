@@ -107,8 +107,6 @@ if(-not $RAPDirectory)
     $PSBoundParameters['RAPDirectory'] = Join-Path $PSScriptRoot ..\Artifacts
 }
 
-$PSBoundParameters['IsTrident'] = "true"
-
 Remove-Item (Join-Path $PSScriptRoot ..\FunctionalTestSettings) -Force -ErrorAction SilentlyContinue
 Remove-Item (Join-Path $PSScriptRoot ..\FunctionalTest.runsettings) -Force -ErrorAction SilentlyContinue
 

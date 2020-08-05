@@ -51,8 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
 			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
@@ -69,8 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
 			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
@@ -78,65 +76,59 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 					.Match(ex => ex is JsonReaderException || ex is JsonSerializationException);
 		}
 
-		private static IEnumerable<TestCaseData> ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases()
+		private static IEnumerable<TestCaseData> ThrowSyncItemLevelErrorExceptionWhenAnyElementsAreInvalidTestCases()
 		{
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Object\" }, { \"test\": 1 } ]"));
 			yield return new TestCaseData(JsonHelpers.DeserializeJson("[ { \"ArtifactID\": 101, \"Name\": \"Cool Object\" }, { \"test\": 1 }, { \"ArtifactID\": 102, \"Name\": \"Cool Object 2\" } ]"));
 		}
 
-		[TestCaseSource(nameof(ThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalidTestCases))]
-		public async Task ItShouldThrowInvalidExportFieldValueExceptionWhenAnyElementsAreInvalid(object initialValue)
+		[TestCaseSource(nameof(ThrowSyncItemLevelErrorExceptionWhenAnyElementsAreInvalidTestCases))]
+		public async Task SanitizeAsync_ShouldThrowSyncItemLevelErrorException_WhenAnyElementsAreInvalid(object initialValue)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
-			Func<Task> action = async () =>
-				await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
-			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
-				.Which.Message.Should()
-				.Contain(typeof(RelativityObjectValue).Name);
+			await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false);
 		}
 
 		private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsMultiValueDelimiterTestCases()
 		{
-			yield return new TestCaseData(
-				ObjectValueJArrayFromNames($"{_MUTLI_DELIM} Sick Name"),
-				$"'{_MUTLI_DELIM} Sick Name'")
+			yield return new TestCaseData(ObjectValueJArrayFromNames($"{_MUTLI_DELIM} Sick Name"))
 			{
 				TestName = "Singleton violating name"
 			};
-			yield return new TestCaseData(
-				ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", "Awesome Name"),
-				$"'Cool{_MUTLI_DELIM} Name'")
+			yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", "Awesome Name"))
 			{
 				TestName = "Single violating name in larger collection"
 			};
-			yield return new TestCaseData(
-				ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", $"Awesome{_MUTLI_DELIM} Name"),
-				$"'Cool{_MUTLI_DELIM} Name', 'Awesome{_MUTLI_DELIM} Name'")
+			yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", $"Awesome{_MUTLI_DELIM} Name"))
 			{
 				TestName = "Many violating names in larger collection"
 			};
 		}
 
 		[TestCaseSource(nameof(ThrowSyncExceptionWhenNameContainsMultiValueDelimiterTestCases))]
-		public async Task ItShouldThrowSyncExceptionWhenNameContainsMultiValueDelimiter(object initialValue, string expectedViolators)
+		public async Task ItShouldThrowSyncExceptionWhenNameContainsMultiValueDelimiter(object initialValue)
 		{
 			// Arrange
 			ISynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
-			Func<Task> action = async () => await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
+			Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
 
 			// Assert
-			(await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false))
-				.Which.Message.Should().MatchRegex($" {expectedViolators}\\.$");
+			(await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
+				.Which.Message.Should()
+				.Be("Unable to parse data from Relativity Export API: " +
+				    "The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII 30'). " +
+				    "Rename these objects to not contain delimiter.");
 		}
 
 		private static IEnumerable<TestCaseData> CombineNamesIntoReturnValueTestCases()

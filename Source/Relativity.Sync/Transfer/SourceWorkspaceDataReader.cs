@@ -17,12 +17,16 @@ namespace Relativity.Sync.Transfer
 		private FieldInfoDto _identifierField;
 		private IDataReader _currentReader;
 
+		private long _completedItem = 0;
+
 		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly IBatchDataReaderBuilder _readerBuilder;
 		private readonly CancellationToken _cancellationToken;
+
+		public event OnSourceWorkspaceDataItemReadErrorEventHandler OnItemReadError;
 
 		public SourceWorkspaceDataReader(IBatchDataReaderBuilder readerBuilder,
 			ISynchronizationConfiguration configuration,
@@ -33,6 +37,8 @@ namespace Relativity.Sync.Transfer
 			CancellationToken cancellationToken)
 		{
 			_readerBuilder = readerBuilder;
+			_readerBuilder.ItemLevelErrorHandler = RaiseOnItemReadError;
+
 			_configuration = configuration;
 			_exportBatcher = exportBatcher;
 			_fieldManager = fieldManager;
@@ -79,6 +85,7 @@ namespace Relativity.Sync.Transfer
 			{ 
 				string itemIdentifier = _currentReader[IdentifierField.DestinationFieldName].ToString();
 				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
+				_completedItem++;
 			}
 			else
 			{
@@ -156,6 +163,14 @@ namespace Relativity.Sync.Transfer
 				_currentReader.Dispose();
 				_currentReader = null;
 			}
+		}
+
+		private void RaiseOnItemReadError(string itemIdentifier, string message)
+		{
+			_completedItem++;
+
+			// Logging and marking item as failed is happening in ImportJob.HandleItemLevelError
+			OnItemReadError?.Invoke(_completedItem, new ItemLevelError(itemIdentifier, message));
 		}
 
 		#region Pass-thrus to _currentBatch

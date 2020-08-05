@@ -6,11 +6,11 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class FileInfoRowValuesBuilder : ISpecialFieldRowValuesBuilder
 	{
-		private readonly IDictionary<int, INativeFile> _artifactIdToNativeFile;
+		public IDictionary<int, INativeFile> ArtifactIdToNativeFile { get; set; }
 
 		public FileInfoRowValuesBuilder(IDictionary<int, INativeFile> artifactIdToNativeFile)
 		{
-			_artifactIdToNativeFile = artifactIdToNativeFile;
+			ArtifactIdToNativeFile = artifactIdToNativeFile;
 		}
 
 		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[]
@@ -30,19 +30,24 @@ namespace Relativity.Sync.Transfer
 				return initialValue;
 			}
 
-			if (!_artifactIdToNativeFile.ContainsKey(document.ArtifactID))
+			if (!ArtifactIdToNativeFile.TryGetValue(document.ArtifactID, out INativeFile nativeFile))
 			{
-				throw new SyncException("Mapping from document artifact ID to native file was not found.");
+				nativeFile = NativeFile.Empty;
+			}
+
+			if (nativeFile.IsDuplicated)
+			{
+				throw new SyncItemLevelErrorException($"Database is corrupted - document Artifact ID: {document.ArtifactID} has more than one native file associated with it.");
 			}
 
 			switch (fieldInfoDto.SpecialFieldType)
 			{
 				case SpecialFieldType.NativeFileSize:
-					return _artifactIdToNativeFile[document.ArtifactID].Size;
+					return nativeFile.Size;
 				case SpecialFieldType.NativeFileLocation:
-					return _artifactIdToNativeFile[document.ArtifactID].Location;
+					return nativeFile.Location;
 				case SpecialFieldType.NativeFileFilename:
-					return _artifactIdToNativeFile[document.ArtifactID].Filename;
+					return nativeFile.Filename;
 				default:
 					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType.ToString()}.", nameof(fieldInfoDto));
 			}

@@ -11,7 +11,9 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
@@ -50,7 +52,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task SyncJob_ShouldConsolidateJobStatusAndUpdateJobHistory()
 		{
 			// Arrange
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 
 			var configuration = new ConfigurationStub

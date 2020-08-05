@@ -10,43 +10,20 @@ namespace Relativity.Sync.Transfer
 	[Serializable]
 	public sealed class InvalidExportFieldValueException : Exception
 	{
-		/// <summary>
-		/// Creates an instance of <see cref="InvalidExportFieldValueException"/>.
-		/// </summary>
-		/// <param name="sourceObjectName">Name of the object for which the error occurred.</param>
-		/// <param name="sourceFieldName">Name of the field on the object identified by <paramref name="sourceObjectName"/> for which the error occurred.</param>
-		/// <param name="message">Additional message describing the error.</param>
-		internal InvalidExportFieldValueException(string sourceObjectName, string sourceFieldName, string message)
-			: base(MessageTemplate(sourceObjectName, sourceFieldName, message))
-		{
-		}
-
-		/// <summary>
-		/// Creates an instance of <see cref="InvalidExportFieldValueException"/>.
-		/// </summary>
-		/// <param name="sourceObjectName">Name of the object for which the error occurred.</param>
-		/// <param name="sourceFieldName">Name of the field on the object identified by <paramref name="sourceObjectName"/> for which the error occurred.</param>
-		/// <param name="message">Additional message describing the error.</param>
-		/// <param name="innerException">Original thrown exception.</param>
-		internal InvalidExportFieldValueException(string sourceObjectName, string sourceFieldName, string message, Exception innerException)
-			: base(MessageTemplate(sourceObjectName, sourceFieldName, message), innerException)
-		{
-		}
-
 		/// <inheritdoc />
 		public InvalidExportFieldValueException() { }
 
 		/// <inheritdoc />
-		public InvalidExportFieldValueException(string message) : base(message) { }
+		public InvalidExportFieldValueException(string message) : base(MessageTemplate(message)) { }
 
 		/// <inheritdoc />
-		public InvalidExportFieldValueException(string message, Exception innerException) : base(message, innerException) { }
+		public InvalidExportFieldValueException(string message, Exception innerException) : base(MessageTemplate(message), innerException) { }
 
 		private InvalidExportFieldValueException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
 
-		private static string MessageTemplate(string sourceObjectName, string sourceFieldName, string message)
+		private static string MessageTemplate(string message)
 		{
-			return $"Unable to parse data from Relativity Export API in field '{sourceFieldName}' of object '{sourceObjectName}'. {message}";
+			return $"Unable to parse data from Relativity Export API: {message}";
 		}
 	}
 }

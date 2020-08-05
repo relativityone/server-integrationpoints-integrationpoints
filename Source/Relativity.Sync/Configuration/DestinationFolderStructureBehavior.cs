@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Specifies folder structure behavior in destination.
 	/// </summary>
-	internal enum DestinationFolderStructureBehavior
+	public enum DestinationFolderStructureBehavior
 	{
 		/// <summary>
 		/// Keep all documents in same destination folder

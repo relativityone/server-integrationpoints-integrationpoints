@@ -11,23 +11,21 @@ namespace Relativity.Sync.Transfer
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly IBatchDataReaderBuilder _readerBuilder;
-		private readonly IItemStatusMonitor _itemStatusMonitor;
 
 		public SourceWorkspaceDataReaderFactory(IRelativityExportBatcherFactory exportBatcherFactory, IFieldManager fieldManager, ISynchronizationConfiguration configuration, 
-			IBatchDataReaderBuilder readerBuilder, IItemStatusMonitor itemStatusMonitor, ISyncLog logger)
+			IBatchDataReaderBuilder readerBuilder, ISyncLog logger)
 		{
 			_exportBatcherFactory = exportBatcherFactory;
 			_fieldManager = fieldManager;
 			_configuration = configuration;
 			_readerBuilder = readerBuilder;
-			_itemStatusMonitor = itemStatusMonitor;
 			_logger = logger;
 		}
 
 		public ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
 			IRelativityExportBatcher relativityExportBatcher = _exportBatcherFactory.CreateRelativityExportBatcher(batch);
-			return new SourceWorkspaceDataReader(_readerBuilder, _configuration, relativityExportBatcher, _fieldManager, _itemStatusMonitor, _logger, token);
+			return new SourceWorkspaceDataReader(_readerBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
 		}
 	}
 }

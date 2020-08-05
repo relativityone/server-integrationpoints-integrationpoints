@@ -19,6 +19,7 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -33,9 +34,9 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
-		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
-		private const string _IDENTIFIER_COLUMN = "Identifier";
-		private const string _MESSAGE_COLUMN = "Message";
+		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
+
+		private static readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
@@ -115,7 +116,6 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();
-			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(container.Resolve<IItemStatusMonitor>());
 			_dataReaderFactory = container.Resolve<ISourceWorkspaceDataReaderFactory>();
 			_executor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
 		}
@@ -133,13 +133,14 @@ namespace Relativity.Sync.Tests.Integration
 			IList<int> documentIds = Enumerable.Range(startIndex, totalItemsCount).ToList();
 			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
 			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(dataReader.ItemStatusMonitor);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				for (int i = 0; i < totalItemsCount; i++)
 				{
 					dataReader.Read();
 				}
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
 			});
 
 			SetupFieldQueryResult();
@@ -177,16 +178,16 @@ namespace Relativity.Sync.Tests.Integration
 			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
 			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
 			List<RelativityObjectSlim> failedDocuments = exportBlock.Take(numberOfErrors).ToList();
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(dataReader.ItemStatusMonitor);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
 				foreach (RelativityObjectSlim document in failedDocuments)
 				{
 					dataReader.Read();
-					_importBulkArtifactJob.Raise(x => x.OnError += null, new Dictionary<string, string>()
-					{
-						{ _IDENTIFIER_COLUMN, document.Values[0].ToString() },
-						{ _MESSAGE_COLUMN, "Some weird error message." },
-					});
+					_importBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
+						document.Values[0].ToString(),
+						"Some weird error message."
+					));
 				}
 
 				for (int i = 0; i < completedItems; i++)
@@ -194,7 +195,7 @@ namespace Relativity.Sync.Tests.Integration
 					dataReader.Read();
 				}
 
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
 			});
 
 			SetupFieldQueryResult();
@@ -234,11 +235,13 @@ namespace Relativity.Sync.Tests.Integration
 			const int totalItemsCount = 10;
 
 			SetupNewBatch(newBatchArtifactId, totalItemsCount);
-			
+
+			ItemStatusMonitor itemStatusMonitor = new ItemStatusMonitor();
+			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(itemStatusMonitor);
 			_importBulkArtifactJob.Setup(x => x.Execute()).Callback(() =>
 			{
-				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, CreateJobReport());
-				_importBulkArtifactJob.Raise(x => x.OnComplete += null, CreateJobReport());
+				_importBulkArtifactJob.Raise(x => x.OnFatalException += null, _emptyJobStatistsics);
+				_importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
 			});
 
 			MassCreateResult massCreateResult = new MassCreateResult()
@@ -457,12 +460,6 @@ namespace Relativity.Sync.Tests.Integration
 				},
 				Value = value
 			};
-		}
-
-		private static JobReport CreateJobReport()
-		{
-			JobReport jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
-			return jobReport;
 		}
 	}
 }

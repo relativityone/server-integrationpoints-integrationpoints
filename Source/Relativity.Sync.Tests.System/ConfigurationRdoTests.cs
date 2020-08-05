@@ -13,7 +13,8 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Tests.System
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
 
-			_jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspaceId).ConfigureAwait(false);
+			_jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("e5a86b87-b1e8-4de3-b4fa-5f3e3878be49")]
@@ -87,7 +88,7 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, int.MaxValue, _jobHistoryArtifactId);
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId,_jobHistoryArtifactId);
 			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
@@ -144,7 +145,7 @@ namespace Relativity.Sync.Tests.System
 				syncConfigurationArtifactId = result.Object.ArtifactID;
 			}
 
-			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, int.MaxValue, _jobHistoryArtifactId);
+			SyncJobParameters jobParameters = new SyncJobParameters(syncConfigurationArtifactId, _workspaceId, _jobHistoryArtifactId);
 			Storage.IConfiguration configuration = await Storage.Configuration
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 

@@ -3,8 +3,7 @@ using Autofac;
 using Banzai;
 using Banzai.Autofac;
 using Banzai.Factories;
-using Relativity.Sync.Nodes;
-using Relativity.Sync.Nodes.SumReporting;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync
 {
@@ -19,31 +18,29 @@ namespace Relativity.Sync
 
 			containerBuilder.RegisterBanzaiNodes(GetType().Assembly, true);
 
-			FlowBuilder<SyncExecutionContext> flowBuilder = new FlowBuilder<SyncExecutionContext>(new AutofacFlowRegistrar(containerBuilder));
+			RegisterPipelines(containerBuilder);
 
-			const string pipelineName = "SYNC";
+			containerBuilder.Register(componentContext =>
+				{
+					var pipeline = componentContext.Resolve<IPipelineSelector>().GetPipeline();
+					return componentContext.Resolve<INodeFactory<SyncExecutionContext>>().BuildFlow(pipeline.GetType().Name);
+				})
+				.As<INode<SyncExecutionContext>>();
+		}
 
-			flowBuilder.CreateFlow(pipelineName)
-				.AddRoot<SyncRootNode>()
-				.AddChild<PermissionsCheckNode>()
-				.AddChild<ValidationNode>()
-				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
-				.AddChild<DataSourceSnapshotNode>()
-				.AddChild<SyncMultiNode>()
-				.ForLastChild()
-				.AddChild<JobStartMetricsNode>()
-				.AddChild<DestinationWorkspaceTagsCreationNode>()
-				.AddChild<SourceWorkspaceTagsCreationNode>()
-				.AddChild<DataDestinationInitializationNode>()
-				.ForParent()
-				.AddChild<DestinationWorkspaceSavedSearchCreationNode>()
-				.AddChild<SnapshotPartitionNode>()
-				.AddChild<SynchronizationNode>()
-				.AddChild<DataDestinationFinalizationNode>();
+		private void RegisterPipelines(ContainerBuilder containerBuilder)
+		{
+			var pipelines = new ISyncPipeline[] { new SyncDocumentRunPipeline(), new SyncDocumentRetryPipeline(), };
 
-			flowBuilder.Register();
+			foreach (var syncPipeline in pipelines)
+			{
+				FlowBuilder<SyncExecutionContext> flowBuilder =
+					new FlowBuilder<SyncExecutionContext>(new AutofacFlowRegistrar(containerBuilder));
 
-			containerBuilder.Register(c => c.Resolve<INodeFactory<SyncExecutionContext>>().BuildFlow(pipelineName)).As<INode<SyncExecutionContext>>();
+				syncPipeline.BuildFlow(flowBuilder.CreateFlow(syncPipeline.GetType().Name));
+
+				flowBuilder.Register();
+			}
 		}
 	}
 }

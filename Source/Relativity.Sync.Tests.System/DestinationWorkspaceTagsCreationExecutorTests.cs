@@ -9,7 +9,8 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
@@ -49,7 +50,7 @@ namespace Relativity.Sync.Tests.System
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			string expectedSourceWorkspaceName = _sourceWorkspace.Name;
 			string expectedSourceCaseTagName = $"{_LOCAL_INSTANCE_NAME} - {expectedSourceWorkspaceName} - {expectedSourceWorkspaceArtifactId}";
-			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
+			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
 			string expectedSourceJobTagName = $"{_JOB_HISTORY_NAME} - {expectedJobHistoryArtifactId}";
 
 			ConfigurationStub configuration = new ConfigurationStub
@@ -89,7 +90,7 @@ namespace Relativity.Sync.Tests.System
 			string expectedSourceWorkspaceName = _sourceWorkspace.Name;
 			string expectedSourceCaseTagName = $"{_LOCAL_INSTANCE_NAME} - {expectedSourceWorkspaceName} - {expectedSourceWorkspaceArtifactId}";
 
-			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
+			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
 
 			RelativitySourceCaseTag wrongSourceCaseTag = new RelativitySourceCaseTag
 			{

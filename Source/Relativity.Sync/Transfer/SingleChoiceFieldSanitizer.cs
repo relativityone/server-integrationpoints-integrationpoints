@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
 
@@ -32,15 +32,13 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(Choice)}, but instead type was {initialValue.GetType()}.",
+				throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(Choice)}, but instead type was {initialValue.GetType()}.",
 					ex);
 			}
 
 			if (string.IsNullOrWhiteSpace(choice.Name))
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName, 
-					$"Expected input to be deserializable to type {typeof(Choice)} and name to not be null or empty.");
+				throw new InvalidExportFieldValueException($"Expected input to be deserializable to type {typeof(Choice)} and name to not be null or empty.");
 			}
 
 			string value = choice.Name;

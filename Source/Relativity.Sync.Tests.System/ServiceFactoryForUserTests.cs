@@ -15,16 +15,18 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Stubs;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Testing.Identification;
 
+#pragma warning disable CS0612 // Type or member is obsolete
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
 	public sealed class ServiceFactoryForUserTests : SystemTest
 	{
-		private ServicesManagerStub _servicesManager;
+		private ISyncServiceManager _servicesManager;
 		private WorkspaceRef _workspace;
 
 		[SetUp]
@@ -46,7 +48,7 @@ namespace Relativity.Sync.Tests.System
 				Name = name,
 				Users = new MultiUserFieldValueList()
 			};
-			
+
 			WriteResultSet<Group> result = Client.Repositories.Group.Create(newGroup);
 			if (!result.Success)
 			{

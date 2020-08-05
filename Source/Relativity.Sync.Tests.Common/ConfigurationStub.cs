@@ -12,11 +12,12 @@ namespace Relativity.Sync.Tests.Common
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration,
-		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration
+		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
 		private string _sourceJobTagName = String.Empty;
+		private string _emailNotificationRecipients;
 
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
@@ -63,7 +64,14 @@ namespace Relativity.Sync.Tests.Common
 			_jobName = jobName;
 		}
 
-		public string GetNotificationEmails() => String.Empty;
+		public IEnumerable<string> GetEmailRecipients() => _emailRecipients;
+
+		public string GetNotificationEmails() => _emailNotificationRecipients;
+
+		public void SetEmailNotificationRecipients(string emailNotificationRecipients)
+		{
+			_emailNotificationRecipients = emailNotificationRecipients;
+		}
 
 		public int SourceWorkspaceArtifactId { get; set; }
 		public string TriggerName { get; }
@@ -81,9 +89,7 @@ namespace Relativity.Sync.Tests.Common
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int SavedSearchArtifactId { get; set; }
 		public int DestinationFolderArtifactId { get; set; }
-		public int IntegrationPointArtifactId { get; }
 		public int SourceProviderArtifactId { get; }
-
 		public string FolderPathSourceFieldName { get; set; }
 
 		public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;
@@ -137,14 +143,12 @@ namespace Relativity.Sync.Tests.Common
 			SourceWorkspaceTagName = name;
 		}
 
-		public int ExecutingUserId => _ADMIN_ID;
+		public int ExecutingUserId { get; set; } = _ADMIN_ID;
 		public bool SendEmails { get; set; }
-
-		public IEnumerable<string> GetEmailRecipients() => _emailRecipients;
 
 		public int TotalRecordsCount { get; set; }
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
-		public string WorkflowId { get; }
+		public int? JobHistoryToRetryId { get; set; }
 	}
 }

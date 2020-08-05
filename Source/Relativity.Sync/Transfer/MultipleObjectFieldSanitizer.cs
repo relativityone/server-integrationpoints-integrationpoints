@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -41,28 +41,24 @@ namespace Relativity.Sync.Transfer
 			}
 			catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected value to be deserializable to {typeof(RelativityObjectValue[])}, but instead type was {initialValue.GetType()}.",
+				throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(RelativityObjectValue[])}, but instead type was {initialValue.GetType()}.",
 					ex);
 			}
 
 			if (objectValues.Any(x => string.IsNullOrWhiteSpace(x.Name)))
 			{
-				throw new InvalidExportFieldValueException(itemIdentifier, sanitizingSourceFieldName,
-					$"Expected elements of input to be deserializable to type {typeof(RelativityObjectValue)}.");
+				throw new InvalidExportFieldValueException($"Some values in MultiObject field are null or contain only white-space characters.");
 			}
 
 			char multiValueDelimiter = _configuration.MultiValueDelimiter;
 			bool ContainsDelimiter(string x) => x.Contains(multiValueDelimiter);
 
-			IEnumerable<string> names = objectValues.Select(x => x.Name);
+			List<string> names = objectValues.Select(x => x.Name).ToList();
 			if (names.Any(ContainsDelimiter))
 			{
-				string violatingNameList = string.Join(", ", names.Where(ContainsDelimiter).Select(x => $"'{x}'"));
-				throw new SyncException(
-					$"The identifiers of the following objects referenced by object '{itemIdentifier}' in field '{sanitizingSourceFieldName}' " +
-					$"contain the character specified as the multi-value delimiter ('{multiValueDelimiter}'). Rename these objects or choose " +
-					$"a different delimiter: {violatingNameList}.");
+				throw new InvalidExportFieldValueException(
+					$"The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII {(int)multiValueDelimiter}'). " +
+					$"Rename these objects to not contain delimiter.");
 			}
 
 			string multiValueDelimiterString = char.ToString(multiValueDelimiter);

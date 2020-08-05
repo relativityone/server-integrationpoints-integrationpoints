@@ -1,11 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
 {
@@ -15,11 +16,9 @@ namespace Relativity.Sync.Executors
 		private bool _itemLevelErrorExists;
 		private bool _canReleaseSemaphore;
 		private Exception _importApiException;
-		private JobReport _importApiJobReport;
+		private ImportApiJobStatistics _importApiJobStatistics;
 
 		private const int _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE = 10000;
-		private const string _IDENTIFIER_COLUMN = "Identifier";
-		private const string _MESSAGE_COLUMN = "Message";
 
 		private readonly object _lockObject;
 		private readonly int _jobHistoryArtifactId;
@@ -50,12 +49,12 @@ namespace Relativity.Sync.Executors
 
 			_syncImportBulkArtifactJob.OnComplete += HandleComplete;
 			_syncImportBulkArtifactJob.OnFatalException += HandleFatalException;
-			_syncImportBulkArtifactJob.OnError += HandleItemLevelError;
+			_syncImportBulkArtifactJob.OnItemLevelError += HandleItemLevelError;
 		}
 
-		private void HandleComplete(JobReport jobReport)
+		private void HandleComplete(ImportApiJobStatistics jobStatistics)
 		{
-			_importApiJobReport = jobReport;
+			_importApiJobStatistics = jobStatistics;
 
 			// IAPI may throw OnFatalException event before OnComplete, so we need to check that first.
 			if (!_importApiFatalExceptionOccurred)
@@ -68,19 +67,19 @@ namespace Relativity.Sync.Executors
 			ReleaseSemaphoreIfPossible();
 		}
 
-		private void HandleFatalException(JobReport jobReport)
+		private void HandleFatalException(ImportApiJobStatistics jobStatistics)
 		{
-			_importApiJobReport = jobReport;
+			_importApiJobStatistics = jobStatistics;
 
-			_logger.LogError(jobReport.FatalException, jobReport.FatalException?.Message);
+			_logger.LogError(jobStatistics.Exception, jobStatistics.Exception?.Message);
 			_importApiFatalExceptionOccurred = true;
-			_importApiException = jobReport.FatalException;
+			_importApiException = jobStatistics.Exception;
 
 			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkReadSoFarAsFailed();
 			var jobError = new CreateJobHistoryErrorDto(ErrorType.Job)
 			{
-				ErrorMessage = jobReport.FatalException?.Message,
-				StackTrace = jobReport.FatalException?.StackTrace
+				ErrorMessage = jobStatistics.Exception?.Message,
+				StackTrace = jobStatistics.Exception?.StackTrace
 			};
 
 			CreateJobHistoryError(jobError);
@@ -99,17 +98,14 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private void HandleItemLevelError(IDictionary row)
+		private void HandleItemLevelError(ItemLevelError itemLevelError)
 		{
 			_itemLevelErrorExists = true;
 
-			string errorMessage = $"IAPI {GetValueOrNull(row, _MESSAGE_COLUMN)}";
-			string sourceUniqueId = GetValueOrNull(row, _IDENTIFIER_COLUMN);
+			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", itemLevelError.Identifier, itemLevelError.Message);
 
-			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", sourceUniqueId, errorMessage);
-
-			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(sourceUniqueId);
-			AddItemLevelError(sourceUniqueId, errorMessage);
+			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
+			AddItemLevelError(itemLevelError.Identifier, itemLevelError.Message);
 		}
 
 		private void AddItemLevelError(string sourceUniqueId, string errorMessage)
@@ -145,11 +141,6 @@ namespace Relativity.Sync.Executors
 		private void CreateJobHistoryError(CreateJobHistoryErrorDto jobError)
 		{
 			_jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, jobError).ConfigureAwait(false);
-		}
-
-		private static string GetValueOrNull(IDictionary row, string key)
-		{
-			return row.Contains(key) ? row[key].ToString() : null;
 		}
 
 		public async Task<ImportJobResult> RunAsync(CancellationToken token)
@@ -198,9 +189,9 @@ namespace Relativity.Sync.Executors
 		private long GetJobSize()
 		{
 			long jobSize = 0;
-			if (_importApiJobReport != null)
+			if (_importApiJobStatistics != null)
 			{
-				jobSize = _importApiJobReport.FileBytes + _importApiJobReport.MetadataBytes;
+				jobSize = _importApiJobStatistics.FileBytes + _importApiJobStatistics.MetadataBytes;
 			}
 			return jobSize;
 		}

@@ -15,7 +15,7 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class DataSourceSnapshotExecutor : IExecutor<IDataSourceSnapshotConfiguration>
 	{
-		private const int _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES = 10000;
+
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
 		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Executors
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					_logger.LogInformation("Retrieved {documentsCount} documents from saved search.", results.RecordCount);
 
-					Task<long> calculateNativesTotalSizeTask = Task.Run(() => CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, (int)results.RecordCount), token);
+					Task<long> calculateNativesTotalSizeTask = Task.Run(() => _nativeFileRepository.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest), token);
 					_jobStatisticsContainer.NativesBytesRequested = calculateNativesTotalSizeTask;
 				}
 			}
@@ -84,54 +84,6 @@ namespace Relativity.Sync.Executors
 			await jobProgressUpdater.SetTotalItemsCountAsync((int) results.RecordCount).ConfigureAwait(false);
 
 			return ExecutionResult.Success();
-		}
-
-		private async Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request, int recordCount)
-		{
-			long nativesTotalSize = 0;
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				List<int> allDocumentsArtifactIds = await GetAllDocumentsArtifactIds(workspaceId, objectManager, request, recordCount).ConfigureAwait(false);
-				IEnumerable<IList<int>> documentArtifactIdBatches = allDocumentsArtifactIds.SplitList(_BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
-
-				foreach (IList<int> batch in documentArtifactIdBatches)
-				{
-					IEnumerable<INativeFile> nativesInBatch = await _nativeFileRepository.QueryAsync(workspaceId, batch).ConfigureAwait(false);
-					nativesTotalSize += nativesInBatch.Sum(x => x.Size);
-				}
-			}
-			return nativesTotalSize;
-		}
-
-		private static async Task<List<int>> GetAllDocumentsArtifactIds(int workspaceId, IObjectManager objectManager, QueryRequest allDocumentsQueryRequest, int recordCount)
-		{
-			QueryRequest allDocumentsArtifactIdsQueryRequest = new QueryRequest
-			{
-				ObjectType = allDocumentsQueryRequest.ObjectType,
-				Condition = allDocumentsQueryRequest.Condition
-			};
-
-			int retrievedRecordCount = 0;
-			List<int> allDocumentsArtifactIds = new List<int>(recordCount);
-
-			ExportInitializationResults allDocumentsArtifactIdsExportInitializationResults = await objectManager.InitializeExportAsync(workspaceId, allDocumentsArtifactIdsQueryRequest, 1).ConfigureAwait(false);
-
-			RelativityObjectSlim[] allDocumentsArtifactIdsExportResultsBlock = await objectManager
-				.RetrieveResultsBlockFromExportAsync(workspaceId, allDocumentsArtifactIdsExportInitializationResults.RunID, recordCount - retrievedRecordCount, retrievedRecordCount)
-				.ConfigureAwait(false);
-
-			while (allDocumentsArtifactIdsExportResultsBlock != null && allDocumentsArtifactIdsExportResultsBlock.Any())
-			{
-				allDocumentsArtifactIds.AddRange(allDocumentsArtifactIdsExportResultsBlock.Select(x => x.ArtifactID));
-
-				retrievedRecordCount += allDocumentsArtifactIdsExportResultsBlock.Length;
-
-				allDocumentsArtifactIdsExportResultsBlock = await objectManager
-					.RetrieveResultsBlockFromExportAsync(workspaceId, allDocumentsArtifactIdsExportInitializationResults.RunID, recordCount - retrievedRecordCount, retrievedRecordCount)
-					.ConfigureAwait(false);
-			}
-
-			return allDocumentsArtifactIds;
 		}
 	}
 }

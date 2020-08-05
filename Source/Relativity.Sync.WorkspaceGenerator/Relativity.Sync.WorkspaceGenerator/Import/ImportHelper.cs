@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+using System.Threading.Tasks;
+using kCura.Relativity.DataReaderClient;
+using kCura.Relativity.ImportAPI;
+using Relativity.Sync.WorkspaceGenerator.RelativityServices;
+using Relativity.Sync.WorkspaceGenerator.Settings;
+
+namespace Relativity.Sync.WorkspaceGenerator.Import
+{
+	internal sealed class ImportHelper
+	{
+		private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
+
+		private readonly IWorkspaceService _workspaceService;
+		private readonly GeneratorSettings _settings;
+		private readonly TestCase _testCase;
+		private readonly IDataReaderProvider _dataReaderProvider;
+
+		public ImportHelper(IWorkspaceService workspaceService, IDataReaderProvider dataReaderProvider, GeneratorSettings settings, TestCase testCase)
+		{
+			_workspaceService = workspaceService;
+			_settings = settings;
+			_testCase = testCase;
+			_dataReaderProvider = dataReaderProvider;
+		}
+
+		public async Task<IList<ImportJobResult>> ImportDataAsync(int workspaceArtifactId)
+		{
+			IList<ImportJobResult> jobResults = new List<ImportJobResult>();
+
+			IDataReader dataReader;
+			while((dataReader = _dataReaderProvider.GetNextDataReader()) != null)
+			{
+				Console.WriteLine("Creating ImportAPI client");
+				var importApi =
+					new ImportAPI(
+						_settings.RelativityUserName,
+						_settings.RelativityPassword,
+						_settings.RelativityWebApiUri.ToString());
+
+				Console.WriteLine("Importing documents");
+				ImportJobResult result = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataReader, importApi).ConfigureAwait(false);
+
+				jobResults.Add(result);
+			}
+			
+			return jobResults;
+		}
+
+		private async Task<ImportJobResult> ConfigureAndRunImportApiJobAsync(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi)
+		{
+			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
+			importJob.Settings.CaseArtifactId = workspaceArtifactId;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+			importJob.Settings.DestinationFolderArtifactID = await _workspaceService.GetRootFolderArtifactIDAsync(workspaceArtifactId).ConfigureAwait(false);
+			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID; // Specify the ArtifactID of the document identifier field, such as a control number.
+			importJob.SourceData.SourceData = dataReader;
+
+			// Extracted text fields
+			if (_testCase.GenerateExtractedText)
+			{
+				importJob.Settings.ExtractedTextFieldContainsFilePath = true;
+				importJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
+			}
+			else
+			{
+				importJob.Settings.ExtractedTextFieldContainsFilePath = false;
+			}
+
+			// Indicates file path for the native file.
+			if (_testCase.GenerateNatives)
+			{
+				importJob.Settings.CopyFilesToDocumentRepository = true;
+				importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+				importJob.Settings.NativeFilePathSourceFieldName = ColumnNames.NativeFilePath;
+				importJob.Settings.FileNameColumn = ColumnNames.FileName;
+			}
+			else
+			{
+				importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+			}
+
+			return await ImportJobExecutor.ExecuteAsync(importJob).ConfigureAwait(false);
+		}
+	}
+
+}

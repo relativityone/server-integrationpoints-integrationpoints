@@ -13,14 +13,14 @@ namespace Relativity.Sync.Tests.Unit
 	public sealed class EnvironmentPropertyProviderTests
 	{
 		private Mock<IInstanceSettingManager> _instanceSettingManagerMock;
-		private Mock<IServicesMgr> _serviceMgr;
+		private Mock<ISyncServiceManager> _serviceMgr;
 		private Mock<ISyncLog> _logger;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_instanceSettingManagerMock = new Mock<IInstanceSettingManager>();
-			_serviceMgr = new Mock<IServicesMgr>();
+			_serviceMgr = new Mock<ISyncServiceManager>();
 			_logger = new Mock<ISyncLog>();
 
 			_serviceMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(ExecutionIdentity.System))

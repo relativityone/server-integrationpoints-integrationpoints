@@ -11,10 +11,10 @@
 		<ResolveNugetPackages>true</ResolveNugetPackages>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<OutputPath>bin\Debug\</OutputPath>
+		<OutputPath>bin\</OutputPath>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<OutputPath>bin\Release\</OutputPath>
+		<OutputPath>bin\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="coverage.cobertura.xml" />
@@ -23,8 +23,12 @@
 		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
 		<ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
 	</ItemGroup>
+  <!-- Third Party Packages -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.0" />
+  </ItemGroup>
 	<ItemGroup>
 	  <Reference Include="System.Web.Services" />
 	</ItemGroup>
-	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

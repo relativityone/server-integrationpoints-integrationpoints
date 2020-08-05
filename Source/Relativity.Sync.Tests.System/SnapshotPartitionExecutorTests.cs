@@ -13,7 +13,9 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
@@ -42,7 +44,7 @@ namespace Relativity.Sync.Tests.System
 				.ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
 
-			int jobHistoryId = await Rdos.CreateJobHistoryInstance(ServiceFactory, _workspaceId).ConfigureAwait(false);
+			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
 			_syncConfigurationId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryId).ConfigureAwait(false);
 
 			_batchRepository = new BatchRepository(new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());

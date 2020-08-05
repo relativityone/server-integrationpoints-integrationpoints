@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Banzai;
+using Banzai.Factories;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using Relativity.API;
@@ -13,6 +15,8 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 using Relativity.Telemetry.APM;
 
@@ -52,6 +56,19 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				.ToList();
 		}
 
+		public static FlowComponent<SyncExecutionContext>[] GetSyncNodesFromRegisteredPipeline(IContainer container, Type pipelineType)
+		{
+			FlowComponent<SyncExecutionContext>[] GetChildTypes(FlowComponent<SyncExecutionContext> flowComponent)
+			{
+				var childTypes = flowComponent.Children.SelectMany(x => GetChildTypes(x)).ToArray();
+				return new[] {flowComponent}.Concat(childTypes).ToArray();
+			}
+
+			FlowComponent<SyncExecutionContext> flows = container.ResolveNamed<FlowComponent<SyncExecutionContext>>(pipelineType.Name);
+
+			return GetChildTypes(flows).Where(x => !x.IsFlow && x.Type?.BaseType?.GetGenericTypeDefinition() == typeof(SyncNode<>)).ToArray();
+		}
+
 		/// <summary>
 		///     Creates a <see cref="ContainerBuilder" /> with all of Relativity Sync's default implementations registered.
 		///     This allows users to override any existing implementations.
@@ -61,7 +78,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			ContainerFactory containerFactory = new ContainerFactory();
 			RelativityServices relativityServices = CreateMockedRelativityServices();
-			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, 1, 1),
+			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, 1),
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
 			MockSearchManagerFactory(containerBuilder);
@@ -98,7 +115,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			});
 			instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
 
-			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
+			Mock<ISyncServiceManager> servicesMgr = new Mock<ISyncServiceManager>();
 			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
 
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);

@@ -10,8 +10,10 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Helpers;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
@@ -36,19 +38,21 @@ namespace Relativity.Sync.Tests.System
 			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 		}
 
-		[IdentifiedTest("1be9ae3e-c78f-408c-a06e-1d9359114d41")]
-		public async Task ItShouldLogProgressForEachStep()
+		[IdentifiedTestCase("1be9ae3e-c78f-408c-a06e-1d9359114d41", typeof(SyncDocumentRunPipeline))]
+		[IdentifiedTestCase("0e424672-33f6-46cb-99df-5e30a6e7e897", typeof(SyncDocumentRetryPipeline))]
+		public async Task ItShouldLogProgressForEachStep(Type pipelineType)
 		{
 			int workspaceArtifactId = _sourceWorkspace.ArtifactID;
 			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstance(ServiceFactory, workspaceArtifactId, jobHistoryName).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, workspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = workspaceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId
+				SyncConfigurationArtifactId = syncConfigurationArtifactId,
+				JobHistoryToRetryId = pipelineType == typeof(SyncDocumentRetryPipeline) ? (int?)1 : null
 			};
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedAllSteps(configuration);
 
@@ -59,7 +63,7 @@ namespace Relativity.Sync.Tests.System
 			List<RelativityObject> progressRdos = await QueryForProgressRdosAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
 
 			const int nonNodeProgressSteps = 1; // MultiNode
-			int minimumExpectedProgressRdos = GetSyncNodes().Count + nonNodeProgressSteps;
+			int minimumExpectedProgressRdos = GetSyncNodes(pipelineType).Count + nonNodeProgressSteps;
 			progressRdos.Count.Should().Be(minimumExpectedProgressRdos);
 		}
 
@@ -101,13 +105,9 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private static List<Type> GetSyncNodes()
+		private static List<Type> GetSyncNodes(Type pipelineType)
 		{
-			return Assembly.GetAssembly(typeof(SyncNode<>))
-				.GetTypes()
-				.Where(t => t.BaseType?.IsConstructedGenericType ?? false)
-				.Where(t => t.BaseType.GetGenericTypeDefinition() == typeof(SyncNode<>))
-				.ToList();
+			return PipelinesNodeHelper.GetExpectedNodesInExecutionOrder(pipelineType).Select(x => x.First()).ToList();
 		}
 	}
 }

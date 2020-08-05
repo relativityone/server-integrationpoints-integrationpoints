@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Sync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs;
@@ -30,22 +30,24 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private JSONSerializer _jsonSerializer;
 		private List<FieldMap> _fieldMappings;
 
-		private FieldMappingsValidator _instance;
+		private FieldMappingsValidator _sut;
 
 		private const int _TEST_DEST_WORKSPACE_ARTIFACT_ID = 202567;
 		private const int _TEST_SOURCE_WORKSPACE_ARTIFACT_ID = 101234;
 		private const int _TEST_DEST_FIELD_ARTIFACT_ID = 1003668;
 		private const int _TEST_SOURCE_FIELD_ARTIFACT_ID = 1003667;
+		private const string _TEST_DEST_FIELD_NAME = "Control Number";
+		private const string _TEST_SOURCE_FIELD_NAME = "Control Number";
 
 		private const string _TEST_FIELDS_MAP = @"[{
 	        ""sourceField"": {
-	            ""displayName"": ""Control Number [Object Identifier]"",
+	            ""displayName"": ""Control Number"",
 	            ""isIdentifier"": true,
 	            ""fieldIdentifier"": ""1003667"",
 	            ""isRequired"": true
 	        },
 	        ""destinationField"": {
-	            ""displayName"": ""Control Number [Object Identifier]"",
+	            ""displayName"": ""Control Number"",
 	            ""isIdentifier"": true,
 	            ""fieldIdentifier"": ""1003668"",
 	            ""isRequired"": true
@@ -79,17 +81,17 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOverlay);
 			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.UseFieldSettings);
 
-			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID);
-			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID);
+			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID, _TEST_SOURCE_FIELD_NAME);
+			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID, _TEST_DEST_FIELD_NAME);
 
-			_instance = new FieldMappingsValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
+			_sut = new FieldMappingsValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
 		}
 
 		[Test]
 		public async Task ValidateAsyncGoldFlowTest()
 		{
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsTrue(actualResult.IsValid);
@@ -105,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.Setup(x => x.GetFieldMappings()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -116,10 +118,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncDestinationFieldMissingTest()
 		{
 			// Arrange
-			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, 0);
+			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, 0, null);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -136,15 +138,58 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsyncSourceFieldMissingTest()
 		{
 			// Arrange
-			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, 0);
+			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, 0, null);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
 			Assert.IsNotEmpty(actualResult.Messages);
 			actualResult.Messages.First().ShortMessage.Should().StartWith("Source field(s) mapped");
+
+			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration);
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldReturnInvalidMessage_WhenFieldInSourceWorkspaceHasBeenRenamed()
+		{
+			// Arrange
+			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID, "Control Number - RENAMED");
+
+			// Act
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			Assert.IsFalse(actualResult.IsValid);
+			Assert.IsNotEmpty(actualResult.Messages);
+			actualResult.Messages.First().ShortMessage
+				.Should().StartWith("Source field(s) mapped")
+				.And.Contain(_TEST_SOURCE_FIELD_NAME);
+
+			VerifyObjectManagerQueryRequest();
+			Mock.Verify(_validationConfiguration);
+		}
+
+		[Test]
+		public async Task ValidateAsync_ShouldReturnInvalidMessage_WhenFieldInDestinationWorkspaceHasBeenRenamed()
+		{
+			// Arrange
+			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID, "Control Number - RENAMED");
+
+			// Act
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			Assert.IsFalse(actualResult.IsValid);
+			Assert.IsNotEmpty(actualResult.Messages);
+
+			ValidationMessage actualMessage = actualResult.Messages.First();
+			actualMessage.ErrorCode.Should().Be("20.005");
+			actualMessage.ShortMessage
+				.Should().StartWith("Destination field(s) mapped")
+				.And.Contain(_TEST_DEST_FIELD_NAME);
 
 			VerifyObjectManagerQueryRequest();
 			Mock.Verify(_validationConfiguration);
@@ -158,7 +203,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -177,7 +222,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -188,7 +233,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Mock.Verify(_validationConfiguration);
 		}
 
-		[Test]
 		[TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
 		public async Task ValidateAsyncUniqueIdentifierInvalidTest(string testInvalidFieldMap, string expectedErrorMessage)
 		{
@@ -197,7 +241,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.Setup(x => x.GetFieldMappings()).Returns(fieldMap).Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -216,7 +260,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.SetupGet(x => x.FieldOverlayBehavior).Returns(FieldOverlayBehavior.ReplaceValues);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.False(actualResult.IsValid);
@@ -227,7 +271,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Mock.Verify(_validationConfiguration);
 		}
 
-		private void SetUpObjectManagerQuery(int testWorkspaceArtifactId, int testFieldArtifactId)
+		private void SetUpObjectManagerQuery(int testWorkspaceArtifactId, int testFieldArtifactId, string testFieldName)
 		{
 			var queryResult = new QueryResult
 			{
@@ -236,6 +280,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 					new RelativityObject
 					{
 						ArtifactID = testFieldArtifactId,
+						Name = testFieldName
 					}
 				}
 			};
@@ -264,13 +309,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			new TestCaseData(@"[{
 		        ""sourceField"": {
-		            ""displayName"": ""Control Number [Object Identifier]"",
+		            ""displayName"": ""Control Number"",
 		            ""isIdentifier"": false,
 		            ""fieldIdentifier"": ""1003667"",
 		            ""isRequired"": true
 		        },
 		        ""destinationField"": {
-		            ""displayName"": ""Control Number [Object Identifier]"",
+		            ""displayName"": ""Control Number"",
 		            ""isIdentifier"": true,
 		            ""fieldIdentifier"": ""1003668"",
 		            ""isRequired"": true
@@ -279,13 +324,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		    }]", "The unique identifier must be mapped.").SetName($"{nameof(ValidateAsyncUniqueIdentifierInvalidTest)}_SourceInvalid"),
 			new TestCaseData(@"[{
 		        ""sourceField"": {
-		            ""displayName"": ""Control Number [Object Identifier]"",
+		            ""displayName"": ""Control Number"",
 		            ""isIdentifier"": true,
 		            ""fieldIdentifier"": ""1003667"",
 		            ""isRequired"": true
 		        },
 		        ""destinationField"": {
-		            ""displayName"": ""Control Number [Object Identifier]"",
+		            ""displayName"": ""Control Number"",
 		            ""isIdentifier"": false,
 		            ""fieldIdentifier"": ""1003668"",
 		            ""isRequired"": true
