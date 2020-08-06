@@ -20,7 +20,8 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/Integra
     }
     orphanedItemStrategy {
         discardOldItems {
-            numToKeep(20)
+            daysToKeep(1)
+            numToKeep(10)
         }
     }
     configure {
