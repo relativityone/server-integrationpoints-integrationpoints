@@ -46,6 +46,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de57")]
 		[RetryOnError]
+		[Category("Test")]
 		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInSourceWorkspaceFieldList()
 		{
 			//Arrange
