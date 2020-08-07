@@ -27,11 +27,11 @@ timestamps {
 					commitHash = scmVars.GIT_COMMIT
 				}
 
-				// stage('Run Job') {
-				// 	withCredentials([usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetSvcPassword', usernameVariable: 'nugetSvcUsername')]) {
-				// 		powershell "./Trident/Scripts/Reg-ImportExport.ps1 -RegEnv $params.RegTestsConfig"
-				// 	}
-				// }
+				stage('Run Job') {
+					withCredentials([usernamePassword(credentialsId: 'ProgetCI', passwordVariable: 'nugetSvcPassword', usernameVariable: 'nugetSvcUsername')]) {
+						powershell "./Trident/Scripts/Reg-ImportExport.ps1 -RegEnv $params.RegTestsConfig"
+					}
+				}
 
 				stage('Publish to TestTracker') {
 					def ttsecrets = [
