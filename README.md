@@ -45,11 +45,17 @@ Common commands:
     build -deploy 1234567 172.17.100.72
 
 ## How to Test
-Running unit tests:
 
-    unit tests:
-        build -test
-        build -skip -test
+Running unit tests: ``build.ps1 Test``
+
+Running Custom Tests against Hopper Relativity environment:
+
+1. Create feature branch with suffix _'-test'_
+2. Modify _Trident/Scripts/Custom-Test.ps1_
+   * Edit TestFilter if needed
+   * Add _[Category("Test")]_ to selected tests
+3. Push branch
+4. Run build <https://trident.kcura.corp/dea/job/IntegrationPoints/job/IntegrationPoints-Jobs/job/IntegrationPoints-Custom-Test>
 
 ## Build artifacts
 * RAPs
