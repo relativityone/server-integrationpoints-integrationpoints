@@ -13,7 +13,7 @@ function Invoke-TestParser
     $UrlToJenkinsJob = $env:BUILD_URL
     $JiraPassword = $env:testtrackerJiraPassword
     $RelativityPassword = $env:testtrackerRelativityPassword
-    $NugetPath = ".\buildtools\nuget.exe"
+    $NugetPath = Join-Path $PSScriptRoot "buildtools\nuget.exe"
     $TestResults = ".\Artifacts\Logs"
     $LogLocation = ".\Artifacts\Logs\TestParser.log"
 
