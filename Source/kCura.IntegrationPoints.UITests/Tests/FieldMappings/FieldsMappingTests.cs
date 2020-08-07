@@ -49,7 +49,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de57")]
 		[RetryOnError]
-		[Category("Test")]
 		public async Task FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInSourceWorkspaceFieldList()
 		{
 			//Arrange
@@ -135,6 +134,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("4a6bbec9-24f5-421d-8233-ffbf9824c371")]
 		[RetryOnError]
+		[Category("Test")]
 		public void FieldMapping_ShouldClearMapFromInvalidFieldExceptObjectIdentifier_WhenClearButtonIsPressed()
 		{
 			//Arrange
