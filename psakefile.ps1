@@ -93,6 +93,11 @@ Task Rebuild -Description "Do a rebuild" {
     }
 }
 
+Task PerformanceTest -Depends Default -Description "Run performance tests" {
+    $LogPath = Join-Path $LogsDir "PerformanceTestResults.xml"
+    Invoke-Tests -WhereClause "cat == ReferencePerformance" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+}
+
 Task Nightly -Depends Default, FunctionalTest -Description "Build and run all tests. All the steps for a nightly build with deployed environemnt.";
 
 Task Help -Alias ? -Description "Display task information" {
