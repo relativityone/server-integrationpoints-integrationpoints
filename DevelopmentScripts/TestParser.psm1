@@ -3,7 +3,7 @@ function Invoke-TestParser
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $True)]
-        [String]$RelativityBranch
+        [String]$Branch
     )
     $testEngineering = ".\.TestEngineering\TestParser"
     if (-not (Test-Path $testEngineering)) {
@@ -22,7 +22,7 @@ function Invoke-TestParser
     & .\.TestEngineering\TestParser\TestParser*\lib\net462\TestParser.exe `
         "urlToJenkinsJob:$UrlToJenkinsJob" `
         "workspaceId:2697037" `
-        "branchName:$RelativityBranch" `
+        "branchName:$Branch" `
         "jiraUsername:svc_jira_jenkins" `
         "jiraPassword:$JiraPassword" `
         "relativityUsername:test.execution.parser@relativity.com" `
