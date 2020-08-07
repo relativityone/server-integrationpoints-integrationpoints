@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			ObjectManagerFactory = new RelativityObjectManagerFactory(SourceContext.Helper);
 			DestinationFieldManager = DestinationContext.Helper.CreateProxy<IFieldManager>();
 			await SuiteSpecificOneTimeSetup().ConfigureAwait(false);
-			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			
 			sw.Stop();
 			Log.Information("One TimeSetUp. Duration: {duration} s", sw.ElapsedMilliseconds/1000);

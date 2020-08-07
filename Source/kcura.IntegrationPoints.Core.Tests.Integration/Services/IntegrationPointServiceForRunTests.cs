@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
 	[Parallelizable(ParallelScope.None)]
-	[Category("Test")]
 	public class IntegrationPointServiceForRunTests : RelativityProviderTemplate
 	{
 		private const int _ADMIN_USER_ID = 9;

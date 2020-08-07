@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		private readonly IReadOnlyList<string> _fieldMapWhiteList = new List<string>
 		{
+			"Control Number",
 			"Extracted Text",
 			"Production",
 			"Production Errors",
