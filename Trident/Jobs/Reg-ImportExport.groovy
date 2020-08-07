@@ -25,7 +25,6 @@ timestamps {
 							userRemoteConfigs: scm.userRemoteConfigs
 					])
 					commitHash = scmVars.GIT_COMMIT
-					env.GIT_BRANCH = scmVars.GIT_BRANCH
 				}
 
 				// stage('Run Job') {
