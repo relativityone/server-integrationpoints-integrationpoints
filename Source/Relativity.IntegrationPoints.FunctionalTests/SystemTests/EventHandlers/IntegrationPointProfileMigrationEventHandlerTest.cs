@@ -222,7 +222,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 					Fields = profilesToCreate.First().ToFieldValues().Select(x => x.Field).ToList(),
 					ValueLists = profilesToCreate.Select(x => x.ToFieldValues().Select(f => f.Value).ToList()).ToList()
 				};
-				var result = await objectManager.CreateAsync(workspaceID, createRequest);
+				var result = await objectManager.CreateAsync(workspaceID, createRequest).ConfigureAwait(false);
 
 				return result.Objects.Select(x => x.ArtifactID);
 			}

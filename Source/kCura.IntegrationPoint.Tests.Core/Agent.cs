@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			int agentsToCreate = _MAX_NUMBER_OF_AGENTS_TO_CREATE - agents.Length;
 			for (int i = 0; i < agentsToCreate; ++i)
 			{
-				Result agent = await CreateIntegrationPointAgentInternalAsync();
+				Result agent = await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
 				if(!agent.Success)
 				{
 					return false;
