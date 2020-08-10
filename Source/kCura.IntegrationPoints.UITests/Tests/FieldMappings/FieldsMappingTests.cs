@@ -35,6 +35,9 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			new Tuple<string, string>("Title", "Title")
 		};
 
+		public FieldsMappingTests() : base(shouldImportDocuments: false)
+		{ }
+
 		protected override async Task SuiteSpecificOneTimeSetup()
 		{
 			await CreateFixedLengthFieldsWithSpecialCharactersAsync(SourceContext).ConfigureAwait(false);
@@ -46,7 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 		[IdentifiedTest("916e57ba-fb4d-42a4-be2a-4d17df17de57")]
 		[RetryOnError]
-		public void FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInSourceWorkspaceFieldList()
+		public async Task FieldMapping_ShouldDisplayMappableFieldsInCorrectOrderInSourceWorkspaceFieldList()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderModel();
@@ -57,6 +60,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			PushToRelativityThirdPage fieldMappingPage =
 				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
 			List<string> fieldsFromSourceWorkspaceListBox = fieldMappingPage.GetFieldsFromSourceWorkspaceListBox();
+
+			await SourceContext.RetrieveMappableFieldsAsync().ConfigureAwait(false);
 			List<string> expectedSourceMappableFields =
 				CreateFieldMapListBoxFormatFromObjectManagerFetchedList(SourceContext.WorkspaceMappableFields);
 

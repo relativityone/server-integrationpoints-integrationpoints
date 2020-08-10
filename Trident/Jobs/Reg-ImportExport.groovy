@@ -33,6 +33,21 @@ timestamps {
 					}
 				}
 
+				stage('Publish to TestTracker') {
+					def ttsecrets = [
+						[secretType: 'Secret', name: 'JenkinsJiraAccountPassword', version: '', envVariable: 'testtrackerJiraPassword'],
+						[secretType: 'Secret', name: 'TestExecutionParserPassword', version: '', envVariable: 'testtrackerRelativityPassword']
+					]
+ 
+					withAzureKeyvault(azureKeyVaultSecrets: ttsecrets,
+						keyVaultURLOverride: 'https://testengineering-trident.vault.azure.net') {
+							powershell """
+								Import-Module ./DevelopmentScripts/TestParser.psm1 -Force
+								Invoke-TestParser -Branch $env.BRANCH_NAME
+							"""
+						}
+				}
+
 				currentBuild.result = 'SUCCESS'
 			} catch (err) {
 				currentBuild.result = 'FAILURE'

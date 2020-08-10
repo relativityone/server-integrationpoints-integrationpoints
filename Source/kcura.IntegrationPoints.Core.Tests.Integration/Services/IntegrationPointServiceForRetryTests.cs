@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
 	[Parallelizable(ParallelScope.None)]
-	[NUnit.Framework.Category("Test")]
 	public class IntegrationPointServiceForRetryTests : RelativityProviderTemplate
 	{
 		private const int _ADMIN_USER_ID = 9;

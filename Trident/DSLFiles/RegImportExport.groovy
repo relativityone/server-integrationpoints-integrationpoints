@@ -5,7 +5,7 @@ folder('IntegrationPoints-Jobs/IntegrationPoints-Regression') {
     description('Prerequisites: "Functional Tests Template" workspace must exist; "rip.jenkins@rip.com" with default password must exist')
 }
 
-multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/IntegrationPoints-ImportExport') {
+multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Regression/IntegrationPoints-Regression-ImportExport') {
     factory {
         workflowBranchProjectFactory {
             scriptPath('Trident/Jobs/Reg-ImportExport.groovy')
