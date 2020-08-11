@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Polly;
+using Polly.Retry;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
@@ -15,6 +17,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class RelativityApplicationManager
 	{
+		private const int _MAX_NUMBER_OF_APP_INSTALL_RETRIES = 3;
+		private const int _DELAY_BETWEEN_RETRIES_IN_MINUTES = 1;
 		private const int _APP_INSTALLATION_TIMEOUT_IN_MINUTES = 15;
 		private const int _ADMIN_CASE_ID = -1;
 
@@ -33,12 +37,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return ImportApplicationToLibraryAsync(applicationFilePath);
 		}
 
-		public async Task ImportApplicationToLibraryAsync(string appPath)
+		public Task ImportApplicationToLibraryAsync(string appPath)
 		{
-			using (var libraryApplicationManager = _helper.CreateProxy<ILibraryApplicationManager>())
-			{
-				await UpdateAppInLibraryAndWaitForInstallationAsync(libraryApplicationManager, appPath).ConfigureAwait(false);
-			}
+			return UpdateAppInLibraryAndWaitForInstallationAsync(appPath);
 		}
 
 		public Task InstallRipFromLibraryAsync(int workspaceArtifactID)
@@ -75,9 +76,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (var applicationInstallManager = _helper.CreateProxy<IApplicationInstallManager>())
 			{
-				GetInstallStatusResponse installStatusResponse;
-				installStatusResponse = await applicationInstallManager.GetStatusAsync(workspaceArtifactID, guid).ConfigureAwait(false);
-				
+				GetInstallStatusResponse installStatusResponse = await applicationInstallManager.GetStatusAsync(workspaceArtifactID, guid).ConfigureAwait(false);
+
 				return IsInstallSuccessfullyCompleted(installStatusResponse.InstallStatus);
 			}
 		}
@@ -95,29 +95,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 				SharedVariables.RipRapFilePath);
 		}
 
-		private async Task UpdateAppInLibraryAndWaitForInstallationAsync(
-			ILibraryApplicationManager libraryApplicationManager,
-			string appPath)
+		private async Task UpdateAppInLibraryAndWaitForInstallationAsync(string rapPath)
 		{
-			using (FileStream fileStream = File.OpenRead(appPath))
+			Console.WriteLine($"Import Application from {rapPath}");
+			int appID = await SendUpdateAppRequestAsync(rapPath).ConfigureAwait(false);
+
+			Console.WriteLine($"Application ID has been retrieved: {appID}");
+
+			using (var libraryApplicationManager = _helper.CreateProxy<ILibraryApplicationManager>())
 			{
-				using (var keplerStream = new KeplerStream(fileStream))
-				{
-					Console.WriteLine($"Import Application from {appPath}");
-					int appID = await SendUpdateAppRequestAsync(libraryApplicationManager, keplerStream)
-						.ConfigureAwait(false);
-
-					Console.WriteLine($"Application ID has been retrieved: {appID}");
-					Func<Task<GetInstallStatusResponse>> currentInstallStatusGetter =
-						() => libraryApplicationManager.GetLibraryInstallStatusAsync(_ADMIN_CASE_ID, appID);
-
-					await WaitForInstallCompletionWithinTimeoutAsync(currentInstallStatusGetter)
-						.ConfigureAwait(false);
-				}
+				Func<Task<GetInstallStatusResponse>> currentInstallStatusGetter = () => libraryApplicationManager.GetLibraryInstallStatusAsync(_ADMIN_CASE_ID, appID);
+				await WaitForInstallCompletionWithinTimeoutAsync(currentInstallStatusGetter).ConfigureAwait(false);
 			}
 		}
 
-		private static async Task<int> SendUpdateAppRequestAsync(ILibraryApplicationManager libraryApplicationManager, KeplerStream rapStream)
+		private Task<int> SendUpdateAppRequestAsync(string appPath)
 		{
 			var request = new UpdateLibraryApplicationRequest
 			{
@@ -126,11 +118,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 				RefreshCustomPages = true
 			};
 
-			UpdateLibraryApplicationResponse updateAppResponse = await libraryApplicationManager
-				.UpdateAsync(_ADMIN_CASE_ID, rapStream, request)
-				.ConfigureAwait(false);
-			int appID = updateAppResponse.ApplicationIdentifier.ArtifactID;
-			return appID;
+			RetryPolicy retryPolicy = Policy
+				.Handle<Exception>()
+				.WaitAndRetryAsync(_MAX_NUMBER_OF_APP_INSTALL_RETRIES, (retryCount, context) => TimeSpan.FromMinutes(_DELAY_BETWEEN_RETRIES_IN_MINUTES),
+					(exception, timeout, retryCount, context) =>
+					{
+						Console.WriteLine($"Failed to send application install request. Delay {_DELAY_BETWEEN_RETRIES_IN_MINUTES} min and retry. " +
+										  $"Retry count: {retryCount}{Environment.NewLine}" +
+										  $"Exception:{Environment.NewLine}{exception}");
+					});
+
+			return retryPolicy.ExecuteAsync(async () =>
+			{
+				using (FileStream fileStream = File.OpenRead(appPath))
+				using (var keplerStream = new KeplerStream(fileStream))
+				using (var libraryApplicationManager = _helper.CreateProxy<ILibraryApplicationManager>())
+				{
+					UpdateLibraryApplicationResponse updateAppResponse = await libraryApplicationManager
+						.UpdateAsync(_ADMIN_CASE_ID, keplerStream, request)
+						.ConfigureAwait(false);
+					int appID = updateAppResponse.ApplicationIdentifier.ArtifactID;
+					return appID;
+				}
+			});
 		}
 
 		private async Task WaitForInstallCompletionWithinTimeoutAsync(Func<Task<GetInstallStatusResponse>> getCurrentStatus)
