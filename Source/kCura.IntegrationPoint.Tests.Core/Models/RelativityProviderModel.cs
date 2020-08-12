@@ -98,5 +98,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 			SavedSearch,
 			Production
 		}
+
+		public string SourceTypeTextUi()
+		{
+			return Source == RelativityProviderModel.SourceTypeEnum.SavedSearch
+				? "Saved Search"
+				: "Production";
+		}
 	}
 }

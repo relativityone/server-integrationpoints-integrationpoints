@@ -97,9 +97,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
         [FindsBy(How = How.Id, Using = "cancelBtn")]
         protected IWebElement CancelBtn { get; set; }
 
-		[FindsBy(How = How.Id, Using = "page-info-message")]
-		protected IWebElement PageInfoMessage { get; set; }
-
+        [FindsBy(How = How.Id, Using = "page-info-message")]
+        protected IWebElement PageInfoMessage { get; set; }
+		
 		public IWebElement ObjectIdentifierWarning => GetElementByIdOrNull("objectIdentifierWarning");
 
 		public IWebElement MappedFieldsWarning => GetElementByIdOrNull("mappedFieldsWarning");

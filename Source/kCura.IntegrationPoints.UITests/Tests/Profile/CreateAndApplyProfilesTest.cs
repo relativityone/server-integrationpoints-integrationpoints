@@ -54,7 +54,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			int numberOfAdditionalFields = 100;
 			await CreateLongTextFieldsAsync(SourceContext, numberOfAdditionalFields).ConfigureAwait(false);
 			await CreateLongTextFieldsAsync(DestinationContext, numberOfAdditionalFields).ConfigureAwait(false);
-
 		}
 
 		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
@@ -65,7 +64,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		public override async Task SetUp()
 		{
 			await base.SetUp().ConfigureAwait(false);
-			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext);
+			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext.WorkspaceName);
 		}
 
 		[IdentifiedTest("77d6c730-3f8f-4d18-83e4-640b09e16a75")]

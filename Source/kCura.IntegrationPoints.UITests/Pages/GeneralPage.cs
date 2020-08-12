@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.CssSelector, Using = "span[title = 'User Dropdown Menu']")]
 		protected IWebElement UserDropdownMenu;
-
+		
 		public GeneralPage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return new IntegrationPointProfilePage(Driver);
 		}
 
-		private void GoToPage(string pageName)
+		public void GoToPage(string pageName)
 		{
 			const int retryCount = 3;
 			Policy policy = Policy

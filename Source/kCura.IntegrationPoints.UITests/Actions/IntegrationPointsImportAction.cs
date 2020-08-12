@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.UITests.Actions
 {
 	public class IntegrationPointsImportAction : IntegrationPointsAction
 	{
-		public IntegrationPointsImportAction(RemoteWebDriver driver, TestContext context) : base(driver, context)
+		public IntegrationPointsImportAction(RemoteWebDriver driver, string workspaceName) : base(driver, workspaceName)
 		{
 		}
 

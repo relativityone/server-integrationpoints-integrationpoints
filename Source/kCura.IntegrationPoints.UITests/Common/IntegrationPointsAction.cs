@@ -17,13 +17,13 @@ namespace kCura.IntegrationPoints.UITests.Common
 	public class IntegrationPointsAction
 	{
 		protected readonly RemoteWebDriver Driver;
-		protected readonly TestContext Context;
+		protected readonly string WorkspaceName;
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
-		public IntegrationPointsAction(RemoteWebDriver driver, TestContext context)
+		public IntegrationPointsAction(RemoteWebDriver driver, string workspaceName)
 		{
 			Driver = driver;
-			Context = context;
+			WorkspaceName = workspaceName;
 		}
 
 		public ExportFirstPage SetupSyncFirstPage(RelativityProviderModel model)
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 		protected GeneralPage GoToWorkspacePage()
 		{
 			Log.Information("GoToWorkspacePage");
-			return new GeneralPage(Driver).PassWelcomeScreen().ChooseWorkspace(Context.WorkspaceName);
+			return new GeneralPage(Driver).PassWelcomeScreen().ChooseWorkspace(WorkspaceName);
 		}
 
 		protected ExportFirstPage ApplyModelToFirstPage(ExportFirstPage firstPage, IntegrationPointGeneralModel model)

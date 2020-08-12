@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public string Name
 		{
-			get { return NameInput.Text; }
+			get { return NameInput.GetAttribute("value"); }
 			set { NameInput.SetText(value); }
 		}
 
@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			get { return ProfileSelect.SelectedOption.Text; }
 			set { ProfileSelect.SelectByText(value); }
 		}
+
+		public string PageMessageText => PageMessage.Text;
 
 		[FindsBy(How = How.Id, Using = "next")]
 		protected IWebElement NextButton { get; set; }
@@ -34,6 +36,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.Id, Using = _NAME_INPUT_ID)]
 		protected IWebElement NameInput { get; set; }
+
+		[FindsBy(How = How.ClassName, Using = "page-message")]
+		protected IWebElement PageMessage { get; set; }
 
 		protected SelectElement ProfileSelect => new SelectElement(ProfileElement);
 

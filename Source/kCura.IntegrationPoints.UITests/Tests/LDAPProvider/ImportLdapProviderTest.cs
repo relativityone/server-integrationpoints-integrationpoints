@@ -43,12 +43,13 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 		[SetUp]
 		public void SetUp()
 		{
-			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, SourceContext);
+			_integrationPointsAction = new IntegrationPointsImportLdapAction(Driver, SourceContext.WorkspaceName);
 		}
 
 		[IdentifiedTest("ebfc56e6-5ac7-4694-9fde-7e474163f87e")]
 		[RetryOnError]
-		[Order(1)]
+		[Category(TestCategory.SMOKE)]
+		[TestType.MainFlow]
 		public void DocumentExportToLoadFile_TC_IMPORT_CUST_1()
 		{
 			// Arrange

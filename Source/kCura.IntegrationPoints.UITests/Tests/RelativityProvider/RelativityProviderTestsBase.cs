@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
@@ -57,7 +56,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			Log.Information("Suite SetUp");
 			
 			await SuiteSpecificSetup().ConfigureAwait(false);
-			PointsAction = new IntegrationPointsAction(Driver, SourceContext);
+			PointsAction = new IntegrationPointsAction(Driver, SourceContext.WorkspaceName);
 			Log.Information("End Suite SetUp");
 		}
 

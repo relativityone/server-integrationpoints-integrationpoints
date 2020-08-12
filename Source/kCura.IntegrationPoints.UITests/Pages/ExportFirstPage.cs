@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public SelectElement SchedulerFrequency => new SelectElement(SchedulerFrequencySelect);
 		public SelectElement TimeMeridiem => new SelectElement(TimeMeridiemSelect);
 		public SelectElement TimeZones => new SelectElement(TimeZonesSelect);
-
+		
 		public string Destination
 		{
 			get { return DestinationSelect.SelectedOption.Text; }

@@ -35,6 +35,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "s2id_productionSetsSelector")]
 		protected IWebElement ProductionLocationSelectWebElement { get; set; }
 
+		[FindsBy(How = How.Id, Using = "location-input")]
+		protected IWebElement FolderLocationSelectTextWebElement { get; set; }
+
 		protected Select SourceProductionSelect => new Select(SourceProductionSelectWebElement);
 
 		protected Select ProductionLocationSelect => new Select(ProductionLocationSelectWebElement);
@@ -64,6 +67,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public TreeSelect FolderLocationSelect;
 
+		public string FolderLocationSelectText => FolderLocationSelectTextWebElement.Text;
+
 		public string RelativityInstance
 		{
 			get { return RelativityInstanceElement.SelectedOption.Text; }
@@ -85,6 +90,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			SavedSearchSelector.SelectSavedSearch(savedSearchName);
 			return this;
+		}
+
+		public string GetSelectedSavedSearch()
+		{
+			return SavedSearchSelector.GetSelectedSavedSearch();
 		}
 
 		public PushToRelativitySecondPage SelectSourceProduction(string productionName)

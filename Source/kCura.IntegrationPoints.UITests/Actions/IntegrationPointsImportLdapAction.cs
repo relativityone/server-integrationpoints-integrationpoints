@@ -8,14 +8,14 @@ namespace kCura.IntegrationPoints.UITests.Actions
 {
 	public class IntegrationPointsImportLdapAction : IntegrationPointsImportAction
 	{
-		public IntegrationPointsImportLdapAction(RemoteWebDriver driver, TestContext context) : base(driver, context)
+		public IntegrationPointsImportLdapAction(RemoteWebDriver driver, string workspaceName) : base(driver, workspaceName)
 		{
 		}
 
 		public IntegrationPointDetailsPage CreateNewImportLdapIntegrationPoint(ImportFromLdapModel model)
 		{
 			var generalPage = new GeneralPage(Driver);
-			generalPage.ChooseWorkspace(Context.WorkspaceName);
+			generalPage.ChooseWorkspace(WorkspaceName);
 
 			ImportWithLdapFirstPage firstPage = 
 				SetupImportFirstPage<ImportWithLdapFirstPage, ImportWithLdapSecondPage, ImportFromLdapModel>(generalPage, model.General,

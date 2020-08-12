@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[SetUp]
 		public void SetUp()
 		{
-			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
+			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext.WorkspaceName);
 		}
 
 		[IdentifiedTest("d6ab4a52-9fce-4053-a46a-3abf5e8ca488")]

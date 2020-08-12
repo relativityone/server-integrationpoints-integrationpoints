@@ -7,8 +7,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 {
 	public class IntegrationPointProfileAction : IntegrationPointsAction
 	{
-		public IntegrationPointProfileAction(RemoteWebDriver driver, TestContext context)
-			: base(driver, context)
+		public IntegrationPointProfileAction(RemoteWebDriver driver, string workspaceName)
+			: base(driver, workspaceName)
 		{
 		}
 

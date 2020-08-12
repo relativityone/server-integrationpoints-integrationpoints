@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 		[SetUp]
 		public void Setup()
 		{
-			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext);
+			_integrationPointsAction = new IntegrationPointsAction(Driver, SourceContext.WorkspaceName);
 		}
 
 		[Category(TestCategory.SMOKE)]
