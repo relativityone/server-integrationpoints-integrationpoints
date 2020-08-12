@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
 	[EventHandler.CustomAttributes.Description("Register RIP Destination Providers")]
-	[EventHandler.CustomAttributes.RunOnce(false)]
+	[EventHandler.CustomAttributes.RunOnce(true)]
 	[Guid("4E058CF3-9C3E-41AA-8D3D-2CA8F1E06E08")]
 	public class RegisterDestinationProviders : PostInstallEventHandlerBase
 	{
