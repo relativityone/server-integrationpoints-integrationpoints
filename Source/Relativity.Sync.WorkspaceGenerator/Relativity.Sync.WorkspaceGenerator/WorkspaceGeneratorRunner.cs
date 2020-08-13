@@ -112,7 +112,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 		{
 			ExitCodes exitCode = ExitCodes.OK;
 
-			int savedSearchId = await PrepareSavedSearchAsync(relativityServicesFactory, workspace, testCase).ConfigureAwait(false))
+			int savedSearchId = await PrepareSavedSearchAsync(relativityServicesFactory, workspace, testCase).ConfigureAwait(false);
 			if (savedSearchId < 0)
 			{
 				return ExitCodes.OtherError;
