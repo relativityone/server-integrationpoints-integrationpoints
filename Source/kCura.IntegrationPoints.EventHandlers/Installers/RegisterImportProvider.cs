@@ -7,7 +7,7 @@ using Relativity.IntegrationPoints.Contracts;
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
     [kCura.EventHandler.CustomAttributes.Description("Register the RIP Import Provider")]
-    [kCura.EventHandler.CustomAttributes.RunOnce(false)]
+    [kCura.EventHandler.CustomAttributes.RunOnce(true)]
     [Guid("01E26CBC-98CA-48A6-942E-FD546E2D5F7E")]
     public class RegisterImportProvider : InternalSourceProviderInstaller
 	{

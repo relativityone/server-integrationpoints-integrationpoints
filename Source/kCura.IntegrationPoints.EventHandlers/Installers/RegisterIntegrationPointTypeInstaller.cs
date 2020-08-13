@@ -12,7 +12,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
 	[Description("Add Integration Points Types into RIP application.")]
-	[RunOnce(false)]
+	[RunOnce(true)]
 	[Guid("28D0FB0A-3CE9-44A3-9774-3CCC9DD57870")]
 	public class RegisterIntegrationPointTypeInstaller : PostInstallEventHandlerBase
 	{

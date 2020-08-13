@@ -15,7 +15,7 @@ using Constants = kCura.IntegrationPoints.Core.Constants;
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
 	[Description("Deletes/Removes old event handlers for Integration Point - PreLoad and PageInteraction")]
-	[RunOnce(false)]
+	[RunOnce(true)]
 	[Guid("1A4C2EC1-079E-4F8F-8FC8-1358627617DE")]
 	public class RemoveUnusedEventHandlers : PostInstallEventHandlerBase
 	{

@@ -11,7 +11,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
 	[Description("Create Data Transfer folders structure")]
-	[RunOnce(false)]
+	[RunOnce(true)]
 	[Guid("F391252A-FD72-4EF4-B323-650C70A66B81")]
 	public class RegisterDataTransferLocationInstaller : PostInstallEventHandlerBase
 	{
