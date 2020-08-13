@@ -47,7 +47,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 				.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate)
 				.ConfigureAwait(false);
 			
-			if (_settings.enabledDataGridForExtractedText)
+			if (_settings.EnabledDataGridForExtractedText)
 			{
 				await workspaceService
 					.EnableExtractedTextFieldForDataGridAsync(workspace.ArtifactID)
