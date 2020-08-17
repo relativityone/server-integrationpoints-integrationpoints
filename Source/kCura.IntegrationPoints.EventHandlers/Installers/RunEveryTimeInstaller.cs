@@ -9,7 +9,7 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
 	[Description("Runs Post install Migration scripts for Integration Points.")]
-	[RunOnce(false)]
+	[RunOnce(true)]
 	[Guid("fb52b882-22d3-481f-b000-b976c13baf49")]
 	public class RunEveryTimeInstaller : PostInstallEventHandlerBase
 	{
