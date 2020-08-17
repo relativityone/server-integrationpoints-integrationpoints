@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.Automation.Utility;
@@ -24,5 +25,12 @@ public class PerformanceTestsSetup : InstanceTestsSetup
 		RelativityFacade.Instance.RelyOn<ApiComponent>();
 
 		ARMHelper.CreateInstance();
+
+		PrepareTestBox();
+	}
+
+	private void PrepareTestBox()
+	{
+		throw new NotImplementedException();
 	}
 }

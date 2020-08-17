@@ -35,6 +35,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private readonly string _INITIAL_BCP_PATH = "BCPPath";
 
 		private static string _RELATIVE_ARCHIVES_LOCATION => AppSettings.RelativeArchivesLocation;
+		private static string _UNC_ARCHIVE_LOCATION => Path.Combine(AppSettings.RemoteArchivesLocation, _RELATIVE_ARCHIVES_LOCATION);
 
 
 		private ARMHelper(IARMApi armApi, FileShareHelper fileShare, AzureStorageHelper storage)
@@ -111,7 +112,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				Logger.LogInformation(
 					$"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
-				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _RELATIVE_ARCHIVES_LOCATION }, };
+				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _UNC_ARCHIVE_LOCATION } };
 			}
 
 			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM")?.Value;

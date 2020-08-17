@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("ReferencePerformance")]
 	public class ReferenceJobsTests : PerformanceTestBase
 	{
-		public ReferenceJobsTests() : base(WorkspaceType.ARM, "1066387_Small_jobs_tests_20200603140140.zip", null)
+		public ReferenceJobsTests() : base(WorkspaceType.ARM, "PerformanceReferenceWorkspace.zip", null)
 		{
 		}
 
@@ -22,9 +22,9 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			{
 				new PerformanceTestCase
 				{
-					TestCaseName = "Small-1a",
+					TestCaseName = "Reference-1",
 					ExpectedItemsTransferred = 10,
-					NumberOfMappedFields = 150
+					NumberOfMappedFields = 15
 				}
 			};
 
