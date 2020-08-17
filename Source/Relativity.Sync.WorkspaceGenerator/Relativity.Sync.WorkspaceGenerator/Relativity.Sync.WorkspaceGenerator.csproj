@@ -144,6 +144,7 @@
   <ItemGroup>
     <Compile Include="Consts.cs" />
     <Compile Include="ExitCodes.cs" />
+    <Compile Include="Extensions\ObjectManagerExtensions.cs" />
     <Compile Include="Fields\CustomField.cs" />
     <Compile Include="Fields\IRandomFieldsGenerator.cs" />
     <Compile Include="Fields\RandomFieldsGenerator.cs" />

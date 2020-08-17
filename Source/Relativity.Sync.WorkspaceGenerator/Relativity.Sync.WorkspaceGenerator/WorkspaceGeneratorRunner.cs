@@ -34,9 +34,18 @@ namespace Relativity.Sync.WorkspaceGenerator
 			IWorkspaceService workspaceService = relativityServicesFactory.CreateWorkspaceService();
 			
 			WorkspaceRef workspace = await PrepareWorkspaceAsync(workspaceService).ConfigureAwait(false);
-			List<CustomField> workspaceFields = await PrepareWorkspaceFieldsAsync(workspaceService, workspace).ConfigureAwait(false);
+			if (workspace is null)
+			{
+				return (int)ExitCodes.OtherError;
+			}
 
-			DirectoryInfo dataDir = new DirectoryInfo(_settings.TestDataDirectoryPath);
+			List<CustomField> workspaceFields = await PrepareWorkspaceFieldsAsync(workspaceService, workspace).ConfigureAwait(false);
+			if (workspaceFields is null)
+			{
+				return (int)ExitCodes.OtherError;
+			}
+
+			DirectoryInfo dataDir = Directory.CreateDirectory(_settings.TestDataDirectoryPath);
 			DirectoryInfo nativesDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"NATIVES"));
 			DirectoryInfo textDir = new DirectoryInfo(Path.Combine(dataDir.FullName, @"TEXT"));
 
@@ -68,18 +77,34 @@ namespace Relativity.Sync.WorkspaceGenerator
 
 		private async Task<WorkspaceRef> PrepareWorkspaceAsync(IWorkspaceService workspaceService)
 		{
+			WorkspaceRef workspace = null;
+
 			if (_settings.Append)
 			{
-				throw new NotImplementedException("AppendToWorkspace command line parameter is not supported yet");
-			}
-
-			WorkspaceRef workspace = await workspaceService.CreateWorkspaceAsync(_settings.DesiredWorkspaceName, _settings.TemplateWorkspaceName)
-				.ConfigureAwait(false);
-
-			if (_settings.EnabledDataGridForExtractedText)
-			{
-				await workspaceService.EnableExtractedTextFieldForDataGridAsync(workspace.ArtifactID)
+				workspace = await workspaceService.GetWorkspaceAsync(_settings.DesiredWorkspaceName)
 					.ConfigureAwait(false);
+
+				if (workspace is null)
+				{
+					Console.WriteLine($"Cannot find workspace name: '{_settings.DesiredWorkspaceName}'");
+				}
+				else if (_settings.EnabledDataGridForExtractedText != await workspaceService.GetExtractedTextFieldEnableForDataGridAsync(workspace.ArtifactID).ConfigureAwait(false))
+				{
+					Console.WriteLine($"Workspace '{_settings.DesiredWorkspaceName}' Data Grid configuration for Extracted Text not consistent with settings.");
+
+					workspace = null;
+				}
+			}
+			else
+			{
+				workspace = await workspaceService.CreateWorkspaceAsync(_settings.DesiredWorkspaceName, _settings.TemplateWorkspaceName)
+					.ConfigureAwait(false);
+
+				if (_settings.EnabledDataGridForExtractedText)
+				{
+					await workspaceService.EnableExtractedTextFieldForDataGridAsync(workspace.ArtifactID)
+						.ConfigureAwait(false);
+				}
 			}
 
 			return workspace;
@@ -87,21 +112,45 @@ namespace Relativity.Sync.WorkspaceGenerator
 
 		private async Task<List<CustomField>> PrepareWorkspaceFieldsAsync(IWorkspaceService workspaceService, WorkspaceRef workspace)
 		{
+			List<CustomField> workspaceFields = null;
+
 			if (_settings.Append)
 			{
-				throw new NotImplementedException("AppendToWorkspace command line parameter is not supported yet");
+				workspaceFields = await workspaceService.GetAllNonSystemDocumentFieldsAsync(workspace.ArtifactID)
+					.ConfigureAwait(false);
+
+				CustomField nativeFilePath = workspaceFields.Find(cf => cf.Name == ColumnNames.NativeFilePath);
+
+				if (nativeFilePath is null)
+				{
+					Console.WriteLine($"The '{ColumnNames.NativeFilePath}' field doesn't exist in '{_settings.DesiredWorkspaceName}'");
+					workspaceFields = null;
+				}
+				else
+				{
+					workspaceFields.Remove(nativeFilePath);
+				}
+
+				if (workspaceFields != null &&
+				    workspaceFields.Count != _settings.TestCases.Max(x => x.NumberOfFields))
+				{
+					Console.WriteLine($"The number of existing fields in '{_settings.DesiredWorkspaceName}' workspace is different than number of fields in settings");
+					workspaceFields = null;
+				}
 			}
-
-			IRandomFieldsGenerator fieldsGenerator = new RandomFieldsGenerator();
-			List<CustomField> workspaceFields = fieldsGenerator.GetRandomFields(_settings.TestCases).ToList();
-
-			List<CustomField> fieldsToCreate = new List<CustomField>(workspaceFields)
+			else
 			{
-				new CustomField(ColumnNames.NativeFilePath, FieldType.FixedLengthText)
-			};
-			await workspaceService.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate)
-				.ConfigureAwait(false);
+				IRandomFieldsGenerator fieldsGenerator = new RandomFieldsGenerator();
+				workspaceFields = fieldsGenerator.GetRandomFields(_settings.TestCases).ToList();
 
+				List<CustomField> fieldsToCreate = new List<CustomField>(workspaceFields)
+				{
+					new CustomField(ColumnNames.NativeFilePath, FieldType.FixedLengthText)
+				};
+				await workspaceService.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate)
+					.ConfigureAwait(false);
+			}
+			
 			return workspaceFields;
 		}
 
