@@ -73,6 +73,16 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		}
 
 		[Test]
+		public void LargestLongTextStreamStatistics_ShouldReturnNull_WhenNoStatisticsAvailable()
+		{
+			// act
+			LongTextStreamStatistics actualStats = _sut.LargestLongTextStreamStatistics;
+
+			// assert
+			actualStats.Should().BeNull();
+		}
+
+		[Test]
 		public void SmallestLongTextStreamStatistics_ShouldReturnSmallestLongTextStreamStats()
 		{
 			// arrange
@@ -93,6 +103,16 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 
 			// assert
 			actualStats.Should().Be(smallerStats);
+		}
+
+		[Test]
+		public void SmallestLongTextStreamStatistics_ShouldReturnNullWhenNoStatisticsAvailable()
+		{
+			// act
+			LongTextStreamStatistics actualStats = _sut.SmallestLongTextStreamStatistics;
+
+			// assert
+			actualStats.Should().BeNull();
 		}
 
 		[Test]

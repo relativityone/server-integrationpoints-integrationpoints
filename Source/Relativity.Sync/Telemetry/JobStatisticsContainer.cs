@@ -19,10 +19,10 @@ namespace Relativity.Sync.Telemetry
 		public long LongTextStreamsTotalSizeInBytes => LongTextStatistics.Sum(x => x.TotalBytesRead);
 
 		public LongTextStreamStatistics LargestLongTextStreamStatistics =>
-			LongTextStatistics.OrderByDescending(x => x.TotalBytesRead).First();
+			LongTextStatistics.OrderByDescending(x => x.TotalBytesRead).FirstOrDefault();
 
 		public LongTextStreamStatistics SmallestLongTextStreamStatistics =>
-			LongTextStatistics.OrderBy(x => x.TotalBytesRead).First();
+			LongTextStatistics.OrderBy(x => x.TotalBytesRead).FirstOrDefault();
 
 		public long CalculateMedianLongTextStreamSize()
 		{
