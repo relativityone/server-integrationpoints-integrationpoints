@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -22,7 +24,40 @@ namespace Relativity.Sync.Telemetry
 		public LongTextStreamStatistics SmallestLongTextStreamStatistics =>
 			LongTextStatistics.OrderBy(x => x.TotalBytesRead).First();
 
-		public long MedianLongTextStreamSizeInBytes => LongTextStreamsTotalSizeInBytes / LongTextStreamsCount;
+		public long CalculateMedianLongTextStreamSize()
+		{
+			List<long> orderedStreamSizes = LongTextStatistics
+				.OrderBy(x => x.TotalBytesRead)
+				.Select(x => x.TotalBytesRead)
+				.ToList();
+			if (orderedStreamSizes.Count % 2 == 0)
+			{
+				return (orderedStreamSizes[orderedStreamSizes.Count / 2] + orderedStreamSizes[orderedStreamSizes.Count / 2] - 1) / 2;
+			}
+			else
+			{
+				return orderedStreamSizes[orderedStreamSizes.Count / 2];
+			}
+		}
+
+		public Tuple<double, double> CalculateAverageLongTextStreamSizeAndTime(Func<long, bool> streamSizePredicate)
+		{
+			List<Tuple<double, double>> sizeAndTimeTuples = LongTextStatistics
+				.Where(x => streamSizePredicate(x.TotalBytesRead))
+				.Select(x => new Tuple<double, double>(
+					UnitsConverter.BytesToMegabytes(x.TotalBytesRead),
+					x.TotalReadTime.TotalSeconds))
+				.ToList();
+
+			if (!sizeAndTimeTuples.Any())
+			{
+				return new Tuple<double, double>(0, 0);
+			}
+
+			double averageSizeInMB = sizeAndTimeTuples.Select(x => x.Item1).Average();
+			double averageTimeInSeconds = sizeAndTimeTuples.Select(x => x.Item2).Average();
+			return new Tuple<double, double>(averageSizeInMB, averageTimeInSeconds);
+		}
 
 		public void AppendLongTextStreamStatistics(LongTextStreamStatistics streamStatistics)
 		{

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Telemetry
@@ -15,12 +16,46 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		Task<long> NativesBytesRequested { get; set; }
 
+		/// <summary>
+		/// Collection of long text statistics.
+		/// </summary>
 		List<LongTextStreamStatistics> LongTextStatistics { get; }
+
+		/// <summary>
+		/// Appends <see cref="LongTextStreamStatistics"/> object to <see cref="LongTextStatistics"/> collection.
+		/// </summary>
 		void AppendLongTextStreamStatistics(LongTextStreamStatistics streamStatistics);
+
+		/// <summary>
+		/// Number of long text streams in current job.
+		/// </summary>
 		int LongTextStreamsCount { get; }
+
+		/// <summary>
+		/// Total size (in bytes) of all long text streams in current job.
+		/// </summary>
 		long LongTextStreamsTotalSizeInBytes { get; }
+
+		/// <summary>
+		/// Returns statistics of the largest long text stream.
+		/// </summary>
 		LongTextStreamStatistics LargestLongTextStreamStatistics { get; }
+		
+		/// <summary>
+		/// Returns statistics of the smallest long text stream.
+		/// </summary>
 		LongTextStreamStatistics SmallestLongTextStreamStatistics { get; }
-		long MedianLongTextStreamSizeInBytes { get; }
+
+		/// <summary>
+		/// Calculates median value of long text streams size.
+		/// </summary>
+		/// <returns></returns>
+		long CalculateMedianLongTextStreamSize();
+
+		/// <summary>
+		/// Calculates average long text stream size and time.
+		/// </summary>
+		/// <returns>Tuple of double values, where Item1 is the average size (in megabytes) and Item2 is the average time (in seconds).</returns>
+		Tuple<double, double> CalculateAverageLongTextStreamSizeAndTime(Func<long, bool> streamSizePredicate);
 	}
 }

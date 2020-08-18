@@ -9,7 +9,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	{
 		private readonly Stream _wrappedStream;
 		private readonly IStopwatch _readTimeStopwatch;
-		private readonly int _relativityObjectArtifactId;
+		private readonly int _documentArtifactID;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncLog _logger;
 
@@ -17,11 +17,11 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private int _readInvocationCount = 0;
 		private long _totalBytesRead = 0;
 		
-		internal StreamWithMetrics(Stream wrappedStream, IStopwatch readTimeStopwatch, int relativityObjectArtifactId, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
+		internal StreamWithMetrics(Stream wrappedStream, IStopwatch readTimeStopwatch, int documentArtifactId, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_wrappedStream = wrappedStream;
 			_readTimeStopwatch = readTimeStopwatch;
-			_relativityObjectArtifactId = relativityObjectArtifactId;
+			_documentArtifactID = documentArtifactId;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_logger = logger;
 		}
@@ -77,8 +77,8 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		{
 			if (disposing && !_disposed)
 			{
-				_logger.LogInformation("Disposing long text stream. Relativity Object ArtifactID: {artifactID} Total bytes read: {totalBytesRead} Total read time (sec): {totalReadTime} Read invocations count: {readCount}",
-					_relativityObjectArtifactId, _totalBytesRead, Math.Round(_readTimeStopwatch.Elapsed.TotalSeconds, 3), _readInvocationCount);
+				_logger.LogInformation("Disposing long text stream. Document ArtifactID: {artifactID} Total bytes read: {totalBytesRead} Total read time (sec): {totalReadTime} Read invocations count: {readCount}",
+					_documentArtifactID, _totalBytesRead, Math.Round(_readTimeStopwatch.Elapsed.TotalSeconds, 3), _readInvocationCount);
 				_jobStatisticsContainer.AppendLongTextStreamStatistics(new LongTextStreamStatistics()
 				{
 					TotalBytesRead = _totalBytesRead,

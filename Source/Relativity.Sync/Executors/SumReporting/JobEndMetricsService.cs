@@ -7,6 +7,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors.SumReporting
 {
@@ -84,31 +85,35 @@ namespace Relativity.Sync.Executors.SumReporting
 			long longTextStreamsTotalSizeInBytes = _jobStatisticsContainer.LongTextStreamsTotalSizeInBytes;
 			LongTextStreamStatistics largestLongTextStreamStatistics = _jobStatisticsContainer.LargestLongTextStreamStatistics;
 			LongTextStreamStatistics smallestLongTextStreamStatistics = _jobStatisticsContainer.SmallestLongTextStreamStatistics;
-			long medianLongTextStreamSize = _jobStatisticsContainer.MedianLongTextStreamSizeInBytes;
+			long medianLongTextStreamSize = _jobStatisticsContainer.CalculateMedianLongTextStreamSize();
 
 			_logger.LogInformation("Number of long text streams: {longTextStreamsCount} " +
-			                       "Total size of all long text streams (bytes): {longTextStreamsTotalSize} " +
-			                       "Largest long text stream size (bytes): {largestLongTextSize} " +
-			                       "Smallest long text stream size (bytes): {smallestLongTextSize} " +
-			                       "Average long text stream size (bytes): {averageLongTextSize}",
-				longTextStreamsCount, longTextStreamsTotalSizeInBytes, largestLongTextStreamStatistics, smallestLongTextStreamStatistics, medianLongTextStreamSize);
+			                       "Total size of all long text streams (MB): {longTextStreamsTotalSize} " +
+								   "Largest long text stream size (MB): {largestLongTextSize} " +
+								   "Smallest long text stream size (MB): {smallestLongTextSize} " +
+								   "Median long text stream size (MB): {averageLongTextSize}",
+				longTextStreamsCount, 
+				UnitsConverter.BytesToMegabytes(longTextStreamsTotalSizeInBytes),
+				UnitsConverter.BytesToMegabytes(largestLongTextStreamStatistics.TotalBytesRead),
+				UnitsConverter.BytesToMegabytes(smallestLongTextStreamStatistics.TotalBytesRead),
+				UnitsConverter.BytesToMegabytes(medianLongTextStreamSize));
 
-			Tuple<double, double> avgForLessThan1MB = CalculateAverageSizeAndTime(size => size < MegabyteToBytes(1));
-			Tuple<double, double> avgBetween1And10MB = CalculateAverageSizeAndTime(size => size >= MegabyteToBytes(1) && size < MegabyteToBytes(10));
-			Tuple<double, double> avgBetween10And20MB = CalculateAverageSizeAndTime(streamSize => streamSize >= MegabyteToBytes(10) && streamSize < MegabyteToBytes(20));
-			Tuple<double, double> avgOver20MB = CalculateAverageSizeAndTime(streamSize => streamSize >= MegabyteToBytes(20));
+			Tuple<double, double> avgForLessThan1MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(size => size < UnitsConverter.MegabyteToBytes(1));
+			Tuple<double, double> avgBetween1And10MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(size => size >= UnitsConverter.MegabyteToBytes(1) && size < UnitsConverter.MegabyteToBytes(10));
+			Tuple<double, double> avgBetween10And20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(10) && streamSize < UnitsConverter.MegabyteToBytes(20));
+			Tuple<double, double> avgOver20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(20));
 
-			_syncMetrics.LogPointInTimeDouble("AverageSize.LessThan1MB", avgForLessThan1MB.Item1);
-			_syncMetrics.LogPointInTimeDouble("AverageTime.LessThan1MB", avgForLessThan1MB.Item2);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB, avgForLessThan1MB.Item1);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB, avgForLessThan1MB.Item2);
 
-			_syncMetrics.LogPointInTimeDouble("AverageSize.Between1And10MB", avgBetween1And10MB.Item1);
-			_syncMetrics.LogPointInTimeDouble("AverageTime.Between1And10MB", avgBetween1And10MB.Item2);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB, avgBetween1And10MB.Item1);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB, avgBetween1And10MB.Item2);
 
-			_syncMetrics.LogPointInTimeDouble("AverageSize.Between10And20MB", avgBetween10And20MB.Item1);
-			_syncMetrics.LogPointInTimeDouble("AverageTime.Between10And20MB", avgBetween10And20MB.Item2);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWWEEN10AND20MB, avgBetween10And20MB.Item1);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWWEEN10AND20MB, avgBetween10And20MB.Item2);
 
-			_syncMetrics.LogPointInTimeDouble("AverageSize.Over20MB", avgOver20MB.Item1);
-			_syncMetrics.LogPointInTimeDouble("AverageTime.Over20MB", avgOver20MB.Item2);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB, avgOver20MB.Item1);
+			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB, avgOver20MB.Item2);
 
 			List<LongTextStreamStatistics> top10LongTexts = _jobStatisticsContainer
 				.LongTextStatistics
@@ -118,35 +123,9 @@ namespace Relativity.Sync.Executors.SumReporting
 
 			foreach (LongTextStreamStatistics stats in top10LongTexts)
 			{
-				_syncMetrics.LogPointInTimeDouble("LargestLongText.Size", BytesToMegabytes(stats.TotalBytesRead));
-				_syncMetrics.LogPointInTimeDouble("LargestLongText.Time", Math.Round(stats.TotalReadTime.TotalSeconds, 3));
+				_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_SIZE, UnitsConverter.BytesToMegabytes(stats.TotalBytesRead));
+				_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_TIME, Math.Round(stats.TotalReadTime.TotalSeconds, 3));
 			}
 		}
-
-		private Tuple<double, double> CalculateAverageSizeAndTime(Func<long, bool> streamSizePredicate)
-		{
-			List<Tuple<double, double>> sizeAndTimeTuples = _jobStatisticsContainer
-				.LongTextStatistics
-				.Where(x => streamSizePredicate(x.TotalBytesRead))
-				.Select(x => new Tuple<double, double>(
-					BytesToMegabytes(x.TotalBytesRead), 
-					x.TotalReadTime.TotalSeconds))
-				.ToList();
-
-			double averageSizeInMB = sizeAndTimeTuples.Select(x => x.Item1).Average();
-			double averageTimeInSeconds = sizeAndTimeTuples.Select(x => x.Item2).Average();
-			return new Tuple<double, double>(averageSizeInMB, averageTimeInSeconds);
-		}
-
-		private long MegabyteToBytes(long megabytes)
-		{
-			return megabytes * 1024 * 1024;
-		}
-
-		private double BytesToMegabytes(long bytes)
-		{
-			return bytes / 1024.0 / 1024.0;
-		}
-
 	}
 }
