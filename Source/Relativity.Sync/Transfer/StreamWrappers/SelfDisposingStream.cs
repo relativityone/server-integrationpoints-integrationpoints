@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using Relativity.API;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {

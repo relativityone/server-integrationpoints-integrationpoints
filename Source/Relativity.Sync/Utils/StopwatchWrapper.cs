@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Relativity.Sync.Telemetry
+namespace Relativity.Sync.Utils
 {
 	/// <summary>
 	/// Wrapper for Stopwatch from the standard .NET library.
 	/// </summary>
-	internal sealed class SystemStopwatch : IStopwatch
+	internal sealed class StopwatchWrapper : IStopwatch
 	{
 		private readonly Stopwatch _stopwatch;
 
-		/// <inheritdoc />
-		public SystemStopwatch()
+		public StopwatchWrapper()
 		{
 			_stopwatch = new Stopwatch();
 		}

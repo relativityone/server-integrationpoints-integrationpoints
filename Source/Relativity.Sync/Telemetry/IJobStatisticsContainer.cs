@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -13,5 +14,13 @@ namespace Relativity.Sync.Telemetry
 		/// Size of the natives that was requested to push.
 		/// </summary>
 		Task<long> NativesBytesRequested { get; set; }
+
+		List<LongTextStreamStatistics> LongTextStatistics { get; }
+		void AppendLongTextStreamStatistics(LongTextStreamStatistics streamStatistics);
+		int LongTextStreamsCount { get; }
+		long LongTextStreamsTotalSizeInBytes { get; }
+		LongTextStreamStatistics LargestLongTextStreamStatistics { get; }
+		LongTextStreamStatistics SmallestLongTextStreamStatistics { get; }
+		long MedianLongTextStreamSizeInBytes { get; }
 	}
 }

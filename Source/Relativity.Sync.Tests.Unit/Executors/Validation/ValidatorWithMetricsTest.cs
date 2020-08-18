@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {

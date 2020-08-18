@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Relativity.Sync.Telemetry
+namespace Relativity.Sync.Utils
 {
 	/// <summary>Provides a set of methods and properties that can be used to accurately measure elapsed time.</summary>
 	internal interface IStopwatch

@@ -1,31 +1,38 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using Relativity.Sync.Telemetry;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
 	/// <summary>
 	/// Wraps a <see cref="Stream"/> in several intermediate streams so it can be consistently
 	/// used by the Relativity Import API. This includes regenerating the stream on error (due to
-	/// transient API failures), translating ASCII -> Unicode, and self-disposal (since the Import
-	/// API will not explicitly it).
+	/// transient API failures), translating ASCII -> Unicode, self-disposal (since the Import
+	/// API will not explicitly dispose it), and stream metrics.
 	/// </summary>
 	internal sealed class ImportStreamBuilder : IImportStreamBuilder
 	{
+		private readonly Func<IStopwatch> _stopwatchFactory;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncLog _logger;
 
-		public ImportStreamBuilder(ISyncLog logger)
+		public ImportStreamBuilder(Func<IStopwatch> stopwatchFactory, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
+			_stopwatchFactory = stopwatchFactory;
+			_jobStatisticsContainer = jobStatisticsContainer;
 			_logger = logger;
 		}
 
-		public Stream Create(IRetriableStreamBuilder streamBuilder, StreamEncoding encoding)
+		public Stream Create(IRetriableStreamBuilder streamBuilder, StreamEncoding encoding, int relativityObjectArtifactId)
 		{
-			
 			Stream wrappedStream = new SelfRecreatingStream(streamBuilder, _logger);
 			if (encoding == StreamEncoding.ASCII)
 			{
 				wrappedStream = new AsciiToUnicodeStream(wrappedStream);
 			}
-			var selfDisposingStream = new SelfDisposingStream(wrappedStream, _logger);
+			var streamWithMetrics = new StreamWithMetrics(wrappedStream, _stopwatchFactory(), relativityObjectArtifactId, _jobStatisticsContainer, _logger);
+			var selfDisposingStream = new SelfDisposingStream(streamWithMetrics, _logger);
 			return selfDisposingStream;
 		}
 	}
