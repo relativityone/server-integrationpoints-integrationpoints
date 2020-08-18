@@ -167,11 +167,19 @@ namespace Relativity.Sync.WorkspaceGenerator
 				return ExitCodes.OtherError;
 			}
 
+			int documentsToImportCount = await GetDocumentsToImportCountAsync(relativityServicesFactory, workspace, savedSearchId, testCase).ConfigureAwait(false);
+			if (documentsToImportCount <= 0)
+			{
+				Console.WriteLine($"All documents for test case '{testCase.Name}' already imported");
+
+				return exitCode;
+			}
+
 			Console.WriteLine($"Importing documents for test case: {testCase.Name}");
 
 			testCase.Fields = workspaceFields.GetRange(0, testCase.NumberOfFields);
 
-			IDataReaderProvider dataReaderProvider = PrepareTestCaseDataReaderProvider(testCase, savedSearchId, nativesDir, textDir);
+			IDataReaderProvider dataReaderProvider = PrepareTestCaseDataReaderProvider(testCase,documentsToImportCount, nativesDir, textDir);
 
 			ImportHelper importHelper = new ImportHelper(workspaceService, dataReaderProvider, _settings, testCase);
 			IList<ImportJobResult> results = await importHelper.ImportDataAsync(workspace.ArtifactID).ConfigureAwait(false);
@@ -198,29 +206,49 @@ namespace Relativity.Sync.WorkspaceGenerator
 		{
 			int savedSearchId = -1;
 
+			ISavedSearchManager savedSearchManager = relativityServicesFactory.CreateSavedSearchManager();
+
 			if (_settings.Append)
 			{
-				throw new NotImplementedException("AppendToWorkspace command line parameter is not supported yet");
+				Console.WriteLine($"Retrieving saved search: {testCase.Name}");
+
+				try
+				{
+					savedSearchId = await savedSearchManager.GetSavedSearchIdForTestCaseAsync(workspace.ArtifactID, testCase.Name)
+						.ConfigureAwait(false) ?? -1;
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"Failed to retrieve saved search:\r\n{ex}");
+				}
 			}
 
-			Console.WriteLine($"Creating saved search: {testCase.Name}");
-
-			try
+			if (savedSearchId == -1)
 			{
-				ISavedSearchManager savedSearchManager = relativityServicesFactory.CreateSavedSearchManager();
+				Console.WriteLine($"Creating saved search: {testCase.Name}");
 
-				savedSearchId = await savedSearchManager.CreateSavedSearchForTestCaseAsync(workspace.ArtifactID, testCase.Name)
-					.ConfigureAwait(false);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"Failed to create saved search:\r\n{ex}");
+				try
+				{
+					savedSearchId = await savedSearchManager.CreateSavedSearchForTestCaseAsync(workspace.ArtifactID, testCase.Name)
+						.ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"Failed to create saved search:\r\n{ex}");
+				}
 			}
 
 			return savedSearchId;
 		}
 
-		private IDataReaderProvider PrepareTestCaseDataReaderProvider(TestCase testCase, int savedSearchId, DirectoryInfo nativesDir, DirectoryInfo textDir)
+		private async Task<int> GetDocumentsToImportCountAsync(IRelativityServicesFactory relativityServicesFactory, WorkspaceRef workspace, int savedSearchId, TestCase testCase)
+		{
+			ISavedSearchManager savedSearchManager = relativityServicesFactory.CreateSavedSearchManager();
+
+			return testCase.NumberOfDocuments - (await savedSearchManager.CountSavedSearchDocumentsAsync(workspace.ArtifactID, savedSearchId).ConfigureAwait(false));
+		}
+
+		private IDataReaderProvider PrepareTestCaseDataReaderProvider(TestCase testCase, int documentsToImportCount, DirectoryInfo nativesDir, DirectoryInfo textDir)
 		{
 			IFileGenerator nativesGenerator = new SingleFileGenerator(
 				new RandomNativeFileExtensionProvider(),
@@ -236,12 +264,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 
 			IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator);
 
-			if (_settings.Append)
-			{
-				throw new NotImplementedException("AppendToWorkspace command line parameter is not supported yet");
-			}
-
-			return new DataReaderProvider(documentFactory, testCase, _settings.BatchSize);
+			return new DataReaderProvider(documentFactory, testCase, documentsToImportCount, _settings.BatchSize);
 		}
 	}
 }
