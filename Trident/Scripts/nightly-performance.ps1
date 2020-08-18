@@ -5,6 +5,6 @@ This script will be used by nightly pipeline to complie and run RelativitySync t
 
 #$TaskRunner = Resolve-Path -Path build.ps1
 
-Run-Command -command "Write-Host 1"
+Get-ChildItem env:
 
 #&($TaskRunner) PerformanceTest -Configuration Release
