@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +34,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_syncMetricsMock = new Mock<ISyncMetrics>();
 			_jobStatisticsContainerFake = new Mock<IJobStatisticsContainer>();
+			_jobStatisticsContainerFake
+				.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
+				.Returns(new Tuple<double, double>(1, 2));
+			_jobStatisticsContainerFake
+				.SetupGet(x => x.LongTextStatistics)
+				.Returns(Enumerable.Range(1, 20).Select(x => new LongTextStreamStatistics()
+				{
+					TotalBytesRead = x * 1024 * 1024,
+					TotalReadTime = TimeSpan.FromSeconds(x)
+				}).ToList());
 
 			_sut = new JobEndMetricsService(_batchRepositoryFake.Object, _jobEndMetricsConfigurationFake.Object, _fieldManagerFake.Object, _jobStatisticsContainerFake.Object, _syncMetricsMock.Object, new EmptyLogger());
 		}
@@ -78,6 +89,21 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, nativesSize), Times.Once);
+
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB, 1), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB, 2), Times.Once);
+
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB, 1), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB, 2), Times.Once);
+
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWWEEN10AND20MB, 1), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWWEEN10AND20MB, 2), Times.Once);
+
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB, 1), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB, 2), Times.Once);
+
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_SIZE, It.IsAny<double>()), Times.Exactly(10));
+			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_TIME, It.IsAny<double>()), Times.Exactly(10));
 		}
 
 		[Test]

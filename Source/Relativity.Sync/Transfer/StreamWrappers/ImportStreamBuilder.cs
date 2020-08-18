@@ -24,14 +24,14 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			_logger = logger;
 		}
 
-		public Stream Create(IRetriableStreamBuilder streamBuilder, StreamEncoding encoding, int relativityObjectArtifactId)
+		public Stream Create(IRetriableStreamBuilder streamBuilder, StreamEncoding encoding, int documentArtifactID)
 		{
 			Stream wrappedStream = new SelfRecreatingStream(streamBuilder, _logger);
 			if (encoding == StreamEncoding.ASCII)
 			{
 				wrappedStream = new AsciiToUnicodeStream(wrappedStream);
 			}
-			var streamWithMetrics = new StreamWithMetrics(wrappedStream, _stopwatchFactory(), relativityObjectArtifactId, _jobStatisticsContainer, _logger);
+			var streamWithMetrics = new StreamWithMetrics(wrappedStream, _stopwatchFactory(), documentArtifactID, _jobStatisticsContainer, _logger);
 			var selfDisposingStream = new SelfDisposingStream(streamWithMetrics, _logger);
 			return selfDisposingStream;
 		}

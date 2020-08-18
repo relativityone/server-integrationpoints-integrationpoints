@@ -6,5 +6,7 @@ namespace Relativity.Sync.Telemetry
 	{
 		public long TotalBytesRead { get; set; }
 		public TimeSpan TotalReadTime { get; set; }
+
+		public static LongTextStreamStatistics Empty => new LongTextStreamStatistics();
 	}
 }

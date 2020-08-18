@@ -30,7 +30,12 @@ namespace Relativity.Sync.Telemetry
 				.OrderBy(x => x.TotalBytesRead)
 				.Select(x => x.TotalBytesRead)
 				.ToList();
-			if (orderedStreamSizes.Count % 2 == 0)
+
+			if (orderedStreamSizes.Count == 0)
+			{
+				return 0;
+			}
+			else if (orderedStreamSizes.Count % 2 == 0)
 			{
 				return (orderedStreamSizes[orderedStreamSizes.Count / 2] + orderedStreamSizes[orderedStreamSizes.Count / 2] - 1) / 2;
 			}

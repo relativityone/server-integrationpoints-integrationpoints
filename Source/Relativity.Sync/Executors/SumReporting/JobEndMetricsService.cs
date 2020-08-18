@@ -83,8 +83,8 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
 			int longTextStreamsCount = _jobStatisticsContainer.LongTextStreamsCount;
 			long longTextStreamsTotalSizeInBytes = _jobStatisticsContainer.LongTextStreamsTotalSizeInBytes;
-			LongTextStreamStatistics largestLongTextStreamStatistics = _jobStatisticsContainer.LargestLongTextStreamStatistics;
-			LongTextStreamStatistics smallestLongTextStreamStatistics = _jobStatisticsContainer.SmallestLongTextStreamStatistics;
+			LongTextStreamStatistics largestLongTextStreamStatistics = _jobStatisticsContainer.LargestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
+			LongTextStreamStatistics smallestLongTextStreamStatistics = _jobStatisticsContainer.SmallestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
 			long medianLongTextStreamSize = _jobStatisticsContainer.CalculateMedianLongTextStreamSize();
 
 			_logger.LogInformation("Number of long text streams: {longTextStreamsCount} " +
