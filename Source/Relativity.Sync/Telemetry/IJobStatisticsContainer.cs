@@ -22,11 +22,6 @@ namespace Relativity.Sync.Telemetry
 		List<LongTextStreamStatistics> LongTextStatistics { get; }
 
 		/// <summary>
-		/// Appends <see cref="LongTextStreamStatistics"/> object to <see cref="LongTextStatistics"/> collection.
-		/// </summary>
-		void AppendLongTextStreamStatistics(LongTextStreamStatistics streamStatistics);
-
-		/// <summary>
 		/// Number of long text streams in current job.
 		/// </summary>
 		int LongTextStreamsCount { get; }

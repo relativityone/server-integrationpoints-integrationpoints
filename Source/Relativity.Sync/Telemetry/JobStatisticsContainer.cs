@@ -58,10 +58,5 @@ namespace Relativity.Sync.Telemetry
 			double averageTimeInSeconds = sizeAndTimeTuples.Select(x => x.Item2).Average();
 			return new Tuple<double, double>(averageSizeInMB, averageTimeInSeconds);
 		}
-
-		public void AppendLongTextStreamStatistics(LongTextStreamStatistics streamStatistics)
-		{
-			LongTextStatistics.Add(streamStatistics);
-		}
 	}
 }
