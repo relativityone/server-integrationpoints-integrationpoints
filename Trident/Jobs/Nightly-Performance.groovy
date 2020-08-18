@@ -7,3 +7,7 @@ jobWithSut {
     jobScript = "Trident/Scripts/nightly-performance.ps1"
     //cron = "0 3 * * *"
 }
+
+withCredentials([usernamePassword(credentialsId: 'HopperSutAdmin', usernameVariable: 'HopperSutAdminUserName', passwordVariable: 'HopperSutAdminPassword')]) {
+    powershell "Get-ChildItem env:"
+}
