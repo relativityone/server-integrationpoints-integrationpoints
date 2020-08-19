@@ -60,8 +60,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static string RelativeArchivesLocation => GetConfigValue("RelativeArchivesLocation");
 
-		public static string RemoteArchivesLocation => 
-			GetConfigValue("RemoteArchivesLocation");
+		public static string RemoteArchivesLocation => GetConfigValue("RemoteArchivesLocation");
 
 		public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
 
