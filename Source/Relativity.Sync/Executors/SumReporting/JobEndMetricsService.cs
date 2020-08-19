@@ -35,8 +35,6 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
 			try
 			{
-				ReportLongTextsStatistics();
-
 				int totalTransferred = 0;
 				int totalFailed = 0;
 				int totalRequested = 0;
@@ -70,6 +68,8 @@ namespace Relativity.Sync.Executors.SumReporting
 				}
 
 				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, allNativesSize);
+				
+				ReportLongTextsStatistics();
 			}
 			catch (Exception e)
 			{

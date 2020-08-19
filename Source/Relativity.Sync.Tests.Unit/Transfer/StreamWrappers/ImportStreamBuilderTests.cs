@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		}
 
 		[TestCaseSource(nameof(EncodingTestCases))]
-		public void ItShouldWrapStreamBasedOnEncoding(Encoding encoding)
+		public void Create_ShouldWrapStreamBasedOnEncoding(Encoding encoding)
 		{
 			// Arrange
 			const string streamInput = "hello world!";
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 		}
 
 		[Test]
-		public void ItShouldWrapStreamInSelfDisposingStream()
+		public void Create_ShouldWrapStreamInSelfDisposingStream()
 		{
 			// Arrange
 			var stream = new Mock<Stream>();
@@ -71,6 +71,21 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 
 			// Assert
 			result.CanRead.Should().BeFalse();
+		}
+
+		[Test]
+		public void Create_ShouldWrapStreamInMetricsStream()
+		{
+			// Arrange
+			var instance = new ImportStreamBuilder(_stopwatchFake, _jobStatisticsContainerFake.Object, new EmptyLogger());
+
+			// Act
+			Stream stream = instance.Create(_streamBuilderMock.Object, StreamEncoding.Unicode, _DOC_ARTIFACT_ID);
+			SelfDisposingStream outerStream = stream as SelfDisposingStream;
+
+			// Assert
+			outerStream.Should().NotBeNull();
+			outerStream.InnerStream.Should().BeOfType<StreamWithMetrics>();
 		}
 
 		private string ReadOutUnicodeString(Stream stream)
