@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Relativity.Services.Field;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 
@@ -19,19 +21,55 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task CreateSavedSearchForTestCaseAsync(int workspaceID, string testCaseName)
+		public Task<int> CreateSavedSearchForTestCaseAsync(int workspaceId, string testCaseName)
 		{
 			using (var keywordSearchManager = _serviceFactory.CreateProxy<IKeywordSearchManager>())
 			{
 				KeywordSearch search = CreateSavedSearchDTO(testCaseName);
-				await keywordSearchManager.CreateSingleAsync(workspaceID, search).ConfigureAwait(false);
+				return keywordSearchManager.CreateSingleAsync(workspaceId, search);
+			}
+		}
+
+		public async Task<int?> GetSavedSearchIdForTestCaseAsync(int workspaceId, string testCaseName)
+		{
+			using (IObjectManager objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryRequest savedSearchIdRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
+					Condition = $"'Name' == '{testCaseName}'",
+					Fields = new[]
+					{
+						new FieldRef {Name = "ArtifactID"}
+					}
+				};
+
+				QueryResult fieldQueryResult = await objectManager.QueryAsync(workspaceId, savedSearchIdRequest, 0, 1).ConfigureAwait(false);
+
+				return fieldQueryResult.Objects.FirstOrDefault()?.ArtifactID;
+			}
+		}
+
+		public async Task<int> CountSavedSearchDocumentsAsync(int workspaceId, int savedSearchId)
+		{
+			using (IObjectManager objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryRequest savedSearchDocumentsRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
+					Condition = $"(('ArtifactId' IN SAVEDSEARCH {savedSearchId}))"
+				};
+
+				QueryResult savedSearchDocumentsQueryResult = await objectManager.QueryAsync(workspaceId, savedSearchDocumentsRequest, 0, 0).ConfigureAwait(false);
+
+				return savedSearchDocumentsQueryResult.TotalCount;
 			}
 		}
 
 		private KeywordSearch CreateSavedSearchDTO(string testCaseName)
 		{
-			FieldRef controlNumberField = new FieldRef(new List<Guid>(){_controlNumberGuid});
-			FieldRef fileIconField = new FieldRef(new List<Guid>(){_fileIconGuid});
+			var controlNumberField = new Services.Field.FieldRef(new List<Guid> {_controlNumberGuid});
+			var fileIconField = new Services.Field.FieldRef(new List<Guid> {_fileIconGuid});
 
 			CriteriaCollection criteria = new CriteriaCollection();
 			criteria.Conditions.Add(new Criteria()
@@ -45,7 +83,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 				ArtifactTypeID = (int)ArtifactType.Document,
 				SearchCriteria = criteria,
 				SearchContainer = new SearchContainerRef(),
-				Fields = new List<FieldRef>()
+				Fields = new List<Services.Field.FieldRef>()
 				{
 					fileIconField,
 					controlNumberField
