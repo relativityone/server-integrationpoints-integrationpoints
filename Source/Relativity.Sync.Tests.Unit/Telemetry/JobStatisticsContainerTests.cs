@@ -148,10 +148,22 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		public void CalculateMedianLongTextStreamSize_ShouldReturnMean_WhenEvenNumberOfStatisticsAvailable()
 		{
 			// arrange
-			Enumerable.Range(1, 6).ForEach(x => _sut.LongTextStatistics.Add(new LongTextStreamStatistics()
+			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
 			{
-				TotalBytesRead = x
-			}));
+				TotalBytesRead = 1
+			});
+			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
+			{
+				TotalBytesRead = 2
+			});
+			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
+			{
+				TotalBytesRead = 4
+			});
+			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
+			{
+				TotalBytesRead = 9
+			});
 			_sut.LongTextStatistics.Shuffle();
 
 			// act
