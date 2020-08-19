@@ -91,7 +91,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			                       "Total size of all long text streams (MB): {longTextStreamsTotalSize} " +
 								   "Largest long text stream size (MB): {largestLongTextSize} " +
 								   "Smallest long text stream size (MB): {smallestLongTextSize} " +
-								   "Median long text stream size (MB): {averageLongTextSize}",
+								   "Median long text stream size (MB): {medianLongTextStreamSize}",
 				longTextStreamsCount, 
 				UnitsConverter.BytesToMegabytes(longTextStreamsTotalSizeInBytes),
 				UnitsConverter.BytesToMegabytes(largestLongTextStreamStatistics.TotalBytesRead),
