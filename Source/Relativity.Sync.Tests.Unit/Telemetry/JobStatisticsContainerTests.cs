@@ -150,7 +150,11 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			// arrange
 			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
 			{
-				TotalBytesRead = 1
+				TotalBytesRead = 4
+			});
+			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
+			{
+				TotalBytesRead = 9
 			});
 			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
 			{
@@ -158,13 +162,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			});
 			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
 			{
-				TotalBytesRead = 4
+				TotalBytesRead = 1
 			});
-			_sut.LongTextStatistics.Add(new LongTextStreamStatistics()
-			{
-				TotalBytesRead = 9
-			});
-			_sut.LongTextStatistics.Shuffle();
 
 			// act
 			long median = _sut.CalculateMedianLongTextStreamSize();
