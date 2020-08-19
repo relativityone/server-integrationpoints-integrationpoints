@@ -27,8 +27,8 @@ namespace Relativity.Sync.Telemetry
 		public long CalculateMedianLongTextStreamSize()
 		{
 			List<long> orderedStreamSizes = LongTextStatistics
-				.OrderBy(x => x.TotalBytesRead)
 				.Select(x => x.TotalBytesRead)
+				.OrderBy(x => x)
 				.ToList();
 
 			if (orderedStreamSizes.Count == 0)

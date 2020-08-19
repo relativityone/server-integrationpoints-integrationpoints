@@ -3,6 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry
 {
@@ -147,39 +148,34 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		public void CalculateMedianLongTextStreamSize_ShouldReturnMean_WhenEvenNumberOfStatisticsAvailable()
 		{
 			// arrange
-			var smallerStats = new LongTextStreamStatistics()
+			Enumerable.Range(1, 6).ForEach(x => _sut.LongTextStatistics.Add(new LongTextStreamStatistics()
 			{
-				TotalBytesRead = 1
-			};
-			var biggerStats = new LongTextStreamStatistics()
-			{
-				TotalBytesRead = 3
-			};
-
-			_sut.LongTextStatistics.Add(smallerStats);
-			_sut.LongTextStatistics.Add(biggerStats);
+				TotalBytesRead = x
+			}));
+			_sut.LongTextStatistics.Shuffle();
 
 			// act
 			long median = _sut.CalculateMedianLongTextStreamSize();
 
 			// assert
-			median.Should().Be(2);
+			median.Should().Be(3);
 		}
 
 		[Test]
 		public void CalculateMedianLongTextStreamSize_ShouldReturnMedian_WhenOddNumberOfStatisticsAvailable()
 		{
 			// arrange
-			Enumerable.Range(1, 3).ForEach(x => _sut.LongTextStatistics.Add(new LongTextStreamStatistics()
+			Enumerable.Range(1, 5).ForEach(x => _sut.LongTextStatistics.Add(new LongTextStreamStatistics()
 			{
 				TotalBytesRead = x
 			}));
+			_sut.LongTextStatistics.Shuffle();
 
 			// act
 			long median = _sut.CalculateMedianLongTextStreamSize();
 
 			// assert
-			median.Should().Be(2);
+			median.Should().Be(3);
 		}
 
 		[Test]
