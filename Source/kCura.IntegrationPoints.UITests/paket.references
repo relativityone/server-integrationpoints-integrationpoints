@@ -17,3 +17,4 @@ Selenium.Support
 Selenium.WebDriver.ChromeDriver
 Selenium.WebDriver.GeckoDriver
 Serilog.Sinks.Seq
+Microsoft.CodeAnalysis.Common

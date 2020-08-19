@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		
 		public TestConfiguration()
 		{
-			_configName = Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
+			_configName = "CH-T001.config"; //Environment.GetEnvironmentVariable(_ENVIRONMENT_VARIABLE_CONFIG_NAME);
 
 			if (_configName == null)
 			{
