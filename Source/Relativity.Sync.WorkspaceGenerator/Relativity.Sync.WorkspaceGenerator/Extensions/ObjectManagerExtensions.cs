@@ -23,6 +23,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Extensions
 
 			var results = new List<QueryResult> { initialResult };
 			int readSoFar = initialResult.ResultCount;
+			currentIndex += initialResult.ResultCount;
 			int totalCount = initialResult.TotalCount;
 
 			while (readSoFar < totalCount)
@@ -33,6 +34,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Extensions
 					batchSize).ConfigureAwait(false);
 
 				readSoFar += result.ResultCount;
+				currentIndex += result.ResultCount;
 				results.Add(result);
 			}
 

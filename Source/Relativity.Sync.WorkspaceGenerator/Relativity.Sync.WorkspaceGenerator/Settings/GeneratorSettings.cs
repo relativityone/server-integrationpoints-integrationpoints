@@ -8,9 +8,9 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 	public class GeneratorSettings
 	{
 		private const string DEFAULT_RELATIVITY_URI = "https://host.name/Relativity";
-		private const string DEFAULT_RELATIVITY_SERVICES_URI = "https://host.name/Relativity/Relativity.Services";
-		private const string DEFAULT_RELATIVITY_USER_NAME = "user.name";
-		private const string DEFAULT_RELATIVITY_PASSWORD = "passwd";
+		private const string DEFAULT_RELATIVITY_SERVICES_URI = "https://host.name/Relativity.Services";
+		private const string DEFAULT_RELATIVITY_USER_NAME = "relativity.admin@kcura.com";
+		private const string DEFAULT_RELATIVITY_PASSWORD = "Test1234!";
 		private const string DEFAULT_DESIRED_WORKSPACE_NAME = "My Test Workspace";
 		private const string DEFAULT_TEMPLATE_WORKSPACE_NAME = "Functional Tests Template";
 		private const string DEFAULT_TEST_DATA_DIRECTORY_PATH = @"C:\Data\WorkspaceGenerator";

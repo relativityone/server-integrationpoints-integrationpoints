@@ -124,15 +124,12 @@ namespace Relativity.Sync.WorkspaceGenerator
 				if (nativeFilePath is null)
 				{
 					Console.WriteLine($"The '{ColumnNames.NativeFilePath}' field doesn't exist in '{_settings.DesiredWorkspaceName}'");
-					workspaceFields = null;
-				}
-				else
-				{
-					workspaceFields.Remove(nativeFilePath);
+					return null;
 				}
 
-				if (workspaceFields != null &&
-				    workspaceFields.Count != _settings.TestCases.Max(x => x.NumberOfFields))
+				workspaceFields.Remove(nativeFilePath);
+
+				if (workspaceFields.Count != _settings.TestCases.Max(x => x.NumberOfFields))
 				{
 					Console.WriteLine($"The number of existing fields in '{_settings.DesiredWorkspaceName}' workspace is different than number of fields in settings");
 					workspaceFields = null;
