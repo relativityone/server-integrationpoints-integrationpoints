@@ -352,3 +352,4 @@ coverage.cobertura.xml
 /.ionide/*
 /FunctionalTest.runsettings
 /FunctionalTestSettings
+Source/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator.csproj.DotSettings

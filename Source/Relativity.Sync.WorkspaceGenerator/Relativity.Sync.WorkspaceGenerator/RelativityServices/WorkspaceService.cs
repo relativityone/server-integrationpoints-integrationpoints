@@ -11,12 +11,16 @@ using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.WorkspaceGenerator.Fields;
+using Relativity.Sync.WorkspaceGenerator.Extensions;
 using FieldType = Relativity.Services.FieldType;
 
 namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 {
 	public class WorkspaceService : IWorkspaceService
 	{
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
+		private const string _WORKSPACE_GENERATOR_FIELD_KEYWORD = "Workspace Generator";
+
 		private readonly IServiceFactory _serviceFactory;
 		private readonly Random _random = new Random();
 		
@@ -38,11 +42,18 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			}
 		}
 
-		public async Task<WorkspaceRef> GetWorkspaceAsync(int workspaceID)
+		public async Task<WorkspaceRef> GetWorkspaceAsync(int workspaceId)
 		{
-			Console.WriteLine($"Reading workspace {workspaceID}");
+			Console.WriteLine($"Reading workspace {workspaceId}");
 			IEnumerable<WorkspaceRef> activeWorkspaces = await GetAllActiveAsync().ConfigureAwait(false);
-			return activeWorkspaces.Single(x => x.ArtifactID == workspaceID);
+			return activeWorkspaces.Single(x => x.ArtifactID == workspaceId);
+		}
+
+		public async Task<WorkspaceRef> GetWorkspaceAsync(string workspaceName)
+		{
+			Console.WriteLine($"Reading workspace {workspaceName}");
+			IEnumerable<WorkspaceRef> activeWorkspaces = await GetAllActiveAsync().ConfigureAwait(false);
+			return activeWorkspaces.FirstOrDefault(x => x.Name == workspaceName);
 		}
 
 		public async Task<WorkspaceRef> CreateWorkspaceAsync(string name, string templateWorkspaceName)
@@ -81,7 +92,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			}
 		}
 
-		public async Task EnableExtractedTextFieldForDataGridAsync(int workspaceID)
+		public async Task<bool> GetExtractedTextFieldEnableForDataGridAsync(int workspaceId)
 		{
 			string fieldName = Consts.ExtractedTextFieldName;
 
@@ -89,8 +100,24 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			using (IFieldManager fieldManager = _serviceFactory.CreateProxy<IFieldManager>())
 			{
 				QueryRequest fieldRequest = CreateObjectManagerArtifactIdQueryRequest(fieldName);
-				QueryResult fieldQueryResult= await objectManager.QueryAsync(workspaceID,fieldRequest,0,1).ConfigureAwait(false);
-				var fieldArtifactId = fieldQueryResult.Objects.FirstOrDefault().ArtifactID;
+				QueryResult fieldQueryResult = await objectManager.QueryAsync(workspaceId, fieldRequest, 0, 1).ConfigureAwait(false);
+				var fieldArtifactId = fieldQueryResult.Objects.Single().ArtifactID;
+
+				FieldResponse fieldResponse = await fieldManager.ReadAsync(workspaceId, fieldArtifactId).ConfigureAwait(false);
+				return fieldResponse.EnableDataGrid;
+			}
+		}
+
+		public async Task EnableExtractedTextFieldForDataGridAsync(int workspaceId)
+		{
+			string fieldName = Consts.ExtractedTextFieldName;
+
+			using (IObjectManager objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+			using (IFieldManager fieldManager = _serviceFactory.CreateProxy<IFieldManager>())
+			{
+				QueryRequest fieldRequest = CreateObjectManagerArtifactIdQueryRequest(fieldName);
+				QueryResult fieldQueryResult= await objectManager.QueryAsync(workspaceId,fieldRequest,0,1).ConfigureAwait(false);
+				var fieldArtifactId = fieldQueryResult.Objects.Single().ArtifactID;
 
 				var longTextFieldRequest = new LongTextFieldRequest()
 				{
@@ -105,11 +132,35 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 					AvailableInViewer = true,
 					HasUnicode = true
 				};
-				await fieldManager.UpdateLongTextFieldAsync(workspaceID, fieldArtifactId, longTextFieldRequest).ConfigureAwait(false);
+				await fieldManager.UpdateLongTextFieldAsync(workspaceId, fieldArtifactId, longTextFieldRequest).ConfigureAwait(false);
 			}
 		}
-		
-		public async Task CreateFieldsAsync(int workspaceID, IEnumerable<CustomField> fields)
+
+		public async Task<List<CustomField>> GetAllNonSystemDocumentFieldsAsync(int workspaceId)
+		{
+			using (IObjectManager objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryRequest fieldsQueryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+					Condition = $"'Object Type Artifact Type ID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'Keywords' == '{_WORKSPACE_GENERATOR_FIELD_KEYWORD}'",
+					Fields = new[]
+					{
+						new FieldRef {Name = "Name"},
+						new FieldRef { Name = "Field Type" }
+					}
+				};
+
+				IEnumerable<QueryResult> results = await objectManager.QueryAllAsync(workspaceId, fieldsQueryRequest).ConfigureAwait(false);
+
+				return results.SelectMany(x => x.Objects.Select(o => new CustomField(
+					o.FieldValues[0].Value.ToString(),
+					o.FieldValues[1].Value.ToString()
+				))).ToList();
+			}
+		}
+
+		public async Task CreateFieldsAsync(int workspaceId, IEnumerable<CustomField> fields)
 		{
 			using (IFieldManager fieldManager = _serviceFactory.CreateProxy<IFieldManager>())
 			{
@@ -121,37 +172,37 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 					{
 						case FieldType.FixedLengthText:
 							await fieldManager
-								.CreateFixedLengthFieldAsync(workspaceID, CreateFixedLengthFieldRequest(field))
+								.CreateFixedLengthFieldAsync(workspaceId, CreateFixedLengthFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
 						case FieldType.LongText:
 							await fieldManager
-								.CreateLongTextFieldAsync(workspaceID, CreateLongTextFieldRequest(field))
+								.CreateLongTextFieldAsync(workspaceId, CreateLongTextFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
 						case FieldType.Date:
 							await fieldManager
-								.CreateDateFieldAsync(workspaceID, CreateDateFieldRequest(field))
+								.CreateDateFieldAsync(workspaceId, CreateDateFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
 						case FieldType.Decimal:
 							await fieldManager
-								.CreateDecimalFieldAsync(workspaceID, CreateDecimalFieldRequest(field))
+								.CreateDecimalFieldAsync(workspaceId, CreateDecimalFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
 						case FieldType.Currency:
 							await fieldManager
-								.CreateCurrencyFieldAsync(workspaceID, CreateCurrencyFieldRequest(field))
+								.CreateCurrencyFieldAsync(workspaceId, CreateCurrencyFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
 						case FieldType.WholeNumber:
 							await fieldManager
-								.CreateWholeNumberFieldAsync(workspaceID, CreateWholeNumberFieldRequest(field))
+								.CreateWholeNumberFieldAsync(workspaceId, CreateWholeNumberFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
 						case FieldType.YesNo:
 							await fieldManager
-								.CreateYesNoFieldAsync(workspaceID, CreateYesNoFieldRequest(field))
+								.CreateYesNoFieldAsync(workspaceId, CreateYesNoFieldRequest(field))
 								.ConfigureAwait(false);
 							break;
 						default:
@@ -169,7 +220,8 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			{
 				ObjectType = _documentObjectTypeIdentifier,
 				Name = field.Name,
-				Formatting = formatting
+				Formatting = formatting,
+				Keywords = _WORKSPACE_GENERATOR_FIELD_KEYWORD
 			};
 		}
 
@@ -179,7 +231,8 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			{
 				ObjectType = _documentObjectTypeIdentifier,
 				Name = field.Name,
-				Length = 255
+				Length = 255,
+				Keywords = _WORKSPACE_GENERATOR_FIELD_KEYWORD
 			};
 		}
 
@@ -189,7 +242,8 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			{
 				ObjectType = _documentObjectTypeIdentifier,
 				Name = field.Name,
-				EnableDataGrid = false
+				EnableDataGrid = false,
+				Keywords = _WORKSPACE_GENERATOR_FIELD_KEYWORD
 			};
 		}
 
@@ -198,7 +252,8 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			return new DecimalFieldRequest()
 			{
 				ObjectType = _documentObjectTypeIdentifier,
-				Name = field.Name
+				Name = field.Name,
+				Keywords = _WORKSPACE_GENERATOR_FIELD_KEYWORD
 			};
 		}
 
@@ -207,7 +262,8 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			return new CurrencyFieldRequest()
 			{
 				ObjectType = _documentObjectTypeIdentifier,
-				Name = field.Name
+				Name = field.Name,
+				Keywords = _WORKSPACE_GENERATOR_FIELD_KEYWORD
 			};
 		}
 
@@ -216,7 +272,8 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			return new WholeNumberFieldRequest()
 			{
 				ObjectType = _documentObjectTypeIdentifier,
-				Name = field.Name
+				Name = field.Name,
+				Keywords = _WORKSPACE_GENERATOR_FIELD_KEYWORD
 			};
 		}
 
@@ -225,7 +282,8 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			return new YesNoFieldRequest()
 			{
 				ObjectType = _documentObjectTypeIdentifier,
-				Name = field.Name
+				Name = field.Name,
+				Keywords = _WORKSPACE_GENERATOR_FIELD_KEYWORD
 			};
 		}
 
@@ -234,7 +292,7 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			QueryRequest artifactIdRequest = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-				Condition = $"'Object Type Artifact Type ID' == 10 AND 'Name' == '{fieldName}'",
+				Condition = $"'Object Type Artifact Type ID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'Name' == '{fieldName}'",
 				Fields = new[]
 				{
 					new FieldRef {Name = "ArtifactID"}

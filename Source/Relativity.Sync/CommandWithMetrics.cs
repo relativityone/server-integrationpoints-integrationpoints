@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync
 {

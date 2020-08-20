@@ -8,7 +8,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Fields
 {
 	public class RandomFieldsGenerator : IRandomFieldsGenerator
 	{
-		private static readonly FieldType[] SupportedTypes = new[]
+		private static readonly FieldType[] SupportedTypes = new []
 		{
 			FieldType.Date,
 			FieldType.Decimal,
