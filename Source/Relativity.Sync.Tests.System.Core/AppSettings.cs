@@ -56,8 +56,6 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static bool SuppressCertificateCheck => bool.Parse(GetConfigValue("SuppressCertificateCheck"));
 
-		public static int ResourcePoolId => int.Parse(GetConfigValue("ResourcePoolId"));
-
 		public static string RelativeArchivesLocation => GetConfigValue("RelativeArchivesLocation");
 
 		public static string RemoteArchivesLocation => GetConfigValue("RemoteArchivesLocation");
