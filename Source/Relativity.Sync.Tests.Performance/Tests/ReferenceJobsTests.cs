@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Performance.Helpers;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("ReferencePerformance")]
 	public class ReferenceJobsTests : PerformanceTestBase
 	{
-		public ReferenceJobsTests() : base(WorkspaceType.ARM, "PerformanceReferenceWorkspace.zip", null)
+		public ReferenceJobsTests() : base(WorkspaceType.ARM, "Performance_Reference_Workspace.zip", null)
 		{
 		}
 
@@ -23,7 +24,9 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				new PerformanceTestCase
 				{
 					TestCaseName = "Reference-1",
+					CopyMode = ImportNativeFileCopyMode.CopyFiles,
 					ExpectedItemsTransferred = 10,
+					MapExtractedText = true,
 					NumberOfMappedFields = 15
 				}
 			};

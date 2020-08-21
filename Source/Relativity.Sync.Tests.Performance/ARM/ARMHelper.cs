@@ -22,6 +22,7 @@ using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ResourcePool;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -313,10 +314,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
 		{
-			int resourcePoolId = _component.OrchestratorFactory.Create<IOrchestrateResourcePools>()
-				.GetBasicResourcePool(new ResourcePool() { Name = "Default" }).ArtifactID;
-
-			Logger.LogInformation($"Default Resource Pool {resourcePoolId} has been retrieved.");
+			int resourcePoolId = await GetResourcePoolId(AppSettings.ResourcePoolName).ConfigureAwait(false);
 
 			int databaseServerId = await GetPrimarySqlServerId().ConfigureAwait(false);
 
@@ -360,6 +358,19 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				await Task.Delay(delay).ConfigureAwait(false);
 			}
 			while (jobStatus.Status != "Complete");
+		}
+
+		private async Task<int> GetResourcePoolId(string name)
+		{
+			var query = new Services.Query()
+			{
+				Condition = $"'Name' == '{name}'"
+			};
+
+			var result = await _component.ServiceFactory.GetAdminServiceProxy<IResourcePoolManager>()
+				.QueryAsync(query).ConfigureAwait(false);
+
+			return result.Results.Single().Artifact.ArtifactID;
 		}
 
 		private async Task<int> GetPrimarySqlServerId()

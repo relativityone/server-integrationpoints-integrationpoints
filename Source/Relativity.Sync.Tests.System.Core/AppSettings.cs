@@ -60,6 +60,8 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static string RemoteArchivesLocation => GetConfigValue("RemoteArchivesLocation");
 
+		public static string ResourcePoolName => GetConfigValue("ResourcePoolName");
+
 		public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
 
 		public static bool UseLogger => !bool.TryParse(GetConfigValue("SuppressCertificateCheck"), out bool useLogger) || useLogger;

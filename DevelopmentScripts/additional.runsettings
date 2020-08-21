@@ -9,7 +9,7 @@
     <Parameter name="AzureStoragePerformanceContainer" value="performance-tests" />
     <Parameter name="RemoteArchivesLocation" value="\\emttest" />
     <Parameter name="RelativeArchivesLocation" value="DefaultFileRepository\Archives" />
-    <Parameter name="ResourcePoolId" value="1015040" />
+    <Parameter name="ResourcePoolName" value="Default" />
     <Parameter name="PerformanceResultsFilePath" value="S:\results.csv" />
   </TestRunParameters>
 </RunSettings>
