@@ -112,6 +112,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				Logger.LogInformation(
 					$"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
+				Logger.LogInformation($"Set ARM Archive location to {_UNC_ARCHIVE_LOCATION}");
 				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _UNC_ARCHIVE_LOCATION } };
 
 				Logger.LogInformation("Updating ARM configuration");

@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				new PerformanceTestCase
 				{
 					TestCaseName = "Reference-1",
-					CopyMode = ImportNativeFileCopyMode.CopyFiles,
+					CopyMode = ImportNativeFileCopyMode.SetFileLinks,
 					ExpectedItemsTransferred = 10,
 					MapExtractedText = true,
 					NumberOfMappedFields = 15
