@@ -20,6 +20,9 @@ using kCura.Utility.Extensions;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ResourcePool;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -109,6 +112,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				Logger.LogInformation(
 					$"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
+				Logger.LogInformation($"Set ARM Archive location to {_UNC_ARCHIVE_LOCATION}");
 				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _UNC_ARCHIVE_LOCATION } };
 
 				Logger.LogInformation("Updating ARM configuration");
@@ -217,7 +221,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			AgentType agentType = agentsOrchestrator.GetAllAgentTypes()
 				.First(x => x.Name == type);
 
-			ResourceServer server = agentsOrchestrator.GetAvailableAgentServersForAgentType(agentType.ArtifactID)
+			Automation.Utility.Models.ResourceServer server = agentsOrchestrator.GetAvailableAgentServersForAgentType(agentType.ArtifactID)
 				.First(x => x.Type == ResourceServerTypeEnum.Agent);
 
 			Agent agent = new Agent()
@@ -250,7 +254,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 				Logger.LogInformation($"Restoring workspace from: {archivedWorkspacePath}");
 
-				Job job = await CreateRestoreJobAsync(archivedWorkspacePath, AppSettings.ResourcePoolId).ConfigureAwait(false);
+				Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {job.JobId} has been created");
 
 				await RunJobAsync(job).ConfigureAwait(false);
@@ -309,9 +313,13 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath, int resourcePoolId)
+		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
 		{
-			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId);
+			int resourcePoolId = await GetResourcePoolId(AppSettings.ResourcePoolName).ConfigureAwait(false);
+
+			int databaseServerId = await GetPrimarySqlServerId().ConfigureAwait(false);
+
+			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId, databaseServerId);
 
 			try
 			{
@@ -351,6 +359,32 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				await Task.Delay(delay).ConfigureAwait(false);
 			}
 			while (jobStatus.Status != "Complete");
+		}
+
+		private async Task<int> GetResourcePoolId(string name)
+		{
+			var query = new Services.Query()
+			{
+				Condition = $"'Name' == '{name}'"
+			};
+
+			var result = await _component.ServiceFactory.GetAdminServiceProxy<IResourcePoolManager>()
+				.QueryAsync(query).ConfigureAwait(false);
+
+			return result.Results.Single().Artifact.ArtifactID;
+		}
+
+		private async Task<int> GetPrimarySqlServerId()
+		{
+			var queryRequest = new QueryRequest()
+			{
+				ObjectType = new ObjectTypeRef() { Name = "Resource Server" },
+				Condition = "'Type' == 'SQL - Primary'"
+			};
+
+			var result = await _component.ServiceFactory.GetAdminServiceProxy<IObjectManager>().QueryAsync(-1, queryRequest, 0, int.MaxValue).ConfigureAwait(false);
+
+			return result.Objects.Single().ArtifactID;
 		}
 	}
 }

@@ -21,12 +21,12 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 			_serviceFactory = serviceFactory;
 		}
 
-		public Task<int> CreateSavedSearchForTestCaseAsync(int workspaceId, string testCaseName)
+		public async Task<int> CreateSavedSearchForTestCaseAsync(int workspaceId, string testCaseName)
 		{
 			using (var keywordSearchManager = _serviceFactory.CreateProxy<IKeywordSearchManager>())
 			{
 				KeywordSearch search = CreateSavedSearchDTO(testCaseName);
-				return keywordSearchManager.CreateSingleAsync(workspaceId, search);
+				return await keywordSearchManager.CreateSingleAsync(workspaceId, search);
 			}
 		}
 

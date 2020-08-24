@@ -12,6 +12,8 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		public AzureStorageHelper(string connectionString, string containerName)
 		{
+			CloudStorageAccount.UseV1MD5 = true;
+
 			CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
 			CloudBlobClient client = storageAccount.CreateCloudBlobClient();
 

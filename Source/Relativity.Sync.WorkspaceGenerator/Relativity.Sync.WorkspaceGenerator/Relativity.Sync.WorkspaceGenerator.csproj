@@ -186,6 +186,9 @@
     <None Include="App.config" />
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
+    <None Include="Resources\TestCases\Reference.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\TestCases\Small.json" />
     <None Include="Resources\TestCases\Medium.json" />
     <None Include="Resources\TestCases\Large5.json" />

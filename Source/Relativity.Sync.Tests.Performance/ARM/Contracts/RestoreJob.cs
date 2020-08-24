@@ -4,7 +4,6 @@ namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 	{
 		private const int _RELATIVITY_TEMPLATE_MATTER_ARTIFACT_ID = 1000002;
 		private const int _DEFAULT_FILE_REPOSITORY_ID = 1014887;
-		private const int _DATABASE_SERVER_ID = 1017224;
 		private const int _DEFAULT_CACHE_LOCATION_ID = 1015534;
 
 		public int JobId { get; set; }
@@ -18,7 +17,7 @@ namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 		public bool AutoMapUsers { get; private set; }
 		public bool AutoMapGroups { get; private set; }
 
-		public static ContractEnvelope<RestoreJob> GetRequest(string archivedWorkspacePath, int resourcePoolId)
+		public static ContractEnvelope<RestoreJob> GetRequest(string archivedWorkspacePath, int resourcePoolId, int databaseServerId)
 		{
 			return new ContractEnvelope<RestoreJob>
 			{
@@ -29,7 +28,7 @@ namespace Relativity.Sync.Tests.Performance.ARM.Contracts
 					JobPriority = "Medium",
 					MatterId = _RELATIVITY_TEMPLATE_MATTER_ARTIFACT_ID,
 					ResourcePoolId = resourcePoolId,
-					DatabaseServerId = _DATABASE_SERVER_ID,
+					DatabaseServerId = databaseServerId,
 					FileRepositoryId = _DEFAULT_FILE_REPOSITORY_ID,
 					CacheLocationId = _DEFAULT_CACHE_LOCATION_ID,
 					AutoMapGroups = true,
