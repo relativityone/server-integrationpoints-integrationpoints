@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -11,6 +12,7 @@ namespace kCura.IntegrationPoints.Domain
 	/// </summary>
 	internal class AssemblyDomainLoader : MarshalByRefObject
 	{
+		private bool _isDisposed;
 
 		private readonly Dictionary<string, Assembly> _assemblies =
 			new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.Domain
 			"kCura.IntegrationPoints.DocumentTransferProvider.Shared",
 			"kCura.ScheduleQueue.Core"
 		};
+
 		public AssemblyDomainLoader()
 		{
 		}
@@ -166,17 +169,6 @@ namespace kCura.IntegrationPoints.Domain
 			return returnedAssembly;
 		}
 
-		public string ResolveMergedAssemblyFullName(string dllName, string searchDirectory)
-		{
-			string mergedAssemblyFullName = null;
-			System.Reflection.Assembly mergedAssembly = ResolveAssemblyInDirectory(dllName, searchDirectory);
-			if (mergedAssembly != null)
-			{
-				mergedAssemblyFullName = mergedAssembly.FullName;
-			}
-			return mergedAssemblyFullName;
-		}
-
 		private void GetLoadedAssemblies()
 		{
 			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -184,5 +176,41 @@ namespace kCura.IntegrationPoints.Domain
 				_assemblies.Add(assembly.GetName().Name, assembly);
 			}
 		}
+
+		#region Cross AppDomain communication
+		public override object InitializeLifetimeService()
+		{
+			return null;
+		}
+
+		private void DisconnectFromRemoteObject()
+		{
+			RemotingServices.Disconnect(this);
+		}
+		#endregion
+
+		#region IDisposable Support
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+			{
+				return;
+			}
+
+			DisconnectFromRemoteObject();
+			_isDisposed = true;
+		}
+
+		~AssemblyDomainLoader()
+		{
+			Dispose(false);
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		#endregion
 	}
 }
