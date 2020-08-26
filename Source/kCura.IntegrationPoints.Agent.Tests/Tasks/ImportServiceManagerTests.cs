@@ -31,6 +31,9 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -47,6 +50,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private Job _job;
 		private TaskParameters _taskParameters;
 		private IHelper _helper;
+		private IRetryHandler _retryHandler;
+		private IRetryHandlerFactory _retryHandlerFactory;
 		private IAutomatedWorkflowsService _rawService;
 		private IJobStatusUpdater _jobStatusUpdater;
 		private const int _RECORD_COUNT = 42;
@@ -65,13 +70,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			SetUp(job);
 		}
 
-
 		private void SetUp(Job job)
 		{
 			_job = job;
 			_helper = Substitute.For<IHelper>();
+			
+			_retryHandler = Substitute.For<IRetryHandler>();
+			_retryHandler.ExecuteWithRetriesAsync(Arg.Any<Func<Task>>(), Arg.Any<string>()).Returns(callInfo => ((Func<Task>)callInfo[0])());
+
+			_retryHandlerFactory = Substitute.For<IRetryHandlerFactory>();
+			_retryHandlerFactory.Create().ReturnsForAnyArgs(_retryHandler);
+
 			_rawService = Substitute.For<IAutomatedWorkflowsService>();
 			_helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System).Returns(_rawService);
+
 			_jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
 
 			ICaseServiceContext caseContext = Substitute.For<ICaseServiceContext>();
@@ -158,7 +170,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(_taskParameters);
 			jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
 			_instance = new ImportServiceManager(
-				_helper, 
+				_helper,
+				_retryHandlerFactory,
 				caseContext,
 				synchronizerFactory,
 				managerFactory, 
@@ -204,7 +217,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorService.Received(1).SubscribeToBatchReporterEvents(_synchronizer);
 		}
 
-
 		[Test]
 		public void Execute_ShouldTriggerRawAsCompleted_WhenRunCompleted()
 		{
@@ -236,7 +248,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_rawService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE_WITH_ERRORS));
 		}
 
-
 		[Test]
 		public void Execute_ShouldNotTriggerRaw_WhenRunFailed()
 		{
@@ -267,7 +278,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
-
 		[Test]
 		public void Execute_ShouldNotTriggerRaw_WhenRunProcessing()
 		{
@@ -282,7 +292,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
-
 
 		[Test]
 		public void Execute_ShouldNotTriggerRaw_WhenRunStopped()
