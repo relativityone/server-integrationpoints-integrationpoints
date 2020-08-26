@@ -31,6 +31,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using kCura.IntegrationPoints.Common;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -134,8 +135,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_serializer = _windsorContainer.Resolve<ISerializer>();
 			IDataReaderFactory dataReaderFactory = _windsorContainer.Resolve<IDataReaderFactory>();
 
+			IRetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(helper.GetLoggerFactory().GetLogger().ForContext<RetryHandlerFactory>());
+
 			_instanceUnderTest = new ImportServiceManager(
 				helper,
+				retryHandlerFactory,
 				caseServiceContext,
 				synchronizerFactory,
 				managerFactory,
