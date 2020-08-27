@@ -6,7 +6,7 @@ namespace Relativity.Sync.Nodes
 	{
 		public ImageRetryDataSourceSnapshotNode(ICommand<IRetryDataSourceSnapshotConfiguration> command, ISyncLog logger) : base(command, logger)
 		{
-			Id = "Creating image data source snapshots for documents with errors";
+			Id = "Creating image data source snapshots for images with errors";
 		}
 	}
 }

@@ -51,10 +51,10 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<PermissionCheckExecutor>().As<IExecutor<IPermissionsCheckConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutor>().As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
-			builder.RegisterType<DataSourceSnapshotExecutor>().As<IExecutor<IDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<DocumentDataSourceSnapshotExecutor>().As<IExecutor<IDataSourceSnapshotConfiguration>>();
 			builder.RegisterType<DataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
 			builder.RegisterType<RetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IRetryDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<RetryDataSourceSnapshotExecutor>().As<IExecutor<IRetryDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<DocumentRetryDataSourceSnapshotExecutor>().As<IExecutor<IRetryDataSourceSnapshotConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SynchronizationExecutionConstrains>().As<IExecutionConstrains<ISynchronizationConfiguration>>();
