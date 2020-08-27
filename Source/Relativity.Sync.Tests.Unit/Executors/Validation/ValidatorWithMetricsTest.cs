@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
 
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private Mock<ISyncMetrics> _syncMetrics;
 		private Mock<IStopwatch> _stopwatch;
 
-		private ValidatorWithMetrics _validatorWithMetrics;
+		private ValidatorWithMetrics _sut;
 
 		[SetUp]
 		public void SetUp()
@@ -28,81 +29,99 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_syncMetrics = new Mock<ISyncMetrics>();
 			_stopwatch = new Mock<IStopwatch>();
 
-			_validatorWithMetrics = new ValidatorWithMetrics(_internalValidator.Object, _syncMetrics.Object, _stopwatch.Object);
+			_sut = new ValidatorWithMetrics(_internalValidator.Object, _syncMetrics.Object, _stopwatch.Object);
 		}
 
 		[Test]
-		public async Task ItShouldNotReportCountOperationWhenValidatorSucceeds()
+		public async Task ValidateAsync_ShouldNotReportCountOperation_WhenValidatorSucceeds()
 		{
+			// Arrange
 			_internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult());
 
-			// act
-			await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			_syncMetrics.Verify(x => x.CountOperation(It.IsAny<string>(), It.IsAny<ExecutionStatus>()), Times.Never);
 		}
 
 		[Test]
-		public async Task ItShouldReportCountOperationWhenValidatorFails()
+		public async Task ValidateAsync_ShouldReportCountOperation_WhenValidatorFails()
 		{
+			// Arrange
 			_internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult() {IsValid = false});
 
-			// act
-			await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			_syncMetrics.Verify(x => x.CountOperation(It.IsAny<string>(), ExecutionStatus.Failed), Times.Once);
 		}
 
 		[Test]
-		public async Task ItShouldReportTimedOperationWhenValidatorFails()
+		public async Task ValidateAsync_ShouldReportTimedOperation_WhenValidatorFails()
 		{
+			// Arrange
 			_internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult() { IsValid = false });
 
-			// act
-			await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Failed), Times.Once);
 		}
 
 		[Test]
-		public async Task ItShouldReportTimedOperationWhenValidatorSucceeds()
+		public async Task ValidateAsync_ShouldReportTimedOperation_WhenValidatorSucceeds()
 		{
+			// Arrange
 			_internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult());
 
-			// act
-			await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Completed), Times.Once);
 		}
 
 		[Test]
-		public void ItShouldReturnFailedResultWhenValidatorThrows()
+		public void ValidateAsync_ShouldReturnFailedResult_WhenValidatorThrows()
 		{
 			_internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
-			// act
-			Func<Task> action = async () => await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			Func<Task> action = async () => await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			action.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
-		public async Task ItShouldMeasureExecutionTimeProperly()
+		public async Task ValidateAsync_ShouldMeasureExecutionTimeProperly()
 		{
+			// Arrange
 			_internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult());
 			TimeSpan expected = TimeSpan.FromSeconds(1);
 			_stopwatch.SetupGet(x => x.Elapsed).Returns(expected);
 
-			// act
-			await _validatorWithMetrics.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), expected, It.IsAny<ExecutionStatus>()));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ShouldValidate_ShouldPassInnerValidatorValue(bool innerValidatorShouldValidate)
+		{
+			// Arrange
+			_internalValidator.Setup(x => x.ShouldValidate(It.IsAny<ISyncPipeline>()))
+				.Returns(innerValidatorShouldValidate);
+
+			// Act && Assert
+			_sut.ShouldValidate(new Mock<ISyncPipeline>().Object).Should()
+				.Be(innerValidatorShouldValidate);
 		}
 	}
 }

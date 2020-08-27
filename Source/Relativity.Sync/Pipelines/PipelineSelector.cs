@@ -7,6 +7,8 @@ namespace Relativity.Sync.Pipelines
 		private readonly IPipelineSelectorConfiguration _pipelineSelectorConfiguration;
 		private readonly ISyncLog _logger;
 
+		private ISyncPipeline _selectedPipeline;
+
 		public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, ISyncLog logger)
 		{
 			_pipelineSelectorConfiguration = pipelineSelectorConfiguration;
@@ -14,6 +16,11 @@ namespace Relativity.Sync.Pipelines
 		}
 
 		public ISyncPipeline GetPipeline()
+		{
+			return _selectedPipeline ?? (_selectedPipeline = GetPipelineInternal());
+		}
+
+		private ISyncPipeline GetPipelineInternal()
 		{
 			_logger.LogInformation("Getting pipeline type");
 			const string messageTemplate = "Returning {pipelineType}";

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs;
@@ -11,6 +12,8 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -24,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IValidationConfiguration> _validationConfiguration;
 
-		private RetryJobHistoryValidator _instance;
+		private RetryJobHistoryValidator _sut;
 
 		private const int _TEST_JOB_HISTORY_TO_RETRY_ID = 101345;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 101202;
@@ -43,13 +46,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.SetupGet(x => x.JobHistoryToRetryId).Returns(_TEST_JOB_HISTORY_TO_RETRY_ID);
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 
-			_instance = new RetryJobHistoryValidator(_sourceServiceFactoryForUser.Object, _syncLog.Object);
+			_sut = new RetryJobHistoryValidator(_sourceServiceFactoryForUser.Object, _syncLog.Object);
 
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 		}
 
 		[Test]
-		public async Task ValidateAsyncGoldFlowTest()
+		public async Task ValidateAsync_ShouldPassGoldFlow()
 		{
 			// Arrange
 			QueryResult queryResult = BuildQueryResult("");
@@ -57,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.ReturnsAsync(queryResult);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsTrue(actualResult.IsValid);
@@ -69,18 +72,17 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_Should_SkipValidation_When_JobHistoryToRetryIsNull()
+		public async Task ValidateAsync_Should_ReturnInvalid_When_JobHistoryToRetryIsNull()
 		{
 			// Arrange
 			_validationConfiguration.SetupGet(x => x.JobHistoryToRetryId).Returns((int?)null);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			_sourceServiceFactoryForUser.Verify(x => x.CreateProxyAsync<IObjectManager>(), Times.Never);
-
-			_syncLog.Verify(x => x.LogInformation("Skipping JobHistoryToRetry validation because it's not set in configuration"), Times.Once);
+			actualResult.Messages.First().ShortMessage.Should()
+				.Be("JobHistoryToRetry should be set in configuration for this pipeline");
 		}
 
 		[Test]
@@ -94,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.ReturnsAsync(queryResult);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -114,7 +116,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -135,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -145,6 +147,22 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
 			_objectManager.Verify(x => x.Dispose(), Times.Once);
 			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), _TEST_JOB_HISTORY_TO_RETRY_ID), Times.AtLeastOnce());
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), false)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 
 		private QueryResult BuildQueryResult(string testFieldValue)

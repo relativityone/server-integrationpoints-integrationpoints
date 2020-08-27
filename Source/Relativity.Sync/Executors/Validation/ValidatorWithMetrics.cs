@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
 
@@ -43,6 +43,11 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			
 			return result;
+		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline)
+		{
+			return _validator.ShouldValidate(pipeline);
 		}
 	}
 }

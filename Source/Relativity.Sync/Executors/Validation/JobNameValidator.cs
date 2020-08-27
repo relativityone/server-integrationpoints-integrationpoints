@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -38,6 +39,11 @@ namespace Relativity.Sync.Executors.Validation
 			}
 
 			return Task.FromResult(result);
+		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline)
+		{
+			return true;
 		}
 	}
 }

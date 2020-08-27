@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs;
@@ -11,6 +12,8 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -24,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IValidationConfiguration> _validationConfiguration;
 
-		private SavedSearchValidator _instance;
+		private SavedSearchValidator _sut;
 
 		private const int _TEST_SAVED_SEARCH_ARTIFACT_ID = 101345;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 101202;
@@ -43,11 +46,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_validationConfiguration.SetupGet(x => x.SavedSearchArtifactId).Returns(_TEST_SAVED_SEARCH_ARTIFACT_ID);
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 
-			_instance = new SavedSearchValidator(_sourceServiceFactoryForUser.Object, _syncLog.Object);
+			_sut = new SavedSearchValidator(_sourceServiceFactoryForUser.Object, _syncLog.Object);
 		}
 
 		[Test]
-		public async Task ValidateAsyncGoldFlowTest()
+		public async Task ValidateAsync_ShouldPassGoldFlow()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
@@ -57,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.ReturnsAsync(queryResult);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsTrue(actualResult.IsValid);
@@ -69,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncInvalidFieldTypeResultTest()
+		public async Task ValidateAsync_ShouldHandleInvalidFieldTypeResult()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
@@ -79,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.ReturnsAsync(queryResult);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -93,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncNoQueryResultsTest()
+		public async Task ValidateAsync_ShouldHandleNoQueryResults()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
@@ -103,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.ReturnsAsync(queryResult);
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -117,13 +120,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncCreateProxyThrowsExceptionTest()
+		public async Task ValidateAsync_ShouldHandleCreateProxy_ThrowsException()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -135,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncQueryAsyncThrowsExceptionTest()
+		public async Task ValidateAsync_ShouldHandleQueryAsync_ThrowsException()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
@@ -144,7 +147,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -154,6 +157,22 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
 			_objectManager.Verify(x => x.Dispose(), Times.Once);
 			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.AtLeastOnce());
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), true)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 
 		private QueryResult BuildQueryResult(string testFieldValue)

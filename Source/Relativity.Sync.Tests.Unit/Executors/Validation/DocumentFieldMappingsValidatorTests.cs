@@ -14,12 +14,14 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
 	[TestFixture]
-	public class FieldMappingsValidatorTests
+	public class DocumentFieldMappingsValidatorTests
 	{
 		private CancellationToken _cancellationToken;
 
@@ -30,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private JSONSerializer _jsonSerializer;
 		private List<FieldMap> _fieldMappings;
 
-		private FieldMappingsValidator _sut;
+		private DocumentFieldMappingValidator _sut;
 
 		private const int _TEST_DEST_WORKSPACE_ARTIFACT_ID = 202567;
 		private const int _TEST_SOURCE_WORKSPACE_ARTIFACT_ID = 101234;
@@ -84,11 +86,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID, _TEST_SOURCE_FIELD_NAME);
 			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID, _TEST_DEST_FIELD_NAME);
 
-			_sut = new FieldMappingsValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
+			_sut = new DocumentFieldMappingValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
 		}
 
 		[Test]
-		public async Task ValidateAsyncGoldFlowTest()
+		public async Task ValidateAsync_ShouldPassGoldFlow()
 		{
 			// Act
 			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -101,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncDeserializeThrowsExceptionTest()
+		public async Task ValidateAsync_ShouldDeserializeThrowsException()
 		{
 			// Arrange
 			_validationConfiguration.Setup(x => x.GetFieldMappings()).Throws<InvalidOperationException>().Verifiable();
@@ -115,7 +117,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncDestinationFieldMissingTest()
+		public async Task ValidateAsync_ShouldHandleDestinationFieldMissing()
 		{
 			// Arrange
 			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, 0, null);
@@ -135,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncSourceFieldMissingTest()
+		public async Task ValidateAsync_ShouldHAndleSourceFieldMissing()
 		{
 			// Arrange
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, 0, null);
@@ -196,7 +198,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncSourceObjectQueryThrowsExceptionTest()
+		public async Task ValidateAsync_ShouldHandleSourceObjectQuery_ThrowsException()
 		{
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
@@ -215,7 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncDestinationObjectQueryThrowsExceptionTest()
+		public async Task ValidateAsync_ShouldHandleDestinationObjectQuery_ThrowsException()
 		{
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
@@ -234,7 +236,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
-		public async Task ValidateAsyncUniqueIdentifierInvalidTest(string testInvalidFieldMap, string expectedErrorMessage)
+		public async Task ValidateAsync_ShouldHandleUniqueIdentifierInvalid(string testInvalidFieldMap, string expectedErrorMessage)
 		{
 			// Arrange
 			List<FieldMap> fieldMap = _jsonSerializer.Deserialize<List<FieldMap>>(testInvalidFieldMap);
@@ -253,7 +255,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsyncFieldOverlayBehaviorInvalidTest()
+		public async Task ValidateAsync_ShouldHandleFieldOverlayBehaviorInvalid()
 		{
 			// Arrange
 			_validationConfiguration.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOnly);
@@ -269,6 +271,22 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			VerifyObjectManagerQueryRequest();
 			Mock.Verify(_validationConfiguration);
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), true)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 
 		private void SetUpObjectManagerQuery(int testWorkspaceArtifactId, int testFieldArtifactId, string testFieldName)
@@ -321,7 +339,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		            ""isRequired"": true
 		        },
 		        ""fieldMapType"": ""Identifier""
-		    }]", "The unique identifier must be mapped.").SetName($"{nameof(ValidateAsyncUniqueIdentifierInvalidTest)}_SourceInvalid"),
+		    }]", "The unique identifier must be mapped.").SetName($"{nameof(ValidateAsync_ShouldHandleUniqueIdentifierInvalid)}_SourceInvalid"),
 			new TestCaseData(@"[{
 		        ""sourceField"": {
 		            ""displayName"": ""Control Number"",
@@ -336,7 +354,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		            ""isRequired"": true
 		        },
 		        ""fieldMapType"": ""Identifier""
-		    }]", "Identifier must be mapped with another identifier.").SetName($"{nameof(ValidateAsyncUniqueIdentifierInvalidTest)}_DestinationInvalid"),
+		    }]", "Identifier must be mapped with another identifier.").SetName($"{nameof(ValidateAsync_ShouldHandleUniqueIdentifierInvalid)}_DestinationInvalid"),
 		};
 	}
 }

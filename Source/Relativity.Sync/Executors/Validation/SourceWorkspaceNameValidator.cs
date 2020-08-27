@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -45,6 +46,11 @@ namespace Relativity.Sync.Executors.Validation
 				result.Add(string.Format(CultureInfo.InvariantCulture, message, configuration.SourceWorkspaceArtifactId));
 			}
 			return result;
+		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline)
+		{
+			return true;
 		}
 	}
 }

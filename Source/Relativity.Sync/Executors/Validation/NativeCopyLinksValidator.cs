@@ -6,6 +6,7 @@ using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -60,6 +61,11 @@ namespace Relativity.Sync.Executors.Validation
 			}
 
 			return validationResult;
+		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline)
+		{
+			return true;
 		}
 
 		private async Task<bool> ExecutingUserIsAdminAsync()

@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -63,6 +64,11 @@ namespace Relativity.Sync.Executors.Validation
 			}
 
 			return Task.FromResult(validationResult);
+		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline)
+		{
+			return true;
 		}
 
 		private bool IsValidEmail(string email)
