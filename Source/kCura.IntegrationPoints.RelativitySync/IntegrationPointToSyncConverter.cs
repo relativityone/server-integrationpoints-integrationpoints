@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -36,6 +39,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
 		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
+
+		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
+		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
+		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("af6b5a64-1613-4dc7-9d21-4fd743b059bb");
+		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
 
 		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService)
 		{
@@ -107,6 +115,19 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return "None";
 		}
 
+		private string ImageFileCopyMode(ImportNativeFileCopyModeEnum fileCopyMode)
+		{
+			switch (fileCopyMode)
+			{
+				case ImportNativeFileCopyModeEnum.CopyFiles:
+					return "Copy";
+				case ImportNativeFileCopyModeEnum.SetFileLinks:
+					return "Link";
+				default:
+					throw new IntegrationPointsException($"Invalid value for Image File Copy Mode: {fileCopyMode}");
+			}
+		}
+
 		private static async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
 		{
 			if (artifactId == 0)
@@ -123,6 +144,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 			QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
 			return result.Objects[0].Values[0].ToString();
 		}
+		
+		private RelativityObject[] GetProductionImagePrecedence(ImportSettings importSettings)
+		{
+			return importSettings
+				.ImagePrecedence
+				.Select(x => new RelativityObject()
+				{
+					ArtifactID = int.Parse(x.ArtifactID, CultureInfo.InvariantCulture),
+					Name = x.DisplayName
+				})
+				.ToArray();
+		}
 
 		private async Task<CreateRequest> PrepareCreateRequestAsync(IExtendedJob job, 
 			SourceConfiguration sourceConfiguration,
@@ -132,7 +165,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			RelativityObject jobHistoryToRetry)
 		{
 			string folderPathSourceFieldName = await GetFolderPathSourceFieldNameAsync(folderConf.FolderPathSourceField, sourceConfiguration.SourceWorkspaceArtifactId, objectManager).ConfigureAwait(false);
-
+			
 			return new CreateRequest
 			{
 				ObjectType = new ObjectTypeRef
@@ -273,6 +306,38 @@ namespace kCura.IntegrationPoints.RelativitySync
 						},
 						Value = jobHistoryToRetry
 					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef()
+						{
+							Guid = ImageImportGuid
+						},
+						Value = importSettings.ImageImport
+					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef()
+						{
+							Guid = IncludeOriginalImagesGuid
+						},
+						Value = importSettings.IncludeOriginalImages
+					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef()
+						{
+							Guid = ImageFileCopyModeGuid
+						},
+						Value = ImageFileCopyMode(importSettings.ImportNativeFileCopyMode)
+					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef()
+						{
+							Guid = ProductionImagePrecedenceGuid
+						},
+						Value = GetProductionImagePrecedence(importSettings)
+					}
 				}
 			};
 		}
