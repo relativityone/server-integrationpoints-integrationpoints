@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				Logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", workspaceId, triggerName, state);
 
-				if (!await IsAutomatedWorkflowsInstalledAsync(workspaceId))
+				if (!await IsAutomatedWorkflowsInstalledAsync(workspaceId).ConfigureAwait(false))
 				{
 					Logger.LogInformation(_AUTOMATED_WORKFLOWS_APPLICATION_NAME + " isn't installed in workspace {workspaceArtifactId}.", workspaceId);
 
