@@ -42,6 +42,7 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
+		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
@@ -52,6 +53,11 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
 		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
+
+		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
+		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
+		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
+		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
 
 		protected override async Task ChildSuiteSetup()
 		{
@@ -107,6 +113,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
 			configuration.GetFieldValue<string>(ImportOverwriteModeGuid);
 			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
+			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryToRetryGuid);
 			configuration.GetFieldValue<bool>(MoveExistingDocumentsGuid);
 			configuration.GetFieldValue<string>(NativesBehaviorGuid);
 			configuration.GetFieldValue<int>(RdoArtifactTypeIdGuid);
@@ -117,6 +124,11 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(SourceJobTagNameGuid);
 			configuration.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
 			configuration.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
+
+			configuration.GetFieldValue<bool>(ImageImportGuid);
+			configuration.GetFieldValue<bool>(IncludeOriginalImagesGuid);
+			configuration.GetFieldValue<string>(ImageFileCopyModeGuid);
+			configuration.GetFieldValue<string>(ProductionImagePrecedenceGuid);
 		}
 
 		[IdentifiedTest("3a5a8647-86e5-4a01-9cac-90bdd84e7a62")]
@@ -362,6 +374,39 @@ namespace Relativity.Sync.Tests.System
 				},
 				Value = "workspace tag name"
 			};
+			yield return new FieldRefValuePair()
+			{
+				Field = new FieldRef()
+				{
+					Guid = ImageImportGuid
+				},
+				Value = true
+			};
+			yield return new FieldRefValuePair()
+			{
+				Field = new FieldRef()
+				{
+					Guid = IncludeOriginalImagesGuid
+				},
+				Value = true
+			};
+			yield return new FieldRefValuePair()
+			{
+				Field = new FieldRef()
+				{
+					Guid = ImageFileCopyModeGuid
+				},
+				Value = "Links"
+			};
+			yield return new FieldRefValuePair()
+			{
+				Field = new FieldRef()
+				{
+					Guid = ProductionImagePrecedenceGuid
+				},
+				Value = "[2564218,254634]"
+			};
+
 
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
