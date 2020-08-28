@@ -213,39 +213,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void METHOD()
-		{
-
-			// ARRANGE
-
-			// ACT
-
-			// ASSERT
-		}
-
-		[Test]
-		public void METHOD1()
-		{
-
-			// ARRANGE
-
-			// ACT
-
-			// ASSERT
-		}
-
-		[Test]
-		public void METHOD2()
-		{
-
-			// ARRANGE
-
-			// ACT
-
-			// ASSERT
-		}
-
-		[Test]
 		[TestCase("")]
 		[TestCase("ABC")]
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
