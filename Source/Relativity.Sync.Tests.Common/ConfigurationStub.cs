@@ -105,6 +105,11 @@ namespace Relativity.Sync.Tests.Common
 		public int IdentityFieldId { get; set; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
 
+		public bool ImageImport { get; }
+		public bool IncludeOriginalImages { get; }
+		public ImportImageFileCopyMode ImportImageFileCopyMode { get; }
+		public string ProductionImagePrecedence { get; }
+
 		public string GetSourceJobTagName() => _sourceJobTagName;
 
 		public void SetSourceJobTagName(string sourceJobTagName)
