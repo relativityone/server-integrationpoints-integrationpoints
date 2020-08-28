@@ -29,15 +29,26 @@ using Relativity.API;
 using Relativity.AutomatedWorkflows.Services.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
 using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ImportServiceManager : ServiceManagerBase
 	{
+		private const int _MAX_NUMBER_OF_RAW_RETRIES = 4;
+
+		private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
+		private const string _AUTOMATED_WORKFLOWS_APPLICATION_NAME = "Automated Workflows";
+
 		private readonly IHelper _helper;
+		private readonly IRetryHandler _automatedWorkflowsRetryHandler;
 		private readonly IDataReaderFactory _dataReaderFactory;
 		private readonly IImportFileLocationService _importFileLocationService;
 		private readonly IJobStatusUpdater _jobStatusUpdater;
+
 		public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
 		public const string RAW_STATE_COMPLETE = "complete";
 		public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
@@ -46,6 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 
 		public ImportServiceManager(IHelper helper,
+			IRetryHandlerFactory retryHandlerFactory,
 			ICaseServiceContext caseServiceContext,
 			ISynchronizerFactory synchronizerFactory,
 			IManagerFactory managerFactory,
@@ -76,6 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				integrationPointRepository)
 		{
 			_helper = helper;
+			_automatedWorkflowsRetryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RAW_RETRIES);
 			_dataReaderFactory = dataReaderFactory;
 			_importFileLocationService = importFileLocationService;
 			_jobStatusUpdater = jobStatusUpdater;
@@ -131,36 +144,44 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryErrorService.CommitErrors();
 				FinalizeService(job);
 				LogExecuteFinalize(job);
-				await SendAutomationWorkflowTrigger(job).ConfigureAwait(false);
+				await SendAutomatedWorkflowsTriggerAsync(job).ConfigureAwait(false);
 			}
 		}
 
-		private async Task SendAutomationWorkflowTrigger(Job job)
+		private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = JobHistoryService.GetRdo(taskParameters.BatchInstance);
-			Choice status = _jobStatusUpdater.GenerateStatus(jobHistory);
+			Relativity.Client.DTOs.Choice status = _jobStatusUpdater.GenerateStatus(jobHistory);
 
 			if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted))
 			{
-				await SendTriggerAsync(job.WorkspaceID, RAW_RIP_TRIGGER_NAME, RAW_STATE_COMPLETE).ConfigureAwait(false);
+				await SendAutomatedWorkflowsTriggerAsync(job.WorkspaceID, RAW_RIP_TRIGGER_NAME, RAW_STATE_COMPLETE).ConfigureAwait(false);
 			}
 			else if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors))
 			{
-				await SendTriggerAsync(job.WorkspaceID, RAW_RIP_TRIGGER_NAME, RAW_STATE_COMPLETE_WITH_ERRORS).ConfigureAwait(false);
+				await SendAutomatedWorkflowsTriggerAsync(job.WorkspaceID, RAW_RIP_TRIGGER_NAME, RAW_STATE_COMPLETE_WITH_ERRORS).ConfigureAwait(false);
 			}
 		}
 
-		private async Task SendTriggerAsync(int workSpaceId, string triggerName, string state)
+		private async Task SendAutomatedWorkflowsTriggerAsync(int workspaceId, string triggerName, string state)
 		{
 			try
 			{
-				Logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", workSpaceId, triggerName, state);
-				SendTriggerBody body = new SendTriggerBody()
+				Logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", workspaceId, triggerName, state);
+
+				if (!await IsAutomatedWorkflowsInstalledAsync(workspaceId).ConfigureAwait(false))
+				{
+					Logger.LogInformation(_AUTOMATED_WORKFLOWS_APPLICATION_NAME + " isn't installed in workspace {workspaceArtifactId}.", workspaceId);
+
+					return;
+				}
+
+				SendTriggerBody body = new SendTriggerBody
 				{
 					Inputs = new List<TriggerInput>
 					{
-						new TriggerInput()
+						new TriggerInput
 						{
 							ID = RAW_TRIGGER_INPUT_ID,
 							Value = RAW_TRIGGER_INPUT_VALUE
@@ -168,17 +189,37 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					},
 					State = state
 				};
-				using (IAutomatedWorkflowsService triggerProcessor = _helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System))
+
+				await _automatedWorkflowsRetryHandler.ExecuteWithRetriesAsync(async () =>
 				{
-					await triggerProcessor.SendTriggerAsync(workSpaceId, triggerName, body).ConfigureAwait(false);
-				}
+					using (IAutomatedWorkflowsService triggerProcessor = _helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System))
+					{
+						await triggerProcessor.SendTriggerAsync(workspaceId, triggerName, body).ConfigureAwait(false);
+					}
+				}).ConfigureAwait(false);
+
+				Logger.LogInformation("For workspace : {0} trigger {1} finished sending.", workspaceId, triggerName);
 			}
 			catch (Exception ex)
 			{
 				string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
-				Logger.LogError(ex, message, triggerName, workSpaceId);
+				Logger.LogError(ex, message, triggerName, workspaceId);
 			}
-			Logger.LogInformation("For workspace : {0} trigger {1} finished sending.", workSpaceId, triggerName);
+		}
+
+		private async Task<bool> IsAutomatedWorkflowsInstalledAsync(int workspaceId)
+		{
+			using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				QueryRequest automatedWorkflowsInstalledRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID },
+					Condition = $"'Name' == '{_AUTOMATED_WORKFLOWS_APPLICATION_NAME}'"
+				};
+				QueryResultSlim automatedWorkflowsInstalledResult = await objectManager.QuerySlimAsync(workspaceId, automatedWorkflowsInstalledRequest, 0, 0).ConfigureAwait(false);
+
+				return automatedWorkflowsInstalledResult.TotalCount > 0;
+			}
 		}
 
 		private ImportSettings GetImportApiSettingsObjectForUser(Job job)
@@ -235,15 +276,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				return recordCount;
 			}
 		}
-
-
+		
 		private string UpdatedProviderSettingsLoadFile()
 		{
 			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
 			providerSettings.LoadFile = _importFileLocationService.LoadFileFullPath(IntegrationPointDto.ArtifactId);
 			return Serializer.Serialize(providerSettings);
 		}
-
 
 		#region Logging
 		private void LogExecuteFinalize(Job job)
@@ -280,7 +319,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			Logger.LogInformation("Started updating source record count.");
 		}
-
 		#endregion
 	}
 }

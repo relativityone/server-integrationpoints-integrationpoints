@@ -31,6 +31,11 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
+using System.Threading.Tasks;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -47,7 +52,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private Job _job;
 		private TaskParameters _taskParameters;
 		private IHelper _helper;
-		private IAutomatedWorkflowsService _rawService;
+		private IRetryHandler _retryHandler;
+		private IRetryHandlerFactory _retryHandlerFactory;
+		private IObjectManager _objectManager;
+		private IAutomatedWorkflowsService _automatedWorkflowsService;
 		private IJobStatusUpdater _jobStatusUpdater;
 		private const int _RECORD_COUNT = 42;
 		private const string _ERROR_FILE_PATH = "ErrorFilePath";
@@ -57,6 +65,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private const string _IMPORTSETTINGS_FOR_IMAGE = "ImageImport";
 		private const string _LOAD_FILE_PATH = "LoadFilePath";
 
+		private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
+		private const string _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION = "'Name' == 'Automated Workflows'";
+
 
 		[SetUp]
 		public override void SetUp()
@@ -65,13 +76,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			SetUp(job);
 		}
 
-
 		private void SetUp(Job job)
 		{
 			_job = job;
 			_helper = Substitute.For<IHelper>();
-			_rawService = Substitute.For<IAutomatedWorkflowsService>();
-			_helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System).Returns(_rawService);
+			
+			_retryHandler = Substitute.For<IRetryHandler>();
+			_retryHandler.ExecuteWithRetriesAsync(Arg.Any<Func<Task>>(), Arg.Any<string>()).Returns(callInfo => ((Func<Task>)callInfo[0])());
+
+			_retryHandlerFactory = Substitute.For<IRetryHandlerFactory>();
+			_retryHandlerFactory.Create().ReturnsForAnyArgs(_retryHandler);
+
+			_objectManager = Substitute.For<IObjectManager>();
+			_helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System).Returns(_objectManager);
+
+			_automatedWorkflowsService = Substitute.For<IAutomatedWorkflowsService>();
+			_helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System).Returns(_automatedWorkflowsService);
+
 			_jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
 
 			ICaseServiceContext caseContext = Substitute.For<ICaseServiceContext>();
@@ -158,7 +179,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(_taskParameters);
 			jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
 			_instance = new ImportServiceManager(
-				_helper, 
+				_helper,
+				_retryHandlerFactory,
 				caseContext,
 				synchronizerFactory,
 				managerFactory, 
@@ -204,38 +226,90 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorService.Received(1).SubscribeToBatchReporterEvents(_synchronizer);
 		}
 
-
 		[Test]
-		public void Execute_ShouldTriggerRawAsCompleted_WhenRunCompleted()
+		public void Execute_ShouldTriggerRawAsCompleted_WhenRunCompletedAndAutomatedWorkflowsIsInstalled()
 		{
 			// ARRANGE
 			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
 			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
 
 			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
+            _objectManager.QuerySlimAsync(
+	            Arg.Any<int>(), 
+	            Arg.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID && qr.Condition == _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION),
+	            Arg.Is(0), 
+	            Arg.Is(0)
+	        ).Returns(Task.FromResult(new QueryResultSlim { TotalCount = 1 }));
 
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>( stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE));
+			_automatedWorkflowsService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>( stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE));
+		}
+
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunCompletedAndAutomatedWorkflowsIsNotInstalled()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
+			_objectManager.QuerySlimAsync(
+				Arg.Any<int>(),
+				Arg.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID && qr.Condition == _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION),
+				Arg.Is(0),
+				Arg.Is(0)
+			).Returns(Task.FromResult(new QueryResultSlim { TotalCount = 0 }));
+
+			// ACT
+			_instance.Execute(_job);
+
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 
 		[Test]
-		public void Execute_ShouldTriggerRawAsCompletedWithErrors_WhenRunCompletedWithErrors()
+		public void Execute_ShouldTriggerRawAsCompletedWithErrors_WhenRunCompletedWithErrorsAndAutomatedWorkflowsIsInstalled()
 		{
 			// ARRANGE
 			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
 			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
 
 			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompletedWithErrors);
+			_objectManager.QuerySlimAsync(
+				Arg.Any<int>(),
+				Arg.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID && qr.Condition == _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION),
+				Arg.Is(0),
+				Arg.Is(0)
+			).Returns(Task.FromResult(new QueryResultSlim { TotalCount = 1 }));
 
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE_WITH_ERRORS));
+			_automatedWorkflowsService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE_WITH_ERRORS));
 		}
 
+		[Test]
+		public void Execute_ShouldNotTriggerRaw_WhenRunCompletedWithErrorsAndAutomatedWorkflowsIsNotInstalled()
+		{
+			// ARRANGE
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompletedWithErrors);
+			_objectManager.QuerySlimAsync(
+				Arg.Any<int>(),
+				Arg.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID && qr.Condition == _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION),
+				Arg.Is(0),
+				Arg.Is(0)
+			).Returns(Task.FromResult(new QueryResultSlim { TotalCount = 0 }));
+
+			// ACT
+			_instance.Execute(_job);
+
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
 
 		[Test]
 		public void Execute_ShouldNotTriggerRaw_WhenRunFailed()
@@ -249,7 +323,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -264,9 +338,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
-
 
 		[Test]
 		public void Execute_ShouldNotTriggerRaw_WhenRunProcessing()
@@ -280,9 +353,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
-
 
 		[Test]
 		public void Execute_ShouldNotTriggerRaw_WhenRunStopped()
@@ -296,7 +368,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -311,7 +383,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -326,7 +398,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -341,7 +413,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_rawService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 	}
 }
