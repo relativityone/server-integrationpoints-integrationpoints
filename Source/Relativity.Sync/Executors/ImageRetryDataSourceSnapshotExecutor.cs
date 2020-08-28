@@ -66,8 +66,8 @@ namespace Relativity.Sync.Executors
 						IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
 					};
 
-					Task<long> calculateNativesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
-					_jobStatisticsContainer.ImagesBytesRequested = calculateNativesTotalSizeTask;
+					Task<long> calculateImagesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
+					_jobStatisticsContainer.ImagesBytesRequested = calculateImagesTotalSizeTask;
 				}
 			}
 			catch (Exception e)
