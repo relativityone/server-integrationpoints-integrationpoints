@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private DocumentRetryDataSourceSnapshotExecutor _instance;
 
 		private Mock<IObjectManager> _objectManager;
-		private Mock<IRetryDataSourceSnapshotConfiguration> _configuration;
+		private Mock<IDocumentRetryDataSourceSnapshotConfiguration> _configuration;
 		private Mock<IJobProgressUpdater> _jobProgressUpdater;
 		private Mock<INativeFileRepository> _nativeFileRepository;
 		private IJobStatisticsContainer _jobStatisticsContainer;
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
 
-			_configuration = new Mock<IRetryDataSourceSnapshotConfiguration>();
+			_configuration = new Mock<IDocumentRetryDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
 			_configuration.Setup(x => x.JobHistoryToRetryId).Returns(_JOB_HISOTRY_TO_RETRY_ID);
@@ -152,9 +152,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				RunID = Guid.NewGuid()
 			};
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
-
-			_configuration.Setup(x => x.DestinationFolderStructureBehavior).Returns(destinationFolderStructureBehavior);
-			_configuration.Setup(x => x.GetFolderPathSourceFieldName()).Returns(folderPathSourceFieldName);
 
 			// ACT
 			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);

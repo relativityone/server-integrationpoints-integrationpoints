@@ -13,7 +13,7 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class DocumentRetryDataSourceSnapshotExecutor : IExecutor<IRetryDataSourceSnapshotConfiguration>
+	internal sealed class DocumentRetryDataSourceSnapshotExecutor : IExecutor<IDocumentRetryDataSourceSnapshotConfiguration>
 	{
 		private const string _RELATIVITY_NATIVE_TYPE_FIELD_NAME = "RelativityNativeType";
 		private const string _SUPPORTED_BY_VIEWER_FIELD_NAME = "SupportedByViewer";
@@ -36,7 +36,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDocumentRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogInformation("Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode, ImportOverwriteMode.AppendOverlay);
 			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;

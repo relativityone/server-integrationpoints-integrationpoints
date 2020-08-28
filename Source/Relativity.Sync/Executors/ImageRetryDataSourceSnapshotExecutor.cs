@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS;
@@ -7,25 +8,32 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Telemetry;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class RetryImageDataSourceSnapshotExecutor : IExecutor<IRetryDataSourceSnapshotConfiguration>
+	internal sealed class ImageRetryDataSourceSnapshotExecutor : IExecutor<IImageRetryDataSourceSnapshotConfiguration>
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-		
+
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
+		private readonly IImageFileRepository _imageFileRepository;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncLog _logger;
 
-		public RetryImageDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger)
+		public ImageRetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
+			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
+			_imageFileRepository = imageFileRepository;
+			_jobStatisticsContainer = jobStatisticsContainer;
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IImageRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogInformation("Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode, ImportOverwriteMode.AppendOverlay);
 			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;
@@ -52,7 +60,14 @@ namespace Relativity.Sync.Executors
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					_logger.LogInformation("Retrived {documentCount} documents from saved search which have images", results.RecordCount);
 
-					//TODO: Image size statistics
+					QueryImagesOptions options = new QueryImagesOptions
+					{
+						ProductionIds = configuration.ProductionIds,
+						IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
+					};
+
+					Task<long> calculateNativesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
+					_jobStatisticsContainer.ImagesBytesRequested = calculateNativesTotalSizeTask;
 				}
 			}
 			catch (Exception e)

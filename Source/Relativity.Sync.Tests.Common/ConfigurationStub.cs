@@ -12,7 +12,8 @@ namespace Relativity.Sync.Tests.Common
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration,
-		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration
+		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
+		IDocumentDataSourceSnapshotConfiguration, IDocumentRetryDataSourceSnapshotConfiguration, IImageDataSourceSnapshotConfiguration, IImageRetryDataSourceSnapshotConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -150,5 +151,9 @@ namespace Relativity.Sync.Tests.Common
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
 		public int? JobHistoryToRetryId { get; set; }
+
+		public List<int> ProductionIds => throw new NotImplementedException();
+
+		public bool IncludeOriginalImageIfNotFoundInProductions => throw new NotImplementedException();
 	}
 }

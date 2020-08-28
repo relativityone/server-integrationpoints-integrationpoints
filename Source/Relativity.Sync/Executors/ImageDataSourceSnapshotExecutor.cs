@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS;
@@ -7,25 +8,32 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Telemetry;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class ImageDataSourceSnapshotExecutor : IExecutor<IDataSourceSnapshotConfiguration>
+	internal sealed class ImageDataSourceSnapshotExecutor : IExecutor<IImageDataSourceSnapshotConfiguration>
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 		
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
+		private readonly IImageFileRepository _imageFileRepository;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncLog _logger;
 
-		public ImageDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger)
+		public ImageDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
+			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
+			_imageFileRepository = imageFileRepository;
+			_jobStatisticsContainer = jobStatisticsContainer;
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogInformation("Initializing image export in workspace {workspaceId} with saved search {savedSearchId}.",
 				configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
@@ -47,7 +55,14 @@ namespace Relativity.Sync.Executors
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					_logger.LogInformation("Retrived {documentCount} documents from saved search which have images", results.RecordCount);
 
-					//TODO: Image size statistics
+					QueryImagesOptions options = new QueryImagesOptions
+					{
+						ProductionIds = configuration.ProductionIds,
+						IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
+					};
+
+					Task<long> calculateNativesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
+					_jobStatisticsContainer.ImagesBytesRequested = calculateNativesTotalSizeTask;
 				}
 			}
 			catch (Exception e)

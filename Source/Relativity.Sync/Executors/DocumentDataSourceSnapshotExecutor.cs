@@ -13,7 +13,7 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class DocumentDataSourceSnapshotExecutor : IExecutor<IDataSourceSnapshotConfiguration>
+	internal sealed class DocumentDataSourceSnapshotExecutor : IExecutor<IDocumentDataSourceSnapshotConfiguration>
 	{
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDocumentDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogInformation("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
 				configuration.DataSourceArtifactId, configuration.GetFieldMappings());
