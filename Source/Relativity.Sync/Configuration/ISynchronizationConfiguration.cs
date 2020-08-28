@@ -58,6 +58,6 @@ namespace Relativity.Sync.Configuration
 
 		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
 
-		string ProductionImagePrecedence { get; }
+		int[] ProductionImagePrecedence { get; }
 	}
 }

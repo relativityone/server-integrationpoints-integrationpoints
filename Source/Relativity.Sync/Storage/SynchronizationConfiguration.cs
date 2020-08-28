@@ -1,6 +1,7 @@
 ﻿using System;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
@@ -11,6 +12,7 @@ namespace Relativity.Sync.Storage
 
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
+		private readonly ISerializer _serializer;
 		private readonly ISyncLog _syncLog;
 
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
@@ -33,10 +35,11 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
 
-		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISyncLog syncLog)
+		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISerializer serializer, ISyncLog syncLog)
 		{
 			_cache = cache;
 			_syncJobParameters = syncJobParameters;
+			_serializer = serializer;
 			_syncLog = syncLog;
 		}
 
@@ -78,7 +81,22 @@ namespace Relativity.Sync.Storage
 		public bool ImageImport => _cache.GetFieldValue<bool>(ImageImportGuid);
 		public bool IncludeOriginalImages => _cache.GetFieldValue<bool>(IncludeOriginalImagesGuid);
 		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue<string>(ImageFileCopyModeGuid).GetEnumFromDescription<ImportImageFileCopyMode>();
-		public string ProductionImagePrecedence => _cache.GetFieldValue<string>(ProductionImagePrecedenceGuid);
+
+		public int[] ProductionImagePrecedence
+		{
+			get
+			{
+				string value = _cache.GetFieldValue<string>(ProductionImagePrecedenceGuid);
+				if (string.IsNullOrWhiteSpace(value))
+				{
+					return Array.Empty<int>();
+				}
+				else
+				{
+					return _serializer.Deserialize<int[]>(value);
+				}
+			}
+		}
 
 		// Below settings are set in SynchronizationExecutor.
 

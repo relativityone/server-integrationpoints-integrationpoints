@@ -108,7 +108,7 @@ namespace Relativity.Sync.Tests.Common
 		public bool ImageImport { get; }
 		public bool IncludeOriginalImages { get; }
 		public ImportImageFileCopyMode ImportImageFileCopyMode { get; }
-		public string ProductionImagePrecedence { get; }
+		public int[] ProductionImagePrecedence { get; }
 
 		public string GetSourceJobTagName() => _sourceJobTagName;
 
