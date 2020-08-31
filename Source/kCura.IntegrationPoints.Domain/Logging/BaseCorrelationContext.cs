@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace kCura.IntegrationPoints.Domain.Logging
@@ -12,7 +13,7 @@ namespace kCura.IntegrationPoints.Domain.Logging
 
 		public BaseCorrelationContext()
 		{
-			ApplicationBuildVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			ApplicationBuildVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 		}
 
 		public virtual Dictionary<string, object> ToDictionary()
