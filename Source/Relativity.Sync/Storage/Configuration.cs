@@ -152,7 +152,7 @@ namespace Relativity.Sync.Storage
 							string longTextField = await Policy
 								.Handle<Exception>()
 								.WaitAndRetryAsync(maxNumberOfRetries, i => TimeSpan.FromMilliseconds(maxWaitTime))
-								.ExecuteAsync(async () => await ReadLongTextFieldAsync(objectManager, guid).ConfigureAwait(false))
+								.ExecuteAsync(() => ReadLongTextFieldAsync(objectManager, guid))
 								.ConfigureAwait(false);
 
 							_logger.LogVerbose("Long text field with guid {guid} read.", guid);

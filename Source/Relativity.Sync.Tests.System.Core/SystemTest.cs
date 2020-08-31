@@ -4,25 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using QueryResult = kCura.Relativity.Client.QueryResult;
 using User = Relativity.Services.User.User;
 
 namespace Relativity.Sync.Tests.System.Core
 {
 	public abstract class SystemTest : IDisposable
 	{
-#pragma warning disable CS0618 // Type or member is obsolete
 		protected readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-
+#pragma warning disable CS0618 // Type or member is obsolete
 		protected IRSAPIClient Client { get; private set; }
 #pragma warning restore CS0618 // Type or member is obsolete
+
 		protected ServiceFactory ServiceFactory { get; private set; }
 		protected TestEnvironment Environment { get; private set; }
 

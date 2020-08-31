@@ -1,6 +1,7 @@
 ﻿using System;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
@@ -11,6 +12,7 @@ namespace Relativity.Sync.Storage
 
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
+		private readonly ISerializer _serializer;
 		private readonly ISyncLog _syncLog;
 
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
@@ -28,10 +30,16 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 
-		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISyncLog syncLog)
+		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
+		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
+		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
+		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
+
+		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISerializer serializer, ISyncLog syncLog)
 		{
 			_cache = cache;
 			_syncJobParameters = syncJobParameters;
+			_serializer = serializer;
 			_syncLog = syncLog;
 		}
 
@@ -69,6 +77,26 @@ namespace Relativity.Sync.Storage
 		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(ImportOverwriteModeGuid)));
 		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue<string>(FieldOverlayBehaviorGuid).GetEnumFromDescription<FieldOverlayBehavior>();
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue<string>(NativesBehaviorGuid).GetEnumFromDescription<ImportNativeFileCopyMode>();
+
+		public bool ImageImport => _cache.GetFieldValue<bool>(ImageImportGuid);
+		public bool IncludeOriginalImages => _cache.GetFieldValue<bool>(IncludeOriginalImagesGuid);
+		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue<string>(ImageFileCopyModeGuid).GetEnumFromDescription<ImportImageFileCopyMode>();
+
+		public int[] ProductionImagePrecedence
+		{
+			get
+			{
+				string value = _cache.GetFieldValue<string>(ProductionImagePrecedenceGuid);
+				if (string.IsNullOrWhiteSpace(value))
+				{
+					return Array.Empty<int>();
+				}
+				else
+				{
+					return _serializer.Deserialize<int[]>(value);
+				}
+			}
+		}
 
 		// Below settings are set in SynchronizationExecutor.
 
