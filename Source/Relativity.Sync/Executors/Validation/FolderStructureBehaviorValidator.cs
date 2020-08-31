@@ -13,7 +13,7 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class FolderStructureBehaviorValidator : IValidator
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public bool ShouldValidate(ISyncPipeline pipeline)
 		{
-			return true;
+			return pipeline.GetType() == typeof(SyncDocumentRunPipeline) || pipeline.GetType() == typeof(SyncDocumentRetryPipeline);
 		}
 
 		private async Task<ValidationResult> ValidateFolderStructureBehaviorAsync(IValidationConfiguration configuration, CancellationToken token)

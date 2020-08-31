@@ -7,7 +7,7 @@ using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
-	internal sealed class ImageFieldMappingValidator : BaseFieldMappingValidatorBase
+	internal sealed class ImageFieldMappingValidator : FieldMappingValidatorBase
 	{
 		public ImageFieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger) : base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, logger)
 		{

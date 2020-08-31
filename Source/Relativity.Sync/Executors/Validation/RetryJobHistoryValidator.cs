@@ -75,7 +75,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public bool ShouldValidate(ISyncPipeline pipeline)
 		{
-			return pipeline.GetType() == typeof(SyncDocumentRetryPipeline);
+			return pipeline.GetType() == typeof(SyncDocumentRetryPipeline) || pipeline.GetType() == typeof(SyncImageRetryPipeline);
 		}
 	}
 }

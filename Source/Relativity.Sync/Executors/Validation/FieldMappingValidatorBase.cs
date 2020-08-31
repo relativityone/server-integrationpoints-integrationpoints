@@ -12,7 +12,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors.Validation
 {
-	internal abstract class BaseFieldMappingValidatorBase : IValidator
+	internal abstract class FieldMappingValidatorBase : IValidator
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
@@ -20,7 +20,7 @@ namespace Relativity.Sync.Executors.Validation
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
 		protected readonly ISyncLog _logger;
 
-		protected BaseFieldMappingValidatorBase(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
+		protected FieldMappingValidatorBase(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;
@@ -39,8 +39,8 @@ namespace Relativity.Sync.Executors.Validation
 				ValidateUniqueIdentifier(fieldMaps, onlyIdentifierShouldBeMapped);
 			allMessages.Add(validateUniqueIdentifier);
 
-			Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
-			Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
+			Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFieldsAsync(configuration, fieldMaps, token);
+			Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFieldsAsync(configuration, fieldMaps, token);
 
 			ValidationMessage[] fieldMappingValidationMessages =
 				await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Executors.Validation
 				return new ValidationMessage("The unique identifier must be mapped.");
 			}
 
-			if (mappedFields.Count > 1)
+			if (onlyIdentifierShouldBeMapped && mappedFields.Count > 1)
 			{
 				return new ValidationMessage("Only unique identifier must be mapped.");
 			}
@@ -99,7 +99,7 @@ namespace Relativity.Sync.Executors.Validation
 			return validationMessage;
 		}
 
-		protected async Task<ValidationMessage> ValidateDestinationFields(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
+		protected async Task<ValidationMessage> ValidateDestinationFieldsAsync(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
 		{
 			_logger.LogVerbose("Validating fields in destination workspace");
 
@@ -116,7 +116,7 @@ namespace Relativity.Sync.Executors.Validation
 			return validationMessage;
 		}
 
-		protected async Task<ValidationMessage> ValidateSourceFields(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
+		protected async Task<ValidationMessage> ValidateSourceFieldsAsync(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
 		{
 			_logger.LogVerbose("Validating fields in source workspace");
 
