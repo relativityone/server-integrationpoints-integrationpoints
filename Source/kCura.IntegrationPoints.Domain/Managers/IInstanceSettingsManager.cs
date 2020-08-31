@@ -7,5 +7,7 @@
 		bool RetrieveAllowNoSnapshotImport();
 
 		bool RetrieveRestrictReferentialFileLinksOnImport();
+
+		string RetrieveBlockedIPs();
 	}
 }
