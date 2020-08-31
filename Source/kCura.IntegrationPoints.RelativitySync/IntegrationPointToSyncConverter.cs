@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -35,7 +37,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
+
 		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
+
+		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
+		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
+		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
+		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
 
 		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService)
 		{
@@ -92,7 +100,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return "ReadFromField";
 		}
 
-		private static string NativesBehavior(ImportNativeFileCopyModeEnum mode)
+		private static string CopyNativeFilesBehavior(ImportNativeFileCopyModeEnum mode)
 		{
 			if (mode == ImportNativeFileCopyModeEnum.CopyFiles)
 			{
@@ -105,6 +113,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			return "None";
+		}
+
+		private static string CopyImageFilesBehavior(ImportNativeFileCopyModeEnum mode)
+		{
+			if (mode == ImportNativeFileCopyModeEnum.CopyFiles)
+			{
+				return "Copy";
+			}
+			else
+			{
+				return "Link";
+			}
 		}
 
 		private static async Task<string> GetFolderPathSourceFieldNameAsync(int artifactId, int workspaceId, IObjectManager objectManager)
@@ -123,6 +143,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
 			return result.Objects[0].Values[0].ToString();
 		}
+		
+		private string GetProductionImagePrecedence(ImportSettings importSettings)
+		{
+			return _serializer.Serialize(importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)));
+		}
 
 		private async Task<CreateRequest> PrepareCreateRequestAsync(IExtendedJob job, 
 			SourceConfiguration sourceConfiguration,
@@ -132,6 +157,177 @@ namespace kCura.IntegrationPoints.RelativitySync
 			RelativityObject jobHistoryToRetry)
 		{
 			string folderPathSourceFieldName = await GetFolderPathSourceFieldNameAsync(folderConf.FolderPathSourceField, sourceConfiguration.SourceWorkspaceArtifactId, objectManager).ConfigureAwait(false);
+
+			List<FieldRefValuePair> fields = new List<FieldRefValuePair>()
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = CreateSavedSearchInDestinationGuid
+					},
+					Value = importSettings.CreateSavedSearchForTagging
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataDestinationArtifactIdGuid
+					},
+					Value = importSettings.DestinationFolderArtifactId
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataDestinationTypeGuid
+					},
+					Value = "Folder"
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataSourceArtifactIdGuid
+					},
+					Value = sourceConfiguration.SavedSearchArtifactId
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataSourceTypeGuid
+					},
+					Value = "SavedSearch"
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DestinationFolderStructureBehaviorGuid
+					},
+					Value = DestinationFolderStructureBehavior(folderConf)
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = FolderPathSourceFieldNameGuid
+					},
+					Value = folderPathSourceFieldName
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DestinationWorkspaceArtifactIdGuid
+					},
+					Value = sourceConfiguration.TargetWorkspaceArtifactId
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = EmailNotificationRecipientsGuid
+					},
+					Value = job.IntegrationPointModel.EmailNotificationRecipients
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = FieldMappingsGuid
+					},
+					Value = FieldMapHelper.FixMappings(job.IntegrationPointModel.FieldMappings, _serializer)
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = FieldOverlayBehaviorGuid
+					},
+					Value = importSettings.FieldOverlayBehavior
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = ImportOverwriteModeGuid
+					},
+					Value = importSettings.ImportOverwriteMode.ToString()
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = MoveExistingDocumentsGuid
+					},
+					Value = importSettings.MoveExistingDocuments
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = NativesBehaviorGuid
+					},
+					Value = CopyNativeFilesBehavior(importSettings.ImportNativeFileCopyMode)
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = RdoArtifactTypeIdGuid
+					},
+					Value = 10
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = JobHistoryToRetryGuid
+					},
+					Value = jobHistoryToRetry
+				},
+				new FieldRefValuePair()
+				{
+					Field = new FieldRef()
+					{
+						Guid = ImageImportGuid
+					},
+					Value = importSettings.ImageImport
+				}
+			};
+
+			if (importSettings.ImageImport)
+			{
+				fields.AddRange(new[]
+				{
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef()
+						{
+							Guid = IncludeOriginalImagesGuid
+						},
+						Value = importSettings.IncludeOriginalImages
+					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef()
+						{
+							Guid = ImageFileCopyModeGuid
+						},
+						Value = CopyImageFilesBehavior(importSettings.ImportNativeFileCopyMode)
+					},
+					new FieldRefValuePair()
+					{
+						Field = new FieldRef()
+						{
+							Guid = ProductionImagePrecedenceGuid
+						},
+						Value = GetProductionImagePrecedence(importSettings)
+					}
+				});
+			}
 
 			return new CreateRequest
 			{
@@ -143,137 +339,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				{
 					ArtifactID = job.JobHistoryId
 				},
-				FieldValues = new[]
-				{
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = CreateSavedSearchInDestinationGuid
-						},
-						Value = importSettings.CreateSavedSearchForTagging
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataDestinationArtifactIdGuid
-						},
-						Value = importSettings.DestinationFolderArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataDestinationTypeGuid
-						},
-						Value = "Folder"
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataSourceArtifactIdGuid
-						},
-						Value = sourceConfiguration.SavedSearchArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataSourceTypeGuid
-						},
-						Value = "SavedSearch"
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DestinationFolderStructureBehaviorGuid
-						},
-						Value = DestinationFolderStructureBehavior(folderConf)
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = FolderPathSourceFieldNameGuid
-						},
-						Value = folderPathSourceFieldName
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DestinationWorkspaceArtifactIdGuid
-						},
-						Value = sourceConfiguration.TargetWorkspaceArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = EmailNotificationRecipientsGuid
-						},
-						Value = job.IntegrationPointModel.EmailNotificationRecipients
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = FieldMappingsGuid
-						},
-						Value = FieldMapHelper.FixMappings(job.IntegrationPointModel.FieldMappings, _serializer)
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = FieldOverlayBehaviorGuid
-						},
-						Value = importSettings.FieldOverlayBehavior
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = ImportOverwriteModeGuid
-						},
-						Value = importSettings.ImportOverwriteMode.ToString()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = MoveExistingDocumentsGuid
-						},
-						Value = importSettings.MoveExistingDocuments
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = NativesBehaviorGuid
-						},
-						Value = NativesBehavior(importSettings.ImportNativeFileCopyMode)
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = RdoArtifactTypeIdGuid
-						},
-						Value = 10
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = JobHistoryToRetryGuid
-						},
-						Value = jobHistoryToRetry
-					},
-				}
+				FieldValues = fields
 			};
 		}
 	}
