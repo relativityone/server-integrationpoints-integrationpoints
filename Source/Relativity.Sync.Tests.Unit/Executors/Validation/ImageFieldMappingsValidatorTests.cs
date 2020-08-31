@@ -103,6 +103,40 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
+		public async Task ValidateAsync_ShouldFailOnMoreThanOneMapping()
+		{
+			// Arrange
+			var additionalFieldsMapped = _fieldMappings.Concat(new FieldMap[]
+			{
+				new FieldMap
+				{
+					DestinationField = new FieldEntry
+					{
+						DisplayName = "Test",
+						FieldIdentifier = 5,
+					},
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Test",
+						FieldIdentifier = 5,
+					},
+					FieldMapType = FieldMapType.None
+				}
+			}).ToList();
+
+			_validationConfiguration.Setup(x => x.GetFieldMappings()).Returns(additionalFieldsMapped).Verifiable();
+
+			// Act
+			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+			// Assert
+			actualResult.IsValid.Should().BeFalse();
+			actualResult.Messages.First().ShortMessage.Should().Be("Only unique identifier must be mapped.");
+
+			Mock.Verify(_validationConfiguration);
+		}
+
+		[Test]
 		public async Task ValidateAsync_ShouldDeserializeThrowsException()
 		{
 			// Arrange
