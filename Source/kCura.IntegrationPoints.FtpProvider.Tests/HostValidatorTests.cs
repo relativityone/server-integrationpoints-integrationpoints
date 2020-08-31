@@ -14,6 +14,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
 		private Mock<IManagerFactory> _managerFactoryFake;
 		private HostValidator _sut;
 
+		private const string _HOST_IP = "55.66.77.88";
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -48,28 +50,23 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
 			canConnect.Should().BeFalse();
 		}
 
-		[Test]
-		public void CanConnectTo_ShouldReturnTrueForIP()
-		{
-			// act
-			bool canConnect = _sut.CanConnectTo("55.66.77.88");
-
-			// assert
-			canConnect.Should().BeTrue();
-		}
-
-		[Test]
-		public void CanConnectTo_ShouldReturnFalseForIP()
+		[TestCase(null, _HOST_IP, true)]
+		[TestCase("", _HOST_IP, true)]
+		[TestCase("127.0.0.1", _HOST_IP, true)]
+		[TestCase("127.0.0.1;222.222.222.222", _HOST_IP, true)]
+		[TestCase(_HOST_IP, _HOST_IP, false)]
+		[TestCase(_HOST_IP + ";222.222.222.222", _HOST_IP, false)]
+		[TestCase("222.222.222.222;" + _HOST_IP, _HOST_IP, false)]
+		public void CanConnectTo_ShouldReturnExpectedCanConnectResult(string blockedIPs, string targetIP, bool expectedCanConnectResult)
 		{
 			// arrange
-			const string ip = "55.66.77.88";
-			_instanceSettingManagerFake.Setup(x => x.RetrieveBlockedIPs()).Returns(ip);
+			_instanceSettingManagerFake.Setup(x => x.RetrieveBlockedIPs()).Returns(blockedIPs);
 
 			// act
-			bool canConnect = _sut.CanConnectTo(ip);
+			bool canConnect = _sut.CanConnectTo(targetIP);
 
 			// assert
-			canConnect.Should().BeFalse();
+			canConnect.Should().Be(expectedCanConnectResult);
 		}
 	}
 }

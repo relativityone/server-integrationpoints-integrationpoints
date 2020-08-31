@@ -26,16 +26,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
 				IEnumerable<IPAddress> blockedIPs = GetBlockedIPs(blockedIPsSettingValue);
 				List<IPAddress> hostIPs = ResolveIPs(host).ToList();
 
-				foreach (IPAddress blockedIP in blockedIPs)
-				{
-					bool isHostBlocked = hostIPs.Contains(blockedIP);
-					if (isHostBlocked)
-					{
-						return false;
-					}
-				}
-
-				return true;
+				bool canConnect = !blockedIPs.Any(blockedIP => hostIPs.Contains(blockedIP));
+				return canConnect;
 			}
 			else
 			{
