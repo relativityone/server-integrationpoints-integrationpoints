@@ -2,47 +2,51 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.FtpProvider.Connection
 {
-	public class FtpConnector : Interfaces.IFtpConnector
+	public class FtpConnector : IFtpConnector
     {
-		private readonly IAPILog _logger;
+	    private bool _disposed;
+	    private FtpWebRequest _request;
+	    private FtpWebResponse _ftpClient;
 
-		internal bool _disposed;
-	    internal FtpWebRequest _request;
-		internal FtpWebResponse _ftpClient;
-        internal Stream _stream;
+	    private int _bufferSize = 2048;
+	    private int _downloadRetryCount;
+	    private int _streamRetryCount;
+	    private Stream _stream;
 
-        internal readonly string _host;
-        internal readonly int _port;
-        internal readonly string _username;
-        internal readonly string _password;
-        internal int _downloadRetryCount;
-        internal int _streamRetryCount;
-        public int Timeout { get; set; }
-        public int BufferSize { get; set; }
+        private readonly string _host;
+        private readonly int _port;
+        private readonly string _password;
+        private readonly string _username;
+        private readonly IHostValidator _hostValidator;
+        private readonly IAPILog _logger;
 
-		private FtpConnector(IAPILog logger)
-		{
-			_logger = logger;
-		}
-
-        public FtpConnector(IAPILog logger, string host, int port, string username, string password)
-			: this(logger)
+        public int Timeout { get; set; } = Constants.Timeout;
+        
+        public FtpConnector(string host, int port, string username, string password, IHostValidator hostValidator, IAPILog logger)
         {
             _host = host.Normalize();
             _port = port;
             _username = string.IsNullOrWhiteSpace(username) ? Constants.DefaultUsername : username.Normalize();
             _password = string.IsNullOrWhiteSpace(username) ? Constants.DefaultPassword : password.Normalize();
-            BufferSize = 2048;
-            Timeout = Constants.Timeout;
+            _hostValidator = hostValidator;
+            _logger = logger;
         }
 
         public bool TestConnection()
         {
+            _logger.LogInformation("Checking if can connect to specified host");
+            if (!_hostValidator.CanConnectTo(_host))
+            {
+	            _logger.LogInformation("Cannot connect to specified host because it's blacklisted");
+	            return false;
+            }
+
 			_logger.LogInformation("Connection test has been started...");
 	        _request = CreateRequest(BuildBaseFtpUrl(_host, _port), _username, _password);
 	        _request.Method = WebRequestMethods.Ftp.ListDirectory;
@@ -107,13 +111,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                                 using (var writer = new FileStream(localDownloadPath, FileMode.Create))
                                 {
 									_logger.LogInformation("FileStream has been created.");
-                                    var buffer = new byte[BufferSize];
+                                    var buffer = new byte[_bufferSize];
 
-                                    var readCount = responseStream.Read(buffer, 0, BufferSize);
+                                    int readCount = responseStream.Read(buffer, 0, _bufferSize);
                                     while (readCount > 0)
                                     {
                                         writer.Write(buffer, 0, readCount);
-                                        readCount = responseStream.Read(buffer, 0, BufferSize);
+                                        readCount = responseStream.Read(buffer, 0, _bufferSize);
                                     }
                                 }
 								_logger.LogInformation("File has been sucessfully downloaded.");
