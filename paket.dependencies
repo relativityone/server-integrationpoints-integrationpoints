@@ -88,7 +88,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-    nuget Relativity.Sync 0.5.0-pre.13
+    nuget Relativity.Sync 0.5.0-pre.26
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9

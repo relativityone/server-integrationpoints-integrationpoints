@@ -34,5 +34,8 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/Integra
         traits << 'jenkins.plugins.git.traits.CleanAfterCheckoutTrait' {
             extension(class:'hudson.plugins.git.extensions.impl.CleanCheckout')
         }
+
+        def namedBranchStrategies = it / sources / data / 'jenkins.branch.BranchSource' / buildStrategies / 'jenkins.branch.buildstrategies.basic.AllBranchBuildStrategyImpl' / 'strategies'
+        namedBranchStrategies / 'jenkins.branch.buildstrategies.basic.SkipInitialBuildOnFirstBranchIndexing'
     }
 }
