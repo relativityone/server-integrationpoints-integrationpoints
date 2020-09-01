@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Core.Tests;
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		[Test]
 		public void JobExecutor_ShouldPushApplicationVersionToLogContext()
 		{
-			string expectedVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			string expectedVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 
 			ExecuteJob(0, 0, 0, 0);
 
