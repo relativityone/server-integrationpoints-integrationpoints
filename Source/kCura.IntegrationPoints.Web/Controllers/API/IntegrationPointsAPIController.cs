@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			if (mappingHasWarnings)
 			{
-				_logger.LogWarning("Saving Integration Point ArtifactID: {IntegrationPointID} with potentially invalid field mappings.", model.ArtifactID);
+				_logger.LogWarning("Saving Integration Point with potentially invalid field mappings.");
 			}
 			
 			if (destinationWorkspaceChanged)
@@ -114,6 +114,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 								var validationResultMapper = new ValidationResultMapper();
 								ValidationResultDTO validationResultDto = validationResultMapper.Map(ex.ValidationResult);
 								return Request.CreateResponse(HttpStatusCode.NotAcceptable, validationResultDto);
+							}
+
+							if (mappingHasWarnings)
+							{
+								_logger.LogWarning("Saved Integration Point ArtifactID: {IntegrationPointID} with potentially invalid field mappings.", createdId);
 							}
 
 							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
