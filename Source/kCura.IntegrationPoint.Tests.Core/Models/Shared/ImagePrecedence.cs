@@ -4,10 +4,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Shared
 {
     public enum ImagePrecedence
     {
-		[Description("")]
+		[Description("Original Images")]
         OriginalImages,
 
-	    [Description("")]
+	    [Description("Produced Images")]
 		ProducedImages
     }
 }
