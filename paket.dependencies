@@ -16,7 +16,7 @@ nuget kCura.Relativity.Client ~> 11.2.0
 nuget Relativity.Authentication ~> 11.2.0
 nuget Relativity.CustomPages ~> 11.2.0
 nuget Relativity.Data ~> 11.2.0
-nuget Relativity.DataExchange.Client.SDK 1.10.7
+nuget Relativity.DataExchange.Client.SDK 1.10.28
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0
 nuget Relativity.Services.Interfaces ~> 11.2.0
 nuget Relativity.Services.Interfaces.Private ~> 11.2.0
@@ -42,7 +42,7 @@ nuget Relativity.Vfs.IO 1.0.24
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre-4
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 2020.1 content: none 		//Relativity.DataExchange.Client.SDK
+nuget kCura.OutsideIn.FI.Win32 2020.3 content: none 		//Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget AutoMapper 4.2.1
@@ -83,13 +83,13 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.2.18
+	nuget Relativity.Sync 0.2.25
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
 	nuget Banzai ~> 3.0
 	nuget kCura.Apps.Common.Utils 2.1.9
-	nuget kCura.OutsideIn.FI.Win32 2020.1
+	nuget kCura.OutsideIn.FI.Win32 2020.3
 	nuget Relativity.Kepler 2.6.2
 	nuget Relativity.Services.DataContracts ~> 11.2.0
 	nuget Relativity.Services.Interfaces ~> 11.2
