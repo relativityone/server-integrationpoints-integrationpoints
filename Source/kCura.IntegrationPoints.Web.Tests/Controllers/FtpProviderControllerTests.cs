@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         [TestCase("", "test.host", "", "", "", 21, true, HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME)]
         [TestCase("AnyFileName", "test.h!@#$%^&*()__+=[]\',./<>?:;ost", "", "", "", 21, true, HttpStatusCode.BadRequest, ErrorMessage.INVALID_HOST_NAME)]
         [TestCase("AnyFileName", "test.host", "", "", "", 88888, true, HttpStatusCode.NoContent, null)]
-        [TestCase("AnyFileName", "test.host", "", "", "", 88888, false, HttpStatusCode.NotImplemented, "Nothing happened")]
+        [TestCase("AnyFileName", "test.host", "", "", "", 88888, false, HttpStatusCode.Forbidden, "Cannot connect to specified host.")]
         public void ShouldValidateSettingsCorrectness(
             string filename, 
             string host, 
@@ -55,7 +55,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             string protocol, 
             int port, 
             bool testConnectionResult,
-            HttpStatusCode expectedStatus, string expectedDescription)
+            HttpStatusCode expectedStatus, 
+            string expectedDescription)
         {
             _testConnectionResult = testConnectionResult;
             // NSubstitute result is passed by value so refreshing TestConnection mockup is needed
