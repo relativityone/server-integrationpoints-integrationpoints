@@ -82,8 +82,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
                     }
                     else
                     {
-                        _logger.LogInformation("Cannot connect to specified host.");
-                        response = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+	                    const string message = "Cannot connect to specified host.";
+	                    _logger.LogInformation(message);
+                        response = new HttpStatusCodeResult(HttpStatusCode.Forbidden, message);
                     }
                 }
             }
