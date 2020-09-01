@@ -80,6 +80,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
 						_logger.LogInformation("Connected.");
                         response = new HttpStatusCodeResult(HttpStatusCode.NoContent);
                     }
+                    else
+                    {
+	                    const string message = "Cannot connect to specified host.";
+	                    _logger.LogInformation(message);
+                        response = new HttpStatusCodeResult(HttpStatusCode.Forbidden, message);
+                    }
                 }
             }
             catch (Exception exception)

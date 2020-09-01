@@ -49,6 +49,8 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="FtpStream.cs" />
+    <Compile Include="HostValidator.cs" />
+    <Compile Include="Interfaces\IHostValidator.cs" />
     <Compile Include="SftpConnector.cs" />
     <Compile Include="ConnectorFactory.cs" />
     <Compile Include="FtpConnector.cs" />
@@ -56,6 +58,14 @@
     <Compile Include="Interfaces\IFtpConnector.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj">
       <Project>{3e33dd7e-266f-48f8-86a2-3cdb836f2947}</Project>
       <Name>kCura.IntegrationPoints.FtpProvider.Helpers</Name>
