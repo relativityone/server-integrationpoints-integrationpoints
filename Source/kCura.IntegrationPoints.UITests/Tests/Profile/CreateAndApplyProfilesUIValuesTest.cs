@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			return model;
 		}
 
-		private RelativityProviderModel CreateRelativityProviderProductionToProductionModel()
+		private RelativityProviderModel CreateRelativityProviderSavedSearchImagesModel()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
 			{
@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		public async Task CopyProfile_ShouldDisplayCorrectValues_WhenSourceImageAndProducedImagePrecedence()
 		{
 			// Arrange
-			RelativityProviderModel model = CreateRelativityProviderProductionToProductionModel();
+			RelativityProviderModel model = CreateRelativityProviderSavedSearchImagesModel();
 			model.MultiSelectFieldOverlay =
 				RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
 			model.ImagePrecedence = ImagePrecedence.ProducedImages;
