@@ -5,9 +5,9 @@ using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
-	internal sealed class ImageLinksValidationBase : CopyLinksValidatorBase
+	internal sealed class ImageCopyLinksValidator : CopyLinksValidatorBase
 	{
-		public ImageLinksValidationBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger) : base(instanceSettings, userContext, serviceFactory, logger)
+		public ImageCopyLinksValidator(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger) : base(instanceSettings, userContext, serviceFactory, logger)
 		{
 		}
 
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		protected override bool ShouldSkipValidation(IValidationConfiguration configuration)
 		{
-			return configuration.ImportNativeFileCopyMode != ImportNativeFileCopyMode.SetFileLinks
+			return configuration.ImportImageFileCopyMode != ImportImageFileCopyMode.SetFileLinks;
 		}
 	}
 }
