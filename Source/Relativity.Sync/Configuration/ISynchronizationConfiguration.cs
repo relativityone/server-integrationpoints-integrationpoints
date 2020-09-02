@@ -51,5 +51,13 @@ namespace Relativity.Sync.Configuration
 		string OiFileTypeColumnName { get; set; }
 
 		string SupportedByViewerColumn { get; set; }
+
+		bool ImageImport { get; }
+
+		bool IncludeOriginalImages { get; }
+
+		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
+
+		int[] ProductionImagePrecedence { get; }
 	}
 }

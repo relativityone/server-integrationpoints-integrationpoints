@@ -1,23 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.API;
+using System.Collections.Generic;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.AutomatedWorkflows.Services.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
-using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
 	internal class AutomatedWorkflowExecutor : IExecutor<IAutomatedWorkflowTriggerConfiguration>
 	{
 		private readonly ISyncLog _logger;
-		private readonly ISyncServiceManager _servicesMgr;
+		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
 
-		public AutomatedWorkflowExecutor(ISyncLog logger, ISyncServiceManager servicesMgr)
+		public AutomatedWorkflowExecutor(ISyncLog logger, IDestinationServiceFactoryForAdmin serviceFactory)
 		{
 			_logger = logger;
-			_servicesMgr = servicesMgr;
+			_serviceFactory = serviceFactory;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CancellationToken token)
@@ -28,11 +28,11 @@ namespace Relativity.Sync.Executors
 				
 				_logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, state);
 				
-				SendTriggerBody body = new SendTriggerBody()
+				SendTriggerBody body = new SendTriggerBody
 				{
 					Inputs = new List<TriggerInput>
 					{
-						new TriggerInput()
+						new TriggerInput
 						{
 							ID = configuration.TriggerId,
 							Value = configuration.TriggerValue
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
 					State = state
 				};
 				
-				using (IAutomatedWorkflowsService triggerProcessor = _servicesMgr.CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System))
+				using (IAutomatedWorkflowsService triggerProcessor = await _serviceFactory.CreateProxyAsync<IAutomatedWorkflowsService>().ConfigureAwait(false))
 				{
 					await triggerProcessor.SendTriggerAsync(configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, body).ConfigureAwait(false);
 				}
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors
 			catch (Exception ex)
 			{
 				string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
-				_logger.LogWarning(ex, message, configuration.TriggerName, configuration.DestinationWorkspaceArtifactId);
+				_logger.LogError(ex, message, configuration.TriggerName, configuration.DestinationWorkspaceArtifactId);
 			}
 			
 			_logger.LogInformation("For workspace : {0} trigger {1} finished sending.", configuration.DestinationWorkspaceArtifactId, configuration.TriggerName);

@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
+using Relativity.Sync.Logging;
+using Relativity.Sync.Executors;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.AutomatedWorkflows.Services.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors;
-using Relativity.Sync.Logging;
+
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -17,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	internal sealed class AutomatedWorkflowExecutorTests
 	{
 		private AutomatedWorkflowExecutor _instance;
-		private Mock<ISyncServiceManager> _servicesMgr;
+		private Mock<IDestinationServiceFactoryForAdmin> _serviceFactory;
 		private Mock<IAutomatedWorkflowsService> _triggerProcessorService;
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _configuration;
 
@@ -27,10 +28,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			_configuration.Setup(m => m.SynchronizationExecutionResult).Returns(ExecutionResult.Success());
 			_triggerProcessorService = new Mock<IAutomatedWorkflowsService>();
-			_servicesMgr = new Mock<ISyncServiceManager>();
-			_servicesMgr.Setup(m => m.CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System))
-				.Returns(_triggerProcessorService.Object);
-			_instance = new AutomatedWorkflowExecutor(new EmptyLogger(), _servicesMgr.Object);
+			_serviceFactory = new Mock<IDestinationServiceFactoryForAdmin>();
+			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>())
+				.Returns(Task.FromResult(_triggerProcessorService.Object));
+			_instance = new AutomatedWorkflowExecutor(new EmptyLogger(), _serviceFactory.Object);
 		}
 
 		[Test]
@@ -59,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ExecuteAsync_ShouldReturnSuccess_WhenSynchronisationResultIsNull()
+		public async Task ExecuteAsync_ShouldReturnSuccess_WhenSynchronizationResultIsNull()
 		{
 			_configuration.Setup(m => m.SynchronizationExecutionResult).Returns((ExecutionResult)null);
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
@@ -69,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ExecuteAsync_ShouldReturnSuccess_WhenKeplerCanNotReturnAutomatedWorkflowsService()
 		{
-			_servicesMgr.Setup(m => m.CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System)).Throws<Exception>();
+			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>()).Throws<Exception>();
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None)
 				.ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -78,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ExecuteAsync_ShouldReturnSuccess_WhenKeplerReturnsNullAutomatedWorkflowsService()
 		{
-			_servicesMgr.Setup(m => m.CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System)).Returns((IAutomatedWorkflowsService)null); 
+			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>()).Returns(Task.FromResult((IAutomatedWorkflowsService)null));
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
