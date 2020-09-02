@@ -12,12 +12,9 @@ We need to add validatior to ValidationNode:
 
 ## Decision
 
-Proposed solutions:
+The interface *IValidator* should be rafactor so that every implemenatation can make a decision based on *IValidationConfiguration* whether it should run the validation for given job. 
 
-1. Add another step to _FieldMappingsValidator_
-2. Analyze existing validators and check which of them are also applicable to Images Sync and create another rule chain specific for images
-
-TBD
+For *FieldMapValidator*, there should be two seperate implementations: *ImageFieldMapValidator* and *DocumentFieldMapValidator*, each meeting requirements for covered flow.
 
 ## Consequences
 
