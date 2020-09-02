@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Models;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected IWebElement SelectCopyNoFilesElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "exportImages-radio-0")]
-		protected IWebElement SelectCopyImagesYesElement { get; set; }
+		public IWebElement SelectCopyImagesYesElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "exportImages-radio-1")]
 		protected IWebElement SelectCopyImagesNoElement { get; set; }
@@ -78,6 +78,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		[FindsBy(How = How.Id, Using = "add-workspace-field")]
 		protected IWebElement AddWorkspaceFieldElement { get; set; }
+
+		[FindsBy(How = How.Id, Using = "image-production-selection")]
+		protected IWebElement ProductionPrecedenceElement { get; set; }
 
 		[FindsBy(How = How.Id, Using = "image-production-precedence-button")]
 		protected IWebElement ChooseProductionPrecedenceBtn { get; set; }
@@ -204,6 +207,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			get { return SelectImagePrecedenceElement.SelectedOption.Text; }
 			set { SelectImagePrecedenceElement.SelectByText(value); }
 		}
+
+		public string ProductionPrecedenceText => ProductionPrecedenceElement.Text;
 
 		public string PageInfoMessageText => PageInfoMessage.Text;
 
