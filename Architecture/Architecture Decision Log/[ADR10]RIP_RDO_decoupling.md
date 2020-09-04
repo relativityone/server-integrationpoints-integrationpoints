@@ -22,7 +22,7 @@ List of RIP RDOs, which Sync depends on:
 - Sync require `Sync Configuration` instance to be created prior to the job, which implicates...
 - ...that external application must know all Sync's RDOs, and must be able to create them in the workspace when installed (Application Schema)
 
-## Option 1 - architectural changes and refactoring
+## Decision
 
 ### **Reporting job errors and updating job progress**
 
@@ -77,21 +77,9 @@ To tag documents in source workspace, Sync is using pre-existing RIP Object Type
 
 Currently, `Sync Configuration`'s Parent Object Type is RIP `Job History`. This must be obviously changed to some other Object Type. This type should be probably `Workspace`.
 
-## Option 2 - one solution to rule them all
-
-There is one another (but probably much less preferable) solution which would have the smallest possible impact, because it would require only to generate new app schema without any changes (or maybe very small changes) to existing codebase. Instead of complicating things described in Option 1, we can adapt RIP's `Job History` and `Job History Error` RDOs as they are in Sync. We would not have to touch any existing code, because all required RDOs will be included in external app schema. The rest remain the same. This approach has two main advantages:
-
-1. Despite Sync will have linked RIP's RDOs, technically it would be decoupled and could be run by any external application
-2. It will not break existing RIP or Sync workflow
-3. No need to refactor existing code
-
-On the other hand, disadvantage is that Sync would still be tightly coupled with RIP architecture (not RDOs) by having to implement `Job History` and `Job History Error` as they are. This will unable us to make any changes in the future in those RDOs, without breaking RIP compatiblity. That's why this option is still not the best.
-
 ## Consequences
 
-Option 1 is harder to implement, and there are many doubts how to properly do that:
+There are many doubts on how to properly decouple:
 
-- either introduce interfaces which external app will be forced to implement to cover features like updating job progress, history, report item level and job level errors, provide information required to retry job history
-- or create dedicated RDOs in Sync for job history and job history erorrs, but this will require to implement adapter in RIP
-
-Option 2 is easy to implement, but huge disadvantage is that we will be tightly coupled with RIP architecture and we will not be able to make any changes in `Job History` or `Job History Error` without breaking RIP compatibility.
+- either introduce interfaces which external app will be forced to implement to cover features like updating job progress, history, report item level and job level errors, provide information required to retry job
+- or create dedicated RDOs in Sync to store job history and job history erorrs, but this will require to implement adapter in RIP
