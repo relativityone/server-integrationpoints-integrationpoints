@@ -11,7 +11,7 @@ existing DataSourceSnapshotExecutors are same for Images Sync:
 + DataSourceSnapshotExecutor
 + RetryDataSourceSnapshotNode
 
-Problem is with statistics for documents size which are calculated in the end of this step. Right now we calculat there only Natives size. It would work anyway (statstic would be 0 for images), but in the future we would like to gather job size for Images
+Problem is with statistics for documents size which are calculated in the end of this step. Right now we calculate there only Natives size. It would work anyway (statstic would be 0 for images), but in the future we would like to gather job size for Images
 
 ## Decision
 

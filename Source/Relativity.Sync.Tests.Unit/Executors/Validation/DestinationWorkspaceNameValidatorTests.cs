@@ -9,6 +9,8 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -39,38 +41,63 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ItShouldHandleValidDestinationFolderName()
+		public async Task ValidateAsync_ShouldHandleValidDestinationFolderName()
 		{
+			// Arrange
 			const bool workspaceNameValidationResult = true;
 			_workspaceNameValidatorMock.Setup(v => v.Validate(_WORKSPACE_NAME, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).Returns(workspaceNameValidationResult);
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 			_workspaceNameQuery.Verify();
 		}
 
 		[Test]
-		public async Task ItShouldHandleInvalidDestinationFolderName()
+		public async Task ValidateAsync_ShouldHandleInvalidDestinationFolderName()
 		{
+			// Arrange
 			const bool workspaceNameValidationResult = false;
 			_workspaceNameValidatorMock.Setup(v => v.Validate(_WORKSPACE_NAME, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).Returns(workspaceNameValidationResult);
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeFalse();
 			result.Messages.Should().NotBeEmpty();
 		}
 
 		[Test]
-		public async Task ItShouldHandleExceptionDuringValidation()
+		public async Task ValidateAsync_ShouldHandleExceptionDuringValidation()
 		{
+			// Arrange
 			_workspaceNameValidatorMock.Setup(x => x.Validate(_WORKSPACE_NAME, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).Throws<InvalidOperationException>();
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeFalse();
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), true)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 	}
 }

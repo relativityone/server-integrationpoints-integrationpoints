@@ -1,9 +1,13 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -14,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private Mock<ISyncLog> _syncLog;
 
-		private EmailValidator _instance;
+		private EmailValidator _sut;
 
 		[SetUp]
 		public void SetUp()
@@ -23,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			_syncLog = new Mock<ISyncLog>();
 
-			_instance = new EmailValidator(_syncLog.Object);
+			_sut = new EmailValidator(_syncLog.Object);
 		}
 
 		[Test]
@@ -45,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			validationConfiguration.Setup(x => x.GetNotificationEmails()).Returns(testEmails).Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsTrue(actualResult.IsValid);
@@ -62,14 +66,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[TestCase("this is\"not\\allowed@example.com")]
 		[TestCase("this\\ still\\\"not\\\\allowed@example.com")]
 		[TestCase("1234567890123456789012345678901234567890123456789012345678901234+x@example.com", Ignore = "We do not check for long local addresses.")]
-		public async Task ValidateAsyncInvalidEmailsTests(string testEmails)
+		public async Task ValidateAsync_ShouldHandleInvalidEmails(string testEmails)
 		{
 			// Arrange
 			var validationConfiguration = new Mock<IValidationConfiguration>();
 			validationConfiguration.Setup(x => x.GetNotificationEmails()).Returns(testEmails).Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _instance.ValidateAsync(validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			ValidationResult actualResult = await _sut.ValidateAsync(validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
 			Assert.IsFalse(actualResult.IsValid);
@@ -77,6 +81,22 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			Mock.VerifyAll(validationConfiguration);
 			_syncLog.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce());
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), true)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 	}
 }

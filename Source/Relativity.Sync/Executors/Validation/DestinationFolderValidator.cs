@@ -6,6 +6,7 @@ using Relativity.Services.DataContracts.DTOs.Folder;
 using Relativity.Services.Folder;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -49,6 +50,11 @@ namespace Relativity.Sync.Executors.Validation
 			}
 
 			return validationResult;
+		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline)
+		{
+			return true;
 		}
 	}
 }

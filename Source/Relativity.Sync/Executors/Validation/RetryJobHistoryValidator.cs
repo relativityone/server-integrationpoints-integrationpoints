@@ -6,6 +6,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -64,10 +65,17 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			else
 			{
-				_logger.LogInformation("Skipping JobHistoryToRetry validation because it's not set in configuration");
+				var message = "JobHistoryToRetry should be set in configuration for this pipeline";
+				_logger.LogError(message);
+				validationResult.Add(message);
 			}
 
 			return validationResult;
+		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline)
+		{
+			return pipeline.GetType() == typeof(SyncDocumentRetryPipeline) || pipeline.GetType() == typeof(SyncImageRetryPipeline);
 		}
 	}
 }

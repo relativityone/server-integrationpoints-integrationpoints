@@ -17,9 +17,9 @@ using Relativity.Sync.Tests.Common.Attributes;
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
 	[TestFixture]
-	public sealed class NativeCopyLinksValidatorTests
+	public sealed class ImageCopyLinksValidatorTests
 	{
-		private NativeCopyLinksValidator _sut;
+		private ImageCopyLinksValidator _sut;
 
 		private Mock<IInstanceSettings> _instanceSettingsFake;
 		private Mock<IUserContextConfiguration> _userContextFake;
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			_configurationFake = new Mock<IValidationConfiguration>();
 
-			_sut = new NativeCopyLinksValidator(
+			_sut = new ImageCopyLinksValidator(
 				_instanceSettingsFake.Object,
 				_userContextFake.Object,
 				_serviceFactoryFake.Object,
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleValidConfiguration_WhenConditionsAreMet()
 		{
 			// Arrange
-			SetupValidator(_USER_IS_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
+			SetupValidator(_USER_IS_ADMIN_ID, ImportImageFileCopyMode.SetFileLinks, true);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleInvalidConfiguration_WhenUserIsNonAdmin()
 		{
 			// Arrange
-			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
+			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportImageFileCopyMode.SetFileLinks, true);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)
 		{
 			// Arrange
-			SetupValidator(userId, ImportNativeFileCopyMode.SetFileLinks, false);
+			SetupValidator(userId, ImportImageFileCopyMode.SetFileLinks, false);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -95,9 +95,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		[TestCase(ImportNativeFileCopyMode.DoNotImportNativeFiles)]
-		[TestCase(ImportNativeFileCopyMode.CopyFiles)]
-		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportNativeFileCopyMode copyMode)
+		[TestCase(ImportImageFileCopyMode.CopyFiles)]
+		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportImageFileCopyMode copyMode)
 		{
 			// Arrange
 			SetupValidator(_USER_IS_NON_ADMIN_ID, copyMode, true);
@@ -110,8 +109,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().BeEmpty();
 		}
 
-		[TestCase(typeof(SyncDocumentRunPipeline), true)]
-		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[TestCase(typeof(SyncDocumentRunPipeline), false)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), false)]
 		[EnsureAllPipelineTestCase(0)]
 		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
 		{
@@ -126,10 +125,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 
-		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly)
+		private void SetupValidator(int userId, ImportImageFileCopyMode copyMode, bool isRestrictedCopyLinksOnly)
 		{
 			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
-			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
+			_configurationFake.Setup(c => c.ImportImageFileCopyMode).Returns(copyMode);
 			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(isRestrictedCopyLinksOnly);
 
 			List<RelativityObjectSlim> groups = userId == _USER_IS_ADMIN_ID

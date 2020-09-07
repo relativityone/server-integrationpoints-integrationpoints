@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,73 +7,74 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors.Validation
 {
-	internal sealed class FieldMappingsValidator : IValidator
+	internal abstract class FieldMappingValidatorBase : IValidator
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
-		private readonly ISyncLog _logger;
+		protected readonly ISyncLog _logger;
 
-		public FieldMappingsValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
+		protected FieldMappingValidatorBase(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;
 			_logger = logger;
 		}
 
-		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
+		public abstract Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token);
+		public abstract bool ShouldValidate(ISyncPipeline pipeline);
+
+		protected async Task<List<ValidationMessage>> BaseValidateAsync(IValidationConfiguration configuration, bool onlyIdentifierShouldBeMapped, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating field mappings");
+			IList<FieldMap> fieldMaps = configuration.GetFieldMappings();
+			var allMessages = new List<ValidationMessage>();
 
-			try
-			{
-				IList<FieldMap> fieldMaps = configuration.GetFieldMappings();
-				Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFields(configuration, fieldMaps, token);
-				Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFields(configuration, fieldMaps, token);
+			ValidationMessage validateUniqueIdentifier =
+				ValidateUniqueIdentifier(fieldMaps, onlyIdentifierShouldBeMapped);
+			allMessages.Add(validateUniqueIdentifier);
 
-				var allMessages = new List<ValidationMessage>();
-				ValidationMessage[] fieldMappingValidationMessages = await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
-				allMessages.AddRange(fieldMappingValidationMessages);
+			Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFieldsAsync(configuration, fieldMaps, token);
+			Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFieldsAsync(configuration, fieldMaps, token);
 
-				ValidationMessage validateUniqueIdentifier = ValidateUniqueIdentifier(fieldMaps);
-				allMessages.Add(validateUniqueIdentifier);
+			ValidationMessage[] fieldMappingValidationMessages =
+				await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
+			allMessages.AddRange(fieldMappingValidationMessages);
 
-				ValidationMessage validateFieldOverlayBehavior = ValidateFieldOverlayBehavior(configuration);
-				allMessages.Add(validateFieldOverlayBehavior);
-
-				return new ValidationResult(allMessages.ToArray());
-			}
-			catch (Exception ex)
-			{
-				const string message = "Exception occurred during field mappings validation. See logs for more details.";
-				_logger.LogError(ex, message);
-				return new ValidationResult(new ValidationMessage(message));
-			}
+			ValidationMessage validateFieldOverlayBehavior = ValidateFieldOverlayBehavior(configuration);
+			allMessages.Add(validateFieldOverlayBehavior);
+			return allMessages;
 		}
 
-		private ValidationMessage ValidateUniqueIdentifier(IList<FieldMap> mappedFields)
+		protected ValidationMessage ValidateUniqueIdentifier(IList<FieldMap> mappedFields, bool onlyIdentifierShouldBeMapped = false)
 		{
 			_logger.LogVerbose("Validating unique identifier");
 
 			bool isIdentifierMapped = mappedFields.Any(x => x.FieldMapType == FieldMapType.Identifier &&
-													x.SourceField != null &&
-													x.SourceField.IsIdentifier);
+															x.SourceField != null &&
+															x.SourceField.IsIdentifier);
 
 			if (!isIdentifierMapped)
 			{
 				return new ValidationMessage("The unique identifier must be mapped.");
 			}
 
+			if (onlyIdentifierShouldBeMapped && mappedFields.Count > 1)
+			{
+				return new ValidationMessage("Only unique identifier must be mapped.");
+			}
+
+
 			bool anyIdentifierNotMatchingAnother = mappedFields.Any(x =>
-													x.SourceField != null &&
-													x.DestinationField != null &&
-													x.SourceField.IsIdentifier &&
-													!x.DestinationField.IsIdentifier);
+				x.SourceField != null &&
+				x.DestinationField != null &&
+				x.SourceField.IsIdentifier &&
+				!x.DestinationField.IsIdentifier);
 
 			if (anyIdentifierNotMatchingAnother)
 			{
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Executors.Validation
 			return null;
 		}
 
-		private ValidationMessage ValidateFieldOverlayBehavior(IValidationConfiguration configuration)
+		protected ValidationMessage ValidateFieldOverlayBehavior(IValidationConfiguration configuration)
 		{
 			_logger.LogVerbose("Validating field overlay behavior");
 
@@ -99,7 +99,7 @@ namespace Relativity.Sync.Executors.Validation
 			return validationMessage;
 		}
 
-		private async Task<ValidationMessage> ValidateDestinationFields(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
+		protected async Task<ValidationMessage> ValidateDestinationFieldsAsync(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
 		{
 			_logger.LogVerbose("Validating fields in destination workspace");
 
@@ -116,7 +116,7 @@ namespace Relativity.Sync.Executors.Validation
 			return validationMessage;
 		}
 
-		private async Task<ValidationMessage> ValidateSourceFields(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
+		protected async Task<ValidationMessage> ValidateSourceFieldsAsync(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
 		{
 			_logger.LogVerbose("Validating fields in source workspace");
 
