@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "location-input")]
 		protected IWebElement FolderLocationSelectTextWebElement { get; set; }
 
-		[FindsBy(How = How.Id, Using = "validationErrorId")]
+		[FindsBy(How = How.ClassName, Using = "field-validation-error")]
 		public IList<IWebElement> listOfValidationErrorsElements { get; set; }
 
 		protected Select SourceProductionSelect => new Select(SourceProductionSelectWebElement);
