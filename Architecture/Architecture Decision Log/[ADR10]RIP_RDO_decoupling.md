@@ -96,6 +96,8 @@ Dictionary<string, Guid> rdoGuids, ISyncLog logger)
 }
 ```
 
+Or to avoid adding another parameter, we could add this dictionary as a property in `SyncJobParameters` (which is already registered in container so it can be easily resolved in configuration classes etc.).
+
 Additionally, Sync should be able to create internal RDOs (that is `Sync Progress` and `Sync Batch`) on its own when they don't exist in workspace. This can be implemented as new step, for example `SourceWorkspaceObjectTypesCreationExecutor`.
 
 ## Consequences
