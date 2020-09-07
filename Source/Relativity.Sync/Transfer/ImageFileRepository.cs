@@ -30,7 +30,7 @@ namespace Relativity.Sync.Transfer
 			_logger = logger;
 		}
 
-		public async Task<IEnumerable<ImageFile>> QueryImagesforDocumentsAsync(int workspaceId, IList<int> documentIds, QueryImagesOptions options)
+		public async Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, IList<int> documentIds, QueryImagesOptions options)
 		{
 			IEnumerable<ImageFile> empty = Enumerable.Empty<ImageFile>();
 
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Transfer
 
 				foreach (IList<int> batch in documentArtifactIdBatches)
 				{
-					IEnumerable<ImageFile> imagesInBatch = await QueryImagesforDocumentsAsync(workspaceId, batch, options).ConfigureAwait(false);
+					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch, options).ConfigureAwait(false);
 					imagesTotalSize += imagesInBatch.Sum(x => x.Size);
 				}
 			}

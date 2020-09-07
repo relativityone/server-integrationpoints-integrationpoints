@@ -44,7 +44,7 @@ namespace Relativity.Sync.Executors
 				{
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
-				Condition = $"'ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId} AND 'Has Images' == 'Yes'"
+				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE 1034243)"
 			};
 
 			ExportInitializationResults results;
@@ -53,7 +53,7 @@ namespace Relativity.Sync.Executors
 				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
-					_logger.LogInformation("Retrived {documentCount} documents from saved search which have images", results.RecordCount);
+					_logger.LogInformation("Retrieved {documentCount} documents from saved search which have images", results.RecordCount);
 
 					QueryImagesOptions options = new QueryImagesOptions
 					{

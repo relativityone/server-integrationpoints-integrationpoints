@@ -6,7 +6,7 @@ using Relativity.Sync.Configuration;
 namespace Relativity.Sync.Tests.Integration
 {
 	[TestFixture]
-	internal sealed class DataSourceSnapshotStepTests : FailingStepsBase<IDataSourceSnapshotConfiguration>
+	internal sealed class DocumentDataSourceSnapshotNode : FailingStepsBase<IDocumentDataSourceSnapshotConfiguration>
 	{
 		protected override void AssertExecutedSteps(List<Type> executorTypes)
 		{
