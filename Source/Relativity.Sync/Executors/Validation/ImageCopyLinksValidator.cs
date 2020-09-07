@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors.Validation
 			return pipelineType == typeof(SyncImageRunPipeline) || pipelineType == typeof(SyncImageRetryPipeline);
 		}
 
-		protected override bool ShouldSkipValidation(IValidationConfiguration configuration)
+		protected override bool ShouldValidateReferentialFileLinksRestriction(IValidationConfiguration configuration)
 		{
 			return configuration.ImportImageFileCopyMode != ImportImageFileCopyMode.SetFileLinks;
 		}

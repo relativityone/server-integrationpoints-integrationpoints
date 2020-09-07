@@ -12,10 +12,10 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal abstract class CopyLinksValidatorBase : IValidator
 	{
-		private IInstanceSettings _instanceSettings;
-		private IUserContextConfiguration _userContext;
-		private ISourceServiceFactoryForAdmin _serviceFactory;
-		private ISyncLog _logger;
+		private readonly IInstanceSettings _instanceSettings;
+		private readonly IUserContextConfiguration _userContext;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISyncLog _logger;
 
 		protected abstract string ValidatorKind { get; }
 
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				if (ShouldSkipValidation(configuration))
+				if (ShouldValidateReferentialFileLinksRestriction(configuration))
 				{
 					return validationResult;
 				}
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Executors.Validation
 		public abstract bool ShouldValidate(ISyncPipeline pipeline);
 
 
-		protected abstract bool ShouldSkipValidation(IValidationConfiguration configuration);
+		protected abstract bool ShouldValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
 
 		private async Task<bool> ExecutingUserIsAdminAsync()
 		{
