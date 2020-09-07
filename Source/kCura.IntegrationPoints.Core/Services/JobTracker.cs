@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.Core.Services
     public class JobTracker : IJobTracker
     {
         private readonly IJobResourceTracker _tracker;
+
         public JobTracker(IJobResourceTracker tracker)
         {
             _tracker = tracker;
@@ -29,14 +30,16 @@ namespace kCura.IntegrationPoints.Core.Services
                 throw new ArgumentNullException(nameof(job));
             }
 
-            var table = GenerateJobTrackerTempTableName(job, batchId);
-            _tracker.CreateTrackingEntry(table, job.JobId, job.WorkspaceID);
+            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+
+            _tracker.CreateTrackingEntry(jobTrackerTempTableName, job.JobId, job.WorkspaceID);
         }
 
         public bool CheckEntries(Job job, string batchId)
         {
-            var table = GenerateJobTrackerTempTableName(job, batchId);
-            return _tracker.RemoveEntryAndCheckStatus(table, job.JobId, job.WorkspaceID) == 0;
+	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+
+            return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID) == 0;
         }
     }
 }

@@ -2,7 +2,8 @@
 {
     public interface IJobResourceTracker
     {
-        void CreateTrackingEntry(string tableName, long jobId, int workspaceID);
-        int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceID);
+        void CreateTrackingEntry(string tableName, long jobId, int workspaceId);
+
+        int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId);
     }
 }

@@ -33,14 +33,15 @@ BEGIN
 	
 	IF EXISTS(select [JobID] FROM {0}.[{2}] WHERE [Completed] = 0)
 	BEGIN
-		select 1
+		SELECT 1
 	END
 	ELSE
 	BEGIN
-		select 0
+		DROP TABLE {0}.[{2}]
+		SELECT 0
 	END
 END
 ELSE
 BEGIN
-	select 1
+	SELECT 1
 END

@@ -7,7 +7,9 @@ namespace kCura.IntegrationPoints.Data.Queries
 {
     public class JobResourceTracker : IJobResourceTracker
     {
-        private readonly IRepositoryFactory _repositoryFactory;
+	    private static readonly object _syncRoot = new object();
+
+		private readonly IRepositoryFactory _repositoryFactory;
         private readonly IWorkspaceDBContext _context;
 
         public JobResourceTracker(IRepositoryFactory repositoryFactory, IWorkspaceDBContext context)
@@ -16,29 +18,36 @@ namespace kCura.IntegrationPoints.Data.Queries
             _context = context;
         }
 
-        public void CreateTrackingEntry(string tableName, long jobId, int workspaceID)
+        public void CreateTrackingEntry(string tableName, long jobId, int workspaceId)
         {
-            IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
-            string sql = string.Format(Resources.Resource.CreateJobTrackingEntry, scratchTableRepository.GetResourceDBPrepend(), tableName);
-            IList<SqlParameter> sqlParams = GetSqlParameters(jobId);
-            _context.ExecuteNonQuerySQLStatement(sql, sqlParams);
+	        lock (_syncRoot)
+	        {
+		        IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceId, string.Empty, string.Empty);
+
+		        string sql = string.Format(Resources.Resource.CreateJobTrackingEntry, scratchTableRepository.GetResourceDBPrepend(), tableName);
+		        IList<SqlParameter> sqlParams = GetSqlParameters(jobId);
+		        _context.ExecuteNonQuerySQLStatement(sql, sqlParams);
+	        }
         }
 
-        public int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceID)
+        public int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId)
         {
-            IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
-            string sql = string.Format(Resources.Resource.RemoveEntryAndCheckBatchStatus, scratchTableRepository.GetResourceDBPrepend(), scratchTableRepository.GetSchemalessResourceDataBasePrepend(), tableName);
-            IList<SqlParameter> sqlParams = GetSqlParameters(jobId);
-            return _context.ExecuteSqlStatementAsScalar<int>(sql, sqlParams);
+	        lock (_syncRoot)
+	        {
+		        IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceId, string.Empty, string.Empty);
+
+		        string sql = string.Format(Resources.Resource.RemoveEntryAndCheckBatchStatus, scratchTableRepository.GetResourceDBPrepend(), scratchTableRepository.GetSchemalessResourceDataBasePrepend(), tableName);
+		        IList<SqlParameter> sqlParams = GetSqlParameters(jobId);
+		        return _context.ExecuteSqlStatementAsScalar<int>(sql, sqlParams);
+	        }
         }
 
         private IList<SqlParameter> GetSqlParameters(long jobId)
         {
-            IList<SqlParameter> sqlParameters = new List<SqlParameter>
+            return new List<SqlParameter>
             {
                 new SqlParameter("@jobID", jobId)
             };
-            return sqlParameters;
         }
     }
 }
