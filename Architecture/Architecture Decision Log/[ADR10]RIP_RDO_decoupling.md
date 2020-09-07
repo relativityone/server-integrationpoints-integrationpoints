@@ -22,7 +22,7 @@ List of RIP RDOs, which Sync depends on:
 - Sync require `Sync Configuration` instance to be created prior to the job, which implicates...
 - ...that external application must know all Sync's RDOs, and must be able to create them in the workspace when installed (Application Schema)
 
-## Decision
+## Option 1
 
 ### **Reporting job errors and updating job progress**
 
@@ -77,9 +77,27 @@ To tag documents in source workspace, Sync is using pre-existing RIP Object Type
 
 Currently, `Sync Configuration`'s Parent Object Type is RIP `Job History`. This must be obviously changed to some other Object Type. This type should be probably `Workspace`.
 
+## Option 2
+
+Another option is to pass all required RDO GUIDs (including their fields) to Sync job:
+
+- `Sync Configuration`
+- `Destination Workspace`
+- `Job History`
+- `Job History Error`
+
+This can be a dictionary where the key is RDO/field name and value is a GUID. Dictionary can be injected as a parameter to `SyncJob`. For example:
+
+```cs
+public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, SyncJobParameters syncJobParameters, IProgress<SyncJobState> syncProgress, 
+Dictionary<string, Guid> rdoGuids, ISyncLog logger)
+{
+    ...
+}
+```
+
+Additionally, Sync should be able to create internal RDOs (that is `Sync Progress` and `Sync Batch`) on its own when they don't exist in workspace. This can be implemented as new step, for example `SourceWorkspaceObjectTypesCreationExecutor`.
+
 ## Consequences
 
-There are many doubts on how to properly decouple:
-
-- either introduce interfaces which external app will be forced to implement to cover features like updating job progress, history, report item level and job level errors, provide information required to retry job
-- or create dedicated RDOs in Sync to store job history and job history erorrs, but this will require to implement adapter in RIP
+There are couple of options to discuss and choose the best solution.
