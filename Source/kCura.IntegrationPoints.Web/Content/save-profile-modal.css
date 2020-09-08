@@ -27,16 +27,6 @@
 	min-width: 300px;
 }
 
-.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
-	font-family: Trebuchet MS, Verdana, Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
-	font-size: 1em;
-	min-width: 200px;
-}
-
-.ui-widget button {
-	min-width: 100px !important;
-}
-
 .card .field-label, .status-container .field-label {
 	color: #404040;
 	text-align: right;

@@ -252,7 +252,6 @@
     <Content Include="Content\Images\success_icon_32px.png" />
     <Content Include="Content\import.css" />
     <Content Include="Content\Images\ui-bg_flat_100_666666_40x100.png" />
-    <Content Include="Content\integration-points-view.css" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\jstree-fluid.css" />
