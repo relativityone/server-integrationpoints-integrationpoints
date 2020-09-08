@@ -7,19 +7,17 @@ using Relativity.Sync.Tests.Performance.Helpers;
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
-	[Category("LARGE_Jobs")]
+	[Category("LARGE_Jobs-Large-2")]
 	public class LargeJobTests_Large2 : PerformanceTestBase
 	{
-		public LargeJobTests_Large2()
-			: base(WorkspaceType.Relativity, "Large Job Tests - Large-2", null)
+		public LargeJobTests_Large2() : base(WorkspaceType.Relativity,
+			"Large Job Tests - Large-2 [DO NOT DELETE]", "Large Job Tests - Destination-2 [DO NOT DELETE]")
 		{
 		}
 
 		[Test]
-		[Category("Large-2")]
 		public async Task RunJob()
 		{
-
 			PerformanceTestCase testCase = new PerformanceTestCase
 			{
 				TestCaseName = "Large-2",
@@ -27,7 +25,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				OverwriteMode = ImportOverwriteMode.OverlayOnly,
 				MapExtractedText = true,
 				ExpectedItemsTransferred = 400000,
-				NumberOfMappedFields = 2,
+				NumberOfMappedFields = 0,
 			};
 
 			await RunTestCaseAsync(testCase).ConfigureAwait(false);

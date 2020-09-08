@@ -87,7 +87,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				MoveExistingDocuments = false,
 			};
-			Configuration.SetEmailNotificationRecipients(string.Empty);
 		}
 
 		[OneTimeSetUp]
@@ -149,7 +148,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				await SetupConfigurationAsync(_sourceWorkspaceId, destinationWorkspaceId, testCase.TestCaseName).ConfigureAwait(false);
 
 				IEnumerable<FieldMap> generatedFields =
-					await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: null)
+					await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: testCase.NumberOfMappedFields)
 						.ConfigureAwait(false);
 
 				Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(generatedFields).ToList());
@@ -261,7 +260,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			var sourceFields = await GetFieldsFromSourceWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			sourceFields = FilterTestCaseFields(sourceFields, numberOfMappedFields);
 
-
 			IEnumerable<RelativityObject> destinationFields = await GetFieldsFromSourceWorkspaceAsync(TargetWorkspace.ArtifactID).ConfigureAwait(false);
 			destinationFields = FilterTestCaseFields(destinationFields, numberOfMappedFields);
 
@@ -287,11 +285,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		{
 			Regex wasGeneratedRegex = new Regex("^([0-9]+-)");
 
-			var filteredfields = fields.Where(f => wasGeneratedRegex.IsMatch(f["Name"].Value.ToString()));
+			var filteredfields = fields.Where(f => wasGeneratedRegex.IsMatch(f["Name"].Value.ToString())).OrderBy(x => x.Name).ToList();
 
 			if (numberOfMappedFields != null)
 			{
-				filteredfields = filteredfields.Take(numberOfMappedFields.Value);
+				filteredfields = filteredfields.Take(numberOfMappedFields.Value).ToList();
 			}
 
 			return filteredfields.ToList();
@@ -344,21 +342,23 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		{
 			if(_workspaceType == WorkspaceType.ARM)
 			{
-				if (SourceWorkspace != null)
+				if (_sourceWorkspaceId != 0)
 				{
 					using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
 					{
 						// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
-						await manager.DeleteAsync(SourceWorkspace).ConfigureAwait(false);
+						var workspaceRef = new WorkspaceRef(_sourceWorkspaceId);
+						await manager.DeleteAsync(workspaceRef).ConfigureAwait(false);
 					}
 				}
 
-				if (TargetWorkspace != null)
+				if (_destinationWorkspaceId != 0)
 				{
 					using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
 					{
 						// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
-						await manager.DeleteAsync(TargetWorkspace).ConfigureAwait(false);
+						var workspaceRef = new WorkspaceRef(_destinationWorkspaceId);
+						await manager.DeleteAsync(workspaceRef).ConfigureAwait(false);
 					}
 				}
 			}
