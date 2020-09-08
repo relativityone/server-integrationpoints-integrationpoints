@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
@@ -166,7 +168,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 
 		[IdentifiedTest("62c16b2a-ed88-419d-a4e9-252550fde0fc")]
 		[RetryOnError]
-		[Category(TestCategory.SMOKE)]
 		[TestType.MainFlow]
 		public async Task CopyProfile_ShouldDisplayCorrectValues_WhenSourceImageAndProducedImagePrecedence()
 		{
@@ -195,15 +196,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
 
 			//Assert
-			firstPage.Name.Should().Be(model.Name);
-			firstPage.Destination.Should().Be(model.DestinationProvider);
-
 			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
-			secondPage.SourceSelect.Should().Be(model.SourceTypeTextUi());
-			secondPage.GetSelectedSavedSearch().Trim().Should().Be(string.Empty); //empty
-			secondPage.DestinationWorkspace.Should().Be(model.DestinationWorkspace);
-			secondPage.FolderLocationSelectText.Should().Be(string.Empty); //this should always be empty;
-			
+
 			secondPage.SelectSavedSearch(model.SavedSearch);
 			secondPage.FolderLocationSelect.ChooseRootElement();
 			PushToRelativityThirdPage thirdPage = secondPage.GoToNextPage();
@@ -214,5 +208,49 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 
 			Workspace.DeleteWorkspace(newWorkspaceID);
 		}
+
+		[IdentifiedTest("b5c2ffc1-06a6-47c7-92fb-8a13c1f87061")]
+		[RetryOnError]
+		[TestType.Error]
+		public async Task CopyProfile_ShouldDisplayError_WhenApplyingCopiedProfileSavedSearchedFolder()
+		{
+			const string emptySavedSearchErrorMessage =
+				"The saved search is no longer accessible. Please verify your settings or create a new Integration Point.";
+			const string emptyLocationErrorMessage = "This field is required.";
+
+			//Arrange
+			RelativityProviderModel model = CreateRelativityProviderSavedSearchModel();
+			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
+
+			string newDestination = $"RIP New destination {_timeStamp}";
+			
+			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName, Log)
+				.ConfigureAwait(false);
+
+			//Act
+			new GeneralPage(Driver)
+				.PassWelcomeScreen()
+				.ChooseWorkspace(newDestination)
+				.GoToIntegrationPointProfilePage();
+
+			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(model.Name);
+			resultLinkLinkName.ClickEx();
+
+			IntegrationPointDetailsPage detailsPage = new IntegrationPointDetailsPage(Driver);
+			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
+
+			
+			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
+			secondPage.GoToNextPage();
+			Driver.SwitchTo().Frame("configurationFrame");
+
+			//Assert
+			List<string> listOfVisibleWarningsTexts = secondPage.listOfValidationErrorsElements.Where( i => i.GetCssValue("display").Equals("inline-block")).Select( i => i.Text).ToList();
+			listOfVisibleWarningsTexts.Should().Contain(emptySavedSearchErrorMessage);
+			listOfVisibleWarningsTexts.Should().Contain(emptyLocationErrorMessage);
+			
+			Workspace.DeleteWorkspace(newWorkspaceID);
+		}
+
 	}
 }
