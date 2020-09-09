@@ -2,10 +2,7 @@
 
 namespace Relativity.Sync.Pipelines
 {
-	internal sealed class SyncImageRetryPipeline : ISyncPipeline
+	internal sealed class SyncImageRetryPipeline
 	{
-		public void BuildFlow(IFlowBuilder<SyncExecutionContext> flowBuilder)
-		{
-		}
 	}
 }

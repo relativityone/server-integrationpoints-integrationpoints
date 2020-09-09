@@ -2,10 +2,7 @@
 
 namespace Relativity.Sync.Pipelines
 {
-	internal sealed class SyncImageRunPipeline : ISyncPipeline
+	internal sealed class SyncImageRunPipeline
 	{
-		public void BuildFlow(IFlowBuilder<SyncExecutionContext> flowBuilder)
-		{
-		}
 	}
 }
