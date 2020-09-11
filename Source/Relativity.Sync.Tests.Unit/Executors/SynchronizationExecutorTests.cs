@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFake = new Mock<Sync.Executors.IImportJob>();
 			_importJobFactoryFake.Setup(x => x.CreateImportJobAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
 
-			_fieldManagerFake.Setup(x => x.GetSpecialFields()).Returns(_specialFields);
+			_fieldManagerFake.Setup(x => x.GetDocumentSpecialFields()).Returns(_specialFields);
 
 			_sut = new SynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
 				_jobProgressHandlerFactoryStub.Object,
@@ -233,7 +233,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// arrange 
 			SpecialFieldType missingSpecialField = SpecialFieldType.NativeFileSize;
 			List<FieldInfoDto> specialFields = _specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
-			_fieldManagerFake.Setup(x => x.GetSpecialFields()).Returns(specialFields);
+			_fieldManagerFake.Setup(x => x.GetDocumentSpecialFields()).Returns(specialFields);
 			Func<Task> action = async () => await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// act

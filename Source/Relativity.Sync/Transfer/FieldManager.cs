@@ -23,6 +23,22 @@ namespace Relativity.Sync.Transfer
 
 		private readonly IList<ISpecialFieldBuilder> _specialFieldBuilders;
 
+		private readonly SpecialFieldType[] _NATIVE_SPECIAL_FIELDS_TYPES = new []
+		{
+			SpecialFieldType.NativeFileSize,
+			SpecialFieldType.NativeFileLocation,
+			SpecialFieldType.NativeFileFilename,
+			SpecialFieldType.RelativityNativeType,
+			SpecialFieldType.SupportedByViewer,
+			SpecialFieldType.FolderPath,
+		};
+
+		private static readonly SpecialFieldType[] _IMAGE_SPECIAL_FIELDS_TYPES = new[]
+{
+			SpecialFieldType.ImageFileName,
+			SpecialFieldType.ImageFileLocation
+		};
+
 		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository, IEnumerable<ISpecialFieldBuilder> specialFieldBuilders)
 		{
 			_configuration = configuration;
@@ -30,9 +46,10 @@ namespace Relativity.Sync.Transfer
 			_specialFieldBuilders = specialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
 		}
 
-		public IList<FieldInfoDto> GetSpecialFields()
+		public IList<FieldInfoDto> GetDocumentSpecialFields()
 		{
-			return _specialFields ?? (_specialFields = _specialFieldBuilders.SelectMany(b => b.BuildColumns()).ToList());
+			return _specialFields ?? (_specialFields = _specialFieldBuilders.SelectMany(b => b.BuildColumns())
+				.Where(f => _NATIVE_SPECIAL_FIELDS_TYPES.Contains(f.SpecialFieldType)).ToList());
 		}
 
 		public async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
@@ -70,7 +87,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_allFields == null)
 			{
-				IList<FieldInfoDto> specialFields = GetSpecialFields();
+				IList<FieldInfoDto> specialFields = GetDocumentSpecialFields();
 				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
 				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
 				_allFields = EnrichDocumentFieldsWithIndex(allFields);

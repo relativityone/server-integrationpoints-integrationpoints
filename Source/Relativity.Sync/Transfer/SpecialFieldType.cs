@@ -8,6 +8,8 @@
 		NativeFileLocation,
 		NativeFileFilename,
 		RelativityNativeType,
-		SupportedByViewer
+		SupportedByViewer,
+		ImageFileName,
+		ImageFileLocation
 	}
 }

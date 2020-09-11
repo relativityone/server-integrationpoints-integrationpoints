@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	public class FileInfoFieldsBuilderTests
 	{
 		private Mock<INativeFileRepository> _nativeFileRepositoryMock;
-		private FileInfoFieldsBuilder _sut;
+		private NativeInfoFieldsBuilder _sut;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
 
 		[SetUp]
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_nativeFileRepositoryMock = new Mock<INativeFileRepository>();
 
-			_sut = new FileInfoFieldsBuilder(_nativeFileRepositoryMock.Object, new EmptyLogger());
+			_sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, new EmptyLogger());
 		}
 
 		[Test]

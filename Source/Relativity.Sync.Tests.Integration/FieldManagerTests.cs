@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.Integration
 			_configuration.DestinationFolderStructureBehavior = folderStructureBehavior;
 
 			// Act
-			List<FieldInfoDto> specialFieldColumns = _instance.GetSpecialFields().ToList();
+			List<FieldInfoDto> specialFieldColumns = _instance.GetDocumentSpecialFields().ToList();
 
 			// Assert
 			specialFieldColumns.Should().BeEquivalentTo(expectedSpecialFieldColumns);

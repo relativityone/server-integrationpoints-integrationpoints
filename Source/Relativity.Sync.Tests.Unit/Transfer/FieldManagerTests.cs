@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void ItShouldReturnSpecialFields()
 		{
 			// Act
-			IList<FieldInfoDto> result = _instance.GetSpecialFields().ToList();
+			IList<FieldInfoDto> result = _instance.GetDocumentSpecialFields().ToList();
 
 			// Assert
 			result.Should().Contain(f => f.SourceFieldName == _DOCUMENT_SPECIAL_FIELD_NAME);
@@ -333,7 +333,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
 			// Act
-			Func<IEnumerable<FieldInfoDto>> action = () => _instance.GetSpecialFields();
+			Func<IEnumerable<FieldInfoDto>> action = () => _instance.GetDocumentSpecialFields();
 
 			// Assert
 			action.Should().NotThrow();

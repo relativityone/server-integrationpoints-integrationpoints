@@ -197,7 +197,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Replacing FileInfoFieldsBuilder with NullSupportedByViewerFileInfoFieldsBuilder. Kids, don't do it in your code.
 			ContainerBuilder overrideContainerBuilder = new ContainerBuilder();
-			container.ComponentRegistry.Registrations.Where(cr => cr.Activator.LimitType != typeof(FileInfoFieldsBuilder)).ForEach(cr => overrideContainerBuilder.RegisterComponent(cr));
+			container.ComponentRegistry.Registrations.Where(cr => cr.Activator.LimitType != typeof(NativeInfoFieldsBuilder)).ForEach(cr => overrideContainerBuilder.RegisterComponent(cr));
 			container.ComponentRegistry.Sources.ForEach(rs => overrideContainerBuilder.RegisterSource(rs));
 			overrideContainerBuilder.RegisterTypes(typeof(NullSupportedByViewerFileInfoFieldsBuilder)).As<ISpecialFieldBuilder>();
 

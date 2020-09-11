@@ -7,11 +7,11 @@ namespace Relativity.Sync.Tests.System.Helpers
 {
 	internal class NullSupportedByViewerFileInfoFieldsBuilder : ISpecialFieldBuilder
 	{
-		private readonly FileInfoFieldsBuilder _fileInfoFieldsBuilder;
+		private readonly NativeInfoFieldsBuilder _fileInfoFieldsBuilder;
 
 		public NullSupportedByViewerFileInfoFieldsBuilder(INativeFileRepository nativeFileRepository)
 		{
-			_fileInfoFieldsBuilder = new FileInfoFieldsBuilder(nativeFileRepository, new EmptyLogger());
+			_fileInfoFieldsBuilder = new NativeInfoFieldsBuilder(nativeFileRepository, new EmptyLogger());
 		}
 
 		public IEnumerable<FieldInfoDto> BuildColumns()

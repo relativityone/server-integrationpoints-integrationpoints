@@ -228,7 +228,7 @@ namespace Relativity.Sync.Executors
 		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
 		{
 			int destinationIdentityFieldId = GetDestinationIdentityFieldId(_fieldMappings.GetFieldMappings());
-			IList<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
+			IList<FieldInfoDto> specialFields = _fieldManager.GetDocumentSpecialFields().ToList();
 
 			configuration.IdentityFieldId = destinationIdentityFieldId;
 			if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
