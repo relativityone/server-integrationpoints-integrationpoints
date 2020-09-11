@@ -1,7 +1,7 @@
-﻿using System;
-using Relativity.Sync.Configuration;
+﻿using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -12,12 +12,8 @@ namespace Relativity.Sync.Executors.Validation
 		}
 
 		protected override string ValidatorKind => "images";
-		public override bool ShouldValidate(ISyncPipeline pipeline)
-		{
-			Type pipelineType = pipeline.GetType();
-
-			return pipelineType == typeof(SyncImageRunPipeline) || pipelineType == typeof(SyncImageRetryPipeline);
-		}
+		
+		public override bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsImagePipeline();
 
 		protected override bool ShouldValidateReferentialFileLinksRestriction(IValidationConfiguration configuration)
 		{

@@ -1,9 +1,9 @@
 ﻿using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Pipelines.Extensions;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
-using System;
 
 namespace Relativity.Sync.Executors.SumReporting
 {
@@ -36,27 +36,22 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		public IJobEndMetricsService CreateJobEndMetricsService()
 		{
-			Type type = _pipelineSelector.GetPipeline().GetType();
-			if (IsDocumentJob(type))
+			var syncPipeline = _pipelineSelector.GetPipeline();
+			if (syncPipeline.IsDocumentPipeline())
 			{
 				return new DocumentJobEndMetricsService(_batchRepository, _configuration, _fieldManager, _jobStatisticsContainer, _syncMetrics, _logger);
 			}
 
-			else if (IsImageJob(type))
+			else if (syncPipeline.IsImagePipeline())
 			{
 				return new ImageJobEndMetricsService();
 			}
 			else
 			{
 				_logger.LogWarning(
-					"Unable to determine valid job pipeline type {pipelineType} for metrics send. EmptyJobEndMetricsService is creating...", type);
+					"Unable to determine valid job pipeline type {pipelineType} for metrics send. EmptyJobEndMetricsService is creating...", syncPipeline.GetType());
 				return new EmptyJobEndMetricsService();
 			}
 		}
-
-		private bool IsDocumentJob(Type pipelineType) => pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncDocumentRetryPipeline);
-
-		private bool IsImageJob(Type pipelineType) => pipelineType == typeof(SyncImageRunPipeline) || pipelineType == typeof(SyncImageRetryPipeline);
-
 	}
 }

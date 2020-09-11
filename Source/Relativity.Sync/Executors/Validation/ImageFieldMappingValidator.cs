@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				var allMessages = await BaseValidateAsync(configuration, onlyIdentifierShouldBeMapped:true, token).ConfigureAwait(false);
+				var allMessages = await BaseValidateAsync(configuration, onlyIdentifierShouldBeMapped: true, token).ConfigureAwait(false);
 
 				return new ValidationResult(allMessages.ToArray());
 			}
@@ -31,13 +32,6 @@ namespace Relativity.Sync.Executors.Validation
 			}
 		}
 
-	
-
-		public override bool ShouldValidate(ISyncPipeline pipeline)
-		{
-			Type pipelineType = pipeline.GetType();
-
-			return pipelineType == typeof(SyncImageRunPipeline) || pipelineType == typeof(SyncImageRetryPipeline);
-		}
+		public override bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsImagePipeline();
 	}
 }
