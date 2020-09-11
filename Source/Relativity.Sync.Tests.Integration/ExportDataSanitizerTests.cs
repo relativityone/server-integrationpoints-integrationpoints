@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			ContainerBuilder builder = ContainerHelper.CreateInitializedContainerBuilder();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
-			IntegrationTestsContainerBuilder.MockReporting(builder);
+			IntegrationTestsContainerBuilder.MockReportingWithProgress(builder);
 			builder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 
 			var configuration = new ConfigurationStub();

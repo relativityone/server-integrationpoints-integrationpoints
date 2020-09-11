@@ -7,6 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -73,9 +74,6 @@ namespace Relativity.Sync.Executors.Validation
 			return validationResult;
 		}
 
-		public bool ShouldValidate(ISyncPipeline pipeline)
-		{
-			return pipeline.GetType() == typeof(SyncDocumentRetryPipeline) || pipeline.GetType() == typeof(SyncImageRetryPipeline);
-		}
+		public bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsRetryPipeline();
 	}
 }

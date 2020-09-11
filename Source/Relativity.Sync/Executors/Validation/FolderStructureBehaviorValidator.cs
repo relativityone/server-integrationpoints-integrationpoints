@@ -8,6 +8,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -47,10 +48,7 @@ namespace Relativity.Sync.Executors.Validation
 			return result;
 		}
 
-		public bool ShouldValidate(ISyncPipeline pipeline)
-		{
-			return pipeline.GetType() == typeof(SyncDocumentRunPipeline) || pipeline.GetType() == typeof(SyncDocumentRetryPipeline);
-		}
+		public bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsDocumentPipeline();
 
 		private async Task<ValidationResult> ValidateFolderStructureBehaviorAsync(IValidationConfiguration configuration, CancellationToken token)
 		{

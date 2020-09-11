@@ -52,9 +52,6 @@ namespace Relativity.Sync.Executors.Validation
 			return validationResult;
 		}
 
-		public bool ShouldValidate(ISyncPipeline pipeline)
-		{
-			return true;
-		}
+		public bool ShouldValidate(ISyncPipeline pipeline) => true;
 	}
 }
