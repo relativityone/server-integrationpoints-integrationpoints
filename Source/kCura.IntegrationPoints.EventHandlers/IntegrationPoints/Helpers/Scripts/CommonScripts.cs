@@ -21,8 +21,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 			{
 				"/Content/jquery.jqGrid/ui.jqgrid.css",
 				"/Content/legal-hold-fonts.css",
-				"/Content/themes/base/dialog.css",
-				"/Content/integration-points-view.css",
 				"/Content/Site.css",
 				"/Content/controls.grid.css",
 				"/Content/controls-grid-pager.css",
