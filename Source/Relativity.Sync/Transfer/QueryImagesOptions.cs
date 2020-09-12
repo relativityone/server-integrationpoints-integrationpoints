@@ -9,6 +9,6 @@ namespace Relativity.Sync.Transfer
 		public List<int> ProductionIds { get; set; }
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 
-		public bool ProductionImagePrecedence => ProductionIds.Any();
+		public bool ProductionImagePrecedence => ProductionIds?.Any() ?? false;
 	}
 }

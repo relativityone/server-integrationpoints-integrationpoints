@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
@@ -16,6 +17,10 @@ namespace Relativity.Sync.Transfer
 		private const int _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES = 10000;
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _LOCATION_COLUMN_NAME = "Location";
+		private const string _FILENAME_COLUMN_NAME_PRODUCTION = "ImageFileName";
+		private const string _SIZE_COLUMN_NAME_PRODUCTION = "ImageSize";
+		private const string _PRODUCTION_ID_COLUMN_NAME = "ProductionArtifactId";
+
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
 
@@ -55,7 +60,7 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<long> CalculateImagesTotalSizeAsync(int workspaceId, QueryRequest request, QueryImagesOptions options)
 		{
-			_logger.LogInformation("Initializing calculating total natives size (in chunks of {batchSize} )", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
+			_logger.LogInformation("Initializing calculating total image size (in chunks of {batchSize} )", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
 			long imagesTotalSize = 0;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -86,7 +91,10 @@ namespace Relativity.Sync.Transfer
 				return new List<ImageFile>();
 			}
 
-			var imageFiles = dataSet.Tables[0].AsEnumerable().Select(x => GetImageFile(x)).ToList();
+			List<ImageFile> imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFileFromProduction).ToList();
+
+			imageFiles = ApplyProductionPrecedence(imageFiles, options.ProductionIds).ToList();
+
 			producedImagesCount += imageFiles.Count;
 
 			if(options.IncludeOriginalImageIfNotFoundInProductions)
@@ -107,6 +115,30 @@ namespace Relativity.Sync.Transfer
 			return imageFiles;
 		}
 
+		private IEnumerable<ImageFile> ApplyProductionPrecedence(IEnumerable<ImageFile> imageFiles, List<int> productionIds)
+		{
+			var images = new Dictionary<int, List<ImageFile>>();
+
+			var imagesForProduction = imageFiles.ToLookup(x => x.ProductionId, x => x);
+
+			foreach (var production in productionIds)
+			{
+				var producedImages = imagesForProduction[production];
+
+				var imagesPerDocument = producedImages.ToLookup(x => x.DocumentArtifactId, x => x);
+
+				foreach (var document in imagesPerDocument)
+				{
+					if (!images.ContainsKey(document.Key))
+					{
+						images.Add(document.Key, new List<ImageFile>(document));
+					}
+				}
+			}
+
+			return images.SelectMany(x => x.Value);
+		}
+
 		private IList<ImageFile> RetrieveOriginalImagesForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds)
 		{
 			var dataSet = searchManager.RetrieveImagesForDocuments(workspaceId, documentIds.ToArray());
@@ -119,7 +151,7 @@ namespace Relativity.Sync.Transfer
 				return new List<ImageFile>();
 			}
 
-			var imageFiles = dataSet.Tables[0].AsEnumerable().Select(x => GetImageFile(x)).ToList();
+			var imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFile).ToList();
 
 			_logger.LogInformation("Image retrieve statistics: OriginalImages - {originalImagesCount}, DocumentsWithoutImages {noImagesCount}",
 				imageFiles.Count, documentIds.Count - imageFiles.Count);
@@ -135,6 +167,18 @@ namespace Relativity.Sync.Transfer
 			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
 
 			return new ImageFile(documentArtifactId, location, fileName, size);
+		}
+
+		private ImageFile GetImageFileFromProduction(DataRow dataRow)
+		{
+			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
+			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
+			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME_PRODUCTION);
+			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME_PRODUCTION);
+
+			int productionId = GetValue<int>(dataRow, _PRODUCTION_ID_COLUMN_NAME);
+
+			return new ImageFile(documentArtifactId, location, fileName, size, productionId);
 		}
 
 		private T GetValue<T>(DataRow row, string columnName)

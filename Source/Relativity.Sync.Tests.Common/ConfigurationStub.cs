@@ -155,5 +155,6 @@ namespace Relativity.Sync.Tests.Common
 		public List<int> ProductionIds => throw new NotImplementedException();
 
 		public bool IncludeOriginalImageIfNotFoundInProductions => throw new NotImplementedException();
+		public bool IsImageJob { get; set; }
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ImportJobErrors> ImportDataAsync(int workspaceArtifactId, ImportDataTableWrapper dataTableWrapper)
+		public async Task<ImportJobErrors> ImportDataAsync(int workspaceArtifactId, ImportDataTableWrapper dataTableWrapper, int? productionId = null)
 		{
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
@@ -29,7 +30,17 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					AppSettings.RelativityUserPassword,
 					AppSettings.RelativityWebApiUrl.ToString());
 
-			ImportJobErrors errors = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi).ConfigureAwait(false);
+			ImportJobErrors errors = null;
+			if (dataTableWrapper.Images)
+			{
+				errors = await ConfigureAndRunImageImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi, productionId)
+					.ConfigureAwait(false);
+			}
+			else
+			{
+				errors = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi)
+					.ConfigureAwait(false);
+			}
 
 			return errors;
 		}
@@ -70,6 +81,37 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				importJob.Settings.DisableNativeLocationValidation = null;
 				importJob.Settings.DisableNativeValidation = null;
 				importJob.Settings.CopyFilesToDocumentRepository = false;
+			}
+
+			return await ImportJobExecutor.ExecuteAsync(importJob).ConfigureAwait(false);
+		}
+
+
+		private async Task<ImportJobErrors> ConfigureAndRunImageImportApiJobAsync(int workspaceArtifactId,
+			ImportDataTableWrapper dataTable, ImportAPI importApi, int? productionId)
+		{
+			if (!dataTable.Images)
+			{
+				throw new ArgumentException($"{nameof(dataTable)} does not contain images data");
+			}
+
+			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
+			importJob.Settings.CaseArtifactId = workspaceArtifactId;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
+			importJob.Settings.DestinationFolderArtifactID = await Rdos.GetRootFolderInstance(_serviceFactory, workspaceArtifactId).ConfigureAwait(false);
+			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID; // Specify the ArtifactID of the document identifier field, such as a control number.
+			importJob.SourceData.SourceData = dataTable.Data;
+
+			importJob.Settings.DocumentIdentifierField = ImportDataTableWrapper.IdentifierFieldName;
+			importJob.Settings.FileLocationField = ImportDataTableWrapper.ImageFile;
+			importJob.Settings.BatesNumberField = ImportDataTableWrapper.BegBates;
+
+			importJob.Settings.CopyFilesToDocumentRepository = true;
+
+			if (productionId != null)
+			{
+				importJob.Settings.ForProduction = true;
+				importJob.Settings.ProductionArtifactID = productionId.Value;
 			}
 
 			return await ImportJobExecutor.ExecuteAsync(importJob).ConfigureAwait(false);

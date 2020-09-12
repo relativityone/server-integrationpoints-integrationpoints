@@ -8,17 +8,17 @@ using Relativity.Services.Field;
 using Relativity.Services.Search;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class RetryDataSourceSnapshotExecutorTests : SystemTest
+	[Ignore("There is no pipeline that uses this node")]
+	public sealed class ImageRetryDataSourceSnapshotExecutorTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
 
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		[IdentifiedTest("e1a6bd86-8e32-4900-a810-b0566416e3e5")]
+		[IdentifiedTest("2f041670-03fb-4eaf-bd1a-9fcb7e85f02e")]
 		public async Task ItShouldCreateSnapshot()
 		{
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
@@ -63,9 +63,10 @@ namespace Relativity.Sync.Tests.System
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				JobHistoryToRetryId = jobHistoryToRetryArtifactId
 			};
-
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(configuration);
-
+			
+		
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IImageRetryDataSourceSnapshotConfiguration>(configuration);
+			
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 

@@ -11,6 +11,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public bool ExtractedText { get; }
 		public bool Natives { get; }
+		public bool Images { get; }
+
 
 		public static string IdentifierFieldName => "Control Number";
 		public static string ExtractedTextFilePath => "Extracted Text";
@@ -18,6 +20,9 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		public static string NativeFilePath => "Native File";
 		public static string FolderPath => "Document Folder Path";
 		public static string RelativitySyncTestUser => "Relativity Sync Test User";
+		public static string ImageFile => "File";
+		public static string BegBates => "Bates Beg";
+
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
@@ -35,7 +40,12 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			new DataColumn(NativeFilePath, typeof(string)),
 			new DataColumn(FolderPath, typeof(string))
 		};
-
+		private static IEnumerable<DataColumn> ImagesColumns => new[]
+		{
+			new DataColumn(ImageFile, typeof(string)),
+			new DataColumn(BegBates, typeof(string)),
+		};
+		
 		private static IEnumerable<DataColumn> UserColumns => new[]
 		{
 			new DataColumn(RelativitySyncTestUser, typeof(string))
@@ -43,10 +53,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public IDataReader DataReader => Data.CreateDataReader();
 
-		public ImportDataTableWrapper(bool extractedText, bool natives, bool user)
+		public ImportDataTableWrapper(bool extractedText, bool natives, bool user, bool images)
 		{
 			ExtractedText = extractedText;
 			Natives = natives;
+			Images = images;
 
 			Data = new DataTable();
 
@@ -62,6 +73,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				dataColumns = dataColumns.Concat(NativesColumns);
 			}
 
+			if (images)
+			{
+				dataColumns = dataColumns.Concat(ImagesColumns);
+			}
+
 			if (user)
 			{
 				dataColumns = dataColumns.Concat(UserColumns);
@@ -69,6 +85,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			Data.Columns.AddRange(dataColumns.ToArray());
 		}
+
 
 		public void AddDocument(string controlNumber, IEnumerable<Tuple<string, string>> columnNameValuePairs)
 		{

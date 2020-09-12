@@ -8,17 +8,16 @@ using Relativity.Services.Field;
 using Relativity.Services.Search;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class DataSourceSnapshotTests : SystemTest
+	public sealed class DocumentDataSourceSnapshotTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
 
@@ -62,7 +61,7 @@ namespace Relativity.Sync.Tests.System
 				JobHistoryArtifactId = jobHistoryArtifactId
 			};
 
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDocumentDataSourceSnapshotConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);

@@ -6,5 +6,6 @@ namespace Relativity.Sync.Configuration
 	{
 		List<int> ProductionIds { get; }
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
+		bool IsImageJob { get; }
 	}
 }

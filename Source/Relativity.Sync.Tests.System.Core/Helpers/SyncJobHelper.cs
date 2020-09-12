@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Autofac;
 using Moq;
 using Relativity.Sync.Tests.Common;

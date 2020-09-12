@@ -16,7 +16,7 @@ namespace Relativity.Sync.Executors
 	internal sealed class ImageDataSourceSnapshotExecutor : IExecutor<IImageDataSourceSnapshotConfiguration>
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-		
+
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IImageFileRepository _imageFileRepository;

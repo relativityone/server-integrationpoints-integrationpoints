@@ -4,9 +4,9 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.ExecutionConstrains
 {
-	internal sealed class DataSourceSnapshotExecutionConstrains : IExecutionConstrains<IDataSourceSnapshotConfiguration>
+	internal sealed class DocumentDataSourceSnapshotExecutionConstrains : IExecutionConstrains<IDocumentDataSourceSnapshotConfiguration>
 	{
-		public Task<bool> CanExecuteAsync(IDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public Task<bool> CanExecuteAsync(IDocumentDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			return Task.FromResult(!configuration.IsSnapshotCreated);
 		}
