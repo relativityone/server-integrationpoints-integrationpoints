@@ -56,6 +56,24 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldReturnDocumentImages_And_SkipDocumentsWithoutImages()
+		{
+			// Arrange
+			var data = Enumerable.Range(1, 10)
+				.Select(x => new DocumentImageData { DocumentArtifactId = x }).ToList();
+
+			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
+				.Returns(CreateDataSet(data));
+
+			// Act
+			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).Concat(Enumerable.Range(20,5)).ToList(),
+				new QueryImagesOptions()).ConfigureAwait(false);
+
+			// Assert
+			result.Select(x => x.DocumentArtifactId).Should().BeEquivalentTo(data.Select(x => x.DocumentArtifactId));
+		}
+
+		[Test]
 		public async Task QueryImagesForDocumentsAsync_ShouldReturnMultipleImagesPerDocument()
 		{
 			// Arrange
@@ -144,8 +162,6 @@ namespace Relativity.Sync.Tests.Unit
 			result.Where(x => x.ProductionId == 2).Select(x => x.DocumentArtifactId).Should()
 				.BeEquivalentTo(Enumerable.Range(1, 5));
 		}
-
-
 
 		private DataSet CreateDataSet(IEnumerable<DocumentImageData> data)
 		{
