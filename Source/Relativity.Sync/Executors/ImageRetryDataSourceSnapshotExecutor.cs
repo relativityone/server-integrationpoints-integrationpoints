@@ -16,7 +16,8 @@ namespace Relativity.Sync.Executors
 	internal sealed class ImageRetryDataSourceSnapshotExecutor : IExecutor<IImageRetryDataSourceSnapshotConfiguration>
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-
+		private const int _HAS_IMAGES_YES_CHOICE = 1034243;
+		
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IImageFileRepository _imageFileRepository;
@@ -49,7 +50,7 @@ namespace Relativity.Sync.Executors
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
 				Condition = $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{configuration.JobHistoryToRetryId}])) " +
-							$"AND ('Artifact ID' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE 1034243)",
+							$"AND ('Artifact ID' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE})",
 			};
 
 			ExportInitializationResults results;

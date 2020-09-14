@@ -16,6 +16,7 @@ namespace Relativity.Sync.Executors
 	internal sealed class ImageDataSourceSnapshotExecutor : IExecutor<IImageDataSourceSnapshotConfiguration>
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
+		private const int _HAS_IMAGES_YES_CHOICE = 1034243;
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Executors
 				{
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
-				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE 1034243)"
+				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE})"
 			};
 
 			ExportInitializationResults results;
