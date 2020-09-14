@@ -50,6 +50,29 @@ namespace Relativity.Sync.Tests.System
 			await Environment.DeleteAllDocumentsInWorkspace(_workspace).ConfigureAwait(false);
 		}
 
+		[IdentifiedTest("2f71008b-89bc-4322-b700-ccd941c9b463")]
+		public async Task QueryImagesForDocumentsAsync_ShouldHandleMultipleImagesPerDocument()
+		{
+			// Arrange
+			Dataset dataset = Dataset.MultipleImagesPerDocument;
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
+			await _importHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
+			var documentIds = await GetAllDocumentArtifactIdsAsync().ConfigureAwait(false);
+
+			// Act
+			ImageFile[] retrievedImages = (await _sut.QueryImagesForDocumentsAsync(_workspace.ArtifactID, documentIds.ToList(), new QueryImagesOptions { IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false)).ToArray();
+
+			// Assert
+			int expectedImagesCount = dataset.GetFiles().Count();
+			int expectedDistinctDocumentsCount =
+				dataset.GetFiles().Select(x => dataset.GetControlNumber(x)).Distinct().Count();
+
+			retrievedImages.Length.Should().Be(expectedImagesCount);
+			retrievedImages.Select(x => x.Filename).Should().BeEquivalentTo(dataset.GetFiles().Select(x => x.Name));
+			retrievedImages.Select(x => x.DocumentArtifactId).Distinct().Count().Should()
+				.Be(expectedDistinctDocumentsCount);
+		}
+
 		[IdentifiedTest("50ee0c92-60e1-46c4-bd7e-2c83b952e51b")]
 		public async Task CalculateImagesTotalSizeAsync_ShouldCalculateCorrectSize()
 		{
@@ -172,6 +195,17 @@ namespace Relativity.Sync.Tests.System
 				}
 			};
 			return request;
+		}
+
+		private async Task<IEnumerable<int>> GetAllDocumentArtifactIdsAsync()
+		{
+			using (var om = ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				var result = await om.QuerySlimAsync(_workspace.ArtifactID, GetQueryRequest(), 1, 1000)
+					.ConfigureAwait(false);
+
+				return result.Objects.Select(x => x.ArtifactID);
+			}
 		}
 	}
 }

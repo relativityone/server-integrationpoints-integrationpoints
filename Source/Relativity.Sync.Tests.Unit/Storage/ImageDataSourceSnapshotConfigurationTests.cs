@@ -12,12 +12,11 @@ namespace Relativity.Sync.Tests.Unit.Storage
 {
 
 	[TestFixture]
-	public sealed class DocumentDataSourceSnapshotConfigurationTests
+	public sealed class ImageDataSourceSnapshotConfigurationTests
 	{
-		private DocumentDataSourceSnapshotConfiguration _instance;
+		private ImageDataSourceSnapshotConfiguration _instance;
 
 		private Mock<IConfiguration> _cache;
-		private Mock<IFieldMappings> _fieldMappings;
 
 		private const int _WORKSPACE_ID = 589632;
 
@@ -29,9 +28,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			_cache = new Mock<IConfiguration>();
-			_fieldMappings = new Mock<IFieldMappings>();
 
-			_instance = new DocumentDataSourceSnapshotConfiguration(_cache.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
+			_instance = new ImageDataSourceSnapshotConfiguration(_cache.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
 		}
 
 		[Test]
@@ -54,17 +52,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldRetrieveFieldMappings()
-		{
-			// Arrange
-			List<FieldMap> fieldMappings = new List<FieldMap>();
-			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMappings);
-
-			// Act & Assert
-			_instance.GetFieldMappings().Should().BeSameAs(fieldMappings);
-		}
-
-		[Test]
 		[TestCase("", false)]
 		[TestCase(null, false)]
 		[TestCase("guid", true)]
@@ -84,12 +71,38 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			Guid snapshotId = Guid.NewGuid();
 			const int totalRecordsCount = 789654;
 
-			// Act
+			// Act 
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
 			_cache.Verify(x => x.UpdateFieldValueAsync(SnapshotIdGuid, snapshotId.ToString()));
 			_cache.Verify(x => x.UpdateFieldValueAsync(SnapshotRecordsCountGuid, totalRecordsCount));
+		}
+
+		[Test]
+		public void ProductionIds_ShouldThrowUntilImplemented()
+		{
+			// Arrange
+			Action action = () =>
+			{
+				_ =_instance.ProductionIds;
+			};
+			
+			// Act & Assert
+			action.Should().Throw<NotImplementedException>();
+		}
+
+		[Test]
+		public void IncludeOriginalImageIfNotFoundInProductions_ShouldThrowUntilImplemented()
+		{
+			// Arrange
+			Action action = () =>
+			{
+				_ = _instance.IncludeOriginalImageIfNotFoundInProductions;
+			};
+
+			// Act & Assert
+			action.Should().Throw<NotImplementedException>();
 		}
 	}
 }

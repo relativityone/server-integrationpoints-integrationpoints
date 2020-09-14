@@ -7,6 +7,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal class Dataset
 	{
+		private Func<FileInfo, string> _begBatesGetter;
+		private Func<FileInfo, string> _controlNumberGetter;
 		private const string _DATASETS_FOLDER_PATH = "Data";
 		private static string CurrentDirectory => AppDomain.CurrentDomain.BaseDirectory;
 
@@ -17,12 +19,21 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		public static Dataset ThreeImages { get; } = new Dataset("ThreeImages");
 		public static Dataset TwoDocumentProduction { get; } = new Dataset("TwoDocumentProduction");
 		public static Dataset SingleDocumentProduction { get; } = new Dataset("SingleDocumentProduction");
+		public static Dataset MultipleImagesPerDocument { get; } = new Dataset("MultipleImagesPerDocument", file => "DOCUMENT_1", file => file.Name.Split('_').Last());
 
 		public string Name { get; }
 		public string FolderPath => GetDatasetPath(Name);
 
-		public Dataset(string name)
+		protected Dataset(string name, Func<FileInfo, string> controlNumberGetter = null, Func<FileInfo, string> begBatesGetter = null)
 		{
+			Func<FileInfo, string> GetFilename = file =>
+			{
+				return Path.GetFileNameWithoutExtension(file.Name);
+
+			};
+
+			_controlNumberGetter = controlNumberGetter ?? GetFilename;
+			_begBatesGetter = begBatesGetter ?? GetFilename;
 			Name = name;
 		}
 
@@ -42,5 +53,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		{
 			return Directory.GetFiles(GetDatasetPath(Name)).Select(x => new FileInfo(x));
 		}
+
+		public string GetControlNumber(FileInfo file) => _controlNumberGetter(file);
+		public string GetBegBates(FileInfo file) => _begBatesGetter(file);
 	}
 }

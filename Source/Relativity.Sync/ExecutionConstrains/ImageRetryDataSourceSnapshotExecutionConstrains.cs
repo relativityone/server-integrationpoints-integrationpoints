@@ -8,7 +8,7 @@ namespace Relativity.Sync.ExecutionConstrains
 	{
 		public Task<bool> CanExecuteAsync(IImageRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
-			return Task.FromResult(!configuration.IsSnapshotCreated && configuration.JobHistoryToRetryId != null && configuration.IsImageJob);
+			return Task.FromResult(!configuration.IsSnapshotCreated && configuration.JobHistoryToRetryId != null);
 		}
 	}
 }

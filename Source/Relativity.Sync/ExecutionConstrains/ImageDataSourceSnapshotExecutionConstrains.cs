@@ -8,7 +8,7 @@ namespace Relativity.Sync.ExecutionConstrains
 	{
 		public Task<bool> CanExecuteAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
-			return Task.FromResult(!configuration.IsSnapshotCreated && configuration.IsImageJob);
+			return Task.FromResult(!configuration.IsSnapshotCreated);
 		}
 	}
 }

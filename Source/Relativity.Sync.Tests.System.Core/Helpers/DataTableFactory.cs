@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 
 			IEnumerable<IEnumerable<string>> groupsOfControlNumbers = directories
-				.Select(GetControlNumbers);
+				.Select(x => GetControlNumbers(x, dataset.GetControlNumber));
 
 			IEnumerable<string> validControlNumbers = GetIntersectionOfEnumerables(groupsOfControlNumbers);
 
@@ -123,11 +123,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			foreach (FileInfo imageFile in images)
 			{
-				var controlNumber = GetControlNumber(imageFile);
+				var controlNumber = dataset.GetControlNumber(imageFile);
 
 				var columnValuePairs = new List<Tuple<string, string>>
 				{
-					Tuple.Create(ImportDataTableWrapper.BegBates, controlNumber),
+					Tuple.Create(ImportDataTableWrapper.BegBates, dataset.GetBegBates(imageFile)),
 					Tuple.Create(ImportDataTableWrapper.IdentifierFieldName, controlNumber),
 					Tuple.Create(ImportDataTableWrapper.ImageFile, imageFile.FullName)
 				};
@@ -164,19 +164,13 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				.First(x => Path.GetFileNameWithoutExtension(x.Name) == controlNumber);
 		}
 
-		private static IEnumerable<string> GetControlNumbers(DirectoryInfo subDirectory)
+		private static IEnumerable<string> GetControlNumbers(DirectoryInfo subDirectory, Func<FileInfo, string> getControlNumber)
 		{
 			return subDirectory == null
 				? Enumerable.Empty<string>()
 				: subDirectory
 					.GetFiles()
-					.Select(GetControlNumber);
+					.Select(getControlNumber);
 		}
-
-		private static string GetControlNumber(FileInfo file)
-		{
-			return Path.GetFileNameWithoutExtension(file.Name);
-		}
-
 	}
 }

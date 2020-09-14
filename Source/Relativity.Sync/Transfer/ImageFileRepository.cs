@@ -117,31 +117,33 @@ namespace Relativity.Sync.Transfer
 
 		private IEnumerable<ImageFile> ApplyProductionPrecedence(IEnumerable<ImageFile> imageFiles, List<int> productionIds)
 		{
-			var images = new Dictionary<int, List<ImageFile>>();
+			var result = new Dictionary<int, IEnumerable<ImageFile>>();
 
-			var imagesForProduction = imageFiles.ToLookup(x => x.ProductionId, x => x);
+			var imagesFromProduction = imageFiles.ToLookup(x => x.ProductionId, x => x);
 
 			foreach (var production in productionIds)
 			{
-				var producedImages = imagesForProduction[production];
+				var producedImages = imagesFromProduction[production];
 
-				var imagesPerDocument = producedImages.ToLookup(x => x.DocumentArtifactId, x => x);
+				var imagesPerDocument = producedImages
+																.Where(x => !result.ContainsKey(x.DocumentArtifactId))
+																.ToLookup(x => x.DocumentArtifactId, x => x);
 
-				foreach (var document in imagesPerDocument)
+				foreach (var documentImages in imagesPerDocument)
 				{
-					if (!images.ContainsKey(document.Key))
+					if (!result.ContainsKey(documentImages.Key))
 					{
-						images.Add(document.Key, new List<ImageFile>(document));
+						result.Add(documentImages.Key, documentImages);
 					}
 				}
 			}
 
-			return images.SelectMany(x => x.Value);
+			return result.SelectMany(x => x.Value);
 		}
 
 		private IList<ImageFile> RetrieveOriginalImagesForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds)
 		{
-			var dataSet = searchManager.RetrieveImagesForDocuments(workspaceId, documentIds.ToArray());
+			DataSet dataSet = searchManager.RetrieveImagesForDocuments(workspaceId, documentIds.ToArray());
 
 			if (dataSet == null || dataSet.Tables.Count == 0)
 			{

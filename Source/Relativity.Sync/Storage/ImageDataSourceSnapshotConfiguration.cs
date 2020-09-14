@@ -24,8 +24,6 @@ namespace Relativity.Sync.Storage
 
 		public bool IncludeOriginalImageIfNotFoundInProductions => throw new NotImplementedException();
 
-		public bool IsImageJob => true;
-
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 
 		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);

@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 
 			configuration.Setup(x => x.IsSnapshotCreated).Returns(snapshotExists);
 			configuration.Setup(x => x.JobHistoryToRetryId).Returns(1);
-			configuration.Setup(x => x.IsImageJob).Returns(true);
 
 			// ACT
 			bool canExecute = await _instance.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
@@ -44,24 +43,6 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 
 			configuration.Setup(x => x.IsSnapshotCreated).Returns(false);
 			configuration.Setup(x => x.JobHistoryToRetryId).Returns(jobHisotryToRetry);
-			configuration.Setup(x => x.IsImageJob).Returns(true);
-
-			// ACT
-			bool canExecute = await _instance.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			canExecute.Should().Be(expectedCanExecute);
-		}
-
-		[TestCase(true, true)]
-		[TestCase(false, false)]
-		public async Task CanExecuteAsync_ShouldReturnTrue_When_IsImageJob(bool isImageJob, bool expectedCanExecute)
-		{
-			Mock<IImageRetryDataSourceSnapshotConfiguration> configuration = new Mock<IImageRetryDataSourceSnapshotConfiguration>();
-
-			configuration.Setup(x => x.IsSnapshotCreated).Returns(false);
-			configuration.Setup(x => x.JobHistoryToRetryId).Returns(1);
-			configuration.Setup(x => x.IsImageJob).Returns(isImageJob);
 
 			// ACT
 			bool canExecute = await _instance.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);

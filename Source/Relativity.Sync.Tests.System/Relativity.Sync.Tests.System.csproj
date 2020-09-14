@@ -62,6 +62,15 @@
 		<None Update="Data\Images\AZIPPER_0011318.tif">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000001.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -138,5 +147,6 @@
 	<ItemGroup>
 	  <Folder Include="Data\Images\" />
 	  <Folder Include="Data\ImagesBig\" />
+	  <Folder Include="Data\MultipleImagesPerDocument\" />
 	</ItemGroup>
 </Project>
