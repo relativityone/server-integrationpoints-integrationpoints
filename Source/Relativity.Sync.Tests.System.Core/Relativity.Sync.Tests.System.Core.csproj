@@ -31,6 +31,7 @@
   <!-- Relativity Packages with Release Versioning Schema -->
   <ItemGroup>
     <PackageReference Include="kCura.Relativity.Client" />
+    <PackageReference Include="Relativity.Productions.Services.Interfaces" Version="11.2.13" />
   </ItemGroup>
 	<ItemGroup>
 		<Reference Include="System.Web.Services" />

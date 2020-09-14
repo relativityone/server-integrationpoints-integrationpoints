@@ -17,7 +17,7 @@ namespace Relativity.Sync.Pipelines
 				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()
-				.AddChild<RetryDataSourceSnapshotNode>()
+				.AddChild<DocumentRetryDataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()
 				.ForLastChild()
 				.AddChild<JobStartMetricsNode>()

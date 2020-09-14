@@ -7,6 +7,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
@@ -77,8 +78,9 @@ namespace Relativity.Sync.Transfer
 			long nativesTotalSize = 0;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				List<int> allDocumentsArtifactIds = await GetAllDocumentsArtifactIdsAsync(workspaceId, objectManager, request).ConfigureAwait(false);
-				IEnumerable<IList<int>> documentArtifactIdBatches = allDocumentsArtifactIds.SplitList(_BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
+				IEnumerable<IList<int>> documentArtifactIdBatches = (await objectManager.QueryAllAsync(workspaceId, request).ConfigureAwait(false))
+					.Select(x => x.ArtifactID)
+					.SplitList(_BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
 
 				foreach (IList<int> batch in documentArtifactIdBatches)
 				{
@@ -87,38 +89,6 @@ namespace Relativity.Sync.Transfer
 				}
 			}
 			return nativesTotalSize;
-		}
-
-		private static async Task<List<int>> GetAllDocumentsArtifactIdsAsync(int workspaceId, IObjectManager objectManager, QueryRequest allDocumentsQueryRequest)
-		{
-			QueryRequest allDocumentsArtifactIdsQueryRequest = new QueryRequest
-			{
-				ObjectType = allDocumentsQueryRequest.ObjectType,
-				Condition = allDocumentsQueryRequest.Condition
-			};
-
-			int retrievedRecordCount = 0;
-			List<int> allDocumentsArtifactIds = new List<int>();
-
-			ExportInitializationResults allDocumentsArtifactIdsExportInitializationResults = await objectManager.InitializeExportAsync(workspaceId, allDocumentsArtifactIdsQueryRequest, 1).ConfigureAwait(false);
-			int exportedRecordsCount = (int)allDocumentsArtifactIdsExportInitializationResults.RecordCount;
-
-			RelativityObjectSlim[] allDocumentsArtifactIdsExportResultsBlock = await objectManager
-				.RetrieveResultsBlockFromExportAsync(workspaceId, allDocumentsArtifactIdsExportInitializationResults.RunID, exportedRecordsCount - retrievedRecordCount, retrievedRecordCount)
-				.ConfigureAwait(false);
-
-			while (allDocumentsArtifactIdsExportResultsBlock != null && allDocumentsArtifactIdsExportResultsBlock.Any())
-			{
-				allDocumentsArtifactIds.AddRange(allDocumentsArtifactIdsExportResultsBlock.Select(x => x.ArtifactID));
-
-				retrievedRecordCount += allDocumentsArtifactIdsExportResultsBlock.Length;
-
-				allDocumentsArtifactIdsExportResultsBlock = await objectManager
-					.RetrieveResultsBlockFromExportAsync(workspaceId, allDocumentsArtifactIdsExportInitializationResults.RunID, exportedRecordsCount - retrievedRecordCount, retrievedRecordCount)
-					.ConfigureAwait(false);
-			}
-
-			return allDocumentsArtifactIds;
 		}
 
 		private IList<INativeFile> GetNativeFiles(DataTable dataTable)
