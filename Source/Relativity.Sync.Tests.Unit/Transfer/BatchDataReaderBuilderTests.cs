@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportDataSanitizerFake = new Mock<IExportDataSanitizer>();
 			_exportDataSanitizerFake.Setup(s => s.ShouldSanitize(It.IsAny<RelativityDataType>())).Returns(false);
 			_fieldManagerFake = new Mock<IFieldManager>();
-			_fieldManagerFake.Setup(fm => fm.GetAllFieldsAsync(CancellationToken.None)).ReturnsAsync(_getAllFieldsResult);
+			_fieldManagerFake.Setup(fm => fm.GetNativeAllFieldsAsync(CancellationToken.None)).ReturnsAsync(_getAllFieldsResult);
 			_fieldManagerFake.Setup(fm => fm.GetObjectIdentifierFieldAsync(CancellationToken.None)).ReturnsAsync(_secondDocumentField);
 		}
 
@@ -170,7 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{specialFieldType, specialFieldValueBuilder.Object},
 				{differentSpecialFieldType, Mock.Of<ISpecialFieldRowValuesBuilder>()}
 			};
-			_fieldManagerFake.Setup(fm => fm.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
+			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
 			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
@@ -221,7 +221,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{differentSpecialFieldType, Mock.Of<ISpecialFieldRowValuesBuilder>()}
 			};
 			
-			_fieldManagerFake.Setup(fm => fm.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
+			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
 			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 			IDataReader reader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
 

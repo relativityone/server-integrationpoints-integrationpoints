@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.Integration
 			_configuration.DestinationFolderStructureBehavior = folderStructureBehavior;
 
 			// Act
-			List<FieldInfoDto> specialFieldColumns = _instance.GetDocumentSpecialFields().ToList();
+			List<FieldInfoDto> specialFieldColumns = _instance.GetNativeSpecialFields().ToList();
 
 			// Assert
 			specialFieldColumns.Should().BeEquivalentTo(expectedSpecialFieldColumns);
@@ -155,7 +155,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Act
 			IEnumerable<FieldInfoDto> documentFields = await _instance
-				.GetDocumentFieldsAsync(CancellationToken.None)
+				.GetDocumentTypeFieldsAsync(CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -178,7 +178,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Act
 			IEnumerable<FieldInfoDto> allFields = await _instance
-				.GetAllFieldsAsync(CancellationToken.None)
+				.GetNativeAllFieldsAsync(CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -193,7 +193,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Act
 			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _instance
-				.CreateSpecialFieldRowValueBuildersAsync(0, new List<int>())
+				.CreateNativeSpecialFieldRowValueBuildersAsync(0, new List<int>())
 				.ConfigureAwait(false);
 
 			// Assert
@@ -237,7 +237,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Act
 			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
-				await _instance.CreateSpecialFieldRowValueBuildersAsync(0, new List<int> { documentArtifactId }).ConfigureAwait(false);
+				await _instance.CreateNativeSpecialFieldRowValueBuildersAsync(0, new List<int> { documentArtifactId }).ConfigureAwait(false);
 
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = documentArtifactId };
 			object value = specialFieldRowValueBuilders[field.SpecialFieldType].BuildRowValue(field, document, null);
@@ -274,7 +274,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Act
 			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
-				await _instance.CreateSpecialFieldRowValueBuildersAsync(0, new List<int> { documentArtifactId }).ConfigureAwait(false);
+				await _instance.CreateNativeSpecialFieldRowValueBuildersAsync(0, new List<int> { documentArtifactId }).ConfigureAwait(false);
 
 			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, _FOLDER_PATH_SOURCE_FIELD_NAME, _FOLDER_PATH_SOURCE_FIELD_NAME);
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = documentArtifactId };

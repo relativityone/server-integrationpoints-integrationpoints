@@ -237,15 +237,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			{
 				TestName = "RelativityDataType"
 			};
-
-			FieldInfoDto dfiField1 = FieldInfoDto.DocumentField("test", "test", false);
-			dfiField1.DocumentFieldIndex = 0;
-			FieldInfoDto dfiField2 = FieldInfoDto.DocumentField("test", "test", false);
-			dfiField2.DocumentFieldIndex = 1;
-			yield return new TestCaseData(dfiField1, dfiField2)
-			{
-				TestName = "DocumentFieldIndex"
-			};
 		}
 
 		[TestCaseSource(nameof(EqualsDifferentPropertyCases))]

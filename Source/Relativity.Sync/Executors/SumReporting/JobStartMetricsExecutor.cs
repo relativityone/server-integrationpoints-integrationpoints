@@ -53,7 +53,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			try
 			{
 				IEnumerable<FieldInfoDto> documentFields =
-					await _fieldManager.GetDocumentFieldsAsync(token).ConfigureAwait(false);
+					await _fieldManager.GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
 
 				documentFields = documentFields.Where(x => x.SpecialFieldType == SpecialFieldType.None);
 

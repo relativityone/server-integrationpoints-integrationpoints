@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			_serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 
-			_fieldManagerMock.Setup(x => x.GetDocumentFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<FieldInfoDto>
+			_fieldManagerMock.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<FieldInfoDto>
 			{
 				new FieldInfoDto(SpecialFieldType.None,"Control Number", "Control Number", true, true){RelativityDataType = RelativityDataType.FixedLengthText}
 			});
@@ -147,7 +147,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public void ExecuteAsync_Should_CompleteSuccessfully_WhenFieldManagerThrows()
 		{
 			// Arrange
-		_fieldManagerMock.Setup(x => x.GetDocumentFieldsAsync(It.IsAny<CancellationToken>()))
+		_fieldManagerMock.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>()))
 				.ThrowsAsync(new Exception());
 
 			// Act
@@ -286,7 +286,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				});
 
 
-			_fieldManagerMock.Setup(x => x.GetDocumentFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
+			_fieldManagerMock.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
 					new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType }
 				).ToList);
 		}

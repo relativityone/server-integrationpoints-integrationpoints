@@ -15,12 +15,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class FieldManagerTests
 	{
+		private Mock<ISpecialFieldBuilder> _folderPathSpecialFieldBuilderMock;
+
+
 		private Mock<IFieldConfiguration> _configuration;
 		private Mock<IDocumentFieldRepository> _documentFieldRepository;
 		private FieldManager _instance;
 		private int[] _documentArtifactIds;
-		private Mock<ISpecialFieldRowValuesBuilder> _rowValueBuilder1;
-		private Mock<ISpecialFieldRowValuesBuilder> _rowValueBuilder2;
 		private const RelativityDataType _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE = RelativityDataType.WholeNumber;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
 		private const string _DOCUMENT_IDENTIFIER_FIELD_NAME = "Control Number [Identifier]";
@@ -37,88 +38,155 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private const int _SECOND_DOCUMENT = 2;
 		private const int _THIRD_DOCUMENT = 3;
 
+		private static readonly FieldInfoDto _DOCUMENT_IDENTIFIER_FIELD = 
+			new FieldInfoDto(SpecialFieldType.None, "Control Number Source [Identifier]", "Control Number Destination [Identifier]", true, true)
+			{
+				RelativityDataType = RelativityDataType.FixedLengthText
+			};
+
+		private static readonly FieldInfoDto _DOCUMENT_MAPPED_FIELD =
+			FieldInfoDto.DocumentField("Mapped Source Field", "Mapped Destination Field", false);
+
+		private static readonly FieldInfoDto _FOLDER_PATH_STRUCTURE_FIELD =
+			FieldInfoDto.FolderPathFieldFromDocumentField("Folder Path Field");
+
+
+		private readonly IDictionary<string, RelativityDataType> _FIELD_TYPES = new Dictionary<string, RelativityDataType>
+		{
+			{ _DOCUMENT_IDENTIFIER_FIELD.SourceFieldName, _DOCUMENT_IDENTIFIER_FIELD.RelativityDataType },
+			{ _DOCUMENT_MAPPED_FIELD.SourceFieldName, _DOCUMENT_MAPPED_FIELD.RelativityDataType },
+			{ _FOLDER_PATH_STRUCTURE_FIELD.SourceFieldName, RelativityDataType.FixedLengthText }
+		};
+
+		private readonly FieldInfoDto[] _NATIVE_SPECIAL_FIELDS = new FieldInfoDto[]
+		{
+			FieldInfoDto.NativeFileFilenameField(),
+			FieldInfoDto.NativeFileLocationField(),
+			FieldInfoDto.NativeFileSizeField(),
+			FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure()
+		};
+
+		private readonly FieldInfoDto[] _IMAGE_SPECIAL_FIELDS = new FieldInfoDto[]
+		{
+			FieldInfoDto.ImageFileNameField(),
+			FieldInfoDto.ImageFileLocationField()
+		};
+
 		[SetUp]
 		public void SetUp()
 		{
 			_documentArtifactIds = new[] {_FIRST_DOCUMENT, _SECOND_DOCUMENT, _THIRD_DOCUMENT};
 
-			FieldInfoDto documentIdentifierField = FieldInfoDto.DocumentField(_DOCUMENT_IDENTIFIER_FIELD_NAME, _DOCUMENT_IDENTIFIER_FIELD_NAME, true);
-			FieldInfoDto documentSpecialField = FieldInfoDto.DocumentField(_DOCUMENT_SPECIAL_FIELD_NAME, _DOCUMENT_SPECIAL_FIELD_NAME, false);
-			FieldInfoDto nonDocumentSpecialField1 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME, _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
-			FieldInfoDto nonDocumentSpecialField2 = FieldInfoDto.GenericSpecialField(SpecialFieldType.None, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME, _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
-
-			FieldMap mappedField1 = CreateFieldMapping(_MAPPED_FIELD_1_SOURCE_NAME, _MAPPED_FIELD_1_DESTINATION_NAME);
-			FieldMap mappedField2 = CreateFieldMapping(_MAPPED_FIELD_2_SOURCE_NAME, _MAPPED_FIELD_2_DESTINATION_NAME);
-			
-			_rowValueBuilder1 = new Mock<ISpecialFieldRowValuesBuilder>();
-			var builder1 = new Mock<ISpecialFieldBuilder>();
-			builder1.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder1.Object);
-			builder1.Setup(b => b.BuildColumns()).Returns(new[] {nonDocumentSpecialField1, documentSpecialField, documentIdentifierField});
-
-			_rowValueBuilder2 = new Mock<ISpecialFieldRowValuesBuilder>();
-			var builder2 = new Mock<ISpecialFieldBuilder>();
-			builder2.Setup(b => b.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)).ReturnsAsync(_rowValueBuilder2.Object);
-			builder2.Setup(b => b.BuildColumns()).Returns(new[] {nonDocumentSpecialField2});
 
 			_configuration = new Mock<IFieldConfiguration>();
-			_configuration.Setup(c => c.GetFieldMappings()).Returns(new[] { mappedField1, mappedField2 });
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
+
 			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
 			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
-				.ReturnsAsync<int, ICollection<string>, CancellationToken, IDocumentFieldRepository, IDictionary<string, RelativityDataType>>(
-					(workspaceId, fieldNames, token) => fieldNames.ToDictionary(f => f, _ => _NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE));
+				.ReturnsAsync(_FIELD_TYPES);
 
-			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] {builder1.Object, builder2.Object});
+			var specialFieldBuilders = SetupSpecialFieldBuilders();
+
+			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, specialFieldBuilders);
 		}
 
 		[Test]
-		public async Task ItShouldReturnDocumentIdentifierField()
+		public async Task GetObjectIdentifierFieldAsync_ShouldReturnDocumentIdentifierField()
 		{
+			// Arrange
+			var mappedFields = new FieldMap[]
+			{
+				CreateFieldMap(_DOCUMENT_IDENTIFIER_FIELD, true),
+				CreateFieldMap(_DOCUMENT_MAPPED_FIELD)
+			};
+
+			_configuration.Setup(c => c.GetFieldMappings()).Returns(mappedFields);
+
 			// Act
 			FieldInfoDto result = await _instance.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().NotBeNull();
-			result.IsIdentifier.Should().BeTrue();
-			result.IsDocumentField.Should().BeTrue();
-			result.SourceFieldName.Should().Be(_DOCUMENT_IDENTIFIER_FIELD_NAME);
+			result.Should().Be(_DOCUMENT_IDENTIFIER_FIELD);
 		}
 
 		[Test]
-		public void ItShouldReturnSpecialFields()
+		public void GetNativeSpecialFields_ShouldReturnSpecialFields()
 		{
 			// Act
-			IList<FieldInfoDto> result = _instance.GetDocumentSpecialFields().ToList();
+			IList<FieldInfoDto> result = _instance.GetNativeSpecialFields().ToList();
 
 			// Assert
-			result.Should().Contain(f => f.SourceFieldName == _DOCUMENT_SPECIAL_FIELD_NAME);
-			result.Should().Contain(f => f.SourceFieldName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
-			result.Should().Contain(f => f.SourceFieldName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
-			result.Should().NotContain(f => f.SourceFieldName == _MAPPED_FIELD_1_SOURCE_NAME);
-			result.Should().NotContain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME);
+			result.Should().BeEquivalentTo(_NATIVE_SPECIAL_FIELDS);
 		}
 
 		[Test]
-		public async Task ItShouldReturnDocumentFields()
+		public void GetImageSpecialFields_ShouldReturnSpecialFields()
 		{
 			// Act
-			IList<FieldInfoDto> result = await _instance.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IList<FieldInfoDto> result = _instance.GetImageSpecialFields().ToList();
 
 			// Assert
-			result.Should().Contain(f => f.SourceFieldName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().Contain(f => f.DestinationFieldName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_1_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_1_DESTINATION_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_2_DESTINATION_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
-			result.Should().NotContain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME);
-			result.Should().NotContain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME);
-			result.Select(f => f.DocumentFieldIndex).Should().ContainInOrder(Enumerable.Range(0, result.Count));
+			result.Should().BeEquivalentTo(_IMAGE_SPECIAL_FIELDS);
+		}
+
+		[Test]
+		public async Task GetDocumentTypeFields_ShouldReturnDocumentFields()
+		{
+			// Arrange
+			var expectedFields = new List<FieldInfoDto>
+			{
+				_DOCUMENT_IDENTIFIER_FIELD,
+				_DOCUMENT_MAPPED_FIELD
+			};
+
+			var mappedFields = new FieldMap[]
+			{
+				CreateFieldMap(_DOCUMENT_IDENTIFIER_FIELD, true),
+				CreateFieldMap(_DOCUMENT_MAPPED_FIELD)
+			};
+
+			_configuration.Setup(c => c.GetFieldMappings()).Returns(mappedFields);
+
+			// Act
+			IList<FieldInfoDto> result = await _instance.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeEquivalentTo(expectedFields);
+		}
+
+		[Test]
+		public async Task GetDocumentTypeFields_ShouldReturnDocumentFieldsWithFolderPathField_WhenDestinationFolderStructureIsSet()
+		{
+			// Arrange
+			var expectedFields = new List<FieldInfoDto>
+			{
+				_DOCUMENT_IDENTIFIER_FIELD,
+				_DOCUMENT_MAPPED_FIELD,
+				_FOLDER_PATH_STRUCTURE_FIELD
+			};
+
+			var mappedFields = new FieldMap[]
+			{
+				CreateFieldMap(_DOCUMENT_IDENTIFIER_FIELD, true),
+				CreateFieldMap(_DOCUMENT_MAPPED_FIELD),
+				CreateSpecialFieldMap(_FOLDER_PATH_STRUCTURE_FIELD, FieldMapType.FolderPathInformation)
+			};
+
+			_configuration.Setup(c => c.GetFieldMappings()).Returns(mappedFields);
+			_configuration.Setup(c => c.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
+
+			// Act
+			IList<FieldInfoDto> result = await _instance.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeEquivalentTo(expectedFields);
 		}
 
 		[Test]
 		public async Task ItShouldReturnAllFields()
 		{
 			// Act
-			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Should().Contain(f => f.SourceFieldName == _DOCUMENT_SPECIAL_FIELD_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
@@ -131,48 +199,44 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_2_DESTINATION_NAME).Which.DocumentFieldIndex.Should().BeGreaterOrEqualTo(0);
 			result.Should().Contain(f => f.SourceFieldName == _MAPPED_FIELD_2_SOURCE_NAME && f.DestinationFieldName == _MAPPED_FIELD_2_DESTINATION_NAME).Which.RelativityDataType.Should()
 				.Be(_NON_SPECIAL_DOCUMENT_FIELD_RELATIVITY_DATA_TYPE);
-
-			result.Should().Contain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_1_NAME).Which.DocumentFieldIndex.Should().Be(-1);
-
-			result.Should().Contain(f => f.DestinationFieldName == _NON_DOCUMENT_SPECIAL_FIELD_2_NAME).Which.DocumentFieldIndex.Should().Be(-1);
 		}
 
-		[Test]
-		public async Task ItShouldReturnSpecialFieldBuilders()
-		{
-			// Arrange 
-			const SpecialFieldType rowValueBuilder1FieldType = SpecialFieldType.FolderPath;
-			const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.NativeFileLocation;
+		//[Test]
+		//public async Task ItShouldReturnSpecialFieldBuilders()
+		//{
+		//	// Arrange 
+		//	const SpecialFieldType rowValueBuilder1FieldType = SpecialFieldType.FolderPath;
+		//	const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.NativeFileLocation;
 
-			_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder1FieldType});
-			_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder2FieldType});
+		//	_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder1FieldType});
+		//	_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder2FieldType});
 			
-			// Act
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> result = await _instance.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)
-				.ConfigureAwait(false);
+		//	// Act
+		//	IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> result = await _instance.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds)
+		//		.ConfigureAwait(false);
 
-			// Assert
-			result.Should().ContainKey(rowValueBuilder1FieldType).WhichValue.Should().Be(_rowValueBuilder1.Object);
-			result.Should().ContainKey(rowValueBuilder2FieldType).WhichValue.Should().Be(_rowValueBuilder2.Object);
-		}
+		//	// Assert
+		//	result.Should().ContainKey(rowValueBuilder1FieldType).WhichValue.Should().Be(_rowValueBuilder1.Object);
+		//	result.Should().ContainKey(rowValueBuilder2FieldType).WhichValue.Should().Be(_rowValueBuilder2.Object);
+		//}
 
-		[Test]
-		public async Task ItShouldThrowWhenRegisteringForTheSameSpecialFieldType()
-		{
-			// Arrange 
-			const SpecialFieldType rowValueBuilder1FieldType = SpecialFieldType.NativeFileSize;
-			const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.NativeFileSize;
+		//[Test]
+		//public async Task ItShouldThrowWhenRegisteringForTheSameSpecialFieldType()
+		//{
+		//	// Arrange 
+		//	const SpecialFieldType rowValueBuilder1FieldType = SpecialFieldType.NativeFileSize;
+		//	const SpecialFieldType rowValueBuilder2FieldType = SpecialFieldType.NativeFileSize;
 
-			_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder1FieldType});
-			_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder2FieldType});
+		//	_rowValueBuilder1.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder1FieldType});
+		//	_rowValueBuilder2.Setup(rb => rb.AllowedSpecialFieldTypes).Returns(new[] {rowValueBuilder2FieldType});
 			
-			// Act
-			Func<Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>>> action =
-				() => _instance.CreateSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds);
+		//	// Act
+		//	Func<Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>>> action =
+		//		() => _instance.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _documentArtifactIds);
 
-			// Assert
-			await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false);
-		}
+		//	// Assert
+		//	await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false);
+		//}
 
 		[Test]
 		public async Task ItShouldNotThrowOnGetAllFieldsWhenNoSpecialFieldBuildersFound()
@@ -181,7 +245,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
 			// Act
-			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
+			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetNativeAllFieldsAsync(CancellationToken.None);
 
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
@@ -208,7 +272,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
 
 			// Act
-			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			FieldInfoDto returnedField = result.Single();
@@ -233,7 +297,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
 
 			// Act
-			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Should().HaveCount(expectedFieldCount);
@@ -263,7 +327,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
 
 			// Act
-			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
+			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetNativeAllFieldsAsync(CancellationToken.None);
 
 			// Assert
 			(await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false)).Which.Message.Should().StartWith("Special field destination name conflicts with mapped field destination name.");
@@ -283,7 +347,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
 
 			// Act
-			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
+			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetNativeAllFieldsAsync(CancellationToken.None);
 
 			// Assert
 			(await action.Should().ThrowAsync<InvalidOperationException>().ConfigureAwait(false)).Which.Message.Should().StartWith("Special field destination name conflicts with mapped field destination name.");
@@ -303,7 +367,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, new[] { builder.Object });
 
 			// Act
-			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetAllFieldsAsync(CancellationToken.None);
+			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _instance.GetNativeAllFieldsAsync(CancellationToken.None);
 
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
@@ -320,7 +384,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
 			// Act
-			IReadOnlyList<FieldInfoDto> result = await _instance.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> result = await _instance.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Should().BeEmpty();
@@ -333,7 +397,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
 			// Act
-			Func<IEnumerable<FieldInfoDto>> action = () => _instance.GetDocumentSpecialFields();
+			Func<IEnumerable<FieldInfoDto>> action = () => _instance.GetNativeSpecialFields();
 
 			// Assert
 			action.Should().NotThrow();
@@ -346,7 +410,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_instance = new FieldManager(_configuration.Object, _documentFieldRepository.Object, Enumerable.Empty<ISpecialFieldBuilder>());
 
 			// Act
-			Func<Task<IList<FieldInfoDto>>> action = () => _instance.GetDocumentFieldsAsync(CancellationToken.None);
+			Func<Task<IList<FieldInfoDto>>> action = () => _instance.GetDocumentTypeFieldsAsync(CancellationToken.None);
 
 			// Assert
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
@@ -372,6 +436,52 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Mock<ISpecialFieldBuilder> builder = new Mock<ISpecialFieldBuilder>();
 			builder.Setup(b => b.BuildColumns()).Returns(fieldsToReturn);
 			return builder;
+		}
+
+		private static FieldMap CreateFieldMap(FieldInfoDto fieldInfo, bool isIdentifier = false)
+			=> new FieldMap
+			{
+				SourceField = new FieldEntry
+				{
+					DisplayName = fieldInfo.SourceFieldName,
+					IsIdentifier = fieldInfo.IsIdentifier
+				},
+				DestinationField = new FieldEntry
+				{
+					DisplayName = fieldInfo.DestinationFieldName,
+					IsIdentifier = fieldInfo.IsIdentifier
+				},
+				FieldMapType = isIdentifier ? FieldMapType.Identifier : FieldMapType.None
+			};
+
+		private static FieldMap CreateSpecialFieldMap(FieldInfoDto fieldInfo, FieldMapType mapType)
+			=> new FieldMap
+			{
+				SourceField = new FieldEntry
+				{
+					DisplayName = fieldInfo.SourceFieldName,
+					IsIdentifier = fieldInfo.IsIdentifier
+				},
+				DestinationField = new FieldEntry(),
+				FieldMapType = mapType
+			};
+
+		private ISpecialFieldBuilder[] SetupSpecialFieldBuilders()
+		{
+			var nativeSpecialFieldBuilder = new Mock<ISpecialFieldBuilder>();
+			nativeSpecialFieldBuilder.Setup(b => b.BuildColumns()).Returns(_NATIVE_SPECIAL_FIELDS);
+
+			var imageSpecialFieldBuilder = new Mock<ISpecialFieldBuilder>();
+			imageSpecialFieldBuilder.Setup(b => b.BuildColumns()).Returns(_IMAGE_SPECIAL_FIELDS);
+
+			_folderPathSpecialFieldBuilderMock = new Mock<ISpecialFieldBuilder>();
+			_folderPathSpecialFieldBuilderMock.Setup(b => b.BuildColumns()).Returns(_IMAGE_SPECIAL_FIELDS);
+
+			return new ISpecialFieldBuilder[] 
+			{ 
+				nativeSpecialFieldBuilder.Object,
+				imageSpecialFieldBuilder.Object
+			};
 		}
 	}
 }

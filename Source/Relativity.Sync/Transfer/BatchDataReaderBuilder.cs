@@ -30,7 +30,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_allFields == null)
 			{
-				_allFields = await _fieldManager.GetAllFieldsAsync(token).ConfigureAwait(false);
+				_allFields = await _fieldManager.GetNativeAllFieldsAsync(token).ConfigureAwait(false);
 			}
 
 			DataTable templateDataTable = GetTemplateDataTable(_allFields);
