@@ -49,6 +49,11 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED,
+				Description = "The total number of bytes of metadata that were successfully transferred."
+			},
+			new MetricIdentifier
+			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED,
 				Description = "The total number of bytes of native files that were requested to transfer."
 			},

@@ -23,6 +23,7 @@
 			public static readonly string RETRY_JOB_START_TYPE = $"{_SYNC_METRIC_PREPEND}.Retry.Job.Start.Type";
 			public static readonly string RETRY_JOB_END_STATUS = $"{_SYNC_METRIC_PREPEND}.Retry.Job.End.Status";
 
+			public static readonly string DATA_BYTES_METADATA_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.MetadataTransferred";
 			public static readonly string DATA_BYTES_TOTAL_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.TotalTransferred";
 			public static readonly string DATA_BYTES_NATIVES_REQUESTED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.NativesRequested";
 			public static readonly string DATA_RECORDS_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Records.Transferred";
