@@ -2,13 +2,17 @@
 {
 	internal sealed class ImportJobResult
 	{
-		public ImportJobResult(ExecutionResult executionResult, long jobSizeInBytes)
+		public ExecutionResult ExecutionResult { get; }
+
+		public long MetadataSizeInBytes { get; }
+
+		public long JobSizeInBytes { get; }
+
+		public ImportJobResult(ExecutionResult executionResult, long metadataSizeInBytes, long jobSizeInBytes)
 		{
 			ExecutionResult = executionResult;
+			MetadataSizeInBytes = metadataSizeInBytes;
 			JobSizeInBytes = jobSizeInBytes;
 		}
-
-		public ExecutionResult ExecutionResult { get; }
-		public long JobSizeInBytes { get; }
 	}
 }

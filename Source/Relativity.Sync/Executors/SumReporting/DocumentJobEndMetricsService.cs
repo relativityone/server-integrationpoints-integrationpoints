@@ -62,7 +62,13 @@ namespace Relativity.Sync.Executors.SumReporting
 				IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, fields.Count);
 
-				if (_jobStatisticsContainer.TotalBytesTransferred != 0) // if IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.
+				// If IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.
+				if (_jobStatisticsContainer.MetadataBytesTransferred != 0)
+				{
+					_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, _jobStatisticsContainer.MetadataBytesTransferred);
+				}
+
+				if (_jobStatisticsContainer.TotalBytesTransferred != 0)
 				{
 					_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, _jobStatisticsContainer.TotalBytesTransferred);
 				}
