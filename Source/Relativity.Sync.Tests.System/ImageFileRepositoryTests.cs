@@ -149,13 +149,13 @@ namespace Relativity.Sync.Tests.System
 				new QueryImagesOptions { ProductionIds = new List<int> { singleDocumentProductionId, twoDocumentProductionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
-			long expectedImagesSize = GetExpectedSizeWithPrecedense(new[]
+			long expectedImagesSize = GetExpectedSizeWithPrecedence(new[]
 				{Dataset.SingleDocumentProduction, Dataset.TwoDocumentProduction, Dataset.ThreeImages});
 
 			calculatedImagesSize.Should().Be(expectedImagesSize);
 		}
 
-		private long GetExpectedSizeWithPrecedense(Dataset[] datasets)
+		private long GetExpectedSizeWithPrecedence(Dataset[] datasets)
 		{
 			var sizes = new Dictionary<string, long>();
 
