@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToList(),
-				new QueryImagesOptions { ProductionIds = new List<int> { 1 } }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { 1 } }).ConfigureAwait(false);
 
 			// Assert
 			result.Select(x => x.DocumentArtifactId).Should().BeEquivalentTo(data.Select(x => x.DocumentArtifactId));
@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToList(),
-				new QueryImagesOptions { ProductionIds = new List<int> { 1 }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { 1 }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
 			data.All(x => result.Any(r => r.DocumentArtifactId == x.DocumentArtifactId)).Should().BeTrue();
@@ -148,7 +148,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToList(),
-				new QueryImagesOptions { ProductionIds = new List<int> { 2, 1 } }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { 2, 1 } }).ConfigureAwait(false);
 
 			// Assert
 			result.Select(x => x.DocumentArtifactId).Should().BeEquivalentTo(Enumerable.Range(1, 10));

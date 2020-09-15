@@ -101,7 +101,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Act
 			long calculatedImagesSize = await _sut.CalculateImagesTotalSizeAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new List<int> { productionId } }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { productionId } }).ConfigureAwait(false);
 
 			// Assert
 			long expectedImagesSize = Dataset.ImagesBig.GetTotalFilesSize();
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Act
 			long calculatedImagesSize = await _sut.CalculateImagesTotalSizeAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new List<int> { productionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { productionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
 			long expectedImagesSize = Dataset.Images.GetTotalFilesSize() + Dataset.ThreeImages.GetTotalFilesSize();
@@ -146,7 +146,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Act
 			long calculatedImagesSize = await _sut.CalculateImagesTotalSizeAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new List<int> { singleDocumentProductionId, twoDocumentProductionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { singleDocumentProductionId, twoDocumentProductionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
 			long expectedImagesSize = GetExpectedSizeWithPrecedence(new[]

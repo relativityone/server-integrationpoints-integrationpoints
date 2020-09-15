@@ -23,6 +23,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
+		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
+		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 
 		[SetUp]
 		public void SetUp()
@@ -80,29 +82,25 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ProductionIds_ShouldThrowUntilImplemented()
+		public void ProductionIds__ShouldBeRetrieved()
 		{
 			// Arrange
-			Action action = () =>
-			{
-				_ =_instance.ProductionIds;
-			};
-			
+			var expectedValue = new [] {1, 2, 3};
+			_cache.Setup(x => x.GetFieldValue<int[]>(ProductionImagePrecedenceGuid)).Returns(expectedValue);
+
 			// Act & Assert
-			action.Should().Throw<NotImplementedException>();
+			_instance.ProductionIds.Should().BeEquivalentTo(expectedValue);
 		}
 
-		[Test]
-		public void IncludeOriginalImageIfNotFoundInProductions_ShouldThrowUntilImplemented()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void IncludeOriginalImageIfNotFoundInProductions_ShouldBeRetrieved(bool expectedValue)
 		{
 			// Arrange
-			Action action = () =>
-			{
-				_ = _instance.IncludeOriginalImageIfNotFoundInProductions;
-			};
+			_cache.Setup(x => x.GetFieldValue<bool>(IncludeOriginalImagesGuid)).Returns(expectedValue);
 
 			// Act & Assert
-			action.Should().Throw<NotImplementedException>();
+			_instance.IncludeOriginalImageIfNotFoundInProductions.Should().Be(expectedValue);
 		}
 	}
 }
