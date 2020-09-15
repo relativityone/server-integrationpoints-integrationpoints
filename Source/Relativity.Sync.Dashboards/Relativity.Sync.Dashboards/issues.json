@@ -390,5 +390,21 @@
 	{
 		"Jira": "REL-473479",
 		"Exception": "*Relativity.Services.Exceptions.UnprocessableEntityException: Workspace * is not finished upgrading.*"
+	},
+	{
+		"Jira": "REL-473486",
+		"Exception": "*Microsoft.AspNet.SignalR.Client.HttpClientException*Failed to determine route because an exception was thrown.*"
+	},
+	{
+		"Jira": "REL-473491",
+		"Exception": "*System.Exception: The service call failed unexpectedly.*System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host*at Relativity.Sync.KeplerFactory.KeplerServiceInterceptor*"
+	},
+	{
+		"Jira": "REL-473500",
+		"Exception": "*Relativity.Sync.Executors.SyncKeplerException*System.InvalidOperationException: Connection was disconnected before invocation result was received*"
+	},
+	{
+		"Jira": "REL-473509",
+		"Exception": "*Relativity.Services.Exceptions.InvalidInputException: Validation failed*The field name you've entered is either reserved by the system or already in use within this object type. Please enter a different field name.*at Relativity.Sync.Executors.DestinationWorkspaceObjectTypesCreationExecutor*"
 	}
 ]
