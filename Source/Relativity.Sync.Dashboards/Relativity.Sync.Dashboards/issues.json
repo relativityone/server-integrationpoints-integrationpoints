@@ -362,5 +362,49 @@
 	{
 		"Jira": "REL-457786",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: The given key was not present in the dictionary.*"
+	},
+	{
+		"Jira": "REL-473432",
+		"Exception": "*Error reading documents from Data Grid file system*Error reading file*The network path was not found.*"
+	},
+	{
+		"Jira": "REL-473436",
+		"Exception": "*System.Exception: The service call failed unexpectedly.*System.Net.WebException: The request was aborted: Could not create SSL/TLS secure channel.*at Relativity.Sync.KeplerFactory.KeplerServiceInterceptor*"
+	},
+	{
+		"Jira": "REL-473442",
+		"Exception": "kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Exception: Unknown failure during authentication*An existing connection was forcibly closed by the remote host*"
+	},
+	{
+		"Jira": "REL-473443",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SHUTDOWN is in progress.*"
+	},
+	{
+		"Jira": "REL-473449",
+		"Exception": "*Relativity.Kepler.Exceptions.ServiceNotFoundException*The service endpoint could not be found.*"
+	},
+	{
+		"Jira": "REL-473452",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException*The timeout period elapsed prior to completion of the operation or the server is not responding.*"
+	},
+	{
+		"Jira": "REL-473479",
+		"Exception": "*Relativity.Services.Exceptions.UnprocessableEntityException: Workspace * is not finished upgrading.*"
+	},
+	{
+		"Jira": "REL-473486",
+		"Exception": "*Microsoft.AspNet.SignalR.Client.HttpClientException*Failed to determine route because an exception was thrown.*"
+	},
+	{
+		"Jira": "REL-473491",
+		"Exception": "*System.Exception: The service call failed unexpectedly.*System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host*at Relativity.Sync.KeplerFactory.KeplerServiceInterceptor*"
+	},
+	{
+		"Jira": "REL-473500",
+		"Exception": "*Relativity.Sync.Executors.SyncKeplerException*System.InvalidOperationException: Connection was disconnected before invocation result was received*"
+	},
+	{
+		"Jira": "REL-473509",
+		"Exception": "*Relativity.Services.Exceptions.InvalidInputException: Validation failed*The field name you've entered is either reserved by the system or already in use within this object type. Please enter a different field name.*at Relativity.Sync.Executors.DestinationWorkspaceObjectTypesCreationExecutor*"
 	}
 ]
