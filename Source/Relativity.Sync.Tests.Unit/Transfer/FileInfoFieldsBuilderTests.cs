@@ -50,10 +50,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task GetRowValuesBuilderAsync_ShouldReturnFileInfoRowValuesBuilder()
 		{
 			// Act
-			ISpecialFieldRowValuesBuilder result = await _sut.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>()).ConfigureAwait(false);
+			INativeSpecialFieldRowValuesBuilder result = await _sut.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>()).ConfigureAwait(false);
 
 			// Assert
-			result.Should().BeOfType<FileInfoRowValuesBuilder>();
+			result.Should().BeOfType<NativeInfoRowValuesBuilder>();
 			_nativeFileRepositoryMock.Verify(r => r.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>()), Times.Once);
 		}
 
@@ -75,11 +75,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync(natives);
 
 			// Act
-			ISpecialFieldRowValuesBuilder result = await _sut
+			INativeSpecialFieldRowValuesBuilder result = await _sut
 				.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>()).ConfigureAwait(false);
 
 			// Assert
-			FileInfoRowValuesBuilder fileInfoRowValuesBuilder = result as FileInfoRowValuesBuilder;
+			NativeInfoRowValuesBuilder fileInfoRowValuesBuilder = result as NativeInfoRowValuesBuilder;
 			fileInfoRowValuesBuilder.Should().NotBeNull();
 			const int expectedNumberOfNotDuplicatedNatives = 2;
 			fileInfoRowValuesBuilder.ArtifactIdToNativeFile.Count.Should().Be(expectedNumberOfNotDuplicatedNatives);

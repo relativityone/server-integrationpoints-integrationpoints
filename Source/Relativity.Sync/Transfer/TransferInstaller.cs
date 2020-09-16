@@ -1,6 +1,5 @@
-﻿using System.Linq;
-using System.Reflection;
-using Autofac;
+﻿using Autofac;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Transfer
@@ -24,12 +23,9 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<RelativityExportBatcherFactory>().As<IRelativityExportBatcherFactory>();
 			builder.RegisterType<ImportStreamBuilder>().As<IImportStreamBuilder>();
 			builder.RegisterType<StreamRetryPolicyFactory>().As<IStreamRetryPolicyFactory>();
-			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISpecialFieldBuilder>())
-				.ToArray()).As<ISpecialFieldBuilder>();
-			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
-				.Where(t => !t.IsAbstract && t.IsAssignableTo<IExportFieldSanitizer>())
-				.ToArray()).As<IExportFieldSanitizer>();
+			builder.RegisterTypesInExecutingAssembly<INativeSpecialFieldBuilder>();
+			builder.RegisterTypesInExecutingAssembly<IImageSpecialFieldBuilder>();
+			builder.RegisterTypesInExecutingAssembly<IExportFieldSanitizer>();
 			builder.RegisterType<RetriableLongTextStreamBuilderFactory>().As<IRetriableStreamBuilderFactory>();
 			builder.RegisterType<InstanceSettings>().As<IInstanceSettings>();
 		}

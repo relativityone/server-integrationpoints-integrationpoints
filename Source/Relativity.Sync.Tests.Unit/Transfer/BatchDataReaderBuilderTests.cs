@@ -163,12 +163,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			
 			_getAllFieldsResult.Add(specialFieldDto);
 
-			var specialFieldValueBuilder = new Mock<ISpecialFieldRowValuesBuilder>();
+			var specialFieldValueBuilder = new Mock<INativeSpecialFieldRowValuesBuilder>();
 			specialFieldValueBuilder.Setup(b => b.BuildRowValue(specialFieldDto, It.IsAny<RelativityObjectSlim>(), It.IsAny<object>())).Returns(specialFieldValue);
-			var buildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>
+			var buildersDictionary = new Dictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>
 			{
 				{specialFieldType, specialFieldValueBuilder.Object},
-				{differentSpecialFieldType, Mock.Of<ISpecialFieldRowValuesBuilder>()}
+				{differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
 			};
 			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
 			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
@@ -216,9 +216,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			
 			_getAllFieldsResult.Add(specialFieldDto);
 
-			var buildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>
+			var buildersDictionary = new Dictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>
 			{
-				{differentSpecialFieldType, Mock.Of<ISpecialFieldRowValuesBuilder>()}
+				{differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
 			};
 			
 			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);

@@ -1,19 +1,41 @@
 ﻿using Relativity.Services.Objects.DataContracts;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class ImageInfoRowValuesBuilder : ISpecialFieldRowValuesBuilder
+	internal sealed class ImageInfoRowValuesBuilder : IImageSpecialFieldRowValuesBuilder
 	{
+		private readonly IDictionary<int, IEnumerable<ImageFile>> _imageFiles;
+
+		public ImageInfoRowValuesBuilder(IDictionary<int, IEnumerable<ImageFile>> imageFiles)
+		{
+			_imageFiles = imageFiles;
+		}
+
 		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new []
 		{
 			SpecialFieldType.ImageFileName,
 			SpecialFieldType.ImageFileLocation
 		};
 
-		public object BuildRowValue(FieldInfoDto fieldInfoDto, RelativityObjectSlim document, object initialValue)
+		public IEnumerable<object> BuildRowValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document)
 		{
-			return initialValue;
+			if(!_imageFiles.TryGetValue(document.ArtifactID, out IEnumerable<ImageFile> imagesForDocument) && !imagesForDocument.Any())
+			{
+				return Enumerable.Empty<object>();
+			}
+
+			switch (fieldInfoDto.SpecialFieldType)
+			{
+				case SpecialFieldType.ImageFileName:
+					return imagesForDocument.Select(x => x.Filename);
+				case SpecialFieldType.ImageFileLocation:
+					return imagesForDocument.Select(x => x.Location);
+				default:
+					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType}.", nameof(fieldInfoDto));
+			}
 		}
 	}
 }

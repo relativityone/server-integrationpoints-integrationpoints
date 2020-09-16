@@ -17,60 +17,62 @@ namespace Relativity.Sync.Transfer
 	{
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private List<FieldInfoDto> _allFields;
+
 		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
 
-		private readonly IList<ISpecialFieldBuilder> _specialFieldBuilders;
+		private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
+		private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
 
-		private readonly SpecialFieldType[] _NATIVE_SPECIAL_FIELDS_TYPES = new []
-		{
-			SpecialFieldType.NativeFileSize,
-			SpecialFieldType.NativeFileLocation,
-			SpecialFieldType.NativeFileFilename,
-			SpecialFieldType.RelativityNativeType,
-			SpecialFieldType.SupportedByViewer,
-			SpecialFieldType.FolderPath,
-		};
-
-		private static readonly SpecialFieldType[] _IMAGE_SPECIAL_FIELDS_TYPES = new[]
-{
-			SpecialFieldType.ImageFileName,
-			SpecialFieldType.ImageFileLocation
-		};
-
-		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository, IEnumerable<ISpecialFieldBuilder> specialFieldBuilders)
+		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository,
+			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders)
 		{
 			_configuration = configuration;
 			_documentFieldRepository = documentFieldRepository;
-			_specialFieldBuilders = specialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
+			_nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
+			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
 		}
 
 		public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
-			=>_specialFieldBuilders
-				.SelectMany(b => b.BuildColumns())
-				.Where(f => _NATIVE_SPECIAL_FIELDS_TYPES.Contains(f.SpecialFieldType));
+			=> _nativeSpecialFieldBuilders.SelectMany(b => b.BuildColumns());
 
 		public IEnumerable<FieldInfoDto> GetImageSpecialFields()
-			=>_specialFieldBuilders.SelectMany(b => b.BuildColumns())
-				.Where(f => _IMAGE_SPECIAL_FIELDS_TYPES.Contains(f.SpecialFieldType));
+			=> _imageSpecialFieldBuilders.SelectMany(b => b.BuildColumns());
 
-		public Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateNativeSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
-			=> CreateSpecialFieldRowValueBuildersInternalAsync(sourceWorkspaceArtifactId, documentArtifactIds, _NATIVE_SPECIAL_FIELDS_TYPES);
-
-		public Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateImageSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
-			=> CreateSpecialFieldRowValueBuildersInternalAsync(sourceWorkspaceArtifactId, documentArtifactIds, _IMAGE_SPECIAL_FIELDS_TYPES);
-
-		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
+		public async Task<IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>> CreateNativeSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
-			IReadOnlyList<FieldInfoDto> fields = await GetNativeAllFieldsAsync(token).ConfigureAwait(false);
-			List<FieldInfoDto> documentFields = fields.Where(f => f.IsDocumentField).OrderBy(f => f.DocumentFieldIndex).ToList();
-			return documentFields;
+			var specialFieldRowValueBuilders = await _nativeSpecialFieldBuilders
+				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
+				.ConfigureAwait(false);
+
+			var specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>();
+			foreach (var builder in specialFieldRowValueBuilders)
+			{
+				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes)
+				{
+					specialFieldBuildersDictionary.Add(specialFieldType, builder);
+				}
+			}
+
+			return specialFieldBuildersDictionary;
 		}
 
-		public async Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token)
+		public async Task<IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>> CreateImageSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
-			IEnumerable<FieldInfoDto> mappedFields = await GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
-			return mappedFields.First(f => f.IsIdentifier);
+			var specialFieldRowValueBuilders = await _imageSpecialFieldBuilders
+				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
+				.ConfigureAwait(false);
+
+			var specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>();
+			foreach (var builder in specialFieldRowValueBuilders)
+			{
+				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes)
+				{
+					specialFieldBuildersDictionary.Add(specialFieldType, builder);
+				}
+			}
+
+			return specialFieldBuildersDictionary;
 		}
 
 		public async Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token)
@@ -86,23 +88,17 @@ namespace Relativity.Sync.Transfer
 			return _allFields;
 		}
 
-		private async Task<IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>> CreateSpecialFieldRowValueBuildersInternalAsync(
-			int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds, IEnumerable<SpecialFieldType> selectedSpecialFieldTypes)
+		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
 		{
-			IEnumerable<ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _specialFieldBuilders
-				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
-				.ConfigureAwait(false);
+			IReadOnlyList<FieldInfoDto> fields = await GetNativeAllFieldsAsync(token).ConfigureAwait(false);
+			List<FieldInfoDto> documentFields = fields.Where(f => f.IsDocumentField).OrderBy(f => f.DocumentFieldIndex).ToList();
+			return documentFields;
+		}
 
-			Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder>();
-			foreach (var builder in specialFieldRowValueBuilders)
-			{
-				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes.Intersect(selectedSpecialFieldTypes))
-				{
-					specialFieldBuildersDictionary.Add(specialFieldType, builder);
-				}
-			}
-
-			return specialFieldBuildersDictionary;
+		public async Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token)
+		{
+			IEnumerable<FieldInfoDto> mappedFields = await GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
+			return mappedFields.First(f => f.IsIdentifier);
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)

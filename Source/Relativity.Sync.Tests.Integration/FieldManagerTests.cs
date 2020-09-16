@@ -186,26 +186,25 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public async Task ItShouldReturnSpecialFieldRowValueBuildersForEachSpecialFieldType()
+		public async Task CreateNativeSpecialFieldRowValueBuildersAsync_ShouldReturnSpecialFieldRowValueBuildersForNativeSpecialFieldType()
 		{
 			// Arrange
 			SetupFileInfoFieldServices();
 
 			// Act
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _instance
+			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _instance
 				.CreateNativeSpecialFieldRowValueBuildersAsync(0, new List<int>())
 				.ConfigureAwait(false);
 
 			// Assert
 			specialFieldRowValueBuilders.Should().NotBeNull();
-			Array specialFieldTypes = Enum.GetValues(typeof(SpecialFieldType));
-			foreach (SpecialFieldType specialFieldType in specialFieldTypes)
-			{
-				if (specialFieldType != SpecialFieldType.None)
-				{
-					specialFieldRowValueBuilders.Should().ContainKey(specialFieldType);
-				}
-			}
+			specialFieldRowValueBuilders.Keys.Should().BeEquivalentTo(new[] {
+				SpecialFieldType.FolderPath,
+				SpecialFieldType.NativeFileSize,
+				SpecialFieldType.NativeFileLocation,
+				SpecialFieldType.NativeFileFilename,
+				SpecialFieldType.RelativityNativeType,
+				SpecialFieldType.SupportedByViewer});
 		}
 
 		private static IEnumerable<TestCaseData> NativeFileInfoTestCases()
@@ -236,7 +235,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupFileInfoFieldServices(new NativeFile(documentArtifactId, _NATIVE_FILE_LOCATION_VALUE, _NATIVE_FILE_FILENAME_VALUE, _NATIVE_FILE_SIZE_VALUE));
 
 			// Act
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
+			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
 				await _instance.CreateNativeSpecialFieldRowValueBuildersAsync(0, new List<int> { documentArtifactId }).ConfigureAwait(false);
 
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = documentArtifactId };
@@ -273,7 +272,7 @@ namespace Relativity.Sync.Tests.Integration
 				new FolderPath { ArtifactID = folderArtifactId, FullPath = _SOURCE_WORKSPACE_FOLDER_PATH_VALUE });
 
 			// Act
-			IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
+			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
 				await _instance.CreateNativeSpecialFieldRowValueBuildersAsync(0, new List<int> { documentArtifactId }).ConfigureAwait(false);
 
 			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, _FOLDER_PATH_SOURCE_FIELD_NAME, _FOLDER_PATH_SOURCE_FIELD_NAME);

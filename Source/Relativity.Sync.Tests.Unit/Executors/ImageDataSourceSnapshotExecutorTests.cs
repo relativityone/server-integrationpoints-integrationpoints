@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_fieldManager = new Mock<IFieldManager>();
-			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
+			_fieldManager.Setup(fm => fm.GetDocumentTypeFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
 
 
 			_configurationMock = new Mock<IImageDataSourceSnapshotConfiguration>();

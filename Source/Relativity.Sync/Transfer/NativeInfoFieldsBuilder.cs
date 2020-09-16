@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class NativeInfoFieldsBuilder : ISpecialFieldBuilder
+	internal sealed class NativeInfoFieldsBuilder : INativeSpecialFieldBuilder
 	{
 		private readonly INativeFileRepository _nativeFileRepository;
 		private readonly ISyncLog _logger;
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Transfer
 			yield return FieldInfoDto.RelativityNativeTypeField();
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
 				.QueryAsync(sourceWorkspaceArtifactId, documentArtifactIds)
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Transfer
 				}
 			}
 
-			return new FileInfoRowValuesBuilder(artifactIdToNativeFile);
+			return new NativeInfoRowValuesBuilder(artifactIdToNativeFile);
 		}
 	}
 }

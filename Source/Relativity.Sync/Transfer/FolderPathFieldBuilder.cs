@@ -4,7 +4,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class FolderPathFieldBuilder : ISpecialFieldBuilder
+	internal sealed class FolderPathFieldBuilder : INativeSpecialFieldBuilder
 	{
 		private readonly IFolderPathRetriever _folderPathRetriever;
 		private readonly IFieldConfiguration _fieldConfiguration;
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			IDictionary<int, string> folderPathsMap = await BuildFolderPathsMapAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 			return new FolderPathRowValueBuilder(_fieldConfiguration.DestinationFolderStructureBehavior, folderPathsMap);

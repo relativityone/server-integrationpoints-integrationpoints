@@ -199,7 +199,7 @@ namespace Relativity.Sync.Tests.System
 			ContainerBuilder overrideContainerBuilder = new ContainerBuilder();
 			container.ComponentRegistry.Registrations.Where(cr => cr.Activator.LimitType != typeof(NativeInfoFieldsBuilder)).ForEach(cr => overrideContainerBuilder.RegisterComponent(cr));
 			container.ComponentRegistry.Sources.ForEach(rs => overrideContainerBuilder.RegisterSource(rs));
-			overrideContainerBuilder.RegisterTypes(typeof(NullSupportedByViewerFileInfoFieldsBuilder)).As<ISpecialFieldBuilder>();
+			overrideContainerBuilder.RegisterTypes(typeof(NullSupportedByViewerFileInfoFieldsBuilder)).As<INativeSpecialFieldBuilder>();
 
 			container = overrideContainerBuilder.Build();
 

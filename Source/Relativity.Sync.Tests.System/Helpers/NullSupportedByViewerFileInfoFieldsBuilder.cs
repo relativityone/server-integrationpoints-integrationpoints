@@ -5,7 +5,7 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
-	internal class NullSupportedByViewerFileInfoFieldsBuilder : ISpecialFieldBuilder
+	internal class NullSupportedByViewerFileInfoFieldsBuilder : INativeSpecialFieldBuilder
 	{
 		private readonly NativeInfoFieldsBuilder _fileInfoFieldsBuilder;
 
@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			return _fileInfoFieldsBuilder.BuildColumns();
 		}
 
-		public async Task<ISpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
 			return new NullSupportedByViewerFileInfoRowValuesBuilder(
 				await _fileInfoFieldsBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false)
