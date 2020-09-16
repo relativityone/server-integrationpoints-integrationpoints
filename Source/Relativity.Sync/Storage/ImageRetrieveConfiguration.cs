@@ -19,7 +19,7 @@ namespace Relativity.Sync.Storage
 			_serializer = serializer;
 		}
 
-		public List<int> ProductionIds => _cache.GetFieldValue<List<int>>(ProductionIdsGuid);
+		public int[] ProductionIds => _cache.GetFieldValue<int[]>(ProductionIdsGuid);
 
 		public bool IncludeOriginalImageIfNotFoundInProductions => _cache.GetFieldValue<bool>(IncludeOriginalImageIfNotFoundInProductionsGuid);
 	}

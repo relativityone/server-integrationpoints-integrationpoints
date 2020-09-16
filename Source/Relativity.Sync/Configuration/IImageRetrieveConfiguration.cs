@@ -4,7 +4,7 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface IImageRetrieveConfiguration
 	{
-		List<int> ProductionIds { get; }
+		int[] ProductionIds { get; }
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
 	}
 }
