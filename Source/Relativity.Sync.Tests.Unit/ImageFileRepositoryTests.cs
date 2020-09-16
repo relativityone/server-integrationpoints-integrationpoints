@@ -56,6 +56,24 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldReturnDocumentImages_And_SkipDocumentsWithoutImages()
+		{
+			// Arrange
+			var data = Enumerable.Range(1, 10)
+				.Select(x => new DocumentImageData { DocumentArtifactId = x }).ToList();
+
+			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
+				.Returns(CreateDataSet(data));
+
+			// Act
+			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).Concat(Enumerable.Range(20, 5)).ToList(),
+				new QueryImagesOptions()).ConfigureAwait(false);
+
+			// Assert
+			result.Select(x => x.DocumentArtifactId).Should().BeEquivalentTo(data.Select(x => x.DocumentArtifactId));
+		}
+
+		[Test]
 		public async Task QueryImagesForDocumentsAsync_ShouldReturnMultipleImagesPerDocument()
 		{
 			// Arrange
@@ -80,12 +98,12 @@ namespace Relativity.Sync.Tests.Unit
 			var data = Enumerable.Range(1, 10)
 				.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 1 }).ToList();
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesByProductionIDsAndDocumentIDsForExport(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<int[]>()))
-				.Returns(CreateDataSet(data));
+
+			MockProductions(data);
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToList(),
-				new QueryImagesOptions { ProductionIds = new List<int> { 1 } }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { 1 } }).ConfigureAwait(false);
 
 			// Assert
 			result.Select(x => x.DocumentArtifactId).Should().BeEquivalentTo(data.Select(x => x.DocumentArtifactId));
@@ -99,15 +117,14 @@ namespace Relativity.Sync.Tests.Unit
 			var data = Enumerable.Range(1, 10)
 				.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = (x % 2) + 1 }).ToList();
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesByProductionIDsAndDocumentIDsForExport(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<int[]>()))
-				.Returns(CreateDataSet(data));
+			MockProductions(data);
 
 			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
 				.Returns(CreateDataSet(data.Where(x => x.ProductionId == 2)));
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToList(),
-				new QueryImagesOptions { ProductionIds = new List<int> { 1 }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { 1 }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
 			data.All(x => result.Any(r => r.DocumentArtifactId == x.DocumentArtifactId)).Should().BeTrue();
@@ -118,7 +135,7 @@ namespace Relativity.Sync.Tests.Unit
 
 
 		[Test]
-		public async Task QueryImagesForDocumentsAsync_ShouldReturnProducedDocumentImages_WithRespectToProductionPrecedense()
+		public async Task QueryImagesForDocumentsAsync_ShouldReturnProducedDocumentImages_WithRespectToProductionPrecedence()
 		{
 			// Arrange
 			var data = Enumerable.Range(1, 10)
@@ -127,12 +144,11 @@ namespace Relativity.Sync.Tests.Unit
 					.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 2 }))
 				.ToList();
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesByProductionIDsAndDocumentIDsForExport(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<int[]>()))
-				.Returns(CreateDataSet(data));
+			MockProductions(data);
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToList(),
-				new QueryImagesOptions { ProductionIds = new List<int> { 2, 1 } }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { 2, 1 } }).ConfigureAwait(false);
 
 			// Assert
 			result.Select(x => x.DocumentArtifactId).Should().BeEquivalentTo(Enumerable.Range(1, 10));
@@ -145,7 +161,15 @@ namespace Relativity.Sync.Tests.Unit
 				.BeEquivalentTo(Enumerable.Range(1, 5));
 		}
 
-
+		private void MockProductions(IEnumerable<DocumentImageData> data)
+		{
+			foreach (var productionSet in data.GroupBy(x => x.ProductionId).Where(x => x.Key != null))
+			{
+				_searchManagerMock
+					.Setup(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),
+						productionSet.Key.Value)).Returns(CreateDataSet(productionSet));
+			}
+		}
 
 		private DataSet CreateDataSet(IEnumerable<DocumentImageData> data)
 		{
@@ -155,8 +179,8 @@ namespace Relativity.Sync.Tests.Unit
 			dataTable.Columns.Add("Location");
 			dataTable.Columns.Add("ImageFileName");
 			dataTable.Columns.Add("ImageSize", typeof(long));
-			dataTable.Columns.Add("ProductionArtifactId", typeof(int));
 			dataTable.Columns.Add("Filename");
+			dataTable.Columns.Add("NativeIdentifier");
 			dataTable.Columns.Add("Size", typeof(long));
 
 			foreach (var imageData in data)
@@ -164,9 +188,9 @@ namespace Relativity.Sync.Tests.Unit
 				DataRow dataRow = dataTable.NewRow();
 
 				dataRow["DocumentArtifactID"] = imageData.DocumentArtifactId;
+				dataRow["NativeIdentifier"] = imageData.DocumentArtifactId.ToString();
 				dataRow["Location"] = "location";
 				dataRow["ImageFileName"] = imageData.DocumentArtifactId.ToString();
-				dataRow["ProductionArtifactId"] = imageData.ProductionId;
 				dataRow["Filename"] = imageData.DocumentArtifactId.ToString();
 				dataRow["Size"] = imageData.ImageSize;
 				dataRow["ImageSize"] = imageData.ImageSize;
@@ -181,7 +205,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			public int DocumentArtifactId { get; set; }
 			public int ImageSize { get; set; }
-			public int ProductionId { get; set; }
+			public int? ProductionId { get; set; }
 		}
 	}
 }

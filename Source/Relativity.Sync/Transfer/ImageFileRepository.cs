@@ -6,6 +6,7 @@ using Relativity.Sync.KeplerFactory;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Transfer
 		private const string _LOCATION_COLUMN_NAME = "Location";
 		private const string _FILENAME_COLUMN_NAME_PRODUCTION = "ImageFileName";
 		private const string _SIZE_COLUMN_NAME_PRODUCTION = "ImageSize";
-		private const string _PRODUCTION_ID_COLUMN_NAME = "ProductionArtifactId";
+		private const string _NATIVE_IDENTIFIER = "NativeIdentifier";
 
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
@@ -48,11 +49,13 @@ namespace Relativity.Sync.Transfer
 
 			using (ISearchManager searchManager = await _searchManagerFactory.CreateSearchManagerAsync().ConfigureAwait(false))
 			{
-				IList<ImageFile> imageFiles = options != null && options.ProductionImagePrecedence
+				ImageFile[] imageFiles = options != null && options.ProductionImagePrecedence
 					? RetrieveImagesByProductionsForDocuments(searchManager, workspaceId, documentIds, options)
-					: RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentIds);
+					: RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentIds).Item1;
 
-				_logger.LogInformation("Found {numberOfImages} image files.", imageFiles.Count);
+				_logger.LogInformation("Found {numberOfImages} image files for {numberOfDocuments} documents", 
+					imageFiles.Length,
+					imageFiles.Select(x => x.DocumentArtifactId).Distinct().Count());
 
 				return imageFiles;
 			}
@@ -77,57 +80,43 @@ namespace Relativity.Sync.Transfer
 			return imagesTotalSize;
 		}
 
-		private IList<ImageFile> RetrieveImagesByProductionsForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds, QueryImagesOptions options)
+		private ImageFile[] RetrieveImagesByProductionsForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds, QueryImagesOptions options)
 		{
-			int producedImagesCount = 0, originalImagesCount = 0, documentsWithoutImagesCount = documentIds.Count;
+			(ImageFile[] producedImageFiles, int[] documentsWithoutImages) = GetImagesWithPrecedence(workspaceId, searchManager, options.ProductionIds.ToArray(), documentIds.ToArray());
 
-			var dataSet = searchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport(workspaceId, options.ProductionIds.ToArray(), documentIds.ToArray());
-
-			if (dataSet == null || dataSet.Tables.Count == 0)
+			if (!producedImageFiles.Any())
 			{
-				_logger.LogWarning("SearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport returned null/empty data set.");
-				_logger.LogInformation("Image retrieve statistics: ProducedImages - {producedImagesCount}, OriginalImages - {originalImagesCount}, DocumentsWithoutImages {noImagesCount}",
-					producedImagesCount, originalImagesCount, documentsWithoutImagesCount);
-				return new List<ImageFile>();
+				_logger.LogWarning("No produced images found for productions [{productionIds}]", string.Join(",", options.ProductionIds));
 			}
 
-			List<ImageFile> imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFileFromProduction).ToList();
+			ImageFile[] originalImageFiles = Array.Empty<ImageFile>();
 
-			imageFiles = ApplyProductionPrecedence(imageFiles, options.ProductionIds).ToList();
-
-			producedImagesCount += imageFiles.Count;
-
-			if(options.IncludeOriginalImageIfNotFoundInProductions)
+			if (options.IncludeOriginalImageIfNotFoundInProductions)
 			{
-				var documentIdsForOriginalImages = documentIds.Except(imageFiles.Select(x => x.DocumentArtifactId)).ToList();
-				var originalImageFiles = RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentIdsForOriginalImages).ToList();
-
-				originalImagesCount += originalImageFiles.Count;
-
-				imageFiles.AddRange(originalImageFiles);
+				(originalImageFiles, documentsWithoutImages) = RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentsWithoutImages);
 			}
-
-			documentsWithoutImagesCount -= imageFiles.Count;
 
 			_logger.LogInformation("Image retrieve statistics: ProducedImages - {producedImagesCount}, OriginalImages - {originalImagesCount}, DocumentsWithoutImages {noImagesCount}",
-				producedImagesCount, originalImagesCount, documentsWithoutImagesCount);
+				producedImageFiles.Length, originalImageFiles.Length, documentsWithoutImages.Length);
 
-			return imageFiles;
+			return producedImageFiles.Concat(originalImageFiles).ToArray();
 		}
 
-		private IEnumerable<ImageFile> ApplyProductionPrecedence(IEnumerable<ImageFile> imageFiles, List<int> productionIds)
+		private (ImageFile[], int[]) GetImagesWithPrecedence(int workspaceId, ISearchManager searchManager, int[] productionPrecedence, int[] documentIds)
 		{
 			var result = new Dictionary<int, IEnumerable<ImageFile>>();
 
-			var imagesFromProduction = imageFiles.ToLookup(x => x.ProductionId, x => x);
+			int[] documentsWithoutImages = documentIds;
 
-			foreach (var production in productionIds)
+			foreach (var production in productionPrecedence)
 			{
-				var producedImages = imagesFromProduction[production];
+				var producedImages = searchManager
+					.RetrieveImagesForProductionDocuments(workspaceId, documentsWithoutImages, production)
+					.Tables[0].AsEnumerable().Select(x => GetImageFileFromProduction(x, production)).ToArray();
 
-				var imagesPerDocument = producedImages
-																.Where(x => !result.ContainsKey(x.DocumentArtifactId))
-																.ToLookup(x => x.DocumentArtifactId, x => x);
+				var imagesPerDocument = producedImages.ToLookup(
+					x => x.DocumentArtifactId,
+					x => x);
 
 				foreach (var documentImages in imagesPerDocument)
 				{
@@ -136,12 +125,14 @@ namespace Relativity.Sync.Transfer
 						result.Add(documentImages.Key, documentImages);
 					}
 				}
+
+				documentsWithoutImages = documentsWithoutImages.Where(x => !result.ContainsKey(x)).ToArray();
 			}
 
-			return result.SelectMany(x => x.Value);
+			return (result.Values.SelectMany(x => x).ToArray(), documentsWithoutImages);
 		}
 
-		private IList<ImageFile> RetrieveOriginalImagesForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds)
+		private (ImageFile[], int[]) RetrieveOriginalImagesForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds)
 		{
 			DataSet dataSet = searchManager.RetrieveImagesForDocuments(workspaceId, documentIds.ToArray());
 
@@ -150,15 +141,15 @@ namespace Relativity.Sync.Transfer
 				_logger.LogWarning("SearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport returned null/empty data set.");
 				_logger.LogInformation("Image retrieve statistics: OriginalImages - {originalImagesCount}, DocumentsWithoutImages {noImagesCount}",
 					0, documentIds.Count);
-				return new List<ImageFile>();
+				return (Array.Empty<ImageFile>(), documentIds.ToArray());
 			}
 
-			var imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFile).ToList();
+			ImageFile[] imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFile).ToArray();
 
 			_logger.LogInformation("Image retrieve statistics: OriginalImages - {originalImagesCount}, DocumentsWithoutImages {noImagesCount}",
-				imageFiles.Count, documentIds.Count - imageFiles.Count);
+				imageFiles.Length, documentIds.Count - imageFiles.Length);
 
-			return imageFiles;
+			return (imageFiles, documentIds.Except(imageFiles.Select(x => x.DocumentArtifactId)).ToArray());
 		}
 
 		private ImageFile GetImageFile(DataRow dataRow)
@@ -171,16 +162,15 @@ namespace Relativity.Sync.Transfer
 			return new ImageFile(documentArtifactId, location, fileName, size);
 		}
 
-		private ImageFile GetImageFileFromProduction(DataRow dataRow)
+		private ImageFile GetImageFileFromProduction(DataRow dataRow, int productionId)
 		{
 			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
 			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
 			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME_PRODUCTION);
 			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME_PRODUCTION);
-
-			int productionId = GetValue<int>(dataRow, _PRODUCTION_ID_COLUMN_NAME);
-
-			return new ImageFile(documentArtifactId, location, fileName, size, productionId);
+			string nativeIdentifier = GetValue<string>(dataRow, _NATIVE_IDENTIFIER);
+		
+			return new ImageFile(documentArtifactId, location, fileName, size, productionId, nativeIdentifier);
 		}
 
 		private T GetValue<T>(DataRow row, string columnName)
