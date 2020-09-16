@@ -172,6 +172,7 @@ namespace Relativity.Sync.Executors
 		{
 			ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
+			_jobStatisticsContainer.MetadataBytesTransferred += importJobResult.MetadataSizeInBytes;
 			_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
 			return importJobResult.ExecutionResult;

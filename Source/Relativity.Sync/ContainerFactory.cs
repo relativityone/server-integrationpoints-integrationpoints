@@ -39,7 +39,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
 			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
-			containerBuilder.RegisterType<JobEndMetricsService>().As<IJobEndMetricsService>();
+			containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
 
 			const string command = "command";
 			containerBuilder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));

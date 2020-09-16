@@ -16,9 +16,9 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 {
 	[TestFixture]
-	public class JobEndMetricsServiceTests
+	public class DocumentJobEndMetricsServiceTests
 	{
-		private JobEndMetricsService _sut;
+		private DocumentJobEndMetricsService _sut;
 
 		private Mock<IJobEndMetricsConfiguration> _jobEndMetricsConfigurationFake;
 		private Mock<IBatchRepository> _batchRepositoryFake;
@@ -45,11 +45,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					TotalReadTime = TimeSpan.FromSeconds(x)
 				}).ToList());
 
-			_sut = new JobEndMetricsService(_batchRepositoryFake.Object, _jobEndMetricsConfigurationFake.Object, _fieldManagerFake.Object, _jobStatisticsContainerFake.Object, _syncMetricsMock.Object, new EmptyLogger());
+			_sut = new DocumentJobEndMetricsService(_batchRepositoryFake.Object, _jobEndMetricsConfigurationFake.Object, _fieldManagerFake.Object, _jobStatisticsContainerFake.Object, _syncMetricsMock.Object, new EmptyLogger());
 		}
 
 		[Test]
-		public async Task ExecuteAsyncGoldFlowTest()
+		public async Task ExecuteAsync_GoldFlowTest()
 		{
 			// Arrange
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
@@ -69,9 +69,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			const int testNumberOfFields = 10;
 			IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.NativeFileFilenameField(), testNumberOfFields);
 			_fieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(fields.ToList);
-
+			
 			const long jobSize = 12345;
+			const long metadataSize = 6667;
 			const long nativesSize = 5678;
+			_jobStatisticsContainerFake.SetupGet(x => x.MetadataBytesTransferred).Returns(metadataSize);
 			_jobStatisticsContainerFake.SetupGet(x => x.TotalBytesTransferred).Returns(jobSize);
 			_jobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Returns(Task.FromResult(nativesSize));
 
@@ -87,6 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, expectedStatusDescription), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, metadataSize), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, nativesSize), Times.Once);
 
@@ -124,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		}
 
 		[Test]
-		public async Task ItShouldNotLogBytesTransferredWhenNoNativeFilesHasBeenTransferred()
+		public async Task ExecuteAsync_ShouldNotLogBytesTransferred_WhenNoNativeFilesHasBeenTransferred()
 		{
 			// Act
 			ExecutionResult actualResult = await _sut.ExecuteAsync(ExecutionStatus.Completed).ConfigureAwait(false);
@@ -136,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		}
 
 		[Test]
-		public async Task ItShouldNotReportBytesTransferredWhenJobFailed()
+		public async Task ExecuteAsync_ShouldNotReportTotalBytesTransferred_WhenJobFailed()
 		{
 			// Arrange
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
@@ -149,7 +152,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		}
 
 		[Test]
-		public async Task ExecuteAsyncGetBatchesThrowsErrorAndLogsTest()
+		public async Task ExecuteAsync_ShouldNotReportMetadataBytesTransferred_WhenJobFailed()
+		{
+			// Arrange
+			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
+
+			// Act
+			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
+
+			// Assert
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, It.IsAny<long>()), Times.Never);
+		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldBeCompleted_WhenGetBatchesThrowsException()
 		{
 			// Arrange
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;

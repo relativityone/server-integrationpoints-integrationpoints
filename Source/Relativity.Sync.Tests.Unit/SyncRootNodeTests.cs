@@ -19,12 +19,14 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncExecutionContext _syncExecutionContext;
 		private CancellationToken _token;
 		
-		private Mock<ICommand<IJobStatusConsolidationConfiguration>> _jobStatusConsolidationCommandStub;
+		private Mock<ICommand<IJobStatusConsolidationConfiguration>> _jobStatusConsolidationCommandFake;
 		private Mock<ICommand<INotificationConfiguration>> _notificationCommandFake;
-		private Mock<ICommand<IJobCleanupConfiguration>> _jobCleanupCommandStub;
-		private Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>> _automatedWfTriggerCommand;
-		private Mock<INode<SyncExecutionContext>> _childNodeStub;
-		private Mock<ISyncLog> _loggerStub;
+		private Mock<ICommand<IJobCleanupConfiguration>> _jobCleanupCommandFake;
+		private Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>> _automatedWorkflowTriggerCommandFake;
+
+		private Mock<IJobEndMetricsServiceFactory> _jobEndMetricsServiceFactory;
+		private Mock<INode<SyncExecutionContext>> _childNodeFake;
+		private Mock<ISyncLog> _loggerFake;
 		
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -35,34 +37,42 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_loggerStub = new Mock<ISyncLog>();
-			var jobEndMetricsService = new Mock<IJobEndMetricsService>();
-			_notificationCommandFake = new Mock<ICommand<INotificationConfiguration>>();
-			_jobStatusConsolidationCommandStub = new Mock<ICommand<IJobStatusConsolidationConfiguration>>();
-			_jobCleanupCommandStub = new Mock<ICommand<IJobCleanupConfiguration>>();
-			_automatedWfTriggerCommand = new Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>>();
-
-			_childNodeStub = new Mock<INode<SyncExecutionContext>>();
-
 			var progress = new Mock<IProgress<SyncJobState>>();
 			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
-			_sut = new SyncRootNode(jobEndMetricsService.Object,
-				_jobStatusConsolidationCommandStub.Object,
+			_jobStatusConsolidationCommandFake = new Mock<ICommand<IJobStatusConsolidationConfiguration>>();
+			
+			_notificationCommandFake = new Mock<ICommand<INotificationConfiguration>>();
+
+			_jobCleanupCommandFake = new Mock<ICommand<IJobCleanupConfiguration>>();
+			_automatedWorkflowTriggerCommandFake = new Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>>();
+
+			var jobEndMetricsService = new Mock<IJobEndMetricsService>();
+			_jobEndMetricsServiceFactory = new Mock<IJobEndMetricsServiceFactory>();
+			_jobEndMetricsServiceFactory.Setup(x => x.CreateJobEndMetricsService()).Returns(jobEndMetricsService.Object);
+
+			_childNodeFake = new Mock<INode<SyncExecutionContext>>();
+
+			_loggerFake = new Mock<ISyncLog>();
+
+			_sut = new SyncRootNode(_jobEndMetricsServiceFactory.Object,
+				_jobStatusConsolidationCommandFake.Object,
 				_notificationCommandFake.Object,
-				_jobCleanupCommandStub.Object,
-				_automatedWfTriggerCommand.Object,
-				_loggerStub.Object);
-			_sut.AddChild(_childNodeStub.Object);
+				_jobCleanupCommandFake.Object,
+				_automatedWorkflowTriggerCommandFake.Object,
+				_loggerFake.Object);
+			_sut.AddChild(_childNodeFake.Object);
 		}
 
 		[Test]
-		public async Task ItShouldSendNotificationsAfterExecution()
+		public async Task ExecuteAsync_ShouldSendNotificationsAfterExecution()
 		{
+			// ARRANGE
 			int index = 1;
 			int nodeExecutionOrder = 0;
 			int commandExecutionOrder = 0;
-			_childNodeStub.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Callback(() => nodeExecutionOrder = index++);
+			_childNodeFake.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Callback(() => nodeExecutionOrder = index++);
+
 			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
 			_notificationCommandFake.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success()).Callback(() => commandExecutionOrder = index++);
 
@@ -76,11 +86,12 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldSendNotificationsAfterExecutionFailed()
+		public async Task ExecuteAsync_ShouldSendNotifications_WhenExecutionFailed()
 		{
+			// ARRANGE
 			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
 			_notificationCommandFake.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success());
-			_childNodeStub.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Throws<InvalidOperationException>();
+			_childNodeFake.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Throws<InvalidOperationException>();
 
 			// ACT
 			NodeResult result = await _sut.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
@@ -91,8 +102,9 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task ItShouldNotSendNotificationsIfDisabled()
+		public async Task ExecuteAsync_ShouldNotSendNotifications_WhenNotificationIsDisabled()
 		{
+			// ARRANGE
 			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(false);
 
 			// ACT

@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Integration
 			};
 
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockReportingWithProgress(_containerBuilder);
 			_artifactGuidManager = new Mock<IArtifactGuidManager>();
 			_objectManager = new Mock<IObjectManager>();
 			_objectTypeManager = new Mock<IObjectTypeManager>();

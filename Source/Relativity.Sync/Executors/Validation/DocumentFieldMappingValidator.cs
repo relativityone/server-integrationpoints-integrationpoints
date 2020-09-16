@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -31,11 +32,6 @@ namespace Relativity.Sync.Executors.Validation
 			}
 		}
 
-		public override bool ShouldValidate(ISyncPipeline pipeline)
-		{
-			Type pipelineType = pipeline.GetType();
-
-			return pipelineType == typeof(SyncDocumentRetryPipeline) || pipelineType == typeof(SyncDocumentRunPipeline);
-		}
+		public override bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsDocumentPipeline();
 	}
 }

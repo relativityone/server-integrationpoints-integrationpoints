@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(_folderManager.Object);
 
 			ContainerBuilder builder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.MockReporting(builder);
+			IntegrationTestsContainerBuilder.MockReportingWithProgress(builder);
 			builder.RegisterInstance(_configuration).AsImplementedInterfaces();
 			builder.RegisterInstance(adminServiceFactory.Object).As<ISourceServiceFactoryForAdmin>();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();

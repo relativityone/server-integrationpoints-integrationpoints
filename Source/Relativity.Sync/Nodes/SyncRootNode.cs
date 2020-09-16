@@ -14,17 +14,17 @@ namespace Relativity.Sync.Nodes
 		private readonly ICommand<INotificationConfiguration> _notificationCommand;
 		private readonly ICommand<IJobCleanupConfiguration> _jobCleanupCommand;
 		private readonly ICommand<IAutomatedWorkflowTriggerConfiguration> _automatedWfTriggerCommand;
-		private readonly IJobEndMetricsService _jobEndMetricsService;
+		private readonly IJobEndMetricsServiceFactory _jobEndMetricsServiceFactory;
 		private readonly ISyncLog _logger;
 
-		public SyncRootNode(IJobEndMetricsService jobEndMetricsService,
+		public SyncRootNode(IJobEndMetricsServiceFactory jobEndMetricsServiceFactory,
 			ICommand<IJobStatusConsolidationConfiguration> jobStatusConsolidationCommand,
 			ICommand<INotificationConfiguration> notificationCommand,
 			ICommand<IJobCleanupConfiguration> jobCleanupCommand,
 			ICommand<IAutomatedWorkflowTriggerConfiguration> automatedWfTriggerCommand,
 			ISyncLog logger)
 		{
-			_jobEndMetricsService = jobEndMetricsService;
+			_jobEndMetricsServiceFactory = jobEndMetricsServiceFactory;
 			_jobStatusConsolidationCommand = jobStatusConsolidationCommand;
 			_notificationCommand = notificationCommand;
 			_jobCleanupCommand = jobCleanupCommand;
@@ -104,7 +104,8 @@ namespace Relativity.Sync.Nodes
 						status = ExecutionStatus.Canceled;
 					}
 
-					return _jobEndMetricsService.ExecuteAsync(status);
+					var jobEndMetricsService = _jobEndMetricsServiceFactory.CreateJobEndMetricsService();
+					return jobEndMetricsService.ExecuteAsync(status);
 				}
 			}
 			return Task.FromResult(ExecutionResult.Skipped());

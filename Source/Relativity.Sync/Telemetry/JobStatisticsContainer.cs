@@ -8,6 +8,8 @@ namespace Relativity.Sync.Telemetry
 {
 	internal sealed class JobStatisticsContainer : IJobStatisticsContainer
 	{
+		public long MetadataBytesTransferred { get; set; }
+
 		public long TotalBytesTransferred { get; set; }
 
 		public Task<long> NativesBytesRequested { get; set; }

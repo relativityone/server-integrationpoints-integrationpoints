@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_container = ContainerHelper.CreateContainer(cb =>
 			{
-				IntegrationTestsContainerBuilder.MockReporting(cb);
+				IntegrationTestsContainerBuilder.MockReportingWithProgress(cb);
 				_documentTransferServicesMocker.RegisterServiceMocks(cb);
 				cb.RegisterInstance(_configuration).AsImplementedInterfaces();
 			});

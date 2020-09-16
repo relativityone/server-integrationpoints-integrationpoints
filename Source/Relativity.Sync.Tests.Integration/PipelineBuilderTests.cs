@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Integration
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			_containerBuilder.RegisterInstance(_pipelineSelector.Object).As<IPipelineSelector>();
 
-			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockReportingWithProgress(_containerBuilder);
 			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypesInActualExecutionOrder);
 		}
 
