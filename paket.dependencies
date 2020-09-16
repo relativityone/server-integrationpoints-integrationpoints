@@ -13,18 +13,18 @@ nuget kCura 13.1.0
 nuget kCura.Agent ~> 13.1
 nuget kCura.EventHandler ~> 11.3 // update to version 13.1 requires update packages in Relativity.IntegrationPoints.SDK
 nuget kCura.Relativity.Client ~> 13.1
-nuget Relativity.Authentication ~> 11.3
+nuget Relativity.Authentication ~> 12.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
-nuget Relativity.DataExchange.Client.SDK 1.11.1
+nuget Relativity.DataExchange.Client.SDK 1.11.33
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0
 nuget Relativity.API 13.1.0
 nuget Relativity ~> 13.1
 
 //Relativity Services packages
-nuget Relativity.Services.Interfaces 13.2.0
-nuget Relativity.Services.Interfaces.Private 13.1.3
-nuget Relativity.Services.DataContracts 13.2.0
+nuget Relativity.Services.Interfaces 13.2.3
+nuget Relativity.Services.Interfaces.Private 13.1.4
+nuget Relativity.Services.DataContracts 13.2.3
 
 //Other Relativity packages
 nuget kCura.Apps.Common.Config 2.1.9
@@ -43,10 +43,10 @@ nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3000.0.1
 nuget Relativity.Toggles 1.0.0.100
 nuget Relativity.Vfs.IO 1.0.24
-nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre-4
+nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre.6
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 ~> 2020.3 content: none 		//Relativity.DataExchange.Client.SDK
+nuget kCura.OutsideIn.FI.Win32 ~> 2020.5 content: none 		//Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget AutoMapper 4.2.1
@@ -88,12 +88,12 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-    nuget Relativity.Sync 0.5.0-pre.26
+    nuget Relativity.Sync 0.5.36
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
 	nuget Banzai ~> 3.0
 	nuget kCura.Apps.Common.Utils 2.1.9
 	nuget Relativity.Kepler 2.7.0
-	nuget Relativity.Services.Interfaces 13.2.0
+	nuget Relativity.Services.Interfaces 13.2.3
 	nuget Relativity.Telemetry.APM 2019.1.1
