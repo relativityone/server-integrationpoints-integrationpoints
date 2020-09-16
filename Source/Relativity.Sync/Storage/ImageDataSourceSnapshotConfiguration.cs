@@ -1,13 +1,14 @@
 ﻿using Relativity.Sync.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
 	internal sealed class ImageDataSourceSnapshotConfiguration : IImageDataSourceSnapshotConfiguration
 	{
 		private readonly IConfiguration _cache;
+		private readonly ISerializer _serializer;
 		private readonly SyncJobParameters _syncJobParameters;
 
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
@@ -16,13 +17,14 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
 		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 
-		public ImageDataSourceSnapshotConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
+		public ImageDataSourceSnapshotConfiguration(IConfiguration cache, ISerializer serializer, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
+			_serializer = serializer;
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public int[] ProductionIds => _cache.GetFieldValue<int[]>(ProductionImagePrecedenceGuid);
+		public int[] ProductionIds => _serializer.Deserialize<int[]>(_cache.GetFieldValue<string>(ProductionImagePrecedenceGuid));
 
 		public bool IncludeOriginalImageIfNotFoundInProductions =>
 			_cache.GetFieldValue<bool>(IncludeOriginalImagesGuid);

@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Utils;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -16,6 +17,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private ImageRetryDataSourceSnapshotConfiguration _instance;
 
 		private Mock<IConfiguration> _cache;
+		private JSONSerializer _serializer;
+
 
 		private const int _WORKSPACE_ID = 589632;
 
@@ -30,8 +33,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			_cache = new Mock<IConfiguration>();
+			_serializer = new JSONSerializer();
 
-			_instance = new ImageRetryDataSourceSnapshotConfiguration(_cache.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
+			_instance = new ImageRetryDataSourceSnapshotConfiguration(_cache.Object, _serializer, new SyncJobParameters(1, _WORKSPACE_ID, 1));
 		}
 
 		[Test]
@@ -108,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var expectedValue = new[] { 1, 2, 3 };
-			_cache.Setup(x => x.GetFieldValue<int[]>(ProductionImagePrecedenceGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<string>(ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
 
 			// Act & Assert
 			_instance.ProductionIds.Should().BeEquivalentTo(expectedValue);

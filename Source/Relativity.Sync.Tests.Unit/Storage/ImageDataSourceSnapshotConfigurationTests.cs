@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Utils;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -25,13 +26,15 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
 		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
+		private ISerializer _serializer;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_cache = new Mock<IConfiguration>();
+			_serializer = new JSONSerializer();
 
-			_instance = new ImageDataSourceSnapshotConfiguration(_cache.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
+			_instance = new ImageDataSourceSnapshotConfiguration(_cache.Object, _serializer, new SyncJobParameters(1, _WORKSPACE_ID, 1));
 		}
 
 		[Test]
@@ -86,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var expectedValue = new [] {1, 2, 3};
-			_cache.Setup(x => x.GetFieldValue<int[]>(ProductionImagePrecedenceGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<string>(ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
 
 			// Act & Assert
 			_instance.ProductionIds.Should().BeEquivalentTo(expectedValue);

@@ -47,11 +47,11 @@
     <PackageReference Include="Relativity.OAuth2Client" Version="[1.0.27,1.5.2]" />
     <PackageReference Include="Relativity.Telemetry.APM" Version="[2019.1.1,2019.2.0)" />
     <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3000.0.1]" />
-    <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="[0.1.1-pre-4]" />
+    <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="[0.1.1-pre.6]" />
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
-    <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="[1.11.1]" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="[1.11.33]" />
   </ItemGroup>
   <!-- Third Party Packages -->
   <ItemGroup>
