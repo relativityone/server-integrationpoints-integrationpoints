@@ -182,7 +182,8 @@ namespace Relativity.Sync.Tests.Integration
 				.ConfigureAwait(false);
 
 			// Assert
-			allFields.Should().BeEquivalentTo(expectedAllFields);
+			allFields.Should().BeEquivalentTo(expectedAllFields,
+				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
 		}
 
 		[Test]

@@ -57,7 +57,8 @@ namespace Relativity.Sync.Transfer
 				DestinationFieldName.Equals(other.DestinationFieldName, StringComparison.InvariantCulture) &&
 				IsDocumentField == other.IsDocumentField &&
 				RelativityDataType == other.RelativityDataType &&
-				IsIdentifier == other.IsIdentifier;
+				IsIdentifier == other.IsIdentifier &&
+				DocumentFieldIndex == other.DocumentFieldIndex;
 		}
 
 		public override bool Equals(object obj)

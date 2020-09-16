@@ -106,7 +106,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			FieldInfoDto result = await _sut.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().Be(_DOCUMENT_IDENTIFIER_FIELD);
+			result.Should().BeEquivalentTo(_DOCUMENT_IDENTIFIER_FIELD, 
+				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
 		}
 
 		[Test]
@@ -148,7 +149,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IList<FieldInfoDto> result = await _sut.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().BeEquivalentTo(expectedFields);
+			result.Should().BeEquivalentTo(expectedFields,
+				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
 		}
 
 		[Test]
@@ -175,7 +177,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IList<FieldInfoDto> result = await _sut.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().BeEquivalentTo(expectedFields);
+			result.Should().BeEquivalentTo(expectedFields,
+				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
 		}
 
 		[Test]
@@ -198,7 +201,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().BeEquivalentTo(expectedFields);
+			result.Should().BeEquivalentTo(expectedFields,
+				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
 		}
 
 		[Test]
@@ -312,7 +316,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.Should().BeEquivalentTo(expectedFields);
+			result.Should().BeEquivalentTo(expectedFields,
+				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
 		}
 
 		[Test]
