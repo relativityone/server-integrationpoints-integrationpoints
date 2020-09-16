@@ -5,16 +5,16 @@
   </PropertyGroup>
   <!-- Relativity Packages with Release Versioning Schema -->
   <ItemGroup>
+    <PackageReference Update="Relativity.Platform.Keywords" Version="[12.0.*,12.1)" />
+  </ItemGroup>
+  <!-- Relativity Packages with Unknown Versioning Schema -->
+  <ItemGroup>
     <PackageReference Update="Relativity" Version="[13.*,14)" />
     <PackageReference Update="kCura.Relativity.Client" Version="[13.*,14)" />
-    <PackageReference Update="Relativity.Platform.Keywords" Version="[11.3.*,11.4)" />
     <PackageReference Update="Relativity.Automation.Utility" Version="[11.2.*,11.3)" />
     <PackageReference Update="Relativity.Automation.Utility.API" Version="[11.2.*,11.3)" />
-  </ItemGroup>
-  <!-- Relativity Services Packages with Release Versioning Schema -->
-  <ItemGroup>
-    <PackageReference Update="Relativity.Services.Interfaces" Version="[13.2.0]" />
-    <PackageReference Update="Relativity.Services.Interfaces.Private" Version="[13.1.3]" />
-    <PackageReference Update="Relativity.Services.DataContracts" Version="[13.2.0]" />
+    <PackageReference Update="Relativity.Services.Interfaces" Version="[13.2.3]" />
+    <PackageReference Update="Relativity.Services.Interfaces.Private" Version="[13.1.4]" />
+    <PackageReference Update="Relativity.Services.DataContracts" Version="[13.2.3]" />
   </ItemGroup>
 </Project>
