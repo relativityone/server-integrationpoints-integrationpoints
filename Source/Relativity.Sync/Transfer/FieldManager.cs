@@ -76,17 +76,10 @@ namespace Relativity.Sync.Transfer
 		}
 
 		public async Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token)
-		{
-			if (_allFields == null)
-			{
-				IList<FieldInfoDto> specialFields = GetNativeSpecialFields().ToList();
-				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
-				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
-				_allFields = EnrichDocumentFieldsWithIndex(allFields);
-			}
+			=> await GetAllFieldsInternalAsync(GetNativeSpecialFields, token).ConfigureAwait(false);
 
-			return _allFields;
-		}
+		public async Task<IReadOnlyList<FieldInfoDto>> GetImageAllFieldsAsync(CancellationToken token)
+			=> await GetAllFieldsInternalAsync(GetImageSpecialFields, token).ConfigureAwait(false);
 
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
 		{
@@ -99,6 +92,19 @@ namespace Relativity.Sync.Transfer
 		{
 			IEnumerable<FieldInfoDto> mappedFields = await GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
 			return mappedFields.First(f => f.IsIdentifier);
+		}
+
+		private async Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsInternalAsync(Func<IEnumerable<FieldInfoDto>> specialFieldsProvider, CancellationToken token)
+		{
+			if (_allFields == null)
+			{
+				IList<FieldInfoDto> specialFields = specialFieldsProvider().ToList();
+				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
+				_allFields = EnrichDocumentFieldsWithIndex(allFields);
+			}
+
+			return _allFields;
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)

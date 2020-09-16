@@ -9,7 +9,6 @@ namespace Relativity.Sync.Transfer
 		public void Install(ContainerBuilder builder)
 		{
 			builder.RegisterType<DocumentFieldRepository>().As<IDocumentFieldRepository>();
-			builder.RegisterType<BatchDataReaderBuilder>().As<IBatchDataReaderBuilder>();
 			builder.RegisterType<RelativityExportBatcher>().As<IRelativityExportBatcher>();
 			builder.RegisterType<SearchManagerFactory>().As<ISearchManagerFactory>().SingleInstance();
 			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();

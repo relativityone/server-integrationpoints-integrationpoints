@@ -22,10 +22,10 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcherFactory = new Mock<IRelativityExportBatcherFactory>();
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
 			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
-			Mock<IBatchDataReaderBuilder> readerBuilder = new Mock<IBatchDataReaderBuilder>();
+			Mock<IExportDataSanitizer> dataSanitizer = new Mock<IExportDataSanitizer>();
 
 			_instance = new SourceWorkspaceDataReaderFactory(_exportBatcherFactory.Object, fieldManager.Object, configuration.Object,
-				readerBuilder.Object, new EmptyLogger());
+				dataSanitizer.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 			_exportBatcherFactory.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<IBatch>())).Returns(batcher.Object);
 
 			// act
-			ISourceWorkspaceDataReader dataReader = _instance.CreateSourceWorkspaceDataReader(Mock.Of<IBatch>(), CancellationToken.None);
+			ISourceWorkspaceDataReader dataReader = _instance.CreateNativeSourceWorkspaceDataReader(Mock.Of<IBatch>(), CancellationToken.None);
 
 			// assert
 			dataReader.Should().NotBeNull();

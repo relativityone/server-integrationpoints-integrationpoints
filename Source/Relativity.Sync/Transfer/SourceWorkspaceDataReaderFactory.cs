@@ -10,22 +10,30 @@ namespace Relativity.Sync.Transfer
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
-		private readonly IBatchDataReaderBuilder _readerBuilder;
+		private readonly IExportDataSanitizer _dataSanitizer;
 
-		public SourceWorkspaceDataReaderFactory(IRelativityExportBatcherFactory exportBatcherFactory, IFieldManager fieldManager, ISynchronizationConfiguration configuration, 
-			IBatchDataReaderBuilder readerBuilder, ISyncLog logger)
+		public SourceWorkspaceDataReaderFactory(IRelativityExportBatcherFactory exportBatcherFactory, IFieldManager fieldManager, ISynchronizationConfiguration configuration,
+			IExportDataSanitizer dataSanitizer, ISyncLog logger)
 		{
 			_exportBatcherFactory = exportBatcherFactory;
 			_fieldManager = fieldManager;
 			_configuration = configuration;
-			_readerBuilder = readerBuilder;
+			_dataSanitizer = dataSanitizer;
 			_logger = logger;
 		}
 
-		public ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
+		public ISourceWorkspaceDataReader CreateNativeSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
 			IRelativityExportBatcher relativityExportBatcher = _exportBatcherFactory.CreateRelativityExportBatcher(batch);
-			return new SourceWorkspaceDataReader(_readerBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
+			IBatchDataReaderBuilder readerBuilder = new NativeBatchDataReaderBuilder(_fieldManager, _dataSanitizer);
+			return new SourceWorkspaceDataReader(readerBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
+		}
+
+		public ISourceWorkspaceDataReader CreateImageSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
+		{
+			IRelativityExportBatcher relativityExportBatcher = _exportBatcherFactory.CreateRelativityExportBatcher(batch);
+			IBatchDataReaderBuilder readerBuilder = new ImageBatchDataReaderBuilder(_fieldManager, _dataSanitizer);
+			return new SourceWorkspaceDataReader(readerBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
 		}
 	}
 }
