@@ -53,6 +53,11 @@ namespace Relativity.Sync.Telemetry
 		long CalculateMedianLongTextStreamSize();
 
 		/// <summary>
+		/// Size of the images that was requested to push.
+		/// </summary>
+		Task<long> ImagesBytesRequested { get; set; }
+
+		/// <summary>
 		/// Calculates average long text stream size and time.
 		/// </summary>
 		/// <returns>Tuple of double values, where Item1 is the average size (in megabytes) and Item2 is the average time (in seconds).</returns>

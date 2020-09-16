@@ -35,6 +35,42 @@
 		<Reference Include="System.Web.Services" />
 	</ItemGroup>
 	<ItemGroup>
+		<None Update="Data\ImagesBig\AMEYERS_0000757.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\ImagesBig\AMEYERS_0000975.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\ImagesBig\AMEYERS_0001185.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\ImagesBig\AMEYERS_0001189_001.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\ImagesBig\AZIPPER_0011318.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\Images\AMEYERS_0000757.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\Images\AMEYERS_0000975.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\Images\AMEYERS_0001185.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\Images\AZIPPER_0011318.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000001.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -89,5 +125,28 @@
 		<None Update="Data\NativesAndExtractedText\TEXT\REL0000below.txt">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Data\SingleDocumentProduction\DOC_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\ThreeImages\DOC_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\ThreeImages\DOC_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\ThreeImages\DOC_3.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\TwoDocumentProduction\DOC_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\TwoDocumentProduction\DOC_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Data\Images\" />
+	  <Folder Include="Data\ImagesBig\" />
+	  <Folder Include="Data\MultipleImagesPerDocument\" />
 	</ItemGroup>
 </Project>

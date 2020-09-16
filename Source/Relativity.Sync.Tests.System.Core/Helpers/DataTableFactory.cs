@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	{
 		public static ImportDataTableWrapper GenerateDocumentsWithExtractedText(int numDocuments, string controlNumberPrefix = "RND")
 		{
-			var documentData = new ImportDataTableWrapper(true, false, false);
+			var documentData = new ImportDataTableWrapper(true, false, false, false);
 
 			Func<string> generateExtractedText = () => Guid.NewGuid().ToString();
 			Func<int, string> getControlNumber = number => string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, number);
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static ImportDataTableWrapper GenerateDocumentWithNoFields(string controlNumberPrefix = "RND", int documentsCount = 1)
 		{
-			var documentData = new ImportDataTableWrapper(false, false, true);
+			var documentData = new ImportDataTableWrapper(false, false, true, false);
 
 			Enumerable.Range(0, documentsCount).ForEach(documentNumber => documentData.AddDocument(
 				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, documentNumber),
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static ImportDataTableWrapper GenerateDocumentWithUserField(string controlNumberPrefix = "RND")
 		{
-			var documentData = new ImportDataTableWrapper(false, false, true);
+			var documentData = new ImportDataTableWrapper(false, false, true, false);
 
 			documentData.AddDocument(
 				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, 0),
@@ -77,11 +77,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 
 			IEnumerable<IEnumerable<string>> groupsOfControlNumbers = directories
-				.Select(GetControlNumbers);
+				.Select(x => GetControlNumbers(x, dataset.GetControlNumber));
 
 			IEnumerable<string> validControlNumbers = GetIntersectionOfEnumerables(groupsOfControlNumbers);
 
-			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false);
+			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, false);
 			foreach (string controlNumber in validControlNumbers)
 			{
 				var columnValuePairs = new List<Tuple<string, string>>();
@@ -114,6 +114,30 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return dataTableWrapper;
 		}
 
+		public static ImportDataTableWrapper CreateImageImportDataTable(Dataset dataset)
+		{
+			var images = dataset.GetFiles();
+
+
+			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, true);
+
+			foreach (FileInfo imageFile in images)
+			{
+				var controlNumber = dataset.GetControlNumber(imageFile);
+
+				var columnValuePairs = new List<Tuple<string, string>>
+				{
+					Tuple.Create(ImportDataTableWrapper.BegBates, dataset.GetBegBates(imageFile)),
+					Tuple.Create(ImportDataTableWrapper.IdentifierFieldName, controlNumber),
+					Tuple.Create(ImportDataTableWrapper.ImageFile, imageFile.FullName)
+				};
+				
+				dataTableWrapper.AddDocument(controlNumber, columnValuePairs);
+			}
+
+			return dataTableWrapper;
+		}
+
 		private static IEnumerable<string> GetIntersectionOfEnumerables(IEnumerable<IEnumerable<string>> enumerables)
 		{
 			IEnumerable<IEnumerable<string>> enumerablesList = enumerables.ToList();
@@ -140,13 +164,13 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				.First(x => Path.GetFileNameWithoutExtension(x.Name) == controlNumber);
 		}
 
-		private static IEnumerable<string> GetControlNumbers(DirectoryInfo subDirectory)
+		private static IEnumerable<string> GetControlNumbers(DirectoryInfo subDirectory, Func<FileInfo, string> getControlNumber)
 		{
 			return subDirectory == null
 				? Enumerable.Empty<string>()
 				: subDirectory
 					.GetFiles()
-					.Select(x => Path.GetFileNameWithoutExtension(x.Name));
+					.Select(getControlNumber);
 		}
 	}
 }

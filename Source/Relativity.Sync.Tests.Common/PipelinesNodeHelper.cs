@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
 
@@ -19,7 +16,7 @@ namespace Relativity.Sync.Tests.Common
 					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 					new[] {typeof(IPermissionsCheckConfiguration)},
 					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IRetryDataSourceSnapshotConfiguration)},
+					new[] {typeof(IDocumentRetryDataSourceSnapshotConfiguration)},
 					new[]
 					{
 						typeof(ISumReporterConfiguration),
@@ -48,7 +45,7 @@ namespace Relativity.Sync.Tests.Common
 					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 					new[] {typeof(IPermissionsCheckConfiguration)},
 					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IDataSourceSnapshotConfiguration)},
+					new[] {typeof(IDocumentDataSourceSnapshotConfiguration)},
 					new[]
 					{
 						typeof(ISumReporterConfiguration),

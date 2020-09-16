@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Integration
 			typeof(IValidationConfiguration),
 			typeof(IPermissionsCheckConfiguration),
 			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
-			typeof(IDataSourceSnapshotConfiguration),
+			typeof(IDocumentDataSourceSnapshotConfiguration),
 			typeof(IDestinationWorkspaceTagsCreationConfiguration),
 			typeof(IDataDestinationInitializationConfiguration),
 			typeof(ISumReporterConfiguration),

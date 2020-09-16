@@ -8,12 +8,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Relativity.Kepler.Transport;
+using Relativity.Productions.Services;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Production;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
+using FieldRef = Relativity.Services.Field.FieldRef;
+using NumberingType = Relativity.Services.Production.NumberingType;
+using ProductionDetails = Relativity.Services.Production.ProductionDetails;
+using ProductionNumberingBase = Relativity.Productions.Services.ProductionNumberingBase;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -86,6 +92,26 @@ namespace Relativity.Sync.Tests.System.Core
 			return workspace;
 		}
 
+		public async Task DeleteAllDocumentsInWorkspace(WorkspaceRef workspace)
+		{
+			var request = new MassDeleteByCriteriaRequest()
+			{
+				ObjectIdentificationCriteria = new ObjectIdentificationCriteria
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						ArtifactTypeID = (int)ArtifactType.Document
+
+					}
+				}
+			};
+
+			using (var objectManager = _serviceFactory.CreateProxy<IObjectManager>())
+			{
+				await objectManager.DeleteAsync(workspace.ArtifactID, request).ConfigureAwait(false);
+			}
+		}
+
 		private async Task<int> GetTemplateWorkspaceArtifactIdAsync(string templateWorkspaceName)
 		{
 			try
@@ -146,6 +172,48 @@ namespace Relativity.Sync.Tests.System.Core
 					};
 					await manager.DeleteAsync(-1, request).ConfigureAwait(false);
 				}
+			}
+		}
+
+		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
+		{
+			var production = new Productions.Services.Production
+			{
+				Name = productionName,
+				Details = new Productions.Services.ProductionDetails
+				{
+					BrandingFontSize = 10,
+					ScaleBrandingFont = false
+				},
+				Numbering = new DocumentFieldNumbering
+				{
+					NumberingType = Productions.Services.NumberingType.DocumentField,
+					NumberingField = new FieldRef
+					{
+						ArtifactID = 1003667,
+						ViewFieldID = 0,
+						Name = "Control Number"
+					},
+					AttachmentRelationalField = new FieldRef
+					{
+						ArtifactID = 0,
+						ViewFieldID = 0,
+						Name = ""
+					},
+					BatesPrefix = "PRE",
+					BatesSuffix = "SUF",
+					IncludePageNumbers = false,
+					DocumentNumberPageNumberSeparator = "",
+					NumberOfDigitsForPageNumbering = 0,
+					StartNumberingOnSecondPage = false
+				}
+			};
+
+			using (var productionManager = _serviceFactory.CreateProxy<IProductionManager>())
+			{
+				
+
+				return await productionManager.CreateSingleAsync(workspaceID, production).ConfigureAwait(false);
 			}
 		}
 
