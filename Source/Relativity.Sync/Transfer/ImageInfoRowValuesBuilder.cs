@@ -22,7 +22,7 @@ namespace Relativity.Sync.Transfer
 
 		public IEnumerable<object> BuildRowValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document)
 		{
-			if(!DocumentToImageFiles.TryGetValue(document.ArtifactID, out IEnumerable<ImageFile> imagesForDocument) && !imagesForDocument.Any())
+			if(!DocumentToImageFiles.TryGetValue(document.ArtifactID, out IEnumerable<ImageFile> imagesForDocument) || !imagesForDocument.Any())
 			{
 				return Enumerable.Empty<object>();
 			}

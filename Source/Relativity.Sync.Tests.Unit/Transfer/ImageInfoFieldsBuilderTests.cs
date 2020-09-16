@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class ImageInfoFieldsBuilderTests
 	{
-		private IImageSpecialFieldBuilder _sut;
+		private ImageInfoFieldsBuilder _sut;
 
 		private Mock<IImageFileRepository> _imageFileRepositoryMock;
 		private Mock<IImageRetrieveConfiguration> _configurationFake;
