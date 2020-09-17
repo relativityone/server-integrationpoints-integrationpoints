@@ -39,7 +39,7 @@ namespace Relativity.Sync.Transfer
 		public IEnumerable<FieldInfoDto> GetImageSpecialFields()
 			=> _imageSpecialFieldBuilders.SelectMany(b => b.BuildColumns());
 
-		public async Task<IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>> CreateNativeSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>> CreateNativeSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
 			var specialFieldRowValueBuilders = await _nativeSpecialFieldBuilders
 				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Transfer
 			return specialFieldBuildersDictionary;
 		}
 
-		public async Task<IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>> CreateImageSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>> CreateImageSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
 			var specialFieldRowValueBuilders = await _imageSpecialFieldBuilders
 				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
@@ -103,6 +103,16 @@ namespace Relativity.Sync.Transfer
 			identifierField.DocumentFieldIndex = 0;
 
 			return identifierField;
+		}
+
+		public async Task<IList<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
+		{
+			if (_mappedDocumentFields == null)
+			{
+				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
+				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
+			}
+			return _mappedDocumentFields;
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
@@ -175,16 +185,6 @@ namespace Relativity.Sync.Transfer
 			}
 
 			return fields;
-		}
-
-		private async Task<List<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
-		{
-			if (_mappedDocumentFields == null)
-			{
-				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
-				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
-			}
-			return _mappedDocumentFields;
 		}
 
 		private async Task<List<FieldInfoDto>> EnrichDocumentFieldsWithRelativityDataTypesAsync(List<FieldInfoDto> fields, CancellationToken token)

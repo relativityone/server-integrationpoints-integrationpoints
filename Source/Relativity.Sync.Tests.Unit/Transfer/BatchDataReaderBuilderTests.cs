@@ -170,7 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{specialFieldType, specialFieldValueBuilder.Object},
 				{differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
 			};
-			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
+			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<int[]>())).ReturnsAsync(buildersDictionary);
 			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
@@ -221,7 +221,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
 			};
 			
-			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
+			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<int[]>())).ReturnsAsync(buildersDictionary);
 			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 			IDataReader reader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
 
