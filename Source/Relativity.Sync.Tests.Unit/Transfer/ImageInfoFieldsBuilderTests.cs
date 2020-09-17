@@ -96,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var imageFile2 = new ImageFile(2, "Location2", "Name2", 0);
 			var imageFile3 = new ImageFile(3, "Location3", "Name3", 0);
 
-			var expectedDocumentToImageFiles = new Dictionary<int, IEnumerable<ImageFile>>()
+			var expectedDocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
 				{ 1, new[] { imageFile1 } },
 				{ 2, new[] { imageFile2 } },
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var imageFile2 = new ImageFile(2, "Location2", "Name2", 0);
 			var imageFile3 = new ImageFile(3, "Location3", "Name3", 0);
 
-			var expectedDocumentToImageFiles = new Dictionary<int, IEnumerable<ImageFile>>()
+			var expectedDocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
 				{ 1, new[] { imageFile1a, imageFile1b } },
 				{ 2, new[] { imageFile2 } },
@@ -148,7 +148,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var imageFile1 = new ImageFile(1, "Location1", "Name1", 0);
 			var imageFile3 = new ImageFile(3, "Location3", "Name3", 0);
 
-			var expectedDocumentToImageFiles = new Dictionary<int, IEnumerable<ImageFile>>()
+			var expectedDocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
 				{ 1, new[] { imageFile1 } },
 				{ 2, new ImageFile[] { } },

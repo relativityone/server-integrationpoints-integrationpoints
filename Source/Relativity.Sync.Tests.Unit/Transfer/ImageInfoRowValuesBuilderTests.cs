@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int documentId = 1;
 			const int nonExsitingDocumentId = 2;
 
-			var DocumentToImageFiles = new Dictionary<int, IEnumerable<ImageFile>>()
+			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
 				{ documentId, new[] { new ImageFile(documentId, "Location1", "Name1", 0) } }
 			};
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
 
 			// Act
-			var result = _sut.BuildRowValues(It.IsAny<FieldInfoDto>(), notExistingDocument);
+			var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), notExistingDocument);
 
 			// Assert
 			result.Should().BeEmpty();
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int documentId = 1;
 			const int documentWithouImagesId = 2;
 
-			var DocumentToImageFiles = new Dictionary<int, IEnumerable<ImageFile>>()
+			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
 				{ documentId, new[] { new ImageFile(documentId, "Location1", "Name1", 0) } },
 				{ documentWithouImagesId, new ImageFile[] { } }
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
 
 			// Act
-			var result = _sut.BuildRowValues(It.IsAny<FieldInfoDto>(), documentWithoutImages);
+			var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), documentWithoutImages);
 
 			// Assert
 			result.Should().BeEmpty();
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void BuildRowValues_ShouldValues_WhenSpecialFieldTypeHasBeenProvided(FieldInfoDto specialField, IEnumerable<object> expectedValues)
 		{
 			// Arrange
-			var DocumentToImageFiles = new Dictionary<int, IEnumerable<ImageFile>>()
+			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
 				{ 1, new[] { new ImageFile(1, "Location1", "Name1", 0) } },
 				{ 2, new[] { new ImageFile(2, "Location2a", "Name2a", 0), new ImageFile(2, "Location2b", "Name2b", 0), new ImageFile(2, "Location2c", "Name2c", 0) } },
@@ -86,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
 
 			// Act
-			var result = _sut.BuildRowValues(specialField, document);
+			var result = _sut.BuildRowsValues(specialField, document);
 
 			// Assert
 			result.Should().BeEquivalentTo(expectedValues);
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Arrange
 			const int documentId = 1;
 
-			var DocumentToImageFiles = new Dictionary<int, IEnumerable<ImageFile>>()
+			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
 				{ documentId, new[] { new ImageFile(documentId, "Location1", "Name1", 0) } }
 			};
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
 
 			// Act
-			Func<object> action = () => _sut.BuildRowValues(field, document);
+			Func<object> action = () => _sut.BuildRowsValues(field, document);
 
 			// Assert
 			action.Should().Throw<ArgumentException>();

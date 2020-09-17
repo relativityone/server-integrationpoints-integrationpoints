@@ -97,8 +97,12 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token)
 		{
-			IEnumerable<FieldInfoDto> mappedFields = await GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
-			return mappedFields.First(f => f.IsIdentifier);
+			IEnumerable<FieldInfoDto> mappedFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+
+			var identifierField = mappedFields.First(f => f.IsIdentifier);
+			identifierField.DocumentFieldIndex = 0;
+
+			return identifierField;
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
