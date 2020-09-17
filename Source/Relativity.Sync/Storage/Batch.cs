@@ -26,6 +26,7 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
+		private static readonly Guid TaggedItemsCountGuid = new Guid(); // TODO
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
@@ -82,6 +83,14 @@ namespace Relativity.Sync.Storage
 			string statusDescription = status.GetDescription();
 			await UpdateFieldValueAsync(StatusGuid, statusDescription).ConfigureAwait(false);
 			Status = status;
+		}
+
+		public int TaggedItemsCount { get; private set; }
+
+		public async Task SetTaggedItemsCountAsync(int taggedItemsCount)
+		{
+			await UpdateFieldValueAsync(TaggedItemsCountGuid, taggedItemsCount).ConfigureAwait(false);
+			TaggedItemsCount = taggedItemsCount;
 		}
 
 		private async Task CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
