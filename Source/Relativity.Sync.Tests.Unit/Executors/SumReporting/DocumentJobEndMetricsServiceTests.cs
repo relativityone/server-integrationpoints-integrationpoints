@@ -56,11 +56,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			const string expectedStatusDescription = "Completed with Errors";
 			const int completedItemsPerBatch = 150;
+			const int taggedItemsPerBatch = 150;
 			const int failedItemsPerBatch = 1;
 			int totalItemsCountPerBatch = completedItemsPerBatch + failedItemsPerBatch;
 
 			var batch = new Mock<IBatch>();
 			batch.SetupGet(x => x.TransferredItemsCount).Returns(completedItemsPerBatch);
+			batch.SetupGet(x => x.TaggedItemsCount).Returns(taggedItemsPerBatch);
 			batch.SetupGet(x => x.FailedItemsCount).Returns(failedItemsPerBatch);
 			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCountPerBatch);
 			var testBatches = new List<IBatch> { batch.Object, batch.Object };
@@ -87,6 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, completedItemsPerBatch * testBatches.Count), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, failedItemsPerBatch * testBatches.Count), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TAGGED, taggedItemsPerBatch * testBatches.Count), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, expectedStatusDescription), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, metadataSize), Times.Once);

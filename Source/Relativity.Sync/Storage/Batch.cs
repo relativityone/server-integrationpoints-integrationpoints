@@ -347,6 +347,10 @@ namespace Relativity.Sync.Storage
 				new FieldRef
 				{
 					Guid = LockedByGuid
+				},
+				new FieldRef
+				{
+					Guid = TaggedItemsCountGuid
 				}
 			};
 		}

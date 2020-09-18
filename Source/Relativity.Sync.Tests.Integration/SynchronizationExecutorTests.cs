@@ -48,6 +48,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
+		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
 
 		private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 
@@ -439,7 +440,8 @@ namespace Relativity.Sync.Tests.Integration
 							CreateFieldValuePair(FailedItemsCountGuid, 0),
 							CreateFieldValuePair(TransferredItemsCountGuid, 0),
 							CreateFieldValuePair(ProgressGuid, (decimal) 0),
-							CreateFieldValuePair(LockedByGuid, "locked by")
+							CreateFieldValuePair(LockedByGuid, "locked by"),
+							CreateFieldValuePair(TaggedItemsCountGuid, 0)
 						}
 					}
 				}
