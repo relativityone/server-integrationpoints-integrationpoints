@@ -4,13 +4,13 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
-	internal class NullSupportedByViewerFileInfoRowValuesBuilder : ISpecialFieldRowValuesBuilder
+	internal class NullSupportedByViewerFileInfoRowValuesBuilder : INativeSpecialFieldRowValuesBuilder
 	{
-		private readonly ISpecialFieldRowValuesBuilder _fileInfoRowValuesBuilder;
+		private readonly INativeSpecialFieldRowValuesBuilder _fileInfoRowValuesBuilder;
 
 		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => _fileInfoRowValuesBuilder.AllowedSpecialFieldTypes;
 
-		public NullSupportedByViewerFileInfoRowValuesBuilder(ISpecialFieldRowValuesBuilder fileInfoRowValuesBuilder)
+		public NullSupportedByViewerFileInfoRowValuesBuilder(INativeSpecialFieldRowValuesBuilder fileInfoRowValuesBuilder)
 		{
 			_fileInfoRowValuesBuilder = fileInfoRowValuesBuilder;
 		}

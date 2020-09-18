@@ -6,7 +6,7 @@ namespace Relativity.Sync.Transfer
 {
 	internal interface IImageFileRepository
 	{
-		Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, IList<int> documentIds, QueryImagesOptions options);
+		Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, int[] documentIds, QueryImagesOptions options);
 
 		Task<long> CalculateImagesTotalSizeAsync(int workspaceId, QueryRequest request, QueryImagesOptions options);
 	}

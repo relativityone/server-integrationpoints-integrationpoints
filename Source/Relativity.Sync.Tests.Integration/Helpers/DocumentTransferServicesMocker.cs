@@ -165,7 +165,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		
 		private async Task SetupExportResultBlocks(Relativity.Sync.Transfer.IFieldManager fieldManager, Document[] documents, int batchSize)
 		{
-			IList<FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			IList<FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			for (int takenDocumentsCount = 0; takenDocumentsCount < documents.Length; takenDocumentsCount += batchSize)
 			{
 				int remainingDocumentCount = documents.Length - takenDocumentsCount;

@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_fieldManager = new Mock<IFieldManager>();
-			_fieldManager.Setup(fm => fm.GetDocumentFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
+			_fieldManager.Setup(fm => fm.GetDocumentTypeFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
 
 
 			_configurationMock = new Mock<IImageDataSourceSnapshotConfiguration>();
@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Array.Empty<RelativityObjectSlim>());
-			_imageFileRepositoryMock.Setup(x => x.QueryImagesForDocumentsAsync(It.IsAny<int>(), It.IsAny<IList<int>>(), It.IsAny<QueryImagesOptions>())).ReturnsAsync(Enumerable.Empty<ImageFile>());
+			_imageFileRepositoryMock.Setup(x => x.QueryImagesForDocumentsAsync(It.IsAny<int>(), It.IsAny<int[]>(), It.IsAny<QueryImagesOptions>())).ReturnsAsync(Enumerable.Empty<ImageFile>());
 
 			// ACT
 			ExecutionResult result = await _instance.ExecuteAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
