@@ -232,7 +232,7 @@ namespace Relativity.Sync.Executors
 		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
 		{
 			int destinationIdentityFieldId = GetDestinationIdentityFieldId(_fieldMappings.GetFieldMappings());
-			IList<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
+			IList<FieldInfoDto> specialFields = _fieldManager.GetNativeSpecialFields().ToList();
 
 			configuration.IdentityFieldId = destinationIdentityFieldId;
 			if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)

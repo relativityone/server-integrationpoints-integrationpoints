@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.System
 			var documentIds = await GetAllDocumentArtifactIdsAsync().ConfigureAwait(false);
 
 			// Act
-			ImageFile[] retrievedImages = (await _sut.QueryImagesForDocumentsAsync(_workspace.ArtifactID, documentIds.ToList(), new QueryImagesOptions { IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false)).ToArray();
+			ImageFile[] retrievedImages = (await _sut.QueryImagesForDocumentsAsync(_workspace.ArtifactID, documentIds.ToArray(), new QueryImagesOptions { IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false)).ToArray();
 
 			// Assert
 			int expectedImagesCount = dataset.GetFiles().Count();

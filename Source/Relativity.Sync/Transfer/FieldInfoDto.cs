@@ -12,6 +12,8 @@ namespace Relativity.Sync.Transfer
 		private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
 		private const string _SUPPORTED_BY_VIEWER_DISPLAY_NAME = "SupportedByViewer";
 		private const string _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME = "RelativityNativeType";
+		private const string _IMAGE_FILE_NAME_DISPLAY_NAME = "ImageFileName";
+		private const string _IMAGE_FILE_LOCATION_DISPLAY_NAME = "ImageFileLocation";
 
 		#endregion
 
@@ -128,6 +130,16 @@ namespace Relativity.Sync.Transfer
 		public static FieldInfoDto RelativityNativeTypeField()
 		{
 			return new FieldInfoDto(SpecialFieldType.RelativityNativeType, _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, false, true);
+		}
+
+		public static FieldInfoDto ImageFileNameField()
+		{
+			return new FieldInfoDto(SpecialFieldType.ImageFileName, string.Empty, _IMAGE_FILE_NAME_DISPLAY_NAME, false, false);
+		}
+
+		public static FieldInfoDto ImageFileLocationField()
+		{
+			return new FieldInfoDto(SpecialFieldType.ImageFileLocation, string.Empty, _IMAGE_FILE_LOCATION_DISPLAY_NAME, false, false);
 		}
 
 		#endregion

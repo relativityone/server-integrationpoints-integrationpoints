@@ -36,7 +36,7 @@ namespace Relativity.Sync.Transfer
 			_logger = logger;
 		}
 
-		public async Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, IList<int> documentIds, QueryImagesOptions options)
+		public async Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, int[] documentIds, QueryImagesOptions options)
 		{
 			IEnumerable<ImageFile> empty = Enumerable.Empty<ImageFile>();
 
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Transfer
 				return empty;
 			}
 
-			_logger.LogInformation("Searching for image files based on options. Documents count: {numberOfDocuments}", documentIds.Count);
+			_logger.LogInformation("Searching for image files based on options. Documents count: {numberOfDocuments}", documentIds.Length);
 
 			using (ISearchManager searchManager = await _searchManagerFactory.CreateSearchManagerAsync().ConfigureAwait(false))
 			{
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Transfer
 					.Select(x => x.ArtifactID)
 					.SplitList(_BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
 
-				foreach (IList<int> batch in documentArtifactIdBatches)
+				foreach (int[] batch in documentArtifactIdBatches)
 				{
 					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch, options).ConfigureAwait(false);
 					imagesTotalSize += imagesInBatch.Sum(x => x.Size);
@@ -80,9 +80,9 @@ namespace Relativity.Sync.Transfer
 			return imagesTotalSize;
 		}
 
-		private ImageFile[] RetrieveImagesByProductionsForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds, QueryImagesOptions options)
+		private ImageFile[] RetrieveImagesByProductionsForDocuments(ISearchManager searchManager, int workspaceId, int[] documentIds, QueryImagesOptions options)
 		{
-			(ImageFile[] producedImageFiles, int[] documentsWithoutImages) = GetImagesWithPrecedence(workspaceId, searchManager, options.ProductionIds.ToArray(), documentIds.ToArray());
+			(ImageFile[] producedImageFiles, int[] documentsWithoutImages) = GetImagesWithPrecedence(workspaceId, searchManager, options.ProductionIds, documentIds);
 
 			if (!producedImageFiles.Any())
 			{
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Transfer
 			{
 				var producedImages = searchManager
 					.RetrieveImagesForProductionDocuments(workspaceId, documentsWithoutImages, production)
-					.Tables[0].AsEnumerable().Select(x => GetImageFileFromProduction(x, production)).ToArray();
+					.Tables[0].AsEnumerable().Select(x => GetImageFileFromProduction(x, production));
 
 				var imagesPerDocument = producedImages.ToLookup(
 					x => x.DocumentArtifactId,
@@ -132,22 +132,22 @@ namespace Relativity.Sync.Transfer
 			return (result.Values.SelectMany(x => x).ToArray(), documentsWithoutImages);
 		}
 
-		private (ImageFile[], int[]) RetrieveOriginalImagesForDocuments(ISearchManager searchManager, int workspaceId, IList<int> documentIds)
+		private (ImageFile[], int[]) RetrieveOriginalImagesForDocuments(ISearchManager searchManager, int workspaceId, int[] documentIds)
 		{
-			DataSet dataSet = searchManager.RetrieveImagesForDocuments(workspaceId, documentIds.ToArray());
+			DataSet dataSet = searchManager.RetrieveImagesForDocuments(workspaceId, documentIds);
 
 			if (dataSet == null || dataSet.Tables.Count == 0)
 			{
 				_logger.LogWarning("SearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport returned null/empty data set.");
 				_logger.LogInformation("Image retrieve statistics: OriginalImages - {originalImagesCount}, DocumentsWithoutImages {noImagesCount}",
-					0, documentIds.Count);
+					0, documentIds.Length);
 				return (Array.Empty<ImageFile>(), documentIds.ToArray());
 			}
 
 			ImageFile[] imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFile).ToArray();
 
 			_logger.LogInformation("Image retrieve statistics: OriginalImages - {originalImagesCount}, DocumentsWithoutImages {noImagesCount}",
-				imageFiles.Length, documentIds.Count - imageFiles.Length);
+				imageFiles.Length, documentIds.Length - imageFiles.Length);
 
 			return (imageFiles, documentIds.Except(imageFiles.Select(x => x.DocumentArtifactId)).ToArray());
 		}

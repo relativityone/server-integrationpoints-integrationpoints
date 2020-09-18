@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors.SumReporting
 					_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS, jobExecutionStatus.GetDescription());
 				}
 
-				IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+				IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, fields.Count);
 
 				// If IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.

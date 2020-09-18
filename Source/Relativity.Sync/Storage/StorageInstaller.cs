@@ -18,6 +18,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<ImageDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ImageRetryDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<FieldConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<ImageRetrieveConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceObjectTypesCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DataDestinationInitializationConfiguration>().AsImplementedInterfaces();

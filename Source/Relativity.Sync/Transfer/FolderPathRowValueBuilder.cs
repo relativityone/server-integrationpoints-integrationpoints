@@ -5,7 +5,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class FolderPathRowValueBuilder : ISpecialFieldRowValuesBuilder
+	internal sealed class FolderPathRowValueBuilder : INativeSpecialFieldRowValuesBuilder
 	{
 		private readonly DestinationFolderStructureBehavior _destinationFolderStructureBehavior;
 		private readonly IDictionary<int, string> _folderPathsMap;
