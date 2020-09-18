@@ -358,6 +358,7 @@ namespace Relativity.Sync.Storage
 			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
 			FailedItemsCount = (int) (relativityObject[FailedItemsCountGuid].Value ?? default(int));
 			TransferredItemsCount = (int) (relativityObject[TransferredItemsCountGuid].Value ?? default(int));
+			TaggedItemsCount = (int) (relativityObject[TaggedItemsCountGuid].Value ?? default(int));
 			Progress = decimal.ToDouble((decimal?) relativityObject[ProgressGuid].Value ?? default(decimal));
 			LockedBy = (string) relativityObject[LockedByGuid].Value;
 		}
