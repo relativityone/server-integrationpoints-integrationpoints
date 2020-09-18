@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task BuildAsync_ShouldReturnDataReaderWithProperlyOrderedColumnsAndValues()
 		{
 			// Arrange
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			RelativityObjectSlim[] batchWithTwoRows = {_batchObject, _batchObject};
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, batchWithTwoRows, CancellationToken.None).ConfigureAwait(false);
@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportDataSanitizerFake.Setup(s => s.SanitizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _SECOND_DOCUMENT_FIELD_NAME, _SECOND_DOCUMENT_FIELD_VALUE, _firstDocumentField, It.IsAny<object>()))
 				.ReturnsAsync(valueAfterSanitization);
 			
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
@@ -126,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportDataSanitizerFake.Setup(s => s.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<FieldInfoDto>(), It.IsAny<object>()))
 				.ReturnsAsync(valueAfterSanitization);
 
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
@@ -142,7 +142,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			RelativityObjectSlim[] emptyBatch = Array.Empty<RelativityObjectSlim>();
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, emptyBatch, CancellationToken.None).ConfigureAwait(false);
@@ -170,8 +170,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{specialFieldType, specialFieldValueBuilder.Object},
 				{differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
 			};
-			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<int[]>())).ReturnsAsync(buildersDictionary);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 
 			// Act
 			IDataReader result = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
@@ -193,7 +193,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportDataSanitizerFake.Setup(s => s.SanitizeAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<FieldInfoDto>(), It.IsAny<object>()))
 				.Throws<InvalidExportFieldValueException>();
 
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 			Mock<Action<string, string>> itemLevelErrorHandlerMock = new Mock<Action<string, string>>();
 			builder.ItemLevelErrorHandler = itemLevelErrorHandlerMock.Object;
 
@@ -221,8 +221,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
 			};
 			
-			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<int>>())).ReturnsAsync(buildersDictionary);
-			var builder = new NativeBatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
+			_fieldManagerFake.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<int[]>())).ReturnsAsync(buildersDictionary);
+			var builder = new BatchDataReaderBuilder(_fieldManagerFake.Object, _exportDataSanitizerFake.Object);
 			IDataReader reader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
 
 			// Act

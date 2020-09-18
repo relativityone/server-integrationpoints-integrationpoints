@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.System
 			IContainer container = ContainerHelper.Create(configuration);
 
 			// Create snapshot
-			IExecutor<IDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
+			IExecutor<IDocumentDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 

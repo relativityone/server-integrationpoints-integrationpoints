@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			_serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 
-			_fieldManagerMock.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<FieldInfoDto>
+			_fieldManagerMock.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<FieldInfoDto>
 			{
 				new FieldInfoDto(SpecialFieldType.None,"Control Number", "Control Number", true, true){RelativityDataType = RelativityDataType.FixedLengthText}
 			});
@@ -147,7 +147,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public void ExecuteAsync_Should_CompleteSuccessfully_WhenFieldManagerThrows()
 		{
 			// Arrange
-		_fieldManagerMock.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>()))
+		_fieldManagerMock.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>()))
 				.ThrowsAsync(new Exception());
 
 			// Act
@@ -251,9 +251,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						new FieldMapDefinitionCase{SourceFieldName = "Native path", DestinationFieldName = "Native path", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false, SpecialFieldType = SpecialFieldType.NativeFileLocation},
 						new FieldMapDefinitionCase{SourceFieldName = "Native location", DestinationFieldName = "Native location", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false, SpecialFieldType = SpecialFieldType.NativeFileFilename}
 					},
-					"{\"FieldMapping\":{\"LongText\":3},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":7,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":8,\"DataGridEnabled\":false}}]}"
+					"{\"FieldMapping\":{\"LongText\":5},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":7,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":8,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":4,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":9,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":5,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":10,\"DataGridEnabled\":false}}]}"
 				)
-				{ TestName = "Should not log special fields" };
+				{ TestName = "Should log special fields when they have been mapped" };
 		}
 
 		private void SetupFieldMapping(IEnumerable<FieldMapDefinitionCase> mapping)
@@ -286,7 +286,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				});
 
 
-			_fieldManagerMock.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
+			_fieldManagerMock.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
 					new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType }
 				).ToList);
 		}

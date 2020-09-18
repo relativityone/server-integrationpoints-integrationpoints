@@ -23,13 +23,13 @@ namespace Relativity.Sync.Transfer
 			yield return FieldInfoDto.RelativityNativeTypeField();
 		}
 
-		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
 			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
 				.QueryAsync(sourceWorkspaceArtifactId, documentArtifactIds)
 				.ConfigureAwait(false);
 
-			IDictionary<int, INativeFile> artifactIdToNativeFile = new Dictionary<int, INativeFile>(documentArtifactIds.Count);
+			IDictionary<int, INativeFile> artifactIdToNativeFile = new Dictionary<int, INativeFile>(documentArtifactIds.Length);
 
 			foreach (INativeFile nativeFile in nativeFileInfo)
 			{

@@ -26,7 +26,7 @@ namespace Relativity.Sync.Transfer
 			yield return FieldInfoDto.ImageFileLocationField();
 		}
 
-		public async Task<IImageSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<IImageSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
 			QueryImagesOptions options = new QueryImagesOptions
 			{
@@ -34,13 +34,13 @@ namespace Relativity.Sync.Transfer
 				IncludeOriginalImageIfNotFoundInProductions = _configuration.IncludeOriginalImageIfNotFoundInProductions
 			};
 
-			var imageFiles = (await _imageFileRepository.QueryImagesForDocumentsAsync(sourceWorkspaceArtifactId, documentArtifactIds.ToList(), options)
+			var imageFiles = (await _imageFileRepository.QueryImagesForDocumentsAsync(sourceWorkspaceArtifactId, documentArtifactIds, options)
 				.ConfigureAwait(false)).ToList();
 
 			LogWarningIfImagesFoundForDocumentsNotSelectedToSync(imageFiles, documentArtifactIds);
 
 			var imageFilesLookup = imageFiles.ToLookup(x => x.DocumentArtifactId, x => x);
-			var documentToImageFiles = documentArtifactIds.ToDictionary(x => x, x => imageFilesLookup[x]);
+			var documentToImageFiles = documentArtifactIds.ToDictionary(x => x, x => imageFilesLookup[x].ToArray());
 
 			return new ImageInfoRowValuesBuilder(documentToImageFiles);
 		}

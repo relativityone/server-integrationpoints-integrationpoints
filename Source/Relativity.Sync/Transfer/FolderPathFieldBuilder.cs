@@ -28,7 +28,7 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
 			IDictionary<int, string> folderPathsMap = await BuildFolderPathsMapAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
 			return new FolderPathRowValueBuilder(_fieldConfiguration.DestinationFolderStructureBehavior, folderPathsMap);

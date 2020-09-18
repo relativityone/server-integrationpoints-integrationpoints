@@ -7,7 +7,7 @@ namespace Relativity.Sync.Transfer
 	{
 		IEnumerable<FieldInfoDto> BuildColumns();
 
-		Task<IImageSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds);
+		Task<IImageSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds);
 
 	}
 }

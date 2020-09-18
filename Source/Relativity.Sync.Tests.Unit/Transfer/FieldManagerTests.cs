@@ -217,7 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> result =
-				await _sut.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, new List<int>())
+				await _sut.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>())
 				.ConfigureAwait(false);
 
 			// Assert
@@ -238,7 +238,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Func<Task<IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>>> action =
-				() => _sut.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, new List<int>());
+				() => _sut.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>());
 
 			// Assert
 			await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false);
@@ -256,7 +256,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> result =
-				await _sut.CreateImageSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, new List<int>())
+				await _sut.CreateImageSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>())
 				.ConfigureAwait(false);
 
 			// Assert
@@ -472,17 +472,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var nativeSpecialFieldBuilder = new Mock<INativeSpecialFieldBuilder>();
 			nativeSpecialFieldBuilder.Setup(b => b.BuildColumns()).Returns(_NATIVE_SPECIAL_FIELDS);
-			nativeSpecialFieldBuilder.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>()))
+			nativeSpecialFieldBuilder.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<int[]>()))
 				.ReturnsAsync(_nativeSpecialFieldRowValuesBuilderFake.Object);
 
 			_folderPathSpecialFieldBuilderFake = new Mock<INativeSpecialFieldBuilder>();
 			_folderPathSpecialFieldBuilderFake.Setup(b => b.BuildColumns()).Returns(_FOLDER_PATH_SPECIAL_FIELDS);
-			_folderPathSpecialFieldBuilderFake.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>()))
+			_folderPathSpecialFieldBuilderFake.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<int[]>()))
 				.ReturnsAsync(_folderPathSpecialFieldRowValuesBuilderFake.Object);
 
 			_emptySpecialFieldBuilder = new Mock<INativeSpecialFieldBuilder>();
 			_emptySpecialFieldBuilder.Setup(b => b.BuildColumns()).Returns(Enumerable.Empty<FieldInfoDto>());
-			_emptySpecialFieldBuilder.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>()))
+			_emptySpecialFieldBuilder.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<int[]>()))
 				.ReturnsAsync(_emptySpecialFieldRowValuesBuilderFake.Object);
 
 			return new INativeSpecialFieldBuilder[]
@@ -499,7 +499,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var imageSpecialFieldBuilder = new Mock<IImageSpecialFieldBuilder>();
 			imageSpecialFieldBuilder.Setup(b => b.BuildColumns()).Returns(_IMAGE_SPECIAL_FIELDS);
-			imageSpecialFieldBuilder.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>()))
+			imageSpecialFieldBuilder.Setup(b => b.GetRowValuesBuilderAsync(It.IsAny<int>(), It.IsAny<int[]>()))
 				.ReturnsAsync(_imageSpecialFieldRowValuesBuilderFake.Object);
 
 			return new IImageSpecialFieldBuilder[]

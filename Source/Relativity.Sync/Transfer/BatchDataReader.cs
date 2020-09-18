@@ -187,7 +187,7 @@ namespace Relativity.Sync.Transfer
 		{
 			// TODO REL-367580: [PERFORMANCE] It looks like we are creating this collection (Int32 x Batch Size) unnecessary.
 			//                  We could pass IEnumerable further, but currently the whole stack is expecting ICollection so the change is to deep for this issue.
-			ICollection<int> documentArtifactIds = _batch.Select(obj => obj.ArtifactID).ToList();
+			int[] documentArtifactIds = _batch.Select(obj => obj.ArtifactID).ToArray();
 
 			return _fieldManager.CreateNativeSpecialFieldRowValueBuildersAsync(_sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
 		}

@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			return _fileInfoFieldsBuilder.BuildColumns();
 		}
 
-		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, ICollection<int> documentArtifactIds)
+		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
 			return new NullSupportedByViewerFileInfoRowValuesBuilder(
 				await _fileInfoFieldsBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false)

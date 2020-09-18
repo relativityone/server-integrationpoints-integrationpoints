@@ -7,6 +7,6 @@ namespace Relativity.Sync.Transfer
 	{
 		IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes { get; }
 
-		IEnumerable<object> BuildRowValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document);
+		IEnumerable<object> BuildRowsValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document);
 	}
 }
