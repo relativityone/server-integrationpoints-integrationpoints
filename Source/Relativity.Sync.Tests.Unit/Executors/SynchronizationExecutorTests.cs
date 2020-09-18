@@ -126,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
-			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
@@ -153,7 +153,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
 			tokenSource.Cancel();
 
-			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync(tokenSource.Token);
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync(tokenSource.Token);
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
@@ -174,7 +174,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), _METADATA_SIZE, _JOB_SIZE);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
-			Task<ExecutionResult> executionResult = null;
+			Task<TaggingExecutionResult> executionResult = null;
 
 			SetUpDocumentsTagRepository(executionResult);
 
@@ -197,7 +197,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), _METADATA_SIZE, _JOB_SIZE);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
-			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
 
 			SetUpDocumentsTagRepository(executionResult);
 
@@ -255,7 +255,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), _METADATA_SIZE, _JOB_SIZE);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
-			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
 
 			SetUpDocumentsTagRepository(executionResult);
 
@@ -293,7 +293,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
-			Task<ExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
@@ -309,10 +309,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			(ctx, result) => ctx._documentTagRepositoryFake
 				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(result),
+				.ReturnsAsync(CastToTaggingResult(result)),
 			(ctx, result) => ctx._documentTagRepositoryFake
 				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
-				.ReturnsAsync(result),
+				.ReturnsAsync(CastToTaggingResult(result)),
 			(ctx, result) => ctx._importJobFake
 				.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new ImportJobResult(result, 1, 1))
@@ -331,13 +331,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
 					It.IsAny<CancellationToken>()))
-					.ReturnsAsync(ExecutionResult.Success);
+					.ReturnsAsync(TaggingExecutionResult.Success());
 
 			_documentTagRepositoryFake
 				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
-					.ReturnsAsync(ExecutionResult.Success);
+					.ReturnsAsync(TaggingExecutionResult.Success());
 
 			_importJobFake
 				.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
@@ -364,13 +364,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<int>>(),
 					It.IsAny<CancellationToken>()))
-					.ReturnsAsync(ExecutionResult.Success);
+					.ReturnsAsync(TaggingExecutionResult.Success());
 
 			_documentTagRepositoryFake
 				.Setup(x => x.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
-					.ReturnsAsync(ExecutionResult.Success);
+					.ReturnsAsync(TaggingExecutionResult.Success());
 
 			_importJobFake
 				.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
@@ -434,7 +434,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
-			Task<ExecutionResult> executionResult = ReturnTaggingFailedResultAsync();
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingFailedResultAsync();
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
@@ -483,7 +483,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(numberOfBatches);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
-			Task<ExecutionResult> executionResult = ReturnTaggingFailedResultAsync();
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingFailedResultAsync();
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
@@ -548,7 +548,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
 		}
 
-		private void SetUpDocumentsTagRepository(Task<ExecutionResult> executionResult)
+		private void SetUpDocumentsTagRepository(Task<TaggingExecutionResult> executionResult)
 		{
 			_documentTagRepositoryFake
 				.Setup(x => x.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
@@ -561,23 +561,27 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					It.IsAny<CancellationToken>())).Returns(executionResult);
 		}
 
-		private static async Task<ExecutionResult> ReturnTaggingCompletedResultAsync()
+		private static async Task<TaggingExecutionResult> ReturnTaggingCompletedResultAsync()
 		{
 			await Task.CompletedTask.ConfigureAwait(false);
-			return new ExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
+			return new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
 		}
-		private static async Task<ExecutionResult> ReturnTaggingCompletedResultAsync(CancellationToken cancellationToken)
+		private static async Task<TaggingExecutionResult> ReturnTaggingCompletedResultAsync(CancellationToken cancellationToken)
 		{
 			await Task.CompletedTask.ConfigureAwait(false);
 			cancellationToken.ThrowIfCancellationRequested();
-			return new ExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
+			return new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
 		}
 
-		private static async Task<ExecutionResult> ReturnTaggingFailedResultAsync()
+		private static async Task<TaggingExecutionResult> ReturnTaggingFailedResultAsync()
 		{
 			await Task.CompletedTask.ConfigureAwait(false);
-			return new ExecutionResult(ExecutionStatus.Failed, "Failed", new Exception());
+			return new TaggingExecutionResult(ExecutionStatus.Failed, "Failed", new Exception());
 		}
+
+		private static TaggingExecutionResult CastToTaggingResult(ExecutionResult result)
+			=> new TaggingExecutionResult(result.Status, result.Message, result.Exception);
+
 		private static ImportJobResult CreateSuccessfulResult()
 		{
 			return new ImportJobResult(ExecutionResult.Success(), 1, 1);

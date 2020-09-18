@@ -57,7 +57,7 @@ namespace Relativity.Sync.Executors
 
 		private TaggingExecutionResult GetTaggingExecutionResult<TIdentifier>(TagDocumentsResult<TIdentifier> taggingDocumentResult, int jobHistoryArtifactId)
 		{
-			TaggingExecutionResult taggingResult = ExecutionResult.Success() as TaggingExecutionResult;
+			TaggingExecutionResult taggingResult = TaggingExecutionResult.Success();
 			var failedIdentifiers = taggingDocumentResult.FailedDocuments.ToList();
 			if (failedIdentifiers.Any())
 			{
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Executors
 
 				string errorMessage = $"Failed to tag synchronized documents in workspace. The first {subsetCount} out of {failedIdentifiers.Count} are: {subsetArtifactIds}.";
 				var failedTaggingException = new SyncException(errorMessage, jobHistoryArtifactId.ToString(CultureInfo.InvariantCulture));
-				taggingResult = ExecutionResult.Failure(errorMessage, failedTaggingException) as TaggingExecutionResult;
+				taggingResult = TaggingExecutionResult.Failure(errorMessage, failedTaggingException);
 			}
 
 			taggingResult.TaggedDocumentsCount = taggingDocumentResult.TotalObjectsUpdated;
