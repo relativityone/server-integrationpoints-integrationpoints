@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Integration
 		private SourceWorkspaceDataReader CreateSourceWorkspaceDataReaderWithBatchSize(int batchSize)
 		{
 			IRelativityExportBatcher batcher = CreateExporterForGivenBatchSize(batchSize);
-			IBatchDataReaderBuilder batchDataReaderBuilder = _container.Resolve<IBatchDataReaderBuilder>();
+			IBatchDataReaderBuilder batchDataReaderBuilder = new NativeBatchDataReaderBuilder(_container.Resolve<IFieldManager>(), _container.Resolve<IExportDataSanitizer>());
 			IFieldManager fieldManager = _container.Resolve<IFieldManager>();
 			ISyncLog syncLog = Mock.Of<ISyncLog>();
 
