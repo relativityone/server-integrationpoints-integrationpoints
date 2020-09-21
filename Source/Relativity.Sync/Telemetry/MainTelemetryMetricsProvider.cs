@@ -49,6 +49,11 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TAGGED,
+				Description = "The number of records that were successfully tagged during the Integration Points job."
+			},
+			new MetricIdentifier
+			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED,
 				Description = "The total number of bytes of metadata that were successfully transferred."
 			},
