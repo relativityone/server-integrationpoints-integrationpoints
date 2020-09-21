@@ -1,35 +1,32 @@
 ﻿using System;
 using System.Data;
-using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
-using System.Globalization;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Transfer
 {
-	internal class BatchDataReader : IDataReader
+	internal abstract class BatchDataReaderBase : IDataReader
 	{
-		private FieldInfoDto _identifierField;
+		protected FieldInfoDto _identifierField;
 
-		private readonly DataTable _templateDataTable;
+		protected readonly DataTable _templateDataTable;
 
-		private readonly int _sourceWorkspaceArtifactId;
-		private readonly RelativityObjectSlim[] _batch;
-		private readonly IEnumerator<object[]> _batchEnumerator;
+		protected readonly int _sourceWorkspaceArtifactId;
+		protected readonly RelativityObjectSlim[] _batch;
+		protected readonly IEnumerator<object[]> _batchEnumerator;
 
-		private readonly IReadOnlyList<FieldInfoDto> _allFields;
-		private readonly IFieldManager _fieldManager;
-		private readonly IExportDataSanitizer _exportDataSanitizer;
+		protected readonly IReadOnlyList<FieldInfoDto> _allFields;
+		protected readonly IFieldManager _fieldManager;
+		protected readonly IExportDataSanitizer _exportDataSanitizer;
 
-		private readonly Action<string, string> _itemLevelErrorHandler;
+		protected readonly Action<string, string> _itemLevelErrorHandler;
 
-		private readonly CancellationToken _cancellationToken;
+		protected readonly CancellationToken _cancellationToken;
 
-		private static readonly Type _typeOfString = typeof(string);
+		protected static readonly Type _typeOfString = typeof(string);
 
-		private FieldInfoDto IdentifierField
+		protected FieldInfoDto IdentifierField
 		{
 			get
 			{
@@ -54,7 +51,7 @@ namespace Relativity.Sync.Transfer
 
 		public int FieldCount => _templateDataTable.Columns.Count;
 
-		public BatchDataReader(
+		protected BatchDataReaderBase(
 			DataTable templateDataTable,
 			int sourceWorkspaceArtifactId,
 			RelativityObjectSlim[] batch,
@@ -78,6 +75,8 @@ namespace Relativity.Sync.Transfer
 
 			_cancellationToken = cancellationToken;
 		}
+
+		protected abstract IEnumerable<object[]> GetBatchEnumerable();
 
 		public string GetDataTypeName(int i)
 		{
@@ -158,91 +157,6 @@ namespace Relativity.Sync.Transfer
 			{
 				throw new InvalidOperationException("The IDataReader is closed.");
 			}
-		}
-
-		private IEnumerable<object[]> GetBatchEnumerable()
-		{
-			if (_batch != null && _batch.Any())
-			{
-				IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = CreateSpecialFieldRowValuesBuilders();
-
-				foreach (RelativityObjectSlim batchItem in _batch)
-				{
-					object[] row;
-					try
-					{
-						row = BuildRow(specialFieldBuildersDictionary, batchItem);
-					}
-					catch (SyncItemLevelErrorException ex)
-					{
-						_itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.GetExceptionMessages());
-						continue;
-					}
-					yield return row;
-				}
-			}
-		}
-
-		private IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> CreateSpecialFieldRowValuesBuilders()
-		{
-			// TODO REL-367580: [PERFORMANCE] It looks like we are creating this collection (Int32 x Batch Size) unnecessary.
-			//                  We could pass IEnumerable further, but currently the whole stack is expecting ICollection so the change is to deep for this issue.
-			int[] documentArtifactIds = _batch.Select(obj => obj.ArtifactID).ToArray();
-
-			return _fieldManager.CreateNativeSpecialFieldRowValueBuildersAsync(_sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
-		}
-
-		private object[] BuildRow(IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem)
-		{
-			object[] result = new object[_allFields.Count];
-
-			string itemIdentifier = batchItem.Values[IdentifierField.DocumentFieldIndex].ToString();
-
-			for (int i = 0; i < _allFields.Count; i++)
-			{
-				FieldInfoDto field = _allFields[i];
-				if (field.SpecialFieldType != SpecialFieldType.None)
-				{
-					object specialValue = BuildSpecialFieldValue(specialFieldBuilders, batchItem, field);
-					result[i] = specialValue;
-				}
-				else
-				{
-					object initialValue = batchItem.Values[field.DocumentFieldIndex];
-					result[i] = SanitizeFieldIfNeeded(IdentifierField.SourceFieldName, itemIdentifier, field, initialValue);
-				}
-			}
-
-			return result;
-		}
-
-		private static object BuildSpecialFieldValue(IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
-		{
-			if (!specialFieldBuilders.ContainsKey(fieldInfo.SpecialFieldType))
-			{
-				throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType}");
-			}
-			object initialFieldValue = fieldInfo.IsDocumentField ? batchItem.Values[fieldInfo.DocumentFieldIndex] : null;
-
-			return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowValue(fieldInfo, batchItem, initialFieldValue);
-		}
-
-		private object SanitizeFieldIfNeeded(string itemIdentifierFieldName, string itemIdentifier, FieldInfoDto field, object initialValue)
-		{
-			object sanitizedValue = initialValue;
-			if (_exportDataSanitizer.ShouldSanitize(field.RelativityDataType))
-			{
-				try
-				{
-					sanitizedValue = _exportDataSanitizer.SanitizeAsync(_sourceWorkspaceArtifactId, itemIdentifierFieldName, itemIdentifier, field, initialValue).GetAwaiter().GetResult();
-				}
-				catch (InvalidExportFieldValueException ex)
-				{
-					throw new SyncItemLevelErrorException($"Could not sanitize field of type: {field.RelativityDataType}", ex);
-				}
-			}
-
-			return sanitizedValue;
 		}
 
 		public void Close()

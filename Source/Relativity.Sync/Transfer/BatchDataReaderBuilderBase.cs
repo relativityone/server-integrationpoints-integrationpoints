@@ -11,9 +11,9 @@ namespace Relativity.Sync.Transfer
 	internal abstract class BatchDataReaderBuilderBase : IBatchDataReaderBuilder
 	{
 		private DataTable _templateDataTable;
-		private IReadOnlyList<FieldInfoDto> _allFields;
-		private readonly IExportDataSanitizer _exportDataSanitizer;
 
+		protected IReadOnlyList<FieldInfoDto> _allFields;
+		protected readonly IExportDataSanitizer _exportDataSanitizer;
 		protected readonly IFieldManager _fieldManager;
 
 		public Action<string, string> ItemLevelErrorHandler { get; set; }
@@ -32,8 +32,7 @@ namespace Relativity.Sync.Transfer
 			}
 
 			DataTable templateDataTable = GetTemplateDataTable(_allFields);
-
-			return new BatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token);
+			return CreateDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, token);
 		}
 
 		private DataTable GetTemplateDataTable(IEnumerable<FieldInfoDto> allFields)
@@ -66,5 +65,7 @@ namespace Relativity.Sync.Transfer
 		}
 
 		protected abstract Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token);
+
+		protected abstract IDataReader CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
 	}
 }

@@ -2,6 +2,7 @@
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
@@ -18,6 +19,11 @@ namespace Relativity.Sync.Transfer
 		protected override Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token)
 		{
 			return _fieldManager.GetImageAllFieldsAsync(token);
+		}
+
+		protected override IDataReader CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		{
+			return new ImageBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token);
 		}
 	}
 }
