@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
 			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
 			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME_PRODUCTION);
-			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME_PRODUCTION);
+			int size = GetValue<int>(dataRow, _SIZE_COLUMN_NAME_PRODUCTION);
 			string nativeIdentifier = GetValue<string>(dataRow, _NATIVE_IDENTIFIER);
 
 			return new ImageFile(documentArtifactId, location, fileName, size, productionId, nativeIdentifier);
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
 			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
 			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
-			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
+			int size = GetValue<int>(dataRow, _SIZE_COLUMN_NAME);
 
 			return new ImageFile(documentArtifactId, location, fileName, size);
 		}
