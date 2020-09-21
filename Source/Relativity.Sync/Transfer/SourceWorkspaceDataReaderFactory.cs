@@ -24,16 +24,18 @@ namespace Relativity.Sync.Transfer
 
 		public ISourceWorkspaceDataReader CreateNativeSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
-			IRelativityExportBatcher relativityExportBatcher = _exportBatcherFactory.CreateRelativityExportBatcher(batch);
-			IBatchDataReaderBuilder readerBuilder = new NativeBatchDataReaderBuilder(_fieldManager, _dataSanitizer);
-			return new SourceWorkspaceDataReader(readerBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
+			return CreateSourceWorkspaceDataReader(batch, new NativeBatchDataReaderBuilder(_fieldManager, _dataSanitizer), token);
 		}
 
 		public ISourceWorkspaceDataReader CreateImageSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
+			return CreateSourceWorkspaceDataReader(batch, new ImageBatchDataReaderBuilder(_fieldManager, _dataSanitizer), token);
+		}
+
+		private ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, IBatchDataReaderBuilder batchDataReaderBuilder, CancellationToken token)
+		{
 			IRelativityExportBatcher relativityExportBatcher = _exportBatcherFactory.CreateRelativityExportBatcher(batch);
-			IBatchDataReaderBuilder readerBuilder = new ImageBatchDataReaderBuilder(_fieldManager, _dataSanitizer);
-			return new SourceWorkspaceDataReader(readerBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
+			return new SourceWorkspaceDataReader(batchDataReaderBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
 		}
 	}
 }

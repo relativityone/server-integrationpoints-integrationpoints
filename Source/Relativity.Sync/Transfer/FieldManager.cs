@@ -75,11 +75,9 @@ namespace Relativity.Sync.Transfer
 			return specialFieldBuildersDictionary;
 		}
 
-		public async Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token)
-			=> await GetAllFieldsInternalAsync(GetNativeSpecialFields, token).ConfigureAwait(false);
+		public Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token) => GetAllFieldsInternalAsync(GetNativeSpecialFields, token);
 
-		public async Task<IReadOnlyList<FieldInfoDto>> GetImageAllFieldsAsync(CancellationToken token)
-			=> await GetAllFieldsInternalAsync(GetImageSpecialFields, token).ConfigureAwait(false);
+		public Task<IReadOnlyList<FieldInfoDto>> GetImageAllFieldsAsync(CancellationToken token) => GetAllFieldsInternalAsync(GetImageSpecialFields, token);
 
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
 		{

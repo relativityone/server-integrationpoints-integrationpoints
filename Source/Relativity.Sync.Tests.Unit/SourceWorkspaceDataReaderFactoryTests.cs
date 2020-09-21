@@ -12,30 +12,42 @@ namespace Relativity.Sync.Tests.Unit
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderFactoryTests
 	{
-		private Mock<IRelativityExportBatcherFactory> _exportBatcherFactory;
-
+		private Mock<IRelativityExportBatcherFactory> _exportBatcherFactoryFake;
 		private SourceWorkspaceDataReaderFactory _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_exportBatcherFactory = new Mock<IRelativityExportBatcherFactory>();
+			_exportBatcherFactoryFake = new Mock<IRelativityExportBatcherFactory>();
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
 			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
 			Mock<IExportDataSanitizer> dataSanitizer = new Mock<IExportDataSanitizer>();
 
-			_instance = new SourceWorkspaceDataReaderFactory(_exportBatcherFactory.Object, fieldManager.Object, configuration.Object,
+			_instance = new SourceWorkspaceDataReaderFactory(_exportBatcherFactoryFake.Object, fieldManager.Object, configuration.Object,
 				dataSanitizer.Object, new EmptyLogger());
 		}
 
 		[Test]
-		public void ItShouldCreateSourceWorkspaceDataReader()
+		public void CreateNativeSourceWorkspaceDataReader_ShouldCreateNativeSourceWorkspaceDataReader()
 		{
 			Mock<IRelativityExportBatcher> batcher = new Mock<IRelativityExportBatcher>();
-			_exportBatcherFactory.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<IBatch>())).Returns(batcher.Object);
+			_exportBatcherFactoryFake.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<IBatch>())).Returns(batcher.Object);
 
 			// act
 			ISourceWorkspaceDataReader dataReader = _instance.CreateNativeSourceWorkspaceDataReader(Mock.Of<IBatch>(), CancellationToken.None);
+
+			// assert
+			dataReader.Should().NotBeNull();
+		}
+
+		[Test]
+		public void CreateImageSourceWorkspaceDataReader_ShouldCreateImageSourceWorkspaceDataReader()
+		{
+			Mock<IRelativityExportBatcher> batcher = new Mock<IRelativityExportBatcher>();
+			_exportBatcherFactoryFake.Setup(x => x.CreateRelativityExportBatcher(It.IsAny<IBatch>())).Returns(batcher.Object);
+
+			// act
+			ISourceWorkspaceDataReader dataReader = _instance.CreateImageSourceWorkspaceDataReader(Mock.Of<IBatch>(), CancellationToken.None);
 
 			// assert
 			dataReader.Should().NotBeNull();
