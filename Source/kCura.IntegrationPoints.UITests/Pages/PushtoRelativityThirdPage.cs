@@ -102,7 +102,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
         [FindsBy(How = How.Id, Using = "page-info-message")]
         protected IWebElement PageInfoMessage { get; set; }
-		
+
+        public IWebElement InvalidMap0WebElement => GetElementByIdOrNull("invalidMap-0");
+        public IWebElement InvalidMap1WebElement => GetElementByIdOrNull("invalidMap-1");
+        public IWebElement InvalidMap2WebElement => GetElementByIdOrNull("invalidMap-2");
+		public IWebElement InvalidReasons00WebElement => GetElementByIdOrNull("invalidReasons-0-0");
+		public IWebElement InvalidReasons10WebElement => GetElementByIdOrNull("invalidReasons-1-0");
+		public IWebElement InvalidReasons11WebElement => GetElementByIdOrNull("invalidReasons-1-1");
+		public IWebElement InvalidReasons20WebElement => GetElementByIdOrNull("invalidReasons-2-0");
+
 		public IWebElement ObjectIdentifierWarning => GetElementByIdOrNull("objectIdentifierWarning");
 
 		public IWebElement MappedFieldsWarning => GetElementByIdOrNull("mappedFieldsWarning");

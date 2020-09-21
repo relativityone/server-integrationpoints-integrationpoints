@@ -12,17 +12,15 @@ var StepMapFieldsValidator = (function () {
 	var buildFieldsMapTableMessage = function (mappedFields) {
 		var mappedFieldsList = $('<div/>')
 			.html('<p id="mappedFieldsWarning">Mapping of the fields below may fail your job:</p>');
-
-		$('<ul/>').appendTo(mappedFieldsList);
-
+		
 		mappedFields.forEach(
-			function (invalidMap) {
-				$('<li/>').text(getMismatchedFieldsAsString(invalidMap.fieldMap)).appendTo(mappedFieldsList);
+			function (invalidMap, i) {
+				$('<li/>', { id: 'invalidMap-' + i }).text(getMismatchedFieldsAsString(invalidMap.fieldMap)).appendTo(mappedFieldsList);
 				reasonList = $('<ul/>')
 				reasonList.appendTo(mappedFieldsList);
 				invalidMap.invalidReasons.forEach(
-					function (reason) {
-						$('<li/>').text(reason).appendTo(reasonList);
+					function (reason, j) {
+						$('<li/>', { id: 'invalidReasons-' + i + '-' + j }).text(reason).appendTo(reasonList);
 					});
 			});
 
