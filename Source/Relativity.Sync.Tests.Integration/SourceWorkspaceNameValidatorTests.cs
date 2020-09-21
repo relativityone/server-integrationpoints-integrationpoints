@@ -45,8 +45,9 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public async Task ItShouldHandleValidDestinationWorkspaceName()
+		public async Task ValidateAsync_ShouldHandleValidDestinationWorkspaceName()
 		{
+			// Arrange
 			string validWorkspaceName = "So much valid";
 
 			_objectManagerMock.Setup(x =>
@@ -64,15 +65,18 @@ namespace Relativity.Sync.Tests.Integration
 
 			_configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
 
 		[Test]
-		public async Task ItShouldHandleInvalidDestinationWorkspaceName()
+		public async Task ValidateAsync_ShouldHandleInvalidDestinationWorkspaceName()
 		{
+			// Arrange
 			string invalidWorkspaceName = "So ; much ; invalid";
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
@@ -89,8 +93,10 @@ namespace Relativity.Sync.Tests.Integration
 
 			_configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeFalse();
 			result.Messages.Should().NotBeEmpty();
 		}

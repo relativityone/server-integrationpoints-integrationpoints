@@ -7,19 +7,16 @@ using Relativity.Sync.Tests.Performance.Helpers;
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
-	[Category("LARGE_Jobs")]
+	[Category("LARGE_Jobs-Large-1")]
 	public class LargeJobTests_Large1 : PerformanceTestBase
 	{
-		public LargeJobTests_Large1()
-			: base(WorkspaceType.Relativity, "Large Job Tests - Large-1", null)
+		public LargeJobTests_Large1() : base(WorkspaceType.Relativity, "Large Job Tests - Large-1 [DO NOT DELETE]", null)
 		{
 		}
 
 		[Test]
-		[Category("Large-1")]
 		public async Task RunJob()
 		{
-
 			PerformanceTestCase testCase = new PerformanceTestCase
 			{
 				TestCaseName = "Large-1",

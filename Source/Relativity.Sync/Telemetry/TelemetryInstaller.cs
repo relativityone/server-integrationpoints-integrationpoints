@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Relativity.API;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -15,7 +16,7 @@ namespace Relativity.Sync.Telemetry
 		public void Install(ContainerBuilder builder)
 		{
 			builder.RegisterType<APMClient>().As<IAPMClient>();
-			builder.RegisterType<SystemStopwatch>().As<IStopwatch>();
+			builder.RegisterType<StopwatchWrapper>().As<IStopwatch>();
 			builder.RegisterType<SyncMetrics>().As<ISyncMetrics>();
 			builder.RegisterType<JobStatisticsContainer>().As<IJobStatisticsContainer>().SingleInstance();
 			builder.Register(c => EnvironmentPropertyProvider.Create(c.Resolve<ISyncServiceManager>(), c.Resolve<ISyncLog>()))

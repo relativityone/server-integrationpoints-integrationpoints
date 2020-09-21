@@ -9,6 +9,8 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -71,6 +73,22 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
 			result.IsValid.Should().BeFalse();
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), true)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 	}
 }

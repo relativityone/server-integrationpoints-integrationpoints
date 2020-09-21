@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -143,6 +144,7 @@
   <ItemGroup>
     <Compile Include="Consts.cs" />
     <Compile Include="ExitCodes.cs" />
+    <Compile Include="Extensions\ObjectManagerExtensions.cs" />
     <Compile Include="Fields\CustomField.cs" />
     <Compile Include="Fields\IRandomFieldsGenerator.cs" />
     <Compile Include="Fields\RandomFieldsGenerator.cs" />
@@ -162,7 +164,7 @@
     <Compile Include="RelativityServices\ISavedSearchManager.cs" />
     <Compile Include="RelativityServices\IWorkspaceService.cs" />
     <Compile Include="RelativityServices\SavedSearchManager.cs" />
-    <Compile Include="Settings\GenerateDefaultSettingsFile.cs" />
+    <Compile Include="Settings\GenerateDefaultSettingsFileArguments.cs" />
     <Compile Include="Settings\GeneratorSettings.cs" />
     <Compile Include="Import\DataReaderWrapper.cs" />
     <Compile Include="Import\DocumentFactory.cs" />
@@ -176,7 +178,7 @@
     <Compile Include="RelativityServices\RelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\WorkspaceService.cs" />
     <Compile Include="FileGenerating\SingleFileGenerator.cs" />
-    <Compile Include="Settings\LoadFromSettingsFileOptions.cs" />
+    <Compile Include="Settings\LoadFromSettingsFileArguments.cs" />
     <Compile Include="Settings\TestCase.cs" />
     <Compile Include="WorkspaceGeneratorRunner.cs" />
   </ItemGroup>
@@ -184,6 +186,9 @@
     <None Include="App.config" />
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
+    <None Include="Resources\TestCases\Reference.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\TestCases\Small.json" />
     <None Include="Resources\TestCases\Medium.json" />
     <None Include="Resources\TestCases\Large5.json" />

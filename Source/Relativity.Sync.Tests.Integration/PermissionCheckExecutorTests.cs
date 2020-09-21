@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Integration
 			};
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.MockReporting(containerBuilder);
+			IntegrationTestsContainerBuilder.MockReportingWithProgress(containerBuilder);
 
 			_objectManagerFake = new Mock<IObjectManager>();
 			_objectTypeManagerFake = new Mock<IObjectTypeManager>();

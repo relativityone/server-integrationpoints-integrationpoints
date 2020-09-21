@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class ValidationExecutor : IExecutor<IValidationConfiguration>
 	{
 		private readonly IEnumerable<IValidator> _validators;
+		private readonly IPipelineSelector _pipelineSelector;
 		private readonly ISyncLog _logger;
 
-		public ValidationExecutor(IEnumerable<IValidator> validators, ISyncLog logger)
+		public ValidationExecutor(IEnumerable<IValidator> validators, IPipelineSelector pipelineSelector, ISyncLog logger)
 		{
 			_validators = validators;
+			_pipelineSelector = pipelineSelector;
 			_logger = logger;
 		}
 
@@ -43,7 +47,8 @@ namespace Relativity.Sync.Executors.Validation
 		{
 			ValidationResult result = new ValidationResult();
 
-			foreach (IValidator validator in _validators)
+			ISyncPipeline syncPipeline = _pipelineSelector.GetPipeline();
+			foreach (IValidator validator in _validators.Where(x => x.ShouldValidate(syncPipeline)))
 			{
 				result.Add(await validator.ValidateAsync(configuration, token).ConfigureAwait(false));
 			}

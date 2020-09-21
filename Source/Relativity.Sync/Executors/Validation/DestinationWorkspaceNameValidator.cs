@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -47,5 +48,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			return result;
 		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline) => true;
 	}
 }

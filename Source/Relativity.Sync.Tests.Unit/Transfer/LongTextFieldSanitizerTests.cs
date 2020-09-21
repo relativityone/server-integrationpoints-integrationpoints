@@ -84,8 +84,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			DateTime initialValue = DateTime.Now;
-			Func<Task> action = async () => await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
-				.ConfigureAwait(false);
+			Func<Task> action = () => instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue);
 
 			// Assert
 			(await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false))
@@ -111,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ConfigureAwait(false);
 
 			// Assert
-			_streamBuilder.Verify(x => x.Create(_retriableStreamBuilder.Object, fieldEncoding));
+			_streamBuilder.Verify(x => x.Create(_retriableStreamBuilder.Object, fieldEncoding, _ITEM_ARTIFACT_ID));
 		}
 
 		[Test]

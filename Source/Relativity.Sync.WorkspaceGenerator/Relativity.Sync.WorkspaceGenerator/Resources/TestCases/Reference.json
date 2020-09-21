@@ -1,0 +1,19 @@
+{
+  "RelativityUri": "https://h-626434a1c78c46a5a594232dff6cac4d.hopper.relativity.com/Relativity",
+  "RelativityServicesUri": "https://h-626434a1c78c46a5a594232dff6cac4d.hopper.relativity.com/Relativity/Relativity.Services",
+  "RelativityUserName": "relativity.admin@kcura.com",
+  "RelativityPassword": "Test1234!",
+  "TemplateWorkspaceName": "Relativity Starter Template",
+  "DesiredWorkspaceName": "Performance Reference Workspace",
+  "TestDataDirectoryPath": "C:\\Data",
+  "BatchSize": 10000,
+  "TestCases": [
+    {
+      "Name": "Reference-1",
+      "NumberOfDocuments": 10,
+      "NumberOfFields": 15,
+      "TotalNativesSizeInMB": 10,
+      "TotalExtractedTextSizeInMB": 10
+    }
+  ]
+}

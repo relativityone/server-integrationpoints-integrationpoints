@@ -164,7 +164,7 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_batch != null && _batch.Any())
 			{
-				IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = CreateSpecialFieldRowValuesBuilders();
+				IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuildersDictionary = CreateSpecialFieldRowValuesBuilders();
 
 				foreach (RelativityObjectSlim batchItem in _batch)
 				{
@@ -183,16 +183,16 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		private IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> CreateSpecialFieldRowValuesBuilders()
+		private IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> CreateSpecialFieldRowValuesBuilders()
 		{
 			// TODO REL-367580: [PERFORMANCE] It looks like we are creating this collection (Int32 x Batch Size) unnecessary.
 			//                  We could pass IEnumerable further, but currently the whole stack is expecting ICollection so the change is to deep for this issue.
-			ICollection<int> documentArtifactIds = _batch.Select(obj => obj.ArtifactID).ToList();
+			int[] documentArtifactIds = _batch.Select(obj => obj.ArtifactID).ToArray();
 
-			return _fieldManager.CreateSpecialFieldRowValueBuildersAsync(_sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
+			return _fieldManager.CreateNativeSpecialFieldRowValueBuildersAsync(_sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 
-		private object[] BuildRow(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem)
+		private object[] BuildRow(IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem)
 		{
 			object[] result = new object[_allFields.Count];
 
@@ -216,7 +216,7 @@ namespace Relativity.Sync.Transfer
 			return result;
 		}
 
-		private static object BuildSpecialFieldValue(IDictionary<SpecialFieldType, ISpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
+		private static object BuildSpecialFieldValue(IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
 		{
 			if (!specialFieldBuilders.ContainsKey(fieldInfo.SpecialFieldType))
 			{

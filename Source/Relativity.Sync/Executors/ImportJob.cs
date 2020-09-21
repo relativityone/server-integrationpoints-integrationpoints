@@ -146,11 +146,11 @@ namespace Relativity.Sync.Executors
 		public async Task<ImportJobResult> RunAsync(CancellationToken token)
 		{
 			ExecutionResult executionResult = ExecutionResult.Success();
-			long jobSizeInBytes = GetJobSize();
+
 			if (token.IsCancellationRequested)
 			{
 				executionResult = ExecutionResult.Canceled();
-				return new ImportJobResult(executionResult, jobSizeInBytes);
+				return new ImportJobResult(executionResult, GetMetadataSize(), GetJobSize());
 			}
 
 			try
@@ -182,8 +182,17 @@ namespace Relativity.Sync.Executors
 				executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
 			}
 
-			jobSizeInBytes = GetJobSize();
-			return new ImportJobResult(executionResult, jobSizeInBytes);
+			return new ImportJobResult(executionResult, GetMetadataSize(), GetJobSize());
+		}
+
+		private long GetMetadataSize()
+		{
+			long metadataSize = 0;
+			if (_importApiJobStatistics != null)
+			{
+				metadataSize = _importApiJobStatistics.MetadataBytes;
+			}
+			return metadataSize;
 		}
 
 		private long GetJobSize()

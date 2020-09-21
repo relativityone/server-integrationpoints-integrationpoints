@@ -10,8 +10,6 @@ using FluentAssertions;
 using FluentAssertions.Common;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
-using Org.BouncyCastle.Asn1.X509.Qualified;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Pipelines;
@@ -45,7 +43,7 @@ namespace Relativity.Sync.Tests.Integration
 			_containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			_containerBuilder.RegisterInstance(_pipelineSelector.Object).As<IPipelineSelector>();
 
-			IntegrationTestsContainerBuilder.MockReporting(_containerBuilder);
+			IntegrationTestsContainerBuilder.MockReportingWithProgress(_containerBuilder);
 			IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypesInActualExecutionOrder);
 		}
 
@@ -173,8 +171,10 @@ namespace Relativity.Sync.Tests.Integration
 			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
 
 			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
-			IntegrationTestsContainerBuilder.MockFailingStep<IDataSourceSnapshotConfiguration>(_containerBuilder);
-			IntegrationTestsContainerBuilder.MockFailingStep<IRetryDataSourceSnapshotConfiguration>(_containerBuilder);
+
+			Type dataSnapshotConfigurationType = GetSnaphotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
+			IntegrationTestsContainerBuilder.MockFailingStep(dataSnapshotConfigurationType, _containerBuilder);
+
 			IContainer container = _containerBuilder.Build();
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
@@ -199,8 +199,12 @@ namespace Relativity.Sync.Tests.Integration
 			_pipelineSelector.Setup(x => x.GetPipeline()).Returns(() => Activator.CreateInstance(pipelineType) as ISyncPipeline);
 
 			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
-			IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep<IDataSourceSnapshotConfiguration>(_containerBuilder);
-			IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep<IRetryDataSourceSnapshotConfiguration>(_containerBuilder);
+
+
+			Type dataSnapshotConfigurationType = GetSnaphotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
+
+			IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep(dataSnapshotConfigurationType, _containerBuilder);
+
 			IContainer container = _containerBuilder.Build();
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
@@ -234,12 +238,12 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			if (pipelineType == typeof(SyncDocumentRetryPipeline))
 			{
-				return typeof(RetryDataSourceSnapshotNode);
+				return typeof(DocumentRetryDataSourceSnapshotNode);
 			}
 
 			if (pipelineType == typeof(SyncDocumentRunPipeline))
 			{
-				return typeof(DataSourceSnapshotNode);
+				return typeof(Nodes.DocumentDataSourceSnapshotNode);
 			}
 
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");

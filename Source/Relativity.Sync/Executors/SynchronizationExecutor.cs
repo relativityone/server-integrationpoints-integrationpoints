@@ -172,6 +172,7 @@ namespace Relativity.Sync.Executors
 		{
 			ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
+			_jobStatisticsContainer.MetadataBytesTransferred += importJobResult.MetadataSizeInBytes;
 			_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
 			return importJobResult.ExecutionResult;
@@ -228,7 +229,7 @@ namespace Relativity.Sync.Executors
 		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
 		{
 			int destinationIdentityFieldId = GetDestinationIdentityFieldId(_fieldMappings.GetFieldMappings());
-			IList<FieldInfoDto> specialFields = _fieldManager.GetSpecialFields().ToList();
+			IList<FieldInfoDto> specialFields = _fieldManager.GetNativeSpecialFields().ToList();
 
 			configuration.IdentityFieldId = destinationIdentityFieldId;
 			if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)

@@ -10,6 +10,8 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -45,35 +47,61 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ItShouldHandleValidConfiguration()
+		public async Task ValidateAsync_ShouldHandleValidConfiguration()
 		{
+			// Arrange
 			_getAccessStatusAsyncResult.Exists = true;
 
+			//Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
 
 		[Test]
-		public async Task ItShouldHandleInvalidConfiguration()
+		public async Task ValidateAsync_ShouldHandleInvalidConfiguration()
 		{
+			// Arrange
 			_getAccessStatusAsyncResult.Exists = false;
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
+
+			// Assert
 			result.IsValid.Should().BeFalse();
 			result.Messages.Should().NotBeEmpty();
 		}
 
 		[Test]
-		public async Task ItShouldHandleExceptionDuringValidation()
+		public async Task ValidateAsync_ShouldHandleExceptionDuringValidation()
 		{
+			// Arrange
 			_folderManagerMock.Setup(x => x.GetAccessStatusAsync(_WORKSPACE_ARTIFACT_ID, _FOLDER_ARTIFACT_ID)).Throws<InvalidOperationException>();
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeFalse();
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), true)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 	}
 }

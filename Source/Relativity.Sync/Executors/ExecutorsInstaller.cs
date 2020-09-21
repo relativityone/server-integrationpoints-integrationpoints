@@ -51,10 +51,17 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<PermissionCheckExecutor>().As<IExecutor<IPermissionsCheckConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutor>().As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
-			builder.RegisterType<DataSourceSnapshotExecutor>().As<IExecutor<IDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<DataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<RetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IRetryDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<RetryDataSourceSnapshotExecutor>().As<IExecutor<IRetryDataSourceSnapshotConfiguration>>();
+			
+			builder.RegisterType<DocumentDataSourceSnapshotExecutor>().As<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<DocumentRetryDataSourceSnapshotExecutor>().As<IExecutor<IDocumentRetryDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<ImageDataSourceSnapshotExecutor>().As<IExecutor<IImageDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<ImageRetryDataSourceSnapshotExecutor>().As<IExecutor<IImageRetryDataSourceSnapshotConfiguration>>();
+
+			builder.RegisterType<DocumentDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDocumentDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<DocumentRetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDocumentRetryDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<ImageDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IImageDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<ImageRetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IImageRetryDataSourceSnapshotConfiguration>>();
+			
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SynchronizationExecutionConstrains>().As<IExecutionConstrains<ISynchronizationConfiguration>>();

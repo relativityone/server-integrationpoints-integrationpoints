@@ -89,12 +89,12 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public Stream StreamLongText(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName, StreamEncoding encoding)
+		private Stream StreamLongText(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName, StreamEncoding encoding)
 		{
 			try
 			{
 				IRetriableStreamBuilder streamBuilder = _streamBuilderFactory.Create(workspaceArtifactId, relativityObjectArtifactId, fieldName);
-				return _importStreamBuilder.Create(streamBuilder, encoding);
+				return _importStreamBuilder.Create(streamBuilder, encoding, relativityObjectArtifactId);
 			}
 			catch (Exception ex)
 			{

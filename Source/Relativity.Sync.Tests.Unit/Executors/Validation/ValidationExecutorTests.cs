@@ -7,54 +7,77 @@ using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
 	[TestFixture]
 	internal sealed class ValidationExecutorTests
 	{
-		private Mock<IValidator> _validator;
-		private ValidationExecutor _instance;
+		private Mock<IValidator> _validatorMock;
+		private ValidationExecutor _sut;
+		private Mock<IPipelineSelector> _pipelineSelectorMock;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_validator = new Mock<IValidator>();
-			_instance = new ValidationExecutor(new[] {_validator.Object}, new EmptyLogger());
+			_validatorMock = new Mock<IValidator>();
+			_pipelineSelectorMock = new Mock<IPipelineSelector>();
+
+			_validatorMock.Setup(x => x.ShouldValidate(It.IsAny<ISyncPipeline>())).Returns(true);
+			_pipelineSelectorMock.Setup(x => x.GetPipeline()).Returns(new SyncDocumentRunPipeline());
+
+			_sut = new ValidationExecutor(new[] {_validatorMock.Object}, _pipelineSelectorMock.Object, new EmptyLogger());
 		}
 
 		[Test]
-		public async Task ItShouldReportSuccessfullyExecutionResult()
+		public async Task ExecuteAsync_ShouldReportSuccessfullyExecutionResult()
 		{
-			// act
-			ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public async Task ItShouldReportFailedExecutionResult()
+		public async Task ExecuteAsync_ShouldReportFailedExecutionResult()
 		{
-			_validator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult(new ValidationMessage("message")));
+			// Arrange
+			_validatorMock.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult(new ValidationMessage("message")));
 
-			// act
-			ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
 
 		[Test]
-		public void ItShouldChangeAnyExceptionToValidationException()
+		public void ExecuteAsync_ShouldChangeAnyExceptionToValidationException()
 		{
-			_validator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).Throws<InvalidOperationException>();
+			// Arrange
+			_validatorMock.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
-			// ACT
-			Func<Task> action = async () => await _instance.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			// Act
+			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// ASSERT
+			// Assert
 			action.Should().Throw<ValidationException>();
+		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldRespect_IValidator_ShouldValidate()
+		{
+			// Arrange
+			_validatorMock.Setup(x => x.ShouldValidate(It.IsAny<ISyncPipeline>())).Returns(false);
+
+			// Act
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Status.Should().Be(ExecutionStatus.Completed);
+			_validatorMock.Verify(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), It.IsAny<CancellationToken>()), Times.Never);
 		}
 	}
 }

@@ -8,7 +8,6 @@ using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Models;
 using Relativity.Automation.Utility.Orchestrators;
 using System.Threading.Tasks;
-using SettingType = Relativity.Services.InstanceSetting.ValueType;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
@@ -69,10 +68,17 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		private void InstallARMTestServices()
 		{
 			string rapPath = GetTestServicesRapPathAsync().Result;
-
+			try
+			{
 			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
 			_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
 				.InstallRelativityApplicationToLibrary(rapPath, options);
+			}
+			finally
+			{
+				File.Delete(rapPath);
+			}
+
 		}
 
 		private async Task<string> GetTestServicesRapPathAsync()

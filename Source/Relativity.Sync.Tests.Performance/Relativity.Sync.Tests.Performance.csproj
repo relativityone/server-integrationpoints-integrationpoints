@@ -25,6 +25,7 @@
 	</ItemGroup>
   <!-- Relativity Packages with Release Versioning Schema -->
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
     <PackageReference Include="Relativity.Automation.Utility" />
     <PackageReference Include="Relativity.Automation.Utility.API" />
   </ItemGroup>

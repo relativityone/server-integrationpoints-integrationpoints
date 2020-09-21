@@ -11,8 +11,9 @@ namespace Relativity.Sync.Tests.Common
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
-		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration,
-		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration
+		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
+		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
+		IDocumentDataSourceSnapshotConfiguration, IDocumentRetryDataSourceSnapshotConfiguration, IImageDataSourceSnapshotConfiguration, IImageRetryDataSourceSnapshotConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -105,6 +106,11 @@ namespace Relativity.Sync.Tests.Common
 		public int IdentityFieldId { get; set; }
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
 
+		public bool ImageImport { get; }
+		public bool IncludeOriginalImages { get; }
+		public ImportImageFileCopyMode ImportImageFileCopyMode { get; }
+		public int[] ProductionImagePrecedence { get; }
+
 		public string GetSourceJobTagName() => _sourceJobTagName;
 
 		public void SetSourceJobTagName(string sourceJobTagName)
@@ -150,5 +156,10 @@ namespace Relativity.Sync.Tests.Common
 		public int BatchSize { get; set; }
 		public Guid ExportRunId { get; set; }
 		public int? JobHistoryToRetryId { get; set; }
+
+		public int[] ProductionIds => throw new NotImplementedException();
+
+		public bool IncludeOriginalImageIfNotFoundInProductions => throw new NotImplementedException();
+		public bool IsImageJob { get; set; }
 	}
 }

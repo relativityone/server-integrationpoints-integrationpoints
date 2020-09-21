@@ -20,6 +20,9 @@ using kCura.Utility.Extensions;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ResourcePool;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -32,9 +35,10 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private readonly IARMApi _armApi;
 		private readonly FileShareHelper _fileShare;
 		private readonly AzureStorageHelper _storage;
-		private readonly string _INITIAL_BCP_PATH = "BCPPath";
 
-		private static string _RELATIVE_ARCHIVES_LOCATION => AppSettings.RelativeArchivesLocation;
+		private static readonly string _INITIAL_BCP_PATH = "BCPPath";
+		private static readonly string _RELATIVE_ARCHIVES_LOCATION = AppSettings.RelativeArchivesLocation;
+		private static readonly string _UNC_ARCHIVE_LOCATION = Path.Combine(AppSettings.RemoteArchivesLocation, _RELATIVE_ARCHIVES_LOCATION);
 
 
 		private ARMHelper(IARMApi armApi, FileShareHelper fileShare, AzureStorageHelper storage)
@@ -100,31 +104,17 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			Logger.LogInformation("Checking ARM locations");
 			var currentArmConfiguration = await _armApi.GetConfigurationData().ConfigureAwait(false);
 
-			bool configurationNeedsUpdating = false;
-
 			if (currentArmConfiguration.ArmArchiveLocations.IsNullOrEmpty())
 			{
-				configurationNeedsUpdating = true;
 				Logger.LogInformation("Remote ARM location not configured, creating default");
 				await _fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
 
 				Logger.LogInformation(
 					$"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
 
-				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _RELATIVE_ARCHIVES_LOCATION }, };
-			}
+				Logger.LogInformation($"Set ARM Archive location to {_UNC_ARCHIVE_LOCATION}");
+				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _UNC_ARCHIVE_LOCATION } };
 
-			string webApiPath = settingOrchestrator.GetInstanceSetting("RelativityWebApiUrl", "kCura.ARM")?.Value;
-
-			if (webApiPath == null)
-			{
-				configurationNeedsUpdating = true;
-				Logger.LogInformation("kCura.ARM.RelativityWebApiUrl instance setting not found, reverting to AppSettings");
-				currentArmConfiguration.RelativityWebApiUrl = AppSettings.RelativityWebApiUrl.AbsoluteUri;
-			}
-
-			if (configurationNeedsUpdating)
-			{
 				Logger.LogInformation("Updating ARM configuration");
 				ContractEnvelope<ArmConfiguration> request = new ContractEnvelope<ArmConfiguration> { Contract = currentArmConfiguration };
 
@@ -132,34 +122,14 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-
 		private bool ShouldBeInstalled()
 		{
-			string installedVersion = GetInstalledArmVersion();
-			string rapArmVersion = GetRapArmVersion(GetARMRapPath());
-			return string.IsNullOrEmpty(installedVersion) || ShouldArmBeInstalledBasedOnVersion(installedVersion, rapArmVersion);
-		}
-
-		private static bool ShouldArmBeInstalledBasedOnVersion(string installedVersion, string rapArmVersion)
-		{
-			if (installedVersion == null || rapArmVersion == null)
-			{
-				return true;
-			}
-
-			// compare each version segment, starting from Major
-			return installedVersion.Split('.').Zip(rapArmVersion.Split('.'), (installed, rap) =>
-			{
-				if (int.TryParse(installed, out var installedVersionValue) && int.TryParse(rap, out var rapVersionValue))
-				{
-					return rapVersionValue > installedVersionValue;
+			Version installedVersion = GetInstalledArmVersion();
+			Version rapArmVersion = GetRapArmVersion(GetARMRapPath());
+			return installedVersion == null || rapArmVersion > installedVersion;
 				}
 
-				return true;
-			}).Any(x => x);
-		}
-
-		private static string GetRapArmVersion(string armRapPath)
+		private static Version GetRapArmVersion(string armRapPath)
 		{
 			try
 			{
@@ -171,7 +141,9 @@ namespace Relativity.Sync.Tests.Performance.ARM
 						using (var stream = applicationXml.Open())
 						{
 							var xmlDoc = XDocument.Load(stream);
-							return xmlDoc.XPathSelectElement(@"//Application/Version").Value;
+							var version = xmlDoc.XPathSelectElement(@"//Application/Version").Value;
+
+							return new Version(version);
 						}
 					}
 				}
@@ -182,7 +154,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private string GetInstalledArmVersion()
+		private Version GetInstalledArmVersion()
 		{
 			const string armAppName = "ARM";
 			LibraryApplicationResponse app = new LibraryApplicationResponse() { Name = armAppName };
@@ -191,8 +163,10 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 			if (isAppInstalled)
 			{
-				return _component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
+				string version = _component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
 					.GetLibraryApplicationByName(armAppName).Version;
+
+				return new Version(version);
 			}
 
 			return null;
@@ -204,11 +178,17 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>();
 
 			string rapPath = GetARMRapPath();
-
+			try
+			{
 			Logger.LogInformation("Installing ARM...");
 			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true, };
 			applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
 			Logger.LogInformation("ARM has been successfully installed.");
+			}
+			finally
+			{
+				File.Delete(rapPath);
+			}
 		}
 
 		private string GetARMRapPath()
@@ -241,7 +221,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			AgentType agentType = agentsOrchestrator.GetAllAgentTypes()
 				.First(x => x.Name == type);
 
-			ResourceServer server = agentsOrchestrator.GetAvailableAgentServersForAgentType(agentType.ArtifactID)
+			Automation.Utility.Models.ResourceServer server = agentsOrchestrator.GetAvailableAgentServersForAgentType(agentType.ArtifactID)
 				.First(x => x.Type == ResourceServerTypeEnum.Agent);
 
 			Agent agent = new Agent()
@@ -274,7 +254,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 				Logger.LogInformation($"Restoring workspace from: {archivedWorkspacePath}");
 
-				Job job = await CreateRestoreJobAsync(archivedWorkspacePath, AppSettings.ResourcePoolId).ConfigureAwait(false);
+				Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {job.JobId} has been created");
 
 				await RunJobAsync(job).ConfigureAwait(false);
@@ -333,9 +313,13 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath, int resourcePoolId)
+		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
 		{
-			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId);
+			int resourcePoolId = await GetResourcePoolId(AppSettings.ResourcePoolName).ConfigureAwait(false);
+
+			int databaseServerId = await GetPrimarySqlServerId().ConfigureAwait(false);
+
+			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId, databaseServerId);
 
 			try
 			{
@@ -375,6 +359,32 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				await Task.Delay(delay).ConfigureAwait(false);
 			}
 			while (jobStatus.Status != "Complete");
+		}
+
+		private async Task<int> GetResourcePoolId(string name)
+		{
+			var query = new Services.Query()
+			{
+				Condition = $"'Name' == '{name}'"
+			};
+
+			var result = await _component.ServiceFactory.GetAdminServiceProxy<IResourcePoolManager>()
+				.QueryAsync(query).ConfigureAwait(false);
+
+			return result.Results.Single().Artifact.ArtifactID;
+		}
+
+		private async Task<int> GetPrimarySqlServerId()
+		{
+			var queryRequest = new QueryRequest()
+			{
+				ObjectType = new ObjectTypeRef() { Name = "Resource Server" },
+				Condition = "'Type' == 'SQL - Primary'"
+			};
+
+			var result = await _component.ServiceFactory.GetAdminServiceProxy<IObjectManager>().QueryAsync(-1, queryRequest, 0, int.MaxValue).ConfigureAwait(false);
+
+			return result.Objects.Single().ArtifactID;
 		}
 	}
 }

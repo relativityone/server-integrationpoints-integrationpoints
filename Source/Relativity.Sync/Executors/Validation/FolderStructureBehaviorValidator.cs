@@ -7,12 +7,14 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class FolderStructureBehaviorValidator : IValidator
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
@@ -45,6 +47,8 @@ namespace Relativity.Sync.Executors.Validation
 
 			return result;
 		}
+
+		public bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsDocumentPipeline();
 
 		private async Task<ValidationResult> ValidateFolderStructureBehaviorAsync(IValidationConfiguration configuration, CancellationToken token)
 		{

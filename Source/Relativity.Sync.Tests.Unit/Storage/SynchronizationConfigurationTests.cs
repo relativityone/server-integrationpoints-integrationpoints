@@ -6,6 +6,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -26,16 +27,21 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 
+		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
+		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
+		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
+		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
+
 		[SetUp]
 		public void SetUp()
 		{
 			_cache = new Mock<Sync.Storage.IConfiguration>();
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
-			_syncConfig = new SynchronizationConfiguration(_cache.Object, syncJobParameters, new EmptyLogger());
+			_syncConfig = new SynchronizationConfiguration(_cache.Object, syncJobParameters, new JSONSerializer(), new EmptyLogger());
 		}
 
 		[Test]
-		public void ItShouldReturnSourceWorkspaceArtifactId()
+		public void SourceWorkspaceArtifactId_ShouldReturnSourceWorkspaceArtifactId()
 		{
 			// act
 			int srcWorkspaceArtifactId = _syncConfig.SourceWorkspaceArtifactId;
@@ -45,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnDestinationWorkspaceArtifactId()
+		public void DestinationWorkspaceArtifactId_ShouldReturnDestinationWorkspaceArtifactId()
 		{
 			const int destinationWorkspaceArtifactId = 1040589;
 			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
@@ -58,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnDestinationWorkspaceTagArtifactId()
+		public void DestinationWorkspaceTagArtifactId_ShouldReturnDestinationWorkspaceTagArtifactId()
 		{
 			const int destinationWorkspaceTagArtifactId = 3;
 			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid)).Returns(destinationWorkspaceTagArtifactId);
@@ -71,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnJobHistoryArtifactId()
+		public void JobHistoryArtifactId_ShouldReturnJobHistoryArtifactId()
 		{
 			const int jobHistoryArtifactId = 4;
 			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue(){ArtifactID = jobHistoryArtifactId});
@@ -84,7 +90,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnSourceJobTagName()
+		public void SourceJobTagArtifactId_ShouldReturnSourceJobTagName()
 		{
 			const int sourceJobTagArtifactId = 105649;
 			_cache.Setup(x => x.GetFieldValue<int>(SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
@@ -97,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnSourceWorkspaceTagName()
+		public void SourceWorkspaceTagArtifactId_ShouldReturnSourceWorkspaceTagName()
 		{
 			const int sourceWorkspaceTagArtifactId = 105656;
 			_cache.Setup(x => x.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
@@ -110,7 +116,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnSyncConfigurationArtifactId()
+		public void SyncConfigurationArtifactId_ShouldReturnSyncConfigurationArtifactId()
 		{
 			// act
 			int syncConfigurationArtifactId = _syncConfig.SyncConfigurationArtifactId;
@@ -120,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnDestinationFolderStructureBehavior()
+		public void DestinationFolderStructureBehavior_ShouldReturnDestinationFolderStructureBehavior()
 		{
 			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
 			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns(expected.ToString());
@@ -133,8 +139,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void ItShouldReturnExportRunId()
+		public void ExportRunId_ShouldReturnExportRunId()
 		{
+			// ARRANGE
 			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
 
 			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
@@ -147,10 +154,69 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
+		public void ImageImport_ShouldReturnValue()
+		{
+			// ARRANGE
+			const bool imageImport = true;
+			_cache.Setup(x => x.GetFieldValue<bool>(ImageImportGuid)).Returns(imageImport);
+
+			// ACT
+			bool actualImageImport = _syncConfig.ImageImport;
+
+			// ASSERT
+			actualImageImport.Should().Be(imageImport);
+		}
+
+		[Test]
+		public void IncludeOriginalImages_ShouldReturnValue()
+		{
+			// ARRANGE
+			const bool includeOriginalImages = true;
+			_cache.Setup(x => x.GetFieldValue<bool>(IncludeOriginalImagesGuid)).Returns(includeOriginalImages);
+
+			// ACT
+			bool actualIncludeOriginalImages = _syncConfig.IncludeOriginalImages;
+
+			// ASSERT
+			actualIncludeOriginalImages.Should().Be(includeOriginalImages);
+		}
+
+		[Test]
+		public void ImageFileCopyMode_ShouldReturnValue()
+		{
+			// ARRANGE
+			ImportImageFileCopyMode imageCopyMode = ImportImageFileCopyMode.CopyFiles;
+			_cache.Setup(x => x.GetFieldValue<string>(ImageFileCopyModeGuid)).Returns(imageCopyMode.ToString());
+
+			// ACT
+			ImportImageFileCopyMode actualImportImageFileCopyMode = _syncConfig.ImportImageFileCopyMode;
+
+			// ASSERT
+			actualImportImageFileCopyMode.Should().Be(imageCopyMode);
+		}
+
+		[TestCase(null, new int[0])]
+		[TestCase("", new int[0])]
+		[TestCase("[]", new int[0])]
+		[TestCase("[111]", new int[]{111})]
+		[TestCase("[111,2222]", new int[]{111,2222})]
+		public void ProductionImagePrecedence_ShouldReturnValue(string jsonValue, int[] expectedArray)
+		{
+			// ARRANGE
+			_cache.Setup(x => x.GetFieldValue<string>(ProductionImagePrecedenceGuid)).Returns(jsonValue);
+
+			// ACT
+			int[] actualArray = _syncConfig.ProductionImagePrecedence;
+
+			// ASSERT
+			actualArray.Should().BeEquivalentTo(expectedArray);
+		}
+
+		[Test]
 		[TestCase("")]
 		[TestCase("ABC")]
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
-		public void ItShouldReturnEmptyGuidForInvalidString(string runId)
+		public void ExportRunId_ShouldReturnEmptyGuidForInvalidString(string runId)
 		{
 			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
 

@@ -1,22 +1,18 @@
 ﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Group;
 using Relativity.Services.Interfaces.Group;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Permission;
-using Relativity.Services.User;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Pipelines;
+using Relativity.Sync.Tests.Common.Attributes;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -57,13 +53,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[Test]
 		public async Task ValidateAsync_ShouldHandleValidConfiguration_WhenConditionsAreMet()
 		{
-			//arrange
+			// Arrange
 			SetupValidator(_USER_IS_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
 
-			//act
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
-			//assert
+			// Assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
@@ -71,13 +67,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[Test]
 		public async Task ValidateAsync_ShouldHandleInvalidConfiguration_WhenUserIsNonAdmin()
 		{
-			//arrange
+			// Arrange
 			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
 
-			//act
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
-			//assert
+			// Assert
 			result.IsValid.Should().BeFalse();
 			result.Messages.Should().NotBeEmpty();
 		}
@@ -87,13 +83,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[TestCase(_USER_IS_NON_ADMIN_ID)]
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)
 		{
-			//arrange
+			// Arrange
 			SetupValidator(userId, ImportNativeFileCopyMode.SetFileLinks, false);
 
-			//act
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
-			//assert
+			// Assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
@@ -103,15 +99,31 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[TestCase(ImportNativeFileCopyMode.CopyFiles)]
 		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportNativeFileCopyMode copyMode)
 		{
-			//arrange
+			// Arrange
 			SetupValidator(_USER_IS_NON_ADMIN_ID, copyMode, true);
 
-			//act
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
-			//assert
+			// Assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
+		}
+
+		[TestCase(typeof(SyncDocumentRunPipeline), true)]
+		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
+		[EnsureAllPipelineTestCase(0)]
+		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
+		{
+			// Arrange
+			ISyncPipeline pipelineObject = (ISyncPipeline)Activator.CreateInstance(pipelineType);
+
+			// Act
+			bool actualResult = _sut.ShouldValidate(pipelineObject);
+
+			// Assert
+			actualResult.Should().Be(expectedResult,
+				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 
 		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly)
