@@ -5,7 +5,7 @@ namespace Relativity.Sync
 	/// <summary>
 	/// Result of the execution of a component of Sync.
 	/// </summary>
-	internal sealed class ExecutionResult
+	internal class ExecutionResult
 	{
 		/// <summary>
 		/// Creates a <see cref="ExecutionResult"/> for a failed operation with the given exception.

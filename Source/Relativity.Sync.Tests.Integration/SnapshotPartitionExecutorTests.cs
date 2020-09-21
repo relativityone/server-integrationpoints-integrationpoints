@@ -34,6 +34,7 @@ namespace Relativity.Sync.Tests.Integration
 		private readonly Guid _statusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
 		private readonly Guid _totalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private readonly Guid _transferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
+		private readonly Guid _taggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -215,6 +216,10 @@ namespace Relativity.Sync.Tests.Integration
 							new FieldValuePair
 							{
 								Field = new Field{ Guids = new List<Guid>{_lockedByGuid}}
+							},
+							new FieldValuePair
+							{
+								Field = new Field{ Guids = new List<Guid>{_taggedItemsCountGuid}}
 							}
 						}
 					}

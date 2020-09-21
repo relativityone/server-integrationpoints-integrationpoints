@@ -36,6 +36,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			try
 			{
 				int totalTransferred = 0;
+				int totalTagged = 0;
 				int totalFailed = 0;
 				int totalRequested = 0;
 				long allNativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
@@ -44,11 +45,13 @@ namespace Relativity.Sync.Executors.SumReporting
 				foreach (IBatch batch in batches)
 				{
 					totalTransferred += batch.TransferredItemsCount;
+					totalTagged += batch.TaggedItemsCount;
 					totalFailed += batch.FailedItemsCount;
 					totalRequested += batch.TotalItemsCount;
 				}
 
 				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, totalTransferred);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TAGGED, totalTagged);
 				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, totalFailed);
 				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalRequested);
 

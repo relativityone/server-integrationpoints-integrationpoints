@@ -24,14 +24,14 @@ namespace Relativity.Sync.Tests.System.Helpers
 			_documentTagRepository = new DocumentTagRepository(destinationWorkspaceTagRepository, sourceWorkspaceTagRepository, jobHistoryErrorRepository);
 		}
 
-		public Task<ExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
+		public Task<TaggingExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
 		{
 			TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts.Add(documentIdentifiers.Count());
 
 			return _documentTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, documentIdentifiers, token);
 		}
 
-		public Task<ExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
+		public Task<TaggingExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
 		{
 			TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts.Add(artifactIds.Count());
 
