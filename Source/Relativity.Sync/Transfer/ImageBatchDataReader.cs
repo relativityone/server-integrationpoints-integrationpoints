@@ -74,17 +74,17 @@ namespace Relativity.Sync.Transfer
 			{
 				object[] row = new object[_allFields.Count];
 
-				for (int i = 0; i < _allFields.Count; i++)
+				for (int fieldIndex = 0; fieldIndex < _allFields.Count; fieldIndex++)
 				{
-					FieldInfoDto field = _allFields[i];
+					FieldInfoDto field = _allFields[fieldIndex];
 					if (field.SpecialFieldType != SpecialFieldType.None)
 					{
-						row[i] = specialFieldsValues[field.SpecialFieldType];
+						row[fieldIndex] = specialFieldsValues[field.SpecialFieldType][imageIndex];
 					}
 					else
 					{
 						object initialValue = batchItem.Values[field.DocumentFieldIndex];
-						row[i] = SanitizeFieldIfNeeded(IdentifierField.SourceFieldName, itemIdentifier, field, initialValue);
+						row[fieldIndex] = SanitizeFieldIfNeeded(IdentifierField.SourceFieldName, itemIdentifier, field, initialValue);
 					}
 				}
 
