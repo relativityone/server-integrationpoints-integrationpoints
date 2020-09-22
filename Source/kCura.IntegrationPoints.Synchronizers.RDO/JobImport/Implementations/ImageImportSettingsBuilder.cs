@@ -1,4 +1,5 @@
-﻿using kCura.Relativity.DataReaderClient;
+﻿using kCura.IntegrationPoints.Domain;
+using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
@@ -21,6 +22,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			target.ExtractedTextFieldContainsFilePath = importSettings.ExtractedTextFieldContainsFilePath;
 			target.SelectedCasePath = importSettings.SelectedCaseFileRepoPath;
 			target.DestinationFolderArtifactID = importSettings.DestinationFolderArtifactId;
+
+			target.FileNameField = Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME;
 		}
 	}
 }

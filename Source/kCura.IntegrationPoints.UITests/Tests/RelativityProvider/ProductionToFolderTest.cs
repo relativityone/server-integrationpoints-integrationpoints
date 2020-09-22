@@ -35,11 +35,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			{
 				Source = RelativityProviderModel.SourceTypeEnum.Production,
 				SourceProductionName = _sourceProductionName,
-				
+
 				RelativityInstance = "This Instance",
 				DestinationWorkspace = $"{DestinationContext.WorkspaceName} - {DestinationContext.WorkspaceId}",
 				Location = RelativityProviderModel.LocationEnum.Folder,
-				
+
 				CreateSavedSearch = false,
 
 				CopyImages = true
@@ -100,14 +100,14 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			RelativityProviderModel model = CreateRelativityProviderModelWithProduction();
 			model.Overwrite = overwrite;
 			model.CopyFilesToRepository = copyFilesToRepository;
-			
-			if (!overwrite.Equals( RelativityProviderModel.OverwriteModeEnum.AppendOnly))
+
+			if (!overwrite.Equals(RelativityProviderModel.OverwriteModeEnum.AppendOnly))
 			{
 				model.MultiSelectFieldOverlay = RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings;
 			}
 
 			SourceContext.CreateProductionAndImportData(model.SourceProductionName);
-			
+
 			//Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			DocumentsValidator validator = CreateDocumentsEmptyValidator()
 				.ValidateWith(new DocumentFieldsValidator())
 				.ValidateWith(new DocumentHasImagesValidator(true))
-				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository))
+				.ValidateWith(new DocumentImagesValidator(ImageService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), expectInRepository))
 				.ValidateWith(new DocumentSourceJobNameValidator(objectManager, model.Name));
 
 			validator.Validate();

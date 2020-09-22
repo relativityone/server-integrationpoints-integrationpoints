@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 	{
 		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 		private readonly string _destinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
-		
+
 		protected override Task SuiteSpecificOneTimeSetup()
 		{
 			SourceContext.CreateProductionAndImportData(_sourceProductionName);
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		protected override Task SuiteSpecificSetup() => Task.CompletedTask;
 		protected override Task SuiteSpecificTearDown() => Task.CompletedTask;
-		
+
 		private RelativityProviderModel CreateRelativityProviderModelWithImages()
 		{
 			var model = new RelativityProviderModel(TestContext.CurrentContext.Test.Name)
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		#endregion
 
 		#region ImagePrecedenceIsProducedImages
-		
+
 		[Category(TestCategory.SMOKE)]
 		[IdentifiedTestCase("63dc8355-41e1-4c48-8d3e-cab0a10b01c7", RelativityProviderModel.OverwriteModeEnum.OverlayOnly, false, false)]
 		[RetryOnError]
@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			model.ImagePrecedence = ImagePrecedence.ProducedImages;
 			model.IncludeOriginalImagesIfNotProduced = includeOriginalImagesIfNotProduced;
 			model.CopyFilesToRepository = copyFilesToRepository;
-			
+
 			// Act
 			IntegrationPointDetailsPage detailsPage = PointsAction.CreateNewRelativityProviderIntegrationPoint(model);
 			PropertiesTable generalProperties = detailsPage.SelectGeneralPropertiesTable();
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateOriginalImages(bool expectInRepository)
 		{
 			DocumentsValidator documentsValidator = CreateOnlyDocumentsWithImagesValidator()
-				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository));
+				.ValidateWith(new DocumentImagesValidator(ImageService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), expectInRepository));
 
 			documentsValidator.Validate();
 		}
@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		private void ValidateProductionImages(bool expectInRepository)
 		{
 			DocumentsValidator documentsValidator = CreateDocumentsEmptyValidator()
-				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository));
+				.ValidateWith(new DocumentImagesValidator(ImageService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), expectInRepository));
 
 			documentsValidator.Validate();
 		}
