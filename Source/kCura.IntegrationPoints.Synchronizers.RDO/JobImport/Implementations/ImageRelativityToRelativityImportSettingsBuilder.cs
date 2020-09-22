@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			target.FileLocationField = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
 			target.DisableImageTypeValidation = true;
 			target.AutoNumberImages = true;
+			target.FileNameField = Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME;
 		}
 	}
 }
