@@ -44,10 +44,10 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[TearDown]
-		public async Task TearDown()
+		public Task TearDown()
 		{
 			// Deleting documents to restore the workspace to empty state between tests
-			await Environment.DeleteAllDocumentsInWorkspace(_workspace).ConfigureAwait(false);
+			return Environment.DeleteAllDocumentsInWorkspace(_workspace);
 		}
 
 		[IdentifiedTest("2f71008b-89bc-4322-b700-ccd941c9b463")]
@@ -96,7 +96,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldCalculateCorrectSize_ForProduction()
 		{
 			// Arrange
-			var productionId = await CreateAndImportProduction(Dataset.ImagesBig);
+			var productionId = await CreateAndImportProductionAsync(Dataset.ImagesBig).ConfigureAwait(false);
 			var request = GetQueryRequest();
 
 			// Act
@@ -113,7 +113,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldIncludeOriginalImagesWhenEnabled()
 		{
 			// Arrange
-			var productionId = await CreateAndImportProduction(Dataset.Images);
+			var productionId = await CreateAndImportProductionAsync(Dataset.Images).ConfigureAwait(false);
 
 			Dataset dataset = Dataset.ThreeImages;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
@@ -135,8 +135,8 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldRespectProductionPrecedence()
 		{
 			// Arrange
-			var singleDocumentProductionId = await CreateAndImportProduction(Dataset.SingleDocumentProduction);
-			var twoDocumentProductionId = await CreateAndImportProduction(Dataset.TwoDocumentProduction);
+			var singleDocumentProductionId = await CreateAndImportProductionAsync(Dataset.SingleDocumentProduction).ConfigureAwait(false);
+			var twoDocumentProductionId = await CreateAndImportProductionAsync(Dataset.TwoDocumentProduction).ConfigureAwait(false);
 
 			Dataset dataset = Dataset.ThreeImages;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
@@ -170,7 +170,7 @@ namespace Relativity.Sync.Tests.System
 			return sizes.Sum(x => x.Value);
 		}
 
-		private async Task<int> CreateAndImportProduction(Dataset dataset, string productionName = "")
+		private async Task<int> CreateAndImportProductionAsync(Dataset dataset, string productionName = "")
 		{
 			if (string.IsNullOrEmpty(productionName))
 			{

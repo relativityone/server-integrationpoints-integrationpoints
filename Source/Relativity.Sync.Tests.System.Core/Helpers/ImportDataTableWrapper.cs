@@ -13,7 +13,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		public bool Natives { get; }
 		public bool Images { get; }
 
-
 		public static string IdentifierFieldName => "Control Number";
 		public static string ExtractedTextFilePath => "Extracted Text";
 		public static string FileName => "File Name";
@@ -22,7 +21,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		public static string RelativitySyncTestUser => "Relativity Sync Test User";
 		public static string ImageFile => "File";
 		public static string BegBates => "Bates Beg";
-
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
@@ -40,12 +38,13 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			new DataColumn(NativeFilePath, typeof(string)),
 			new DataColumn(FolderPath, typeof(string))
 		};
+
 		private static IEnumerable<DataColumn> ImagesColumns => new[]
 		{
 			new DataColumn(ImageFile, typeof(string)),
 			new DataColumn(BegBates, typeof(string)),
 		};
-		
+
 		private static IEnumerable<DataColumn> UserColumns => new[]
 		{
 			new DataColumn(RelativitySyncTestUser, typeof(string))
@@ -85,7 +84,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			Data.Columns.AddRange(dataColumns.ToArray());
 		}
-
 
 		public void AddDocument(string controlNumber, IEnumerable<Tuple<string, string>> columnNameValuePairs)
 		{

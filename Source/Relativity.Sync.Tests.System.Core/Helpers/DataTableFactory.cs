@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -116,20 +116,20 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static ImportDataTableWrapper CreateImageImportDataTable(Dataset dataset)
 		{
-			var images = dataset.GetFiles();
-
-
+			IEnumerable<FileInfo> images = dataset.GetFiles();
+			
 			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, true);
 
 			foreach (FileInfo imageFile in images)
 			{
-				var controlNumber = dataset.GetControlNumber(imageFile);
+				string controlNumber = dataset.GetControlNumber(imageFile);
 
 				var columnValuePairs = new List<Tuple<string, string>>
 				{
 					Tuple.Create(ImportDataTableWrapper.BegBates, dataset.GetBegBates(imageFile)),
 					Tuple.Create(ImportDataTableWrapper.IdentifierFieldName, controlNumber),
-					Tuple.Create(ImportDataTableWrapper.ImageFile, imageFile.FullName)
+					Tuple.Create(ImportDataTableWrapper.ImageFile, imageFile.FullName),
+					Tuple.Create(ImportDataTableWrapper.FileName, imageFile.Name),
 				};
 				
 				dataTableWrapper.AddDocument(controlNumber, columnValuePairs);
