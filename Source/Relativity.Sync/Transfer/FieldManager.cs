@@ -16,6 +16,8 @@ namespace Relativity.Sync.Transfer
 	internal sealed class FieldManager : IFieldManager
 	{
 		private List<FieldInfoDto> _mappedDocumentFields;
+		private IReadOnlyList<FieldInfoDto> _imageAllFields;
+		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
 
 		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
@@ -74,9 +76,25 @@ namespace Relativity.Sync.Transfer
 			return specialFieldBuildersDictionary;
 		}
 
-		public Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token) => GetAllFieldsInternalAsync(GetNativeSpecialFields, token);
+		public async Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token)
+		{
+			if (_nativeAllFields == null)
+			{
+				_nativeAllFields = await GetAllFieldsInternalAsync(GetNativeSpecialFields, token).ConfigureAwait(false);
+			}
 
-		public Task<IReadOnlyList<FieldInfoDto>> GetImageAllFieldsAsync(CancellationToken token) => GetAllFieldsInternalAsync(GetImageSpecialFields, token);
+			return _nativeAllFields;
+		}
+
+		public async Task<IReadOnlyList<FieldInfoDto>> GetImageAllFieldsAsync(CancellationToken token)
+		{
+			if (_imageAllFields == null)
+			{
+				_imageAllFields = await GetAllFieldsInternalAsync(GetImageSpecialFields, token).ConfigureAwait(false);
+			}
+
+			return _imageAllFields;
+		}
 
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
 		{

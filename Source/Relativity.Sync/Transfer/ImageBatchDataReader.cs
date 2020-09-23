@@ -63,24 +63,10 @@ namespace Relativity.Sync.Transfer
 		{
 			string itemIdentifier = batchItem.Values[IdentifierField.DocumentFieldIndex].ToString();
 
-			Dictionary<SpecialFieldType, object[]> specialFieldsValues = _allFields
-				.Where(x => x.SpecialFieldType != SpecialFieldType.None)
-				.ToDictionary(x => x.SpecialFieldType,
-					field => BuildSpecialFieldValues(specialFieldBuilders, batchItem, field));
+			Dictionary<SpecialFieldType, object[]> specialFieldsValues =
+				BuildValuesForImageSpecialFields(specialFieldBuilders, batchItem, out int imageCount);
 
-			int documentImageCount = specialFieldsValues.Values.First().Length;
-
-			if (specialFieldsValues.Values.Any(x => x.Length != documentImageCount))
-			{
-				IEnumerable<string> specialFieldNameAndLengthPairs = specialFieldsValues.Select(x => $"{x.Key} ({x.Value.Length})");
-
-				string message = $"Cannot determine images count for document Artifact ID: {batchItem.ArtifactID}. " +
-				                 $"Special fields builders should all return equal number of field values, but was: " +
-				                 $"{string.Join(",", specialFieldNameAndLengthPairs)}";
-				throw new SyncItemLevelErrorException(message);
-			}
-
-			for (int imageIndex = 0; imageIndex < documentImageCount; imageIndex++)
+			for (int imageIndex = 0; imageIndex < imageCount; imageIndex++)
 			{
 				object[] row = new object[_allFields.Count];
 
@@ -100,6 +86,29 @@ namespace Relativity.Sync.Transfer
 
 				yield return row;
 			}
+		}
+
+		private Dictionary<SpecialFieldType, object[]> BuildValuesForImageSpecialFields(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, out int imageCount)
+		{
+			Dictionary<SpecialFieldType, object[]> specialFieldsValues = _allFields
+				.Where(x => x.SpecialFieldType != SpecialFieldType.None)
+				.ToDictionary(x => x.SpecialFieldType,
+					field => BuildSpecialFieldValues(specialFieldBuilders, batchItem, field));
+
+			int imageCountInternal = specialFieldsValues.Values.First().Length;
+
+			if (specialFieldsValues.Values.Any(x => x.Length != imageCountInternal))
+			{
+				IEnumerable<string> specialFieldNameAndLengthPairs = specialFieldsValues.Select(x => $"{x.Key} ({x.Value.Length})");
+
+				string message = $"Cannot determine images count for document Artifact ID: {batchItem.ArtifactID}. " +
+				                 $"Special fields builders should all return equal number of field values, but was: " +
+				                 $"{string.Join(",", specialFieldNameAndLengthPairs)}";
+				throw new SyncItemLevelErrorException(message);
+			}
+
+			imageCount = imageCountInternal;
+			return specialFieldsValues;
 		}
 
 		private static object[] BuildSpecialFieldValues(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)

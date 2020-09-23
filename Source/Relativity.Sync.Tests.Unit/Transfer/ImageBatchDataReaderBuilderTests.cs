@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
@@ -50,11 +52,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var builder = new ImageBatchDataReaderBuilder(_fieldManagerMock.Object, _exportDataSanitizerFake.Object);
 
 			// Act
-			await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
+			IDataReader dataReader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			_fieldManagerMock.Verify(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>()), Times.Never);
 			_fieldManagerMock.Verify(x => x.GetImageAllFieldsAsync(It.IsAny<CancellationToken>()));
+			dataReader.Should().BeOfType<ImageBatchDataReader>();
 		}
 	}
 }

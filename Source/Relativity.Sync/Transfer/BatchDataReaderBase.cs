@@ -8,20 +8,17 @@ namespace Relativity.Sync.Transfer
 {
 	internal abstract class BatchDataReaderBase : IDataReader
 	{
-		protected FieldInfoDto _identifierField;
+		private FieldInfoDto _identifierField;
 
-		protected readonly DataTable _templateDataTable;
+		private readonly DataTable _templateDataTable;
+		private readonly IEnumerator<object[]> _batchEnumerator;
 
 		protected readonly int _sourceWorkspaceArtifactId;
 		protected readonly RelativityObjectSlim[] _batch;
-		protected readonly IEnumerator<object[]> _batchEnumerator;
-
 		protected readonly IReadOnlyList<FieldInfoDto> _allFields;
 		protected readonly IFieldManager _fieldManager;
 		protected readonly IExportDataSanitizer _exportDataSanitizer;
-
 		protected readonly Action<string, string> _itemLevelErrorHandler;
-
 		protected readonly CancellationToken _cancellationToken;
 
 		protected static readonly Type _typeOfString = typeof(string);

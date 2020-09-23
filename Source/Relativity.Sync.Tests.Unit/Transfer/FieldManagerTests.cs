@@ -206,6 +206,26 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public async Task GetImageAllFieldsAsync_ShouldReturnAllFields()
+		{
+			// Arrange
+			var expectedFields = new List<FieldInfoDto>
+			{
+				_DOCUMENT_IDENTIFIER_FIELD,
+				_DOCUMENT_MAPPED_FIELD,
+				FieldInfoDto.ImageFileLocationField(),
+				FieldInfoDto.ImageFileNameField()
+			};
+
+			// Act
+			IReadOnlyList<FieldInfoDto> result = await _sut.GetImageAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeEquivalentTo(expectedFields,
+				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
+		}
+
+		[Test]
 		public async Task CreateNativeSpecialFieldRowValueBuildersAsync_ShouldReturnSpecialFieldBuilders()
 		{
 			// Arrange 

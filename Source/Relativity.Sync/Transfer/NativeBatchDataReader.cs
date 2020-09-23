@@ -55,7 +55,7 @@ namespace Relativity.Sync.Transfer
 			//                  We could pass IEnumerable further, but currently the whole stack is expecting ICollection so the change is to deep for this issue.
 			int[] documentArtifactIds = _batch.Select(obj => obj.ArtifactID).ToArray();
 
-			return _fieldManager.CreateNativeSpecialFieldRowValueBuildersAsync(_sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false).GetAwaiter().GetResult();
+			return _fieldManager.CreateNativeSpecialFieldRowValueBuildersAsync(_sourceWorkspaceArtifactId, documentArtifactIds).GetAwaiter().GetResult();
 		}
 
 		private object[] BuildRow(IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem)
