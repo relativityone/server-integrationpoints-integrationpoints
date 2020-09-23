@@ -380,7 +380,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			documentsValidator
 				.ValidateWith(new DocumentFieldsValidator())
 				.ValidateWith(new DocumentHasImagesValidator(true))
-				.ValidateWith(new DocumentImagesValidator(ImageService, DestinationContext.GetWorkspaceId(), expectInRepository))
+				.ValidateWith(new DocumentImagesValidator(ImageService, SourceContext.GetWorkspaceId(), DestinationContext.GetWorkspaceId(), expectInRepository))
 				.ValidateWith(CreateDocumentSourceJobNameValidator(model))
 				.Validate();
 		}

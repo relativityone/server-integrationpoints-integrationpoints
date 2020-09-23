@@ -7,6 +7,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -175,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			//act
-			ILookup<int, string> result = _sut.GetImagesLocationForProductionDocuments(
+			ILookup<int, ImageFile> result = _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs
@@ -187,7 +188,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 			AssertIfListsAreSameAsExpected(
 				_testProductionDocumentImageResponses.Select(x => x.Location).ToList(),
-				result.SelectMany(x => x).ToList()
+				result.SelectMany(x => x).Select(x => x.Location).ToList()
 			);
 		}
 
@@ -218,7 +219,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			const int productionID = 1111;
 
 			//act
-			ILookup<int, string> result = _sut.GetImagesLocationForProductionDocuments(
+			ILookup<int, ImageFile> result = _sut.GetImagesLocationForProductionDocuments(
 				_WORKSPACE_ID,
 				productionID,
 				documentIDs: new int[] { }
@@ -268,7 +269,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Returns((Func<DataSet> f, string s) => f.Invoke());
 
 			//act
-			ILookup<int, string> result = _sut.GetImagesLocationForDocuments(
+			ILookup<int, ImageFile> result = _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs
 			);
@@ -279,7 +280,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 			AssertIfListsAreSameAsExpected(
 				_testDocumentImageResponses.Select(x => x.Location).ToList(),
-				result.SelectMany(x => x).ToList()
+				result.SelectMany(x => x).Select(x => x.Location).ToList()
 			);
 		}
 
@@ -303,7 +304,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		public void GetImagesForDocuments_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
 		{
 			//act
-			ILookup<int, string> result = _sut.GetImagesLocationForDocuments(
+			ILookup<int, ImageFile> result = _sut.GetImagesLocationForDocuments(
 				_WORKSPACE_ID,
 				documentIDs: new int[] { }
 			);
