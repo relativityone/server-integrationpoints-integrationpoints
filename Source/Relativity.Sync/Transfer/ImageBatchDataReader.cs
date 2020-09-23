@@ -33,11 +33,11 @@ namespace Relativity.Sync.Transfer
 
 				foreach (RelativityObjectSlim batchItem in _batch)
 				{
-					IEnumerable<object[]> rows;
+					List<object[]> rows;
 
 					try
 					{
-						rows = BuildRows(specialFieldBuildersDictionary, batchItem);
+						rows = BuildRows(specialFieldBuildersDictionary, batchItem).ToList();
 					}
 					catch (SyncItemLevelErrorException ex)
 					{
@@ -66,9 +66,19 @@ namespace Relativity.Sync.Transfer
 			Dictionary<SpecialFieldType, object[]> specialFieldsValues = _allFields
 				.Where(x => x.SpecialFieldType != SpecialFieldType.None)
 				.ToDictionary(x => x.SpecialFieldType,
-					field => BuildSpecialFieldValue(specialFieldBuilders, batchItem, field));
+					field => BuildSpecialFieldValues(specialFieldBuilders, batchItem, field));
 
 			int documentImageCount = specialFieldsValues.Values.First().Length;
+
+			if (specialFieldsValues.Values.Any(x => x.Length != documentImageCount))
+			{
+				IEnumerable<string> specialFieldNameAndLengthPairs = specialFieldsValues.Select(x => $"{x.Key} ({x.Value.Length})");
+
+				string message = $"Cannot determine images count for document Artifact ID: {batchItem.ArtifactID}. " +
+				                 $"Special fields builders should all return equal number of field values, but was: " +
+				                 $"{string.Join(",", specialFieldNameAndLengthPairs)}";
+				throw new SyncItemLevelErrorException(message);
+			}
 
 			for (int imageIndex = 0; imageIndex < documentImageCount; imageIndex++)
 			{
@@ -92,7 +102,7 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		private static object[] BuildSpecialFieldValue(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
+		private static object[] BuildSpecialFieldValues(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
 		{
 			if (!specialFieldBuilders.ContainsKey(fieldInfo.SpecialFieldType))
 			{

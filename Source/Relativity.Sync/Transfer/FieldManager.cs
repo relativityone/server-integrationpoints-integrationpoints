@@ -16,7 +16,6 @@ namespace Relativity.Sync.Transfer
 	internal sealed class FieldManager : IFieldManager
 	{
 		private List<FieldInfoDto> _mappedDocumentFields;
-		private List<FieldInfoDto> _allFields;
 
 		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
@@ -108,15 +107,10 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsInternalAsync(Func<IEnumerable<FieldInfoDto>> specialFieldsProvider, CancellationToken token)
 		{
-			if (_allFields == null)
-			{
-				IList<FieldInfoDto> specialFields = specialFieldsProvider().ToList();
-				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
-				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
-				_allFields = EnrichDocumentFieldsWithIndex(allFields);
-			}
-
-			return _allFields;
+			IList<FieldInfoDto> specialFields = specialFieldsProvider().ToList();
+			IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
+			return EnrichDocumentFieldsWithIndex(allFields);
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
@@ -171,9 +165,9 @@ namespace Relativity.Sync.Transfer
 		}
 
 		private static bool FieldInfosHaveSameSourceAndDestination(FieldInfoDto first, FieldInfoDto second)
-		{ 
+		{
 			return first.SourceFieldName.Equals(second.SourceFieldName, StringComparison.InvariantCultureIgnoreCase)
-			       && first.DestinationFieldName.Equals(second.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase);
+				   && first.DestinationFieldName.Equals(second.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)
@@ -204,7 +198,7 @@ namespace Relativity.Sync.Transfer
 
 			return fields;
 		}
-		
+
 		private Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
 		{
 			ICollection<string> fieldNames = fields.Select(f => f.SourceFieldName).ToArray();
