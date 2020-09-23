@@ -6185,7 +6185,7 @@
           <DisplayName>Tagged items count</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
-          <FieldArtifactTypeId>1001069</FieldArtifactTypeId>
+          <FieldArtifactTypeId>1000057</FieldArtifactTypeId>
           <FieldCategoryId>0</FieldCategoryId>
           <FieldTypeId>1</FieldTypeId>
           <FilterType>Search</FilterType>
@@ -8520,8 +8520,8 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.1.26.0</RelativityVersion>
-  <Version>0.0.1.12</Version>
-  <SchemaVersion>0.0.1.12</SchemaVersion>
+  <Version>0.0.1.13</Version>
+  <SchemaVersion>0.0.1.13</SchemaVersion>
   <TabDisplay>false</TabDisplay>
   <OriginSignature>7d0cdeb5-0456-4843-821f-7473e1960710</OriginSignature>
   <MasterScripts />
@@ -8675,6 +8675,7 @@
     <Id>1039920</Id>
     <Id>1039921</Id>
     <Id>1039923</Id>
+    <Id>1042626</Id>
   </FieldIds>
   <ChoiceIds>
     <Id>1039836</Id>
