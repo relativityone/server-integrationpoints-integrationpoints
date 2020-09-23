@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
@@ -38,11 +37,9 @@ namespace Relativity.Sync.Tests.Integration
 				_instance["ImageFileName"].ConvertTo<string>().Should().Be(document.Images.First().Filename);
 				_instance["ImageFileLocation"].ConvertTo<string>().Should().Be(document.Images.First().Location);
 
-				foreach (FieldValue fieldValue in document.FieldValues)
-				{
-					Type expectedValueType = fieldValue.Value.GetType();
-					_instance[fieldValue.Field].ConvertTo(expectedValueType).Should().Be(fieldValue.Value);
-				}
+				FieldValue controlNumber = document.FieldValues.Single();
+				Type expectedValueType = controlNumber.Value.GetType();
+				_instance[controlNumber.Field].ConvertTo(expectedValueType).Should().Be(controlNumber.Value);
 			}
 
 			bool hasExtraData = _instance.Read();
@@ -56,6 +53,34 @@ namespace Relativity.Sync.Tests.Integration
 			hasExtraData.Should().Be(false);
 		}
 
+		[Test]
+		public void Read_ShouldReadRowForEachImageInDocument()
+		{
+			// Arrange 
+			const int numberOfDocuments = 1;
+			const int numberOfImages = 3;
+
+			SetUp(numberOfDocuments);
+
+			DocumentImportJob importData = CreateDefaultDocumentImportJob(numberOfDocuments,
+				(artifactId, values) => CreateDocumentForImagesTransfer(artifactId, values, numberOfImages),
+				DefaultImageFieldConfiguration);
+
+			_configuration.SetFieldMappings(importData.FieldMappings);
+			_documentTransferServicesMocker.SetupServicesWithImagesTestDataAsync(importData, numberOfDocuments);
+
+			// Act/Assert
+			bool read;
+			for (int i = 0; i < numberOfImages; i++)
+			{
+				read = _instance.Read();
+				read.Should().BeTrue();
+			}
+
+			read = _instance.Read();
+			read.Should().BeFalse();
+		}
+
 		private static HashSet<FieldConfiguration> DefaultImageFieldConfiguration => new HashSet<FieldConfiguration>()
 		{
 			FieldConfiguration.Identifier(_DEFAULT_IDENTIFIER_COLUMN_NAME, _DEFAULT_IDENTIFIER_COLUMN_NAME)
@@ -67,8 +92,9 @@ namespace Relativity.Sync.Tests.Integration
 			string workspaceFolderPath = string.Empty;
 			string controlNumber = $"TST{artifactId.ToString("D4", CultureInfo.InvariantCulture)}";
 
-			IEnumerable<ImageFile> images = Enumerable.Range(0, numberOfImages).Select(x =>
-				new ImageFile(artifactId, $@"\\fake\path\img{x}.jpg", $"img{x}.jpg", 100 + artifactId));
+			IEnumerable<ImageFile> images = Enumerable
+				.Range(0, numberOfImages)
+				.Select(x => new ImageFile(artifactId, $@"\\fake\path\img{x}.jpg", $"img{x}.jpg", 100 + artifactId));
 
 			FieldValue[] fieldValues = values
 				.Select(x => x.Type == FieldType.Identifier
