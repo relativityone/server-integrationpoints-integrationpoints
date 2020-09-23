@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -51,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldGetNextItemsForBatchWhenCurrentIsEmpty()
+		public void Read_ShouldGetNextItemsForBatch_WhenCurrentIsEmpty()
 		{
 			// Arrange
 			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
@@ -64,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldReturnTrueWhenCurrentBatchIsEmptyAndNextExists()
+		public void Read_ShouldReturnTrue_WhenCurrentBatchIsEmptyAndNextExists()
 		{
 			// Arrange
 			const int batchSize = 1;
@@ -79,7 +78,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldReturnTrueWhenCurrentBatchHasMoreData()
+		public void Read_ShouldReturnTrue_WhenCurrentBatchHasMoreData()
 		{
 			// Arrange
 			const int batchSize = 2;
@@ -95,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldNotGetNextBatchWhenCurrentBatchHasMoreData()
+		public void Read_ShouldNotGetNextBatch_WhenCurrentBatchHasMoreData()
 		{
 			// Arrange
 			const int batchSize = 2;
@@ -111,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldDisposePreviousBlockWhenNewOneIsCreated()
+		public void Dispose_ShouldDisposePreviousBlock_WhenNewOneIsCreated()
 		{
 			// Arrange
 			const int batchSize = 2;
@@ -149,7 +148,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldReturnFalseWhenCurrentBatchIsEmptyAndNextBatchIsNull()
+		public void Read_ShouldReturnFalse_WhenCurrentBatchIsEmptyAndNextBatchIsNull()
 		{
 			// Arrange
 			const int batchSize = 1;
@@ -165,7 +164,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldReturnFalseWhenCancelled()
+		public void Read_ShouldReturnFalse_WhenCancelled()
 		{
 			// Arrange
 			const int batchSize = 2;
@@ -190,7 +189,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldReturnFalseWhenCurrentBatchIsEmptyAndNextBatchIsEmpty()
+		public void Read_ShouldReturnFalse_WhenCurrentBatchIsEmptyAndNextBatchIsEmpty()
 		{
 			// Arrange
 			const int batchSize = 1;
@@ -206,7 +205,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldWorkAcrossMultipleBatches()
+		public void Read_ShouldWorkAcrossMultipleBatches()
 		{
 			// Arrange
 			const int batchSize = 5;
@@ -224,7 +223,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldNotThrowOnMultipleDisposeCalls()
+		public void Dispose_ShouldNotThrow_WhenMultipleDisposeCalls()
 		{
 			// Arrange
 			SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
@@ -241,7 +240,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldAccessUnderlyingDataReader()
+		public void Read_ShouldAccessUnderlyingDataReader()
 		{
 #pragma warning disable RG2009 // need to use a lot of literal indices here, and making them consts is absurd
 
@@ -280,7 +279,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldThrowProperExceptionWhenExportBatcherThrows()
+		public void Read_ShouldThrowProperException_WhenExportBatcherThrows()
 		{
 			// Arrange
 			_exportBatcher.Setup(x => x.GetNextItemsFromBatchAsync())
@@ -295,7 +294,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldThrowProperExceptionWhenTableBuilderThrows()
+		public void Read_ShouldThrowProperException_WhenTableBuilderThrows()
 		{
 			// Arrange
 			const int batchSize = 1;

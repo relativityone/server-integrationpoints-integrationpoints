@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			Mock<IImageSpecialFieldRowValuesBuilder> imageRowValuesBuilderMock = new Mock<IImageSpecialFieldRowValuesBuilder>();
 			imageRowValuesBuilderMock
-				.Setup(x => x.BuildRowsValues(It.IsAny<FieldInfoDto>(), It.IsAny<RelativityObjectSlim>()))
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>()))
 				.Returns(Enumerable.Range(0, numberOfImagesInDocument).Select(i => $"image-{i}"));
 
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
