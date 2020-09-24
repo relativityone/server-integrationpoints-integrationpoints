@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Approved
 
 ## Context
 
@@ -30,7 +30,10 @@ Code:
 
 ## Decision
 
-TBD
+The only required special fields for images pushing are:
+
++ ImageFileName
++ ImageFileLocation
 
 ## Consequences
 
