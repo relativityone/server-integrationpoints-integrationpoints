@@ -4,5 +4,6 @@
 	{
 		IWorkspaceService CreateWorkspaceService();
 		ISavedSearchManager CreateSavedSearchManager();
+		IProductionService CreateProductionService();
 	}
 }

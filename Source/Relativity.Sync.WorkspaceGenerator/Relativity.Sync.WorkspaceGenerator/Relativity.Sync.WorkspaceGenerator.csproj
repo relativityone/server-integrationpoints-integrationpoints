@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.3</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -86,6 +87,12 @@
     </Reference>
     <Reference Include="Relativity.OAuth2Client.Interfaces, Version=1.0.27.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.OAuth2Client.Interfaces.1.0.27\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=11.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.11.1.0\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces.Private, Version=11.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Productions.Services.Interfaces.11.1.0\lib\net462\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.SecretCatalog, Version=1.0.18.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.SecretCatalog.1.0.18\lib\Relativity.SecretCatalog.dll</HintPath>
@@ -151,6 +158,7 @@
     <Compile Include="FileGenerating\IFileGenerator.cs" />
     <Compile Include="FileGenerating\SizeCalculator\EqualFileSizeCalculatorStrategy.cs" />
     <Compile Include="FileGenerating\SizeCalculator\IFileSizeCalculatorStrategy.cs" />
+    <Compile Include="FileGenerating\ImageGenerator.cs" />
     <Compile Include="Import\ColumnNames.cs" />
     <Compile Include="FileGenerating\FileContentProvider\AsciiExtractedTextFileContentProvider.cs" />
     <Compile Include="FileGenerating\FileContentProvider\IFileContentProvider.cs" />
@@ -159,14 +167,20 @@
     <Compile Include="FileGenerating\FileExtensionProvider\RandomNativeFileExtensionProvider.cs" />
     <Compile Include="FileGenerating\FileExtensionProvider\TextFileExtensionProvider.cs" />
     <Compile Include="Import\DataReaderProvider.cs" />
+    <Compile Include="Import\DataReaderWrapperBase.cs" />
     <Compile Include="Import\IDataReaderProvider.cs" />
+    <Compile Include="FileGenerating\IImageGenerator.cs" />
+    <Compile Include="Import\IDataReaderWrapper.cs" />
+    <Compile Include="Import\ImageDataReaderWrapper.cs" />
+    <Compile Include="Import\ImageFileDTO.cs" />
+    <Compile Include="RelativityServices\IProductionService.cs" />
     <Compile Include="RelativityServices\IRelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\ISavedSearchManager.cs" />
     <Compile Include="RelativityServices\IWorkspaceService.cs" />
     <Compile Include="RelativityServices\SavedSearchManager.cs" />
     <Compile Include="Settings\GenerateDefaultSettingsFileArguments.cs" />
     <Compile Include="Settings\GeneratorSettings.cs" />
-    <Compile Include="Import\DataReaderWrapper.cs" />
+    <Compile Include="Import\DocumentDataReaderWrapper.cs" />
     <Compile Include="Import\DocumentFactory.cs" />
     <Compile Include="Import\IDocumentFactory.cs" />
     <Compile Include="Import\ImportHelper.cs" />
@@ -215,6 +229,12 @@
     <Content Include="oi\unmanaged\scclo-R1.dll" />
     <Content Include="oi\unmanaged\sccut-R1.dll" />
     <Content Include="oi\unmanaged\wvcore-R1.dll" />
+    <Content Include="Resources\Images\IMG1.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\IMG2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SupportedFileTypes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

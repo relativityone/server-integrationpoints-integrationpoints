@@ -14,18 +14,26 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private readonly IFileGenerator _nativeSingleFileGenerator;
 		private readonly IFileGenerator _extractedTextSingleFileGenerator;
 		private readonly Random _random;
+		private Guid[] _documentsInBatchIds;
 
-		public DocumentFactory(TestCase testCase, IFileGenerator nativeSingleFileGenerator, IFileGenerator extractedTextSingleFileGenerator)
+		public DocumentFactory(TestCase testCase, IFileGenerator nativeSingleFileGenerator, IFileGenerator extractedTextSingleFileGenerator, IImageGenerator imageGenerator)
 		{
 			_testCase = testCase;
 			_nativeSingleFileGenerator = nativeSingleFileGenerator;
 			_extractedTextSingleFileGenerator = extractedTextSingleFileGenerator;
 			_random = new Random();
+			_documentsInBatchIds =
+				Enumerable.Range(0, testCase.NumberOfDocuments).Select(x => Guid.NewGuid()).ToArray();
 		}
 
-		public async Task<Document> GetNextDocumentAsync()
+		public async Task<Document> GetDocumentAsync(int index)
 		{
-			Document document = new Document($"{_testCase.Name}{Consts.ControlNumberSeparator}{Guid.NewGuid().ToString()}");
+			if (index >= _testCase.NumberOfDocuments)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index), $"Index must be less than number of documents in the test case: {_testCase.Name} - {_testCase.NumberOfDocuments}");
+			}
+
+			Document document = new Document(_documentsInBatchIds[index], _testCase.Name);
 
 			if (_testCase.GenerateNatives)
 			{

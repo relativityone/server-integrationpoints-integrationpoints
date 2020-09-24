@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
 	public interface IDocumentFactory
 	{
-		Task<Document> GetNextDocumentAsync();
+		Task<Document> GetDocumentAsync(int index);
 	}
 }
