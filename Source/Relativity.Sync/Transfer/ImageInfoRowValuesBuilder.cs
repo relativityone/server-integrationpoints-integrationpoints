@@ -7,7 +7,7 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class ImageInfoRowValuesBuilder : IImageSpecialFieldRowValuesBuilder
 	{
-		public IDictionary<int, ImageFile[]> DocumentToImageFiles { get; private set; }
+		public IDictionary<int, ImageFile[]> DocumentToImageFiles { get; }
 
 		public ImageInfoRowValuesBuilder(IDictionary<int, ImageFile[]> documentToImageFiles)
 		{

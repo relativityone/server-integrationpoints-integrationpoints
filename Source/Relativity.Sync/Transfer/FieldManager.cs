@@ -16,7 +16,8 @@ namespace Relativity.Sync.Transfer
 	internal sealed class FieldManager : IFieldManager
 	{
 		private List<FieldInfoDto> _mappedDocumentFields;
-		private List<FieldInfoDto> _allFields;
+		private IReadOnlyList<FieldInfoDto> _imageAllFields;
+		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
 
 		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
@@ -41,14 +42,14 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>> CreateNativeSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
-			var specialFieldRowValueBuilders = await _nativeSpecialFieldBuilders
+			IEnumerable<INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _nativeSpecialFieldBuilders
 				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
 				.ConfigureAwait(false);
 
 			var specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>();
-			foreach (var builder in specialFieldRowValueBuilders)
+			foreach (INativeSpecialFieldRowValuesBuilder builder in specialFieldRowValueBuilders)
 			{
-				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes)
+				foreach (SpecialFieldType specialFieldType in builder.AllowedSpecialFieldTypes)
 				{
 					specialFieldBuildersDictionary.Add(specialFieldType, builder);
 				}
@@ -59,14 +60,14 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>> CreateImageSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
-			var specialFieldRowValueBuilders = await _imageSpecialFieldBuilders
+			IEnumerable<IImageSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _imageSpecialFieldBuilders
 				.SelectAsync(specialFieldBuilder => specialFieldBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds))
 				.ConfigureAwait(false);
 
 			var specialFieldBuildersDictionary = new Dictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>();
-			foreach (var builder in specialFieldRowValueBuilders)
+			foreach (IImageSpecialFieldRowValuesBuilder builder in specialFieldRowValueBuilders)
 			{
-				foreach (var specialFieldType in builder.AllowedSpecialFieldTypes)
+				foreach (SpecialFieldType specialFieldType in builder.AllowedSpecialFieldTypes)
 				{
 					specialFieldBuildersDictionary.Add(specialFieldType, builder);
 				}
@@ -77,15 +78,22 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token)
 		{
-			if (_allFields == null)
+			if (_nativeAllFields == null)
 			{
-				IList<FieldInfoDto> specialFields = GetNativeSpecialFields().ToList();
-				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
-				List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
-				_allFields = EnrichDocumentFieldsWithIndex(allFields);
+				_nativeAllFields = await GetAllFieldsInternalAsync(GetNativeSpecialFields, token).ConfigureAwait(false);
 			}
 
-			return _allFields;
+			return _nativeAllFields;
+		}
+
+		public async Task<IReadOnlyList<FieldInfoDto>> GetImageAllFieldsAsync(CancellationToken token)
+		{
+			if (_imageAllFields == null)
+			{
+				_imageAllFields = await GetAllFieldsInternalAsync(GetImageSpecialFields, token).ConfigureAwait(false);
+			}
+
+			return _imageAllFields;
 		}
 
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
@@ -99,7 +107,7 @@ namespace Relativity.Sync.Transfer
 		{
 			IEnumerable<FieldInfoDto> mappedFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
 
-			var identifierField = mappedFields.First(f => f.IsIdentifier);
+			FieldInfoDto identifierField = mappedFields.First(f => f.IsIdentifier);
 			identifierField.DocumentFieldIndex = 0;
 
 			return identifierField;
@@ -113,6 +121,14 @@ namespace Relativity.Sync.Transfer
 				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 			}
 			return _mappedDocumentFields;
+		}
+
+		private async Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsInternalAsync(Func<IEnumerable<FieldInfoDto>> specialFieldsProvider, CancellationToken token)
+		{
+			IList<FieldInfoDto> specialFields = specialFieldsProvider().ToList();
+			IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
+			return EnrichDocumentFieldsWithIndex(allFields);
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
@@ -167,9 +183,9 @@ namespace Relativity.Sync.Transfer
 		}
 
 		private static bool FieldInfosHaveSameSourceAndDestination(FieldInfoDto first, FieldInfoDto second)
-		{ 
+		{
 			return first.SourceFieldName.Equals(second.SourceFieldName, StringComparison.InvariantCultureIgnoreCase)
-			       && first.DestinationFieldName.Equals(second.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase);
+				   && first.DestinationFieldName.Equals(second.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)
@@ -200,7 +216,7 @@ namespace Relativity.Sync.Transfer
 
 			return fields;
 		}
-		
+
 		private Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
 		{
 			ICollection<string> fieldNames = fields.Select(f => f.SourceFieldName).ToArray();

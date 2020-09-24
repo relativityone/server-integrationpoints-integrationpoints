@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Common
 		public bool MoveExistingDocuments { get; set; }
 		public int RdoArtifactTypeId => (int) ArtifactType.Document;
 
-		public string GetSourceWorkspaceTag() => String.Empty;
+		public string GetSourceWorkspaceTag() => string.Empty;
 
 		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
 		public char NestedValueDelimiter => (char)_ASCII_GROUP_SEPARATOR;
@@ -157,9 +157,9 @@ namespace Relativity.Sync.Tests.Common
 		public Guid ExportRunId { get; set; }
 		public int? JobHistoryToRetryId { get; set; }
 
-		public int[] ProductionIds => throw new NotImplementedException();
+		public int[] ProductionIds { get; set; }
 
-		public bool IncludeOriginalImageIfNotFoundInProductions => throw new NotImplementedException();
+		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 		public bool IsImageJob { get; set; }
 	}
 }

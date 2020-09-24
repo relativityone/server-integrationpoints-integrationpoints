@@ -8,19 +8,17 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
-	/// <summary>
-	/// Creates a single <see cref="DataTable"/> out of several sources of information based on the given schema.
-	/// </summary>
-	internal sealed class BatchDataReaderBuilder : IBatchDataReaderBuilder
+	internal abstract class BatchDataReaderBuilderBase : IBatchDataReaderBuilder
 	{
 		private DataTable _templateDataTable;
-		private IReadOnlyList<FieldInfoDto> _allFields;
-		private readonly IFieldManager _fieldManager;
-		private readonly IExportDataSanitizer _exportDataSanitizer;
+
+		protected IReadOnlyList<FieldInfoDto> _allFields;
+		protected readonly IExportDataSanitizer _exportDataSanitizer;
+		protected readonly IFieldManager _fieldManager;
 
 		public Action<string, string> ItemLevelErrorHandler { get; set; }
 
-		public BatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
+		internal BatchDataReaderBuilderBase(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
 		{
 			_fieldManager = fieldManager;
 			_exportDataSanitizer = exportDataSanitizer;
@@ -30,12 +28,11 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_allFields == null)
 			{
-				_allFields = await _fieldManager.GetNativeAllFieldsAsync(token).ConfigureAwait(false);
+				_allFields = await GetAllFieldsAsync(token).ConfigureAwait(false);
 			}
 
 			DataTable templateDataTable = GetTemplateDataTable(_allFields);
-
-			return new BatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token);
+			return CreateDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, token);
 		}
 
 		private DataTable GetTemplateDataTable(IEnumerable<FieldInfoDto> allFields)
@@ -66,5 +63,9 @@ namespace Relativity.Sync.Transfer
 			}).ToArray();
 			return columns;
 		}
+
+		protected abstract Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token);
+
+		protected abstract IDataReader CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
 	}
 }

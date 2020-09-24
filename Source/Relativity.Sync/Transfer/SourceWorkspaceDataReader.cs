@@ -147,7 +147,7 @@ namespace Relativity.Sync.Transfer
 
 		private void CreateItemStatusRecords(RelativityObjectSlim[] batch)
 		{
-			foreach (var item in batch)
+			foreach (RelativityObjectSlim item in batch)
 			{
 				int documentFieldIndex = IdentifierField.DocumentFieldIndex;
 				string itemIdentifier = item.Values[documentFieldIndex].ToString();

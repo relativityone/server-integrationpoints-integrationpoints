@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -25,17 +27,16 @@ namespace Relativity.Sync.Tests.System
 	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal sealed class SourceWorkspaceDataReaderTests : SystemTest
 	{
-		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
-
 		[IdentifiedTest("789d730f-1d5a-403e-83c8-b0f7bfae8a1a")]
-		public async Task ItShouldPassGoldFlow()
+		public async Task Read_ShouldPassGoldFlow_WhenPushingNatives()
 		{
+			Dataset dataset = Dataset.NativesAndExtractedText;
 			const string folderInfoFieldName = "Document Folder Path";
 			const int controlNumberFieldId = 1003667;
 			const int extractedTextFieldId = 1003668;
 			const int totalItemsCount = 10;
 
-			long extractedTextSizeThreshold = await QueryForExtractedTextSizeThreshold().ConfigureAwait(false);
+			long extractedTextSizeThreshold = await QueryForExtractedTextSizeThresholdAsync().ConfigureAwait(false);
 
 			string sourceWorkspaceName = $"{Guid.NewGuid()}";
 			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
@@ -74,9 +75,14 @@ namespace Relativity.Sync.Tests.System
 
 			// Prepare environment
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
-			int allDocumentsSavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMap).ConfigureAwait(false);
+			int allDocumentsSavedSearchArtifactId =
+				await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos
+				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
+				.ConfigureAwait(false);
+			int syncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId,
+					fieldMap).ConfigureAwait(false);
 
 			// Create configuration
 			ConfigurationStub configuration = new ConfigurationStub
@@ -92,22 +98,30 @@ namespace Relativity.Sync.Tests.System
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
-			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(Dataset, extractedText: true, natives: true);
-			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
-			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+			ImportDataTableWrapper dataTableWrapper =
+				DataTableFactory.CreateImportDataTable(dataset, extractedText: true, natives: true);
+			ImportJobErrors importJobErrors = await importHelper
+				.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
+			Assert.IsTrue(importJobErrors.Success,
+				$"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
 			// Initialize container
 			IContainer container = ContainerHelper.Create(configuration);
 
 			// Create snapshot
-			IExecutor<IDocumentDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
-			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			IExecutor<IDocumentDataSourceSnapshotConfiguration> executor =
+				container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
+			ExecutionResult result =
+				await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
 			// Create batch and SourceWorkspaceDataReader
 			IBatchRepository batchRepository = container.Resolve<IBatchRepository>();
-			IBatch batch = await batchRepository.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0).ConfigureAwait(false);
-			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>().CreateSourceWorkspaceDataReader(batch, CancellationToken.None);
+			IBatch batch = await batchRepository
+				.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0)
+				.ConfigureAwait(false);
+			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>()
+				.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None);
 
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
@@ -120,34 +134,149 @@ namespace Relativity.Sync.Tests.System
 			{
 				for (int i = 0; i < dataReader.GetValues(tmpTable); i++)
 				{
-					logger.LogInformation($"{dataReader.GetName(i)} [{(tmpTable[i] == null ? "null" : tmpTable[i].GetType().Name)}]: {tmpTable[i]}");
+					logger.LogInformation(
+						$"{dataReader.GetName(i)} [{(tmpTable[i] == null ? "null" : tmpTable[i].GetType().Name)}]: {tmpTable[i]}");
 				}
-				logger.LogInformation("");
 
 				object controlNumberObject = dataReader["Control Number"];
 				controlNumberObject.Should().BeOfType<string>();
-				string controlNumber = (string)controlNumberObject;
+				string controlNumber = (string) controlNumberObject;
 
-				Action<string, object, object> extractedTextValidator = (cn, extractedTextFilePathObject, actualExtractedTextObject) =>
-					ValidateExtractedText(cn, extractedTextFilePathObject, actualExtractedTextObject, extractedTextSizeThreshold);
+				Action<string, object, object> extractedTextValidator =
+					(cn, extractedTextFilePathObject, actualExtractedTextObject) =>
+						ValidateExtractedText(cn, extractedTextFilePathObject, actualExtractedTextObject,
+							extractedTextSizeThreshold);
 
 				validator.ValidateAndRegisterRead(
 					controlNumber,
-					new FieldVerifyData { ColumnName = ImportDataTableWrapper.FileName, ActualValue = dataReader["NativeFileFilename"], Validator = ValidateNativeFileName },
-					new FieldVerifyData { ColumnName = ImportDataTableWrapper.NativeFilePath, ActualValue = dataReader["NativeFileSize"], Validator = ValidateNativeFileSize },
 					new FieldVerifyData
-				{
-					ColumnName = ImportDataTableWrapper.ExtractedTextFilePath,
-					ActualValue = dataReader["Extracted Text"],
-					Validator = extractedTextValidator
-				}
-					);
+					{
+						ColumnName = ImportDataTableWrapper.FileName, ActualValue = dataReader["NativeFileFilename"],
+						Validator = ValidateNativeFileName
+					},
+					new FieldVerifyData
+					{
+						ColumnName = ImportDataTableWrapper.NativeFilePath, ActualValue = dataReader["NativeFileSize"],
+						Validator = ValidateNativeFileSize
+					},
+					new FieldVerifyData
+					{
+						ColumnName = ImportDataTableWrapper.ExtractedTextFilePath,
+						ActualValue = dataReader["Extracted Text"],
+						Validator = extractedTextValidator
+					}
+				);
 			}
 
 			validator.ValidateAllRead();
 		}
 
-		private async Task<long> QueryForExtractedTextSizeThreshold()
+		[IdentifiedTest("8cc37da4-96e8-4817-902a-c42283a3de31")]
+		public async Task Read_ShouldPassGoldFlow_WhenPushingImages()
+		{
+			Dataset dataset = Dataset.MultipleImagesPerDocument;
+			const string folderInfoFieldName = "Document Folder Path";
+			const int controlNumberFieldId = 1003667;
+			const int totalItemsCount = 1;
+
+			string sourceWorkspaceName = $"{Guid.NewGuid()}";
+			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
+
+			var fieldMap = new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = "Control Number",
+						FieldIdentifier = controlNumberFieldId,
+						IsIdentifier = true
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "Control Number",
+						FieldIdentifier = controlNumberFieldId,
+						IsIdentifier = true
+					}
+				}
+			};
+
+			// Prepare environment
+			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
+			int allDocumentsSavedSearchArtifactId =
+				await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
+			int jobHistoryArtifactId = await Rdos
+				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
+				.ConfigureAwait(false);
+			int syncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId,
+					fieldMap).ConfigureAwait(false);
+
+			// Create configuration
+			ConfigurationStub configuration = new ConfigurationStub
+			{
+				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
+				JobHistoryArtifactId = jobHistoryArtifactId,
+				SyncConfigurationArtifactId = syncConfigurationArtifactId,
+				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
+				FolderPathSourceFieldName = folderInfoFieldName,
+				IsImageJob = true
+			};
+			configuration.SetFieldMappings(fieldMap);
+
+			// Import documents
+			var importHelper = new ImportHelper(ServiceFactory);
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
+			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
+			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+
+			// Initialize container
+			IContainer container = ContainerHelper.Create(configuration);
+
+			// Create snapshot
+			IExecutor<IImageDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
+			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			result.Status.Should().Be(ExecutionStatus.Completed);
+
+			// Create batch and SourceWorkspaceDataReader
+			IBatchRepository batchRepository = container.Resolve<IBatchRepository>();
+			IBatch batch = await batchRepository
+				.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0)
+				.ConfigureAwait(false);
+			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>()
+				.CreateImageSourceWorkspaceDataReader(batch, CancellationToken.None);
+
+			// Test SourceWorkspaceDataReader
+			const int resultsBlockSize = 100;
+			object[] tmpTable = new object[resultsBlockSize];
+			ISyncLog logger = new ConsoleLogger();
+
+			int imageFilesCount = dataset.GetFiles().Count();
+			bool read;
+
+			for (int imageFileIndex = 0; imageFileIndex < imageFilesCount; imageFileIndex++)
+			{
+				read = dataReader.Read();
+				read.Should().BeTrue();
+
+				for (int i = 0; i < dataReader.GetValues(tmpTable); i++)
+				{
+					logger.LogInformation(
+						$"{dataReader.GetName(i)} [{(tmpTable[i] == null ? "null" : tmpTable[i].GetType().Name)}]: {tmpTable[i]}");
+				}
+
+				DataRow dataRow = dataTableWrapper.Data.Rows[imageFileIndex];
+				object actualFileName = dataReader["ImageFileName"];
+				object expectedFileName = dataRow["File Name"];
+				actualFileName.Should().Be(expectedFileName);
+			}
+
+			read = dataReader.Read();
+			read.Should().BeFalse();
+		}
+
+		private async Task<long> QueryForExtractedTextSizeThresholdAsync()
 		{
 			const string instanceSettingName = "MaximumLongTextSizeForExportInCell";
 			const string instanceSettingSection = "kCura.EDDS.WebAPI";
