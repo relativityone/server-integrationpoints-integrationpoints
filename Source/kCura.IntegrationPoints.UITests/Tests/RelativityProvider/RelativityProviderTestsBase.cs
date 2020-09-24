@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 	public class RelativityProviderTestsBase : UiTest
 	{
-		
 		protected IntegrationPointsAction PointsAction { get; private set; }
 		protected IFolderManager FolderManager { get; set; }
 		protected IFieldManager SourceFieldManager { get; set; }
@@ -74,10 +73,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 		}
 
 		[TearDown]
-		public virtual async Task TearDownDestinationContext()
+		public virtual Task TearDownDestinationContext()
 		{
 			Log.Information("TearDownDestinationContext");
-			await SuiteSpecificTearDown().ConfigureAwait(false);
+			return SuiteSpecificTearDown();
 		}
 
 		protected virtual Task SuiteSpecificTearDown()

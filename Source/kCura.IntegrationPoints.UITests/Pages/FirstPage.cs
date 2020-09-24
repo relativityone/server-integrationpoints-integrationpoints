@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -9,8 +10,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public abstract class FirstPage : GeneralPage
 	{
-		private const string _NAME_INPUT_ID = "name";
-
 		public string Name
 		{
 			get { return NameInput.GetAttribute("value"); }
@@ -23,7 +22,23 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set { ProfileSelect.SelectByText(value); }
 		}
 
+		public string Source
+		{
+			get { return SourceSelect.SelectedOption.Text; }
+			set { SourceSelect.SelectByText(value); }
+		}
+
+		public string TransferredObject
+		{
+			get { return TransferredObjectSelect.SelectedOption.Text; }
+			set { TransferredObjectSelect.SelectByText(value); }
+		}
+
 		public string PageMessageText => PageMessage.Text;
+
+		public IWebElement ImportRadioButtonLabel => ImportExportRadioGroup.FindElements(By.TagName("label")).First(e => e.Text == "Import");
+
+		public bool IsExportSelected => ImportExportRadioGroup.FindElements(By.TagName("input")).Last().Selected;
 
 		[FindsBy(How = How.Id, Using = "next")]
 		protected IWebElement NextButton { get; set; }
@@ -34,8 +49,21 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		[FindsBy(How = How.Id, Using = "apply-profile-selector")]
 		protected IWebElement ProfileElement { get; set; }
 
-		[FindsBy(How = How.Id, Using = _NAME_INPUT_ID)]
+		[FindsBy(How = How.Id, Using = "name")]
 		protected IWebElement NameInput { get; set; }
+
+		[FindsBy(How = How.Id, Using = "isExportType")]
+		protected IWebElement ImportExportRadioGroup { get; set; }
+
+		[FindsBy(How = How.Id, Using = "sourceProvider")]
+		protected IWebElement SourceSelectWebElement { get; set; }
+
+		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
+
+		[FindsBy(How = How.Id, Using = "destinationRdo")]
+		protected IWebElement TransferredObjectWebElement { get; set; }
+
+		protected SelectElement TransferredObjectSelect => new SelectElement(TransferredObjectWebElement);
 
 		[FindsBy(How = How.ClassName, Using = "page-message")]
 		protected IWebElement PageMessage { get; set; }

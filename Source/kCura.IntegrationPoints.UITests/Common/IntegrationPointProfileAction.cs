@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Pages;
 using OpenQA.Selenium.Remote;
 
@@ -15,9 +14,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 		public IntegrationPointDetailsPage CreateNewRelativityProviderIntegrationPointProfile(
 			RelativityProviderModel model)
 		{
-			GeneralPage generalPage = GoToWorkspacePage();
-
-			ExportFirstPage firstPage = SetupFirstIntegrationPointProfilePage(generalPage, model);
+			ExportFirstPage firstPage = SetupFirstIntegrationPointProfilePage(model);
 
 			PushToRelativitySecondPage secondPage = SetupPushToRelativitySecondPage(firstPage, model);
 
@@ -26,16 +23,15 @@ namespace kCura.IntegrationPoints.UITests.Common
 			return thirdPage.SaveIntegrationPoint();
 		}
 
-		private ExportFirstPage GoToFirstPageIntegrationPointProfile(GeneralPage generalPage)
+		public ExportFirstPage GoToFirstPageIntegrationPointProfile()
 		{
-			IntegrationPointProfilePage integrationPointProfilePage = generalPage.GoToIntegrationPointProfilePage();
+			IntegrationPointProfilePage integrationPointProfilePage = GoToWorkspacePage().GoToIntegrationPointProfilePage();
 			return integrationPointProfilePage.CreateNewIntegrationPointProfile();
 		}
 
-		private ExportFirstPage SetupFirstIntegrationPointProfilePage(GeneralPage generalPage,
-			IntegrationPointGeneralModel model)
+		private ExportFirstPage SetupFirstIntegrationPointProfilePage(IntegrationPointGeneralModel model)
 		{
-			ExportFirstPage firstPage = GoToFirstPageIntegrationPointProfile(generalPage);
+			ExportFirstPage firstPage = GoToFirstPageIntegrationPointProfile();
 			ExportFirstPage firstPageWithModelApplied = ApplyModelToFirstPage(firstPage, model);
 
 			return firstPageWithModelApplied;
