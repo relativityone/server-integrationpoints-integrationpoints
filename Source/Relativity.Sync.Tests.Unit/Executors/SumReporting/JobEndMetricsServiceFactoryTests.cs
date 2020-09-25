@@ -17,18 +17,18 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 
-		private static ISyncPipeline[] DocumentTypePipelines = new ISyncPipeline[]
+		private static readonly ISyncPipeline[] DocumentTypePipelines = new ISyncPipeline[]
 		{
 			new SyncDocumentRunPipeline(),
 			new SyncDocumentRetryPipeline()
 		};
 
-		//REL-465065
-		//private static ISyncPipeline[] ImageTypePipelines = new ISyncPipeline[]
-		//{
+		// TODO: REL-465065
+		private static ISyncPipeline[] ImageTypePipelines = new ISyncPipeline[]
+		{
 		//	new SyncImageRunPipeline(),
 		//	new SyncImageRetryPipeline()
-		//};
+		};
 
 		[SetUp]
 		public void SetUp()
@@ -66,20 +66,18 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			result.Should().BeOfType<DocumentJobEndMetricsService>();
 		}
 
-		//REL-465065
-		//[TestCaseSource(nameof(ImageTypePipelines))]
+		[TestCaseSource(nameof(ImageTypePipelines))]
+		public void CreateJobEndMetricsService_ShouldReturnImageJobEndMetricsService_WhenPipelineIsImageType(ISyncPipeline syncPipeline)
+		{
+			// Arrange
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
 
-		//public void CreateJobEndMetricsService_ShouldReturnImageJobEndMetricsService_WhenPipelineIsImageType(ISyncPipeline syncPipeline)
-		//{
-		//	// Arrange
-		//	_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
+			// Act
+			var result = _sut.CreateJobEndMetricsService();
 
-		//	// Act
-		//	var result = _sut.CreateJobEndMetricsService();
-
-		//	// Assert
-		//	result.Should().BeOfType<ImageJobEndMetricsService>();
-		//}
+			// Assert
+			result.Should().BeOfType<ImageJobEndMetricsService>();
+		}
 
 		[Test]
 
