@@ -183,11 +183,11 @@ namespace Relativity.Sync.WorkspaceGenerator
 			IList<ImportJobResult> results = null;
 			if (testCase.GenerateImages)
 			{
-				results = await GenerateImages(importHelper, relativityServicesFactory, workspace.ArtifactID, testCase);
+				results = await GenerateImagesAsync(importHelper, relativityServicesFactory, workspace.ArtifactID, testCase).ConfigureAwait(false);
 			}
 			else
 			{
-				results = await GenerateDocuments(importHelper, workspace.ArtifactID, workspaceFields, testCase);
+				results = await GenerateDocumentsAsync(importHelper, workspace.ArtifactID, workspaceFields, testCase).ConfigureAwait(false);
 			}
 
 			return ParseResults(testCase, results, exitCode);
@@ -213,7 +213,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 			return exitCode;
 		}
 
-		private async Task<IList<ImportJobResult>> GenerateImages(ImportHelper importHelper, IRelativityServicesFactory relativityServicesFactory, int workspaceId, TestCase testCase)
+		private async Task<IList<ImportJobResult>> GenerateImagesAsync(ImportHelper importHelper, IRelativityServicesFactory relativityServicesFactory, int workspaceId, TestCase testCase)
 		{
 			int? productionId = null;
 
@@ -232,7 +232,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 						return new List<ImportJobResult>();
 					}
 
-					productionId = await productionService.CreateProductionAsync(workspaceId, testCase.ProductionName);
+					productionId = await productionService.CreateProductionAsync(workspaceId, testCase.ProductionName).ConfigureAwait(false);
 				}
 			}
 
@@ -242,7 +242,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 			return imageResults.ToList();
 		}
 
-		private async Task<IList<ImportJobResult>> GenerateDocuments(ImportHelper importHelper, int workspaceId, List<CustomField> workspaceFields, TestCase testCase)
+		private async Task<IList<ImportJobResult>> GenerateDocumentsAsync(ImportHelper importHelper, int workspaceId, List<CustomField> workspaceFields, TestCase testCase)
 		{
 			IList<ImportJobResult> results;
 			Console.WriteLine($"Importing documents for test case: {testCase.Name}");
@@ -315,7 +315,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 
 			IImageGenerator imageGenerator = new ImageGenerator(testCase.TotalImagesSizeInMB, testCase.NumberOfDocuments);
 
-			IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator, imageGenerator);
+			IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator);
 
 			return new DataReaderProvider(documentFactory, imageGenerator, testCase, documentsToImportCount, _settings.BatchSize);
 		}

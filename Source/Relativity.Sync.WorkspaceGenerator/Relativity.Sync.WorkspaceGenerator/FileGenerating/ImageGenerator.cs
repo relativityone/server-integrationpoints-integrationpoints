@@ -9,20 +9,19 @@ namespace Relativity.Sync.WorkspaceGenerator.FileGenerating
 	internal class ImageGenerator : IImageGenerator
 	{
 		private static readonly long KbMultiplier = 1024;
-		private FileInfo[] _availableImages;
-		private FileInfo[] _imagesPerDocument;
+		private readonly FileInfo[] _imagesPerDocument;
 
-		public ImageGenerator(int totalImageSizeInMB, int numberOfDocuments)
+		public ImageGenerator(int totalImageSizeInMb, int numberOfDocuments)
 		{
-			_availableImages = new DirectoryInfo("Resources/Images").GetFiles();
+			FileInfo[] availableImages = new DirectoryInfo("Resources/Images").GetFiles();
 
-			long KbavailableSum = _availableImages.Select(x => x.Length).Sum() / KbMultiplier;
+			long availableImagesSizeSumInKb = availableImages.Select(x => x.Length).Sum() / KbMultiplier;
 
-			long KbPerDocument = (totalImageSizeInMB * KbMultiplier) / numberOfDocuments;
+			long requestedPerDocumentImagesSizeInKb = (totalImageSizeInMb * KbMultiplier) / numberOfDocuments;
 
-			int repeatSet = (int) Math.Max(KbPerDocument / KbavailableSum, 1);
+			int repeatSetCount = (int) Math.Max(requestedPerDocumentImagesSizeInKb / availableImagesSizeSumInKb, 1);
 
-			_imagesPerDocument = Enumerable.Repeat(_availableImages, repeatSet).SelectMany(x => x).ToArray();
+			_imagesPerDocument = Enumerable.Repeat(availableImages, repeatSetCount).SelectMany(x => x).ToArray();
 		}
 
 		public IEnumerable<ImageFileDTO> GetImagesForDocument(Document document)

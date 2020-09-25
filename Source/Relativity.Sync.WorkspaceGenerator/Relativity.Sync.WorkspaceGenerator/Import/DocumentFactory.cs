@@ -14,9 +14,9 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private readonly IFileGenerator _nativeSingleFileGenerator;
 		private readonly IFileGenerator _extractedTextSingleFileGenerator;
 		private readonly Random _random;
-		private Guid[] _documentsInBatchIds;
+		private readonly Guid[] _documentsInBatchIds;
 
-		public DocumentFactory(TestCase testCase, IFileGenerator nativeSingleFileGenerator, IFileGenerator extractedTextSingleFileGenerator, IImageGenerator imageGenerator)
+		public DocumentFactory(TestCase testCase, IFileGenerator nativeSingleFileGenerator, IFileGenerator extractedTextSingleFileGenerator)
 		{
 			_testCase = testCase;
 			_nativeSingleFileGenerator = nativeSingleFileGenerator;

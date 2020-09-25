@@ -177,6 +177,7 @@
     <Compile Include="RelativityServices\IRelativityServicesFactory.cs" />
     <Compile Include="RelativityServices\ISavedSearchManager.cs" />
     <Compile Include="RelativityServices\IWorkspaceService.cs" />
+    <Compile Include="RelativityServices\ProductionService.cs" />
     <Compile Include="RelativityServices\SavedSearchManager.cs" />
     <Compile Include="Settings\GenerateDefaultSettingsFileArguments.cs" />
     <Compile Include="Settings\GeneratorSettings.cs" />

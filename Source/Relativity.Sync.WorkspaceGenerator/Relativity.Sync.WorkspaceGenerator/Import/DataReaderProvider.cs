@@ -1,6 +1,7 @@
 ﻿using Relativity.Sync.WorkspaceGenerator.Settings;
 using System;
 using System.Data;
+using kCura.Vendor.Castle.MicroKernel.ModelBuilder.Descriptors;
 using Relativity.Sync.WorkspaceGenerator.FileGenerating;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
@@ -12,9 +13,9 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private readonly TestCase _testCase;
 		private readonly int _documentsToImportCount;
 		private readonly int _batchSize;
-		private readonly int _imageBatchSize;
 
 		private int _totalRecordsProvided = 0;
+
 
 		public DataReaderProvider(IDocumentFactory documentFactory, IImageGenerator imageGenerator, TestCase testCase,
 			int documentsToImportCount, int batchSize)
@@ -24,43 +25,45 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			_testCase = testCase;
 			_documentsToImportCount = documentsToImportCount;
 			_batchSize = batchSize;
-			_imageBatchSize = batchSize / imageGenerator.SetPerDocumentCount;
 		}
 
 		public IDataReaderWrapper GetNextDocumentDataReader()
 		{
-			if (_totalRecordsProvided >= _documentsToImportCount)
-			{
-				return null;
-			}
+			int documentCount = CalculateReaderDocumentCount(_batchSize);
 
-			int size = (_documentsToImportCount - _totalRecordsProvided) / _batchSize == 0
-				? (_documentsToImportCount - _totalRecordsProvided) % _batchSize : _batchSize;
-
-			Console.WriteLine($"Creating DataReader for documents ({_totalRecordsProvided} - {_totalRecordsProvided + size})...");
-			IDataReaderWrapper dataReader = new DocumentDataReaderWrapper(_documentFactory, _testCase, size, _totalRecordsProvided);
-
-			_totalRecordsProvided += size;
-
-			return dataReader;
+			return GetDataReaderWrapper(documentCount, () =>
+				 new DocumentDataReaderWrapper(_documentFactory, _testCase, documentCount, _totalRecordsProvided));
 		}
 
 		public IDataReaderWrapper GetNextImageDataReader()
+		{
+			int documentCount = CalculateReaderDocumentCount(_batchSize / _imageGenerator.SetPerDocumentCount);
+
+			return GetDataReaderWrapper(documentCount, () =>
+				 new ImageDataReaderWrapper(_imageGenerator, _documentFactory, _testCase, documentCount, _totalRecordsProvided));
+		}
+
+		private IDataReaderWrapper GetDataReaderWrapper<T>(int documentCount, Func<T> factoryMethod) where T : IDataReaderWrapper
 		{
 			if (_totalRecordsProvided >= _documentsToImportCount)
 			{
 				return null;
 			}
 
-			int size = (_documentsToImportCount - _totalRecordsProvided) / _imageBatchSize == 0
-				? (_documentsToImportCount - _totalRecordsProvided) % _imageBatchSize : _imageBatchSize;
+			Console.WriteLine(
+				$"Creating {typeof(T).Name} ({_totalRecordsProvided} - {_totalRecordsProvided + documentCount})...");
 
-			Console.WriteLine($"Creating DataReader for document images ({_totalRecordsProvided} - {_totalRecordsProvided + size})...");
-			IDataReaderWrapper dataReader = new ImageDataReaderWrapper(_imageGenerator, _documentFactory, _testCase, size, _totalRecordsProvided);
+			IDataReaderWrapper dataReader = factoryMethod();
 
-			_totalRecordsProvided += size;
+			_totalRecordsProvided += documentCount;
 
 			return dataReader;
+		}
+
+		private int CalculateReaderDocumentCount(int batchSize)
+		{
+			return (_documentsToImportCount - _totalRecordsProvided) / batchSize == 0
+				? (_documentsToImportCount - _totalRecordsProvided) % batchSize : batchSize;
 		}
 	}
 }
