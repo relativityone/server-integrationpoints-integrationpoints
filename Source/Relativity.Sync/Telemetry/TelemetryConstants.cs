@@ -29,6 +29,7 @@
 			public static readonly string FLOW_TYPE = $"{_SYNC_METRIC_PREPEND}.FlowType";
 
 			public static readonly string DATA_BYTES_METADATA_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.MetadataTransferred";
+			public static readonly string DATA_BYTES_NATIVES_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.NativesTransferred";
 			public static readonly string DATA_BYTES_TOTAL_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.TotalTransferred";
 			public static readonly string DATA_BYTES_NATIVES_REQUESTED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.NativesRequested";
 			public static readonly string DATA_RECORDS_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Records.Transferred";

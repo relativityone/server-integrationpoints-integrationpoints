@@ -28,8 +28,6 @@ namespace Relativity.Sync.Executors.SumReporting
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
 
-
-
 		public JobStartMetricsExecutor(ISyncLog logger, ISyncMetrics syncMetrics, IPipelineSelector pipelineSelector, IFieldManager fieldManager,
 			ISourceServiceFactoryForUser serviceFactory, ISerializer serializer)
 		{
