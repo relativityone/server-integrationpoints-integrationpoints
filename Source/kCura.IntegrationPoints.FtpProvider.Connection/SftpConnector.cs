@@ -33,20 +33,20 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
 		public SftpConnector(string host, int port, string username, string password, IHostValidator hostValidator, IAPILog logger)
 		{
 			_host = host;
+			_hostValidator = hostValidator;
+			_logger = logger;
 
 			username = string.IsNullOrWhiteSpace(username) ? Constants.DefaultUsername : username.Normalize();
 			password = string.IsNullOrWhiteSpace(username) ? Constants.DefaultPassword : password.Normalize();
+
 			ConnectionInfo connection = new ConnectionInfo(host.Normalize(), port, username.Normalize(),
 				new AuthenticationMethod[]
 				{
 					new PasswordAuthenticationMethod(username.Normalize(), password.Normalize()),
 				});
-			LogConnectionInfo(connection);
-
 			_sftpClient = new SftpClient(connection);
-			_host = host;
-			_hostValidator = hostValidator;
-			_logger = logger;
+
+			LogConnectionInfo(connection);
 		}
 
 		public bool TestConnection()
