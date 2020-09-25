@@ -55,7 +55,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 
 		// Size of batch for documents import
 		public int BatchSize { get; set; }
-		
+
 		// Should Extracted Text be store in DataGrid (if False, it will be in SQL)
 		public bool EnabledDataGridForExtractedText { get; set; }
 

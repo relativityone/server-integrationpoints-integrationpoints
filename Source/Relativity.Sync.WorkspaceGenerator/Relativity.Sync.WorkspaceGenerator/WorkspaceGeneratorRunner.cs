@@ -32,7 +32,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 		{
 			IRelativityServicesFactory relativityServicesFactory = new RelativityServicesFactory(_settings);
 			IWorkspaceService workspaceService = relativityServicesFactory.CreateWorkspaceService();
-			
+
 			WorkspaceRef workspace = await PrepareWorkspaceAsync(workspaceService).ConfigureAwait(false);
 			if (workspace is null)
 			{
@@ -147,13 +147,13 @@ namespace Relativity.Sync.WorkspaceGenerator
 				await workspaceService.CreateFieldsAsync(workspace.ArtifactID, fieldsToCreate)
 					.ConfigureAwait(false);
 			}
-			
+
 			return workspaceFields;
 		}
 
 		private async Task<ExitCodes> ImportTestCaseDocumentsAsync(
 			IRelativityServicesFactory relativityServicesFactory, IWorkspaceService workspaceService,
-			WorkspaceRef workspace, List<CustomField> workspaceFields, TestCase testCase, 
+			WorkspaceRef workspace, List<CustomField> workspaceFields, TestCase testCase,
 			DirectoryInfo nativesDir, DirectoryInfo textDir)
 		{
 			ExitCodes exitCode = ExitCodes.OK;
@@ -163,24 +163,38 @@ namespace Relativity.Sync.WorkspaceGenerator
 			{
 				return ExitCodes.OtherError;
 			}
+			
+			int documentsToImportCount =
+				await GetDocumentsToImportCountAsync(relativityServicesFactory, workspace, savedSearchId, testCase)
+					.ConfigureAwait(false);
 
-			int documentsToImportCount = await GetDocumentsToImportCountAsync(relativityServicesFactory, workspace, savedSearchId, testCase).ConfigureAwait(false);
 			if (documentsToImportCount <= 0)
 			{
 				Console.WriteLine($"All documents for test case '{testCase.Name}' already imported");
-
 				return exitCode;
 			}
 
-			Console.WriteLine($"Importing documents for test case: {testCase.Name}");
+			IDataReaderProvider dataReaderProvider =
+				PrepareTestCaseDataReaderProvider(testCase, documentsToImportCount, nativesDir, textDir);
 
-			testCase.Fields = workspaceFields.GetRange(0, testCase.NumberOfFields);
+			ImportHelper importHelper =
+				new ImportHelper(workspaceService, dataReaderProvider, _settings, testCase);
+			
+			IList<ImportJobResult> results = null;
+			if (testCase.GenerateImages)
+			{
+				results = await GenerateImagesAsync(importHelper, relativityServicesFactory, workspace.ArtifactID, testCase).ConfigureAwait(false);
+			}
+			else
+			{
+				results = await GenerateDocumentsAsync(importHelper, workspace.ArtifactID, workspaceFields, testCase).ConfigureAwait(false);
+			}
 
-			IDataReaderProvider dataReaderProvider = PrepareTestCaseDataReaderProvider(testCase,documentsToImportCount, nativesDir, textDir);
+			return ParseResults(testCase, results, exitCode);
+		}
 
-			ImportHelper importHelper = new ImportHelper(workspaceService, dataReaderProvider, _settings, testCase);
-			IList<ImportJobResult> results = await importHelper.ImportDataAsync(workspace.ArtifactID).ConfigureAwait(false);
-
+		private static ExitCodes ParseResults(TestCase testCase, IList<ImportJobResult> results, ExitCodes exitCode)
+		{
 			ImportJobResult[] errorResults = results.Where(x => !x.Success).ToArray();
 			if (errorResults.Length == 0)
 			{
@@ -197,6 +211,46 @@ namespace Relativity.Sync.WorkspaceGenerator
 			}
 
 			return exitCode;
+		}
+
+		private async Task<IList<ImportJobResult>> GenerateImagesAsync(ImportHelper importHelper, IRelativityServicesFactory relativityServicesFactory, int workspaceId, TestCase testCase)
+		{
+			int? productionId = null;
+
+			if (!string.IsNullOrEmpty(testCase.ProductionName))
+			{
+				var productionService = relativityServicesFactory.CreateProductionService();
+				productionId = await productionService
+					.GetProductionIdAsync(workspaceId, testCase.ProductionName)
+					.ConfigureAwait(false);
+
+				if (productionId == null)
+				{
+					if (_settings.Append)
+					{
+						Console.WriteLine($"Production {testCase.ProductionName} does not exist - cannot append");
+						return new List<ImportJobResult>();
+					}
+
+					productionId = await productionService.CreateProductionAsync(workspaceId, testCase.ProductionName).ConfigureAwait(false);
+				}
+			}
+
+			IEnumerable<ImportJobResult> imageResults =
+				await importHelper.ImportImagesAsync(workspaceId, productionId).ConfigureAwait(false);
+
+			return imageResults.ToList();
+		}
+
+		private async Task<IList<ImportJobResult>> GenerateDocumentsAsync(ImportHelper importHelper, int workspaceId, List<CustomField> workspaceFields, TestCase testCase)
+		{
+			IList<ImportJobResult> results;
+			Console.WriteLine($"Importing documents for test case: {testCase.Name}");
+
+			testCase.Fields = workspaceFields.GetRange(0, testCase.NumberOfFields);
+
+			results = await importHelper.ImportDataAsync(workspaceId).ConfigureAwait(false);
+			return results;
 		}
 
 		private async Task<int> PrepareSavedSearchAsync(IRelativityServicesFactory relativityServicesFactory, WorkspaceRef workspace, TestCase testCase)
@@ -259,9 +313,11 @@ namespace Relativity.Sync.WorkspaceGenerator
 				new EqualFileSizeCalculatorStrategy(testCase.NumberOfDocuments, testCase.TotalExtractedTextSizeInMB).GetNext(),
 				textDir);
 
+			IImageGenerator imageGenerator = new ImageGenerator(testCase.TotalImagesSizeInMB, testCase.NumberOfDocuments);
+
 			IDocumentFactory documentFactory = new DocumentFactory(testCase, nativesGenerator, textGenerator);
 
-			return new DataReaderProvider(documentFactory, testCase, documentsToImportCount, _settings.BatchSize);
+			return new DataReaderProvider(documentFactory, imageGenerator, testCase, documentsToImportCount, _settings.BatchSize);
 		}
 	}
 }
