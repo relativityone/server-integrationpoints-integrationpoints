@@ -6,39 +6,28 @@ Approved
 
 ## Context
 
-existing DataSourceSnapshotExecutors are same for Images Sync:
+In our DataSourceSnapshot step, we currently have 2 versions executors:
 
 + DataSourceSnapshotExecutor
 + RetryDataSourceSnapshotNode
 
-Problem is with statistics for documents size which are calculated in the end of this step. Right now we calculate there only Natives size. It would work anyway (statstic would be 0 for images), but in the future we would like to gather job size for Images
+For images, we can only reuse 2 or 3 lines of those classes (different query, different fields, different requested size calculation, different logging messages).
 
 ## Decision
 
-```csharp
-...
-ExportInitializationResults results;
-try
-{
-    using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-    {
-        results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
-        _logger.LogInformation("Retrieved {documentsCount} documents from saved search.", results.RecordCount);
+Since the process of creating the snapshot is different for images and natives, completely seperate classes should be created:
 
-        // Natives calculation
-        Task<long> calculateNativesTotalSizeTask = Task.Run(() => _nativeFileRepository.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest), token);
-        _jobStatisticsContainer.NativesBytesRequested = calculateNativesTotalSizeTask;
-    }
-}
-...
-```
++ DocumentDataSourceSnapshotExecutor
++ DocumentRetryDataSourceSnapshotNode
++ ImageDataSourceSnapshotExecutor
++ ImageRetryDataSourceSnapshotNode
 
-Proposed solutions:
+No shared base class should be creaetd, since the amount of common code is very little and it makes it easier for Autofac to resolve the node.
 
-+ Provide generic solution for data calculation and call it in the same place and decide inside which statistics should be calculated
-+ Move this step outside of this _SnapshotExecutor_
+*JobStatisticsContainer* should have new field *ImagesBytesRequested* to hold the task calculating size. The calculation should be done using new class *ImageFileRepository*.
 
 ## Consequences
 
-+ (+) Enable to reuse _RetryDataSourceSnapshotExecutor_ and _DataSourceSnapshotExecutor_
-+ (-) Branching has to be done
++ (+) Clear structure of exeuctors and nodes
++ (-) 2 new classes very similar to each other
+    + it is still better to have 4 almost identical classes than 3 level hierarhy adding single line at each level

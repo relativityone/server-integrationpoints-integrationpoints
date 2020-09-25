@@ -179,8 +179,7 @@ namespace Relativity.Sync.WorkspaceGenerator
 
 			ImportHelper importHelper =
 				new ImportHelper(workspaceService, dataReaderProvider, _settings, testCase);
-
-
+			
 			IList<ImportJobResult> results = null;
 			if (testCase.GenerateImages)
 			{
