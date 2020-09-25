@@ -37,14 +37,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 
-		private static readonly ISyncPipeline[] DocumentTypePipelines = new ISyncPipeline[]
+		private static readonly ISyncPipeline[] DocumentTypePipelines =
 		{
 			new SyncDocumentRunPipeline(),
 			new SyncDocumentRetryPipeline()
 		};
 
 		// TODO: REL-465065
-		private static ISyncPipeline[] _imageTypePipelines = new ISyncPipeline[]
+		private static readonly ISyncPipeline[] ImageTypePipelines =
 		{
 		//	new SyncImageRunPipeline(),
 		//	new SyncImageRetryPipeline()
@@ -136,7 +136,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA), Times.Once);
 		}
 
-		[TestCaseSource(nameof(_imageTypePipelines))]
+		[TestCaseSource(nameof(ImageTypePipelines))]
 		public async Task ExecuteAsync_ShouldLogSavedSearchImagesFlowType(ISyncPipeline syncPipeline)
 		{
 			// Arrange

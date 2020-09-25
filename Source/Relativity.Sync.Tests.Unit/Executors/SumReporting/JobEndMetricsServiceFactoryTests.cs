@@ -17,14 +17,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 
-		private static readonly ISyncPipeline[] DocumentTypePipelines = new ISyncPipeline[]
+		private static readonly ISyncPipeline[] DocumentTypePipelines =
 		{
 			new SyncDocumentRunPipeline(),
 			new SyncDocumentRetryPipeline()
 		};
 
 		// TODO: REL-465065
-		private static ISyncPipeline[] ImageTypePipelines = new ISyncPipeline[]
+		private static readonly ISyncPipeline[] ImageTypePipelines =
 		{
 		//	new SyncImageRunPipeline(),
 		//	new SyncImageRetryPipeline()
