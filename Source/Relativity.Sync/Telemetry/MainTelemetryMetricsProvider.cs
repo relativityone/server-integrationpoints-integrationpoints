@@ -29,6 +29,11 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
+				Name = TelemetryConstants.MetricIdentifiers.FLOW_TYPE,
+				Description = "The type of Sync job flow."
+			},
+			new MetricIdentifier
+			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED,
 				Description = "The number of fields mapped for the Integration Points job."
 			},

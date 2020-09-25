@@ -12,6 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
@@ -34,6 +35,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
 		private Mock<ISerializer> _serializerMock;
 		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IPipelineSelector> _pipelineSelectorFake;
+
+		private static ISyncPipeline[] _documentTypePipelines = new ISyncPipeline[]
+		{
+			new SyncDocumentRunPipeline(),
+			new SyncDocumentRetryPipeline()
+		};
+
+		// TODO: REL-465065
+		//private static ISyncPipeline[] _imageTypePipelines = new ISyncPipeline[]
+		//{
+		//	new SyncImageRunPipeline(),
+		//	new SyncImageRetryPipeline()
+		//};
 
 		[SetUp]
 		public void SetUp()
@@ -46,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
 			_serializerMock = new Mock<ISerializer>();
 			_objectManagerMock = new Mock<IObjectManager>();
-
+			_pipelineSelectorFake = new Mock<IPipelineSelector>();
 
 			_sumReporterConfigurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_sumReporterConfigurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
@@ -65,6 +80,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				new FieldInfoDto(SpecialFieldType.None,"Control Number", "Control Number", true, true){RelativityDataType = RelativityDataType.FixedLengthText}
 			});
 
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(_documentTypePipelines[0]);
+
 			_objectManagerMock
 				.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new QueryResultSlim
@@ -78,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						}
 				});
 
-			_sut = new JobStartMetricsExecutor(_syncLoggerMock.Object, _syncMetricsMock.Object, _fieldManagerMock.Object, _serviceFactoryMock.Object, _serializerMock.Object);
+			_sut = new JobStartMetricsExecutor(_syncLoggerMock.Object, _syncMetricsMock.Object, _pipelineSelectorFake.Object, _fieldManagerMock.Object, _serviceFactoryMock.Object, _serializerMock.Object);
 		}
 
 		[Test]
@@ -104,6 +121,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			// Assert
 			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME), Times.Once);
+		}
+
+		[TestCaseSource(nameof(_documentTypePipelines))]
+		public async Task ExecuteAsync_ShouldLogSavedSearchNativesAndMetadataFlowType(ISyncPipeline syncPipeline)
+		{
+			// Arrange
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
+
+			// Act
+			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA), Times.Once);
 		}
 
 		[Test]
@@ -141,8 +171,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			_objectManagerMock.Invocations.Count.Should().Be(0);
 		}
-
-
+		
 		[Test]
 		public void ExecuteAsync_Should_CompleteSuccessfully_WhenFieldManagerThrows()
 		{
@@ -156,9 +185,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			action.Should().NotThrow();
 		}
-
-
-		[Test, TestCaseSource(nameof(FieldsMappingTestCaseSource))]
+		
+		[TestCaseSource(nameof(FieldsMappingTestCaseSource))]
 		public async Task ExecuteAsync_Should_Log_Correct_FieldsMappingDetails(List<FieldMapDefinitionCase> mapping, string expectedLog)
 		{
 			// Arrange
@@ -181,36 +209,36 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				{
 					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText},
 				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":false}},\"LongText\":[]}"
+				"{\"FieldMapping\":{\"LongText\":1},\"ExtractedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":false}},\"LongText\":[]}"
 				)
-			{ TestName = "ExtractedTextDataGrid(Source=disable, Destination=disabled)" };
+			{ TestName = "{m}(ExtractedTextDataGridSource=disable, ExtractedTextDataGridDestination=disabled)" };
 
 			yield return new TestCaseData(
 				new List<FieldMapDefinitionCase>
 				{
 					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false}
 				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":false}},\"LongText\":[]}"
+				"{\"FieldMapping\":{\"LongText\":1},\"ExtractedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":false}},\"LongText\":[]}"
 				)
-			{ TestName = "ExtractedTextDataGrid(Source=enabled, Destination=disabled)" };
+			{ TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=disabled)" };
 
 			yield return new TestCaseData(
 				new List<FieldMapDefinitionCase>
 				{
 					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false, DestinationFieldDataGridEnabled = true}
 				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":true}},\"LongText\":[]}"
+				"{\"FieldMapping\":{\"LongText\":1},\"ExtractedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":true}},\"LongText\":[]}"
 			)
-			{ TestName = "ExtractedTextDataGrid(Source=disabled, Destination=enabled)" };
+			{ TestName = "{m}(ExtractedTextDataGridSource=disabled, ExtractedTextDataGridDestination=enabled)" };
 
 			yield return new TestCaseData(
 				new List<FieldMapDefinitionCase>
 				{
 					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = true}
 				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":true}},\"LongText\":[]}"
+				"{\"FieldMapping\":{\"LongText\":1},\"ExtractedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":true}},\"LongText\":[]}"
 				)
-			{ TestName = "ExtractedTextDataGrid(Source=enabled, Destination=enabled)" };
+			{ TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=enabled)" };
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -227,9 +255,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						new FieldMapDefinitionCase{SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo},
 						new FieldMapDefinitionCase{SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo},
 					},
-					"{\"FieldMapping\":{\"FixedLengthText\":4,\"WholeNumber\":1,\"Currency\":2,\"YesNo\":4},\"ExtactedText\":null,\"LongText\":[]}"
+					"{\"FieldMapping\":{\"FixedLengthText\":4,\"WholeNumber\":1,\"Currency\":2,\"YesNo\":4},\"ExtractedText\":null,\"LongText\":[]}"
 				)
-				{ TestName = "Counting Types" };
+				{ TestName = "{m}(CountingTypes)" };
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -238,9 +266,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						new FieldMapDefinitionCase{SourceFieldName = "long text1", DestinationFieldName = "long text1 dest", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false, DestinationFieldDataGridEnabled = true},
 						new FieldMapDefinitionCase{SourceFieldName = "long text2", DestinationFieldName = "long text2", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false}
 					},
-					"{\"FieldMapping\":{\"LongText\":3},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":4,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":5,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":false}}]}"
+					"{\"FieldMapping\":{\"LongText\":3},\"ExtractedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":4,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":5,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":false}}]}"
 				)
-				{ TestName = "Long text" };
+				{ TestName = "{m}(LongText)" };
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -251,9 +279,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						new FieldMapDefinitionCase{SourceFieldName = "Native path", DestinationFieldName = "Native path", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false, SpecialFieldType = SpecialFieldType.NativeFileLocation},
 						new FieldMapDefinitionCase{SourceFieldName = "Native location", DestinationFieldName = "Native location", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false, SpecialFieldType = SpecialFieldType.NativeFileFilename}
 					},
-					"{\"FieldMapping\":{\"LongText\":5},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":7,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":8,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":4,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":9,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":5,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":10,\"DataGridEnabled\":false}}]}"
+					"{\"FieldMapping\":{\"LongText\":5},\"ExtractedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":7,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":8,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":4,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":9,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":5,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":10,\"DataGridEnabled\":false}}]}"
 				)
-				{ TestName = "Should log special fields when they have been mapped" };
+				{ TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
 		}
 
 		private void SetupFieldMapping(IEnumerable<FieldMapDefinitionCase> mapping)
