@@ -37,17 +37,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 
-		private static readonly ISyncPipeline[] DocumentTypePipelines =
-		{
-			new SyncDocumentRunPipeline(),
-			new SyncDocumentRetryPipeline()
-		};
-
 		// TODO: REL-465065
-		private static readonly ISyncPipeline[] ImageTypePipelines =
+		private static readonly TestCaseData[] LogFlowTypeTestCases =
 		{
-		//	new SyncImageRunPipeline(),
-		//	new SyncImageRetryPipeline()
+			new TestCaseData(new SyncDocumentRunPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA),
+			new TestCaseData(new SyncDocumentRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA)
+		//	new TestCaseData(new SyncImageRunPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES),
+		//	new TestCaseData(new SyncImageRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES)
 		};
 
 		[SetUp]
@@ -80,7 +76,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				new FieldInfoDto(SpecialFieldType.None,"Control Number", "Control Number", true, true){RelativityDataType = RelativityDataType.FixedLengthText}
 			});
 
-			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(DocumentTypePipelines[0]);
+			ISyncPipeline defaultPipeline = new SyncDocumentRunPipeline();
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(defaultPipeline);
 
 			_objectManagerMock
 				.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
@@ -123,8 +120,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME), Times.Once);
 		}
 
-		[TestCaseSource(nameof(DocumentTypePipelines))]
-		public async Task ExecuteAsync_ShouldLogSavedSearchNativesAndMetadataFlowType(ISyncPipeline syncPipeline)
+		[TestCaseSource(nameof(LogFlowTypeTestCases))]
+		public async Task ExecuteAsync_ShouldLogCorrectFlowType(ISyncPipeline syncPipeline, string flowType)
 		{
 			// Arrange
 			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
@@ -133,20 +130,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA), Times.Once);
-		}
-
-		[TestCaseSource(nameof(ImageTypePipelines))]
-		public async Task ExecuteAsync_ShouldLogSavedSearchImagesFlowType(ISyncPipeline syncPipeline)
-		{
-			// Arrange
-			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
-
-			// Act
-			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
-
-			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, flowType), Times.Once);
 		}
 
 		[Test]

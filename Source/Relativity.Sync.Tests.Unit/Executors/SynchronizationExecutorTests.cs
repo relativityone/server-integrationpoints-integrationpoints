@@ -588,9 +588,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			return new ImportJobResult(ExecutionResult.Success(), 1, 0, 1);
 		}
 
-		private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null, int metadataSize = 1, int filesSize = 0, int jobSize = 1)
+		private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null)
 		{
-			return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), metadataSize, filesSize, jobSize);
+			return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), 1, 0, 1);
 		}
 	}
 }
