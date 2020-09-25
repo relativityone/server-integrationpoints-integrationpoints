@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			SourceWorkspaceArtifactID = WorkspaceArtifactId;
 
-			Task.Run(async () => await SetupAsync().ConfigureAwait(false)).Wait();
+			SetupAsync().GetAwaiter().GetResult();
 
 			RelativityProvider = SourceProviders.First(provider => provider.Name == "Relativity");
 			LdapProvider = SourceProviders.First(provider => provider.Name == "LDAP");

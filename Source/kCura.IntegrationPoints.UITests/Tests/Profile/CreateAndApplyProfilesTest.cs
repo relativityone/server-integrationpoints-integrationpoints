@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
@@ -22,8 +23,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{
-		public CreateAndApplyProfilesTest() : base(false) { }
-
 		private IntegrationPointProfileAction _profileAction;
 
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
@@ -32,6 +31,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			new Tuple<string, string>("Extracted Text", "Extracted Text"),
 			new Tuple<string, string>("Title", "Title")
 		};
+
+		public CreateAndApplyProfilesTest() : base(false) { }
 
 		private RelativityProviderModel CreateRelativityProviderModel(
 			string name = null,
@@ -65,6 +66,22 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		{
 			await base.SetUp().ConfigureAwait(false);
 			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext.WorkspaceName);
+		}
+
+		[IdentifiedTest("12a7dceb-9b88-4b2a-b59c-f9ff64108ba3")]
+		[RetryOnError]
+		public void Profile_ShouldHaveDefaultValues_WhenCreatingNewProfile()
+		{
+			// Arrange & Act
+			ExportFirstPage firstPage = _profileAction.GoToFirstPageIntegrationPointProfile();
+			
+			// Assert
+			firstPage.Name.Should().BeNullOrEmpty();
+			firstPage.IsExportSelected.Should().BeTrue();
+			firstPage.Source.Should().Be("Relativity");
+			firstPage.Destination.Should().Be("Relativity");
+			firstPage.TransferedObject.Should().Be("Document");
+			firstPage.ProfileObject.Should().Be("Select...");
 		}
 
 		[IdentifiedTest("77d6c730-3f8f-4d18-83e4-640b09e16a75")]
