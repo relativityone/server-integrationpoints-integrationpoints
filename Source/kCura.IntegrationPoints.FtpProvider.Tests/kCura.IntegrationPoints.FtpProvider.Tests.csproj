@@ -53,6 +53,7 @@
     </Compile>
     <Compile Include="FtpProviderTests.cs" />
     <Compile Include="HostValidatorTests.cs" />
+    <Compile Include="SftpConnectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
