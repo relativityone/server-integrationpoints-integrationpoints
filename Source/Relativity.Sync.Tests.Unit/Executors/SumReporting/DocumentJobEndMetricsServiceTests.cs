@@ -26,6 +26,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<ISyncMetrics> _syncMetricsMock;
 		private Mock<IJobStatisticsContainer> _jobStatisticsContainerFake;
 
+		private static readonly string[] MetricsNotToSendWhenJobFailed =
+		{
+			TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED,
+			TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED,
+			TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED
+		};
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -76,6 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			const long metadataSize = 6667;
 			const long nativesSize = 5678;
 			_jobStatisticsContainerFake.SetupGet(x => x.MetadataBytesTransferred).Returns(metadataSize);
+			_jobStatisticsContainerFake.SetupGet(x => x.FilesBytesTransferred).Returns(nativesSize);
 			_jobStatisticsContainerFake.SetupGet(x => x.TotalBytesTransferred).Returns(jobSize);
 			_jobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Returns(Task.FromResult(nativesSize));
 
@@ -93,6 +101,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, expectedStatusDescription), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, metadataSize), Times.Once);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED, nativesSize), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize), Times.Once);
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, nativesSize), Times.Once);
 
@@ -141,8 +150,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, It.IsAny<long>()), Times.Never);
 		}
 
-		[Test]
-		public async Task ExecuteAsync_ShouldNotReportTotalBytesTransferred_WhenJobFailed()
+		[TestCaseSource(nameof(MetricsNotToSendWhenJobFailed))]
+		public async Task ExecuteAsync_ShouldNotReportMetric_WhenJobFailed(string metric)
 		{
 			// Arrange
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
@@ -151,20 +160,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, It.IsAny<long>()), Times.Never);
-		}
-
-		[Test]
-		public async Task ExecuteAsync_ShouldNotReportMetadataBytesTransferred_WhenJobFailed()
-		{
-			// Arrange
-			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
-
-			// Act
-			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
-
-			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, It.IsAny<long>()), Times.Never);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(metric, It.IsAny<long>()), Times.Never);
 		}
 
 		[Test]

@@ -10,6 +10,9 @@
 
 		public const string PROVIDER_NAME = "Sync";
 
+		public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearched.Images";
+		public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearched.NativesAndMetadata";
+		
 		public static class MetricIdentifiers
 		{
 			public const string KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX = "Duration";
@@ -23,9 +26,14 @@
 			public static readonly string RETRY_JOB_START_TYPE = $"{_SYNC_METRIC_PREPEND}.Retry.Job.Start.Type";
 			public static readonly string RETRY_JOB_END_STATUS = $"{_SYNC_METRIC_PREPEND}.Retry.Job.End.Status";
 
+			public static readonly string FLOW_TYPE = $"{_SYNC_METRIC_PREPEND}.FlowType";
+
 			public static readonly string DATA_BYTES_METADATA_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.MetadataTransferred";
+			public static readonly string DATA_BYTES_NATIVES_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.NativesTransferred";
+			public static readonly string DATA_BYTES_IMAGES_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.ImagesTransferred";
 			public static readonly string DATA_BYTES_TOTAL_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.TotalTransferred";
 			public static readonly string DATA_BYTES_NATIVES_REQUESTED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.NativesRequested";
+			public static readonly string DATA_BYTES_IMAGES_REQUESTED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.ImagesRequested";
 			public static readonly string DATA_RECORDS_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Records.Transferred";
 			public static readonly string DATA_RECORDS_TAGGED = $"{_SYNC_METRIC_PREPEND}.Data.Records.Tagged";
 			public static readonly string DATA_RECORDS_FAILED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Records.Failed";

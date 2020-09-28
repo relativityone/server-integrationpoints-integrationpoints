@@ -150,7 +150,7 @@ namespace Relativity.Sync.Executors
 			if (token.IsCancellationRequested)
 			{
 				executionResult = ExecutionResult.Canceled();
-				return new ImportJobResult(executionResult, GetMetadataSize(), GetJobSize());
+				return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
 			}
 
 			try
@@ -182,7 +182,7 @@ namespace Relativity.Sync.Executors
 				executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
 			}
 
-			return new ImportJobResult(executionResult, GetMetadataSize(), GetJobSize());
+			return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
 		}
 
 		private long GetMetadataSize()
@@ -191,6 +191,16 @@ namespace Relativity.Sync.Executors
 			if (_importApiJobStatistics != null)
 			{
 				metadataSize = _importApiJobStatistics.MetadataBytes;
+			}
+			return metadataSize;
+		}
+
+		private long GetFilesSize()
+		{
+			long metadataSize = 0;
+			if (_importApiJobStatistics != null)
+			{
+				metadataSize = _importApiJobStatistics.FileBytes;
 			}
 			return metadataSize;
 		}

@@ -29,6 +29,11 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
+				Name = TelemetryConstants.MetricIdentifiers.FLOW_TYPE,
+				Description = "The type of Sync job flow."
+			},
+			new MetricIdentifier
+			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED,
 				Description = "The number of fields mapped for the Integration Points job."
 			},
@@ -59,8 +64,23 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED,
+				Description = "The total number of bytes of natives that were successfully transferred."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_TRANSFERRED,
+				Description = "The total number of bytes of images that were successfully transferred."
+			},
+			new MetricIdentifier
+			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED,
 				Description = "The total number of bytes of native files that were requested to transfer."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_REQUESTED,
+				Description = "The total number of bytes of images that were requested to transfer."
 			},
 			new MetricIdentifier
 			{
