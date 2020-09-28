@@ -33,7 +33,7 @@
 			public static readonly string DATA_BYTES_IMAGES_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.ImagesTransferred";
 			public static readonly string DATA_BYTES_TOTAL_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.TotalTransferred";
 			public static readonly string DATA_BYTES_NATIVES_REQUESTED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.NativesRequested";
-			public static readonly string DATA_BYTES_IMAGES_REQUESTED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Bytes.ImagesRequested";
+			public static readonly string DATA_BYTES_IMAGES_REQUESTED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.ImagesRequested";
 			public static readonly string DATA_RECORDS_TRANSFERRED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Records.Transferred";
 			public static readonly string DATA_RECORDS_TAGGED = $"{_SYNC_METRIC_PREPEND}.Data.Records.Tagged";
 			public static readonly string DATA_RECORDS_FAILED = $"{_INTEGRATION_POINTS_METRIC_PREPEND}.Data.Records.Failed";
