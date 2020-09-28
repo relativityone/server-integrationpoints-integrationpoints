@@ -1331,7 +1331,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 							var clearAndProceedCallback = function() {
 								var filteredOutInvalidFields = map.filter(
-									x => validationResult.invalidMappedFields.findIndex(
+									x => validationResult.invalidMappedFields.map(f => f.fieldMap).findIndex(
 										i => StepMapFieldsValidator.isFieldMapEqual(i, x)) ==
 									-1);
 								this.returnModel.map = JSON.stringify(filteredOutInvalidFields);
