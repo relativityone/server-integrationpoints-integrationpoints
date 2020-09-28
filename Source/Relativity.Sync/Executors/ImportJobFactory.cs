@@ -39,11 +39,6 @@ namespace Relativity.Sync.Executors
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
-			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
-
-			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
-
 			await SetCommonIapiSettingsAsync(configuration, importJob.Settings, importApi).ConfigureAwait(false);
 
 			importJob.SourceData.Reader = sourceWorkspaceDataReader;
@@ -51,6 +46,12 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
 			importJob.Settings.Billable = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
 			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
+			importJob.Settings.ImageFilePathSourceFieldName = configuration.ImageFilePathSourceFieldName;
+
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
 			return job;
 		}
@@ -61,11 +62,6 @@ namespace Relativity.Sync.Executors
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 
-			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
-
-			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
-
 			await SetCommonIapiSettingsAsync(configuration, importJob.Settings, importApi).ConfigureAwait(false);
 
 			importJob.SourceData.SourceData = sourceWorkspaceDataReader; // This assignment invokes IDataReader.Read immediately!
@@ -73,6 +69,7 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
 			importJob.Settings.Billable = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles;
 			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
+			importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
 
 			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
 			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
@@ -90,7 +87,10 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.DisableNativeValidation = false;
 			}
 
-			importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
 			return job;
 		}
@@ -99,8 +99,7 @@ namespace Relativity.Sync.Executors
 			ImportSettingsBase settings, IImportAPI importApi)
 		{
 			settings.ApplicationName = _syncJobParameters.SyncApplicationName;
-			settings.MaximumErrorCount =
-				int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
+			settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
 			settings.StartRecordNumber = 0;
 			settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
 			settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;

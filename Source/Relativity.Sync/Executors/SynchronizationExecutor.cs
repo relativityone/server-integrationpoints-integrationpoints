@@ -244,6 +244,13 @@ namespace Relativity.Sync.Executors
 			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename);
 			configuration.OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType);
 			configuration.SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer);
+
+			// TODO REL-465067
+			if (configuration.ImageImport)
+			{
+				configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
+				configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
+			}
 		}
 
 		private int GetDestinationIdentityFieldId(IList<FieldMap> fieldMappings)
@@ -268,6 +275,7 @@ namespace Relativity.Sync.Executors
 				_logger.LogError(message);
 				throw new SyncException(message);
 			}
+
 			return specialField.DestinationFieldName;
 		}
 	}

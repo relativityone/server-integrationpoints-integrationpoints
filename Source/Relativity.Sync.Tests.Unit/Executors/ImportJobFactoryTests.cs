@@ -273,6 +273,27 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			importBulkArtifactJob.Settings.Billable.Should().Be(false);
 		}
+		
+		[Test]
+		public async Task CreateImageImportJob_ShouldSetImageFilePathSourceFieldName()
+		{
+			// Arrange
+			const string fakePath = "//fake/path.jpg";
+			var configuration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
+			configuration.SetupGet(x => x.ImageFilePathSourceFieldName).Returns(fakePath);
+
+			var importBulkArtifactJob = new ImageImportBulkArtifactJob();
+			Mock<IImportApiFactory> importApiFactory = GetImagesImportAPIFactoryMock(importBulkArtifactJob);
+
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			await instance.CreateImageImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.ImageFilePathSourceFieldName.Should().Be(fakePath);
+		}
+
 
 		[Test]
 		public async Task CreateNativeImportJob_ShouldSetBillableToFalse_WhenNotCopyingNatives()

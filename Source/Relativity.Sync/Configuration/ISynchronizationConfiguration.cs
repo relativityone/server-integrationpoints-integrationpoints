@@ -46,6 +46,8 @@ namespace Relativity.Sync.Configuration
 
 		string NativeFilePathSourceFieldName { get; set; }
 
+		string ImageFilePathSourceFieldName { get; set; }
+
 		string FileNameColumn { get; set; }
 
 		string OiFileTypeColumnName { get; set; }
