@@ -33,37 +33,50 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		public async Task<IImportJob> CreateImageImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
-			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token);
+			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateImageSourceWorkspaceDataReader(batch, token);
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
-			ImportBulkArtifactJob importJob = await Task.Run(() => importApi.NewNativeDocumentImportJob()).ConfigureAwait(false);
+			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
 			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
-			importJob.SourceData.SourceData = sourceWorkspaceDataReader; // This assignment invokes IDataReader.Read immediately!
-			
-			importJob.Settings.ApplicationName = _syncJobParameters.SyncApplicationName;
-			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
-			importJob.Settings.StartRecordNumber = 0;
+			await SetCommonIapiSettingsAsync(configuration, importJob.Settings, importApi).ConfigureAwait(false);
+
+			importJob.SourceData.Reader = sourceWorkspaceDataReader;
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
-			importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
+			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
+			importJob.Settings.Billable = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
+			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
+
+			return job;
+		}
+
+		public async Task<IImportJob> CreateNativeImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		{
+			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token);
+			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
+
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+
+			await SetCommonIapiSettingsAsync(configuration, importJob.Settings, importApi).ConfigureAwait(false);
+
+			importJob.SourceData.SourceData = sourceWorkspaceDataReader; // This assignment invokes IDataReader.Read immediately!
+			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
+			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
+			importJob.Settings.Billable = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles;
+			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
+
 			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
 			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
-			importJob.Settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
-			importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
-			importJob.Settings.MoveDocumentsInAppendOverlayMode = configuration.ImportOverwriteMode != ImportOverwriteMode.AppendOnly &&
-				configuration.MoveExistingDocuments && !string.IsNullOrEmpty(configuration.FolderPathSourceFieldName);
-			importJob.Settings.Billable = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles;
 
-			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
-			importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
-			importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
-			importJob.Settings.IdentityFieldId = configuration.IdentityFieldId;
-			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
 			importJob.Settings.FileSizeColumn = configuration.FileSizeColumn;
 			importJob.Settings.FileNameColumn = configuration.FileNameColumn;
 			importJob.Settings.OIFileTypeColumnName = configuration.OiFileTypeColumnName;
@@ -79,10 +92,30 @@ namespace Relativity.Sync.Executors
 
 			importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
 
-			importJob.Settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
-				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, configuration.IdentityFieldId).ConfigureAwait(false);
-
 			return job;
+		}
+
+		private async Task SetCommonIapiSettingsAsync(ISynchronizationConfiguration configuration,
+			ImportSettingsBase settings, IImportAPI importApi)
+		{
+			settings.ApplicationName = _syncJobParameters.SyncApplicationName;
+			settings.MaximumErrorCount =
+				int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
+			settings.StartRecordNumber = 0;
+			settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
+			settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
+			settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
+			settings.MoveDocumentsInAppendOverlayMode =
+				configuration.ImportOverwriteMode != ImportOverwriteMode.AppendOnly &&
+				configuration.MoveExistingDocuments && !string.IsNullOrEmpty(configuration.FolderPathSourceFieldName);
+
+			settings.OverlayBehavior = (OverlayBehavior) configuration.FieldOverlayBehavior;
+			settings.OverwriteMode = (OverwriteModeEnum) configuration.ImportOverwriteMode;
+			settings.IdentityFieldId = configuration.IdentityFieldId;
+
+			settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
+				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
+				configuration.IdentityFieldId).ConfigureAwait(false);
 		}
 
 		private async Task<IImportAPI> GetImportApiAsync()

@@ -10,14 +10,29 @@ namespace Relativity.Sync.Executors
 	[ExcludeFromCodeCoverage]
 	internal sealed class SyncImportBulkArtifactJob : ISyncImportBulkArtifactJob
 	{
+		private enum ImportType
+		{
+			Natives,
+			Images
+		}
+
 		private int _sourceWorkspaceErrorItemsCount = 0;
 
 		private const string _IAPI_IDENTIFIER_COLUMN = "Identifier";
 		private const string _IAPI_MESSAGE_COLUMN = "Message";
 
 		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
+		private readonly ImageImportBulkArtifactJob _imageImportBulkArtifactJob;
+		private readonly ImportType _importType;
+
+		private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+		{
+			ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
+			sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
+		}
 
 		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+			: this(sourceWorkspaceDataReader)
 		{
 			_importBulkArtifactJob = importBulkArtifactJob;
 			_importBulkArtifactJob.OnProgress += RaiseOnProgress;
@@ -25,8 +40,19 @@ namespace Relativity.Sync.Executors
 			_importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
 			_importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
-			ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
-			sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
+			_importType = ImportType.Natives;
+		}
+
+		public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+			: this(sourceWorkspaceDataReader)
+		{
+			_imageImportBulkArtifactJob = imageImportBulkArtifactJob;
+			_imageImportBulkArtifactJob.OnProgress += RaiseOnProgress;
+			_imageImportBulkArtifactJob.OnError += HandleIapiItemLevelError;
+			_imageImportBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			_imageImportBulkArtifactJob.OnFatalException += HandleIapiFatalException;
+
+			_importType = ImportType.Images;
 		}
 
 		public IItemStatusMonitor ItemStatusMonitor { get; }
@@ -38,7 +64,15 @@ namespace Relativity.Sync.Executors
 
 		public void Execute()
 		{
-			_importBulkArtifactJob.Execute();
+			switch (_importType)
+			{
+				case ImportType.Natives:
+					_importBulkArtifactJob.Execute();
+					break;
+				case ImportType.Images:
+					_imageImportBulkArtifactJob.Execute();
+					break;
+			}
 		}
 
 		private void RaiseOnProgress(long completedRow)

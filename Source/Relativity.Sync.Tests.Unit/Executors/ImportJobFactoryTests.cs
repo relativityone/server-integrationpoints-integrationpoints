@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert
@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactoryMock);
 
 			// Act
-			Func<Task> action = () => instance.CreateImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None);
+			Func<Task> action = () => instance.CreateNativeImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None);
 
 			// Assert
 			(await action.Should().ThrowAsync<ImportFailedException>().ConfigureAwait(false))
@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactoryStub);
 
 			// Act
-			Sync.Executors.IImportJob result = await instance.CreateImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(configurationStub.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 			result.Dispose();
 
 			// Assert
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			await instance.CreateNativeImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			importBulkArtifactJob.Settings.Billable.Should().Be(true);
@@ -164,7 +164,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			await instance.CreateNativeImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			importBulkArtifactJob.Settings.Billable.Should().Be(false);
@@ -183,7 +183,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			await instance.CreateNativeImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			importBulkArtifactJob.Settings.Billable.Should().Be(false);
@@ -201,7 +201,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobFactory instance = GetTestInstance(importApiFactory);
 
 			// Act
-			await instance.CreateImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			await instance.CreateNativeImportJobAsync(configuration.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			importBulkArtifactJob.Settings.ApplicationName.Should().Be(_syncJobParameters.SyncApplicationName);
