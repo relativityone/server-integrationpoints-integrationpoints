@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Target Name="Sign" Condition="'$(CertificateThumbprint)' != '' AND '$(SignToolPath)' != ''" AfterTargets="Build">
+        <Message Text="Signing $(OutputPath)$(AssemblyName).dll" />
+        <Message Text="Usign tool from $(SignToolPath)" />
+        <Exec Command="&quot;$(SignToolPath)&quot; sign /sha1 $(CertificateThumbprint) /t http://timestamp.digicert.com /d Relativity /du http://www.relativity.com $(OutputPath)$(AssemblyName).dll" />
+    </Target>
+</Project>
