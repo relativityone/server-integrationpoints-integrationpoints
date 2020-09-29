@@ -10,20 +10,14 @@ namespace Relativity.Sync.Executors
 	[ExcludeFromCodeCoverage]
 	internal sealed class SyncImportBulkArtifactJob : ISyncImportBulkArtifactJob
 	{
-		private enum ImportType
-		{
-			Natives,
-			Images
-		}
-
 		private int _sourceWorkspaceErrorItemsCount = 0;
 
 		private const string _IAPI_IDENTIFIER_COLUMN = "Identifier";
 		private const string _IAPI_MESSAGE_COLUMN = "Message";
 
 		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
-		private readonly ImageImportBulkArtifactJob _imageImportBulkArtifactJob;
-		private readonly ImportType _importType;
+		private readonly ImageImportBulkArtifactJob _imageImportBulkArtifactJob; 
+		private readonly Action _executeJob;
 
 		private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader)
 		{
@@ -40,7 +34,7 @@ namespace Relativity.Sync.Executors
 			_importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
 			_importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
-			_importType = ImportType.Natives;
+			_executeJob = () => _importBulkArtifactJob.Execute();
 		}
 
 		public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
@@ -52,7 +46,7 @@ namespace Relativity.Sync.Executors
 			_imageImportBulkArtifactJob.OnComplete += HandleIapiJobComplete;
 			_imageImportBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
-			_importType = ImportType.Images;
+			_executeJob = () => _imageImportBulkArtifactJob.Execute();
 		}
 
 		public IItemStatusMonitor ItemStatusMonitor { get; }
@@ -64,15 +58,7 @@ namespace Relativity.Sync.Executors
 
 		public void Execute()
 		{
-			switch (_importType)
-			{
-				case ImportType.Natives:
-					_importBulkArtifactJob.Execute();
-					break;
-				case ImportType.Images:
-					_imageImportBulkArtifactJob.Execute();
-					break;
-			}
+			_executeJob();
 		}
 
 		private void RaiseOnProgress(long completedRow)
