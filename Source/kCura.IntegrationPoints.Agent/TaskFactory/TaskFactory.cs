@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 						return CheckForSynchronizationAndResolve<SyncEntityManagerWorker>(job, integrationPointDto, agentBase);
 					case TaskType.SendEmailManager: //Left for backwards compatibility after removing SendEmailManager
 					case TaskType.SendEmailWorker:
-						return CheckForSynchronizationAndResolve<SendEmailWorker>(job, integrationPointDto, agentBase);
+						return _container.Resolve<SendEmailWorker>(); // only not synchronized task
 					case TaskType.ExportService:
 						return CheckForSynchronizationAndResolve<ExportServiceManager>(job, integrationPointDto, agentBase);
 					case TaskType.ImportService:
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
 		private ITask CheckForSynchronizationAndResolve<T>(Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase) where T : ITask
 		{
-			_jobSynchronizationChecker.CheckForSynchronization(typeof(T), job, integrationPointDto, agentBase);
+			_jobSynchronizationChecker.CheckForSynchronization(job, integrationPointDto, agentBase);
 			return _container.Resolve<T>();
 		}
 
