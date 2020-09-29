@@ -7,11 +7,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SyncFlowTests
 {
@@ -42,6 +38,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SyncFlowTests
 		}
 
 		[Test]
+		[Ignore("REL-401141")]
 		public void SyncImages_ShouldRunSuccessfully_WhenCommaIsInControlNumber()
 		{
 			// Arrange
