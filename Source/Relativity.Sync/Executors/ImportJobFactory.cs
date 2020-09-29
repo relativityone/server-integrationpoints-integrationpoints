@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
-			await SetCommonIapiSettingsAsync(configuration, importJob.Settings, importApi).ConfigureAwait(false);
+			SetCommonIapiSettings(configuration, importJob.Settings, importApi);
 
 			importJob.SourceData.Reader = sourceWorkspaceDataReader;
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 
-			await SetCommonIapiSettingsAsync(configuration, importJob.Settings, importApi).ConfigureAwait(false);
+			SetCommonIapiSettings(configuration, importJob.Settings, importApi);
 
 			importJob.SourceData.SourceData = sourceWorkspaceDataReader; // This assignment invokes IDataReader.Read immediately!
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
@@ -95,8 +95,7 @@ namespace Relativity.Sync.Executors
 			return job;
 		}
 
-		private async Task SetCommonIapiSettingsAsync(ISynchronizationConfiguration configuration,
-			ImportSettingsBase settings, IImportAPI importApi)
+		private void SetCommonIapiSettings(ISynchronizationConfiguration configuration, ImportSettingsBase settings, IImportAPI importApi)
 		{
 			settings.ApplicationName = _syncJobParameters.SyncApplicationName;
 			settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
@@ -112,9 +111,9 @@ namespace Relativity.Sync.Executors
 			settings.OverwriteMode = (OverwriteModeEnum) configuration.ImportOverwriteMode;
 			settings.IdentityFieldId = configuration.IdentityFieldId;
 
-			settings.SelectedIdentifierFieldName = await GetSelectedIdentifierFieldNameAsync(
+			settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
 				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
-				configuration.IdentityFieldId).ConfigureAwait(false);
+				configuration.IdentityFieldId);
 		}
 
 		private async Task<IImportAPI> GetImportApiAsync()
@@ -135,9 +134,9 @@ namespace Relativity.Sync.Executors
 			}
 		}
 
-		private static async Task<string> GetSelectedIdentifierFieldNameAsync(IImportAPI importApi, int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
+		private static string GetSelectedIdentifierFieldName(IImportAPI importApi, int workspaceArtifactId, int artifactTypeId, int identityFieldArtifactId)
 		{
-			IEnumerable<Field> workspaceFields = await Task.Run(() => importApi.GetWorkspaceFields(workspaceArtifactId, artifactTypeId)).ConfigureAwait(false);
+			IEnumerable<Field> workspaceFields = importApi.GetWorkspaceFields(workspaceArtifactId, artifactTypeId);
 			Field identityField = workspaceFields.First(x => x.ArtifactID == identityFieldArtifactId);
 			return identityField.Name;
 		}
