@@ -9,7 +9,6 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Moq;
 using NUnit.Framework;
-using OutsideIn;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -97,19 +96,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Should().NotBeNull();
 		}
 
-		private ImportJobFactory PrepareInstanceForWebApiPathTests(Mock<IImportApiFactory> importApiFactory, string invalidWebAPIPath)
-		{
-			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync(invalidWebAPIPath);
-			ImportJobFactory instance = GetTestInstance(importApiFactory);
-			return instance;
-		}
-
-		private async Task AssertWebApiPathTestsAsync(Func<Task> action, string expectedMessage)
-		{
-			(await action.Should().ThrowAsync<ImportFailedException>().ConfigureAwait(false))
-				.Which.Message.Should().Be(expectedMessage);
-		}
-
 		[TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
 		[TestCase("", "WebAPIPath doesn't exist")]
 		[TestCase(null, "WebAPIPath doesn't exist")]
@@ -138,28 +124,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			return AssertWebApiPathTestsAsync(Action, expectedMessage);
-		}
-
-		private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)
-		{
-			Mock<IImportAPI> importApiStub = new Mock<IImportAPI>(MockBehavior.Loose);
-			Mock<IImportApiFactory> importApiFactoryStub = new Mock<IImportApiFactory>();
-			Mock<Field> fieldStub = new Mock<Field>();
-
-			importApiStub.Setup(setupAction).Returns(mockObject);
-			importApiStub.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { fieldStub.Object });
-			importApiFactoryStub.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApiStub.Object);
-
-			const int batchStartingIndex = 250;
-			_batch.SetupGet(x => x.StartingIndex).Returns(batchStartingIndex);
-
-			ImportJobFactory instance = GetTestInstance(importApiFactoryStub);
-			return instance;
-		}
-
-		private void AssertStartRecordNumberForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(ImportSettingsBase settings)
-		{
-			settings.StartRecordNumber.Should().Be(0);
 		}
 
 		[Test]
@@ -318,6 +282,41 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			AssertApplicationName(importBulkArtifactJob.Settings);
+		}
+
+		private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)
+		{
+			Mock<IImportAPI> importApiStub = new Mock<IImportAPI>(MockBehavior.Loose);
+			Mock<IImportApiFactory> importApiFactoryStub = new Mock<IImportApiFactory>();
+			Mock<Field> fieldStub = new Mock<Field>();
+
+			importApiStub.Setup(setupAction).Returns(mockObject);
+			importApiStub.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { fieldStub.Object });
+			importApiFactoryStub.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApiStub.Object);
+
+			const int batchStartingIndex = 250;
+			_batch.SetupGet(x => x.StartingIndex).Returns(batchStartingIndex);
+
+			ImportJobFactory instance = GetTestInstance(importApiFactoryStub);
+			return instance;
+		}
+
+		private void AssertStartRecordNumberForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(ImportSettingsBase settings)
+		{
+			settings.StartRecordNumber.Should().Be(0);
+		}
+
+		private ImportJobFactory PrepareInstanceForWebApiPathTests(Mock<IImportApiFactory> importApiFactory, string invalidWebAPIPath)
+		{
+			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync(invalidWebAPIPath);
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+			return instance;
+		}
+
+		private async Task AssertWebApiPathTestsAsync(Func<Task> action, string expectedMessage)
+		{
+			(await action.Should().ThrowAsync<ImportFailedException>().ConfigureAwait(false))
+				.Which.Message.Should().Be(expectedMessage);
 		}
 
 		private void AssertApplicationName(ImportSettingsBase settings)
