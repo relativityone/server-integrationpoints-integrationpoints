@@ -68,13 +68,21 @@ flowBuilder.AddRoot<SyncRootNode>()
     }
     ```
 
-    We could consider similar approach to [REL-445672](https://jira.kcura.com/browse/REL-445672). It enables to narrow total data size calculation to one batch. It could be implemented in `RelativityExportBatcher` where we get documentIds for batch. Then in `*JobEndMetricsService` summarize it same as for other counts.
+    **[Obsolete]**
+    ~~We could consider similar approach to [REL-445672](https://jira.kcura.com/browse/REL-445672). It enables to narrow total data size calculation to one batch. It could be implemented in `RelativityExportBatcher` where we get documentIds for batch. Then in `*JobEndMetricsService` summarize it same as for other counts.~~
 
-    As a main benefit we could remove total data size calculation which right now violates SoC principle.
+    ~~As a main benefit we could remove total data size calculation which right now violates SoC principle.~~
 
-    Drawback of this approach would be possible performance degradation. We could try to run calculation in background process, in result it could prolong batch cleanup process.
+    ~~Drawback of this approach would be possible performance degradation. We could try to run calculation in background process, in result it could prolong batch cleanup process.~~
 
-    _Note_: I don't think that size calculation takes more than transferring documents in batch, but it needs to be check
+    ~~_Note_: I don't think that size calculation takes more than transferring documents in batch, but it needs to be check~~
+
+    **[Proposed]**
+    Problem with previous approach is that if one of the batches fail and in result we fail the job then Total Data Size calculation would be calculated only for procceeded batches. As temporary solution we should start Total Data Size calculation every time the job is resumed.
+
+    It could impact overall performance because when the job has been paused in 99% we'll do whole data size calculation in this 1% time, which prolong job completion time.
+
+    Another problem is that we should extract Total Data Size calculation from DataSourceSnapshot because it needs to be calculated on every run, but snapshot is created once per job.
 
 3. Workspace Tag Creation:
 
@@ -113,7 +121,7 @@ Metrics with partial results shouldn't be send. It would require many changes in
 
 + **Relativity.IntegrationPoints.Job.Start.Type** - Should be send once. Perhaps we would need to receive some information from outside that this job is _Resumed_ to don't send it twice.
 + **Relativity.IntegrationPoints.Job.End.Status** - Shouldn't be send when job has been paused
-+ **Relativity.Sync.Data.LongTextStream** - I think we should move this metrics to `*JobEndMetricsService` (only DocumentJobEndMetricsService should be enough).
++ **Relativity.Sync.Data.LongTextStream** - This metrics keeps its running result through the job in memory. The results should be stored in persistent storage after drain stop. **[TBC]**
 
 ## RIP Requirements
 
@@ -126,6 +134,7 @@ Metrics with partial results shouldn't be send. It would require many changes in
     Resuming job would end up with running new Sync job so parameters needs to stay unchanged. There are two possible ways:
 
     + Grey out _Edit_ button when job is in _Pause_ state
+    + Display message as prerequisite e.g _"You cannot edit this Integration Point while its paused"_ after clicking _Edit_
     + Add validation on 3rd Step when saving the Integration Point
 
     Pros & Cons
