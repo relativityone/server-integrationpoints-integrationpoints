@@ -82,7 +82,7 @@ namespace Relativity.Sync.Executors
 
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-						using (IImportJob importJob = await _importJobFactory.CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
+						using (IImportJob importJob = await _importJobFactory.CreateNativeImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
 							{
@@ -245,6 +245,13 @@ namespace Relativity.Sync.Executors
 			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename);
 			configuration.OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType);
 			configuration.SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer);
+
+			// TODO REL-465067
+			if (configuration.ImageImport)
+			{
+				configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
+				configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
+			}
 		}
 
 		private int GetDestinationIdentityFieldId(IList<FieldMap> fieldMappings)
@@ -269,6 +276,7 @@ namespace Relativity.Sync.Executors
 				_logger.LogError(message);
 				throw new SyncException(message);
 			}
+
 			return specialField.DestinationFieldName;
 		}
 	}

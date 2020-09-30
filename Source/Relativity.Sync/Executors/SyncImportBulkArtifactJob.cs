@@ -15,18 +15,34 @@ namespace Relativity.Sync.Executors
 		private const string _IAPI_IDENTIFIER_COLUMN = "Identifier";
 		private const string _IAPI_MESSAGE_COLUMN = "Message";
 
-		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
+		private readonly IImportBulkArtifactJob _importBulkArtifactJob;
 
-		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+		private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader)
 		{
-			_importBulkArtifactJob = importBulkArtifactJob;
-			_importBulkArtifactJob.OnProgress += RaiseOnProgress;
-			_importBulkArtifactJob.OnError += HandleIapiItemLevelError;
-			_importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
-			_importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
-
 			ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
 			sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
+		}
+
+		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+			: this(sourceWorkspaceDataReader)
+		{
+			importBulkArtifactJob.OnProgress += RaiseOnProgress;
+			importBulkArtifactJob.OnError += HandleIapiItemLevelError;
+			importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
+
+			_importBulkArtifactJob = importBulkArtifactJob;
+		}
+
+		public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+			: this(sourceWorkspaceDataReader)
+		{
+			imageImportBulkArtifactJob.OnProgress += RaiseOnProgress;
+			imageImportBulkArtifactJob.OnError += HandleIapiItemLevelError;
+			imageImportBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			imageImportBulkArtifactJob.OnFatalException += HandleIapiFatalException;
+
+			_importBulkArtifactJob = imageImportBulkArtifactJob;
 		}
 
 		public IItemStatusMonitor ItemStatusMonitor { get; }
