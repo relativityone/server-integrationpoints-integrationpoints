@@ -44,7 +44,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 			else if (syncPipeline.IsImagePipeline())
 			{
-				return new ImageJobEndMetricsService();
+				return new ImageJobEndMetricsService(_batchRepository, _configuration, _jobStatisticsContainer, _syncMetrics, _logger);
 			}
 			else
 			{

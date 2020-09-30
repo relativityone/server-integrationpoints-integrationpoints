@@ -14,8 +14,13 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
-				Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS,
-				Description = "The end status of the Integration Points job."
+				Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA,
+				Description = "The end status of the Integration Points job for natives and metadata flow."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES,
+				Description = "The end status of the Integration Points job for images flow."
 			},
 			new MetricIdentifier
 			{
@@ -26,6 +31,11 @@ namespace Relativity.Sync.Telemetry
 			{
 				Name = TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS,
 				Description = "The end status of the Integration Points retry job."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.FLOW_TYPE,
+				Description = "The type of Sync job flow."
 			},
 			new MetricIdentifier
 			{
@@ -59,8 +69,23 @@ namespace Relativity.Sync.Telemetry
 			},
 			new MetricIdentifier
 			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED,
+				Description = "The total number of bytes of natives that were successfully transferred."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_TRANSFERRED,
+				Description = "The total number of bytes of images that were successfully transferred."
+			},
+			new MetricIdentifier
+			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED,
 				Description = "The total number of bytes of native files that were requested to transfer."
+			},
+			new MetricIdentifier
+			{
+				Name = TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_REQUESTED,
+				Description = "The total number of bytes of images that were requested to transfer."
 			},
 			new MetricIdentifier
 			{
