@@ -65,7 +65,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SynchronizationExecutionConstrains>().As<IExecutionConstrains<ISynchronizationConfiguration>>();
-			builder.RegisterType<SynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
+			builder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
 			builder.RegisterType<DataDestinationInitializationExecutor>().As<IExecutor<IDataDestinationInitializationConfiguration>>();
 			builder.RegisterType<DataDestinationInitializationExecutionConstrains>().As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
 			builder.RegisterType<DataDestinationFinalizationExecutor>().As<IExecutor<IDataDestinationFinalizationConfiguration>>();
