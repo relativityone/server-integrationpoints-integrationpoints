@@ -33,7 +33,7 @@
     <WarningsAsErrors />
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
-  <Import Project="..\..\scripts\Build.Sign.targets" />
+  <Import Project="..\..\DevelopmentScripts\Build.Sign.targets" />
   <!-- Relativity Packages with Release Versioning Schema -->
   <ItemGroup>
     <PackageReference Include="Relativity" />
