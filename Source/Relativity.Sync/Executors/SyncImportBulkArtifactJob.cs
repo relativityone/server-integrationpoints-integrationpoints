@@ -15,9 +15,7 @@ namespace Relativity.Sync.Executors
 		private const string _IAPI_IDENTIFIER_COLUMN = "Identifier";
 		private const string _IAPI_MESSAGE_COLUMN = "Message";
 
-		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
-		private readonly ImageImportBulkArtifactJob _imageImportBulkArtifactJob; 
-		private readonly Action _executeJob;
+		private readonly IImportBulkArtifactJob _importBulkArtifactJob;
 
 		private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader)
 		{
@@ -28,25 +26,23 @@ namespace Relativity.Sync.Executors
 		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
 			: this(sourceWorkspaceDataReader)
 		{
-			_importBulkArtifactJob = importBulkArtifactJob;
-			_importBulkArtifactJob.OnProgress += RaiseOnProgress;
-			_importBulkArtifactJob.OnError += HandleIapiItemLevelError;
-			_importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
-			_importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
+			importBulkArtifactJob.OnProgress += RaiseOnProgress;
+			importBulkArtifactJob.OnError += HandleIapiItemLevelError;
+			importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
-			_executeJob = () => _importBulkArtifactJob.Execute();
+			_importBulkArtifactJob = importBulkArtifactJob;
 		}
 
 		public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
 			: this(sourceWorkspaceDataReader)
 		{
-			_imageImportBulkArtifactJob = imageImportBulkArtifactJob;
-			_imageImportBulkArtifactJob.OnProgress += RaiseOnProgress;
-			_imageImportBulkArtifactJob.OnError += HandleIapiItemLevelError;
-			_imageImportBulkArtifactJob.OnComplete += HandleIapiJobComplete;
-			_imageImportBulkArtifactJob.OnFatalException += HandleIapiFatalException;
+			imageImportBulkArtifactJob.OnProgress += RaiseOnProgress;
+			imageImportBulkArtifactJob.OnError += HandleIapiItemLevelError;
+			imageImportBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			imageImportBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
-			_executeJob = () => _imageImportBulkArtifactJob.Execute();
+			_importBulkArtifactJob = imageImportBulkArtifactJob;
 		}
 
 		public IItemStatusMonitor ItemStatusMonitor { get; }
@@ -58,7 +54,7 @@ namespace Relativity.Sync.Executors
 
 		public void Execute()
 		{
-			_executeJob();
+			_importBulkArtifactJob.Execute();
 		}
 
 		private void RaiseOnProgress(long completedRow)

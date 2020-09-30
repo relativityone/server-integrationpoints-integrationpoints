@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -28,7 +29,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		public Task<Executors.IImportJob> CreateImageImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
-			return CreateImportJobAsync(configuration);
+			throw new NotImplementedException();
 		}
 
 		private Task<Executors.IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration)
