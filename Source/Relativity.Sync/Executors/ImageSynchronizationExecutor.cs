@@ -5,9 +5,9 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase
+	internal class ImageSynchronizationExecutor : SynchronizationExecutorBase
 	{
-		public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
+		public ImageSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration, IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
