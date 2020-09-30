@@ -2,8 +2,8 @@
 
 jobWithSut {
     slackChannel = "cd_trident_rip"
-    sutTemplate = "aio-lanceleaf-ea"
-	relativityBranch = "develop"
+    sutTemplate = "aio-mayapple-ea"
+    relativityBranch = "release-11.3-mayapple-ea"
     jobScript = "Trident/Scripts/UI-OldSync.ps1"
     cron = "0 1 * * *"
 }
