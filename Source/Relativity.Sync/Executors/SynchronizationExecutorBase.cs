@@ -14,14 +14,15 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
-		private readonly IImportJobFactory _importJobFactory;
-		private readonly IFieldManager _fieldManager;
 		private readonly IFieldMappings _fieldMappings;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IDocumentTagRepository _documentsTagRepository;
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
 		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
 		private readonly ISyncLog _logger;
+
+		protected readonly IImportJobFactory _importJobFactory;
+		protected readonly IFieldManager _fieldManager;
 
 		public SynchronizationExecutorBase(IImportJobFactory importJobFactory,
 			IBatchRepository batchRepository,
@@ -45,6 +46,10 @@ namespace Relativity.Sync.Executors
 			_automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
 			_logger = logger;
 		}
+
+		protected abstract Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
+
+		protected abstract void UpdateImportSettings(ISynchronizationConfiguration configuration);
 
 		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
 		{
@@ -82,7 +87,7 @@ namespace Relativity.Sync.Executors
 
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-						using (IImportJob importJob = await _importJobFactory.CreateNativeImportJobAsync(configuration, batch, token).ConfigureAwait(false))
+						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
 							{
@@ -230,33 +235,9 @@ namespace Relativity.Sync.Executors
 			return ExecutionResult.Success();
 		}
 
-		private void UpdateImportSettings(ISynchronizationConfiguration configuration)
+		protected int GetDestinationIdentityFieldId()
 		{
-			int destinationIdentityFieldId = GetDestinationIdentityFieldId(_fieldMappings.GetFieldMappings());
-			IList<FieldInfoDto> specialFields = _fieldManager.GetNativeSpecialFields().ToList();
-
-			configuration.IdentityFieldId = destinationIdentityFieldId;
-			if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
-			{
-				configuration.FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath);
-			}
-			configuration.FileSizeColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileSize);
-			configuration.NativeFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileLocation);
-			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename);
-			configuration.OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType);
-			configuration.SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer);
-
-			// TODO REL-465067
-			if (configuration.ImageImport)
-			{
-				configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
-				configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
-			}
-		}
-
-		private int GetDestinationIdentityFieldId(IList<FieldMap> fieldMappings)
-		{
-			FieldMap destinationIdentityField = fieldMappings.FirstOrDefault(x => x.DestinationField.IsIdentifier);
+			FieldMap destinationIdentityField = _fieldMappings.GetFieldMappings().FirstOrDefault(x => x.DestinationField.IsIdentifier);
 			if (destinationIdentityField == null)
 			{
 				const string message = "Cannot find destination identifier field in field mappings.";
@@ -266,7 +247,7 @@ namespace Relativity.Sync.Executors
 			return destinationIdentityField.DestinationField.FieldIdentifier;
 		}
 
-		private string GetSpecialFieldColumnName(IList<FieldInfoDto> specialFields, SpecialFieldType specialFieldType)
+		protected string GetSpecialFieldColumnName(IList<FieldInfoDto> specialFields, SpecialFieldType specialFieldType)
 		{
 			FieldInfoDto specialField = specialFields.FirstOrDefault(x => x.SpecialFieldType == specialFieldType);
 

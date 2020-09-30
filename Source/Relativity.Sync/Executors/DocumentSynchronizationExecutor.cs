@@ -2,6 +2,10 @@
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Executors
 {
@@ -14,6 +18,28 @@ namespace Relativity.Sync.Executors
 			ISyncLog logger) : base(importJobFactory, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, logger)
 		{
+		}
+
+		protected override Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		{
+			return _importJobFactory.CreateNativeImportJobAsync(configuration, batch, token);
+		}
+
+		protected override void UpdateImportSettings(ISynchronizationConfiguration configuration)
+		{
+			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
+			
+			IList<FieldInfoDto> specialFields = _fieldManager.GetNativeSpecialFields().ToList();
+			if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
+			{
+				configuration.FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath);
+			}
+
+			configuration.FileSizeColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileSize);
+			configuration.NativeFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileLocation);
+			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.NativeFileFilename);
+			configuration.OiFileTypeColumnName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.RelativityNativeType);
+			configuration.SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer);
 		}
 	}
 }
