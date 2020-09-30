@@ -34,7 +34,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 				await ReportRecordsStatisticsAsync().ConfigureAwait(false);
 
-				ReportJobEndStatus(jobExecutionStatus);
+				ReportJobEndStatus(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA, jobExecutionStatus);
 
 				await ReportFieldsStatisticsAsync().ConfigureAwait(false);
 

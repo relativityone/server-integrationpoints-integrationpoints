@@ -41,9 +41,9 @@ namespace Relativity.Sync.Executors.SumReporting
 			_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalRequested);
 		}
 
-		protected void ReportJobEndStatus(ExecutionStatus jobExecutionStatus)
+		protected void ReportJobEndStatus(string bucketName, ExecutionStatus jobExecutionStatus)
 		{
-			_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS, jobExecutionStatus.GetDescription());
+			_syncMetrics.LogPointInTimeString(bucketName, jobExecutionStatus.GetDescription());
 
 			if (_configuration.JobHistoryToRetryId != null)
 			{
