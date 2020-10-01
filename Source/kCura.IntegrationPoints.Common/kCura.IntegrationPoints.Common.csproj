@@ -54,6 +54,13 @@
     <Compile Include="Handlers\IRetryHandler.cs" />
     <Compile Include="Handlers\IRetryHandlerFactory.cs" />
     <Compile Include="Extensions\DotNet\EnumerableExtensions.cs" />
+    <Compile Include="Metrics\IRipMetrics.cs" />
+    <Compile Include="Metrics\Sink\ApmRipMetricSink.cs" />
+    <Compile Include="Metrics\Sink\IRipMetricsSink.cs" />
+    <Compile Include="Metrics\RipMetric.cs" />
+    <Compile Include="Metrics\RipMetrics.cs" />
+    <Compile Include="Metrics\RipMetricType.cs" />
+    <Compile Include="Metrics\Sink\SplunkRipMetricSink.cs" />
     <Compile Include="Monitoring\Constants\TelemetryMetricsBucketNames.cs" />
     <Compile Include="Context\IWorkspaceContext.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentation.cs" />
@@ -103,6 +110,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

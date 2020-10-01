@@ -83,7 +83,10 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Attributes\ExecutionTimeMetricsFilterAttribute.cs" />
+    <Compile Include="Attributes\ApiActionExecutionTimeMetricsFilterAttribute.cs" />
+    <Compile Include="Metrics\ControllerActionExecutionTimeMetrics.cs" />
+    <Compile Include="Attributes\MvcActionExecutionTimeMetricsFilterAttribute.cs" />
+    <Compile Include="Metrics\IControllerActionExecutionTimeMetrics.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldMappingsController.cs" />
     <Compile Include="Helpers\IRelativityUrlHelper.cs" />
     <Compile Include="Helpers\RelativityUrlHelper.cs" />
@@ -673,7 +676,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Metrics\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="paket.references">

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Metrics
 {
@@ -54,6 +55,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Metrics
 			{
 				Value = value,
 				CustomData = new Dictionary<string, object>() { { "unitOfMeasure", unitOfMeasure } }
+			};
+		}
+
+		public static Metric TimedOperation(string name, TimeSpan duration, string workflowId)
+		{
+			return new Metric(name, MetricType.TimedOperation, workflowId)
+			{
+				Value = duration.TotalMilliseconds
 			};
 		}
 	}

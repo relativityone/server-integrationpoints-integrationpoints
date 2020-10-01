@@ -9,12 +9,12 @@ namespace kCura.IntegrationPoints.Web
 		public static void RegisterGlobalMvcFilters(GlobalFilterCollection mvcFilters)
 		{
 			mvcFilters.Add(new HandleErrorAttribute());
-			mvcFilters.Add(new ExecutionTimeMetricsMvcActionFilterAttribute());
+			mvcFilters.Add(new MvcActionExecutionTimeMetricsFilterAttribute());
 		}
 
 		public static void RegisterGlobalApiFilters(HttpFilterCollection apiFilters)
 		{
-			apiFilters.Add(new ExecutionTimeMetricsApiActionFilterAttribute());
+			apiFilters.Add(new ApiActionExecutionTimeMetricsFilterAttribute());
 		}
 	}
 }
