@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _automatedWorkflowTriggerConfigurationFake;
 
 		private Mock<Sync.Executors.IImportJob> _importJobFake;
-		private Mock<ISynchronizationConfiguration> _configFake;
+		private Mock<IDocumentSynchronizationConfiguration> _configFake;
 
 		private DocumentSynchronizationExecutor _sut;
 
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_fakeFieldMappings = new Mock<IFieldMappings>();
 			_documentTagRepositoryFake = new Mock<IDocumentTagRepository>();
-			_configFake = new Mock<ISynchronizationConfiguration>();
+			_configFake = new Mock<IDocumentSynchronizationConfiguration>();
 			_jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
 			_automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();

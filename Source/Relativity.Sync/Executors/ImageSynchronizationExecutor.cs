@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Executors
 {
-	internal class ImageSynchronizationExecutor : SynchronizationExecutorBase
+	internal class ImageSynchronizationExecutor : SynchronizationExecutorBase<IImageSynchronizationConfiguration>
 	{
 		public ImageSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
@@ -20,12 +20,12 @@ namespace Relativity.Sync.Executors
 		{
 		}
 
-		protected override Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		protected override Task<IImportJob> CreateImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			return _importJobFactory.CreateImageImportJobAsync(configuration, batch, token);
 		}
 
-		protected override void UpdateImportSettings(ISynchronizationConfiguration configuration)
+		protected override void UpdateImportSettings(IImageSynchronizationConfiguration configuration)
 		{
 			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
 

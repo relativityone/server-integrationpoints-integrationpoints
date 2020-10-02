@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Integration
 	internal sealed class DocumentSynchronizationExecutorTests
 	{
 		private ConfigurationStub _config;
-		private IExecutor<ISynchronizationConfiguration> _executor;
+		private IExecutor<IDocumentSynchronizationConfiguration> _executor;
 		private ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<IFolderManager> _folderManagerMock;
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Integration
 		public void SetUp()
 		{
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			IntegrationTestsContainerBuilder.MockStepsExcept<ISynchronizationConfiguration>(containerBuilder);
+			IntegrationTestsContainerBuilder.MockStepsExcept<IDocumentSynchronizationConfiguration>(containerBuilder);
 			containerBuilder.RegisterType<ImportJobFactoryStub>().As<IImportJobFactory>();
 
 			_importBulkArtifactJob = new Mock<ISyncImportBulkArtifactJob>();
@@ -103,6 +103,7 @@ namespace Relativity.Sync.Tests.Integration
 			var fieldMappings = new Mock<IFieldMappings>();
 			fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMaps);
 
+
 			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
@@ -111,14 +112,14 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(sourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
-			containerBuilder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<ISynchronizationConfiguration>>();
+			containerBuilder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<IDocumentSynchronizationConfiguration>>();
 
 			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();
 			_dataReaderFactory = container.Resolve<ISourceWorkspaceDataReaderFactory>();
-			_executor = container.Resolve<IExecutor<ISynchronizationConfiguration>>();
+			_executor = container.Resolve<IExecutor<IDocumentSynchronizationConfiguration>>();
 		}
 
 		[Test]

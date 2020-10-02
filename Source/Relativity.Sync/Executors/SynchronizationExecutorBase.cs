@@ -10,7 +10,8 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal abstract class SynchronizationExecutorBase : IExecutor<ISynchronizationConfiguration>
+	internal abstract class SynchronizationExecutorBase<TConfiguration> : IExecutor<TConfiguration>
+		where TConfiguration : ISynchronizationConfiguration
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
@@ -47,11 +48,11 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		protected abstract Task<IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
+		protected abstract Task<IImportJob> CreateImportJobAsync(TConfiguration configuration, IBatch batch, CancellationToken token);
 
-		protected abstract void UpdateImportSettings(ISynchronizationConfiguration configuration);
+		protected abstract void UpdateImportSettings(TConfiguration configuration);
 
-		public async Task<ExecutionResult> ExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogInformation("Creating settings for ImportAPI.");
 			UpdateImportSettings(configuration);
@@ -63,7 +64,7 @@ namespace Relativity.Sync.Executors
 			return importAndTagResult;
 		}
 
-		private async Task<ExecutionResult> ExecuteSynchronizationAsync(ISynchronizationConfiguration configuration,
+		private async Task<ExecutionResult> ExecuteSynchronizationAsync(TConfiguration configuration,
 			CancellationToken token)
 		{
 			ExecutionResult importAndTagResult;
