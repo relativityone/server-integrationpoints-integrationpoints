@@ -47,6 +47,8 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Attributes\ApiActionExecutionTimeMetricsFilterAttributeTests.cs" />
+    <Compile Include="Attributes\MvcActionExecutionTimeMetricsFilterAttributeTests.cs" />
     <Compile Include="Context\UserContext\NotFoundUserContextServiceTests.cs" />
     <Compile Include="Context\UserContext\RequestHeadersUserContextServiceTests.cs" />
     <Compile Include="Context\UserContext\SessionUserContextServiceTests.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="Infrastructure\MessageHandlers\CorrelationIdHandlerTests.cs" />
     <Compile Include="Context\WorkspaceContext\SessionWorkspaceContextServiceTests.cs" />
     <Compile Include="IntegrationPointsServices\TextSanitizerTests.cs" />
+    <Compile Include="Metrics\ControllerActionExecutionTimeMetricsTests.cs" />
     <Compile Include="RelativityServices\RetriableCPHelperProxyTests.cs" />
     <Compile Include="Context\WorkspaceContext\RequestContextWorkspaceContextServiceTests.cs" />
     <Compile Include="WindsorFilterProviderTests.cs" />
@@ -230,6 +233,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
