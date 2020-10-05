@@ -37,7 +37,8 @@ namespace kCura.IntegrationPoints.Web
 		{
 			AreaRegistration.RegisterAllAreas();
 
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactoryWrapper(ConnectionHelper.Helper);
+			Apps.Common.Config.Manager.Settings.Factory =
+				new HelperConfigSqlServiceFactoryWrapper(ConnectionHelper.Helper);
 			CreateWindsorContainer();
 
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
@@ -52,7 +53,8 @@ namespace kCura.IntegrationPoints.Web
 				exceptionLogger: _container.Resolve<WebAPIExceptionLogger>()
 			);
 
-			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+			FilterConfig.RegisterGlobalMvcFilters(GlobalFilters.Filters);
+			FilterConfig.RegisterGlobalApiFilters(GlobalConfiguration.Configuration.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
@@ -89,10 +91,14 @@ namespace kCura.IntegrationPoints.Web
 			IKernel kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
 
-			_container.Install(FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory, "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
+			_container.Install(
+				FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory,
+					"kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
 
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
-			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
+			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator),
+				new WindsorCompositionRoot(_container));
+			WindsorServiceLocator.Container = _container;
 		}
 	}
 }

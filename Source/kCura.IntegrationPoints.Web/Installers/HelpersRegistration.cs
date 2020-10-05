@@ -1,7 +1,11 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Metrics;
+using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.DocumentTransferProvider;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
+using kCura.IntegrationPoints.Web.Metrics;
 using kCura.Relativity.ImportAPI;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.Metrics;
@@ -40,6 +44,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.For<IFieldsMappingValidator>()
 					.ImplementedBy<FieldsMappingValidator>()
 					.LifestyleTransient(),
+
 				Component
 					.For<IMetricsSender>()
 					.ImplementedBy<MetricsSender>()
@@ -47,6 +52,28 @@ namespace kCura.IntegrationPoints.Web.Installers
 				Component
 					.For<IMetricsSink>()
 					.ImplementedBy<SplunkMetricsSink>()
+					.LifestyleTransient(),
+
+				Component
+					.For<IRipMetrics>()
+					.ImplementedBy<RipMetrics>()
+					.LifestyleTransient(),
+				Component
+					.For<IRipMetricsSink>()
+					.ImplementedBy<SplunkRipMetricSink>()
+					.LifestyleTransient(),
+				Component
+					.For<IRipMetricsSink>()
+					.ImplementedBy<ApmRipMetricSink>()
+					.LifestyleTransient(),
+
+				Component
+					.For<IControllerActionExecutionTimeMetrics>()
+					.ImplementedBy<ControllerActionExecutionTimeMetrics>()
+					.LifestyleTransient(),
+				Component
+					.For<IDateTimeHelper>()
+					.ImplementedBy<DateTimeHelper>()
 					.LifestyleTransient()
 			);
 		}

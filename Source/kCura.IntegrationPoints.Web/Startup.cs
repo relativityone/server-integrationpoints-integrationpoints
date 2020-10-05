@@ -1,11 +1,4 @@
-﻿using System;
-using Castle.MicroKernel;
-using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.Resolvers.SpecializedResolvers;
-using Castle.Windsor;
-using Castle.Windsor.Installer;
-using kCura.IntegrationPoints.Web.Installers;
-using kCura.IntegrationPoints.Web.SignalRHubs;
+﻿using kCura.IntegrationPoints.Web.SignalRHubs;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;

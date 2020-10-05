@@ -53,6 +53,9 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Extensions\DotNet\EnumerableExtensionsTests.cs" />
+    <Compile Include="Metrics\RipMetricsTests.cs" />
+    <Compile Include="Metrics\Sink\ApmMetricSinkTests.cs" />
+    <Compile Include="Metrics\Sink\SplunkMetricsSinkTests.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalCallCompletedMessageTests.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceInstrumentationTests.cs" />
     <Compile Include="Monitoring\Instrumentation\ExternalServiceSimpleInstrumentationTests.cs" />
@@ -62,9 +65,6 @@
       <Project>{32bcb03b-4980-4434-9392-f72334e6e348}</Project>
       <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
@@ -158,6 +158,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
           <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Telemetry.APM">
+          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

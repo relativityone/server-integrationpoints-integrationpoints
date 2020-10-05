@@ -93,6 +93,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncWorker.Execute.Duration";
 				public const string BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncManager.Execute.Duration";
 				public const string BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Web.Controllers.API.Update.Duration";
+				public const string BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME = "IntegrationPoint.CustomPage.ResponseTime";
 
 				public const string CUSTOM_DATA_CORRELATIONID = "CorrelationID";
 

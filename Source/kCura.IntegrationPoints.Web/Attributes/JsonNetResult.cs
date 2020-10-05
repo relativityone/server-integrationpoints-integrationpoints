@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Helpers;
 using Newtonsoft.Json;
@@ -21,16 +21,6 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			SerializerSettings = JSONHelper.GetDefaultSettings();
 		}
 
-		public JsonNetResult GetJsonNetResult(object data = null, int statusCode = (int)HttpStatusCode.NoContent, string contentType = null)
-		{
-			return new JsonNetResult
-			{
-				Data = data,
-				StatusCode = statusCode,
-				ContentType = contentType
-			};
-		}
-
 		public override void ExecuteResult(ControllerContext context)
 		{
 			if (context == null)
@@ -38,7 +28,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 				throw new ArgumentNullException("context");
 			}
 
-			var response = context.HttpContext.Response;
+			HttpResponseBase response = context.HttpContext.Response;
 
 			response.StatusCode = StatusCode;
 			response.ContentType = string.IsNullOrEmpty(ContentType) ? "application/json" : ContentType;
@@ -60,9 +50,9 @@ namespace kCura.IntegrationPoints.Web.Attributes
 
 			var formatting = Formatting.None;
 
-			var writer = new JsonTextWriter(response.Output) { Formatting = formatting, };
+			var writer = new JsonTextWriter(response.Output) {Formatting = formatting};
 
-			var serializer = JsonSerializer.Create(SerializerSettings);
+			JsonSerializer serializer = JsonSerializer.Create(SerializerSettings);
 			serializer.Serialize(writer, Data);
 
 			writer.Flush();

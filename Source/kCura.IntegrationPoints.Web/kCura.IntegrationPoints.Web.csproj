@@ -83,6 +83,10 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Attributes\ApiActionExecutionTimeMetricsFilterAttribute.cs" />
+    <Compile Include="Metrics\ControllerActionExecutionTimeMetrics.cs" />
+    <Compile Include="Attributes\MvcActionExecutionTimeMetricsFilterAttribute.cs" />
+    <Compile Include="Metrics\IControllerActionExecutionTimeMetrics.cs" />
     <Compile Include="Controllers\API\FieldMappings\FieldMappingsController.cs" />
     <Compile Include="Helpers\IRelativityUrlHelper.cs" />
     <Compile Include="Helpers\RelativityUrlHelper.cs" />
@@ -204,6 +208,7 @@
     <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />
     <Compile Include="WindsorFilterProvider.cs" />
+    <Compile Include="WindsorServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.svg">
