@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Relativity.Sync.Configuration
+﻿namespace Relativity.Sync.Configuration
 {
 	interface IImageSynchronizationConfiguration : ISynchronizationConfiguration
 	{
+		string ImageFilePathSourceFieldName { get; set; }
+		
+		bool IncludeOriginalImages { get; }
+
+		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
+
+		int[] ProductionImagePrecedence { get; }
 	}
 }

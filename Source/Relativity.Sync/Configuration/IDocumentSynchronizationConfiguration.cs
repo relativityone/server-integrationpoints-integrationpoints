@@ -1,12 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Relativity.Sync.Configuration
+﻿namespace Relativity.Sync.Configuration
 {
 	internal interface IDocumentSynchronizationConfiguration : ISynchronizationConfiguration
 	{
+		char MultiValueDelimiter { get; }
+
+		char NestedValueDelimiter { get; }
+
+		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+
+		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+
+		string FileSizeColumn { get; set; }
+
+		string NativeFilePathSourceFieldName { get; set; }
+
+		string OiFileTypeColumnName { get; set; }
+
+		string SupportedByViewerColumn { get; set; }
+
 	}
 }

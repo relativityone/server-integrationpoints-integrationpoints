@@ -22,12 +22,12 @@ namespace Relativity.Sync.Tests.Integration
 			_logger = logger;
 		}
 
-		public Task<Executors.IImportJob> CreateNativeImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		public Task<Executors.IImportJob> CreateNativeImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			return CreateImportJobAsync(configuration);
 		}
 
-		public Task<Executors.IImportJob> CreateImageImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		public Task<Executors.IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			throw new NotImplementedException();
 		}

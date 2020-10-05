@@ -25,7 +25,7 @@ namespace Relativity.Sync.Executors
 		protected readonly IImportJobFactory _importJobFactory;
 		protected readonly IFieldManager _fieldManager;
 
-		public SynchronizationExecutorBase(IImportJobFactory importJobFactory,
+		protected SynchronizationExecutorBase(IImportJobFactory importJobFactory,
 			IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory,
 			IDocumentTagRepository documentsTagRepository,
@@ -50,7 +50,10 @@ namespace Relativity.Sync.Executors
 
 		protected abstract Task<IImportJob> CreateImportJobAsync(TConfiguration configuration, IBatch batch, CancellationToken token);
 
-		protected abstract void UpdateImportSettings(TConfiguration configuration);
+		protected virtual void UpdateImportSettings(TConfiguration configuration)
+		{
+			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
+		}
 
 		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CancellationToken token)
 		{

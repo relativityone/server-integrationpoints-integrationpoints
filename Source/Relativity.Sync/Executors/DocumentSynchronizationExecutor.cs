@@ -27,8 +27,8 @@ namespace Relativity.Sync.Executors
 
 		protected override void UpdateImportSettings(IDocumentSynchronizationConfiguration configuration)
 		{
-			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
-			
+			base.UpdateImportSettings(configuration);
+
 			IList<FieldInfoDto> specialFields = _fieldManager.GetNativeSpecialFields().ToList();
 			if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
 			{

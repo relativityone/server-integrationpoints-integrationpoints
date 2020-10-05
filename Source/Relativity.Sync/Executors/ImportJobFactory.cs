@@ -33,65 +33,28 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<IImportJob> CreateImageImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		public async Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateImageSourceWorkspaceDataReader(batch, token);
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
-			//SetCommonIapiSettings(configuration, importJob.Settings, importApi);
+			SetCommonIapiSettings(configuration, importJob.Settings);
 
 			importJob.SourceData.Reader = sourceWorkspaceDataReader;
-
-			importJob.Settings.ApplicationName = _syncJobParameters.SyncApplicationName;
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
-			importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
 			importJob.Settings.AutoNumberImages = true;
 			importJob.Settings.BatesNumberField = configuration.FileNameColumn;
 			importJob.Settings.Billable = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
-			importJob.Settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
 			importJob.Settings.CopyFilesToDocumentRepository = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
-			importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
 			importJob.Settings.DisableImageTypeValidation = true;
 			importJob.Settings.DocumentIdentifierField = GetSelectedIdentifierFieldName(
 				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
 				configuration.IdentityFieldId);
 
 			importJob.Settings.FileLocationField = configuration.ImageFilePathSourceFieldName;
-			//importJob.Settings.FileNameField = ""; //TODO
-			importJob.Settings.IdentityFieldId = configuration.IdentityFieldId;
-			//importJob.Settings.FolderPathSourceFieldName
-			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
 			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
-			importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
-			importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
-			importJob.Settings.StartRecordNumber = 0;
 			
-			
-			
-			//importJob.Settings.StartRecordNumber = 0;
-			//importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
-			//importJob.Settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
-			//importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
-			//importJob.Settings.MoveDocumentsInAppendOverlayMode =
-			//	configuration.ImportOverwriteMode != ImportOverwriteMode.AppendOnly &&
-			//	configuration.MoveExistingDocuments && !string.IsNullOrEmpty(configuration.FolderPathSourceFieldName);
-
-			//importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
-			//importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
-			//importJob.Settings.IdentityFieldId = configuration.IdentityFieldId;
-
-			//importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
-			//	importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
-			//	configuration.IdentityFieldId);
-
-			//importJob.SourceData.Reader = sourceWorkspaceDataReader;
-			//importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
-			//importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
-			//importJob.Settings.Billable = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
-			//importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
-			//importJob.Settings.ImageFilePathSourceFieldName = configuration.ImageFilePathSourceFieldName;
-
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
 			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
@@ -100,13 +63,13 @@ namespace Relativity.Sync.Executors
 			return job;
 		}
 
-		public async Task<IImportJob> CreateNativeImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		public async Task<IImportJob> CreateNativeImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token);
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 
-			SetCommonIapiSettings(configuration, importJob.Settings, importApi);
+			SetCommonIapiSettings(configuration, importJob.Settings);
 
 			importJob.SourceData.SourceData = sourceWorkspaceDataReader; // This assignment invokes IDataReader.Read immediately!
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
@@ -131,6 +94,10 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.DisableNativeValidation = false;
 			}
 
+			importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
+				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
+				configuration.IdentityFieldId);
+
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
 			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
@@ -139,7 +106,7 @@ namespace Relativity.Sync.Executors
 			return job;
 		}
 
-		private void SetCommonIapiSettings(ISynchronizationConfiguration configuration, ImportSettingsBase settings, IImportAPI importApi)
+		private void SetCommonIapiSettings(ISynchronizationConfiguration configuration, ImportSettingsBase settings)
 		{
 			settings.ApplicationName = _syncJobParameters.SyncApplicationName;
 			settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
@@ -151,13 +118,9 @@ namespace Relativity.Sync.Executors
 				configuration.ImportOverwriteMode != ImportOverwriteMode.AppendOnly &&
 				configuration.MoveExistingDocuments && !string.IsNullOrEmpty(configuration.FolderPathSourceFieldName);
 
-			settings.OverlayBehavior = (OverlayBehavior) configuration.FieldOverlayBehavior;
-			settings.OverwriteMode = (OverwriteModeEnum) configuration.ImportOverwriteMode;
+			settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
+			settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
 			settings.IdentityFieldId = configuration.IdentityFieldId;
-
-			settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
-				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
-				configuration.IdentityFieldId);
 		}
 
 		private async Task<IImportAPI> GetImportApiAsync()

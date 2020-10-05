@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	internal class MultipleChoiceFieldSanitizerTests
 	{
-		private Mock<ISynchronizationConfiguration> _config;
+		private Mock<IDocumentSynchronizationConfiguration> _config;
 		private Mock<IChoiceCache> _choiceCache;
 		private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
 		private MultipleChoiceFieldSanitizer _instance;
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[SetUp]
 		public void SetUp()
 		{
-			_config = new Mock<ISynchronizationConfiguration>();
+			_config = new Mock<IDocumentSynchronizationConfiguration>();
 			_config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_VALUE);
 			_config.SetupGet(x => x.MultiValueDelimiter).Returns(_MULTI_VALUE);
 			_choiceCache = new Mock<IChoiceCache>();

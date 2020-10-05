@@ -13,7 +13,6 @@ using NUnit.Framework;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
@@ -53,7 +52,7 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 
 			var configuration = new ConfigurationStub();
-			builder.RegisterInstance(configuration).As<ISynchronizationConfiguration>();
+			builder.RegisterInstance(configuration).AsImplementedInterfaces();
 
 			builder.RegisterType<ExportDataSanitizer>().As<ExportDataSanitizer>();
 			_container = builder.Build();

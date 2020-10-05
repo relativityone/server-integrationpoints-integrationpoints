@@ -15,7 +15,8 @@ namespace Relativity.Sync.Executors
 			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration, IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			ISyncLog logger) : base(importJobFactory, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
+			ISyncLog logger)
+			: base(importJobFactory, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, logger)
 		{
 		}
@@ -27,11 +28,10 @@ namespace Relativity.Sync.Executors
 
 		protected override void UpdateImportSettings(IImageSynchronizationConfiguration configuration)
 		{
-			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
+			base.UpdateImportSettings(configuration);
 
 			IList<FieldInfoDto> specialFields = _fieldManager.GetImageSpecialFields().ToList();
 			configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
-			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
 		}
 	}
 }
