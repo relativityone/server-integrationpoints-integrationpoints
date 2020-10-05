@@ -103,7 +103,6 @@ namespace Relativity.Sync.Tests.Integration
 			var fieldMappings = new Mock<IFieldMappings>();
 			fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMaps);
 
-
 			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
