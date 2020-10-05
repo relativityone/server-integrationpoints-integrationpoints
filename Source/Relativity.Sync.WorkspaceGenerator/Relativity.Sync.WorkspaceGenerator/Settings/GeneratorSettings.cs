@@ -105,6 +105,10 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 			GeneratorSettings settings = JsonConvert.DeserializeObject<GeneratorSettings>(File.ReadAllText(filePath));
 
 			settings.Append = append;
+			if (settings.BatchSize == 0)
+			{
+				settings.BatchSize = DEFAULT_BATCH_SIZE;
+			}
 
 			return settings;
 		}
