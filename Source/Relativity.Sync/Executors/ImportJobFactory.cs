@@ -39,14 +39,58 @@ namespace Relativity.Sync.Executors
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
 			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
-			SetCommonIapiSettings(configuration, importJob.Settings, importApi);
+			//SetCommonIapiSettings(configuration, importJob.Settings, importApi);
 
 			importJob.SourceData.Reader = sourceWorkspaceDataReader;
+
+			importJob.Settings.ApplicationName = _syncJobParameters.SyncApplicationName;
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
-			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
+			importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
+			importJob.Settings.AutoNumberImages = true;
+			importJob.Settings.BatesNumberField = configuration.FileNameColumn;
 			importJob.Settings.Billable = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
+			importJob.Settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
+			importJob.Settings.CopyFilesToDocumentRepository = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
+			importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
+			importJob.Settings.DisableImageTypeValidation = true;
+			importJob.Settings.DocumentIdentifierField = GetSelectedIdentifierFieldName(
+				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
+				configuration.IdentityFieldId);
+
+			importJob.Settings.FileLocationField = configuration.ImageFilePathSourceFieldName;
+			//importJob.Settings.FileNameField = ""; //TODO
+			importJob.Settings.IdentityFieldId = configuration.IdentityFieldId;
+			//importJob.Settings.FolderPathSourceFieldName
+			importJob.Settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
 			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
-			importJob.Settings.ImageFilePathSourceFieldName = configuration.ImageFilePathSourceFieldName;
+			importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
+			importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
+			importJob.Settings.StartRecordNumber = 0;
+			
+			
+			
+			//importJob.Settings.StartRecordNumber = 0;
+			//importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
+			//importJob.Settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
+			//importJob.Settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
+			//importJob.Settings.MoveDocumentsInAppendOverlayMode =
+			//	configuration.ImportOverwriteMode != ImportOverwriteMode.AppendOnly &&
+			//	configuration.MoveExistingDocuments && !string.IsNullOrEmpty(configuration.FolderPathSourceFieldName);
+
+			//importJob.Settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
+			//importJob.Settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
+			//importJob.Settings.IdentityFieldId = configuration.IdentityFieldId;
+
+			//importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
+			//	importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
+			//	configuration.IdentityFieldId);
+
+			//importJob.SourceData.Reader = sourceWorkspaceDataReader;
+			//importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
+			//importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
+			//importJob.Settings.Billable = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
+			//importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
+			//importJob.Settings.ImageFilePathSourceFieldName = configuration.ImageFilePathSourceFieldName;
 
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 

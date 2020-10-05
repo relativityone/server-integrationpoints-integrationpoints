@@ -23,6 +23,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public string Name { get; }
 		public string FolderPath => GetDatasetPath(Name);
+		public int TotalCount => GetFiles().Count();
 
 		protected Dataset(string name, Func<FileInfo, string> controlNumberGetter = null, Func<FileInfo, string> begBatesGetter = null)
 		{

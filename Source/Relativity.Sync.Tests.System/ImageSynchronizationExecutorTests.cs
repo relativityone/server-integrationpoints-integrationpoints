@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
+using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +21,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Sync.Tests.System.SynchronizationExecutorsTests;
 using Relativity.Testing.Identification;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
@@ -30,7 +34,6 @@ namespace Relativity.Sync.Tests.System
 		private const int _CONTROL_NUMBER_FIELD_ID = 1003667;
 		private const string _CONTROL_NUMBER_FIELD_DISPLAY_NAME = "Control Number";
 
-		private static readonly Dataset Dataset = Dataset.NativesAndExtractedText;
 		private static readonly Guid JobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 		private static readonly Guid ErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
 		private static readonly Guid StackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
@@ -41,51 +44,34 @@ namespace Relativity.Sync.Tests.System
 		[IdentifiedTestCase("A8E4D5D7-5E70-4909-9EE0-27BA1F80E532", 1000, 1)]
 		public async Task ItShouldPassGoldFlow(int batchSize, int totalRecordsCount)
 		{
-			string sourceWorkspaceName = $"Source.884adc74-2309-45ba-be22-9d9c8be3783d";
-			string destinationWorkspaceName = $"Destination.7078b15d-3ad6-4055-8473-a77d5eed9117";
+			string sourceWorkspaceName = $"Source.{Guid.NewGuid()}";
+			string destinationWorkspaceName = $"Destination.{Guid.NewGuid()}";
 
-			int sourceWorkspaceArtifactId = 1021191; //await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
-			int destinationWorkspaceArtifactId = 1021193; //await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
+			int sourceWorkspaceArtifactId = 1017863; //await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
+			int destinationWorkspaceArtifactId = 1017864; //await CreateWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
 
 			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
 
 			ConfigurationStub configuration = await CreateConfigurationStubAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, fieldMappings, batchSize, totalRecordsCount).ConfigureAwait(false);
 
-			// Import documents
-			//Dataset dataset = Dataset.MultipleImagesPerDocument;
-			//var importHelper = new ImportHelper(ServiceFactory);
-			//ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			//ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
-			//Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+			SynchronizationExecutorSetup setupBuilder = new SynchronizationExecutorSetup(Environment, ServiceFactory);
 
-			IContainer container = CreateContainer(configuration);
-
-			configuration.DestinationWorkspaceTagArtifactId = await GetDestinationWorkspaceTagArtifactIdAsync(container, sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)
-				.ConfigureAwait(false);
-
-			Assert.AreEqual(ExecutionStatus.Completed, await CreateSourceTagsInDestinationWorkspaceAsync(container, configuration).ConfigureAwait(false));
-
-			Assert.AreEqual(ExecutionStatus.Completed, await CreateDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false));
-
-			Assert.AreEqual(ExecutionStatus.Completed, await PartitionDataSourceSnapshotAsync(container, configuration).ConfigureAwait(false));
+			setupBuilder
+				.ForWorkspaces(sourceWorkspaceName, destinationWorkspaceName)
+				.ImportData(Dataset.MultipleImagesPerDocument)
+				.SetDestinationWorkspaceTagArtifactId()
+				.CreateSourceTagsInDestinationWorkspace()
+				.CreateImageDataSourceSnapshot()
+				.PartitionDataSourceSnapshot();
 
 			// ACT
-			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(container, configuration).ConfigureAwait(false);
+			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setupBuilder.Container, configuration).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Completed, syncResult.Status, await AggregateJobHistoryErrorMessagesAsync(sourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, syncResult)
 				.ConfigureAwait(false));
 
 			//Assert.AreEqual(dataTableWrapper.Data.Rows.Count, await GetBatchesTransferredItemsCountAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false));
-		}
-
-		private async Task<int> CreateWorkspaceAsync(string workspaceName)
-		{
-			WorkspaceRef workspace = await Environment
-				.CreateWorkspaceWithFieldsAsync(workspaceName)
-				.ConfigureAwait(false);
-
-			return workspace.ArtifactID;
 		}
 
 		private static List<FieldMap> CreateControlNumberFieldMapping()
@@ -135,55 +121,13 @@ namespace Relativity.Sync.Tests.System
 				SyncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId, fieldMappings).ConfigureAwait(false),
 				ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
 				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
+				ImportImageFileCopyMode = ImportImageFileCopyMode.CopyFiles,
+				ImageImport = true,
+				IncludeOriginalImages = true
 			};
 			configuration.SetFieldMappings(fieldMappings);
 
 			return configuration;
-		}
-
-		private static IContainer CreateContainer(ConfigurationStub configuration)
-		{
-			return ContainerHelper.Create(configuration, containerBuilder =>
-			{
-				containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>();
-			});
-		}
-
-		private static async Task<int> GetDestinationWorkspaceTagArtifactIdAsync(IContainer container, int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
-		{
-			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = container.Resolve<IDestinationWorkspaceTagRepository>();
-			DestinationWorkspaceTag destinationWorkspaceTag = await destinationWorkspaceTagRepository.CreateAsync(sourceWorkspaceArtifactId,
-				destinationWorkspaceArtifactId, destinationWorkspaceName).ConfigureAwait(false);
-
-			return destinationWorkspaceTag.ArtifactId;
-		}
-
-		private static async Task<ExecutionStatus> CreateSourceTagsInDestinationWorkspaceAsync(IContainer container, ConfigurationStub configuration)
-		{
-			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
-
-			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = await destinationWorkspaceTagsCreationExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-
-			return sourceWorkspaceTagsCreationExecutorResult.Status;
-		}
-
-		private static async Task<ExecutionStatus> CreateDataSourceSnapshotAsync(IContainer container, ConfigurationStub configuration)
-		{
-			IExecutor<IImageDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
-
-			ExecutionResult dataSourceExecutorResult = await dataSourceSnapshotExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-
-			return dataSourceExecutorResult.Status;
-		}
-
-		private static async Task<ExecutionStatus> PartitionDataSourceSnapshotAsync(IContainer container, ConfigurationStub configuration)
-		{
-			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
-
-			ExecutionResult snapshotPartitionExecutorResult = await snapshotPartitionExecutor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
-
-			return snapshotPartitionExecutorResult.Status;
 		}
 
 		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
