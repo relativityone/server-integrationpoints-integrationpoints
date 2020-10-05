@@ -47,7 +47,10 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 		public void AssertTransferredItemsInBatches(IList<int> expectedTagCountInBatches)
 		{
-			CollectionAssert.AreEqual(GetTransferredItemsCountsPerBatchAsync().GetAwaiter().GetResult(), expectedTagCountInBatches);
+			var transfferedItemsCounsPerBatch = GetTransferredItemsCountsPerBatchAsync().GetAwaiter().GetResult();
+
+			CollectionAssert.IsNotEmpty(transfferedItemsCounsPerBatch);
+			CollectionAssert.AreEqual(transfferedItemsCounsPerBatch, expectedTagCountInBatches);
 		}
 
 		#region Private Methods

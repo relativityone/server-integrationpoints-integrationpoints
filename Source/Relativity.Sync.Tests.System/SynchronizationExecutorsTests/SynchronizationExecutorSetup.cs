@@ -18,9 +18,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Security;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
@@ -47,11 +45,11 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 		public SynchronizationExecutorSetup ForWorkspaces(string sourceWorkspaceName, string destinationWorkspaceName)
 		{
-			SourceWorkspace = Environment.CreateWorkspaceWithFieldsAsync(sourceWorkspaceName).GetAwaiter().GetResult();
-			DestinationWorkspace = Environment.CreateWorkspaceWithFieldsAsync(destinationWorkspaceName).GetAwaiter().GetResult();
+			//SourceWorkspace = Environment.CreateWorkspaceWithFieldsAsync(sourceWorkspaceName).GetAwaiter().GetResult();
+			//DestinationWorkspace = Environment.CreateWorkspaceWithFieldsAsync(destinationWorkspaceName).GetAwaiter().GetResult();
 
-			//SourceWorkspace = new WorkspaceRef(1018075) { Name = sourceWorkspaceName };
-			//DestinationWorkspace = new WorkspaceRef(1018076) { Name = destinationWorkspaceName };
+			SourceWorkspace = new WorkspaceRef(1019174) { Name = sourceWorkspaceName };
+			DestinationWorkspace = new WorkspaceRef(1019185) { Name = destinationWorkspaceName };
 
 			Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
 			Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
@@ -59,34 +57,32 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 			return this;
 		}
 
-		public SynchronizationExecutorSetup ImportData(Dataset dataSet, bool extractedText = false, bool natives = false)
+		public SynchronizationExecutorSetup ImportData(Dataset dataSet, bool extractedText = false, bool natives = false, bool images = false)
 		{
-			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(dataSet, extractedText, natives);
+			//ImportDataTableWrapper dataTableWrapper = images
+			//	? DataTableFactory.CreateImageImportDataTable(dataSet)
+			//	: DataTableFactory.CreateImportDataTable(dataSet, extractedText, natives);
 
 			//ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
 			//	.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
 
 			//Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
-			UpdateFilePathToLocalIfNeeded(dataSet);
+			//TotalDataCount = dataTableWrapper.Data.Rows.Count;
 
-			TotalDataCount = dataTableWrapper.Data.Rows.Count;
+			//UpdateFilePathToLocalIfNeeded(dataSet);
 
 			return this;
 		}
 
-		public SynchronizationExecutorSetup ImportData(ImportDataTableWrapper table)
+		public SynchronizationExecutorSetup ImportData(ImportDataTableWrapper dataTableWrapper)
 		{
-			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(
-				SourceWorkspace.ArtifactID,
-				Rdos.GetRootFolderInstance(ServiceFactory, SourceWorkspace.ArtifactID).GetAwaiter().GetResult(),
-				table);
+			ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
+				.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
 
-			ImportJobErrors importErrors = ImportJobExecutor.ExecuteAsync(documentImportJob).GetAwaiter().GetResult();
+			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
-			Assert.IsTrue(importErrors.Success, $"{importErrors.Errors.Count} errors occurred during document upload: {importErrors}");
-
-			TotalDataCount = table.Data.Rows.Count;
+			TotalDataCount = dataTableWrapper.Data.Rows.Count;
 
 			return this;
 		}
@@ -117,7 +113,45 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID, jobHistoryArtifactId, fieldMap).GetAwaiter().GetResult();
 			Configuration.ImportOverwriteMode = overwriteMode;
 			Configuration.FieldOverlayBehavior = overlayBehavior;
+			
+			// Native Configuration
 			Configuration.ImportNativeFileCopyMode = nativeFileCopyMode;
+
+			Configuration.SetFieldMappings(fieldMap);
+
+			return this;
+		}
+
+		public SynchronizationExecutorSetup SetupImageConfiguration(
+			List<FieldMap> fieldMap,
+			string savedSearchName = "All Documents",
+			ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly,
+			FieldOverlayBehavior overlayBehavior = FieldOverlayBehavior.UseFieldSettings,
+			ImportImageFileCopyMode imageFileCopyMode = ImportImageFileCopyMode.CopyFiles,
+			int totalRecordsCount = 0,
+			int batchSize = 0
+			)
+		{
+			int jobHistoryArtifactId = Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"JobHistory.{Guid.NewGuid()}").GetAwaiter().GetResult();
+
+			Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
+			Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
+			Configuration.DataSourceArtifactId = Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).GetAwaiter().GetResult();
+
+			Configuration.JobHistoryArtifactId = jobHistoryArtifactId;
+			Configuration.DestinationFolderArtifactId = Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspace.ArtifactID).GetAwaiter().GetResult();
+			Configuration.SendEmails = false;
+
+			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
+			Configuration.BatchSize = batchSize == 0 ? TotalDataCount : batchSize;
+			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID, jobHistoryArtifactId, fieldMap).GetAwaiter().GetResult();
+			Configuration.ImportOverwriteMode = overwriteMode;
+			Configuration.FieldOverlayBehavior = overlayBehavior;
+			
+			//Image Configuration
+			Configuration.ImportImageFileCopyMode = imageFileCopyMode;
+			Configuration.ImageImport = true;
+			Configuration.IncludeOriginalImages = true;
 
 			Configuration.SetFieldMappings(fieldMap);
 
@@ -134,65 +168,22 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 			return this;
 		}
 
-		public SynchronizationExecutorSetup SetDestinationWorkspaceTagArtifactId()
+		public SynchronizationExecutorSetup ExecuteDocumentPreSynchronizationExecutors()
 		{
-			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = Container.Resolve<IDestinationWorkspaceTagRepository>();
-
-			Configuration.DestinationWorkspaceTagArtifactId = destinationWorkspaceTagRepository.CreateAsync(
-				SourceWorkspace.ArtifactID,
-				DestinationWorkspace.ArtifactID,
-				DestinationWorkspace.Name).GetAwaiter().GetResult().ArtifactId;
-
-			return this;
+			return this
+				.SetDestinationWorkspaceTagArtifactId()
+				.CreateSourceTagsInDestinationWorkspace()
+				.CreateImageDataSourceSnapshot()
+				.PartitionDataSourceSnapshot();
 		}
 
-		public SynchronizationExecutorSetup CreateSourceTagsInDestinationWorkspace()
+		public SynchronizationExecutorSetup ExecuteImagePreSynchronizationExecutors()
 		{
-			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor =
-				Container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
-
-			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = destinationWorkspaceTagsCreationExecutor.ExecuteAsync(Configuration, CancellationToken.None)
-				.GetAwaiter().GetResult();
-
-			Assert.AreEqual(ExecutionStatus.Completed, sourceWorkspaceTagsCreationExecutorResult.Status);
-
-			return this;
-		}
-
-		public SynchronizationExecutorSetup CreateDocumentDataSourceSnapshot()
-		{
-			IExecutor<IDocumentDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
-
-			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CancellationToken.None)
-				.GetAwaiter().GetResult();
-
-			Assert.AreEqual(ExecutionStatus.Completed, dataSourceSnapshotExecutorResult.Status);
-
-			return this;
-		}
-
-		public SynchronizationExecutorSetup CreateImageDataSourceSnapshot()
-		{
-			IExecutor<IImageDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
-
-			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CancellationToken.None)
-				.GetAwaiter().GetResult();
-
-			Assert.AreEqual(ExecutionStatus.Completed, dataSourceSnapshotExecutorResult.Status);
-
-			return this;
-		}
-
-		public SynchronizationExecutorSetup PartitionDataSourceSnapshot()
-		{
-			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = Container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
-
-			ExecutionResult snapshotPartitionExecutorResult = snapshotPartitionExecutor.ExecuteAsync(Configuration, CancellationToken.None)
-				.GetAwaiter().GetResult();
-
-			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
-
-			return this;
+			return this
+				.SetDestinationWorkspaceTagArtifactId()
+				.CreateSourceTagsInDestinationWorkspace()
+				.CreateImageDataSourceSnapshot()
+				.PartitionDataSourceSnapshot();
 		}
 
 		public SynchronizationExecutorSetup SetDocumentTracking()
@@ -222,6 +213,67 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 		}
 
 		#region Helper Methods
+
+		private SynchronizationExecutorSetup SetDestinationWorkspaceTagArtifactId()
+		{
+			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository = Container.Resolve<IDestinationWorkspaceTagRepository>();
+
+			Configuration.DestinationWorkspaceTagArtifactId = destinationWorkspaceTagRepository.CreateAsync(
+				SourceWorkspace.ArtifactID,
+				DestinationWorkspace.ArtifactID,
+				DestinationWorkspace.Name).GetAwaiter().GetResult().ArtifactId;
+
+			return this;
+		}
+
+		private SynchronizationExecutorSetup CreateSourceTagsInDestinationWorkspace()
+		{
+			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor =
+				Container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
+
+			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = destinationWorkspaceTagsCreationExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+				.GetAwaiter().GetResult();
+
+			Assert.AreEqual(ExecutionStatus.Completed, sourceWorkspaceTagsCreationExecutorResult.Status);
+
+			return this;
+		}
+
+		private SynchronizationExecutorSetup CreateDocumentDataSourceSnapshot()
+		{
+			IExecutor<IDocumentDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
+
+			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+				.GetAwaiter().GetResult();
+
+			Assert.AreEqual(ExecutionStatus.Completed, dataSourceSnapshotExecutorResult.Status);
+
+			return this;
+		}
+
+		private SynchronizationExecutorSetup CreateImageDataSourceSnapshot()
+		{
+			IExecutor<IImageDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
+
+			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+				.GetAwaiter().GetResult();
+
+			Assert.AreEqual(ExecutionStatus.Completed, dataSourceSnapshotExecutorResult.Status);
+
+			return this;
+		}
+
+		public SynchronizationExecutorSetup PartitionDataSourceSnapshot()
+		{
+			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = Container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
+
+			ExecutionResult snapshotPartitionExecutorResult = snapshotPartitionExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+				.GetAwaiter().GetResult();
+
+			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
+
+			return this;
+		}
 
 		private void UpdateFilePathToLocalIfNeeded(Dataset dataSet)
 		{

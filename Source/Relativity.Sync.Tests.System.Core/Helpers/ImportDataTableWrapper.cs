@@ -95,5 +95,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			Data.Rows.Add(dataRow);
 		}
+
 	}
 }

@@ -13,7 +13,7 @@ using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Tests.System.SynchronizationExecutorsTests;
 using Relativity.Testing.Identification;
 
-namespace Relativity.Sync.Tests.System
+namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
@@ -40,10 +40,7 @@ namespace Relativity.Sync.Tests.System
 				.ImportData(dataSet, true, true)
 				.SetupDocumentConfiguration(fieldMappings, batchSize: batchSize, totalRecordsCount: totalRecordsCount)
 				.SetupContainer()
-				.SetDestinationWorkspaceTagArtifactId()
-				.CreateSourceTagsInDestinationWorkspace()
-				.CreateDocumentDataSourceSnapshot()
-				.PartitionDataSourceSnapshot();
+				.ExecuteDocumentPreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -75,10 +72,7 @@ namespace Relativity.Sync.Tests.System
 				.ImportData(DataTableFactory.GenerateDocumentWithUserField())
 				.SetupDocumentConfiguration(fieldMappings)
 				.SetupContainer()
-				.SetDestinationWorkspaceTagArtifactId()
-				.CreateSourceTagsInDestinationWorkspace()
-				.CreateDocumentDataSourceSnapshot()
-				.PartitionDataSourceSnapshot();
+				.ExecuteDocumentPreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -97,21 +91,15 @@ namespace Relativity.Sync.Tests.System
 
 			Dataset dataSet = Dataset.NativesAndExtractedText;
 
-			const int _BATCH_COUNT_FOR_TAGGING = 3;
-
-			int batchSize = (int)Math.Ceiling((double)dataSet.TotalCount / _BATCH_COUNT_FOR_TAGGING);
-			int totalRecordsCount = dataSet.TotalCount;
+			const int _BATCH_SIZE = 2;
 
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
 				.ImportData(dataSet, true, true)
-				.SetupDocumentConfiguration(fieldMappings, batchSize: batchSize, totalRecordsCount: totalRecordsCount)
+				.SetupDocumentConfiguration(fieldMappings, batchSize: _BATCH_SIZE)
 				.SetupContainer()
-				.SetDestinationWorkspaceTagArtifactId()
-				.CreateSourceTagsInDestinationWorkspace()
-				.CreateDocumentDataSourceSnapshot()
-				.PartitionDataSourceSnapshot()
-				.SetDocumentTracking();
+				.SetDocumentTracking()
+				.ExecuteDocumentPreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -139,11 +127,8 @@ namespace Relativity.Sync.Tests.System
 				.ImportData(dataSet, true, true)
 				.SetupDocumentConfiguration(fieldMappings)
 				.SetupContainer()
-				.SetDestinationWorkspaceTagArtifactId()
-				.CreateSourceTagsInDestinationWorkspace()
-				.CreateDocumentDataSourceSnapshot()
-				.PartitionDataSourceSnapshot()
-				.SetSupportedByViewer();
+				.SetSupportedByViewer()
+				.ExecuteDocumentPreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);

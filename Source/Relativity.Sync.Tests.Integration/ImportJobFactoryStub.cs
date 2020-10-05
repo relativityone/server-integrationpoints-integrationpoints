@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		public Task<Executors.IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
-			throw new NotImplementedException();
+			return CreateImportJobAsync(configuration);
 		}
 
 		private Task<Executors.IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration)

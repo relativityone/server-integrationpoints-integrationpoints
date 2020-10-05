@@ -50,10 +50,7 @@ namespace Relativity.Sync.Executors
 
 		protected abstract Task<IImportJob> CreateImportJobAsync(TConfiguration configuration, IBatch batch, CancellationToken token);
 
-		protected virtual void UpdateImportSettings(TConfiguration configuration)
-		{
-			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
-		}
+		protected abstract void UpdateImportSettings(TConfiguration configuration);
 
 		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CancellationToken token)
 		{

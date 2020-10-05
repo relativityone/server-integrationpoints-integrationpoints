@@ -28,10 +28,11 @@ namespace Relativity.Sync.Executors
 
 		protected override void UpdateImportSettings(IImageSynchronizationConfiguration configuration)
 		{
-			base.UpdateImportSettings(configuration);
+			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
 
 			IList<FieldInfoDto> specialFields = _fieldManager.GetImageSpecialFields().ToList();
 			configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
+			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
 		}
 	}
 }
