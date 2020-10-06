@@ -1,7 +1,5 @@
 ﻿using Relativity.Sync.WorkspaceGenerator.Settings;
 using System;
-using System.Data;
-using kCura.Vendor.Castle.MicroKernel.ModelBuilder.Descriptors;
 using Relativity.Sync.WorkspaceGenerator.FileGenerating;
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
@@ -15,8 +13,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 		private readonly int _batchSize;
 
 		private int _totalRecordsProvided = 0;
-
-
+		
 		public DataReaderProvider(IDocumentFactory documentFactory, IImageGenerator imageGenerator, TestCase testCase,
 			int documentsToImportCount, int batchSize)
 		{
@@ -29,7 +26,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		public IDataReaderWrapper GetNextDocumentDataReader()
 		{
-			int documentCount = CalculateReaderDocumentCount(_batchSize);
+			int documentCount = CalculateReaderDocumentCount();
 
 			return GetDataReaderWrapper(documentCount, () =>
 				 new DocumentDataReaderWrapper(_documentFactory, _testCase, documentCount, _totalRecordsProvided));
@@ -37,7 +34,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 
 		public IDataReaderWrapper GetNextImageDataReader()
 		{
-			int documentCount = CalculateReaderDocumentCount(_batchSize / _imageGenerator.SetPerDocumentCount);
+			int documentCount = CalculateReaderDocumentCount();
 
 			return GetDataReaderWrapper(documentCount, () =>
 				 new ImageDataReaderWrapper(_imageGenerator, _documentFactory, _testCase, documentCount, _totalRecordsProvided));
@@ -60,10 +57,10 @@ namespace Relativity.Sync.WorkspaceGenerator.Import
 			return dataReader;
 		}
 
-		private int CalculateReaderDocumentCount(int batchSize)
+		private int CalculateReaderDocumentCount()
 		{
-			return (_documentsToImportCount - _totalRecordsProvided) / batchSize == 0
-				? (_documentsToImportCount - _totalRecordsProvided) % batchSize : batchSize;
+			return (_documentsToImportCount - _totalRecordsProvided) / _batchSize == 0
+				? (_documentsToImportCount - _totalRecordsProvided) % _batchSize : _batchSize;
 		}
 	}
 }
