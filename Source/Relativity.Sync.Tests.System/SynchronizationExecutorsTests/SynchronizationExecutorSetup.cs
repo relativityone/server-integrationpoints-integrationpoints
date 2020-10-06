@@ -82,6 +82,8 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			ImportJobExecutor.ExecuteAsync(documentImportJob).GetAwaiter().GetResult();
 
+			TotalDataCount = dataTableWrapper.Data.Rows.Count;
+
 			return this;
 		}
 
