@@ -10,7 +10,6 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Helpers;
-using Relativity.Sync.Tests.System.SynchronizationExecutorsTests;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests

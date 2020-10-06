@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
@@ -19,7 +18,6 @@ using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading;
-using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 {
@@ -45,11 +43,8 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 		public SynchronizationExecutorSetup ForWorkspaces(string sourceWorkspaceName, string destinationWorkspaceName)
 		{
-			//SourceWorkspace = Environment.CreateWorkspaceWithFieldsAsync(sourceWorkspaceName).GetAwaiter().GetResult();
-			//DestinationWorkspace = Environment.CreateWorkspaceWithFieldsAsync(destinationWorkspaceName).GetAwaiter().GetResult();
-
-			SourceWorkspace = new WorkspaceRef(1019174) { Name = sourceWorkspaceName };
-			DestinationWorkspace = new WorkspaceRef(1019185) { Name = destinationWorkspaceName };
+			SourceWorkspace = Environment.CreateWorkspaceWithFieldsAsync(sourceWorkspaceName).GetAwaiter().GetResult();
+			DestinationWorkspace = Environment.CreateWorkspaceWithFieldsAsync(destinationWorkspaceName).GetAwaiter().GetResult();
 
 			Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
 			Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
@@ -59,18 +54,18 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 		public SynchronizationExecutorSetup ImportData(Dataset dataSet, bool extractedText = false, bool natives = false, bool images = false)
 		{
-			//ImportDataTableWrapper dataTableWrapper = images
-			//	? DataTableFactory.CreateImageImportDataTable(dataSet)
-			//	: DataTableFactory.CreateImportDataTable(dataSet, extractedText, natives);
+			ImportDataTableWrapper dataTableWrapper = images
+				? DataTableFactory.CreateImageImportDataTable(dataSet)
+				: DataTableFactory.CreateImportDataTable(dataSet, extractedText, natives);
 
-			//ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
-			//	.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
+			ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
+				.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
 
-			//Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
 
-			//TotalDataCount = dataTableWrapper.Data.Rows.Count;
+			TotalDataCount = dataTableWrapper.Data.Rows.Count;
 
-			//UpdateFilePathToLocalIfNeeded(dataSet);
+			UpdateFilePathToLocalIfNeeded(dataSet);
 
 			return this;
 		}
@@ -173,7 +168,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 			return this
 				.SetDestinationWorkspaceTagArtifactId()
 				.CreateSourceTagsInDestinationWorkspace()
-				.CreateImageDataSourceSnapshot()
+				.CreateDocumentDataSourceSnapshot()
 				.PartitionDataSourceSnapshot();
 		}
 

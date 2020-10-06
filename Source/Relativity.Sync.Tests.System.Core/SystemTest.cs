@@ -42,11 +42,11 @@ namespace Relativity.Sync.Tests.System.Core
 		}
 
 		[OneTimeTearDown]
-		public void SuiteTeardown()
+		public async Task SuiteTeardown()
 		{
 			ChildSuiteTeardown();
 
-			//await Environment.DoCleanupAsync().ConfigureAwait(false);
+			await Environment.DoCleanupAsync().ConfigureAwait(false);
 			Client?.Dispose();
 			Client = null;
 		}
