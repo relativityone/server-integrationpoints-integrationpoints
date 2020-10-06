@@ -32,12 +32,13 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			const int _BATCH_SIZE = 2;
 
-			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
 				.ImportData(dataSet, images: true)
-				.SetupImageConfiguration(fieldMappings, batchSize: _BATCH_SIZE)
+				.SetupImageConfiguration(identifierFieldMap, batchSize: _BATCH_SIZE)
 				.SetupContainer()
 				.SetDocumentTracking()
 				.ExecuteDocumentPreSynchronizationExecutors();
@@ -52,29 +53,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			synchronizationValidator.AssertTransferredItemsInBatches(TrackingDocumentTagRepository.TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts);
 			synchronizationValidator.AssertTransferredItemsInBatches(TrackingDocumentTagRepository.TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts);
-		}
-
-		private static List<FieldMap> CreateControlNumberFieldMapping()
-		{
-			return new List<FieldMap>
-			{
-				new FieldMap
-				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					}
-				}
-			};
-		}
+		}	
 
 		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
 		{

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
@@ -14,10 +15,12 @@ using Relativity.Sync.Transfer;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security;
 using System.Threading;
+using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 {
@@ -65,25 +68,25 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			TotalDataCount = dataTableWrapper.Data.Rows.Count;
 
-			UpdateFilePathToLocalIfNeeded(dataSet);
+			UpdateFilePathToLocalIfNeeded(dataSet, natives);
 
 			return this;
 		}
 
-		public SynchronizationExecutorSetup ImportData(ImportDataTableWrapper dataTableWrapper)
+		public SynchronizationExecutorSetup ImportMetadata(ImportDataTableWrapper dataTableWrapper)
 		{
-			ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
-				.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
+			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(
+				SourceWorkspace.ArtifactID,
+				Rdos.GetRootFolderInstance(ServiceFactory, SourceWorkspace.ArtifactID).GetAwaiter().GetResult(),
+				dataTableWrapper);
 
-			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
-
-			TotalDataCount = dataTableWrapper.Data.Rows.Count;
+			ImportJobExecutor.ExecuteAsync(documentImportJob).GetAwaiter().GetResult();
 
 			return this;
 		}
 
 		public SynchronizationExecutorSetup SetupDocumentConfiguration(
-			List<FieldMap> fieldMap,
+			Func<int, int, List<FieldMap>> fieldMapProvider,
 			string savedSearchName = "All Documents",
 			ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly,
 			FieldOverlayBehavior overlayBehavior = FieldOverlayBehavior.UseFieldSettings,
@@ -105,20 +108,21 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
 			Configuration.BatchSize = batchSize == 0 ? TotalDataCount : batchSize;
-			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID, jobHistoryArtifactId, fieldMap).GetAwaiter().GetResult();
+			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID,
+				jobHistoryArtifactId, fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID)).GetAwaiter().GetResult();
 			Configuration.ImportOverwriteMode = overwriteMode;
 			Configuration.FieldOverlayBehavior = overlayBehavior;
 			
 			// Native Configuration
 			Configuration.ImportNativeFileCopyMode = nativeFileCopyMode;
 
-			Configuration.SetFieldMappings(fieldMap);
+			Configuration.SetFieldMappings(fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID));
 
 			return this;
 		}
 
 		public SynchronizationExecutorSetup SetupImageConfiguration(
-			List<FieldMap> fieldMap,
+			Func<int, int, List<FieldMap>> fieldMapProvider,
 			string savedSearchName = "All Documents",
 			ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly,
 			FieldOverlayBehavior overlayBehavior = FieldOverlayBehavior.UseFieldSettings,
@@ -139,7 +143,8 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
 			Configuration.BatchSize = batchSize == 0 ? TotalDataCount : batchSize;
-			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID, jobHistoryArtifactId, fieldMap).GetAwaiter().GetResult();
+			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID,
+				jobHistoryArtifactId, fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID)).GetAwaiter().GetResult();
 			Configuration.ImportOverwriteMode = overwriteMode;
 			Configuration.FieldOverlayBehavior = overlayBehavior;
 			
@@ -148,7 +153,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 			Configuration.ImageImport = true;
 			Configuration.IncludeOriginalImages = true;
 
-			Configuration.SetFieldMappings(fieldMap);
+			Configuration.SetFieldMappings(fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID));
 
 			return this;
 		}
@@ -270,7 +275,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 			return this;
 		}
 
-		private void UpdateFilePathToLocalIfNeeded(Dataset dataSet)
+		private void UpdateFilePathToLocalIfNeeded(Dataset dataSet, bool natives)
 		{
 			if (AppSettings.IsSettingsFileSet)
 			{
@@ -284,12 +289,16 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 				#endregion
 				using (SqlConnection connection = CreateConnectionFromAppConfig(SourceWorkspace.ArtifactID))
 				{
+					string localFolderPath = natives
+						? Path.Combine(dataSet.FolderPath, "NATIVES")
+						: dataSet.FolderPath;
+
 					connection.Open();
 
 					const string sqlStatement =
 						@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename])";
 					SqlCommand command = new SqlCommand(sqlStatement, connection);
-					command.Parameters.AddWithValue("LocalFilePath", dataSet.FolderPath);
+					command.Parameters.AddWithValue("LocalFilePath", localFolderPath);
 
 					command.ExecuteNonQuery();
 				}

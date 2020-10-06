@@ -37,11 +37,9 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 				message: AggregateJobHistoryErrorMessagesAsync(result).GetAwaiter().GetResult());
 		}
 
-		public void AssertTotalTransferredItems(Dataset dataSet)
+		public void AssertTotalTransferredItems(int expectedTotalCount)
 		{
-			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataSet);
-
-			Assert.AreEqual(dataTableWrapper.Data.Rows.Count, 
+			Assert.AreEqual(expectedTotalCount, 
 				GetTotalTransferredItemsCountAsync().GetAwaiter().GetResult());
 		}
 

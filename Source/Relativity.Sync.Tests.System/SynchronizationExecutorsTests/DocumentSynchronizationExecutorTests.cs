@@ -30,14 +30,15 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 		public async Task ItShouldPassGoldFlow(int batchSize, int totalRecordsCount)
 		{
 			// Arrange		
-			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			Dataset dataSet = Dataset.NativesAndExtractedText;
 
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
 				.ImportData(dataSet, true, true)
-				.SetupDocumentConfiguration(fieldMappings, batchSize: batchSize, totalRecordsCount: totalRecordsCount)
+				.SetupDocumentConfiguration(identifierFieldMap, batchSize: batchSize, totalRecordsCount: totalRecordsCount)
 				.SetupContainer()
 				.ExecuteDocumentPreSynchronizationExecutors();
 
@@ -49,27 +50,17 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			synchronizationValidator.AssertResult(syncResult, ExecutionStatus.Completed);
 
-			synchronizationValidator.AssertTotalTransferredItems(dataSet);
+			synchronizationValidator.AssertTotalTransferredItems(setup.TotalDataCount);
 		}
 
 		[IdentifiedTest("0967e7fa-2607-48ba-bfc2-5ab6b786db86")]
 		public async Task ItShouldSyncUserField()
 		{
 			// Arrange
-			const int _USER_FIELD_ID = 1039900;
-			const string _USER_FIELD_DISPLAY_NAME = "Relativity Sync Test User";
-
-			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
-			fieldMappings.Add(new FieldMap
-			{
-				SourceField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false },
-				DestinationField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false }
-			});
-
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
-				.ImportData(DataTableFactory.GenerateDocumentWithUserField())
-				.SetupDocumentConfiguration(fieldMappings)
+				.ImportMetadata(DataTableFactory.GenerateDocumentWithUserField())
+				.SetupDocumentConfiguration(UserFieldMap)
 				.SetupContainer()
 				.ExecuteDocumentPreSynchronizationExecutors();
 
@@ -86,7 +77,8 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 		public async Task ItShouldTagInBatches()
 		{
 			// Arrange
-			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			Dataset dataSet = Dataset.NativesAndExtractedText;
 
@@ -95,7 +87,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
 				.ImportData(dataSet, true, true)
-				.SetupDocumentConfiguration(fieldMappings, batchSize: _BATCH_SIZE)
+				.SetupDocumentConfiguration(identifierFieldMap, batchSize: _BATCH_SIZE)
 				.SetupContainer()
 				.SetDocumentTracking()
 				.ExecuteDocumentPreSynchronizationExecutors();
@@ -117,14 +109,15 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 		public async Task ItShouldCompleteWithErrors_WhenSupportedByViewerIsNull()
 		{
 			// Arrange
-			List<FieldMap> fieldMappings = CreateControlNumberFieldMapping();
+			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			Dataset dataSet = Dataset.NativesAndExtractedText;
 
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
 				.ImportData(dataSet, true, true)
-				.SetupDocumentConfiguration(fieldMappings)
+				.SetupDocumentConfiguration(identifierFieldMap)
 				.SetupContainer()
 				.SetSupportedByViewer()
 				.ExecuteDocumentPreSynchronizationExecutors();
@@ -137,33 +130,26 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			synchronizationValidator.AssertResult(syncResult, ExecutionStatus.CompletedWithErrors);
 		}
-
-		private static List<FieldMap> CreateControlNumberFieldMapping()
-		{
-			return new List<FieldMap>
-			{
-				new FieldMap
-				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = _CONTROL_NUMBER_FIELD_DISPLAY_NAME,
-						FieldIdentifier = _CONTROL_NUMBER_FIELD_ID,
-						IsIdentifier = true
-					}
-				}
-			};
-		}
 		
 		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
 		{
 			IExecutor<IDocumentSynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<IDocumentSynchronizationConfiguration>>();
 			return syncExecutor.ExecuteAsync(configuration, CancellationToken.None);
+		}
+
+		private List<FieldMap> UserFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+		{
+			const int _USER_FIELD_ID = 1039900;
+			const string _USER_FIELD_DISPLAY_NAME = "Relativity Sync Test User";
+
+			var fieldMap = GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+			fieldMap.Add(new FieldMap
+			{
+				SourceField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false },
+				DestinationField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false }
+			});
+
+			return fieldMap;
 		}
 	}
 }
