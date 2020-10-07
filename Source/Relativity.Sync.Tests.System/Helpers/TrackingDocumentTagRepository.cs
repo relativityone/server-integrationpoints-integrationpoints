@@ -13,9 +13,9 @@ namespace Relativity.Sync.Tests.System.Helpers
 	{
 		private readonly DocumentTagRepository _documentTagRepository;
 
-		public static IList<int> TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts { get; } = new List<int>();
+		public static IDictionary<int, IList<int>> TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts { get; } = new Dictionary<int, IList<int>>();
 
-		public static IList<int> TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts { get; } = new List<int>();
+		public static IDictionary<int, IList<int>> TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts { get; } = new Dictionary<int, IList<int>>();
 
 		public TrackingDocumentTagRepository(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
 			ISourceWorkspaceTagRepository sourceWorkspaceTagRepository,
@@ -26,14 +26,30 @@ namespace Relativity.Sync.Tests.System.Helpers
 
 		public Task<TaggingExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
 		{
-			TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts.Add(documentIdentifiers.Count());
+			lock (TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts)
+			{
+				if (!TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts.ContainsKey(configuration.DestinationWorkspaceArtifactId))
+				{
+					TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts.Add(configuration.DestinationWorkspaceArtifactId, new List<int>());
+				}
+			}
+
+			TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts[configuration.DestinationWorkspaceArtifactId].Add(documentIdentifiers.Count());
 
 			return _documentTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, documentIdentifiers, token);
 		}
 
 		public Task<TaggingExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
 		{
-			TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts.Add(artifactIds.Count());
+			lock (TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts)
+			{
+				if (!TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts.ContainsKey(configuration.SourceWorkspaceArtifactId))
+				{
+					TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts.Add(configuration.SourceWorkspaceArtifactId, new List<int>());
+				}
+			}
+
+			TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts[configuration.SourceWorkspaceArtifactId].Add(artifactIds.Count());
 
 			return _documentTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, artifactIds, token);
 		}

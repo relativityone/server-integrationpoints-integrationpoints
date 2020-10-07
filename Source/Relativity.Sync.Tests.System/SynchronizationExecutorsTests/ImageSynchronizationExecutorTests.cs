@@ -51,8 +51,8 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 			synchronizationValidator.AssertResult(syncResult, ExecutionStatus.Completed);
 
-			synchronizationValidator.AssertTransferredItemsInBatches(TrackingDocumentTagRepository.TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts);
-			synchronizationValidator.AssertTransferredItemsInBatches(TrackingDocumentTagRepository.TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts);
+			synchronizationValidator.AssertTransferredItemsInBatches(TrackingDocumentTagRepository.TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts[setup.Configuration.SourceWorkspaceArtifactId]);
+			synchronizationValidator.AssertTransferredItemsInBatches(TrackingDocumentTagRepository.TaggedDocumentsInDestinationWorkspaceWithSourceInfoCounts[setup.Configuration.DestinationWorkspaceArtifactId]);
 		}	
 
 		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)

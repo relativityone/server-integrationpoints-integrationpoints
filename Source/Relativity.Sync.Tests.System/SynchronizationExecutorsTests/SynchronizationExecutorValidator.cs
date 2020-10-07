@@ -2,9 +2,7 @@
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,10 +43,10 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
 
 		public void AssertTransferredItemsInBatches(IList<int> expectedTagCountInBatches)
 		{
-			var transfferedItemsCounsPerBatch = GetTransferredItemsCountsPerBatchAsync().GetAwaiter().GetResult();
+			IList<int> transferredItemsCountsPerBatch = GetTransferredItemsCountsPerBatchAsync().GetAwaiter().GetResult();
 
-			CollectionAssert.IsNotEmpty(transfferedItemsCounsPerBatch);
-			CollectionAssert.AreEqual(transfferedItemsCounsPerBatch, expectedTagCountInBatches);
+			CollectionAssert.IsNotEmpty(transferredItemsCountsPerBatch);
+			CollectionAssert.AreEqual(transferredItemsCountsPerBatch, expectedTagCountInBatches);
 		}
 
 		#region Private Methods
