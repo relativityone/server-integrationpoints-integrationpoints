@@ -189,7 +189,8 @@ namespace Relativity.Sync.Executors.SumReporting
 				LongText = longTextFields.Where(x => x.Key != extractedTextKey).Select(x => x.Value).ToArray()
 			};
 
-			return _serializer.Serialize(fieldMapInfoObject);
+			_logger.LogInformation("Fields map configuration summary: {@summary}",
+				_serializer.Serialize(fieldMapInfoObject));
 		}
 	}
 }
