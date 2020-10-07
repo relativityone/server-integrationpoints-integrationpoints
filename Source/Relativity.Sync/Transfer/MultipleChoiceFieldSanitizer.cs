@@ -17,12 +17,12 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class MultipleChoiceFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISynchronizationConfiguration _configuration;
+		private readonly IDocumentSynchronizationConfiguration _configuration;
 		private readonly IChoiceCache _choiceCache;
 		private readonly IChoiceTreeToStringConverter _choiceTreeConverter;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 
-		public MultipleChoiceFieldSanitizer(ISynchronizationConfiguration configuration, IChoiceCache choiceCache, IChoiceTreeToStringConverter choiceTreeConverter)
+		public MultipleChoiceFieldSanitizer(IDocumentSynchronizationConfiguration configuration, IChoiceCache choiceCache, IChoiceTreeToStringConverter choiceTreeConverter)
 		{
 			_configuration = configuration;
 			_choiceCache = choiceCache;

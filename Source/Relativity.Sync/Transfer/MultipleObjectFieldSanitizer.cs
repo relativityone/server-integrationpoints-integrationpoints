@@ -16,10 +16,10 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class MultipleObjectFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISynchronizationConfiguration _configuration;
+		private readonly IDocumentSynchronizationConfiguration _configuration;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 
-		public MultipleObjectFieldSanitizer(ISynchronizationConfiguration configuration)
+		public MultipleObjectFieldSanitizer(IDocumentSynchronizationConfiguration configuration)
 		{
 			_configuration = configuration;
 		}

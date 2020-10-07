@@ -112,6 +112,11 @@ namespace Relativity.Sync.Transfer
 			return value;
 		}
 
+		public string GetString(int i)
+		{
+			return GetValue(i).ToString();
+		}
+
 		public int GetValues(object[] values)
 		{
 			int columnIndex = 0;
@@ -233,11 +238,6 @@ namespace Relativity.Sync.Transfer
 		}
 
 		public long GetInt64(int i)
-		{
-			throw new NotImplementedException();
-		}
-
-		public string GetString(int i)
 		{
 			throw new NotImplementedException();
 		}

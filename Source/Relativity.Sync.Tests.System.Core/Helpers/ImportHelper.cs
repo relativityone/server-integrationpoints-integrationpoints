@@ -107,6 +107,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			importJob.Settings.BatesNumberField = ImportDataTableWrapper.BegBates;
 
 			importJob.Settings.CopyFilesToDocumentRepository = true;
+			importJob.Settings.DisableImageTypeValidation = true;
 
 			if (productionId != null)
 			{

@@ -7,8 +7,8 @@ namespace Relativity.Sync.Executors
 {
 	internal interface IImportJobFactory
 	{
-		Task<IImportJob> CreateNativeImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
+		Task<IImportJob> CreateNativeImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
 
-		Task<IImportJob> CreateImageImportJobAsync(ISynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
+		Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
 	}
 }

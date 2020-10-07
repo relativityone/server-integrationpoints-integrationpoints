@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void ItShouldSupportMultipleObject()
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
+			IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
+			IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
+			IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task SanitizeAsync_ShouldThrowSyncItemLevelErrorException_WhenAnyElementsAreInvalid(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
+			IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -117,7 +117,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldThrowSyncExceptionWhenNameContainsMultiValueDelimiter(object initialValue)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
+			IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -156,7 +156,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, string expectedResult)
 		{
 			// Arrange
-			ISynchronizationConfiguration configuration = CreateConfiguration();
+			IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
 			var instance = new MultipleObjectFieldSanitizer(configuration);
 
 			// Act
@@ -166,9 +166,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().Be(expectedResult);
 		}
 
-		private static ISynchronizationConfiguration CreateConfiguration()
+		private static IDocumentSynchronizationConfiguration CreateConfiguration()
 		{
-			var config = new Mock<ISynchronizationConfiguration>();
+			var config = new Mock<IDocumentSynchronizationConfiguration>();
 			config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_DELIM);
 			config.SetupGet(x => x.MultiValueDelimiter).Returns(_MUTLI_DELIM);
 			return config.Object;

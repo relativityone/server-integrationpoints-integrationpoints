@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 		}
 
-		protected async Task<IEnumerable<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId)
+		protected async Task<List<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId)
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.System.Core
 				Services.Objects.DataContracts.QueryResult sourceQueryResult = await objectManager.QueryAsync(sourceWorkspaceId, query, 0, 1).ConfigureAwait(false);
 				Services.Objects.DataContracts.QueryResult destinationQueryResult = await objectManager.QueryAsync(targetWorkspaceId, query, 0, 1).ConfigureAwait(false);
 
-				return new FieldMap[]
+				return new List<FieldMap>
 				{
 					new FieldMap
 					{
