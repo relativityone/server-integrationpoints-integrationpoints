@@ -180,10 +180,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		}
 
 		[Test]
-		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToCreateSavedSearch()
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionToCreateSavedSearchAndSavedSearchShouldBeCreated()
 		{
 			// Arrange
-			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration(createSavedSearchForTags: true);
 
 			Mock<IPermissionManager> permissionManager = SetupPermissions();
 
@@ -199,6 +199,26 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should().Be(
 				"User does not have permission to create saved searches in the destination workspace.");
+		}
+
+		[Test]
+		public async Task Validate_ShouldPass_WhenUserDoesNotHavePermissionToCreateSavedSearchAndSavedSearchShouldNotBeCreated()
+		{
+			// Arrange
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration(createSavedSearchForTags: false);
+
+			Mock<IPermissionManager> permissionManager = SetupPermissions();
+
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
+				(y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_SEARCH)))).Throws<SyncException>();
+
+			// Act
+			ValidationResult actualResult =
+				await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
+
+			//Assert
+			actualResult.IsValid.Should().BeTrue();
+			actualResult.Messages.Should().HaveCount(0);
 		}
 
 		[Test]
@@ -351,11 +371,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			return permissionManager;
 		}
 
-		private Mock<IPermissionsCheckConfiguration> SetupConfiguration()
+		private static Mock<IPermissionsCheckConfiguration> SetupConfiguration(bool createSavedSearchForTags = true)
 		{
 			Mock<IPermissionsCheckConfiguration> configuration = new Mock<IPermissionsCheckConfiguration>();
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 			configuration.Setup(x => x.DestinationFolderArtifactId).Returns(_TEST_FOLDER_ARTIFACT_ID);
+			configuration.Setup(x => x.CreateSavedSearchForTags).Returns(createSavedSearchForTags);
+
 			return configuration;
 		}
 	}

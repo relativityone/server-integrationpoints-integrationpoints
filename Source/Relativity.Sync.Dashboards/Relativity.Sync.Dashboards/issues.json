@@ -12,7 +12,7 @@
 		"Exception": "*System.Data.DuplicateNameException: A column named '*' already belongs to this DataTable*"
 	},
 	{
-		"Jira": "REL-402615",
+		"Jira": "REL-423995",
 		"Exception": "*Fatal exception occurred in Import API.*The operation has timed out*"
 	},
 	{
