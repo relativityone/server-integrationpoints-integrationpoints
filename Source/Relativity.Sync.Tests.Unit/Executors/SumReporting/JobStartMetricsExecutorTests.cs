@@ -216,7 +216,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					},
 					PrepareSummaryForExtractedTextWithDisabledDataGrid()
 				)
-				{TestName = "ExtractedTextDataGrid(Source=disable, Destination=disabled)"};
+				{TestName = "{m}(ExtractedTextDataGridSource=disable, ExtractedTextDataGridDestination=disabled)" };
 
 			yield return new TestCaseData(
 				new List<FieldMapDefinitionCase>
@@ -303,7 +303,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					},
 					PrepareSummaryForCountingTypes()
 				)
-				{TestName = "Counting Types"};
+				{TestName = "{m}(CountingTypes)" };
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -329,7 +329,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						},
 					PrepareSummaryForLongText()
 				)
-				{ TestName = "{m}(CountingTypes)" };
+				{ TestName = "{m}(LongText)" };
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -367,36 +367,36 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							SpecialFieldType = SpecialFieldType.NativeFileFilename
 						}
 					},
-					PrepareSummaryForNotLoggingSpecialFields()
+					PrepareSummaryForLoggingSpecialFields()
 				)
-				{TestName = "Should not log special fields"};
+				{TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
 		}
 
-		private static Dictionary<string, object> PrepareSummaryForNotLoggingSpecialFields()
-					{
+		private static Dictionary<string, object> PrepareSummaryForLoggingSpecialFields()
+		{
 			return new Dictionary<string, object>()
-						{
+			{
 				{
-							"FieldMapping", new Dictionary<string, int>()
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 5
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
 							{
-								{
-									"LongText", 3
-								}
+								{"ArtifactId", 1},
+								{"DataGridEnabled", true}
 							}
 						},
 						{
-							"ExtractedText", new Dictionary<string, object>()
+							"Destination", new Dictionary<string, object>()
 							{
-								{
-									"Source", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 1},
-										{"DataGridEnabled", true}
-									}
-								},
-								{
-									"Destination", new Dictionary<string, object>()
-									{
 								{"ArtifactId", 6},
 								{"DataGridEnabled", true}
 							}
@@ -439,7 +439,41 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 									{"DataGridEnabled", false}
 								}
 							}
-						}
+						},
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 4},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 9},
+									{"DataGridEnabled", false}
+								}
+							}
+						},
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 5},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 10},
+									{"DataGridEnabled", false}
+								}
+							}
+						},
 					}
 				}
 			};
@@ -470,61 +504,59 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						{
 							"Destination", new Dictionary<string, object>()
 							{
-										{"ArtifactId", 4},
-										{"DataGridEnabled", true}
-									}
+								{"ArtifactId", 4},
+								{"DataGridEnabled", true}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[]
+					{
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 2},
+									{"DataGridEnabled", false}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 5},
+									{"DataGridEnabled", true}
 								}
 							}
 						},
+						new Dictionary<string, Dictionary<string, object>>()
 						{
-							"LongText", new Dictionary<string, Dictionary<string, object>>[]
 							{
-								new Dictionary<string, Dictionary<string, object>>()
+								"Source", new Dictionary<string, object>()
 								{
-									{
-										"Source", new Dictionary<string, object>()
-										{
-											{"ArtifactId", 2},
-											{"DataGridEnabled", false}
-										}
-									},
-									{
-										"Destination", new Dictionary<string, object>()
-										{
-											{"ArtifactId", 5},
-											{"DataGridEnabled", true}
-										}
-									}
-								},
-								new Dictionary<string, Dictionary<string, object>>()
+									{"ArtifactId", 3},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
 								{
-									{
-										"Source", new Dictionary<string, object>()
-										{
-											{"ArtifactId", 3},
-											{"DataGridEnabled", true}
-										}
-									},
-									{
-										"Destination", new Dictionary<string, object>()
-										{
-											{"ArtifactId", 6},
-											{"DataGridEnabled", false}
-										}
-									}
+									{"ArtifactId", 6},
+									{"DataGridEnabled", false}
 								}
 							}
 						}
-			};
 					}
-				)
-				{ TestName = "{m}(LongText)" };
+				}
+			};
+		}
 
 		private static Dictionary<string, object> PrepareSummaryForCountingTypes()
-					{
+		{
 			return new Dictionary<string, object>()
-						{
-						{
+			{
+				{
 					"FieldMapping", new Dictionary<string, int>()
 					{
 						{
@@ -540,11 +572,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							"YesNo", 4
 						}
 					}
-					},
-					{
+				},
+				{
 					"ExtractedText", null
 				},
-						{
+				{
 					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
 				}
 			};
@@ -555,43 +587,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			return new Dictionary<string, object>()
 			{
 				{
-							"FieldMapping", new Dictionary<string, int>()
-							{
-								{
-							"LongText", 1
-								}
-							}
-						},
-						{
-							"ExtractedText", new Dictionary<string, object>()
-							{
-								{
-									"Source", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 1},
-										{"DataGridEnabled", true}
-									}
-								},
-								{
-									"Destination", new Dictionary<string, object>()
-									{
-								{"ArtifactId", 2},
-										{"DataGridEnabled", true}
-									}
-								}
-							}
-						},
-						{
-					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
-				}
-			};
-		}
-
-		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInDestination()
-							{
-			return new Dictionary<string, object>()
-								{
-									{
 					"FieldMapping", new Dictionary<string, int>()
 					{
 						{
@@ -603,29 +598,29 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					"ExtractedText", new Dictionary<string, object>()
 					{
 						{
-										"Source", new Dictionary<string, object>()
-										{
+							"Source", new Dictionary<string, object>()
+							{
 								{"ArtifactId", 1},
-											{"DataGridEnabled", false}
-										}
-									},
-									{
-										"Destination", new Dictionary<string, object>()
-										{
+								{"DataGridEnabled", true}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
 								{"ArtifactId", 2},
-											{"DataGridEnabled", true}
-										}
-									}
+								{"DataGridEnabled", true}
+							}
+						}
 					}
-								},
-								{
+				},
+				{
 					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
 				}
 			};
 		}
 
-		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInSource()
-									{
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInDestination()
+		{
 			return new Dictionary<string, object>()
 			{
 				{
@@ -640,26 +635,63 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					"ExtractedText", new Dictionary<string, object>()
 					{
 						{
-										"Source", new Dictionary<string, object>()
-										{
+							"Source", new Dictionary<string, object>()
+							{
 								{"ArtifactId", 1},
-											{"DataGridEnabled", true}
-										}
-									},
-									{
-										"Destination", new Dictionary<string, object>()
-										{
+								{"DataGridEnabled", false}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
 								{"ArtifactId", 2},
-											{"DataGridEnabled", false}
-										}
-									}
-								}
+								{"DataGridEnabled", true}
+							}
+						}
+					}
 				},
 				{
 					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
-							}
+				}
 			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInSource()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
 						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", true}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 2},
+								{"DataGridEnabled", false}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
 
 		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithDisabledDataGrid()
 		{
@@ -670,10 +702,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					{
 						{
 							"LongText", 1
+						}
 					}
-				)
-				{ TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
-		}
 				},
 				{
 					"ExtractedText", new Dictionary<string, object>()

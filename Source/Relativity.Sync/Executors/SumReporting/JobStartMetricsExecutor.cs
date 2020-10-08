@@ -62,22 +62,39 @@ namespace Relativity.Sync.Executors.SumReporting
 			return ExecutionResult.Success();
 		}
 
-				Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask =
-					GetFieldsDetailsAsync(configuration.SourceWorkspaceArtifactId,
-						documentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
-							.Select(x => x.SourceFieldName), token);
+		private void LogFlowType()
+		{
+			ISyncPipeline syncPipeline = _pipelineSelector.GetPipeline();
+			if (syncPipeline.IsDocumentPipeline())
+			{
+				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA);
+			}
+			else if (syncPipeline.IsImagePipeline())
+			{
+				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES);
+			}
+		}
 
-				Task<Dictionary<string, RelativityObjectSlim>> destinationFieldsDetailsTask =
-					GetFieldsDetailsAsync(configuration.DestinationWorkspaceArtifactId,
-						documentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
-							.Select(x => x.DestinationFieldName), token);
+		private async Task LogFieldsMappingDetailsAsync(ISumReporterConfiguration configuration, CancellationToken token)
+		{
+			IList<FieldInfoDto> documentFields = await _fieldManager.GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+
+			Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask = GetFieldsDetailsAsync(configuration.SourceWorkspaceArtifactId,
+				documentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
+					.Select(x => x.SourceFieldName), token);
+
+			Task<Dictionary<string, RelativityObjectSlim>> destinationFieldsDetailsTask = GetFieldsDetailsAsync(configuration.DestinationWorkspaceArtifactId,
+				documentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
+					.Select(x => x.DestinationFieldName), token);
 
 			await Task.WhenAll(sourceFieldsDetailsTask, destinationFieldsDetailsTask).ConfigureAwait(false);
 
-				LogFieldsMappingDetails(documentFields, sourceFieldsDetailsTask.Result, destinationFieldsDetailsTask.Result);
+			_logger.LogInformation("Fields map configuration summary: {@summary}",
+				GetFieldsMappingSummary(documentFields, sourceFieldsDetailsTask.Result, destinationFieldsDetailsTask.Result));
 		}
 
-		private async Task<Dictionary<string, RelativityObjectSlim>> GetFieldsDetailsAsync(int workspaceId, IEnumerable<string> fieldNames, CancellationToken token)
+		private async Task<Dictionary<string, RelativityObjectSlim>> GetFieldsDetailsAsync(int workspaceId,
+			IEnumerable<string> fieldNames, CancellationToken token)
 		{
 			if (fieldNames == null || !fieldNames.Any())
 			{
@@ -134,35 +151,35 @@ namespace Relativity.Sync.Executors.SumReporting
 			return result.Objects.ToDictionary(x => x.Values[0].ToString(), x => x);
 		}
 
-		private string SerializeFieldsMappingDetails(IList<FieldInfoDto> mappings,
+		private Dictionary<string, object> GetFieldsMappingSummary(IList<FieldInfoDto> mappings,
 			IDictionary<string, RelativityObjectSlim> sourceLongTextFieldsDetails,
 			IDictionary<string, RelativityObjectSlim> destinationLongTextFieldsDetails)
 		{
 			const string keyFormat = "[{0}] <--> [{1}]";
 
-			var mappingSummary = mappings
+			Dictionary<string, int> mappingSummary = mappings
 				.GroupBy(x => x.RelativityDataType, x => x)
 				.ToDictionary(x => x.Key.ToString(), x => x.Count());
 
-			var longTextFields = mappings.Where(x => x.RelativityDataType == RelativityDataType.LongText)
+			Dictionary<string, Dictionary<string, Dictionary<string, object>>> longTextFields = mappings.Where(x => x.RelativityDataType == RelativityDataType.LongText)
 				.ToDictionary(x => string.Format(keyFormat, x.SourceFieldName, x.DestinationFieldName), x =>
 					new Dictionary<string, Dictionary<string, object>>
-				{
 					{
+						{
 							"Source", new Dictionary<string, object>()
 							{
 								{"ArtifactId", sourceLongTextFieldsDetails[x.SourceFieldName].ArtifactID},
 								{"DataGridEnabled", sourceLongTextFieldsDetails[x.SourceFieldName].Values[1]}
 							}
-					},
-					{
+						},
+						{
 							"Destination", new Dictionary<string, object>()
 							{
 								{"ArtifactId", destinationLongTextFieldsDetails[x.DestinationFieldName].ArtifactID},
 								{"DataGridEnabled", destinationLongTextFieldsDetails[x.DestinationFieldName].Values[1]}
-					}
+							}
 						}
-				});
+					});
 
 			string extractedTextKey = string.Format(keyFormat, _EXTRACTED_TEXT_FIELD_NAME, _EXTRACTED_TEXT_FIELD_NAME);
 
@@ -173,7 +190,7 @@ namespace Relativity.Sync.Executors.SumReporting
 				{ "LongText", longTextFields.Where(x => x.Key != extractedTextKey).Select(x => x.Value).ToArray() }
 			};
 
-			_logger.LogInformation("Fields map configuration summary: {@summary}", summary);
+			return summary;
 		}
 	}
 }
