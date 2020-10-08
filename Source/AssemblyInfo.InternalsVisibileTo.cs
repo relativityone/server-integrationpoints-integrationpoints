@@ -8,6 +8,7 @@
 [assembly:InternalsVisibleTo("Relativity.Sync.Tests.System.Core")]
 [assembly:InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync")]
 [assembly:InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests")]
+[assembly:InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Unit")]
 [assembly:InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests.Integration")]
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
