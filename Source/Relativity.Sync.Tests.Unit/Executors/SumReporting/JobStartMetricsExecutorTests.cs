@@ -214,39 +214,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							DataType = RelativityDataType.LongText
 				},
 					},
-					new Dictionary<string, object>()
-					{
-						{
-							"FieldMapping", new Dictionary<string, int>()
-							{
-								{
-									"LongText", 1
-								}
-							}
-						},
-						{
-							"ExtractedText", new Dictionary<string, object>()
-							{
-								{
-									"Source", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 1},
-										{"DataGridEnabled", false}
-									}
-								},
-								{
-									"Destination", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 2},
-										{"DataGridEnabled", false}
-									}
-								}
-							}
-						},
-						{
-							"LongText", new Dictionary<string, Dictionary<string, object>>[0]
-						}
-					}
+					PrepareSummaryForExtractedTextWithDisabledDataGrid()
 				)
 				{TestName = "ExtractedTextDataGrid(Source=disable, Destination=disabled)"};
 
@@ -260,39 +228,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							DestinationFieldDataGridEnabled = false
 						}
 				},
-					new Dictionary<string, object>()
-					{
-						{
-							"FieldMapping", new Dictionary<string, int>()
-							{
-								{
-									"LongText", 1
-								}
-							}
-						},
-						{
-							"ExtractedText", new Dictionary<string, object>()
-							{
-								{
-									"Source", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 1},
-										{"DataGridEnabled", true}
-									}
-								},
-								{
-									"Destination", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 2},
-										{"DataGridEnabled", false}
-									}
-								}
-							}
-						},
-						{
-							"LongText", new Dictionary<string, Dictionary<string, object>>[0]
-						}
-					}
+					PrepareSummaryForExtractedTextWithEnabledDataGridInSource()
 				)
 			{ TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=disabled)" };
 
@@ -306,39 +242,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							DestinationFieldDataGridEnabled = true
 						}
 				},
-					new Dictionary<string, object>()
-					{
-						{
-							"FieldMapping", new Dictionary<string, int>()
-							{
-								{
-									"LongText", 1
-								}
-							}
-						},
-						{
-							"ExtractedText", new Dictionary<string, object>()
-							{
-								{
-									"Source", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 1},
-										{"DataGridEnabled", false}
-									}
-								},
-								{
-									"Destination", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 2},
-										{"DataGridEnabled", true}
-									}
-								}
-							}
-						},
-						{
-							"LongText", new Dictionary<string, Dictionary<string, object>>[0]
-						}
-					}
+					PrepareSummaryForExtractedTextWithEnabledDataGridInDestination()
 			)
 			{ TestName = "{m}(ExtractedTextDataGridSource=disabled, ExtractedTextDataGridDestination=enabled)" };
 
@@ -352,39 +256,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							DestinationFieldDataGridEnabled = true
 						}
 				},
-					new Dictionary<string, object>()
-					{
-						{
-							"FieldMapping", new Dictionary<string, int>()
-							{
-								{
-									"LongText", 1
-								}
-							}
-						},
-						{
-							"ExtractedText", new Dictionary<string, object>()
-							{
-								{
-									"Source", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 1},
-										{"DataGridEnabled", true}
-									}
-								},
-								{
-									"Destination", new Dictionary<string, object>()
-									{
-										{"ArtifactId", 2},
-										{"DataGridEnabled", true}
-									}
-								}
-							}
-						},
-						{
-							"LongText", new Dictionary<string, Dictionary<string, object>>[0]
-						}
-					}
+					PrepareSummaryForExtractedTextWithDataGridEnabledBothInSourceAndDestination()
 				)
 			{ TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=enabled)" };
 
@@ -429,32 +301,33 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						new FieldMapDefinitionCase
 							{SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo},
 					},
-					new Dictionary<string, object>()
+					PrepareSummaryForCountingTypes()
+				)
+				{TestName = "Counting Types"};
+
+			yield return new TestCaseData(
+					new List<FieldMapDefinitionCase>
 					{
+						new FieldMapDefinitionCase
 						{
-							"FieldMapping", new Dictionary<string, int>()
-							{
-								{
-									"FixedLengthText", 4
+							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = true
 								},
+						new FieldMapDefinitionCase
 								{
-									"WholeNumber", 1
+							SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
+							DestinationFieldDataGridEnabled = true
 								},
+						new FieldMapDefinitionCase
 								{
-									"Currency", 2
-								},
-								{
-									"YesNo", 4
+							SourceFieldName = "long text2", DestinationFieldName = "long text2",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false
 								}
-							}
 						},
-						{
-							"ExtractedText", null
-						},
-						{
-							"LongText", new Dictionary<string, Dictionary<string, object>>[0]
-						}
-					}
+					PrepareSummaryForLongText()
 				)
 				{ TestName = "{m}(CountingTypes)" };
 
@@ -478,11 +351,32 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							SourceFieldName = "long text2", DestinationFieldName = "long text2",
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
 							DestinationFieldDataGridEnabled = false
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "Native path", DestinationFieldName = "Native path",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false,
+							SpecialFieldType = SpecialFieldType.NativeFileLocation
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "Native location", DestinationFieldName = "Native location",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false,
+							SpecialFieldType = SpecialFieldType.NativeFileFilename
 						}
 					},
-					new Dictionary<string, object>()
+					PrepareSummaryForNotLoggingSpecialFields()
+				)
+				{TestName = "Should not log special fields"};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForNotLoggingSpecialFields()
 					{
+			return new Dictionary<string, object>()
 						{
+				{
 							"FieldMapping", new Dictionary<string, int>()
 							{
 								{
@@ -503,6 +397,79 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 								{
 									"Destination", new Dictionary<string, object>()
 									{
+								{"ArtifactId", 6},
+								{"DataGridEnabled", true}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[]
+					{
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 2},
+									{"DataGridEnabled", false}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 7},
+									{"DataGridEnabled", true}
+								}
+							}
+						},
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 3},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 8},
+									{"DataGridEnabled", false}
+								}
+							}
+						}
+					}
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForLongText()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 3
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", true}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
 										{"ArtifactId", 4},
 										{"DataGridEnabled", true}
 									}
@@ -548,53 +515,50 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 								}
 							}
 						}
+			};
 					}
 				)
 				{ TestName = "{m}(LongText)" };
 
-			yield return new TestCaseData(
-					new List<FieldMapDefinitionCase>
+		private static Dictionary<string, object> PrepareSummaryForCountingTypes()
 					{
-						new FieldMapDefinitionCase
+			return new Dictionary<string, object>()
 						{
-							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
-							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-							DestinationFieldDataGridEnabled = true
-					},
-						new FieldMapDefinitionCase
 						{
-							SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
-							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
-							DestinationFieldDataGridEnabled = true
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"FixedLengthText", 4
 						},
-						new FieldMapDefinitionCase
 						{
-							SourceFieldName = "long text2", DestinationFieldName = "long text2",
-							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-							DestinationFieldDataGridEnabled = false
+							"WholeNumber", 1
 						},
-						new FieldMapDefinitionCase
 						{
-							SourceFieldName = "Native path", DestinationFieldName = "Native path",
-							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-							DestinationFieldDataGridEnabled = false,
-							SpecialFieldType = SpecialFieldType.NativeFileLocation
+							"Currency", 2
 						},
-						new FieldMapDefinitionCase
 						{
-							SourceFieldName = "Native location", DestinationFieldName = "Native location",
-							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-							DestinationFieldDataGridEnabled = false,
-							SpecialFieldType = SpecialFieldType.NativeFileFilename
+							"YesNo", 4
 						}
+					}
 					},
-					new Dictionary<string, object>()
 					{
+					"ExtractedText", null
+				},
 						{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithDataGridEnabledBothInSourceAndDestination()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
 							"FieldMapping", new Dictionary<string, int>()
 							{
 								{
-									"LongText", 3
+							"LongText", 1
 								}
 							}
 						},
@@ -611,54 +575,129 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 								{
 									"Destination", new Dictionary<string, object>()
 									{
-										{"ArtifactId", 6},
+								{"ArtifactId", 2},
 										{"DataGridEnabled", true}
 									}
 								}
 							}
 						},
 						{
-							"LongText", new Dictionary<string, Dictionary<string, object>>[]
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInDestination()
 							{
-								new Dictionary<string, Dictionary<string, object>>()
+			return new Dictionary<string, object>()
 								{
 									{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
 										"Source", new Dictionary<string, object>()
 										{
-											{"ArtifactId", 2},
+								{"ArtifactId", 1},
 											{"DataGridEnabled", false}
 										}
 									},
 									{
 										"Destination", new Dictionary<string, object>()
 										{
-											{"ArtifactId", 7},
+								{"ArtifactId", 2},
 											{"DataGridEnabled", true}
 										}
 									}
+					}
 								},
-								new Dictionary<string, Dictionary<string, object>>()
 								{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInSource()
 									{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
 										"Source", new Dictionary<string, object>()
 										{
-											{"ArtifactId", 3},
+								{"ArtifactId", 1},
 											{"DataGridEnabled", true}
 										}
 									},
 									{
 										"Destination", new Dictionary<string, object>()
 										{
-											{"ArtifactId", 8},
+								{"ArtifactId", 2},
 											{"DataGridEnabled", false}
 										}
 									}
 								}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
 							}
+			};
 						}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithDisabledDataGrid()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
 					}
 				)
 				{ TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
+		}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", false}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 2},
+								{"DataGridEnabled", false}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
 		}
 
 		private void SetupFieldMapping(IEnumerable<FieldMapDefinitionCase> mapping)
