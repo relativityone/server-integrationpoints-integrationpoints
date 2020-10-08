@@ -206,59 +206,59 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			const string extractedTextFieldName = "Extracted Text";
 
 			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
+					new List<FieldMapDefinitionCase>
+					{
 						new FieldMapDefinitionCase
 						{
 							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
 							DataType = RelativityDataType.LongText
-				},
+						},
 					},
 					PrepareSummaryForExtractedTextWithDisabledDataGrid()
 				)
-				{TestName = "{m}(ExtractedTextDataGridSource=disable, ExtractedTextDataGridDestination=disabled)" };
+				{TestName = "{m}(ExtractedTextDataGridSource=disable, ExtractedTextDataGridDestination=disabled)"};
 
 			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
+					new List<FieldMapDefinitionCase>
+					{
 						new FieldMapDefinitionCase
 						{
 							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
 							DestinationFieldDataGridEnabled = false
 						}
-				},
+					},
 					PrepareSummaryForExtractedTextWithEnabledDataGridInSource()
 				)
-			{ TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=disabled)" };
+				{TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=disabled)"};
 
 			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
+					new List<FieldMapDefinitionCase>
+					{
 						new FieldMapDefinitionCase
 						{
 							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
 							DestinationFieldDataGridEnabled = true
 						}
-				},
+					},
 					PrepareSummaryForExtractedTextWithEnabledDataGridInDestination()
-			)
-			{ TestName = "{m}(ExtractedTextDataGridSource=disabled, ExtractedTextDataGridDestination=enabled)" };
+				)
+				{TestName = "{m}(ExtractedTextDataGridSource=disabled, ExtractedTextDataGridDestination=enabled)"};
 
 			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
+					new List<FieldMapDefinitionCase>
+					{
 						new FieldMapDefinitionCase
 						{
 							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
 							DestinationFieldDataGridEnabled = true
 						}
-				},
+					},
 					PrepareSummaryForExtractedTextWithDataGridEnabledBothInSourceAndDestination()
 				)
-			{ TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=enabled)" };
+				{TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=enabled)"};
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -267,7 +267,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						{
 							SourceFieldName = "fixed-length", DestinationFieldName = "fixed-length",
 							DataType = RelativityDataType.FixedLengthText
-					},
+						},
 						new FieldMapDefinitionCase
 						{
 							SourceFieldName = "fixed-length 2", DestinationFieldName = "fixed-length 2",
@@ -303,7 +303,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					},
 					PrepareSummaryForCountingTypes()
 				)
-				{TestName = "{m}(CountingTypes)" };
+				{TestName = "{m}(CountingTypes)"};
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -313,23 +313,23 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
 							DestinationFieldDataGridEnabled = true
-								},
+						},
 						new FieldMapDefinitionCase
-								{
+						{
 							SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
 							DestinationFieldDataGridEnabled = true
-								},
+						},
 						new FieldMapDefinitionCase
-								{
+						{
 							SourceFieldName = "long text2", DestinationFieldName = "long text2",
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
 							DestinationFieldDataGridEnabled = false
-								}
-						},
+						}
+					},
 					PrepareSummaryForLongText()
 				)
-				{ TestName = "{m}(LongText)" };
+				{TestName = "{m}(LongText)"};
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
@@ -339,7 +339,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
 							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
 							DestinationFieldDataGridEnabled = true
-					},
+						},
 						new FieldMapDefinitionCase
 						{
 							SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
@@ -369,7 +369,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					},
 					PrepareSummaryForLoggingSpecialFields()
 				)
-				{TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
+				{TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)"};
 		}
 
 		private static Dictionary<string, object> PrepareSummaryForLoggingSpecialFields()
