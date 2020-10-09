@@ -12,7 +12,7 @@ using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Testing.Identification;
 
-namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
+namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]

@@ -22,7 +22,7 @@ using System.Security;
 using System.Threading;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
-namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
+namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 {
 	internal class SynchronizationExecutorSetup
 	{

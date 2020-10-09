@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Relativity.Sync.Tests.System.SynchronizationExecutorsTests
+namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 {
 	internal class SynchronizationExecutorValidator
 	{
