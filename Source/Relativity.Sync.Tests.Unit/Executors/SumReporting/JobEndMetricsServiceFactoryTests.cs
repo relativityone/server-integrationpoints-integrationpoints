@@ -23,11 +23,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			new SyncDocumentRetryPipeline()
 		};
 
-		// TODO: REL-465065
 		private static readonly ISyncPipeline[] ImageTypePipelines =
 		{
-		//	new SyncImageRunPipeline(),
-		//	new SyncImageRetryPipeline()
+			new SyncImageRunPipeline(),
+			new SyncImageRetryPipeline()
 		};
 
 		[SetUp]

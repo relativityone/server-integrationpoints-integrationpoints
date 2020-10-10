@@ -67,6 +67,64 @@ namespace Relativity.Sync.Tests.Common
 				};
 			}
 
+			if (pipelineType == typeof(SyncImageRetryPipeline))
+			{
+				return new List<Type[]>
+				{
+					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
+					new[] {typeof(IPermissionsCheckConfiguration)},
+					new[] {typeof(IValidationConfiguration)},
+					new[] {typeof(IImageRetryDataSourceSnapshotConfiguration)},
+					new[]
+					{
+						typeof(ISumReporterConfiguration),
+						typeof(ISourceWorkspaceTagsCreationConfiguration),
+						typeof(IDestinationWorkspaceTagsCreationConfiguration),
+						typeof(IDataDestinationInitializationConfiguration)
+					},
+					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
+					new[] {typeof(ISnapshotPartitionConfiguration)},
+					new[] {typeof(IImageSynchronizationConfiguration)},
+					new[] {typeof(IDataDestinationFinalizationConfiguration)},
+					new[] {typeof(IJobStatusConsolidationConfiguration)},
+					new[]
+					{
+						typeof(INotificationConfiguration),
+						typeof(IAutomatedWorkflowTriggerConfiguration)
+					},
+					new[] {typeof(IJobCleanupConfiguration) }
+				};
+			}
+
+			if (pipelineType == typeof(SyncImageRunPipeline))
+			{
+				return new List<Type[]>
+				{
+					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
+					new[] {typeof(IPermissionsCheckConfiguration)},
+					new[] {typeof(IValidationConfiguration)},
+					new[] {typeof(IImageDataSourceSnapshotConfiguration)},
+					new[]
+					{
+						typeof(ISumReporterConfiguration),
+						typeof(ISourceWorkspaceTagsCreationConfiguration),
+						typeof(IDestinationWorkspaceTagsCreationConfiguration),
+						typeof(IDataDestinationInitializationConfiguration)
+					},
+					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
+					new[] {typeof(ISnapshotPartitionConfiguration)},
+					new[] {typeof(IImageSynchronizationConfiguration) },
+					new[] {typeof(IDataDestinationFinalizationConfiguration)},
+					new[] {typeof(IJobStatusConsolidationConfiguration)},
+					new[]
+					{
+						typeof(INotificationConfiguration),
+						typeof(IAutomatedWorkflowTriggerConfiguration)
+					},
+					new[] {typeof(IJobCleanupConfiguration) }
+				};
+			}
+
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");
 		}
 	}
