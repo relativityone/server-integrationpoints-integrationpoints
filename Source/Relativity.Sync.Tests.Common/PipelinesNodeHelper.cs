@@ -11,121 +11,141 @@ namespace Relativity.Sync.Tests.Common
 		{
 			if (pipelineType == typeof(SyncDocumentRetryPipeline))
 			{
-				return new List<Type[]>
-				{
-					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
-					new[] {typeof(IPermissionsCheckConfiguration)},
-					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IDocumentRetryDataSourceSnapshotConfiguration)},
-					new[]
-					{
-						typeof(ISumReporterConfiguration),
-						typeof(ISourceWorkspaceTagsCreationConfiguration),
-						typeof(IDestinationWorkspaceTagsCreationConfiguration),
-						typeof(IDataDestinationInitializationConfiguration)
-					},
-					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-					new[] {typeof(ISnapshotPartitionConfiguration)},
-					new[] {typeof(IDocumentSynchronizationConfiguration)},
-					new[] {typeof(IDataDestinationFinalizationConfiguration)},
-					new[] {typeof(IJobStatusConsolidationConfiguration)},
-					new[]
-					{
-						typeof(INotificationConfiguration),
-						typeof(IAutomatedWorkflowTriggerConfiguration)
-					},
-					new[] {typeof(IJobCleanupConfiguration) }
-				};
+				return GetSyncDocumentRetryPipelineExpectedNodes();
 			}
 
 			if (pipelineType == typeof(SyncDocumentRunPipeline))
 			{
-				return new List<Type[]>
-				{
-					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
-					new[] {typeof(IPermissionsCheckConfiguration)},
-					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IDocumentDataSourceSnapshotConfiguration)},
-					new[]
-					{
-						typeof(ISumReporterConfiguration),
-						typeof(ISourceWorkspaceTagsCreationConfiguration),
-						typeof(IDestinationWorkspaceTagsCreationConfiguration),
-						typeof(IDataDestinationInitializationConfiguration)
-					},
-					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-					new[] {typeof(ISnapshotPartitionConfiguration)},
-					new[] {typeof(IDocumentSynchronizationConfiguration) },
-					new[] {typeof(IDataDestinationFinalizationConfiguration)},
-					new[] {typeof(IJobStatusConsolidationConfiguration)},
-					new[]
-					{
-						typeof(INotificationConfiguration),
-						typeof(IAutomatedWorkflowTriggerConfiguration)
-					},
-					new[] {typeof(IJobCleanupConfiguration) }
-				};
+				return GetSyncDocumentRunPipelineExpectedNodes();
 			}
 
 			if (pipelineType == typeof(SyncImageRetryPipeline))
 			{
-				return new List<Type[]>
-				{
-					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
-					new[] {typeof(IPermissionsCheckConfiguration)},
-					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IImageRetryDataSourceSnapshotConfiguration)},
-					new[]
-					{
-						typeof(ISumReporterConfiguration),
-						typeof(ISourceWorkspaceTagsCreationConfiguration),
-						typeof(IDestinationWorkspaceTagsCreationConfiguration),
-						typeof(IDataDestinationInitializationConfiguration)
-					},
-					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-					new[] {typeof(ISnapshotPartitionConfiguration)},
-					new[] {typeof(IImageSynchronizationConfiguration)},
-					new[] {typeof(IDataDestinationFinalizationConfiguration)},
-					new[] {typeof(IJobStatusConsolidationConfiguration)},
-					new[]
-					{
-						typeof(INotificationConfiguration),
-						typeof(IAutomatedWorkflowTriggerConfiguration)
-					},
-					new[] {typeof(IJobCleanupConfiguration) }
-				};
+				return GetSyncImageRetryPipelineExpectedNodes();
 			}
 
 			if (pipelineType == typeof(SyncImageRunPipeline))
 			{
-				return new List<Type[]>
-				{
-					new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
-					new[] {typeof(IPermissionsCheckConfiguration)},
-					new[] {typeof(IValidationConfiguration)},
-					new[] {typeof(IImageDataSourceSnapshotConfiguration)},
-					new[]
-					{
-						typeof(ISumReporterConfiguration),
-						typeof(ISourceWorkspaceTagsCreationConfiguration),
-						typeof(IDestinationWorkspaceTagsCreationConfiguration),
-						typeof(IDataDestinationInitializationConfiguration)
-					},
-					new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-					new[] {typeof(ISnapshotPartitionConfiguration)},
-					new[] {typeof(IImageSynchronizationConfiguration) },
-					new[] {typeof(IDataDestinationFinalizationConfiguration)},
-					new[] {typeof(IJobStatusConsolidationConfiguration)},
-					new[]
-					{
-						typeof(INotificationConfiguration),
-						typeof(IAutomatedWorkflowTriggerConfiguration)
-					},
-					new[] {typeof(IJobCleanupConfiguration) }
-				};
+				return GetSyncImageRunPipelineExpectedNodes();
 			}
 
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");
+		}
+
+		private static List<Type[]> GetSyncImageRunPipelineExpectedNodes()
+		{
+			return new List<Type[]>
+			{
+				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
+				new[] {typeof(IPermissionsCheckConfiguration)},
+				new[] {typeof(IValidationConfiguration)},
+				new[] {typeof(IImageDataSourceSnapshotConfiguration)},
+				new[]
+				{
+					typeof(ISumReporterConfiguration),
+					typeof(ISourceWorkspaceTagsCreationConfiguration),
+					typeof(IDestinationWorkspaceTagsCreationConfiguration),
+					typeof(IDataDestinationInitializationConfiguration)
+				},
+				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
+				new[] {typeof(ISnapshotPartitionConfiguration)},
+				new[] {typeof(IImageSynchronizationConfiguration)},
+				new[] {typeof(IDataDestinationFinalizationConfiguration)},
+				new[] {typeof(IJobStatusConsolidationConfiguration)},
+				new[]
+				{
+					typeof(INotificationConfiguration),
+					typeof(IAutomatedWorkflowTriggerConfiguration)
+				},
+				new[] {typeof(IJobCleanupConfiguration)}
+			};
+		}
+
+		private static List<Type[]> GetSyncImageRetryPipelineExpectedNodes()
+		{
+			return new List<Type[]>
+			{
+				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
+				new[] {typeof(IPermissionsCheckConfiguration)},
+				new[] {typeof(IValidationConfiguration)},
+				new[] {typeof(IImageRetryDataSourceSnapshotConfiguration)},
+				new[]
+				{
+					typeof(ISumReporterConfiguration),
+					typeof(ISourceWorkspaceTagsCreationConfiguration),
+					typeof(IDestinationWorkspaceTagsCreationConfiguration),
+					typeof(IDataDestinationInitializationConfiguration)
+				},
+				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
+				new[] {typeof(ISnapshotPartitionConfiguration)},
+				new[] {typeof(IImageSynchronizationConfiguration)},
+				new[] {typeof(IDataDestinationFinalizationConfiguration)},
+				new[] {typeof(IJobStatusConsolidationConfiguration)},
+				new[]
+				{
+					typeof(INotificationConfiguration),
+					typeof(IAutomatedWorkflowTriggerConfiguration)
+				},
+				new[] {typeof(IJobCleanupConfiguration)}
+			};
+		}
+
+		private static List<Type[]> GetSyncDocumentRunPipelineExpectedNodes()
+		{
+			return new List<Type[]>
+			{
+				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
+				new[] {typeof(IPermissionsCheckConfiguration)},
+				new[] {typeof(IValidationConfiguration)},
+				new[] {typeof(IDocumentDataSourceSnapshotConfiguration)},
+				new[]
+				{
+					typeof(ISumReporterConfiguration),
+					typeof(ISourceWorkspaceTagsCreationConfiguration),
+					typeof(IDestinationWorkspaceTagsCreationConfiguration),
+					typeof(IDataDestinationInitializationConfiguration)
+				},
+				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
+				new[] {typeof(ISnapshotPartitionConfiguration)},
+				new[] {typeof(IDocumentSynchronizationConfiguration)},
+				new[] {typeof(IDataDestinationFinalizationConfiguration)},
+				new[] {typeof(IJobStatusConsolidationConfiguration)},
+				new[]
+				{
+					typeof(INotificationConfiguration),
+					typeof(IAutomatedWorkflowTriggerConfiguration)
+				},
+				new[] {typeof(IJobCleanupConfiguration)}
+			};
+		}
+
+		private static List<Type[]> GetSyncDocumentRetryPipelineExpectedNodes()
+		{
+			return new List<Type[]>
+			{
+				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
+				new[] {typeof(IPermissionsCheckConfiguration)},
+				new[] {typeof(IValidationConfiguration)},
+				new[] {typeof(IDocumentRetryDataSourceSnapshotConfiguration)},
+				new[]
+				{
+					typeof(ISumReporterConfiguration),
+					typeof(ISourceWorkspaceTagsCreationConfiguration),
+					typeof(IDestinationWorkspaceTagsCreationConfiguration),
+					typeof(IDataDestinationInitializationConfiguration)
+				},
+				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
+				new[] {typeof(ISnapshotPartitionConfiguration)},
+				new[] {typeof(IDocumentSynchronizationConfiguration)},
+				new[] {typeof(IDataDestinationFinalizationConfiguration)},
+				new[] {typeof(IJobStatusConsolidationConfiguration)},
+				new[]
+				{
+					typeof(INotificationConfiguration),
+					typeof(IAutomatedWorkflowTriggerConfiguration)
+				},
+				new[] {typeof(IJobCleanupConfiguration)}
+			};
 		}
 	}
 }
