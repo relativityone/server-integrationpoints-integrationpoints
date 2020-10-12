@@ -37,13 +37,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 
-		// TODO: REL-465065
 		private static readonly TestCaseData[] LogFlowTypeTestCases =
 		{
 			new TestCaseData(new SyncDocumentRunPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA),
-			new TestCaseData(new SyncDocumentRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA)
-		//	new TestCaseData(new SyncImageRunPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES),
-		//	new TestCaseData(new SyncImageRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES)
+			new TestCaseData(new SyncDocumentRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA),
+			new TestCaseData(new SyncImageRunPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES),
+			new TestCaseData(new SyncImageRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES)
 		};
 
 		[SetUp]

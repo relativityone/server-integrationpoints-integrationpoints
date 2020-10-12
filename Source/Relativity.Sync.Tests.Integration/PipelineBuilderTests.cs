@@ -172,7 +172,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
 
-			Type dataSnapshotConfigurationType = GetSnaphotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
+			Type dataSnapshotConfigurationType = GetSnapshotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
 			IntegrationTestsContainerBuilder.MockFailingStep(dataSnapshotConfigurationType, _containerBuilder);
 
 			IContainer container = _containerBuilder.Build();
@@ -188,7 +188,7 @@ namespace Relativity.Sync.Tests.Integration
 				container.ResolveNode<IValidationConfiguration>(),
 				container.ResolveNode<IDestinationWorkspaceObjectTypesCreationConfiguration>());
 
-			AssertNodesReportedFailed(progress, container.Resolve(GetSnaphotNodeType(pipelineType)) as INode<SyncExecutionContext>);
+			AssertNodesReportedFailed(progress, container.Resolve(GetSnapshotNodeType(pipelineType)) as INode<SyncExecutionContext>);
 		}
 
 		[TestCaseSource(nameof(PipelineTypes))]
@@ -201,7 +201,7 @@ namespace Relativity.Sync.Tests.Integration
 			_containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
 
 
-			Type dataSnapshotConfigurationType = GetSnaphotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
+			Type dataSnapshotConfigurationType = GetSnapshotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
 
 			IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep(dataSnapshotConfigurationType, _containerBuilder);
 
@@ -213,11 +213,11 @@ namespace Relativity.Sync.Tests.Integration
 
 			// ASSERT
 			INode<SyncExecutionContext>[] completedNodes = ContainerHelper.GetSyncNodesFromRegisteredPipeline(container, pipelineType)
-				.Where(x => x.Type != GetSnaphotNodeType(pipelineType))
+				.Where(x => x.Type != GetSnapshotNodeType(pipelineType))
 				.Select(x => container.Resolve(x.Type) as INode<SyncExecutionContext>).ToArray();
 			AssertNodesReportedCompleted(progress, completedNodes);
 			AssertNodesReportedCompletedWithErrors(progress,
-				container.Resolve(GetSnaphotNodeType(pipelineType)) as INode<SyncExecutionContext>);
+				container.Resolve(GetSnapshotNodeType(pipelineType)) as INode<SyncExecutionContext>);
 		}
 
 		private static void AssertExecutionOrder(IReadOnlyCollection<Type[]> expectedExecutionOrder, IReadOnlyCollection<Type> actualExecutionOrder)
@@ -234,7 +234,7 @@ namespace Relativity.Sync.Tests.Integration
 			}
 		}
 
-		private static Type GetSnaphotNodeType(Type pipelineType)
+		private static Type GetSnapshotNodeType(Type pipelineType)
 		{
 			if (pipelineType == typeof(SyncDocumentRetryPipeline))
 			{
@@ -244,6 +244,16 @@ namespace Relativity.Sync.Tests.Integration
 			if (pipelineType == typeof(SyncDocumentRunPipeline))
 			{
 				return typeof(Nodes.DocumentDataSourceSnapshotNode);
+			}
+
+			if (pipelineType == typeof(SyncImageRetryPipeline))
+			{
+				return typeof(ImageRetryDataSourceSnapshotNode);
+			}
+
+			if (pipelineType == typeof(SyncImageRunPipeline))
+			{
+				return typeof(ImageDataSourceSnapshotNode);
 			}
 
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");

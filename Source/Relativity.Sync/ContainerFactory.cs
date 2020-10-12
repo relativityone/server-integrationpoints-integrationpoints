@@ -52,7 +52,7 @@ namespace Relativity.Sync
 			}
 
 			containerBuilder.RegisterType<PipelineSelectorConfiguration>().As<IPipelineSelectorConfiguration>();
-			containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces();
+			containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces().SingleInstance();
 
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);

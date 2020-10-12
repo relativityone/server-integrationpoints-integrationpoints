@@ -30,7 +30,7 @@ namespace Relativity.Sync
 
 		private void RegisterPipelines(ContainerBuilder containerBuilder)
 		{
-			var pipelines = new ISyncPipeline[] { new SyncDocumentRunPipeline(), new SyncDocumentRetryPipeline(), };
+			var pipelines = new ISyncPipeline[] { new SyncDocumentRunPipeline(), new SyncDocumentRetryPipeline(), new SyncImageRunPipeline(), new SyncImageRetryPipeline() };
 
 			foreach (var syncPipeline in pipelines)
 			{
