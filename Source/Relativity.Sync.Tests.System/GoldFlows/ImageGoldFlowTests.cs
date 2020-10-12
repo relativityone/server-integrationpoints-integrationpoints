@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using FluentAssertions;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Configuration;
@@ -14,11 +15,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 	[TestFixture]
 	public class ImageGoldFlowTests : SystemTest
 	{
+		private const int _HAS_IMAGES_YES_CHOICE = 1034243;
+
 		private GoldFlowTestSuite _goldFlowTestSuite;
 
 		protected override async Task ChildSuiteSetup()
 		{
-			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory, Dataset.Images)
+			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory, DataTableFactory.CreateImageImportDataTable(Dataset.Images))
 				.ConfigureAwait(false);
 		}
 
@@ -33,7 +36,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
 
 			// Assert
+			int documentsWithImagesInDestinationWorkspaceCount = (await Rdos.QueryDocumentIdentifiersAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false))
+				.Count;
+
 			await goldFlowTestRun.AssertAsync(result, _goldFlowTestSuite.DataSetItemsCount).ConfigureAwait(false);
+			documentsWithImagesInDestinationWorkspaceCount.Should().Be(_goldFlowTestSuite.DataSetItemsCount);
 		}
 
 		[IdentifiedTest("e4451454-ea17-4d0e-b45a-a2c43ad35add")]

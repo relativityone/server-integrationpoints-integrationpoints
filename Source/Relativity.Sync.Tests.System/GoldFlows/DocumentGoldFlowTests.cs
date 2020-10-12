@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		
 		protected override async Task ChildSuiteSetup()
 		{
-			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory, Dataset.NativesAndExtractedText)
+			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory, DataTableFactory.CreateImportDataTable(Dataset.NativesAndExtractedText, true))
 				.ConfigureAwait(false);
 		}
 

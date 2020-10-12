@@ -36,11 +36,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			_importDataTable = importDataTable;
 		}
 
-		internal static async Task<GoldFlowTestSuite> CreateAsync(TestEnvironment environment, User user, ServiceFactory serviceFactory, Dataset dataSet)
+		internal static async Task<GoldFlowTestSuite> CreateAsync(TestEnvironment environment, User user, ServiceFactory serviceFactory, ImportDataTableWrapper importDataTable)
 		{
 			WorkspaceRef sourceWorkspace = await environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-
-			ImportDataTableWrapper importDataTable = DataTableFactory.CreateImportDataTable(dataSet, true);
 
 			ImportHelper importHelper = new ImportHelper(serviceFactory);
 			await importHelper.ImportDataAsync(sourceWorkspace.ArtifactID, importDataTable).ConfigureAwait(false);
@@ -76,6 +74,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		internal interface IGoldFlowTestRun
 		{
+			int DestinationWorkspaceArtifactId { get; }
+
 			Task<SyncJobState> RunAsync();
 
 			Task AssertAsync(SyncJobState expected, int expectedItemsTransferred);
@@ -86,6 +86,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			private readonly GoldFlowTestSuite _goldFlowTestSuite;
 			private readonly ConfigurationStub _configuration;
 			private readonly SyncJobParameters _parameters;
+
+			public int DestinationWorkspaceArtifactId => _configuration.DestinationWorkspaceArtifactId;
 
 			public GoldFlowTestRun(GoldFlowTestSuite goldFlowTestSuite, int configurationId, ConfigurationStub configuration)
 			{
