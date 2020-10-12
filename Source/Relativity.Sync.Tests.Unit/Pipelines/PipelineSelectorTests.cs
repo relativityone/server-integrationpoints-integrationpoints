@@ -49,5 +49,32 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
 			// Assert
 			pipeline.GetType().Should().Be<SyncDocumentRetryPipeline>();
 		}
+
+		[Test]
+		public void GetPipeline_Should_ReturnSyncImageRetryPipeline_When_JobHistoryToRetryIsSet_And_IsImageJob()
+		{
+			// Arrange
+			_configurationMock.SetupGet(x => x.JobHistoryToRetryId).Returns(1);
+			_configurationMock.SetupGet(x => x.IsImageJob).Returns(true);
+
+			// Act
+			var pipeline = _sut.GetPipeline();
+
+			// Assert
+			pipeline.GetType().Should().Be<SyncImageRetryPipeline>();
+		}
+
+		[Test]
+		public void GetPipeline_Should_ReturnSyncImageRunPipeline_When_IsImageJob()
+		{
+			// Arrange
+			_configurationMock.SetupGet(x => x.IsImageJob).Returns(true);
+
+			// Act
+			var pipeline = _sut.GetPipeline();
+
+			// Assert
+			pipeline.GetType().Should().Be<SyncImageRunPipeline>();
+		}
 	}
 }
