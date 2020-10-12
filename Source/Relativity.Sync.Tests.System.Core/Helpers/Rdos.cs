@@ -68,6 +68,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static readonly Guid JobHistoryToRetryGuid
 			= new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 
+		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
+
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 		private static readonly Guid DataDestinationTypeGuid = new Guid("86D9A34A-B394-41CF-BFF4-BD4FF49A932D");
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
@@ -370,6 +372,38 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				await QueryDocumentsAsync(serviceFactory, workspaceId, condition).ConfigureAwait(false);
 			IList<string> identifiers = documents.Select(x => x.Name).ToList();
 			return identifiers;
+		}
+
+		public static async Task TagDocumentsAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryArtifactId, int numberOfDocuments)
+		{
+			UpdateRequest GetRequest(int documentArtifactId)
+			{
+				return new UpdateRequest
+				{
+					FieldValues = new[]
+					{
+						new FieldRefValuePair
+						{
+							Field = new FieldRef {Guid = JobHistoryMultiObjectFieldGuid},
+							Value = new [] {new RelativityObjectRef {ArtifactID = jobHistoryArtifactId}}
+						}
+					},
+					Object = new RelativityObjectRef
+					{
+						ArtifactID = documentArtifactId
+					}
+				};
+			}
+
+			foreach (var documentArtifactId in (await QueryDocumentIdsAsync(serviceFactory, workspaceId).ConfigureAwait(false)).Take(numberOfDocuments))
+			{
+				var updateRequest = GetRequest(documentArtifactId);
+				using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
+				{
+					await objectManager.UpdateAsync(workspaceId, updateRequest)
+						.ConfigureAwait(false);
+				}
+			}
 		}
 
 		public static async Task<int> CreateSyncConfigurationRDOAsync(ServiceFactory serviceFactory, int workspaceId,

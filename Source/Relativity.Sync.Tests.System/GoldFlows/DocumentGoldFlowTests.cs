@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Relativity.Services.Objects;
 using Relativity.Services.Workspace;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Configuration;
 using Relativity.Testing.Identification;
@@ -19,8 +17,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 	public class DocumentGoldFlowTests : SystemTest
 	{
 		private GoldFlowTestSuite _goldFlowTestSuite;
-		
-		private readonly Guid _documentJobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 		
 		protected override async Task ChildSuiteSetup()
 		{
@@ -47,11 +43,19 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		public async Task SyncJob_Should_RetryDocuments()
 		{
 			// Arrange
-			var goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunAsync).ConfigureAwait(false);
+			int jobHistoryToRetryId = -1;
+			var goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(async (sourceWorkspace, destinationWorkspace, configuration) =>
+				{
+					await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration);
+
+					jobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID)
+						.ConfigureAwait(false);
+					configuration.JobHistoryToRetryId = jobHistoryToRetryId;
+
+				}).ConfigureAwait(false);
 
 			const int numberOfTaggedDocuments = 2;
-			int jobHistoryToRetryId = await goldFlowTestRun.ConfigureForRetry().ConfigureAwait(false);
-			await TagDocumentsInSourceAsync(jobHistoryToRetryId, numberOfTaggedDocuments).ConfigureAwait(false);
+			await Rdos.TagDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, jobHistoryToRetryId, numberOfTaggedDocuments).ConfigureAwait(false);
 
 			// Act
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
@@ -73,38 +77,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
 			configuration.SetFieldMappings(identifierMapping.Concat(extractedTextMapping).ToList());
-		}
-
-		private async Task TagDocumentsInSourceAsync(int jobHistoryArtifactId, int numberOfDocuments = 1)
-		{
-			UpdateRequest GetRequest(int documentArtifactId)
-			{
-				return new UpdateRequest
-				{
-					FieldValues = new[]
-					{
-						new FieldRefValuePair
-						{
-							Field = new FieldRef {Guid = _documentJobHistoryMultiObjectFieldGuid},
-							Value = new [] {new RelativityObjectRef {ArtifactID = jobHistoryArtifactId}}
-						}
-					},
-					Object = new RelativityObjectRef
-					{
-						ArtifactID = documentArtifactId
-					}
-				};
-			}
-
-			foreach (var documentArtifactId in (await Rdos.QueryDocumentIdsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID).ConfigureAwait(false)).Take(numberOfDocuments))
-			{
-				var updateRequest = GetRequest(documentArtifactId);
-				using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-				{
-					await objectManager.UpdateAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, updateRequest)
-						.ConfigureAwait(false);
-				}
-			}
 		}
 	}
 }

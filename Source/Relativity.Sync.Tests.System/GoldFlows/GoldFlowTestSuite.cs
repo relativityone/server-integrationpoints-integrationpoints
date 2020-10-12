@@ -78,8 +78,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		{
 			Task<SyncJobState> RunAsync();
 
-			Task<int> ConfigureForRetry();
-
 			Task AssertAsync(SyncJobState expected, int expectedItemsTransferred);
 		}
 
@@ -101,14 +99,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				var syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger());
 
 				return syncRunner.RunAsync(_parameters, _goldFlowTestSuite.User.ArtifactID);
-			}
-
-			public async Task<int> ConfigureForRetry()
-			{
-				_configuration.JobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID)
-					.ConfigureAwait(false);
-
-				return _configuration.JobHistoryToRetryId.Value;
 			}
 
 			public async Task AssertAsync(SyncJobState expectedResult, int expectedItemsTransferred)
