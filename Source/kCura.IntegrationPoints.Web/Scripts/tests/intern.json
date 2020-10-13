@@ -6,7 +6,7 @@
   ],
   "plugins": [
     "../jquery-1.9.1.min.js",
-    "../knockout-3.4.0.js",
+    "../knockout-3.5.1.js",
     "../knockout.validation.js",
     "../moment.min.js",
     "mocks/ip.mock.js",

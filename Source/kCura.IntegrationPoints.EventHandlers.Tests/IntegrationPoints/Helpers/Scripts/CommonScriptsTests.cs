@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
 		private readonly List<string> _allScripts = new List<string>(new[]
 		{
-				"/Scripts/knockout-3.4.0.js",
+				"/Scripts/knockout-3.5.1.js",
 				"/Scripts/knockout.validation.js",
 				"/Scripts/route.js",
 				"/Scripts/date.js",
