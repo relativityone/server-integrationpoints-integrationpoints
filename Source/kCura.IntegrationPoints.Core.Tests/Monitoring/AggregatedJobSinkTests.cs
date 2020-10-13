@@ -60,53 +60,116 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 		[Test]
 		public void ShouldSendJobStartedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobStartedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobStartedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobStartedMessage message = CreateMessage<JobStartedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobStartedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_logger.Received(1).LogInformation(
+				Arg.Any<string>(), expectedMetricBucket, "1", message);
 		}
 
 		[Test]
 		public void ShouldSendJobCompletedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobCompletedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobCompletedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobCompletedMessage message = CreateMessage<JobCompletedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobCompletedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_logger.Received(1).LogInformation(
+				Arg.Any<string>(), expectedMetricBucket, "1", message);
 		}
 
 		[Test]
 		public void ShouldSendJobFailedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobFailedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobFailedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobFailedMessage message = CreateMessage<JobFailedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobFailedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_logger.Received(1).LogInformation(
+				Arg.Any<string>(), expectedMetricBucket, "1", message);
 		}
 
 		[Test]
 		public void ShouldSendJobValidationFailedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobValidationFailedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobValidationFailedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobValidationFailedMessage message = CreateMessage<JobValidationFailedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobValidationFailedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_logger.Received(1).LogInformation(
+				Arg.Any<string>(), expectedMetricBucket, "1", message);
 		}
 
 		[Test]
 		public void ShouldSendTotalRecordsTest()
 		{
+			// Arrange
 			const long totalRecords = 5;
-			_sink.OnMessage(CreateMessage<JobTotalRecordsCountMessage>(msg => msg.TotalRecordsCount = totalRecords));
-			_sum.Received(1).LogLong($"IntegrationPoints.Usage.TotalRecords.{_provider}", totalRecords, CreateValidator());
+			JobTotalRecordsCountMessage message = CreateMessage<JobTotalRecordsCountMessage>(msg => msg.TotalRecordsCount = totalRecords);
+			string expectedMetricBucket = $"IntegrationPoints.Usage.TotalRecords.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogLong(expectedMetricBucket, totalRecords, CreateValidator());
+			_logger.Received(1).LogInformation(
+				Arg.Any<string>(), expectedMetricBucket, totalRecords.ToString(), message);
 		}
 
 		[Test]
 		public void ShouldSendCompletedRecordsTest()
 		{
+			// Arrange
 			const long completedRecords = 5;
-			_sink.OnMessage(CreateMessage<JobCompletedRecordsCountMessage>(msg => msg.CompletedRecordsCount = completedRecords));
-			_sum.Received(1).LogLong($"IntegrationPoints.Usage.CompletedRecords.{_provider}", completedRecords, CreateValidator());
+			JobCompletedRecordsCountMessage message = CreateMessage<JobCompletedRecordsCountMessage>(msg => msg.CompletedRecordsCount = completedRecords);
+			string expectedMetricBucket = $"IntegrationPoints.Usage.CompletedRecords.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogLong(expectedMetricBucket, completedRecords, CreateValidator());
+			_logger.Received(1).LogInformation(
+				Arg.Any<string>(), expectedMetricBucket, completedRecords.ToString(), message);
 		}
 
 		[Test]
 		public void ShouldSendThroughputTest()
 		{
+			// Arrange
 			const double throughput = 10.8;
-			_sink.OnMessage(CreateMessage<JobThroughputMessage>(msg => msg.RecordsPerSecond = throughput));
-			_sum.Received(1).LogDouble($"IntegrationPoints.Performance.Throughput.{_provider}", throughput, CreateValidator());
+			JobThroughputMessage message = CreateMessage<JobThroughputMessage>(msg => msg.RecordsPerSecond = throughput);
+			string expectedMetricBucket = $"IntegrationPoints.Performance.Throughput.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogDouble(expectedMetricBucket, throughput, CreateValidator());
+			_logger.Received(1).LogInformation(
+				Arg.Any<string>(), expectedMetricBucket, throughput.ToString(), message);
 		}
 
 		[Test]

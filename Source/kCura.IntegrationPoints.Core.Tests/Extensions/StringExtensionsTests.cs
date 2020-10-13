@@ -42,5 +42,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
 			// assert
 			result.Should().Be(expectedResult);
 		}
+
+		[TestCase("test    ", "test")]
+		[TestCase("test test", "testtest")]
+		[TestCase("   ", "")]
+		[TestCase(null, null)]
+		[TestCase("", "")]
+		public void TrimAll_ShoudRemoveAllWhiteSpacesFromTheString(string str, string expectedResult)
+		{
+			// Act
+			string result = str.TrimAll();
+
+			// Assert
+			result.Should().Be(expectedResult);
+		}
 	}
 }
