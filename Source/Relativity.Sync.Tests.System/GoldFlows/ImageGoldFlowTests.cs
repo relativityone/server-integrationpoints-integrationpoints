@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			);
 		}
 
-		[IdentifiedTest("e4451454-ea17-4d0e-b45a-a2c43ad35add")]
+		[IdentifiedTest("d77b1e0c-e39d-4084-9e84-6efb40ae0fe0")]
 		[TestType.MainFlow]
 		public async Task SyncJob_Should_RetryDocuments()
 		{
