@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			await configureAsync(SourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
 
-			int configurationId = await Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, configuration)
+			int configurationId = await Rdos.CreateSyncConfigurationRdoAsync(ServiceFactory, SourceWorkspace.ArtifactID, configuration)
 				.ConfigureAwait(false);
 
 			return new GoldFlowTestRun(this, configurationId, configuration);

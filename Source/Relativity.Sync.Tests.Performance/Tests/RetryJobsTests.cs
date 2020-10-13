@@ -113,7 +113,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		private async Task RunJobAsync()
 		{
-			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
+			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRdoAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
 			Logger.LogInformation("Configuration RDO created");
 
 			SyncJobParameters jobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId);
