@@ -391,34 +391,34 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static async Task TagDocumentsAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryArtifactId, int numberOfDocuments)
 		{
-			UpdateRequest GetRequest(int documentArtifactId)
-			{
-				return new UpdateRequest
-				{
-					FieldValues = new[]
-					{
-						new FieldRefValuePair
-						{
-							Field = new FieldRef {Guid = JobHistoryMultiObjectFieldGuid},
-							Value = new [] {new RelativityObjectRef {ArtifactID = jobHistoryArtifactId}}
-						}
-					},
-					Object = new RelativityObjectRef
-					{
-						ArtifactID = documentArtifactId
-					}
-				};
-			}
-
 			foreach (var documentArtifactId in (await QueryDocumentIdsAsync(serviceFactory, workspaceId).ConfigureAwait(false)).Take(numberOfDocuments))
 			{
-				var updateRequest = GetRequest(documentArtifactId);
+				UpdateRequest tagUpdateRequest = CreateTagUpdateRequest(documentArtifactId, jobHistoryArtifactId);
+
 				using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
 				{
-					await objectManager.UpdateAsync(workspaceId, updateRequest)
-						.ConfigureAwait(false);
+					await objectManager.UpdateAsync(workspaceId, tagUpdateRequest).ConfigureAwait(false);
 				}
 			}
+		}
+
+		private static UpdateRequest CreateTagUpdateRequest(int documentArtifactId, int jobHistoryArtifactId)
+		{
+			return new UpdateRequest
+			{
+				FieldValues = new[]
+				{
+					new FieldRefValuePair
+					{
+						Field = new FieldRef {Guid = JobHistoryMultiObjectFieldGuid},
+						Value = new [] {new RelativityObjectRef {ArtifactID = jobHistoryArtifactId}}
+					}
+				},
+				Object = new RelativityObjectRef
+				{
+					ArtifactID = documentArtifactId
+				}
+			};
 		}
 
 		public static async Task<int> CreateSyncConfigurationRdoAsync(ServiceFactory serviceFactory, int workspaceId,

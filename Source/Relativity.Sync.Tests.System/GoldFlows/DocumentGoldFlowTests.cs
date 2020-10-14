@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Relativity.Services.Workspace;
@@ -46,7 +45,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			int jobHistoryToRetryId = -1;
 			var goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(async (sourceWorkspace, destinationWorkspace, configuration) =>
 				{
-					await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration);
+					await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
 
 					jobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID)
 						.ConfigureAwait(false);
