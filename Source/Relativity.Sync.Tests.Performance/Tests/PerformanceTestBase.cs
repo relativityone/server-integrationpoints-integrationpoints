@@ -163,7 +163,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				Logger.LogInformation("Fields mapping ready");
 
 				ConfigurationRdoId = await
-					Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
+					Rdos.CreateSyncConfigurationRdoAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
 						.ConfigureAwait(false);
 
 				Logger.LogInformation("Configuration RDO created");
