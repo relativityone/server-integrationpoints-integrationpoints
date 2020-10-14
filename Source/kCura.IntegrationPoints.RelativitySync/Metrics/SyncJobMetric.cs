@@ -20,8 +20,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 		{
 			try
 			{
-				IMetricCollection metrics = new MetricsCollection()
-					.AddMetric(_metricsFactory.CreateScheduleJobStartedMetric(job));
+				IMetric metric = _metricsFactory.CreateScheduleJobStartedMetric(job);
+				_logger.LogInformation("Sending Sync job started metric: {@metric}", metric);
+
+				IMetricCollection metrics = new MetricsCollection().AddMetric(metric);
 
 				await metrics.SendAsync().ConfigureAwait(false);
 			}
@@ -37,8 +39,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 		{
 			try
 			{
-				IMetricCollection metrics = new MetricsCollection()
-					.AddMetric(_metricsFactory.CreateScheduleJobCompletedMetric(job));
+				IMetric metric = _metricsFactory.CreateScheduleJobCompletedMetric(job);
+				_logger.LogInformation("Sending Sync job completed metric: {@metric}", metric);
+
+				IMetricCollection metrics = new MetricsCollection().AddMetric(metric);
 
 				await metrics.SendAsync().ConfigureAwait(false);
 			}
@@ -54,8 +58,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 		{
 			try
 			{
-				IMetricCollection metrics = new MetricsCollection()
-					.AddMetric(_metricsFactory.CreateScheduleJobFailedMetric(job));
+				IMetric metric = _metricsFactory.CreateScheduleJobFailedMetric(job);
+				_logger.LogInformation("Sending Sync job failed metric: {@metric}", metric);
+
+				IMetricCollection metrics = new MetricsCollection().AddMetric(metric);
 
 				await metrics.SendAsync().ConfigureAwait(false);
 			}
