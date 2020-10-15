@@ -14,6 +14,28 @@ namespace kCura.IntegrationPoints.Common.Metrics
 			_sinks = sinks;
 		}
 
+		public void PointInTimeDouble(string name, double value, Dictionary<string, object> customData)
+		{
+			foreach (IRipMetricsSink sink in _sinks)
+			{
+				RipMetric metric = RipMetric.PointInTimeDouble(name, value, _workflowId.ToString());
+				metric.CustomData = customData;
+
+				sink.Log(metric);
+			}
+		}
+
+		public void PointInTimeLong(string name, long value, Dictionary<string, object> customData)
+		{
+			foreach (IRipMetricsSink sink in _sinks)
+			{
+				RipMetric metric = RipMetric.PointInTimeLong(name, value, _workflowId.ToString());
+				metric.CustomData = customData;
+
+				sink.Log(metric);
+			}
+		}
+
 		public void TimedOperation(string name, TimeSpan duration, Dictionary<string, object> customData)
 		{
 			foreach (IRipMetricsSink sink in _sinks)

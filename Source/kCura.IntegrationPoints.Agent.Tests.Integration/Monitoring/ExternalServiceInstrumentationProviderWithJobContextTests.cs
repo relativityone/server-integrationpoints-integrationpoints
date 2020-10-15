@@ -19,6 +19,7 @@ using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.Testing.Identification;
+using kCura.IntegrationPoints.Common.Metrics;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 {
@@ -30,6 +31,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		private Mock<IConfig> _configMock;
 		private Mock<IMetricsManager> _metricManagerMock;
 		private Mock<IDateTimeHelper> _dateTimeHelperMock;
+		private Mock<IRipMetrics> _ripMetricsMock; 
 		private JobContextProvider _jobContextProvider;
 		private IntegrationPointsMessageService _messageService;
 		private ExternalServiceInstrumentationProviderWithJobContext _sut;
@@ -58,7 +60,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 			var metricManagerFactory = new Mock<IMetricsManagerFactory>();
 			metricManagerFactory.Setup(x => x.CreateAPMManager()).Returns(_metricManagerMock.Object);
 			_dateTimeHelperMock = new Mock<IDateTimeHelper>();
-			_messageService = new IntegrationPointsMessageService(metricManagerFactory.Object, _configMock.Object, logger.Object, _dateTimeHelperMock.Object);
+			_ripMetricsMock = new Mock<IRipMetrics>();
+			_messageService = new IntegrationPointsMessageService(metricManagerFactory.Object, _configMock.Object, logger.Object, _dateTimeHelperMock.Object, _ripMetricsMock.Object);
 
 			_jobContextProvider = new JobContextProvider();
 

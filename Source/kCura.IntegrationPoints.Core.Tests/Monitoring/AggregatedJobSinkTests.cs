@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 		private IMetricsManagerFactory _metricsManagerFactory;
 		private IMetricsManager _sum, _apm;
 		private IDateTimeHelper _dateTimeHelper;
+		private IRipMetrics _ripMetrics;
 
 		private string _provider = "TestProvider";
 		private string _correlationId;
@@ -39,8 +41,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 			_metricsManagerFactory.CreateAPMManager().Returns(_apm);
 			_correlationId = Guid.NewGuid().ToString();
 			_dateTimeHelper = Substitute.For<IDateTimeHelper>();
+			_ripMetrics = Substitute.For<IRipMetrics>();
 
-			_sink = new AggregatedJobSink(_logger, _metricsManagerFactory, _dateTimeHelper);
+			_sink = new AggregatedJobSink(_logger, _metricsManagerFactory, _dateTimeHelper, _ripMetrics);
 		}
 
 		private IMetricMetadata CreateValidator()
