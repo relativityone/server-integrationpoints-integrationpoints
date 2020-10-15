@@ -16,6 +16,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		IMessageSink<JobThroughputBytesMessage>,
 		IMessageSink<JobStatisticsMessage>, IMessageSink<JobProgressMessage>
 	{
+		private const string _INTEGRATION_POINTS_PERFORMANCE_PREFIX = "IntegrationPoints.Performance";
+		private const string _INTEGRATION_POINTS_USAGE_PREFIX = "IntegrationPoints.Usage";
 		private const double _TOLERANCE = 0.0000001;
 
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
@@ -307,23 +309,32 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 
 		#region Metrics Definitions
 
-		private string JobStartedCountMetric(JobMessageBase message) => $"IntegrationPoints.Performance.JobStartedCount.{message.Provider}";
+		private string JobStartedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobStartedCount.{message.Provider}";
 		
-		private string JobCompletedCountMetric(JobMessageBase message) => $"IntegrationPoints.Performance.JobCompletedCount.{message.Provider}";
+		private string JobCompletedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobCompletedCount.{message.Provider}";
 
-		private string JobFailedCountMetric(JobMessageBase message) => $"IntegrationPoints.Performance.JobFailedCount.{message.Provider}";
+		private string JobFailedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobFailedCount.{message.Provider}";
 
-		private string JobValidationFailedCountMetric(JobMessageBase message) => $"IntegrationPoints.Performance.JobValidationFailedCount.{message.Provider}";
+		private string JobValidationFailedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobValidationFailedCount.{message.Provider}";
 		
-		private string TotalRecordsCountMetric(JobMessageBase message) => $"IntegrationPoints.Usage.TotalRecords.{message.Provider}";
+		private string TotalRecordsCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_USAGE_PREFIX}.TotalRecords.{message.Provider}";
 
-		private string CompletedRecordsCountMetric(JobMessageBase message) => $"IntegrationPoints.Usage.CompletedRecords.{message.Provider}";
+		private string CompletedRecordsCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_USAGE_PREFIX}.CompletedRecords.{message.Provider}";
 
-		private string ThroughputMetric(JobMessageBase message) => $"IntegrationPoints.Performance.Throughput.{message.Provider}";
+		private string ThroughputMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.Throughput.{message.Provider}";
 		
-		private string JobSizeMetric(JobMessageBase message) => $"IntegrationPoints.Performance.JobSize.{message.Provider}";
+		private string JobSizeMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobSize.{message.Provider}";
 
-		private string ThroughputBytesMetric(JobMessageBase message) => $"IntegrationPoints.Performance.ThroughputBytes.{message.Provider}";
+		private string ThroughputBytesMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.ThroughputBytes.{message.Provider}";
 
 		#endregion
 
