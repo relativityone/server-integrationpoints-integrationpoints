@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -10,6 +11,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -17,16 +19,19 @@ namespace kCura.IntegrationPoints.Agent
 	{
 		private readonly IAPILog _logger;
 		private readonly IProviderTypeService _providerTypeService;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly ISerializer _serializer;
 
 		public RelativitySyncConstrainsChecker(IIntegrationPointService integrationPointService,
 			IProviderTypeService providerTypeService,
+			IToggleProvider toggleProvider,
 			ISerializer serializer,
 			IAPILog logger)
 		{
 			_integrationPointService = integrationPointService;
 			_providerTypeService = providerTypeService;
+			_toggleProvider = toggleProvider;
 			_serializer = serializer;
 			_logger = logger;
 		}
@@ -48,6 +53,15 @@ namespace kCura.IntegrationPoints.Agent
 
 					if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
 					{
+						if (importSettings.ImageImport && !IsSyncImageFlowToggleEnabled())
+						{
+							_logger.LogInformation(
+								$"Old image import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncImageFlowToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
+								job.JobId, job.RelatedObjectArtifactID);
+
+							return false;
+						}
+
 						_logger.LogInformation(
 							"Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}",
 							job.JobId, job.RelatedObjectArtifactID);
@@ -64,6 +78,24 @@ namespace kCura.IntegrationPoints.Agent
 			{
 				_logger.LogError(ex, "Error occurred when checking if Integration Point should use Relativity Sync workflow");
 				return false;
+			}
+		}
+
+		private bool IsSyncImageFlowToggleEnabled()
+		{
+			_logger.LogDebug($"Checking if {nameof(EnableSyncImageFlowToggle)} is enabled.");
+
+			try
+			{
+				bool isEnabled = _toggleProvider.IsEnabled<EnableSyncImageFlowToggle>();
+				_logger.LogInformation($"Confirmed that {nameof(EnableSyncImageFlowToggle)} is {(isEnabled ? "enabled" : "disabled")}.");
+				return isEnabled;
+
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Checking if {nameof(EnableSyncImageFlowToggle)} is enabled operation failed.");
+				throw;
 			}
 		}
 
@@ -138,7 +170,6 @@ namespace kCura.IntegrationPoints.Agent
 				importSettings.ProductionImport);
 
 			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-				   !importSettings.ImageImport &&
 				   !importSettings.ProductionImport;
 		}
 	}

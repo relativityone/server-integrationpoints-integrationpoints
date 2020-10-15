@@ -15,21 +15,20 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 
 		private readonly IServicesMgr _servicesMgr;
 
-		private readonly string _bucket;
-
-		private readonly int _integrationPointId;
-		private readonly long _jobId;
-		private readonly ExportType _type;
+		public string Bucket { get; }
+		public int IntegrationPointId { get; }
+		public long JobId { get; }
+		public ExportType Type { get; }
 
 		private ScheduleMetric(IServicesMgr servicesMgr, string bucket, int integrationPointId, long jobId, ExportType type)
 		{
 			_servicesMgr = servicesMgr;
 
-			_bucket = bucket;
+			Bucket = bucket;
 
-			_integrationPointId = integrationPointId;
-			_jobId = jobId;
-			_type = type;
+			IntegrationPointId = integrationPointId;
+			JobId = jobId;
+			Type = type;
 		}
 
 		public static ScheduleMetric CreateScheduleJobStarted(IServicesMgr servicesMgr, int integrationPointId, long jobId, ExportType type, IScheduleRule scheduleRule)
@@ -47,11 +46,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 		{
 			using (var metrics = _servicesMgr.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
 			{
-				await metrics.LogCountAsync(_bucket, Guid.Empty, GetWorkflowId(), 1).ConfigureAwait(false);
+				await metrics.LogCountAsync(Bucket, Guid.Empty, GetWorkflowId(), 1).ConfigureAwait(false);
 			}
 		}
 
-		private string GetWorkflowId() => $"Sync_{_type}_{_integrationPointId}_{_jobId}";
+		private string GetWorkflowId() => $"Sync_{Type}_{IntegrationPointId}_{JobId}";
 
 		private static bool IsScheduledDaily(IScheduleRule scheduleRule)
 		{
