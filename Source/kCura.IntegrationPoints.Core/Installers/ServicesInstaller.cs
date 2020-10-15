@@ -56,6 +56,8 @@ using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
 using Relativity.IntegrationPoints.Contracts;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
+using kCura.IntegrationPoints.Common.Metrics;
+using kCura.IntegrationPoints.Common.Metrics.Sink;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -185,10 +187,14 @@ namespace kCura.IntegrationPoints.Core.Installers
 			
 			container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
 				.LifestyleSingleton());
-
 			container.Register(Component.For<IFieldService>().ImplementedBy<FieldService>().LifestyleTransient());
 			container.Register(Component.For<IMetricsManagerFactory>().ImplementedBy<MetricsManagerFactory>().LifestyleSingleton());
 			container.Register(Component.For<IConfig>().Instance(Config.Config.Instance).LifestyleSingleton());
+
+			container.Register(Component.For<IRipMetrics>().ImplementedBy<RipMetrics>());
+			container.Register(Component.For<IRipMetricsSink>().ImplementedBy<SplunkRipMetricSink>());
+			container.Register(Component.For<IRipMetricsSink>().ImplementedBy<ApmRipMetricSink>());
+			
 			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
 
 			container.Register(Component
