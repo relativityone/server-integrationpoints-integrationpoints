@@ -13,8 +13,7 @@ namespace kCura.IntegrationPoints.Common.Metrics.Sink
 
 		public void Log(RipMetric ripMetric)
 		{
-			_logger.LogInformation("Logging metric '{MetricName}' with value: {value} and properties: {@MetricProperties}",
-				ripMetric.Name, ripMetric.Value, ripMetric);
+			_logger.LogInformation("Logging metric '{MetricName}' with properties: {@MetricProperties}", ripMetric.Name, ripMetric);
 		}
 	}
 }
