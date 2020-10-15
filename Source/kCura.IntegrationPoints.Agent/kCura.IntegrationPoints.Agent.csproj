@@ -90,6 +90,7 @@
     <Compile Include="Tasks\SyncManager.cs" />
     <Compile Include="Tasks\SyncWorker.cs" />
     <Compile Include="TaskFactory\TaskFactory.cs" />
+    <Compile Include="Toggles\EnableSyncImageFlowToggle.cs" />
     <Compile Include="Validation\AgentValidator.cs" />
     <Compile Include="Tasks\TurnOnDgOptimizationToggle.cs" />
     <Compile Include="Tasks\AgentExceptionHelper.cs" />
@@ -199,6 +200,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
