@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Threading.Tasks;
 using Relativity.Sync.Utils;
 using Relativity.Sync.KeplerFactory;
@@ -17,13 +18,16 @@ namespace Relativity.Sync.Transfer
 	internal sealed class UserFieldSanitizer : IExportFieldSanitizer
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly IMemoryCache _memoryCache;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
+		private readonly CacheItemPolicy _memoryCacheItemPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) };
 
 		public RelativityDataType SupportedType { get; } = RelativityDataType.User;
 
-		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory)
+		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache)
 		{
 			_serviceFactory = serviceFactory;
+			_memoryCache = memoryCache;
 		}
 
 		public async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
@@ -34,24 +38,33 @@ namespace Relativity.Sync.Transfer
 			}
 
 			int userArtifactId = GetUserArtifactId(initialValue);
-			
+			string cacheKey = $"{nameof(UserFieldSanitizer)}_{userArtifactId}";
+
+			string cacheUserEmail = _memoryCache.Get<string>(cacheKey);
+			if (!String.IsNullOrEmpty(cacheUserEmail))
+			{
+				return cacheUserEmail;
+			}
+
 			using (IUserInfoManager userInfoManager = await _serviceFactory.CreateProxyAsync<IUserInfoManager>().ConfigureAwait(false))
 			{
 				string instanceUserEmail = await GetUserEmailAsync(userInfoManager, -1, userArtifactId).ConfigureAwait(false);
 				if (!string.IsNullOrEmpty(instanceUserEmail))
 				{
+					_memoryCache.Add(cacheKey, instanceUserEmail, _memoryCacheItemPolicy);
 					return instanceUserEmail;
 				}
 
 				string workspaceUserEmail = await GetUserEmailAsync(userInfoManager, workspaceArtifactId, userArtifactId).ConfigureAwait(false);
 				if (!string.IsNullOrEmpty(workspaceUserEmail))
 				{
+					_memoryCache.Add(cacheKey, workspaceUserEmail, _memoryCacheItemPolicy);
 					return workspaceUserEmail;
 				}
 			}
 
 			throw new InvalidExportFieldValueException($"Could not retrieve info for user with ArtifactID {userArtifactId}. " +
-				$"If this workspace was restored using ARM, verify if user has been properly mapped during workspace restore.");
+				"If this workspace was restored using ARM, verify if user has been properly mapped during workspace restore.");
 		}
 
 		private async Task<string> GetUserEmailAsync(IUserInfoManager userInfoManager, int workspaceArtifactId, int userArtifactId)

@@ -14,10 +14,12 @@ namespace Relativity.Sync.KeplerFactory
 				.WithParameter(new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(Uri), (pi, ctx) => ctx.Resolve<RelativityServices>().AuthenticationUri));
 
 			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
+
 			builder.RegisterType<ServiceFactoryForUser>()
 				.As<ISourceServiceFactoryForUser>()
 				.As<IDestinationServiceFactoryForUser>()
 				.SingleInstance();
+
 			builder.RegisterType<ServiceFactoryForAdmin>()
 				.As<ISourceServiceFactoryForAdmin>()
 				.As<IDestinationServiceFactoryForAdmin>()
