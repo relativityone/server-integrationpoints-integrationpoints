@@ -100,8 +100,19 @@ Task PerformanceTest -Depends Default -Description "Run performance tests" {
 
 Task Nightly -Depends Default, FunctionalTest -Description "Build and run all tests. All the steps for a nightly build with deployed environemnt.";
 
+Task MyTest -Depends Compile, Package -Description "Run custom tests based on specified filter" {
+    Invoke-MyTest
+}
+
 Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
+}
+
+function Invoke-MyTest
+{
+    $LogTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
+    $LogPath = Join-Path $LogsDir "MyTest_$LogTime.xml"
+    Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath -WithCoverage
 }
 
 function Invoke-Tests
@@ -141,27 +152,5 @@ function Invoke-Tests
             "--result=$OutputFile" `
             $settings
         }
-    }
-}
-
-function Move-Output
-{
-    param (
-        [Parameter(Mandatory=$true)]
-        [String] $Source,
-        [Parameter(Mandatory=$true)]
-        [String] $Destination
-    )
-
-    if(Test-Path $Destination) {
-        Remove-Item $Destination -Force -Recurse
-    }
-
-    $childItems = Get-ChildItem $Source
-
-    New-Item $Destination -ItemType Directory
-
-    $childItems | ForEach-Object {
-        Copy-Item -Path $_.FullName -Destination $Destination -Recurse -Force
     }
 }
