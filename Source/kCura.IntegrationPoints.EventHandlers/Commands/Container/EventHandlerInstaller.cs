@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().Instance(new RsapiClientWithWorkspaceFactory(_context.Helper)).LifestyleSingleton());
 			container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());
 			container.Register(Component.For<IHelper, IEHHelper>().Instance(_context.Helper).LifestyleSingleton());
+			container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => k.Resolve<IEHHelper>().GetLoggerFactory().GetLogger()).LifestyleSingleton());
 			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k =>
 			{
 				IRSAPIServiceFactory serviceFactory = k.Resolve<IRSAPIServiceFactory>();
