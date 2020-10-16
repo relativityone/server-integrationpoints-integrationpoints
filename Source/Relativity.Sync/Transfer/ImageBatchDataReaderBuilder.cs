@@ -1,0 +1,29 @@
+﻿using System.Collections.Generic;
+using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
+using Relativity.Services.Objects.DataContracts;
+
+namespace Relativity.Sync.Transfer
+{
+	/// <summary>
+	/// Creates a single <see cref="IDataReader"/> for images, out of several sources of information based on the given schema.
+	/// </summary>
+	internal sealed class ImageBatchDataReaderBuilder : BatchDataReaderBuilderBase
+	{
+		public ImageBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
+			: base(fieldManager, exportDataSanitizer)
+		{
+		}
+
+		protected override Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token)
+		{
+			return _fieldManager.GetImageAllFieldsAsync(token);
+		}
+
+		protected override IDataReader CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		{
+			return new ImageBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token);
+		}
+	}
+}

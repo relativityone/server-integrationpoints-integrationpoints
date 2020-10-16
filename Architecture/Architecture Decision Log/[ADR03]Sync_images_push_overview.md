@@ -63,23 +63,17 @@ Configuration Fields:
 + ImageImport - determine if job is Image Sync
 + ImagePrecedence - List of productions, where images come from if applicable
 + IncludeOriginalImages - determine if push original image if it doesn't exist in selected productions
++ ImageFileCopyMode - determine if copy physical file or link only
 
-__Note__: Copy Files To Repository is determined by NativeFileCopyMode
+__Note__: These properties can be taken directly from ImportSettings
 
-__Note__: This properties can be taken directly from ImportSettings
+#### **ImageDataReader**
 
-#### ImageDataReader
-
-Rows:
+Columns:
 
 + ControlNumber
-+ NATIVE_FILE_PATH_001
-+ REL_FILE_NAME_001
-+ NATIVE_FILE_SIZE_001
-+ REL_TYPE_NAME_001
-+ REL_TYPE_SUPPORTED_BY_VIEWER_001
-
-__Note__: During running RIP jobs NATIVE_FILE_SIZE_001, REL_TYPE_NAME_001, REL_TYPE_SUPPORTED_BY_VIEWER_001 were always empty. We could validate if they are needed
++ ImageFileName
++ ImageFileLocation
 
 Right now retrievieng Image path for document is done by ISearchManager:
 
@@ -88,7 +82,11 @@ Right now retrievieng Image path for document is done by ISearchManager:
 
 _ADR Reference_: [ADR04]Sync_images_push_redundant_reader_fields
 
-#### Pipeline
+#### **Handling multiple images per document**
+
+Single document can contain multiple images, and current `BatchDataReader` implementation does not support that, because `GetBatchEnumerable` returns one row per document, and we need to return one row for each image. That's why we created specific implementation of `ImageBatchDataReader`, which counts number of images in document and then creates data row for each image file.
+
+#### **Pipeline**
 
 We should create two new pipelines _SyncImagesRunPipeline_ and _SyncImagesRetryPipeline_. The one step which is different is _SynchronizationNode_ which should be replaced with _ImagesSynchronizationNode_. There is couple of differences which should be covered in some other steps like ValidationNode and DataSourceSnapshotNode
 
@@ -148,7 +146,7 @@ Probably we should add another property to IJobsStatisticsContainer - ImagesByte
 
 _ADR Reference_: [ADR06]Sync_images_push_image_size_calculation
 
-#### ImagesSynchronizationNode
+#### **ImagesSynchronizationNode**
 
 This step needs to be replaced completely and it'll be most complicated task. We need to replace following line of code in method ExecuteSynchronizationAsync and provide proper ISynchronizationConfiguration
 
@@ -168,7 +166,7 @@ On first look we should provide new method to IImportJobFactory → CreateImageI
 
 _ADR Reference_: [ADR05]Sync_images_push_ImagesSynchronizationNode_design
 
-#### Metrics
+#### **Metrics**
 
 Adding Images push requires metrics rethink:
 

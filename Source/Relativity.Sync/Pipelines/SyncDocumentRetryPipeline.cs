@@ -27,7 +27,7 @@ namespace Relativity.Sync.Pipelines
 				.ForParent()
 				.AddChild<DestinationWorkspaceSavedSearchCreationNode>()
 				.AddChild<SnapshotPartitionNode>()
-				.AddChild<SynchronizationNode>()
+				.AddChild<DocumentSynchronizationNode>()
 				.AddChild<DataDestinationFinalizationNode>();
 		}
 	}

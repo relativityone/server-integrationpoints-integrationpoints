@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 	/// </summary>
 	internal sealed class DocumentTransferServicesMocker
 	{
-		private Relativity.Sync.Transfer.IFieldManager _fieldManager;
+		private Transfer.IFieldManager _fieldManager;
 
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _FILENAME_COLUMN_NAME = "Filename";
@@ -45,16 +45,27 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			SearchManager = new Mock<ISearchManager>();
 		}
 
-		public async Task SetupServicesWithTestData(DocumentImportJob job, int batchSize)
+		private void SetupServicesWithTestData(DocumentImportJob job)
 		{
 			SetupServiceCreation(ObjectManager);
-
 			SetupFields(job.Schema);
-			await SetupExportResultBlocks(_fieldManager, job.Documents, batchSize).ConfigureAwait(false);
+		}
+
+		public async Task SetupServicesWithNativesTestDataAsync(DocumentImportJob job, int batchSize)
+		{
+			SetupServicesWithTestData(job);
+			await SetupNativesExportResultBlocksAsync(_fieldManager, job.Documents, batchSize).ConfigureAwait(false);
 			SetupNatives(job.Documents);
 
 			// We should also setup folder paths here. That should be done once we are able to reliably
 			// mock out workflows other than those using DestinationFolderPathBehavior.None.
+		}
+
+		public void SetupServicesWithImagesTestDataAsync(DocumentImportJob job, int batchSize)
+		{
+			SetupServicesWithTestData(job);
+			SetupImagesExportResultBlocks(job.Documents, batchSize);
+			SetupImages(job.Documents);
 		}
 
 		public void SetupFailingObjectManagerCreation()
@@ -163,9 +174,8 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			return retVal;
 		}
 		
-		private async Task SetupExportResultBlocks(Relativity.Sync.Transfer.IFieldManager fieldManager, Document[] documents, int batchSize)
+		private void SetupExportResultBlocks(Document[] documents, int batchSize, IList<FieldInfoDto> sourceDocumentFields)
 		{
-			IList<FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			for (int takenDocumentsCount = 0; takenDocumentsCount < documents.Length; takenDocumentsCount += batchSize)
 			{
 				int remainingDocumentCount = documents.Length - takenDocumentsCount;
@@ -177,18 +187,25 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			}
 		}
 
+		private void SetupImagesExportResultBlocks(Document[] documents, int batchSize)
+		{
+			SetupExportResultBlocks(documents, batchSize, new List<FieldInfoDto>()
+			{
+				FieldInfoDto.DocumentField("Control Number", "Control Number", true)
+			});
+		}
+
+		private async Task SetupNativesExportResultBlocksAsync(Transfer.IFieldManager fieldManager, Document[] documents,
+			int batchSize)
+		{
+			IList<FieldInfoDto> sourceDocumentFields = await fieldManager.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+			SetupExportResultBlocks(documents, batchSize, sourceDocumentFields);
+		}
+
 		private void SetupExportResultBlock(int resultsBlockSize, int exportIndexId, RelativityObjectSlim[] block)
 		{
 			ObjectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), resultsBlockSize, exportIndexId))
 				.ReturnsAsync(block);
-		}
-
-		private void SetupNatives(Document[] documents)
-		{
-			DataSet dataSet = GetDataSetForDocuments(documents);
-			SearchManager
-				.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
-				.Returns(dataSet);
 		}
 
 		private static RelativityObjectSlim[] GetBlock(IList<FieldInfoDto> sourceDocumentFields, Document[] documents, int resultsBlockSize, int startingIndex)
@@ -210,10 +227,26 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			};
 		}
 
-		private static DataSet GetDataSetForDocuments(Document[] documents)
+		private void SetupNatives(Document[] documents)
+		{
+			DataSet dataSet = GetDataSetForDocumentsWithNatives(documents);
+			SearchManager
+				.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
+				.Returns(dataSet);
+		}
+
+		private void SetupImages(Document[] documents)
+		{
+			DataSet dataSet = GetDataSetForDocumentsWithImages(documents);
+			SearchManager
+				.Setup(x => x.RetrieveImagesForDocuments(It.IsAny<int>(), It.IsAny<int[]>()))
+				.Returns(dataSet);
+		}
+
+		private static DataSet GetDataSetForDocumentsWithNatives(Document[] documents)
 		{
 			DataSet dataSet = new DataSet();
-			DataTable dataTable = new DataTable("Table1");
+			DataTable dataTable = new DataTable("DataTableWithNatives");
 			dataSet.Tables.Add(dataTable);
 			dataTable.Columns.AddRange(new[]
 			{
@@ -232,6 +265,35 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				return dataRow;
 			}).ToArray();
 			rows.ForEach(row => dataTable.Rows.Add(row));
+			return dataSet;
+		}
+
+		private static DataSet GetDataSetForDocumentsWithImages(Document[] documents)
+		{
+			DataSet dataSet = new DataSet();
+			DataTable dataTable = new DataTable("DataTableWithImages");
+			dataSet.Tables.Add(dataTable);
+			dataTable.Columns.AddRange(new[]
+			{
+				new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
+				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
+				new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
+				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
+			});
+
+			foreach (Document document in documents)
+			{
+				foreach (ImageFile image in document.Images)
+				{
+					DataRow dataRow = dataTable.NewRow();
+					dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
+					dataRow[_FILENAME_COLUMN_NAME] = image.Filename;
+					dataRow[_LOCATION_COLUMN_NAME] = image.Location;
+					dataRow[_SIZE_COLUMN_NAME] = image.Size;
+					dataTable.Rows.Add(dataRow);
+				}
+			}
+			
 			return dataSet;
 		}
 

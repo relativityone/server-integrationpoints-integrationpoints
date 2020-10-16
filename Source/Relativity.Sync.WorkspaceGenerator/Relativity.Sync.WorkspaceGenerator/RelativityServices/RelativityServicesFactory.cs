@@ -23,5 +23,10 @@ namespace Relativity.Sync.WorkspaceGenerator.RelativityServices
 		{
 			return new SavedSearchManager(_serviceFactory);
 		}
+
+		public IProductionService CreateProductionService()
+		{
+			return new ProductionService(_serviceFactory);
+		}
 	}
 }

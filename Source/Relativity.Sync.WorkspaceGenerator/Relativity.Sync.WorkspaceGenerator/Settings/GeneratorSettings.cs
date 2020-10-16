@@ -55,7 +55,7 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 
 		// Size of batch for documents import
 		public int BatchSize { get; set; }
-		
+
 		// Should Extracted Text be store in DataGrid (if False, it will be in SQL)
 		public bool EnabledDataGridForExtractedText { get; set; }
 
@@ -105,6 +105,10 @@ namespace Relativity.Sync.WorkspaceGenerator.Settings
 			GeneratorSettings settings = JsonConvert.DeserializeObject<GeneratorSettings>(File.ReadAllText(filePath));
 
 			settings.Append = append;
+			if (settings.BatchSize == 0)
+			{
+				settings.BatchSize = DEFAULT_BATCH_SIZE;
+			}
 
 			return settings;
 		}

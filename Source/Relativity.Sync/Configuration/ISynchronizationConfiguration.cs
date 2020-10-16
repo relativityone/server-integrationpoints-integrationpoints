@@ -4,9 +4,9 @@ namespace Relativity.Sync.Configuration
 {
 	internal interface ISynchronizationConfiguration : IConfiguration
 	{
-		char MultiValueDelimiter { get; }
+		bool ImageImport { get; }
 
-		char NestedValueDelimiter { get; }
+		int RdoArtifactTypeId { get; }
 
 		int DestinationWorkspaceArtifactId { get; }
 
@@ -26,38 +26,17 @@ namespace Relativity.Sync.Configuration
 
 		int SyncConfigurationArtifactId { get; }
 
-		bool MoveExistingDocuments { get; }
+		int IdentityFieldId { get; set; }
 
-		int RdoArtifactTypeId { get; }
-
-		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+		string FileNameColumn { get; set; }
 
 		ImportOverwriteMode ImportOverwriteMode { get; }
 
 		FieldOverlayBehavior FieldOverlayBehavior { get; }
 
-		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
-
-		int IdentityFieldId { get; set; }
-
 		string FolderPathSourceFieldName { get; set; }
 
-		string FileSizeColumn { get; set; }
+		bool MoveExistingDocuments { get; }
 
-		string NativeFilePathSourceFieldName { get; set; }
-
-		string FileNameColumn { get; set; }
-
-		string OiFileTypeColumnName { get; set; }
-
-		string SupportedByViewerColumn { get; set; }
-
-		bool ImageImport { get; }
-
-		bool IncludeOriginalImages { get; }
-
-		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
-
-		int[] ProductionImagePrecedence { get; }
 	}
 }

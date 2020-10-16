@@ -9,6 +9,12 @@ namespace Relativity.Sync.Configuration
 	public enum ImportImageFileCopyMode
 	{
 		/// <summary>
+		/// Disable import of images.
+		/// </summary>
+		[Description("None")]
+		DoNotImportImageFiles = NativeFileCopyModeEnum.DoNotImportNativeFiles,
+
+		/// <summary>
 		/// Copy files.
 		/// </summary>
 		[Description("Copy")]

@@ -20,10 +20,10 @@ using Relativity.Telemetry.APM;
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
+	[Category("RETRY_Jobs")]
 	public class RetryJobsTests : PerformanceTestBase
 	{
-		public RetryJobsTests()
-			: base(WorkspaceType.Relativity, "TODO", null)
+		public RetryJobsTests() : base(WorkspaceType.ARM, "Sync Retries 100k_Docs-30k_Errors.zip", null)
 		{
 		}
 
@@ -113,7 +113,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		private async Task RunJobAsync()
 		{
-			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRDOAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
+			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRdoAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
 			Logger.LogInformation("Configuration RDO created");
 
 			SyncJobParameters jobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId);

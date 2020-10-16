@@ -34,6 +34,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<WorkspaceGuidService>().As<IWorkspaceGuidService>().SingleInstance();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();
+			containerBuilder.RegisterType<MemoryCacheWrapper>().As<IMemoryCache>();
 			containerBuilder.RegisterType<DateTimeWrapper>().As<IDateTime>();
 			containerBuilder.RegisterType<WrapperForRandom>().As<IRandom>();
 			containerBuilder.RegisterType<JSONSerializer>().As<ISerializer>();
@@ -52,7 +53,7 @@ namespace Relativity.Sync
 			}
 
 			containerBuilder.RegisterType<PipelineSelectorConfiguration>().As<IPipelineSelectorConfiguration>();
-			containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces();
+			containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces().SingleInstance();
 
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);

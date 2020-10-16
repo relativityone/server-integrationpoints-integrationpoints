@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
 using Relativity.Sync.Transfer;
@@ -12,21 +11,38 @@ namespace Relativity.Sync.Executors
 	{
 		private int _sourceWorkspaceErrorItemsCount = 0;
 
-		private const string _IAPI_IDENTIFIER_COLUMN = "Identifier";
+		private const string _IAPI_DOCUMENT_IDENTIFIER_COLUMN = "Identifier";
+		private const string _IAPI_IMAGE_IDENTIFIER_COLUMN = "DocumentID";
 		private const string _IAPI_MESSAGE_COLUMN = "Message";
 
-		private readonly ImportBulkArtifactJob _importBulkArtifactJob;
+		private readonly IImportBulkArtifactJob _importBulkArtifactJob;
 
-		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+		private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader)
 		{
-			_importBulkArtifactJob = importBulkArtifactJob;
-			_importBulkArtifactJob.OnProgress += RaiseOnProgress;
-			_importBulkArtifactJob.OnError += HandleIapiItemLevelError;
-			_importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
-			_importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
-
 			ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
 			sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
+		}
+
+		public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+			: this(sourceWorkspaceDataReader)
+		{
+			importBulkArtifactJob.OnProgress += RaiseOnProgress;
+			importBulkArtifactJob.OnError += HandleIapiDocumentItemLevelError;
+			importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
+
+			_importBulkArtifactJob = importBulkArtifactJob;
+		}
+
+		public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
+			: this(sourceWorkspaceDataReader)
+		{
+			imageImportBulkArtifactJob.OnProgress += RaiseOnProgress;
+			imageImportBulkArtifactJob.OnError += HandleIapiImageItemLevelError;
+			imageImportBulkArtifactJob.OnComplete += HandleIapiJobComplete;
+			imageImportBulkArtifactJob.OnFatalException += HandleIapiFatalException;
+
+			_importBulkArtifactJob = imageImportBulkArtifactJob;
 		}
 
 		public IItemStatusMonitor ItemStatusMonitor { get; }
@@ -46,12 +62,18 @@ namespace Relativity.Sync.Executors
 			OnProgress?.Invoke(new ImportApiJobProgress(completedRow));
 		}
 
-		private void HandleIapiItemLevelError(IDictionary row)
+		private void HandleIapiDocumentItemLevelError(IDictionary row)
 		{
-			RaiseOnItemLevelError(new ItemLevelError(
-				GetValueOrNull(row, _IAPI_IDENTIFIER_COLUMN),
-				$"IAPI {GetValueOrNull(row, _IAPI_MESSAGE_COLUMN)}"
-			));
+			RaiseOnItemLevelError(
+				CreateItemLevelError(row, _IAPI_DOCUMENT_IDENTIFIER_COLUMN, _IAPI_MESSAGE_COLUMN)
+			);
+		}
+
+		private void HandleIapiImageItemLevelError(IDictionary row)
+		{
+			RaiseOnItemLevelError(
+				CreateItemLevelError(row, _IAPI_IMAGE_IDENTIFIER_COLUMN, _IAPI_MESSAGE_COLUMN)
+			);
 		}
 
 		private void HandleIapiJobComplete(JobReport jobReport)
@@ -62,6 +84,14 @@ namespace Relativity.Sync.Executors
 		private void HandleIapiFatalException(JobReport jobReport)
 		{
 			OnFatalException?.Invoke(CreateJobStatistics(jobReport));
+		}
+
+		private ItemLevelError CreateItemLevelError(IDictionary rawItemLevelError, string identifierColumnName, string messageColumnName)
+		{
+			return new ItemLevelError(
+				GetValueOrNull(rawItemLevelError, identifierColumnName),
+				$"IAPI {GetValueOrNull(rawItemLevelError, messageColumnName)}"
+			);
 		}
 
 		private void RaiseOnItemLevelError(ItemLevelError itemLevelError)

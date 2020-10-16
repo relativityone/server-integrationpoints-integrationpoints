@@ -32,6 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
+		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
@@ -105,8 +106,9 @@ namespace Relativity.Sync.Tests.Unit
 			const int transferredItemsCount = 222;
 			const double progress = 3.1;
 			const string lockedBy = "id 2";
+			const int taggedItemsCount = 333;
 
-			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy);
+			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy, taggedItemsCount);
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// ACT
@@ -121,6 +123,7 @@ namespace Relativity.Sync.Tests.Unit
 			batch.TransferredItemsCount.Should().Be(transferredItemsCount);
 			batch.Progress.Should().Be(progress);
 			batch.LockedBy.Should().Be(lockedBy);
+			batch.TaggedItemsCount.Should().Be(taggedItemsCount);
 
 			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(queryRequest => AssertQueryRequest(queryRequest)), 0, 1), Times.Once);
 		}
@@ -150,8 +153,9 @@ namespace Relativity.Sync.Tests.Unit
 			int? transferredItemsCount = null;
 			decimal? progress = null;
 			const string lockedBy = null;
+			int? taggedItemsCount = null;
 
-			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy);
+			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy, taggedItemsCount: taggedItemsCount);
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
@@ -163,17 +167,18 @@ namespace Relativity.Sync.Tests.Unit
 			batch.TransferredItemsCount.Should().Be(0);
 			batch.Progress.Should().Be(0);
 			batch.LockedBy.Should().Be(lockedBy);
+			batch.TaggedItemsCount.Should().Be(0);
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
 		private static QueryResult PrepareQueryResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id")
+			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1)
 		{
 			QueryResult readResult = new QueryResult
 			{
 				Objects = new List<RelativityObject>()
 				{
-					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy)
+					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy, taggedItemsCount)
 				}
 			};
 			return readResult;
@@ -203,7 +208,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "New", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id")
+			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1)
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
 			return new RelativityObject
@@ -266,6 +271,14 @@ namespace Relativity.Sync.Tests.Unit
 							Guids = new List<Guid> {LockedByGuid}
 						},
 						Value = lockedBy
+					},
+					new FieldValuePair
+					{
+						Field = new Field
+						{
+							Guids = new List<Guid> {TaggedItemsCountGuid}
+						},
+						Value = taggedItemsCount
 					}
 				}
 			};
@@ -289,7 +302,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static void AssertReadFields(IList<FieldRef> fields)
 		{
-			const int expectedNumberOfFields = 7;
+			const int expectedNumberOfFields = 8;
 			fields.Count().Should().Be(expectedNumberOfFields);
 			fields.Should().Contain(x => x.Guid == TotalItemsCountGuid);
 			fields.Should().Contain(x => x.Guid == StartingIndexGuid);
@@ -298,6 +311,7 @@ namespace Relativity.Sync.Tests.Unit
 			fields.Should().Contain(x => x.Guid == TransferredItemsCountGuid);
 			fields.Should().Contain(x => x.Guid == ProgressGuid);
 			fields.Should().Contain(x => x.Guid == LockedByGuid);
+			fields.Should().Contain(x => x.Guid == TaggedItemsCountGuid);
 		}
 
 		[Test]
@@ -397,6 +411,25 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
+		public async Task SetTaggedItemsCountAsync_ShouldUpdateTaggedItemsCount()
+		{
+			const int taggedItemsCount = 849170;
+
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
+
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// ACT
+			await batch.SetTaggedItemsCountAsync(taggedItemsCount).ConfigureAwait(false);
+
+			// ASSERT
+			batch.TaggedItemsCount.Should().Be(taggedItemsCount);
+
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, TaggedItemsCountGuid, taggedItemsCount))));
+		}
+
+		[Test]
 		public async Task SetFailedItemsCountAsync_ShouldNotSetFailedItemsCount_WhenUpdateFails()
 		{
 			const int newValue = 876536;
@@ -488,6 +521,25 @@ namespace Relativity.Sync.Tests.Unit
 			action.Should().Throw<ArgumentNullException>();
 			batch.Progress.Should().Be(oldValue);
 			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == ProgressGuid))));
+		}
+
+		[Test]
+		public async Task SetTaggedItemsCountAsync_ShouldNotSetTaggedItemsCount_WhenUpdateFails()
+		{
+			const int newValue = 85743;
+
+			SetupObjectManagerForUpdatingBatchFields();
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			int oldValue = batch.TaggedItemsCount;
+
+			// ACT
+			Func<Task> action = () => batch.SetTaggedItemsCountAsync(newValue);
+
+			// ASSERT
+			action.Should().Throw<ArgumentNullException>();
+			batch.TaggedItemsCount.Should().Be(oldValue);
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == TaggedItemsCountGuid))));
 		}
 
 		private void SetupObjectManagerForUpdatingBatchFields()

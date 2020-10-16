@@ -17,26 +17,45 @@ namespace Relativity.Sync.Pipelines
 
 		public ISyncPipeline GetPipeline()
 		{
-			return _selectedPipeline ?? (_selectedPipeline = GetPipelineInternal());
+			return _selectedPipeline ?? (_selectedPipeline = GetPipelineInternal(IsRetryJob(), IsImageJob()));
 		}
 
-		private ISyncPipeline GetPipelineInternal()
+		private ISyncPipeline GetPipelineInternal(bool isRetryJob, bool isImageJob)
 		{
-			_logger.LogInformation("Getting pipeline type");
-			const string messageTemplate = "Returning {pipelineType}";
-			if (IsDocumentRetry())
+			_logger.LogInformation("Getting pipeline for parameters: {isRetryJob}, {isImageJob}", isRetryJob, isImageJob);
+
+			ISyncPipeline selectedPipeline;
+
+			switch (isImageJob)
 			{
-				_logger.LogInformation(messageTemplate, nameof(SyncDocumentRetryPipeline));
-				return new SyncDocumentRetryPipeline();
+				case (false) when isRetryJob:
+					selectedPipeline = new SyncDocumentRetryPipeline();
+					break;
+				case (false):
+					selectedPipeline = new SyncDocumentRunPipeline();
+					break;
+				case (true) when isRetryJob:
+					selectedPipeline = new SyncImageRetryPipeline();
+					break;
+				case (true):
+					selectedPipeline = new SyncImageRunPipeline();
+					break;
 			}
 
-			_logger.LogInformation(messageTemplate, nameof(SyncDocumentRunPipeline));
-			return new SyncDocumentRunPipeline();
+			const string messageTemplate = "Selected pipeline of type: {pipelineType}";
+
+			_logger.LogInformation(messageTemplate, selectedPipeline.GetType().Name);
+			return selectedPipeline;
 		}
 
-		private bool IsDocumentRetry()
+		private bool IsRetryJob()
 		{
 			return _pipelineSelectorConfiguration.JobHistoryToRetryId != null;
+		}
+
+		private bool IsImageJob()
+		{
+			return _pipelineSelectorConfiguration.IsImageJob;
 		}
 	}
 }

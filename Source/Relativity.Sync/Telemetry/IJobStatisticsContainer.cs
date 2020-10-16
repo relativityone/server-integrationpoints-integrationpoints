@@ -12,6 +12,11 @@ namespace Relativity.Sync.Telemetry
 		long MetadataBytesTransferred { get; set; }
 
 		/// <summary>
+		/// Size of the files in bytes, that was successfully pushed.
+		/// </summary>
+		long FilesBytesTransferred { get; set; }
+
+		/// <summary>
 		/// Size of the job in bytes, including files and metadata, that was successfully pushed.
 		/// </summary>
 		long TotalBytesTransferred { get; set; }

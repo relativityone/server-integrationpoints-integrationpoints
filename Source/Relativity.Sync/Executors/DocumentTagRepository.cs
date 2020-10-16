@@ -23,45 +23,42 @@ namespace Relativity.Sync.Executors
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 		}
 
-		public Task<ExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
+		public Task<TaggingExecutionResult> TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<string> documentIdentifiers, CancellationToken token)
 		{
 			return TagDocumentsInWorkspaceWithInfoAsync(_sourceWorkspaceTagRepository.TagDocumentsAsync, configuration, documentIdentifiers, token);
 		}
 
-		public Task<ExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
+		public Task<TaggingExecutionResult> TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(ISynchronizationConfiguration configuration, IEnumerable<int> artifactIds, CancellationToken token)
 		{
 			return TagDocumentsInWorkspaceWithInfoAsync(_destinationWorkspaceTagRepository.TagDocumentsAsync, configuration, artifactIds, token);
 		}
 
-		private async Task<ExecutionResult> TagDocumentsInWorkspaceWithInfoAsync<TIdentifier>(
+		private async Task<TaggingExecutionResult> TagDocumentsInWorkspaceWithInfoAsync<TIdentifier>(
 			Func<ISynchronizationConfiguration, IList<TIdentifier>, CancellationToken, Task<IList<TagDocumentsResult<TIdentifier>>>> taggingFunctionAsync,
 			ISynchronizationConfiguration configuration, IEnumerable<TIdentifier> documentIdentifiers, CancellationToken token)
 		{
-			var failedArtifactIds = new List<TIdentifier>();
+			var taggingDocumentResult = TagDocumentsResult<TIdentifier>.Empty();
+
 			IList<TIdentifier> documentIdentifiersList = documentIdentifiers.ToList();
 			if (documentIdentifiersList.Any())
 			{
 				IList<TagDocumentsResult<TIdentifier>> taggingResults = await taggingFunctionAsync.Invoke(configuration, documentIdentifiersList, token).ConfigureAwait(false);
-				foreach (TagDocumentsResult<TIdentifier> taggingResult in taggingResults)
-				{
-					if (taggingResult.FailedDocuments.Any())
-					{
-						failedArtifactIds.AddRange(taggingResult.FailedDocuments);
-					}
-				}
+				taggingDocumentResult = TagDocumentsResult<TIdentifier>.Merge(taggingResults);
 			}
 
-			ExecutionResult destinationTaggingResult = GetTaggingResults(failedArtifactIds, configuration.JobHistoryArtifactId);
-			if (destinationTaggingResult.Status == ExecutionStatus.Failed)
+			TaggingExecutionResult taggingExecutionResult = GetTaggingExecutionResult(taggingDocumentResult, configuration.JobHistoryArtifactId);
+			if (taggingExecutionResult.Status == ExecutionStatus.Failed)
 			{
-				await GenerateDocumentTaggingJobHistoryErrorAsync(destinationTaggingResult, configuration).ConfigureAwait(false);
+				await GenerateDocumentTaggingJobHistoryErrorAsync(taggingExecutionResult, configuration).ConfigureAwait(false);
 			}
-			return destinationTaggingResult;
+
+			return taggingExecutionResult;
 		}
 
-		private ExecutionResult GetTaggingResults<TIdentifier>(IList<TIdentifier> failedIdentifiers, int jobHistoryArtifactId)
+		private TaggingExecutionResult GetTaggingExecutionResult<TIdentifier>(TagDocumentsResult<TIdentifier> taggingDocumentResult, int jobHistoryArtifactId)
 		{
-			ExecutionResult taggingResult = ExecutionResult.Success();
+			TaggingExecutionResult taggingResult = TaggingExecutionResult.Success();
+			var failedIdentifiers = taggingDocumentResult.FailedDocuments.ToList();
 			if (failedIdentifiers.Any())
 			{
 				const int maxSubset = 50;
@@ -70,8 +67,11 @@ namespace Relativity.Sync.Executors
 
 				string errorMessage = $"Failed to tag synchronized documents in workspace. The first {subsetCount} out of {failedIdentifiers.Count} are: {subsetArtifactIds}.";
 				var failedTaggingException = new SyncException(errorMessage, jobHistoryArtifactId.ToString(CultureInfo.InvariantCulture));
-				taggingResult = ExecutionResult.Failure(errorMessage, failedTaggingException);
+				taggingResult = TaggingExecutionResult.Failure(errorMessage, failedTaggingException);
 			}
+
+			taggingResult.TaggedDocumentsCount = taggingDocumentResult.TotalObjectsUpdated;
+
 			return taggingResult;
 		}
 

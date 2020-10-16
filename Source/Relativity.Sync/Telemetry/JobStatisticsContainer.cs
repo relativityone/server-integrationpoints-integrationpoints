@@ -10,6 +10,8 @@ namespace Relativity.Sync.Telemetry
 	{
 		public long MetadataBytesTransferred { get; set; }
 
+		public long FilesBytesTransferred { get; set; }
+
 		public long TotalBytesTransferred { get; set; }
 
 		public Task<long> NativesBytesRequested { get; set; }

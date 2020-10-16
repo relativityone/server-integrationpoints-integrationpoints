@@ -46,8 +46,11 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Document,
 				new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Search,
-				new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
+			if (configuration.CreateSavedSearchForTags)
+			{
+				validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Search,
+					new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
+			}
 
 			validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, (int)ArtifactType.Document,
 				PermissionType.Add).ConfigureAwait(false));

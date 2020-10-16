@@ -13,7 +13,8 @@ namespace Relativity.Sync.Tests.Common
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
-		IDocumentDataSourceSnapshotConfiguration, IDocumentRetryDataSourceSnapshotConfiguration, IImageDataSourceSnapshotConfiguration, IImageRetryDataSourceSnapshotConfiguration
+		IDocumentDataSourceSnapshotConfiguration, IDocumentRetryDataSourceSnapshotConfiguration, IImageDataSourceSnapshotConfiguration, IImageRetryDataSourceSnapshotConfiguration,
+		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -27,8 +28,11 @@ namespace Relativity.Sync.Tests.Common
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
 
 		public string DataDestinationName { get; set; }
+
 		public bool IsDataDestinationArtifactIdSet { get; set; }
+
 		public int DataDestinationArtifactId { get; set; }
+
 		public int DataSourceArtifactId { get; set; }
 
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings;
@@ -49,8 +53,11 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 		public string SourceWorkspaceTagName { get; set; }
+
 		public bool CreateSavedSearchForTags { get; set; }
+
 		public bool IsSavedSearchArtifactIdSet { get; set; }
+
 		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
 		{
 			SavedSearchArtifactId = artifactId;
@@ -75,41 +82,68 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 		public int SourceWorkspaceArtifactId { get; set; }
-		public string TriggerName { get; }
-		public int SyncConfigurationArtifactId { get; set; }
-		public ExecutionResult SynchronizationExecutionResult { get; set; }
-		public string TriggerId { get; }
-		public string TriggerValue { get; }
-		public bool MoveExistingDocuments { get; set; }
-		public int RdoArtifactTypeId => (int) ArtifactType.Document;
 
-		public string GetSourceWorkspaceTag() => String.Empty;
+		public string TriggerName { get; }
+
+		public int SyncConfigurationArtifactId { get; set; }
+
+		public ExecutionResult SynchronizationExecutionResult { get; set; }
+
+		public string TriggerId { get; }
+
+		public string TriggerValue { get; }
+
+		public bool MoveExistingDocuments { get; set; }
+
+		public int RdoArtifactTypeId => (int)ArtifactType.Document;
+
+		public string GetSourceWorkspaceTag() => string.Empty;
 
 		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
+
 		public char NestedValueDelimiter => (char)_ASCII_GROUP_SEPARATOR;
+
 		public int DestinationWorkspaceArtifactId { get; set; }
+
 		public int SavedSearchArtifactId { get; set; }
+
 		public int DestinationFolderArtifactId { get; set; }
+
 		public int SourceProviderArtifactId { get; }
+
 		public string FolderPathSourceFieldName { get; set; }
 
 		public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;
 
 		public string FileSizeColumn { get; set; }
+
 		public string NativeFilePathSourceFieldName { get; set; }
+
+		public string ImageFilePathSourceFieldName { get; set; }
+
 		public string FileNameColumn { get; set; }
+
 		public string OiFileTypeColumnName { get; set; }
+
 		public string SupportedByViewerColumn { get; set; }
+
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
+
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
+
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
+
 		public int IdentityFieldId { get; set; }
+
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
 
-		public bool ImageImport { get; }
-		public bool IncludeOriginalImages { get; }
-		public ImportImageFileCopyMode ImportImageFileCopyMode { get; }
-		public int[] ProductionImagePrecedence { get; }
+		public bool ImageImport { get; set; }
+
+		public bool IncludeOriginalImages { get; set; }
+
+		public ImportImageFileCopyMode ImportImageFileCopyMode { get; set; }
+
+		public int[] ProductionImagePrecedence { get; set; }
 
 		public string GetSourceJobTagName() => _sourceJobTagName;
 
@@ -119,8 +153,11 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 		public int SourceJobTagArtifactId { get; set; }
+
 		public int SourceWorkspaceTagArtifactId { get; set; }
+
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; set; }
+
 		public async Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId)
 		{
 			await Task.Yield();
@@ -129,6 +166,7 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 		public int DestinationWorkspaceTagArtifactId { get; set; }
+
 		public int JobHistoryArtifactId { get; set; }
 
 		public bool IsSourceJobTagSet { get; set; }
@@ -150,16 +188,21 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 		public int ExecutingUserId { get; set; } = _ADMIN_ID;
+
 		public bool SendEmails { get; set; }
 
 		public int TotalRecordsCount { get; set; }
+
 		public int BatchSize { get; set; }
+
 		public Guid ExportRunId { get; set; }
+
 		public int? JobHistoryToRetryId { get; set; }
 
-		public int[] ProductionIds => throw new NotImplementedException();
+		public int[] ProductionIds { get; set; }
 
-		public bool IncludeOriginalImageIfNotFoundInProductions => throw new NotImplementedException();
+		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
+
 		public bool IsImageJob { get; set; }
 	}
 }

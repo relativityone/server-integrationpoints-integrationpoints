@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Collections;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
@@ -12,9 +12,11 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
+using Relativity.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 {
@@ -23,8 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 	{
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
 		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 2;
-
-
+		
 		private JobStartMetricsExecutor _sut;
 
 		private Mock<ISyncMetrics> _syncMetricsMock;
@@ -34,6 +35,15 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
 		private Mock<ISerializer> _serializerMock;
 		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IPipelineSelector> _pipelineSelectorFake;
+
+		private static readonly TestCaseData[] LogFlowTypeTestCases =
+		{
+			new TestCaseData(new SyncDocumentRunPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA),
+			new TestCaseData(new SyncDocumentRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA),
+			new TestCaseData(new SyncImageRunPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES),
+			new TestCaseData(new SyncImageRetryPipeline(), TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES)
+		};
 
 		[SetUp]
 		public void SetUp()
@@ -46,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
 			_serializerMock = new Mock<ISerializer>();
 			_objectManagerMock = new Mock<IObjectManager>();
-
+			_pipelineSelectorFake = new Mock<IPipelineSelector>();
 
 			_sumReporterConfigurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_sumReporterConfigurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
@@ -65,6 +75,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				new FieldInfoDto(SpecialFieldType.None,"Control Number", "Control Number", true, true){RelativityDataType = RelativityDataType.FixedLengthText}
 			});
 
+			ISyncPipeline defaultPipeline = new SyncDocumentRunPipeline();
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(defaultPipeline);
+
 			_objectManagerMock
 				.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new QueryResultSlim
@@ -78,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 						}
 				});
 
-			_sut = new JobStartMetricsExecutor(_syncLoggerMock.Object, _syncMetricsMock.Object, _fieldManagerMock.Object, _serviceFactoryMock.Object, _serializerMock.Object);
+			_sut = new JobStartMetricsExecutor(_syncLoggerMock.Object, _syncMetricsMock.Object, _pipelineSelectorFake.Object, _fieldManagerMock.Object, _serviceFactoryMock.Object);
 		}
 
 		[Test]
@@ -106,6 +119,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME), Times.Once);
 		}
 
+		[TestCaseSource(nameof(LogFlowTypeTestCases))]
+		public async Task ExecuteAsync_ShouldLogCorrectFlowType(ISyncPipeline syncPipeline, string flowType)
+		{
+			// Arrange
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
+
+			// Act
+			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, flowType), Times.Once);
+		}
+
 		[Test]
 		public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
 		{
@@ -113,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncLoggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {summary}", It.IsAny<string>()));
+			_syncLoggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()));
 		}
 
 		[Test]
@@ -126,7 +152,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				.ThrowsAsync(new Exception());
 
 			// Act
-			Func<Task> action = async () => await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None);
 
 			// Assert
 			action.Should().NotThrow();
@@ -141,8 +167,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			_objectManagerMock.Invocations.Count.Should().Be(0);
 		}
-
-
+		
 		[Test]
 		public void ExecuteAsync_Should_CompleteSuccessfully_WhenFieldManagerThrows()
 		{
@@ -151,25 +176,28 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				.ThrowsAsync(new Exception());
 
 			// Act
-			Func<Task> action = async () => await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None);
 
 			// Assert
 			action.Should().NotThrow();
 		}
-
-
-		[Test, TestCaseSource(nameof(FieldsMappingTestCaseSource))]
-		public async Task ExecuteAsync_Should_Log_Correct_FieldsMappingDetails(List<FieldMapDefinitionCase> mapping, string expectedLog)
+		
+		[TestCaseSource(nameof(FieldsMappingTestCaseSource))]
+		public async Task ExecuteAsync_Should_Log_Correct_FieldsMappingDetails(List<FieldMapDefinitionCase> mapping, Dictionary<string, object> expectedLog)
 		{
 			// Arrange
-
 			SetupFieldMapping(mapping);
 
 			// Act
 			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncLoggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {summary}", expectedLog));
+			Func<Dictionary<string, object>, bool> verify = actual =>
+			{
+				CollectionAssert.AreEquivalent(actual, expectedLog);
+				return true;
+			};
+			_syncLoggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.Is<Dictionary<string, object>>(actual => verify(actual))));
 		}
 
 		public static IEnumerable<TestCaseData> FieldsMappingTestCaseSource()
@@ -177,83 +205,528 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			const string extractedTextFieldName = "Extracted Text";
 
 			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
-					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText},
-				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":false}},\"LongText\":[]}"
+					new List<FieldMapDefinitionCase>
+					{
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
+							DataType = RelativityDataType.LongText
+						},
+					},
+					PrepareSummaryForExtractedTextWithDisabledDataGrid()
 				)
-			{ TestName = "ExtractedTextDataGrid(Source=disable, Destination=disabled)" };
-
-			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
-					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false}
-				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":false}},\"LongText\":[]}"
-				)
-			{ TestName = "ExtractedTextDataGrid(Source=enabled, Destination=disabled)" };
-
-			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
-					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false, DestinationFieldDataGridEnabled = true}
-				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":true}},\"LongText\":[]}"
-			)
-			{ TestName = "ExtractedTextDataGrid(Source=disabled, Destination=enabled)" };
-
-			yield return new TestCaseData(
-				new List<FieldMapDefinitionCase>
-				{
-					new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = true}
-				},
-				"{\"FieldMapping\":{\"LongText\":1},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":2,\"DataGridEnabled\":true}},\"LongText\":[]}"
-				)
-			{ TestName = "ExtractedTextDataGrid(Source=enabled, Destination=enabled)" };
+				{TestName = "{m}(ExtractedTextDataGridSource=disable, ExtractedTextDataGridDestination=disabled)"};
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
 					{
-						new FieldMapDefinitionCase{SourceFieldName = "fixed-length", DestinationFieldName = "fixed-length", DataType = RelativityDataType.FixedLengthText},
-						new FieldMapDefinitionCase{SourceFieldName = "fixed-length 2", DestinationFieldName = "fixed-length 2", DataType = RelativityDataType.FixedLengthText},
-						new FieldMapDefinitionCase{SourceFieldName = "number", DestinationFieldName = "number destination", DataType = RelativityDataType.WholeNumber},
-						new FieldMapDefinitionCase{SourceFieldName = "randomName", DestinationFieldName = "CommandoreBomardiero", DataType = RelativityDataType.FixedLengthText},
-						new FieldMapDefinitionCase{SourceFieldName = "AdlerSieben", DestinationFieldName = "SeniorGordo", DataType = RelativityDataType.FixedLengthText},
-						new FieldMapDefinitionCase{SourceFieldName = "1", DestinationFieldName = "1", DataType = RelativityDataType.Currency},
-						new FieldMapDefinitionCase{SourceFieldName = "2", DestinationFieldName = "2", DataType = RelativityDataType.Currency},
-						new FieldMapDefinitionCase{SourceFieldName = "3", DestinationFieldName = "3", DataType = RelativityDataType.YesNo},
-						new FieldMapDefinitionCase{SourceFieldName = "4", DestinationFieldName = "4", DataType = RelativityDataType.YesNo},
-						new FieldMapDefinitionCase{SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo},
-						new FieldMapDefinitionCase{SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false
+						}
 					},
-					"{\"FieldMapping\":{\"FixedLengthText\":4,\"WholeNumber\":1,\"Currency\":2,\"YesNo\":4},\"ExtactedText\":null,\"LongText\":[]}"
+					PrepareSummaryForExtractedTextWithEnabledDataGridInSource()
 				)
-				{ TestName = "Counting Types" };
+				{TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=disabled)"};
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
 					{
-						new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = true},
-						new FieldMapDefinitionCase{SourceFieldName = "long text1", DestinationFieldName = "long text1 dest", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false, DestinationFieldDataGridEnabled = true},
-						new FieldMapDefinitionCase{SourceFieldName = "long text2", DestinationFieldName = "long text2", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false}
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
+							DestinationFieldDataGridEnabled = true
+						}
 					},
-					"{\"FieldMapping\":{\"LongText\":3},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":4,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":5,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":false}}]}"
+					PrepareSummaryForExtractedTextWithEnabledDataGridInDestination()
 				)
-				{ TestName = "Long text" };
+				{TestName = "{m}(ExtractedTextDataGridSource=disabled, ExtractedTextDataGridDestination=enabled)"};
 
 			yield return new TestCaseData(
 					new List<FieldMapDefinitionCase>
 					{
-						new FieldMapDefinitionCase{SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName, DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = true},
-						new FieldMapDefinitionCase{SourceFieldName = "long text1", DestinationFieldName = "long text1 dest", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false, DestinationFieldDataGridEnabled = true},
-						new FieldMapDefinitionCase{SourceFieldName = "long text2", DestinationFieldName = "long text2", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false},
-						new FieldMapDefinitionCase{SourceFieldName = "Native path", DestinationFieldName = "Native path", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false, SpecialFieldType = SpecialFieldType.NativeFileLocation},
-						new FieldMapDefinitionCase{SourceFieldName = "Native location", DestinationFieldName = "Native location", DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true, DestinationFieldDataGridEnabled = false, SpecialFieldType = SpecialFieldType.NativeFileFilename}
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = true
+						}
 					},
-					"{\"FieldMapping\":{\"LongText\":5},\"ExtactedText\":{\"Source\":{\"ArtifactId\":1,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":6,\"DataGridEnabled\":true}},\"LongText\":[{\"Source\":{\"ArtifactId\":2,\"DataGridEnabled\":false},\"Destination\":{\"ArtifactId\":7,\"DataGridEnabled\":true}},{\"Source\":{\"ArtifactId\":3,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":8,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":4,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":9,\"DataGridEnabled\":false}},{\"Source\":{\"ArtifactId\":5,\"DataGridEnabled\":true},\"Destination\":{\"ArtifactId\":10,\"DataGridEnabled\":false}}]}"
+					PrepareSummaryForExtractedTextWithDataGridEnabledBothInSourceAndDestination()
 				)
-				{ TestName = "Should log special fields when they have been mapped" };
+				{TestName = "{m}(ExtractedTextDataGridSource=enabled, ExtractedTextDataGridDestination=enabled)"};
+
+			yield return new TestCaseData(
+					new List<FieldMapDefinitionCase>
+					{
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "fixed-length", DestinationFieldName = "fixed-length",
+							DataType = RelativityDataType.FixedLengthText
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "fixed-length 2", DestinationFieldName = "fixed-length 2",
+							DataType = RelativityDataType.FixedLengthText
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "number", DestinationFieldName = "number destination",
+							DataType = RelativityDataType.WholeNumber
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "randomName", DestinationFieldName = "CommandoreBomardiero",
+							DataType = RelativityDataType.FixedLengthText
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "AdlerSieben", DestinationFieldName = "SeniorGordo",
+							DataType = RelativityDataType.FixedLengthText
+						},
+						new FieldMapDefinitionCase
+							{SourceFieldName = "1", DestinationFieldName = "1", DataType = RelativityDataType.Currency},
+						new FieldMapDefinitionCase
+							{SourceFieldName = "2", DestinationFieldName = "2", DataType = RelativityDataType.Currency},
+						new FieldMapDefinitionCase
+							{SourceFieldName = "3", DestinationFieldName = "3", DataType = RelativityDataType.YesNo},
+						new FieldMapDefinitionCase
+							{SourceFieldName = "4", DestinationFieldName = "4", DataType = RelativityDataType.YesNo},
+						new FieldMapDefinitionCase
+							{SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo},
+						new FieldMapDefinitionCase
+							{SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo},
+					},
+					PrepareSummaryForCountingTypes()
+				)
+				{TestName = "{m}(CountingTypes)"};
+
+			yield return new TestCaseData(
+					new List<FieldMapDefinitionCase>
+					{
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = true
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
+							DestinationFieldDataGridEnabled = true
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "long text2", DestinationFieldName = "long text2",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false
+						}
+					},
+					PrepareSummaryForLongText()
+				)
+				{TestName = "{m}(LongText)"};
+
+			yield return new TestCaseData(
+					new List<FieldMapDefinitionCase>
+					{
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = extractedTextFieldName, DestinationFieldName = extractedTextFieldName,
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = true
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
+							DestinationFieldDataGridEnabled = true
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "long text2", DestinationFieldName = "long text2",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "Native path", DestinationFieldName = "Native path",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false,
+							SpecialFieldType = SpecialFieldType.NativeFileLocation
+						},
+						new FieldMapDefinitionCase
+						{
+							SourceFieldName = "Native location", DestinationFieldName = "Native location",
+							DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+							DestinationFieldDataGridEnabled = false,
+							SpecialFieldType = SpecialFieldType.NativeFileFilename
+						}
+					},
+					PrepareSummaryForLoggingSpecialFields()
+				)
+				{TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)"};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForLoggingSpecialFields()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 5
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", true}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 6},
+								{"DataGridEnabled", true}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[]
+					{
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 2},
+									{"DataGridEnabled", false}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 7},
+									{"DataGridEnabled", true}
+								}
+							}
+						},
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 3},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 8},
+									{"DataGridEnabled", false}
+								}
+							}
+						},
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 4},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 9},
+									{"DataGridEnabled", false}
+								}
+							}
+						},
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 5},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 10},
+									{"DataGridEnabled", false}
+								}
+							}
+						},
+					}
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForLongText()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 3
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", true}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 4},
+								{"DataGridEnabled", true}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[]
+					{
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 2},
+									{"DataGridEnabled", false}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 5},
+									{"DataGridEnabled", true}
+								}
+							}
+						},
+						new Dictionary<string, Dictionary<string, object>>()
+						{
+							{
+								"Source", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 3},
+									{"DataGridEnabled", true}
+								}
+							},
+							{
+								"Destination", new Dictionary<string, object>()
+								{
+									{"ArtifactId", 6},
+									{"DataGridEnabled", false}
+								}
+							}
+						}
+					}
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForCountingTypes()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"FixedLengthText", 4
+						},
+						{
+							"WholeNumber", 1
+						},
+						{
+							"Currency", 2
+						},
+						{
+							"YesNo", 4
+						}
+					}
+				},
+				{
+					"ExtractedText", null
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithDataGridEnabledBothInSourceAndDestination()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", true}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 2},
+								{"DataGridEnabled", true}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInDestination()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", false}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 2},
+								{"DataGridEnabled", true}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithEnabledDataGridInSource()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", true}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 2},
+								{"DataGridEnabled", false}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
+		}
+
+		private static Dictionary<string, object> PrepareSummaryForExtractedTextWithDisabledDataGrid()
+		{
+			return new Dictionary<string, object>()
+			{
+				{
+					"FieldMapping", new Dictionary<string, int>()
+					{
+						{
+							"LongText", 1
+						}
+					}
+				},
+				{
+					"ExtractedText", new Dictionary<string, object>()
+					{
+						{
+							"Source", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 1},
+								{"DataGridEnabled", false}
+							}
+						},
+						{
+							"Destination", new Dictionary<string, object>()
+							{
+								{"ArtifactId", 2},
+								{"DataGridEnabled", false}
+							}
+						}
+					}
+				},
+				{
+					"LongText", new Dictionary<string, Dictionary<string, object>>[0]
+				}
+			};
 		}
 
 		private void SetupFieldMapping(IEnumerable<FieldMapDefinitionCase> mapping)

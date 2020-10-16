@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal sealed class ChoiceTreeToStringConverterTests
 	{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
-		private Mock<ISynchronizationConfiguration> _config;
+		private Mock<IDocumentSynchronizationConfiguration> _config;
 		private ChoiceTreeToStringConverter _instance;
 
 		private const char _NESTED_VALUE_DELIMITER = (char)29;
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[SetUp]
 		public void SetUp()
 		{
-			_config = new Mock<ISynchronizationConfiguration>();
+			_config = new Mock<IDocumentSynchronizationConfiguration>();
 			_config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_VALUE_DELIMITER);
 			_config.SetupGet(x => x.MultiValueDelimiter).Returns(_MULTI_VALUE_DELIMITER);
 			_instance = new ChoiceTreeToStringConverter(_config.Object);

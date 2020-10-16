@@ -317,7 +317,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
 			int resourcePoolId = await GetResourcePoolId(AppSettings.ResourcePoolName).ConfigureAwait(false);
 
-			int databaseServerId = await GetPrimarySqlServerId().ConfigureAwait(false);
+			int databaseServerId = await GetRestoreSqlServerId().ConfigureAwait(false);
 
 			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId, databaseServerId);
 
@@ -374,17 +374,22 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			return result.Results.Single().Artifact.ArtifactID;
 		}
 
-		private async Task<int> GetPrimarySqlServerId()
+		private async Task<int> GetRestoreSqlServerId()
 		{
 			var queryRequest = new QueryRequest()
 			{
 				ObjectType = new ObjectTypeRef() { Name = "Resource Server" },
-				Condition = "'Type' == 'SQL - Primary'"
+				Condition = "'Type' LIKE 'SQL'",
+				Fields = new FieldRef[]
+				{
+					new FieldRef { Name = "Type" }
+				}
 			};
 
 			var result = await _component.ServiceFactory.GetAdminServiceProxy<IObjectManager>().QueryAsync(-1, queryRequest, 0, int.MaxValue).ConfigureAwait(false);
 
-			return result.Objects.Single().ArtifactID;
+			return result.Objects.FirstOrDefault(o => o["Type"].Value.ToString() == "SQL - Distributed")?.ArtifactID
+				?? result.Objects.Single().ArtifactID;
 		}
 	}
 }

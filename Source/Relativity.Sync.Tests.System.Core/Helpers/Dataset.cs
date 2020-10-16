@@ -7,8 +7,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal class Dataset
 	{
-		private Func<FileInfo, string> _begBatesGetter;
-		private Func<FileInfo, string> _controlNumberGetter;
+		private readonly Func<FileInfo, string> _begBatesGetter;
+		private readonly Func<FileInfo, string> _controlNumberGetter;
 		private const string _DATASETS_FOLDER_PATH = "Data";
 		private static string CurrentDirectory => AppDomain.CurrentDomain.BaseDirectory;
 
@@ -23,14 +23,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public string Name { get; }
 		public string FolderPath => GetDatasetPath(Name);
+		public int TotalCount => GetFiles().Count();
 
 		protected Dataset(string name, Func<FileInfo, string> controlNumberGetter = null, Func<FileInfo, string> begBatesGetter = null)
 		{
-			Func<FileInfo, string> GetFilename = file =>
-			{
-				return Path.GetFileNameWithoutExtension(file.Name);
-
-			};
+			string GetFilename(FileInfo file) => Path.GetFileNameWithoutExtension(file.Name);
 
 			_controlNumberGetter = controlNumberGetter ?? GetFilename;
 			_begBatesGetter = begBatesGetter ?? GetFilename;

@@ -9,7 +9,9 @@ namespace Relativity.Sync.Transfer
 		Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token);
 		
 		Task<IReadOnlyList<FieldInfoDto>> GetNativeAllFieldsAsync(CancellationToken token);
-		
+
+		Task<IReadOnlyList<FieldInfoDto>> GetImageAllFieldsAsync(CancellationToken token);
+
 		Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token);
 
 		Task<IList<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token);

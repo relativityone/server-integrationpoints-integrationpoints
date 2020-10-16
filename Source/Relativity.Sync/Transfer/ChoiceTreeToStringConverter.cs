@@ -10,7 +10,7 @@ namespace Relativity.Sync.Transfer
 		private readonly char _multiValueDelimiter;
 		private readonly char _nestedValueDelimiter;
 
-		public ChoiceTreeToStringConverter(ISynchronizationConfiguration config)
+		public ChoiceTreeToStringConverter(IDocumentSynchronizationConfiguration config)
 		{
 			_multiValueDelimiter = config.MultiValueDelimiter;
 			_nestedValueDelimiter = config.NestedValueDelimiter;

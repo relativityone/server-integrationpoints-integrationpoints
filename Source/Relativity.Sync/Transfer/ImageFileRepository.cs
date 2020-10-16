@@ -6,9 +6,7 @@ using Relativity.Sync.KeplerFactory;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
@@ -71,9 +69,9 @@ namespace Relativity.Sync.Transfer
 					.Select(x => x.ArtifactID)
 					.SplitList(_BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
 
-				foreach (int[] batch in documentArtifactIdBatches)
+				foreach (var batch in documentArtifactIdBatches)
 				{
-					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch, options).ConfigureAwait(false);
+					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
 					imagesTotalSize += imagesInBatch.Sum(x => x.Size);
 				}
 			}
