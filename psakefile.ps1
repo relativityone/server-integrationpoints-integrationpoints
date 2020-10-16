@@ -31,6 +31,10 @@ Task Compile -Description "Compile code for this repo" {
 }
 
 Task Test -Description "Run Unit and Integration Tests without coverage" {
+    if($TestFilter) {
+        return
+    }
+
     $LogPath = Join-Path $LogsDir "TestResults.xml"
     Invoke-Tests -WhereClause "namespace =~ Tests.Unit || namespace =~ Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
@@ -93,14 +97,14 @@ Task Rebuild -Description "Do a rebuild" {
     }
 }
 
-Task PerformanceTest -Depends Default -Description "Run performance tests" {
+Task PerformanceTest -Depends default -Description "Run performance tests" {
     $LogPath = Join-Path $LogsDir "PerformanceTestResults.xml"
     Invoke-Tests -WhereClause "cat == ReferencePerformance" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
-Task Nightly -Depends Default, FunctionalTest -Description "Build and run all tests. All the steps for a nightly build with deployed environemnt.";
+Task Nightly -Depends default, FunctionalTest -Description "Build and run all tests. All the steps for a nightly build with deployed environemnt.";
 
-Task MyTest -Depends Compile, Package -Description "Run custom tests based on specified filter" {
+Task MyTest -Depends default -Description "Run custom tests based on specified filter" {
     Invoke-MyTest
 }
 
