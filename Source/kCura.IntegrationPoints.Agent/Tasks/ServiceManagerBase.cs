@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -27,6 +28,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
+	[SynchronizedTask]
 	public abstract class ServiceManagerBase : ITaskWithJobHistory
 	{
 		private readonly IAgentValidator _agentValidator;

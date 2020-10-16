@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -18,8 +19,8 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
 		public JobSynchronizationChecker(
 			IAgentHelper helper,
-			IJobService jobService,
-			IManagerFactory managerFactory,
+			IJobService jobService, 
+			IManagerFactory managerFactory, 
 			ITaskFactoryJobHistoryServiceFactory jobHistoryServicesFactory)
 		{
 			_jobService = jobService;
@@ -29,11 +30,19 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobSynchronizationChecker>();
 		}
 
-		public void CheckForSynchronization(Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase)
+		public void CheckForSynchronization(Type type, Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase)
 		{
-			if (HasOtherJobsExecuting(job))
+			object[] attributes = type.GetCustomAttributes(false);
+			foreach (object attribute in attributes)
 			{
-				DropJobAndThrowException(job, integrationPointDto, agentBase);
+				if (attribute is SynchronizedTaskAttribute)
+				{
+					if (HasOtherJobsExecuting(job))
+					{
+						DropJobAndThrowException(job, integrationPointDto, agentBase);
+					}
+					break;
+				}
 			}
 		}
 
