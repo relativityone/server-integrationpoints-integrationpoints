@@ -55,6 +55,7 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Agent.cs" />
+    <Compile Include="Attributes\SynchronizedTaskAttribute.cs" />
     <Compile Include="Exceptions\AgentDropJobException.cs" />
     <Compile Include="Installer\AgentAggregatedInstaller.cs" />
     <Compile Include="Installer\AgentInstaller.cs" />
