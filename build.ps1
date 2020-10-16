@@ -26,7 +26,11 @@ param(
 
     [Parameter(Mandatory=$False)]
     [ValidateSet("Debug","Release")]
-    [string]$Configuration = "Debug"
+    [string]$Configuration = "Debug",
+
+    # <-- Test section -->
+	[Parameter(Mandatory=$False)]
+	[String]$TestFilter
 )
 
 Set-StrictMode -Version 2.0
@@ -64,6 +68,8 @@ $Params = @{
     parameters = @{	
         BuildConfig = $Configuration
         BuildToolsDir = $ToolsDir
+		# <-- Test section -->
+		TestFilter = $TestFilter
     }
     Verbose = $VerbosePreference
     Debug = $DebugPreference
