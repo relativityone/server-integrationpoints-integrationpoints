@@ -7,4 +7,4 @@ param(
 $TaskRunner = Resolve-Path -Path build.ps1
 
 # Custom
-&($TaskRunner) MyTest -Configuration Release -TestFilter $TestFilter
+&($TaskRunner) Compile, Package, MyTest -Configuration Release -TestFilter $TestFilter
