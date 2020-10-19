@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Data.Installers;
@@ -29,6 +30,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 				.For<ILazyComponentLoader>()
 				.ImplementedBy<LazyOfTComponentLoader>()
 			);
+
+			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 		}
 	}
 }

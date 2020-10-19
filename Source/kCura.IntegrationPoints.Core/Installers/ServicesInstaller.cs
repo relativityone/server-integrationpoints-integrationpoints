@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IRipMetrics>().ImplementedBy<RipMetrics>());
 			container.Register(Component.For<IRipMetricsSink>().ImplementedBy<SplunkRipMetricSink>());
 			container.Register(Component.For<IRipMetricsSink>().ImplementedBy<ApmRipMetricSink>());
-			
+
 			container.Register(Component.For<IMessageService>().ImplementedBy<IntegrationPointsMessageService>().LifestyleSingleton());
 
 			container.Register(Component
