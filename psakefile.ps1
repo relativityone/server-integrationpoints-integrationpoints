@@ -30,14 +30,14 @@ Task Compile -Description "Compile code for this repo" {
     }
 }
 
-Task Test -Description "Run Unit and Integration Tests" {
+Task Test -Description "Run Unit and Integration Tests with coverage" {
     $LogPath = Join-Path $LogsDir "TestResults.xml"
     Invoke-Tests -WhereClause "namespace =~ Tests.Unit || namespace =~ Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "SystemTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath -TestSettings -WithCoverage
+    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -108,9 +108,8 @@ Task Help -Alias ? -Description "Display task information" {
 
 function Invoke-MyTest
 {
-    $LogTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
-    $LogPath = Join-Path $LogsDir "MyTest_$LogTime.xml"
-    Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath -WithCoverage
+    $LogPath = Join-Path $LogsDir "MyTestResults.xml"
+    Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath
 }
 
 function Invoke-Tests
