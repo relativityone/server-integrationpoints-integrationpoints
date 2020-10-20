@@ -1,10 +1,24 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Extensions
 {
 	public static class StringExtensions
 	{
+		/// <summary>
+		/// Trim all white space characters from <paramref name="value"/>.
+		/// </summary>
+		public static string TrimAll(this string value)
+		{
+			if(string.IsNullOrEmpty(value))
+			{
+				return value;
+			}
+
+			return new string(value.Where(c => !char.IsWhiteSpace(c)).ToArray());
+		}
+
 		/// <summary>
 		/// Returns null if <paramref name="value"/> is null or empty, otherwise it returns exact same string.
 		/// </summary>

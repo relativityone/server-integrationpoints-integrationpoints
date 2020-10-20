@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -12,6 +13,17 @@ namespace kCura.IntegrationPoints.Core.Services
 		public ProviderTypeService(IRelativityObjectManager objectManager)
 		{
 			_objectManager = objectManager;
+		}
+
+		public string GetProviderName(int sourceProviderId, int destinationProviderId)
+		{
+			SourceProvider sourceProvider = _objectManager.Read<SourceProvider>(sourceProviderId);
+			DestinationProvider destinationProvider = _objectManager.Read<DestinationProvider>(destinationProviderId);
+			ProviderType providerType = GetProviderType(sourceProvider.Identifier, destinationProvider.Identifier);
+
+			return providerType != ProviderType.Other
+				? providerType.ToString()
+				: string.IsNullOrEmpty(sourceProvider.Name) ? providerType.ToString() : sourceProvider.Name.TrimAll();
 		}
 
 		public ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)

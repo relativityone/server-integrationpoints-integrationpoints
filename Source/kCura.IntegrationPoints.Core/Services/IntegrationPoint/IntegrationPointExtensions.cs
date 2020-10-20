@@ -11,5 +11,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				integrationPoint.DestinationProvider.GetValueOrDefault());
 			return providerType;
 		}
+
+		public static string GetProviderName(this Data.IntegrationPoint integrationPoint, IProviderTypeService providerTypeService) =>
+			providerTypeService.GetProviderName(
+				integrationPoint.SourceProvider.GetValueOrDefault(),
+				integrationPoint.DestinationProvider.GetValueOrDefault());
 	}
 }

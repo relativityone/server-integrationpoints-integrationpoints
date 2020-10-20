@@ -51,5 +51,21 @@ namespace kCura.IntegrationPoints.Common.Metrics
 				Value = duration.TotalMilliseconds
 			};
 		}
+
+		public static RipMetric PointInTimeLong(string name, long value, string workflowId)
+		{
+			return new RipMetric(name, RipMetricType.PointInTimeLong, workflowId)
+			{
+				Value = value
+			};
+		}
+
+		public static RipMetric PointInTimeDouble(string name, double value, string workflowId)
+		{
+			return new RipMetric(name, RipMetricType.PointInTimeDouble, workflowId)
+			{
+				Value = value
+			};
+		}
 	}
 }

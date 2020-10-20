@@ -55,19 +55,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.LifestyleTransient(),
 
 				Component
-					.For<IRipMetrics>()
-					.ImplementedBy<RipMetrics>()
-					.LifestyleTransient(),
-				Component
-					.For<IRipMetricsSink>()
-					.ImplementedBy<SplunkRipMetricSink>()
-					.LifestyleTransient(),
-				Component
-					.For<IRipMetricsSink>()
-					.ImplementedBy<ApmRipMetricSink>()
-					.LifestyleTransient(),
-
-				Component
 					.For<IControllerActionExecutionTimeMetrics>()
 					.ImplementedBy<ControllerActionExecutionTimeMetrics>()
 					.LifestyleTransient(),
