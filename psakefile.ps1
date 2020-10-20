@@ -30,14 +30,14 @@ Task Compile -Description "Compile code for this repo" {
     }
 }
 
-Task Test -Description "Run Unit and Integration Tests without coverage" {
+Task Test -Description "Run Unit and Integration Tests with coverage" {
     $LogPath = Join-Path $LogsDir "TestResults.xml"
     Invoke-Tests -WhereClause "namespace =~ Tests.Unit || namespace =~ Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "SystemTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "namespace =~ Tests.System" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -93,15 +93,23 @@ Task Rebuild -Description "Do a rebuild" {
     }
 }
 
-Task PerformanceTest -Depends Default -Description "Run performance tests" {
+Task PerformanceTest -Description "Run performance tests" {
     $LogPath = Join-Path $LogsDir "PerformanceTestResults.xml"
-    Invoke-Tests -WhereClause "cat == ReferencePerformance" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+    Invoke-Tests -WhereClause "cat == ReferencePerformance" -OutputFile $LogPath
 }
 
-Task Nightly -Depends Default, FunctionalTest -Description "Build and run all tests. All the steps for a nightly build with deployed environemnt.";
+Task MyTest -Description "Run custom tests based on specified filter" {
+    Invoke-MyTest
+}
 
 Task Help -Alias ? -Description "Display task information" {
     WriteDocumentation
+}
+
+function Invoke-MyTest
+{
+    $LogPath = Join-Path $LogsDir "MyTestResults.xml"
+    Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath
 }
 
 function Invoke-Tests
@@ -118,9 +126,13 @@ function Invoke-Tests
     )
 
     $NUnit = Resolve-Path (Join-Path $BuildToolsDir "NUnit.ConsoleRunner\tools\nunit3-console.exe")
-    $settings = if($TestSettings) { "@$TestSettings" }
+
+    if(!$TestSettings) { $TestSettings = (Join-Path $PSScriptRoot FunctionalTestSettings) }
+    $settings = if(Test-Path $TestSettings) { "@$TestSettings" }
+
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
+
     if($WithCoverage)
     {
         $OpenCover = Join-Path $BuildToolsDir "opencover\tools\OpenCover.Console.exe"
@@ -141,27 +153,5 @@ function Invoke-Tests
             "--result=$OutputFile" `
             $settings
         }
-    }
-}
-
-function Move-Output
-{
-    param (
-        [Parameter(Mandatory=$true)]
-        [String] $Source,
-        [Parameter(Mandatory=$true)]
-        [String] $Destination
-    )
-
-    if(Test-Path $Destination) {
-        Remove-Item $Destination -Force -Recurse
-    }
-
-    $childItems = Get-ChildItem $Source
-
-    New-Item $Destination -ItemType Directory
-
-    $childItems | ForEach-Object {
-        Copy-Item -Path $_.FullName -Destination $Destination -Recurse -Force
     }
 }

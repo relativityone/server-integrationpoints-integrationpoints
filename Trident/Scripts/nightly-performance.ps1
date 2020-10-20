@@ -5,4 +5,4 @@ This script will be used by nightly pipeline to complie and run RelativitySync t
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) PerformanceTest -Configuration Release
+&($TaskRunner) Compile, Package, PerformanceTest -Configuration Release
