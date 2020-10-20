@@ -11,6 +11,7 @@ Relativity.OAuth2Client
 Relativity.Services.Interfaces.Private
 Relativity.Toggles
 Relativity.Kepler.Client
+Relativity.Logging.Interfaces
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
