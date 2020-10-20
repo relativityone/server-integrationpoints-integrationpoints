@@ -16,10 +16,16 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 	public class DocumentGoldFlowTests : SystemTest
 	{
 		private GoldFlowTestSuite _goldFlowTestSuite;
-		
+		private readonly Dataset _dataset;
+
+		public DocumentGoldFlowTests()
+		{
+			_dataset = Dataset.NativesAndExtractedText;
+		}
+
 		protected override async Task ChildSuiteSetup()
 		{
-			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory, DataTableFactory.CreateImportDataTable(Dataset.NativesAndExtractedText, true))
+			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory, DataTableFactory.CreateImportDataTable(_dataset, true))
 				.ConfigureAwait(false);
 		}
 
@@ -34,7 +40,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
 
 			// Assert
-			await goldFlowTestRun.AssertAsync(result, _goldFlowTestSuite.DataSetItemsCount).ConfigureAwait(false);
+			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("e4451454-ea17-4d0e-b45a-a2c43ad35add")]
@@ -60,7 +66,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
 
 			// Assert
-			await goldFlowTestRun.AssertAsync(result, _goldFlowTestSuite.DataSetItemsCount - numberOfTaggedDocuments).ConfigureAwait(false);
+			await goldFlowTestRun.AssertAsync(result, _dataset.TotalDocumentCount - numberOfTaggedDocuments, _dataset.TotalDocumentCount - numberOfTaggedDocuments).ConfigureAwait(false);
 		}
 
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)

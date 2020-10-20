@@ -20,6 +20,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public class ImportJobFactoryTests
 	{
+		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
+		
 		private Mock<IDocumentSynchronizationConfiguration> _documentConfigurationMock;
 		private Mock<IImageSynchronizationConfiguration> _imageConfigurationMock;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
@@ -53,6 +55,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_logger = new EmptyLogger();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
+
+			_imageConfigurationMock.SetupGet(x => x.IdentifierColumn).Returns(_IMAGE_IDENTIFIER_DISPLAY_NAME);
 		}
 
 		[Test]
@@ -266,6 +270,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			AssertApplicationName(importBulkArtifactJob.Settings);
+		}
+
+		[Test]
+		public async Task CreateImagesImportJob_ShouldSetBatesNumberFieldToImageIdentifier()
+		{
+			// Arrange
+			var importBulkArtifactJob = new ImageImportBulkArtifactJob();
+			ImportJobFactory instance = GetTestInstance(GetImagesImportAPIFactoryMock(importBulkArtifactJob));
+
+			// Act
+			await instance.CreateImageImportJobAsync(_imageConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.BatesNumberField.Should().Be(_imageConfigurationMock.Object.IdentifierColumn);
 		}
 
 		private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)

@@ -33,6 +33,7 @@ namespace Relativity.Sync.Executors
 			IList<FieldInfoDto> specialFields = _fieldManager.GetImageSpecialFields().ToList();
 			configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
 			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
+			configuration.IdentifierColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageIdentifier);
 		}
 	}
 }

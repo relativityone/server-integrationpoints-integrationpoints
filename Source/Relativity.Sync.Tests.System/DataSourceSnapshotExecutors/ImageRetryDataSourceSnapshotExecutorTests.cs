@@ -17,7 +17,6 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	[Ignore("There is no pipeline that uses this node")]
 	public sealed class ImageRetryDataSourceSnapshotExecutorTests : SystemTest
 	{
 		private WorkspaceRef _workspace;

@@ -17,7 +17,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 	internal class GoldFlowTestSuite
 	{
 		private readonly TestEnvironment _environment;
-		private readonly ImportDataTableWrapper _importDataTable;
 
 		public User User { get; }
 
@@ -25,15 +24,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		public WorkspaceRef SourceWorkspace { get; }
 
-		public int DataSetItemsCount => _importDataTable?.Data.Rows.Count ?? 0;
 
-		private GoldFlowTestSuite(TestEnvironment environment, User user, ServiceFactory serviceFactory, WorkspaceRef sourceWorkspace, ImportDataTableWrapper importDataTable)
+		private GoldFlowTestSuite(TestEnvironment environment, User user, ServiceFactory serviceFactory, WorkspaceRef sourceWorkspace)
 		{
 			_environment = environment;
 			User = user;
 			ServiceFactory = serviceFactory;
 			SourceWorkspace = sourceWorkspace;
-			_importDataTable = importDataTable;
 		}
 
 		internal static async Task<GoldFlowTestSuite> CreateAsync(TestEnvironment environment, User user, ServiceFactory serviceFactory, ImportDataTableWrapper importDataTable)
@@ -43,7 +40,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			ImportHelper importHelper = new ImportHelper(serviceFactory);
 			await importHelper.ImportDataAsync(sourceWorkspace.ArtifactID, importDataTable).ConfigureAwait(false);
 
-			return new GoldFlowTestSuite(environment, user, serviceFactory, sourceWorkspace, importDataTable);
+			return new GoldFlowTestSuite(environment, user, serviceFactory, sourceWorkspace);
 		}
 
 		public async Task<IGoldFlowTestRun> CreateTestRunAsync(Func<WorkspaceRef, WorkspaceRef, ConfigurationStub, Task> configureAsync)
@@ -78,7 +75,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			Task<SyncJobState> RunAsync();
 
-			Task AssertAsync(SyncJobState expected, int expectedItemsTransferred);
+			Task AssertAsync(SyncJobState expected, int expectedItemsTransferred, int expectedTotalItems);
 		}
 
 		private class GoldFlowTestRun : IGoldFlowTestRun
@@ -103,7 +100,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				return syncRunner.RunAsync(_parameters, _goldFlowTestSuite.User.ArtifactID);
 			}
 
-			public async Task AssertAsync(SyncJobState expectedResult, int expectedItemsTransferred)
+			public async Task AssertAsync(SyncJobState expectedResult, int expectedItemsTransferred, int expectedTotalItems)
 			{
 				expectedResult.Status.Should().Be(SyncJobStatus.Completed, expectedResult.Message);
 
@@ -111,9 +108,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					.GetJobHistoryAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, _configuration.JobHistoryArtifactId)
 					.ConfigureAwait(false);
 				int itemsTransferred = (int)jobHistory["Items Transferred"].Value;
-
-				itemsTransferred.Should().Be((int)jobHistory["Total Items"].Value);
+				int totalItems = (int) jobHistory["Total Items"].Value;
+				
 				itemsTransferred.Should().Be(expectedItemsTransferred);
+				totalItems.Should().Be(expectedTotalItems);
 			}
 		}
 	}

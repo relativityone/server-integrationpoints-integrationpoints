@@ -71,6 +71,12 @@
 		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_2.tif">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000002_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000002_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

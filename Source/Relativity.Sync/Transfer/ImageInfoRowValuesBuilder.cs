@@ -17,7 +17,8 @@ namespace Relativity.Sync.Transfer
 		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new []
 		{
 			SpecialFieldType.ImageFileName,
-			SpecialFieldType.ImageFileLocation
+			SpecialFieldType.ImageFileLocation,
+			SpecialFieldType.ImageIdentifier
 		};
 
 		public IEnumerable<object> BuildRowsValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document)
@@ -33,6 +34,8 @@ namespace Relativity.Sync.Transfer
 					return imagesForDocument.Select(x => x.Filename);
 				case SpecialFieldType.ImageFileLocation:
 					return imagesForDocument.Select(x => x.Location);
+				case SpecialFieldType.ImageIdentifier:
+					return imagesForDocument.Select(x => x.Identifier);
 				default:
 					throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType}.", nameof(fieldInfoDto));
 			}

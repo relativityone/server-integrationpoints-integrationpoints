@@ -204,5 +204,7 @@ namespace Relativity.Sync.Tests.Common
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 
 		public bool IsImageJob { get; set; }
+		public string IdentifierColumn { get; set; }
+
 	}
 }

@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
-				{ documentId, new[] { new ImageFile(documentId, "Location1", "Name1", 0) } }
+				{ documentId, new[] { new ImageFile(documentId, "1","Location1", "Name1", 0) } }
 			};
 
 			var notExistingDocument = new RelativityObjectSlim { ArtifactID = nonExsitingDocumentId };
@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
-				{ documentId, new[] { new ImageFile(documentId, "Location1", "Name1", 0) } },
+				{ documentId, new[] { new ImageFile(documentId, "1", "Location1", "Name1", 0) } },
 				{ documentWithouImagesId, new ImageFile[] { } }
 			};
 
@@ -76,9 +76,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Arrange
 			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
-				{ 1, new[] { new ImageFile(1, "Location1", "Name1", 0) } },
-				{ 2, new[] { new ImageFile(2, "Location2a", "Name2a", 0), new ImageFile(2, "Location2b", "Name2b", 0), new ImageFile(2, "Location2c", "Name2c", 0) } },
-				{ 3, new[] { new ImageFile(3, "Location3", "Name3", 0) } }
+				{ 1, new[] { new ImageFile(1, "1","Location1", "Name1", 0) } },
+				{ 2, new[] { new ImageFile(2, "2a","Location2a", "Name2a", 0), new ImageFile(2, "2b","Location2b", "Name2b", 0), new ImageFile(2, "2c", "Location2c", "Name2c", 0) } },
+				{ 3, new[] { new ImageFile(3, "3","Location3", "Name3", 0) } }
 			};
 
 			var document = new RelativityObjectSlim { ArtifactID = 2 };
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
-				{ documentId, new[] { new ImageFile(documentId, "Location1", "Name1", 0) } }
+				{ documentId, new[] { new ImageFile(documentId, "1","Location1", "Name1", 0) } }
 			};
 
 			var field = FieldInfoDto.NativeFileLocationField();
