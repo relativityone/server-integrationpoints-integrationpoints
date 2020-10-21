@@ -40,7 +40,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 			try
 			{
 				IMetric metric = _metricsFactory.CreateScheduleJobCompletedMetric(job);
-				_logger.LogInformation("Sending Sync job completed metric: {@metric}", metric);
+
+				if (!(metric is EmptyMetric))
+				{
+					_logger.LogInformation("Sending Sync job completed metric: {@metric}", metric);
+				}
 
 				IMetricCollection metrics = new MetricsCollection().AddMetric(metric);
 
