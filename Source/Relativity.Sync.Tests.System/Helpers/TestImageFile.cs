@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using FluentAssertions;
+using FluentAssertions.Common;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
@@ -55,11 +56,12 @@ namespace Relativity.Sync.Tests.System.Helpers
 			}
 		}
 
-		public static void AssertAreEquivalent(TestImageFile sourceTestImage, TestImageFile destinationTestImage)
+		public static void AssertAreEquivalent(TestImageFile sourceTestImage, TestImageFile destinationTestImage,
+			string expectedIdentifier)
 		{
-			sourceTestImage.Filename.Should().Be(destinationTestImage.Filename);
-			sourceTestImage.Identifier.Should().Be(destinationTestImage.Identifier);
-			sourceTestImage.Size.Should().Be(destinationTestImage.Size);
+			destinationTestImage.Filename.Should().Be(sourceTestImage.Filename);
+			destinationTestImage.Identifier.Should().Be(expectedIdentifier);
+			destinationTestImage.Size.Should().Be(sourceTestImage.Size);
 		}
 	}
 }

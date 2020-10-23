@@ -48,9 +48,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		public async Task SyncJob_Should_RetryDocuments()
 		{
 			// Arrange
-			int jobHistoryToRetryId = -1;
+			int jobHistoryToRetryId = -1, destinationWorkspaceId = -1;
 			var goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(async (sourceWorkspace, destinationWorkspace, configuration) =>
-				{
+			{
+				destinationWorkspaceId = destinationWorkspace.ArtifactID;
 					await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
 
 					jobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID)
@@ -67,6 +68,16 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			// Assert
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalDocumentCount - numberOfTaggedDocuments, _dataset.TotalDocumentCount - numberOfTaggedDocuments).ConfigureAwait(false);
+
+			var sourceWorkspaceDocuments = await Rdos
+				.QueryDocumentNamesAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, $"NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{jobHistoryToRetryId}])")
+				.ConfigureAwait(false);
+
+			var destinationWorkspaceDocuments = await Rdos
+				.QueryDocumentNamesAsync(ServiceFactory, destinationWorkspaceId, "")
+				.ConfigureAwait(false);
+
+			AssertDocuments(sourceWorkspaceDocuments.ToArray(), destinationWorkspaceDocuments.ToArray());
 		}
 
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)

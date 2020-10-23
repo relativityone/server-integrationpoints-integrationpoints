@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS;
+using Relativity.API.Foundation;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -22,15 +24,17 @@ namespace Relativity.Sync.Executors
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IImageFileRepository _imageFileRepository;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
+		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
 		public ImageRetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
-			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
+			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, IFieldManager fieldManager, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_imageFileRepository = imageFileRepository;
 			_jobStatisticsContainer = jobStatisticsContainer;
+			_fieldManager = fieldManager;
 			_logger = logger;
 		}
 
@@ -43,6 +47,10 @@ namespace Relativity.Sync.Executors
 			_logger.LogInformation("Initializing image export in workspace {workspaceId} with saved search {savedSearchId}.",
 				configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
 
+
+			FieldInfoDto documentFields = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+			IEnumerable<FieldRef> documentFieldRefs = new[] { documentFields }.Select(f => new FieldRef { Name = f.SourceFieldName });
+
 			QueryRequest queryRequest = new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
@@ -51,6 +59,7 @@ namespace Relativity.Sync.Executors
 				},
 				Condition = $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{configuration.JobHistoryToRetryId}])) " +
 							$"AND ('Artifact ID' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE})",
+				Fields = documentFieldRefs
 			};
 
 			ExportInitializationResults results;

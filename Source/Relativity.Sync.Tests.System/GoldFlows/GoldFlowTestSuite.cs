@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			Task<SyncJobState> RunAsync();
 
-			Task AssertAsync(SyncJobState expected, int expectedItemsTransferred, int expectedTotalItems);
+			Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems);
 		}
 
 		private class GoldFlowTestRun : IGoldFlowTestRun
@@ -100,9 +100,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				return syncRunner.RunAsync(_parameters, _goldFlowTestSuite.User.ArtifactID);
 			}
 
-			public async Task AssertAsync(SyncJobState expectedResult, int expectedItemsTransferred, int expectedTotalItems)
+			public async Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems)
 			{
-				expectedResult.Status.Should().Be(SyncJobStatus.Completed, expectedResult.Message);
+				result.Status.Should().Be(SyncJobStatus.Completed, result.Message);
 
 				RelativityObject jobHistory = await Rdos
 					.GetJobHistoryAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, _configuration.JobHistoryArtifactId)

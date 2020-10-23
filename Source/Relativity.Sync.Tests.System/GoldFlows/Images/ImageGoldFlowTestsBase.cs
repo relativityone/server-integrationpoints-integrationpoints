@@ -10,6 +10,7 @@ using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
 using NUnit.Framework;
 using Relativity.DataExchange;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
@@ -32,7 +33,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 		private GoldFlowTestSuite _goldFlowTestSuite;
 
-		internal ImageGoldFlowTestsBase(Dataset dataset,int expectedItemsForRetry, int expectedDocumentsForRetry)
+		internal ImageGoldFlowTestsBase(Dataset dataset, int expectedItemsForRetry, int expectedDocumentsForRetry)
 		{
 			ExpectedItemsForRetry = expectedItemsForRetry;
 			ExpectedDocumentsForRetry = expectedDocumentsForRetry;
@@ -58,22 +59,24 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
 
 			// Assert
-			IList<int> documentsWithImagesInSourceWorkspace = await Rdos.QueryDocumentIdentifiersAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
-			IList<int> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentIdentifiersAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
+			IList<RelativityObject> documentsWithImagesInSourceWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
+			IList<RelativityObject> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
 
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
 
 			documentsWithImagesInDestinationWorkspace.Count.Should().Be(_dataset.TotalDocumentCount);
 
-			await AssertDocuments(
-				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-				).ConfigureAwait(false);
+			AssertDocuments(
+				documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
+				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
+				);
 
 			AssertImages(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
 			);
+
+			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, documentsWithImagesInDestinationWorkspace.Count).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("d77b1e0c-e39d-4084-9e84-6efb40ae0fe0")]
@@ -96,16 +99,16 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 			// Act
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
-			
+
 
 			// Assert
-			IList<int> documentsWithImagesInSourceWorkspace = await Rdos.QueryDocumentIdentifiersAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
-			IList<int> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentIdentifiersAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
+			IList<RelativityObject> documentsWithImagesInSourceWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, $"('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}) AND (NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{jobHistoryToRetryId}]))").ConfigureAwait(false);
+			IList<RelativityObject> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
 
-			await AssertDocuments(
-				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			).ConfigureAwait(false);
+			AssertDocuments(
+				documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
+				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
+			);
 
 			await goldFlowTestRun.AssertAsync(result, ExpectedItemsForRetry, ExpectedDocumentsForRetry).ConfigureAwait(false);
 		}
@@ -122,23 +125,18 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			configuration.SetFieldMappings(identifierMapping);
 		}
 
-		private async Task AssertDocuments(int sourceWorkspaceArtifactId, int[] sourceDocumentsIds, int destinationWorkspaceArtifactId, int[] destinationDocumentsIds)
+		public void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds)
 		{
-			var sourceDocumentsNames = await Rdos.QueryDocumentNamesAsync(ServiceFactory, sourceWorkspaceArtifactId, "")
-				.ConfigureAwait(false);
-
-			var destinationDocumentsNames = new HashSet<string>(await Rdos.QueryDocumentNamesAsync(ServiceFactory, sourceWorkspaceArtifactId, "")
-				.ConfigureAwait(false));
-
-			foreach (var name in sourceDocumentsNames)
+			string GetExpectedIdentifier(string controlNumber, int index)
 			{
-				destinationDocumentsNames.Contains(name).Should().BeTrue($"Document {name} was not created in destination workspace");
+				if (index == 0)
+				{
+					return controlNumber;
+				}
+
+				return $"{controlNumber}_{index}";
 			}
-		}
 
-
-		public void AssertImages(int sourceWorkspaceId, int[] sourceWorkspaceDocumentIds, int destinationWorkspaceId, int[] destinationWorkspaceDocumentIds)
-		{
 			CookieContainer cookieContainer = new CookieContainer();
 			IRunningContext runningContext = new RunningContext
 			{
@@ -147,29 +145,41 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext);
 			kCura.WinEDDS.Config.ProgrammaticServiceURL = AppSettings.RelativityWebApiUrl.ToString();
 
-			Dictionary<string, TestImageFile> sourceWorkspaceImages;
+			ILookup<int, TestImageFile> sourceWorkspaceImages;
 			Dictionary<string, TestImageFile> destinationWorkspaceImages;
+
+			Dictionary<int, string> sourceWorkspaceDocumentNames = sourceWorkspaceDocuments.ToDictionary(x => x.ArtifactID, x => x.Name);
+
 			using (ISearchManager searchManager = new SearchManager(credentials, cookieContainer))
 			{
-				var dataTable = searchManager.RetrieveImagesForDocuments(sourceWorkspaceId, sourceWorkspaceDocumentIds).Tables[0];
+				var dataTable = searchManager.RetrieveImagesForDocuments(sourceWorkspaceId, sourceWorkspaceDocuments.Select(x => x.ArtifactID).ToArray()).Tables[0];
 				sourceWorkspaceImages = dataTable.AsEnumerable()
 					.Select(TestImageFile.GetImageFile)
-					.ToDictionary(x => x.Identifier, x => x);
+					.ToLookup(x => x.DocumentArtifactId, x => x);
 
 
-				destinationWorkspaceImages = searchManager.RetrieveImagesForDocuments(destinationWorkspaceId, destinationWorkspaceDocumentIds).Tables[0].AsEnumerable()
+				destinationWorkspaceImages = searchManager.RetrieveImagesForDocuments(destinationWorkspaceId, destinationWorkspaceDocumentIds.Select(x => x.ArtifactID).ToArray()).Tables[0].AsEnumerable()
 					.Select(TestImageFile.GetImageFile)
 					.ToDictionary(x => x.Identifier, x => x);
 			}
 
-			foreach (var sourceImageKeyValue in sourceWorkspaceImages)
+
+			foreach (var sourceDocumentImages in sourceWorkspaceImages)
 			{
-				destinationWorkspaceImages.ContainsKey(sourceImageKeyValue.Key).Should()
-					.BeTrue($"Image {sourceImageKeyValue.Key} was not pushed to destination workspace");
+				int i = 0;
+				foreach (var imageFile in sourceDocumentImages)
+				{
+					var expectedIdentifier =
+						GetExpectedIdentifier(sourceWorkspaceDocumentNames[imageFile.DocumentArtifactId], i);
 
-				var destinationImage = destinationWorkspaceImages[sourceImageKeyValue.Key];
+					destinationWorkspaceImages.ContainsKey(expectedIdentifier).Should()
+						.BeTrue($"Image [{sourceDocumentImages.Key} => {expectedIdentifier}] was not pushed to destination workspace");
 
-				TestImageFile.AssertAreEquivalent(sourceImageKeyValue.Value, destinationImage);
+					var destinationImage = destinationWorkspaceImages[expectedIdentifier];
+
+					TestImageFile.AssertAreEquivalent(imageFile, destinationImage, expectedIdentifier);
+					i++;
+				}
 			}
 		}
 	}

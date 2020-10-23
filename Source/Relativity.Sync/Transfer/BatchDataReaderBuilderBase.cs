@@ -32,7 +32,7 @@ namespace Relativity.Sync.Transfer
 			}
 
 			DataTable templateDataTable = GetTemplateDataTable(_allFields);
-			return CreateDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, token);
+			return await CreateDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, token).ConfigureAwait(false);
 		}
 
 		private DataTable GetTemplateDataTable(IEnumerable<FieldInfoDto> allFields)
@@ -66,6 +66,6 @@ namespace Relativity.Sync.Transfer
 
 		protected abstract Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token);
 
-		protected abstract IDataReader CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
+		protected abstract Task<IDataReader> CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
 	}
 }

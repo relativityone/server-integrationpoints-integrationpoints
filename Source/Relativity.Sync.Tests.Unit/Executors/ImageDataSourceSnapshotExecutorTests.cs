@@ -43,6 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldManager.Setup(fm => fm.GetDocumentTypeFieldsAsync(CancellationToken.None)).ReturnsAsync(Mock.Of<List<FieldInfoDto>>());
+			_fieldManager.Setup(fm => fm.GetObjectIdentifierFieldAsync(CancellationToken.None)).ReturnsAsync(new FieldInfoDto(SpecialFieldType.None, "a", "a", true, true));
 
 
 			_configurationMock = new Mock<IImageDataSourceSnapshotConfiguration>();
@@ -57,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
 			_instance = new ImageDataSourceSnapshotExecutor(serviceFactory.Object, jobProgressUpdaterFactory.Object,
-				_imageFileRepositoryMock.Object, _jobStatisticsContainer, new EmptyLogger());
+				_imageFileRepositoryMock.Object, _jobStatisticsContainer, _fieldManager.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -111,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private bool AssertQueryRequest(QueryRequest queryRequest)
 		{
-			const int documentArtifactTypeId = (int) ArtifactType.Document;
+			const int documentArtifactTypeId = (int)ArtifactType.Document;
 			queryRequest.ObjectType.ArtifactTypeID.Should().Be(documentArtifactTypeId);
 
 			queryRequest.Condition.Should().Be($"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)");
