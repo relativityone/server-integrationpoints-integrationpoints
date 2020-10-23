@@ -36,13 +36,15 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 		private JobLifetimeMetricBatchStatus _instance;
 
+		private const string _EXPECTED_PROVIDER_NAME = "SomeProvider";
+
 		[SetUp]
 		public override void SetUp()
 		{
 			_messageService = Substitute.For<IMessageService>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_providerTypeService = Substitute.For<IProviderTypeService>();
-			_providerTypeService.GetProviderType(Arg.Any<int>(), Arg.Any<int>()).Returns(ProviderType.FTP);
+			_providerTypeService.GetProviderName(Arg.Any<int>(), Arg.Any<int>()).Returns(_EXPECTED_PROVIDER_NAME);
 			_updater = Substitute.For<IJobStatusUpdater>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(new JobHistory() { ItemsTransferred = 0, TotalItems = 0, StartTimeUTC = DateTime.UtcNow, EndTimeUTC = DateTime.UtcNow.AddSeconds(5) });
@@ -201,6 +203,34 @@ namespace kCura.IntegrationPoints.Core.Tests
 			// ASSERT
 			double expectedThroughput = (double) itemsTransfered / seconds;
 			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.RecordsPerSecond == expectedThroughput));
+		}
+
+		[Test]
+		public void OnJobComplete_ShouldSendCorrectProviderName()
+		{
+			// Arrange
+			Job job = JobExtensions.CreateJob();
+			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
+
+			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
+			JobHistory jobHistory = new JobHistory();
+			jobHistory.StartTimeUTC = new DateTime(2018, 1, 1, 0, 0, 0);
+			jobHistory.EndTimeUTC = null;
+			jobHistory.TotalItems = 0;
+			jobHistory.ItemsTransferred = 10;
+			jobHistory.ItemsWithErrors = 0;
+			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
+
+			JobLifetimeMetricBatchStatus metric = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, jobHistoryService, _serializer, _dateTimeHelper);
+
+			// Act
+			metric.OnJobComplete(job);
+
+			// Assert
+			_messageService.Received().Send(Arg.Is<JobCompletedMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
+			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
+			_messageService.Received().Send(Arg.Is<JobTotalRecordsCountMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
+			_messageService.Received().Send(Arg.Is<JobCompletedRecordsCountMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
 		}
 
 		private static IEnumerable<Choice> JobCompletedStatusChoices()

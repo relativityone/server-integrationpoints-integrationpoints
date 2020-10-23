@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 		private IMetricsManagerFactory _metricsManagerFactory;
 		private IMetricsManager _sum, _apm;
 		private IDateTimeHelper _dateTimeHelper;
+		private IRipMetrics _ripMetrics;
 
 		private string _provider = "TestProvider";
 		private string _correlationId;
@@ -39,8 +41,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 			_metricsManagerFactory.CreateAPMManager().Returns(_apm);
 			_correlationId = Guid.NewGuid().ToString();
 			_dateTimeHelper = Substitute.For<IDateTimeHelper>();
+			_ripMetrics = Substitute.For<IRipMetrics>();
 
-			_sink = new AggregatedJobSink(_logger, _metricsManagerFactory, _dateTimeHelper);
+			_sink = new AggregatedJobSink(_logger, _metricsManagerFactory, _dateTimeHelper, _ripMetrics);
 		}
 
 		private IMetricMetadata CreateValidator()
@@ -60,53 +63,109 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 		[Test]
 		public void ShouldSendJobStartedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobStartedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobStartedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobStartedMessage message = CreateMessage<JobStartedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobStartedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
 		}
 
 		[Test]
 		public void ShouldSendJobCompletedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobCompletedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobCompletedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobCompletedMessage message = CreateMessage<JobCompletedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobCompletedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
 		}
 
 		[Test]
 		public void ShouldSendJobFailedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobFailedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobFailedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobFailedMessage message = CreateMessage<JobFailedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobFailedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
 		}
 
 		[Test]
 		public void ShouldSendJobValidationFailedTest()
 		{
-			_sink.OnMessage(CreateMessage<JobValidationFailedMessage>());
-			_sum.Received(1).LogCount($"IntegrationPoints.Performance.JobValidationFailedCount.{_provider}", 1, CreateValidator());
+			// Arrange
+			JobValidationFailedMessage message = CreateMessage<JobValidationFailedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobValidationFailedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
 		}
 
 		[Test]
 		public void ShouldSendTotalRecordsTest()
 		{
+			// Arrange
 			const long totalRecords = 5;
-			_sink.OnMessage(CreateMessage<JobTotalRecordsCountMessage>(msg => msg.TotalRecordsCount = totalRecords));
-			_sum.Received(1).LogLong($"IntegrationPoints.Usage.TotalRecords.{_provider}", totalRecords, CreateValidator());
+			JobTotalRecordsCountMessage message = CreateMessage<JobTotalRecordsCountMessage>(msg => msg.TotalRecordsCount = totalRecords);
+			string expectedMetricBucket = $"IntegrationPoints.Usage.TotalRecords.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogLong(expectedMetricBucket, totalRecords, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, totalRecords, message.CustomData);
 		}
 
 		[Test]
 		public void ShouldSendCompletedRecordsTest()
 		{
+			// Arrange
 			const long completedRecords = 5;
-			_sink.OnMessage(CreateMessage<JobCompletedRecordsCountMessage>(msg => msg.CompletedRecordsCount = completedRecords));
-			_sum.Received(1).LogLong($"IntegrationPoints.Usage.CompletedRecords.{_provider}", completedRecords, CreateValidator());
+			JobCompletedRecordsCountMessage message = CreateMessage<JobCompletedRecordsCountMessage>(msg => msg.CompletedRecordsCount = completedRecords);
+			string expectedMetricBucket = $"IntegrationPoints.Usage.CompletedRecords.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogLong(expectedMetricBucket, completedRecords, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, completedRecords, message.CustomData);
 		}
 
 		[Test]
 		public void ShouldSendThroughputTest()
 		{
+			// Arrange
 			const double throughput = 10.8;
-			_sink.OnMessage(CreateMessage<JobThroughputMessage>(msg => msg.RecordsPerSecond = throughput));
-			_sum.Received(1).LogDouble($"IntegrationPoints.Performance.Throughput.{_provider}", throughput, CreateValidator());
+			JobThroughputMessage message = CreateMessage<JobThroughputMessage>(msg => msg.RecordsPerSecond = throughput);
+			string expectedMetricBucket = $"IntegrationPoints.Performance.Throughput.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogDouble(expectedMetricBucket, throughput, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeDouble(expectedMetricBucket, throughput, message.CustomData);
 		}
 
 		[Test]

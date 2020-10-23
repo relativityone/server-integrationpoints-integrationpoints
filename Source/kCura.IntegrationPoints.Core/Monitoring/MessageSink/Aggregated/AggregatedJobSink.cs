@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Core.Extensions;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
@@ -14,27 +16,34 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		IMessageSink<JobThroughputBytesMessage>,
 		IMessageSink<JobStatisticsMessage>, IMessageSink<JobProgressMessage>
 	{
+		private const string _INTEGRATION_POINTS_PERFORMANCE_PREFIX = "IntegrationPoints.Performance";
+		private const string _INTEGRATION_POINTS_USAGE_PREFIX = "IntegrationPoints.Usage";
 		private const double _TOLERANCE = 0.0000001;
 
 		private readonly IMetricsManagerFactory _metricsManagerFactory;
 		private readonly IAPILog _logger;
 		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly IRipMetrics _ripMetrics;
 		
 		private readonly ConcurrentDictionary<string, JobStatistics>
 			_jobs = new ConcurrentDictionary<string, JobStatistics>();
 
-		public AggregatedJobSink(IAPILog logger, IMetricsManagerFactory metricsManagerFactory, IDateTimeHelper dateTimeHelper)
+		public AggregatedJobSink(IAPILog logger, IMetricsManagerFactory metricsManagerFactory, IDateTimeHelper dateTimeHelper, IRipMetrics ripMetrics)
 		{
 			_metricsManagerFactory = metricsManagerFactory;
 			_logger = logger.ForContext<AggregatedJobSink>();
 			_dateTimeHelper = dateTimeHelper;
+			_ripMetrics = ripMetrics;
 		}
 
 		public void OnMessage(JobStartedMessage message)
 		{
 			if (!_jobs.ContainsKey(message.CorrelationID))
 			{
-				_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobStartedCount.{message.Provider}", 1, message);
+				string bucket = JobStartedCountMetric(message);
+				_metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
+				_ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+
 				DateTime now = _dateTimeHelper.Now();
 				UpdateJobStatistics(
 					message,
@@ -48,39 +57,54 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 
 		public void OnMessage(JobCompletedMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobCompletedCount.{message.Provider}", 1, message);
+			string bucket = JobCompletedCountMetric(message);
+			_metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
+			_ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+
 			OnJobEnd(message, JobStatus.Completed);
 		}
 
 		public void OnMessage(JobFailedMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobFailedCount.{message.Provider}", 1, message);
+			string bucket = JobFailedCountMetric(message);
+			_metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
+			_ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+
 			OnJobEnd(message, JobStatus.Failed);
 		}
 
 		public void OnMessage(JobValidationFailedMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogCount($"IntegrationPoints.Performance.JobValidationFailedCount.{message.Provider}", 1, message);
+			string bucket = JobValidationFailedCountMetric(message);
+			_metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
+			_ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+
 			OnJobEnd(message, JobStatus.ValidationFailed);
 		}
 
 		public void OnMessage(JobTotalRecordsCountMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogLong($"IntegrationPoints.Usage.TotalRecords.{message.Provider}", message.TotalRecordsCount, message);
+			string bucket = TotalRecordsCountMetric(message);
+			_metricsManagerFactory.CreateSUMManager().LogLong(bucket, message.TotalRecordsCount, message);
+			_ripMetrics.PointInTimeLong(bucket, message.TotalRecordsCount, message.CustomData);
 
 			UpdateJobStatistics(message, jobStatistics => jobStatistics.TotalRecordsCount = message.TotalRecordsCount);
 		}
 
 		public void OnMessage(JobCompletedRecordsCountMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogLong($"IntegrationPoints.Usage.CompletedRecords.{message.Provider}", message.CompletedRecordsCount, message);
+			string bucket = CompletedRecordsCountMetric(message);
+			_metricsManagerFactory.CreateSUMManager().LogLong(bucket, message.CompletedRecordsCount, message);
+			_ripMetrics.PointInTimeLong(bucket, message.CompletedRecordsCount, message.CustomData);
 
 			UpdateJobStatistics(message, jobStatistics => jobStatistics.CompletedRecordsCount = message.CompletedRecordsCount);
 		}
 
 		public void OnMessage(JobThroughputMessage message)
 		{
-			_metricsManagerFactory.CreateSUMManager().LogDouble($"IntegrationPoints.Performance.Throughput.{message.Provider}", message.RecordsPerSecond, message);
+			string bucket = ThroughputMetric(message);
+			_metricsManagerFactory.CreateSUMManager().LogDouble(bucket, message.RecordsPerSecond, message);
+			_ripMetrics.PointInTimeDouble(bucket, message.RecordsPerSecond, message.CustomData);
 
 			UpdateJobStatistics(message, jobStatistics => jobStatistics.RecordsPerSecond = message.RecordsPerSecond);
 		}
@@ -171,18 +195,26 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 					s.EndTime = now;
 				});
 
-			HandleJobEnd(message.CorrelationID);
+			HandleJobEnd(message);
 		}
 
-		private void HandleJobEnd(string correlationId)
+		private void HandleJobEnd(JobMessageBase message)
 		{
 			JobStatistics jobStatistics;
-			if (_jobs.TryRemove(correlationId, out jobStatistics) && CanSendJobStatistics(jobStatistics))
+			if (_jobs.TryRemove(message.CorrelationID, out jobStatistics) && CanSendJobStatistics(jobStatistics))
 			{
+				FillInMissingFields(jobStatistics, message);	
+
 				long jobSize = jobStatistics.FileBytes + jobStatistics.MetaBytes;
 				IMetricsManager sum = _metricsManagerFactory.CreateSUMManager();
-				sum.LogLong($"IntegrationPoints.Performance.JobSize.{jobStatistics.Provider}", jobSize, jobStatistics);
-				sum.LogDouble($"IntegrationPoints.Performance.ThroughputBytes.{jobStatistics.Provider}", jobStatistics.BytesPerSecond, jobStatistics);
+
+				string jobSizeBucket = JobSizeMetric(jobStatistics);
+				sum.LogLong(jobSizeBucket, jobSize, jobStatistics);
+				_ripMetrics.PointInTimeLong(jobSizeBucket, jobSize, jobStatistics.CustomData);
+
+				string throughputBytesBucket = ThroughputBytesMetric(jobStatistics);
+				sum.LogDouble(throughputBytesBucket, jobStatistics.BytesPerSecond, jobStatistics);
+				_ripMetrics.PointInTimeDouble(throughputBytesBucket, jobStatistics.BytesPerSecond, jobStatistics.CustomData);
 
 				// Set the floor for job duration at TimeSpan.Zero. This might happen if we don't receive a JobStartedMessage before a job end message.
 				TimeSpan calculatedJobDuration = jobStatistics.EndTime - jobStatistics.StartTime;
@@ -238,6 +270,14 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 			return statistics;
 		}
 
+		private void FillInMissingFields(JobStatistics jobStatistics, JobMessageBase message)
+		{
+			jobStatistics.Provider = string.IsNullOrEmpty(jobStatistics.Provider) ? message.Provider : jobStatistics.Provider;
+			jobStatistics.CorrelationID = string.IsNullOrEmpty(jobStatistics.CorrelationID) ? message.CorrelationID : jobStatistics.CorrelationID;
+			jobStatistics.UnitOfMeasure = string.IsNullOrEmpty(jobStatistics.UnitOfMeasure) ? message.UnitOfMeasure : jobStatistics.UnitOfMeasure;
+			jobStatistics.WorkspaceID = jobStatistics.WorkspaceID == 0 ? message.WorkspaceID : jobStatistics.WorkspaceID;
+		}
+
 		private bool IsJobStarted(string correlationId)
 		{
 			JobStatistics jobStatistics;
@@ -267,9 +307,40 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 			return updatedRate;
 		}
 
+		#region Metrics Definitions
+
+		private string JobStartedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobStartedCount.{message.Provider}";
+		
+		private string JobCompletedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobCompletedCount.{message.Provider}";
+
+		private string JobFailedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobFailedCount.{message.Provider}";
+
+		private string JobValidationFailedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobValidationFailedCount.{message.Provider}";
+		
+		private string TotalRecordsCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_USAGE_PREFIX}.TotalRecords.{message.Provider}";
+
+		private string CompletedRecordsCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_USAGE_PREFIX}.CompletedRecords.{message.Provider}";
+
+		private string ThroughputMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.Throughput.{message.Provider}";
+		
+		private string JobSizeMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobSize.{message.Provider}";
+
+		private string ThroughputBytesMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.ThroughputBytes.{message.Provider}";
+
+		#endregion
+
 		#region Logging
 
-		void LogMissingJobStartedMetric(string correlationId)
+		private void LogMissingJobStartedMetric(string correlationId)
 		{
 			_logger.LogWarning($"Job finished, but didn't received job started metric. CorrelationID: {correlationId}");
 		}

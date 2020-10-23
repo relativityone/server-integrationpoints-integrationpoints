@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Agent
 			IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
 			var message = new JobStartedMessage
 			{
-				Provider = integrationPoint.GetProviderType(providerTypeService).ToString(),
+				Provider = integrationPoint.GetProviderName(providerTypeService),
 				CorrelationID = batchInstanceId.ToString()
 			};
 			messageService.Send(message).GetAwaiter().GetResult();

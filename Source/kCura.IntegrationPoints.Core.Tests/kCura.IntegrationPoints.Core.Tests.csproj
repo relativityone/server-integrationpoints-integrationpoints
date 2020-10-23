@@ -110,6 +110,7 @@
     <Compile Include="Services\JobHistory\DestinationParserTests.cs" />
     <Compile Include="Services\JobHistory\UnfinishedJobServiceTests.cs" />
     <Compile Include="Services\JobTrackerTests.cs" />
+    <Compile Include="Services\ProviderTypeServiceTests.cs" />
     <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactoryTests.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
     <Compile Include="Helpers\ArtifactTreeCreatorTests.cs" />
