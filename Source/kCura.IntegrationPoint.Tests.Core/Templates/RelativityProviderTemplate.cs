@@ -1,4 +1,3 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -149,17 +148,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				RelativityPassword = SharedVariables.RelativityPassword,
 				DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
 				DestinationFolderArtifactId = GetRootFolder(Helper, targetWorkspaceId),
-				FederatedInstanceArtifactId = federatedInstanceArtifactId
+				FederatedInstanceArtifactId = federatedInstanceArtifactId,
+				ExtractedTextFileEncoding = "utf-8"
 			};
 		}
 
 		protected string CreateDefaultFieldMap()
 		{
-			global::Relativity.IntegrationPoints.Services.FieldMap[] map = GetDefaultFieldMap();
+			FieldMap[] map = GetDefaultFieldMap();
 			return Serializer.Serialize(map);
 		}
 
-		protected global::Relativity.IntegrationPoints.Services.FieldMap[] GetDefaultFieldMap()
+		protected FieldMap[] GetDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
@@ -168,9 +168,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
 			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
 
-			global::Relativity.IntegrationPoints.Services.FieldMap[] map =
+			FieldMap[] map =
 			{
-				new global::Relativity.IntegrationPoints.Services.FieldMap
+				new FieldMap
 				{
 					SourceField = new FieldEntry
 					{
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			using (var folderManager = helper.CreateProxy<IFolderManager>())
 			{
-				return folderManager.GetWorkspaceRootAsync(workspaceArtifactId).Result.ArtifactID;
+				return folderManager.GetWorkspaceRootAsync(workspaceArtifactId).GetAwaiter().GetResult().ArtifactID;
 			}
 		}
 

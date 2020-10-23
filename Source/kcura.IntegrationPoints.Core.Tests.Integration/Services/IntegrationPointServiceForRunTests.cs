@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Productions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -18,18 +17,13 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
-using Relativity.IntegrationPoints.Services;
-using Relativity.Services.Interfaces.Field;
-using Relativity.Services.Interfaces.Field.Models;
-using Relativity.Services.Interfaces.Shared.Models;
+using Relativity;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
-using FieldEntry = Relativity.IntegrationPoints.Contracts.Models.FieldEntry;
 using IntegrationPointModel = kCura.IntegrationPoints.Core.Models.IntegrationPointModel;
-using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -38,12 +32,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[Parallelizable(ParallelScope.None)]
 	public class IntegrationPointServiceForRunTests : RelativityProviderTemplate
 	{
-		private const int _ADMIN_USER_ID = 9;
 		private IIntegrationPointService _integrationPointService;
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
-		private IJobService _jobService;
 		private ISavedSearchQueryRepository _savedSearchRepository;
+
+		private const int _ADMIN_USER_ID = 9;
 
 		public IntegrationPointServiceForRunTests() : base("IntegrationPointService Source", "IntegrationPointService Destination")
 		{
@@ -56,17 +50,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
-			_jobService = Container.Resolve<IJobService>();
+			Container.Resolve<IJobService>();
 			_savedSearchRepository = _repositoryFactory.GetSavedSearchQueryRepository(SourceWorkspaceArtifactID);
 
 			DocumentService.DeleteAllDocuments(SourceWorkspaceArtifactID);
 			DocumentService.DeleteAllDocuments(TargetWorkspaceArtifactID);
-		}
-
-		[SetUp]
-		public void Setup()
-		{
-			Import.ImportNewDocuments(SourceWorkspaceArtifactID, Import.GetImportTable("IPTestDocument", 3));
 		}
 
 		[TearDown]
@@ -82,6 +70,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
+			Import.ImportNewDocuments(SourceWorkspaceArtifactID, Import.GetImportTable("IPTestDocument", 3));
+
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.AppendOnly),
@@ -118,23 +108,75 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(JobTypeChoices.JobHistoryRun.Name, jobHistory.JobType.Name);
 		}
 
-	
+		[IdentifiedTest("df96a034-dc7d-4b20-84f1-1a66baeab551")]
+		[SmokeTest]
+		[Parallelizable(ParallelScope.None)]
+		public Task CreateAndRunIntegrationPoint_PushProductions_GoldFlow()
+		{
+			//Arrange
 
-		
+			ProductionHelper productionHelper = new ProductionHelper(WorkspaceArtifactId);
+			int productionId = productionHelper.CreateProductionSetAndImportData($"Production {DateTime.Now:yy-MM-dd HH-mm-ss}", DocumentTestDataBuilder.TestDataType.SmallWithFoldersStructure);
+
+			ImportSettings destinationSettings = CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactID);
+			destinationSettings.ImageImport = true;
+			destinationSettings.ImagePrecedence = Array.Empty<ProductionDTO>();
+
+			SourceConfiguration sourceConfiguration = new SourceConfiguration()
+			{
+				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
+				TargetWorkspaceArtifactId = TargetWorkspaceArtifactID,
+				TypeOfExport = SourceConfiguration.ExportType.ProductionSet,
+				SourceProductionId = productionId
+			};
+
+			IntegrationPointModel integrationModel = new IntegrationPointModel
+			{
+				Destination = Serializer.Serialize(destinationSettings),
+				DestinationProvider = RelativityDestinationProviderArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = Serializer.Serialize(sourceConfiguration),
+				LogErrors = true,
+				Name = $"CreateAndRunIntegrationPoint_PushProduction_GoldFlow {DateTime.Now:yy-MM-dd HH-mm-ss}",
+				SelectedOverwrite = "Overlay Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				},
+				Map = CreateDefaultFieldMap(),
+				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
+			};
+
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+
+			//Act
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
+			IntegrationPointModel integrationPointPostJob = _integrationPointService.ReadIntegrationPointModel(integrationPoint.ArtifactID);
+			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactID);
+			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointPostJob.ArtifactID) };
+			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
+
+			//Assert
+			Assert.AreEqual(false, integrationPointPostJob.HasErrors);
+			Assert.IsNotNull(integrationPointPostJob.LastRun);
+			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRun.Name, jobHistory.JobType.Name);
+			return AssertAllDocumentsHaveImagesAsync(TargetWorkspaceArtifactID, 3);
+		}
 
 		[IdentifiedTest("0b87716a-5712-41a1-ab79-c98b4a07461a")]
 		[Parallelizable(ParallelScope.None)]
 		public void RunJobWithFailingValidation_ExpectError_SaveJobHistory()
 		{
-			// Arrange 
-
-			int TemporarySavedSearchId = CreateTemporarySavedSearch();
+			// Arrange
+			int temporarySavedSearchId = CreateTemporarySavedSearch();
 			IntegrationPointModel integrationModel = new IntegrationPointModel
 			{
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactID, TemporarySavedSearchId, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
+				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactID, temporarySavedSearchId, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,
 				Name = $"RunJobWithFailingValidation_ExpectError_SaveJobHistory {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",
@@ -147,21 +189,53 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			};
 
 			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
-			DeleteSavedSearch(SourceWorkspaceArtifactID, TemporarySavedSearchId);
+			DeleteSavedSearch(SourceWorkspaceArtifactID, temporarySavedSearchId);
 
 			// Act
 			Assert.Throws<IntegrationPointValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
 
 			// Assert
 			Data.IntegrationPoint ip = _integrationPointService.ReadIntegrationPoint(integrationPointModel.ArtifactID);
-			var jobHistory = _jobHistoryService.GetJobHistory(ip.JobHistory);
+			IList<Data.JobHistory> jobHistory = _jobHistoryService.GetJobHistory(ip.JobHistory);
 			Assert.NotNull(ip.JobHistory);
 			Assert.AreEqual(JobStatusChoices.JobHistoryValidationFailed.Name, jobHistory[0].JobStatus.Name);
 		}
 
-		#region "Helpers"
+		private async Task AssertAllDocumentsHaveImagesAsync(int workspaceID, int expectedNumberOfDocuments)
+		{
+			using (var objectManager = Helper.CreateProxy<IObjectManager>())
+			{
+				const string relativityImageCountFieldName = "Relativity Image Count";
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceID, new QueryRequest()
+				{
+					ObjectType = new ObjectTypeRef()
+					{
+						ArtifactTypeID = (int)ArtifactType.Document
+					},
+					Fields = new[]
+					{
+						new FieldRef()
+						{
+							Name = relativityImageCountFieldName
+						}
+					}
+				}, start: 0, length: int.MaxValue).ConfigureAwait(false);
 
-		
+				queryResult.Objects.Count.Should().Be(expectedNumberOfDocuments);
+
+				foreach (RelativityObject document in queryResult.Objects)
+				{
+					document.FieldValuePairExists(relativityImageCountFieldName).Should().BeTrue();
+					FieldValuePair relativityImageCountField =
+						document.FieldValues.Single(x => x.Field.Name == relativityImageCountFieldName);
+					relativityImageCountField
+						.Value.Should().BeAssignableTo<int>()
+						.Which.Should().BeGreaterThan(0);
+				}
+			}
+		}
+
+		#region "Helpers"
 
 		private void DeleteSavedSearch(int workspaceArtifactId, int savedSearchId)
 		{
@@ -174,15 +248,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private int CreateTemporarySavedSearch()
 		{
 			return SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, "NewSavedSearch");
-		}
-
-		private void CleanScheduleAgentQueueFromAllRipJobs(int integrationPointArtifactId)
-		{
-			IList<Job> jobs = _jobService.GetJobs(integrationPointArtifactId);
-			foreach (Job job in jobs)
-			{
-				_jobService.DeleteJob(job.JobId);
-			}
 		}
 
 		#endregion
