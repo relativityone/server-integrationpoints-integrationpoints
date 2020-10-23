@@ -1,4 +1,4 @@
-pipelineJob("IntegrationPointsTest") {
+pipelineJob("Test") {
     description('Help: JobScript - Trident/Scripts/Custom-Test.ps1 -TestFilter "cat == Test"; SutTemplate - https://app.hopper.relativity.com/#/templates')
     
     parameters {
