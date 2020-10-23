@@ -30,7 +30,7 @@ pipelineJob("IntegrationPointsTest") {
                 }
             }
 
-            scriptPath('Trident/Jobs/CustomTest_NEW.groovy')
+            scriptPath('Trident/Jobs/CustomTest.groovy')
         }
     }
 }
