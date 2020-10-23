@@ -45,7 +45,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ /Tests\.Integration[\$\.]/ || namespace =~ E2ETests) && cat != NightlyOnly && cat != NotWorkingOnTrident" -OutputFile $LogPath
+    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ /Tests\.Integration[\$\.]/ || namespace =~ E2ETests) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -110,7 +110,7 @@ Task Help -Alias ? -Description "Display task information" {
 }
 
 Task OneTimeTestsSetup -Description "Should be run always before running tests that require setup in deployed environment." {
-    $LogPath = Join-Path $LogsDir "OneTimeTestsSetupResults.xml"
+    $LogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
 }
 
@@ -124,8 +124,7 @@ Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on s
 
 function Invoke-MyTest
 {
-    $LogTime = Get-Date -Format "MM-dd-yyyy_hh-mm-ss"
-    $LogPath = Join-Path $LogsDir "MyTest_$LogTime.xml"
+    $LogPath = Join-Path $LogsDir "MyTestResults.xml"
     Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath
 }
 
