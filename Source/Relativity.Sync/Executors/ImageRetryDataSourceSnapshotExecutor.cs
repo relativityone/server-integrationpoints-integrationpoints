@@ -67,8 +67,8 @@ namespace Relativity.Sync.Executors
 						IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
 					};
 
-					Task<long> calculateImagesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
-					_jobStatisticsContainer.ImagesBytesRequested = calculateImagesTotalSizeTask;
+					Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesStatisticsAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
+					_jobStatisticsContainer.ImagesStatistics = calculateImagesTotalSizeTask;
 				}
 			}
 			catch (Exception e)
@@ -80,9 +80,6 @@ namespace Relativity.Sync.Executors
 			//ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
 			//however, order is the same as order of fields in QueryRequest when they are provided explicitly
 			await configuration.SetSnapshotDataAsync(results.RunID, (int)results.RecordCount).ConfigureAwait(false);
-
-			IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();
-			await jobProgressUpdater.SetTotalItemsCountAsync((int)results.RecordCount).ConfigureAwait(false);
 
 			return ExecutionResult.Success();
 		}

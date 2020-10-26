@@ -61,26 +61,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldSetImagesSize()
+		public async Task ItShouldSetImagesStatistics()
 		{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 			// Arrange
-			const long expectedNativesSize = 50;
+			ImagesStatistics expectedImagesStatistics = new ImagesStatistics(5, 50);
 
 			ExportInitializationResults exportInitializationResults = new ExportInitializationResults();
 
 			_imageFileRepositoryMock
-				.Setup(x => x.CalculateImagesTotalSizeAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<QueryImagesOptions>()))
-				.Returns(Task.FromResult(expectedNativesSize));
+				.Setup(x => x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<QueryImagesOptions>()))
+				.Returns(Task.FromResult(expectedImagesStatistics));
 
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			// Act
 			await _instance.ExecuteAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
-			long nativesSize = await _jobStatisticsContainer.ImagesBytesRequested.ConfigureAwait(false);
+			ImagesStatistics imagesStatistics = await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false);
 
 			// Assert
-			nativesSize.Should().Be(expectedNativesSize);
+			imagesStatistics.Should().Be(expectedImagesStatistics);
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
 
@@ -106,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Status.Should().Be(ExecutionStatus.Completed);
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 1));
 			_configurationMock.Verify(x => x.SetSnapshotDataAsync(runId, totalRecords));
-			_jobProgressUpdater.Verify(x => x.SetTotalItemsCountAsync(totalRecords));
+			_jobProgressUpdater.Verify(x => x.SetTotalItemsCountAsync(It.IsAny<int>()), Times.Never);
 		}
 
 		private bool AssertQueryRequest(QueryRequest queryRequest)

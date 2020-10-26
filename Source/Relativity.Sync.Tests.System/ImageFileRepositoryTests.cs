@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -83,13 +84,12 @@ namespace Relativity.Sync.Tests.System
 			var request = GetQueryRequest();
 
 			// Act
-			long calculatedImagesSize = await _sut.CalculateImagesTotalSizeAsync(_workspace.ArtifactID, request,
+			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
 				new QueryImagesOptions { IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
-			long expectedImagesSize = dataset.GetTotalFilesSize();
-
-			calculatedImagesSize.Should().Be(expectedImagesSize);
+			calculatedImagesStatistics.TotalCount.Should().Be(dataset.TotalCount);
+			calculatedImagesStatistics.TotalSize.Should().Be(dataset.GetTotalFilesSize());
 		}
 
 		[IdentifiedTest("ab852f80-fda3-4347-a5c1-29d595c7030d")]
@@ -100,13 +100,12 @@ namespace Relativity.Sync.Tests.System
 			var request = GetQueryRequest();
 
 			// Act
-			long calculatedImagesSize = await _sut.CalculateImagesTotalSizeAsync(_workspace.ArtifactID, request,
+			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
 				new QueryImagesOptions { ProductionIds = new[] { productionId } }).ConfigureAwait(false);
 
 			// Assert
-			long expectedImagesSize = Dataset.ImagesBig.GetTotalFilesSize();
-
-			calculatedImagesSize.Should().Be(expectedImagesSize);
+			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.ImagesBig.TotalCount);
+			calculatedImagesStatistics.TotalSize.Should().Be(Dataset.ImagesBig.GetTotalFilesSize());
 		}
 
 		[IdentifiedTest("c6ef001e-68b7-438d-9697-8406bf56797c")]
@@ -122,13 +121,12 @@ namespace Relativity.Sync.Tests.System
 			var request = GetQueryRequest();
 
 			// Act
-			long calculatedImagesSize = await _sut.CalculateImagesTotalSizeAsync(_workspace.ArtifactID, request,
+			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
 				new QueryImagesOptions { ProductionIds = new[] { productionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
-			long expectedImagesSize = Dataset.Images.GetTotalFilesSize() + Dataset.ThreeImages.GetTotalFilesSize();
-
-			calculatedImagesSize.Should().Be(expectedImagesSize);
+			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.Images.TotalCount + Dataset.ThreeImages.TotalCount);
+			calculatedImagesStatistics.TotalSize.Should().Be(Dataset.Images.GetTotalFilesSize() + Dataset.ThreeImages.GetTotalFilesSize());
 		}
 
 		[IdentifiedTest("dc9a2ed8-092a-4e2f-8476-6e578a127b3c")]
@@ -145,17 +143,18 @@ namespace Relativity.Sync.Tests.System
 			var request = GetQueryRequest();
 
 			// Act
-			long calculatedImagesSize = await _sut.CalculateImagesTotalSizeAsync(_workspace.ArtifactID, request,
+			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
 				new QueryImagesOptions { ProductionIds = new[] { singleDocumentProductionId, twoDocumentProductionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
-			long expectedImagesSize = GetExpectedSizeWithPrecedence(new[]
+			ImagesStatistics expectedImagesStatistics = GetExpectedImagesStatisticsWithPrecedence(new[]
 				{Dataset.SingleDocumentProduction, Dataset.TwoDocumentProduction, Dataset.ThreeImages});
 
-			calculatedImagesSize.Should().Be(expectedImagesSize);
+			calculatedImagesStatistics.TotalCount.Should().Be(expectedImagesStatistics.TotalCount);
+			calculatedImagesStatistics.TotalSize.Should().Be(expectedImagesStatistics.TotalSize);
 		}
 
-		private long GetExpectedSizeWithPrecedence(Dataset[] datasets)
+		private ImagesStatistics GetExpectedImagesStatisticsWithPrecedence(Dataset[] datasets)
 		{
 			var sizes = new Dictionary<string, long>();
 
@@ -167,7 +166,7 @@ namespace Relativity.Sync.Tests.System
 				}
 			}
 
-			return sizes.Sum(x => x.Value);
+			return new ImagesStatistics(sizes.Count, sizes.Sum(x => x.Value));
 		}
 
 		private async Task<int> CreateAndImportProductionAsync(Dataset dataset, string productionName = "")

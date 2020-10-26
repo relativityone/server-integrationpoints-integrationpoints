@@ -1,6 +1,7 @@
-﻿using Relativity.Services.Objects.DataContracts;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Relativity.Sync.Telemetry;
+using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
@@ -8,6 +9,6 @@ namespace Relativity.Sync.Transfer
 	{
 		Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, int[] documentIds, QueryImagesOptions options);
 
-		Task<long> CalculateImagesTotalSizeAsync(int workspaceId, QueryRequest request, QueryImagesOptions options);
+		Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId, QueryRequest request, QueryImagesOptions options);
 	}
 }

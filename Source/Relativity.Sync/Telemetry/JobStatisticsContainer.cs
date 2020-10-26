@@ -28,7 +28,7 @@ namespace Relativity.Sync.Telemetry
 		public LongTextStreamStatistics SmallestLongTextStreamStatistics =>
 			LongTextStatistics.OrderBy(x => x.TotalBytesRead).FirstOrDefault();
 
-		public Task<long> ImagesBytesRequested { get; set; }
+		public Task<ImagesStatistics> ImagesStatistics { get; set; }
 
 		public long CalculateMedianLongTextStreamSize()
 		{
