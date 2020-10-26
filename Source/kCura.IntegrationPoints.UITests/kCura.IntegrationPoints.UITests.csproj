@@ -105,7 +105,6 @@
     <Compile Include="Configuration\Models\FieldObject.cs" />
     <Compile Include="Configuration\Helpers\ImportDocumentsHelper.cs" />
     <Compile Include="Configuration\Helpers\FieldMappingHelper.cs" />
-    <Compile Include="Configuration\Helpers\ProductionHelper.cs" />
     <Compile Include="Configuration\Helpers\RelativityFolderPathScriptHelper.cs" />
     <Compile Include="Configuration\Helpers\SyncFieldMapResults.cs" />
     <Compile Include="Configuration\Helpers\UserHelper.cs" />
