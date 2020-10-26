@@ -8,6 +8,7 @@ using Relativity.Services.Field;
 using Relativity.Services.Search;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -53,14 +54,20 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 		{
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
 
+			List<FieldMap> identifierMapping = await GetIdentifierMappingAsync(_workspace.ArtifactID, _workspace.ArtifactID)
+				.ConfigureAwait(false);
+
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				DataSourceArtifactId = _savedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
 				SourceWorkspaceArtifactId = _workspace.ArtifactID,
-				JobHistoryArtifactId = jobHistoryArtifactId
+				JobHistoryArtifactId = jobHistoryArtifactId,
+				IsImageJob = true,
 			};
 
+			configuration.SetFieldMappings(identifierMapping);
+			
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IImageDataSourceSnapshotConfiguration>(configuration);
 
 			// ACT

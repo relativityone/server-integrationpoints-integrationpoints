@@ -41,9 +41,7 @@ namespace Relativity.Sync.Executors
 			_logger.LogInformation("Initializing image export in workspace {workspaceId} with saved search {savedSearchId}.",
 				configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
 
-
-			FieldInfoDto documentFields = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
-			IEnumerable<FieldRef> documentFieldRefs = new []{documentFields}.Select(f => new FieldRef { Name = f.SourceFieldName });
+			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
 
 			QueryRequest queryRequest = new QueryRequest
 			{
@@ -52,7 +50,7 @@ namespace Relativity.Sync.Executors
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
 				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE})",
-				Fields = documentFieldRefs.ToList()
+				Fields = new[] { new FieldRef { Name = identifierField.SourceFieldName } }
 			};
 
 			ExportInitializationResults results;

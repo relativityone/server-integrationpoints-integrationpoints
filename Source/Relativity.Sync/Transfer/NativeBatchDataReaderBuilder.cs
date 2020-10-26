@@ -21,7 +21,7 @@ namespace Relativity.Sync.Transfer
 			return _fieldManager.GetNativeAllFieldsAsync(token);
 		}
 
-		protected override Task<IDataReader> CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch,
+		protected override Task<IDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch,
 			CancellationToken token)
 		{
 			return Task.FromResult((IDataReader)new NativeBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token));
