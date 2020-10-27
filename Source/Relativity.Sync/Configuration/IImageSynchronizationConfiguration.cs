@@ -3,6 +3,8 @@
 	interface IImageSynchronizationConfiguration : ISynchronizationConfiguration
 	{
 		string ImageFilePathSourceFieldName { get; set; }
+
+		string IdentifierColumn { get; set; }
 		
 		bool IncludeOriginalImages { get; }
 

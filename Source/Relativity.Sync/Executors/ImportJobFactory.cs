@@ -44,7 +44,7 @@ namespace Relativity.Sync.Executors
 			importJob.SourceData.Reader = sourceWorkspaceDataReader;
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
 			importJob.Settings.AutoNumberImages = true;
-			importJob.Settings.BatesNumberField = configuration.FileNameColumn;
+			importJob.Settings.BatesNumberField = configuration.IdentifierColumn;
 			importJob.Settings.Billable = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
 			importJob.Settings.CopyFilesToDocumentRepository = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
 			importJob.Settings.DisableImageTypeValidation = true;

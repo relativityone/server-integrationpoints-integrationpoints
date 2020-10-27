@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.Objects;
@@ -154,6 +155,20 @@ namespace Relativity.Sync.Tests.System.Core
 
 			return queryRequest;
 		}
+
+		#region Assertions
+
+		protected void AssertDocuments(string[] sourceDocumentsNames, string[] destinationDocumentsNames)
+		{
+			var destinationDocumentsNamesSet = new HashSet<string>(destinationDocumentsNames);
+
+			foreach (var name in sourceDocumentsNames)
+			{
+				destinationDocumentsNamesSet.Contains(name).Should().BeTrue($"Document {name} was not created in destination workspace");
+			}
+		}
+
+		#endregion
 
 		protected virtual void Dispose(bool disposing)
 		{

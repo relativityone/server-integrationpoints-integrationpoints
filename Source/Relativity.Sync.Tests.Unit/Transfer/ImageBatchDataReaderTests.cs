@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			Mock<IImageSpecialFieldRowValuesBuilder> imageRowValuesBuilderMock = new Mock<IImageSpecialFieldRowValuesBuilder>();
 			imageRowValuesBuilderMock
-				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>()))
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>(), It.IsAny<Func<RelativityObjectSlim, string>>()))
 				.Returns(Enumerable.Range(0, numberOfImagesInDocument).Select(i => $"image-{i}"));
 
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
@@ -70,6 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				fieldManager.Object,
 				exportDataSanitizer.Object,
 				itemLevelErrorHandler,
+				0,
 				CancellationToken.None);
 
 			// Act & Assert
@@ -95,11 +96,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Mock<IImageSpecialFieldRowValuesBuilder> imageRowValuesBuilderMock = new Mock<IImageSpecialFieldRowValuesBuilder>();
 			const int imageFileNameCount = 5;
 			imageRowValuesBuilderMock
-				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>()))
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>(), It.IsAny<Func<RelativityObjectSlim, string>>()))
 				.Returns(Enumerable.Range(0, imageFileNameCount).Select(i => $"image-{i}"));
 			const int imageFileLocationCount = 2;
 			imageRowValuesBuilderMock
-				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileLocation), It.IsAny<RelativityObjectSlim>()))
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileLocation), It.IsAny<RelativityObjectSlim>(), It.IsAny<Func<RelativityObjectSlim, string>>()))
 				.Returns(Enumerable.Range(0, imageFileLocationCount).Select(i => $"image-{i}"));
 
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
@@ -133,6 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				fieldManager.Object,
 				exportDataSanitizer.Object,
 				itemLevelErrorHandlerMock.Object,
+				0,
 				CancellationToken.None);
 
 			// Act

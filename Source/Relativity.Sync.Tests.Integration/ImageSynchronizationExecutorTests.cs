@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 		private Mock<IImageFileRepository> _imageFileRepository;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
-		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
+		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
 
 		private static readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
 
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Integration
 			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
 			var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			var sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-			
+
 			var fieldMappings = new Mock<IFieldMappings>();
 			fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMaps);
 
@@ -360,7 +360,7 @@ namespace Relativity.Sync.Tests.Integration
 					"HTML File"
 				}
 			}).ToArray();
-			
+
 			_objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
 					It.IsAny<Guid>(),
 					documentIds.Count,
@@ -444,9 +444,9 @@ namespace Relativity.Sync.Tests.Integration
 
 		private void SetupImageFileRepository(IList<int> documentIds)
 		{
-			var imageFiles = documentIds.Select(x => new ImageFile(x, $"\\\\location{x}", $"name{x}", 100)).ToList();
+			var imageFiles = documentIds.Select(x => new ImageFile(x, x.ToString(), $"\\\\location{x}", $"name{x}", 100)).ToList();
 
-			_imageFileRepository.Setup(x => x.QueryImagesForDocumentsAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, 
+			_imageFileRepository.Setup(x => x.QueryImagesForDocumentsAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
 				It.Is<int[]>(d => d.Length == documentIds.Count), It.IsAny<QueryImagesOptions>()))
 				.ReturnsAsync(imageFiles);
 		}

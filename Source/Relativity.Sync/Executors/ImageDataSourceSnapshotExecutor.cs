@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,16 +24,17 @@ namespace Relativity.Sync.Executors
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IImageFileRepository _imageFileRepository;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
+		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
-		public ImageDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory,
-			IJobProgressUpdaterFactory jobProgressUpdaterFactory,
-			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
+		public ImageDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
+			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, IFieldManager fieldManager, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_imageFileRepository = imageFileRepository;
 			_jobStatisticsContainer = jobStatisticsContainer;
+			_fieldManager = fieldManager;
 			_logger = logger;
 		}
 
@@ -42,7 +44,17 @@ namespace Relativity.Sync.Executors
 				"Initializing image export in workspace {workspaceId} with saved search {savedSearchId}.",
 				configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
 
-			QueryRequest queryRequest = CreateQueryRequest(configuration);
+			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+
+			QueryRequest queryRequest = new QueryRequest
+			{
+				ObjectType = new ObjectTypeRef
+				{
+					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
+				},
+				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE})",
+				Fields = new[] { new FieldRef { Name = identifierField.SourceFieldName } }
+			};
 
 			ExportInitializationResults results;
 			try
