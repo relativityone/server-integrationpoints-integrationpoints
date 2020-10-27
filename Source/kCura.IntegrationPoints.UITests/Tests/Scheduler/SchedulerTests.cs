@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Scheduling]
+	[Category(TestCategory.RIP_OLD)]
 	[Category(TestCategory.SCHEDULER)]
 	public class SchedulerTests : RelativityProviderTestsBase
 	{

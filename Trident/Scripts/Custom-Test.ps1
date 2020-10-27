@@ -1,10 +1,9 @@
-<#
-.SYNOPSIS
-This script will be used by nightly pipeline to complie and run Integration tests
-#>
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    [string] $TestFilter
+)
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) -Configuration Release
-
-&($TaskRunner) MyTest -Configuration Release -TestFilter "cat == Test"
+&($TaskRunner) Compile, Package, MyTest -Configuration Release -TestFilter $TestFilter

@@ -5,6 +5,4 @@ This script will be used by nightly pipeline to compile and run UI RelativitySyn
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) -Configuration Release
-
-&($TaskRunner) MyTest -Configuration Release -TestFilter "cat == RIP_SYNC && cat != NotWorkingOnTrident"
+&($TaskRunner) Compile, Package, MyTest -Configuration Release -TestFilter "cat == RIP_SYNC && cat != NotWorkingOnTrident"
