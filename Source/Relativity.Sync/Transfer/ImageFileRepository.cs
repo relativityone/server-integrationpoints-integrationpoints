@@ -19,6 +19,7 @@ namespace Relativity.Sync.Transfer
 		private const string _FILENAME_COLUMN_NAME_PRODUCTION = "ImageFileName";
 		private const string _SIZE_COLUMN_NAME_PRODUCTION = "ImageSize";
 		private const string _NATIVE_IDENTIFIER = "NativeIdentifier";
+		private const string _IDENTIFIER = "Identifier";
 
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
@@ -51,7 +52,7 @@ namespace Relativity.Sync.Transfer
 					? RetrieveImagesByProductionsForDocuments(searchManager, workspaceId, documentIds, options)
 					: RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentIds).Item1;
 
-				_logger.LogInformation("Found {numberOfImages} image files for {numberOfDocuments} documents", 
+				_logger.LogInformation("Found {numberOfImages} image files for {numberOfDocuments} documents",
 					imageFiles.Length,
 					imageFiles.Select(x => x.DocumentArtifactId).Distinct().Count());
 
@@ -157,7 +158,10 @@ namespace Relativity.Sync.Transfer
 			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
 			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
 
-			return new ImageFile(documentArtifactId, location, fileName, size);
+			string identifier = GetValue<string>(dataRow, _IDENTIFIER);
+
+
+			return new ImageFile(documentArtifactId, identifier, location, fileName, size);
 		}
 
 		private ImageFile GetImageFileFromProduction(DataRow dataRow, int productionId)
@@ -167,8 +171,8 @@ namespace Relativity.Sync.Transfer
 			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME_PRODUCTION);
 			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME_PRODUCTION);
 			string nativeIdentifier = GetValue<string>(dataRow, _NATIVE_IDENTIFIER);
-		
-			return new ImageFile(documentArtifactId, location, fileName, size, productionId, nativeIdentifier);
+
+			return new ImageFile(documentArtifactId, nativeIdentifier, location, fileName, size, productionId);
 		}
 
 		private T GetValue<T>(DataRow row, string columnName)

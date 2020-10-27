@@ -434,7 +434,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		private static async Task<IList<RelativityObject>> QueryDocumentsAsync(ServiceFactory serviceFactory,
+		public static async Task<IList<RelativityObject>> QueryDocumentsAsync(ServiceFactory serviceFactory,
 			int workspaceId, string condition)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())

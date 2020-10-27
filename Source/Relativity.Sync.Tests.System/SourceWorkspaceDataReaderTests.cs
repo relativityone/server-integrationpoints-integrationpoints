@@ -177,7 +177,7 @@ namespace Relativity.Sync.Tests.System
 			Dataset dataset = Dataset.MultipleImagesPerDocument;
 			const string folderInfoFieldName = "Document Folder Path";
 			const int controlNumberFieldId = 1003667;
-			const int totalItemsCount = 1;
+			const int totalItemsCount = 2;
 
 			string sourceWorkspaceName = $"{Guid.NewGuid()}";
 			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";

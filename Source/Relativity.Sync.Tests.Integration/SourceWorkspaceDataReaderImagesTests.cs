@@ -94,7 +94,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			IEnumerable<ImageFile> images = Enumerable
 				.Range(0, numberOfImages)
-				.Select(x => new ImageFile(artifactId, $@"\\fake\path\img{x}.jpg", $"img{x}.jpg", 100 + artifactId));
+				.Select(x => new ImageFile(artifactId, artifactId.ToString(), $@"\\fake\path\img{x}.jpg", $"img{x}.jpg", 100 + artifactId));
 
 			FieldValue[] fieldValues = values
 				.Select(x => x.Type == FieldType.Identifier
