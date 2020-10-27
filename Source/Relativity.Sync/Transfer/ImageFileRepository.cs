@@ -69,7 +69,7 @@ namespace Relativity.Sync.Transfer
 					.Select(x => x.ArtifactID)
 					.SplitList(_BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
 
-				foreach (var batch in documentArtifactIdBatches)
+				foreach (IList<int> batch in documentArtifactIdBatches)
 				{
 					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
 					imagesTotalSize += imagesInBatch.Sum(x => x.Size);
@@ -106,17 +106,19 @@ namespace Relativity.Sync.Transfer
 
 			int[] documentsWithoutImages = documentIds;
 
-			foreach (var production in productionPrecedence)
+			foreach (int production in productionPrecedence)
 			{
-				var producedImages = searchManager
+				EnumerableRowCollection<ImageFile> producedImages = searchManager
 					.RetrieveImagesForProductionDocuments(workspaceId, documentsWithoutImages, production)
-					.Tables[0].AsEnumerable().Select(x => GetImageFileFromProduction(x, production));
+					.Tables[0]
+					.AsEnumerable()
+					.Select(x => GetImageFileFromProduction(x, production));
 
-				var imagesPerDocument = producedImages.ToLookup(
+				ILookup<int, ImageFile> imagesPerDocument = producedImages.ToLookup(
 					x => x.DocumentArtifactId,
 					x => x);
 
-				foreach (var documentImages in imagesPerDocument)
+				foreach (IGrouping<int, ImageFile> documentImages in imagesPerDocument)
 				{
 					if (!result.ContainsKey(documentImages.Key))
 					{
