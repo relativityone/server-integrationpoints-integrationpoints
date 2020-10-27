@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,18 +42,8 @@ namespace Relativity.Sync.Executors
 			_logger.LogInformation(
 				"Initializing image export in workspace {workspaceId} with saved search {savedSearchId}.",
 				configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
-
-			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
-
-			QueryRequest queryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
-				},
-				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND ('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE})",
-				Fields = new[] { new FieldRef { Name = identifierField.SourceFieldName } }
-			};
+			
+			QueryRequest queryRequest = await CreateQueryRequestAsync(configuration, token).ConfigureAwait(false);
 
 			ExportInitializationResults results;
 			try
@@ -95,8 +84,10 @@ namespace Relativity.Sync.Executors
 			return ExecutionResult.Success();
 		}
 
-		private QueryRequest CreateQueryRequest(IImageDataSourceSnapshotConfiguration configuration)
+		private async Task<QueryRequest> CreateQueryRequestAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
+			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+
 			string imageCondition = configuration.ProductionIds.Any()
 				? $"('{_PRODUCTION_IMAGE_COUNT_FIELD_NAME}' > 0)"
 				: $"('{_HAS_IMAGES_FIELD_NAME}' == CHOICE {_HAS_IMAGES_YES_CHOICE})";
@@ -107,7 +98,14 @@ namespace Relativity.Sync.Executors
 				{
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
-				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND {imageCondition}"
+				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND {imageCondition}",
+				Fields = new[]
+				{
+					new FieldRef
+					{
+						Name = identifierField.SourceFieldName
+					}
+				}
 			};
 			return queryRequest;
 		}
