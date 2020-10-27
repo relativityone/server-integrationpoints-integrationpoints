@@ -4,7 +4,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 {
 	public class ImageGoldFlowMultipleImagesSetTests : ImageGoldFlowTestsBase
 	{
-		public ImageGoldFlowMultipleImagesSetTests() : base(Dataset.MultipleImagesPerDocument, expectedItemsForRetry: 2, expectedDocumentsForRetry: 1)
+		public ImageGoldFlowMultipleImagesSetTests() : base(Dataset.MultipleImagesPerDocument, expectedItemsForRetry: 2)
 		{
 	
 		}

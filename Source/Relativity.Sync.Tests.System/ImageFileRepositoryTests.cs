@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.System
 				new QueryImagesOptions { IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
-			calculatedImagesStatistics.TotalCount.Should().Be(dataset.TotalCount);
+			calculatedImagesStatistics.TotalCount.Should().Be(dataset.TotalItemCount);
 			calculatedImagesStatistics.TotalSize.Should().Be(dataset.GetTotalFilesSize());
 		}
 
@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.System
 				new QueryImagesOptions { ProductionIds = new[] { productionId } }).ConfigureAwait(false);
 
 			// Assert
-			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.ImagesBig.TotalCount);
+			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.ImagesBig.TotalItemCount);
 			calculatedImagesStatistics.TotalSize.Should().Be(Dataset.ImagesBig.GetTotalFilesSize());
 		}
 
@@ -125,7 +125,7 @@ namespace Relativity.Sync.Tests.System
 				new QueryImagesOptions { ProductionIds = new[] { productionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
-			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.Images.TotalCount + Dataset.ThreeImages.TotalCount);
+			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.Images.TotalItemCount + Dataset.ThreeImages.TotalItemCount);
 			calculatedImagesStatistics.TotalSize.Should().Be(Dataset.Images.GetTotalFilesSize() + Dataset.ThreeImages.GetTotalFilesSize());
 		}
 
