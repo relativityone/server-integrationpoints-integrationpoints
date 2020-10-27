@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.DataContracts.DTOs.Results;
@@ -12,26 +11,22 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class ImageDataSourceSnapshotExecutor : IExecutor<IImageDataSourceSnapshotConfiguration>
+	internal sealed class ImageDataSourceSnapshotExecutor : ImageDataSourceSnapshotExecutorBase, IExecutor<IImageDataSourceSnapshotConfiguration>
 	{
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
-		private const int _HAS_IMAGES_YES_CHOICE = 1034243;
-		private const string _HAS_IMAGES_FIELD_NAME = "Has Images";
-		private const string _PRODUCTION_IMAGE_COUNT_FIELD_NAME = "Production::Image Count";
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
-		private readonly IImageFileRepository _imageFileRepository;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
 		public ImageDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
 			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, IFieldManager fieldManager, ISyncLog logger)
+		: base(imageFileRepository)
 		{
 			_serviceFactory = serviceFactory;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
-			_imageFileRepository = imageFileRepository;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_fieldManager = fieldManager;
 			_logger = logger;
@@ -53,19 +48,9 @@ namespace Relativity.Sync.Executors
 					results = await objectManager
 						.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1)
 						.ConfigureAwait(false);
-					_logger.LogInformation("Retrieved {documentCount} documents from saved search which have images",
-						results.RecordCount);
+					_logger.LogInformation("Retrieved {documentCount} documents from saved search which have images", results.RecordCount);
 
-					QueryImagesOptions options = new QueryImagesOptions
-					{
-						ProductionIds = configuration.ProductionIds,
-						IncludeOriginalImageIfNotFoundInProductions =
-							configuration.IncludeOriginalImageIfNotFoundInProductions
-					};
-
-					Task<long> calculateImagesTotalSizeTask = Task.Run(() =>
-						_imageFileRepository.CalculateImagesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
-					_jobStatisticsContainer.ImagesBytesRequested = calculateImagesTotalSizeTask;
+					_jobStatisticsContainer.ImagesBytesRequested = CreateCalculateImagesTotalSizeTaskAsync(configuration, token, queryRequest);
 				}
 			}
 			catch (Exception e)
@@ -87,10 +72,7 @@ namespace Relativity.Sync.Executors
 		private async Task<QueryRequest> CreateQueryRequestAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
-
-			string imageCondition = configuration.ProductionIds.Any()
-				? $"('{_PRODUCTION_IMAGE_COUNT_FIELD_NAME}' > 0)"
-				: $"('{_HAS_IMAGES_FIELD_NAME}' == CHOICE {_HAS_IMAGES_YES_CHOICE})";
+			string imageCondition = CreateConditionToRetrieveImages(configuration.ProductionIds);
 
 			QueryRequest queryRequest = new QueryRequest
 			{
