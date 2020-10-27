@@ -160,7 +160,6 @@
     <Compile Include="Tagging\TagSavedSearchManagerTests.cs" />
     <Compile Include="Tagging\TagSavedSearchTests.cs" />
     <Compile Include="Tagging\TagsCreatorTests.cs" />
-    <Compile Include="Telemetry\ExportTelemetryMetricProviderTest.cs" />
     <Compile Include="Telemetry\TelemetryMangerTest.cs" />
     <Compile Include="Utils\JsonUtilsTests.cs" />
     <Compile Include="Validation\ArtifactValidatorTests.cs" />

@@ -108,6 +108,7 @@
     <Compile Include="EncryptionManager\DefaultEncryptionManager.cs" />
     <Compile Include="EncryptionManager\IEncryptionManager.cs" />
     <Compile Include="Commands\Factories\RestoreJobHistoryDestinationWorkspaceCommandFactory.cs" />
+    <Compile Include="Installers\Metrics\RegisterIntegrationPointsMetricsEventHandler.cs" />
     <Compile Include="Installers\Metrics\RegisterScheduleSyncSUMMetricsEventHandler.cs" />
     <Compile Include="Installers\MigrateSecretCatalogPathToSecretStorePathInstaller.cs" />
     <Compile Include="Installers\RegisterDataTransferLocationInstaller.cs" />
@@ -180,7 +181,7 @@
     <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />
-    <Compile Include="Installers\RunEveryTimeInstaller.cs" />
+    <Compile Include="Installers\RunPostInstallMigrationScriptsInstaller.cs" />
     <Compile Include="Installers\SetHasErrorsField.cs" />
     <Compile Include="Installers\Uninstaller.cs" />
     <Compile Include="Installers\RegisterLDAPInstaller.cs" />

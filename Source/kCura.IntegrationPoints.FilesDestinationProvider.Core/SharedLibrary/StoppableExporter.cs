@@ -49,33 +49,29 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public bool ExportSearch()
 		{
-			using (Client.MetricsClient.LogDuration(
-				Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR,
-				Guid.Empty))
+			try
 			{
-				try
+				_jobStopManager.StopRequestedEvent += OnStopRequested;
+
+				var exportJobStats = new ExportJobStats
 				{
-					_jobStopManager.StopRequestedEvent += OnStopRequested;
+					StartTime = DateTime.UtcNow
+				};
 
-					var exportJobStats = new ExportJobStats
-					{
-						StartTime = DateTime.UtcNow
-					};
+				_exporter.ExportSearch();
 
-					_exporter.ExportSearch();
+				exportJobStats.EndTime = DateTime.UtcNow;
+				exportJobStats.ExportedItemsCount = _exporter.DocumentsExported;
+				DocumentsExported = _exporter.DocumentsExported;
 
-					exportJobStats.EndTime = DateTime.UtcNow;
-					exportJobStats.ExportedItemsCount = _exporter.DocumentsExported;
-					DocumentsExported = _exporter.DocumentsExported;
-
-					CompleteExportJob(exportJobStats);
-					_jobStopManager.ThrowIfStopRequested();
-				}
-				finally
-				{
-					_jobStopManager.StopRequestedEvent -= OnStopRequested;
-				}
+				CompleteExportJob(exportJobStats);
+				_jobStopManager.ThrowIfStopRequested();
 			}
+			finally
+			{
+				_jobStopManager.StopRequestedEvent -= OnStopRequested;
+			}
+
 			return true;
 		}
 
