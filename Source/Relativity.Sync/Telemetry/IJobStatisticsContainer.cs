@@ -60,7 +60,7 @@ namespace Relativity.Sync.Telemetry
 		/// <summary>
 		/// Size of the images that was requested to push.
 		/// </summary>
-		Task<long> ImagesBytesRequested { get; set; }
+		Task<ImagesStatistics> ImagesStatistics { get; set; }
 
 		/// <summary>
 		/// Calculates average long text stream size and time.

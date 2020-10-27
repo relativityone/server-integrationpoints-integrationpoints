@@ -8,21 +8,24 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Executors
 {
 	internal class JobStatusConsolidationExecutor : IExecutor<IJobStatusConsolidationConfiguration>
 	{
 		private readonly IBatchRepository _batchRepository;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 
 		private static readonly Guid _COMPLETED_ITEMS_COUNT_GUID = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
 		private static readonly Guid _FAILED_ITEMS_COUNT_GUID = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
 		private static readonly Guid _TOTAL_ITEMS_COUNT_GUID = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
 
-		public JobStatusConsolidationExecutor(IBatchRepository batchRepository, ISourceServiceFactoryForAdmin serviceFactory)
+		public JobStatusConsolidationExecutor(IBatchRepository batchRepository, IJobStatisticsContainer jobStatisticsContainer, ISourceServiceFactoryForAdmin serviceFactory)
 		{
 			_batchRepository = batchRepository;
+			_jobStatisticsContainer = jobStatisticsContainer;
 			_serviceFactory = serviceFactory;
 		}
 
@@ -38,8 +41,7 @@ namespace Relativity.Sync.Executors
 				int completedItemsCount = batches
 					.Sum(batch => batch.TransferredItemsCount);
 
-				int totalItemsCount = batches
-					.Sum(batch => batch.TotalItemsCount);
+				int totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
 
 				int failedItemsCount = batches
 					.Sum(batch => batch.FailedItemsCount);
@@ -59,6 +61,16 @@ namespace Relativity.Sync.Executors
 			}
 
 			return ExecutionResult.Success();
+		}
+
+		private async Task<int> GetTotalItemsCountAsync(List<IBatch> batches)
+		{
+			if (_jobStatisticsContainer.ImagesStatistics != null)
+			{
+				return (int)(await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false)).TotalCount;
+			}
+
+			return batches.Sum(batch => batch.TotalItemsCount);
 		}
 
 		private static string CreateEventHandlersFailureMessage(UpdateResult updateResult)
