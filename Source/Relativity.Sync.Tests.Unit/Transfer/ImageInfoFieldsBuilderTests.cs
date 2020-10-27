@@ -49,7 +49,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var expectedFieldTypes = new SpecialFieldType[]
 			{
 				SpecialFieldType.ImageFileName,
-				SpecialFieldType.ImageFileLocation
+				SpecialFieldType.ImageFileLocation,
+				SpecialFieldType.ImageIdentifier
 			};
 
 			// Act
@@ -92,9 +93,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task GetRowValuesBuilderAsync_ShouldReturnBuilder_WhenSingleImageExistsForEveryDocument()
 		{
 			// Arrange
-			var imageFile1 = new ImageFile(1, "Location1", "Name1", 0);
-			var imageFile2 = new ImageFile(2, "Location2", "Name2", 0);
-			var imageFile3 = new ImageFile(3, "Location3", "Name3", 0);
+			var imageFile1 = new ImageFile(1, "1", "Location1", "Name1", 0);
+			var imageFile2 = new ImageFile(2, "2", "Location2", "Name2", 0);
+			var imageFile3 = new ImageFile(3, "3", "Location3", "Name3", 0);
 
 			var expectedDocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
@@ -118,10 +119,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task GetRowValuesBuilderAsync_ShouldReturnBuilder_WhenMultipleImagesExistForSomeDocuments()
 		{
 			// Arrange
-			var imageFile1a = new ImageFile(1, "Location1a", "Name1a", 0);
-			var imageFile1b = new ImageFile(1, "Location1b", "Name1b", 0);
-			var imageFile2 = new ImageFile(2, "Location2", "Name2", 0);
-			var imageFile3 = new ImageFile(3, "Location3", "Name3", 0);
+			var imageFile1a = new ImageFile(1, "1a", "Location1a", "Name1a", 0);
+			var imageFile1b = new ImageFile(1, "1b", "Location1b", "Name1b", 0);
+			var imageFile2 = new ImageFile(2, "2", "Location2", "Name2", 0);
+			var imageFile3 = new ImageFile(3, "3", "Location3", "Name3", 0);
 
 			var expectedDocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
@@ -145,8 +146,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task GetRowValuesBuilderAsync_ShouldReturnBuilder_WhenSomeDocumentsHaveNoImages()
 		{
 			// Arrange
-			var imageFile1 = new ImageFile(1, "Location1", "Name1", 0);
-			var imageFile3 = new ImageFile(3, "Location3", "Name3", 0);
+			var imageFile1 = new ImageFile(1, "1", "Location1", "Name1", 0);
+			var imageFile3 = new ImageFile(3, "3", "Location3", "Name3", 0);
 
 			var expectedDocumentToImageFiles = new Dictionary<int, ImageFile[]>()
 			{
@@ -172,10 +173,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Arrange
 			const int nonExistingDocumentId = 4;
 
-			var imageFile1 = new ImageFile(1, "Location1", "Name1", 0);
-			var imageFile2 = new ImageFile(2, "Location2", "Name2", 0);
-			var imageFile3 = new ImageFile(3, "Location3", "Name3", 0);
-			var imageFileForNotExistingDocument = new ImageFile(nonExistingDocumentId, "Location4", "Name4", 0);
+			var imageFile1 = new ImageFile(1, "1", "Location1", "Name1", 0);
+			var imageFile2 = new ImageFile(2, "2", "Location2", "Name2", 0);
+			var imageFile3 = new ImageFile(3, "3", "Location3", "Name3", 0);
+			var imageFileForNotExistingDocument = new ImageFile(nonExistingDocumentId, "4", "Location4", "Name4", 0);
 
 			var imageFiles = new ImageFile[] { imageFile1, imageFile2, imageFile3, imageFileForNotExistingDocument };
 

@@ -47,7 +47,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private readonly List<FieldInfoDto> _specialFields = new List<FieldInfoDto>
 		{
 			FieldInfoDto.ImageFileLocationField(),
-			FieldInfoDto.ImageFileNameField()
+			FieldInfoDto.ImageFileNameField(),
+			FieldInfoDto.ImageIdentifierField()
 		};
 
 		public static (object[] BatchResults, object ExpectedResult)[] AggregationTestCaseSource { get; } =

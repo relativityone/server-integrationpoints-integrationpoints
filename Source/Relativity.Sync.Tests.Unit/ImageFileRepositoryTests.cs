@@ -181,6 +181,7 @@ namespace Relativity.Sync.Tests.Unit
 			dataTable.Columns.Add("ImageSize", typeof(long));
 			dataTable.Columns.Add("Filename");
 			dataTable.Columns.Add("NativeIdentifier");
+			dataTable.Columns.Add("Identifier");
 			dataTable.Columns.Add("Size", typeof(long));
 
 			foreach (var imageData in data)
@@ -189,6 +190,7 @@ namespace Relativity.Sync.Tests.Unit
 
 				dataRow["DocumentArtifactID"] = imageData.DocumentArtifactId;
 				dataRow["NativeIdentifier"] = imageData.DocumentArtifactId.ToString();
+				dataRow["Identifier"] = imageData.Identifier ?? (imageData.DocumentArtifactId.ToString() + (imageData.ProductionId != null ? "_" + imageData.ProductionId : ""));
 				dataRow["Location"] = "location";
 				dataRow["ImageFileName"] = imageData.DocumentArtifactId.ToString();
 				dataRow["Filename"] = imageData.DocumentArtifactId.ToString();
@@ -204,6 +206,7 @@ namespace Relativity.Sync.Tests.Unit
 		private struct DocumentImageData
 		{
 			public int DocumentArtifactId { get; set; }
+			public string Identifier { get; set; }
 			public int ImageSize { get; set; }
 			public int? ProductionId { get; set; }
 		}

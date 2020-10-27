@@ -11,6 +11,8 @@ namespace Relativity.Sync.Transfer
 {
 	internal class ImageBatchDataReader : BatchDataReaderBase
 	{
+		private readonly int _identifierFieldIndex;
+
 		public ImageBatchDataReader(
 			DataTable templateDataTable,
 			int sourceWorkspaceArtifactId,
@@ -19,10 +21,11 @@ namespace Relativity.Sync.Transfer
 			IFieldManager fieldManager,
 			IExportDataSanitizer exportDataSanitizer,
 			Action<string, string> itemLevelErrorHandler,
+			int identifierFieldIndex,
 			CancellationToken cancellationToken)
 		: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer, itemLevelErrorHandler, cancellationToken)
 		{
-			
+			_identifierFieldIndex = identifierFieldIndex;
 		}
 
 		protected override IEnumerable<object[]> GetBatchEnumerable()
@@ -111,14 +114,14 @@ namespace Relativity.Sync.Transfer
 			return specialFieldsValues;
 		}
 
-		private static object[] BuildSpecialFieldValues(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
+		private object[] BuildSpecialFieldValues(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
 		{
 			if (!specialFieldBuilders.ContainsKey(fieldInfo.SpecialFieldType))
 			{
 				throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType}");
 			}
 
-			return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowsValues(fieldInfo, batchItem).ToArray();
+			return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowsValues(fieldInfo, batchItem, document => document.Values[_identifierFieldIndex].ToString()).ToArray();
 		}
 
 		private object SanitizeFieldIfNeeded(string itemIdentifierFieldName, string itemIdentifier, FieldInfoDto field, object initialValue)

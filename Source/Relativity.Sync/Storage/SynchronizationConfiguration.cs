@@ -106,6 +106,7 @@ namespace Relativity.Sync.Storage
 		public string NativeFilePathSourceFieldName { get; set; }
 		public string ImageFilePathSourceFieldName { get; set; }
 		public string FileNameColumn { get; set; }
+		public string IdentifierColumn { get; set; }
 		public string OiFileTypeColumnName { get; set; }
 		public string SupportedByViewerColumn { get; set; }
 	}
