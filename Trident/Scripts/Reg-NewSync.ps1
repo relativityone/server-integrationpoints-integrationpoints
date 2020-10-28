@@ -14,8 +14,6 @@ Set-RegressionSettings $RegEnv
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) -Configuration Release
-
-&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == RIP_SYNC && cat != NotWorkingOnRegressionEnvironment"
+&($TaskRunner) Compile, Package, RegTest -Configuration Release -TestFilter "cat == RIP_SYNC && cat != NotWorkingOnRegressionEnvironment"
 
 Remove-Module Build-Util
