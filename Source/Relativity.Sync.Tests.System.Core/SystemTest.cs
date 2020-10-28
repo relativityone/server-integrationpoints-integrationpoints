@@ -1,10 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Relativity.Client;
+using kCura.WinEDDS.Api;
+using kCura.WinEDDS.Service;
+using kCura.WinEDDS.Service.Export;
 using NUnit.Framework;
+using Relativity.DataExchange;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
@@ -182,6 +188,62 @@ namespace Relativity.Sync.Tests.System.Core
 			foreach (var name in sourceDocumentsNames)
 			{
 				destinationDocumentsNamesSet.Contains(name).Should().BeTrue($"Document {name} was not created in destination workspace");
+			}
+		}
+		
+		protected void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds)
+		{
+			string GetExpectedIdentifier(string controlNumber, int index)
+			{
+				if (index == 0)
+				{
+					return controlNumber;
+				}
+
+				return $"{controlNumber}_{index}";
+			}
+
+			CookieContainer cookieContainer = new CookieContainer();
+			IRunningContext runningContext = new RunningContext
+			{
+				ApplicationName = "Relativity.Sync.Tests.System.GoldFlows"
+			};
+			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext);
+			kCura.WinEDDS.Config.ProgrammaticServiceURL = AppSettings.RelativityWebApiUrl.ToString();
+
+			ILookup<int, TestFile> sourceWorkspaceFiles;
+			Dictionary<string, TestFile> destinationWorkspaceFiles;
+
+			Dictionary<int, string> sourceWorkspaceDocumentNames = sourceWorkspaceDocuments.ToDictionary(x => x.ArtifactID, x => x.Name);
+
+			using (ISearchManager searchManager = new SearchManager(credentials, cookieContainer))
+			{
+				DataTable dataTable = searchManager.RetrieveImagesForDocuments(sourceWorkspaceId, sourceWorkspaceDocuments.Select(x => x.ArtifactID).ToArray()).Tables[0];
+				sourceWorkspaceFiles = dataTable.AsEnumerable()
+					.Select(TestFile.GetFile)
+					.ToLookup(x => x.DocumentArtifactId, x => x);
+
+				destinationWorkspaceFiles = searchManager.RetrieveImagesForDocuments(destinationWorkspaceId, destinationWorkspaceDocumentIds.Select(x => x.ArtifactID).ToArray()).Tables[0].AsEnumerable()
+					.Select(TestFile.GetFile)
+					.ToDictionary(x => x.Identifier, x => x);
+			}
+
+			foreach (IGrouping<int, TestFile> sourceDocumentImages in sourceWorkspaceFiles)
+			{
+				int i = 0;
+				foreach (TestFile imageFile in sourceDocumentImages)
+				{
+					string expectedIdentifier =
+						GetExpectedIdentifier(sourceWorkspaceDocumentNames[imageFile.DocumentArtifactId], i);
+
+					destinationWorkspaceFiles.ContainsKey(expectedIdentifier).Should()
+						.BeTrue($"Image [{sourceDocumentImages.Key} => {expectedIdentifier}] was not pushed to destination workspace");
+
+					TestFile destinationImage = destinationWorkspaceFiles[expectedIdentifier];
+
+					TestFile.AssertAreEquivalent(imageFile, destinationImage, expectedIdentifier);
+					i++;
+				}
 			}
 		}
 

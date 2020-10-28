@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.WinEDDS.Api;
-using kCura.WinEDDS.Service;
-using kCura.WinEDDS.Service.Export;
 using NUnit.Framework;
-using Relativity.DataExchange;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
@@ -17,9 +10,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Testing.Identification;
-using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
 
 namespace Relativity.Sync.Tests.System.GoldFlows.Images
 {
@@ -123,62 +114,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 			IList<FieldMap> identifierMapping = await GetIdentifierMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			configuration.SetFieldMappings(identifierMapping);
-		}
-
-		private void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds)
-		{
-			string GetExpectedIdentifier(string controlNumber, int index)
-			{
-				if (index == 0)
-				{
-					return controlNumber;
-				}
-
-				return $"{controlNumber}_{index}";
-			}
-
-			CookieContainer cookieContainer = new CookieContainer();
-			IRunningContext runningContext = new RunningContext
-			{
-				ApplicationName = "Relativity.Sync.Tests.System.GoldFlows"
-			};
-			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext);
-			kCura.WinEDDS.Config.ProgrammaticServiceURL = AppSettings.RelativityWebApiUrl.ToString();
-
-			ILookup<int, TestImageFile> sourceWorkspaceImages;
-			Dictionary<string, TestImageFile> destinationWorkspaceImages;
-
-			Dictionary<int, string> sourceWorkspaceDocumentNames = sourceWorkspaceDocuments.ToDictionary(x => x.ArtifactID, x => x.Name);
-
-			using (ISearchManager searchManager = new SearchManager(credentials, cookieContainer))
-			{
-				DataTable dataTable = searchManager.RetrieveImagesForDocuments(sourceWorkspaceId, sourceWorkspaceDocuments.Select(x => x.ArtifactID).ToArray()).Tables[0];
-				sourceWorkspaceImages = dataTable.AsEnumerable()
-					.Select(TestImageFile.GetImageFile)
-					.ToLookup(x => x.DocumentArtifactId, x => x);
-				
-				destinationWorkspaceImages = searchManager.RetrieveImagesForDocuments(destinationWorkspaceId, destinationWorkspaceDocumentIds.Select(x => x.ArtifactID).ToArray()).Tables[0].AsEnumerable()
-					.Select(TestImageFile.GetImageFile)
-					.ToDictionary(x => x.Identifier, x => x);
-			}
-			
-			foreach (IGrouping<int, TestImageFile> sourceDocumentImages in sourceWorkspaceImages)
-			{
-				int i = 0;
-				foreach (TestImageFile imageFile in sourceDocumentImages)
-				{
-					string expectedIdentifier =
-						GetExpectedIdentifier(sourceWorkspaceDocumentNames[imageFile.DocumentArtifactId], i);
-
-					destinationWorkspaceImages.ContainsKey(expectedIdentifier).Should()
-						.BeTrue($"Image [{sourceDocumentImages.Key} => {expectedIdentifier}] was not pushed to destination workspace");
-
-					TestImageFile destinationImage = destinationWorkspaceImages[expectedIdentifier];
-
-					TestImageFile.AssertAreEquivalent(imageFile, destinationImage, expectedIdentifier);
-					i++;
-				}
-			}
 		}
 	}
 }

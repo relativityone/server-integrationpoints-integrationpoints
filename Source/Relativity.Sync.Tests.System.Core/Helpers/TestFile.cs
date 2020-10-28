@@ -2,11 +2,11 @@
 using System.Data;
 using FluentAssertions;
 
-namespace Relativity.Sync.Tests.System.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
-	internal class TestImageFile
+	internal class TestFile
 	{
-		public TestImageFile(int documentArtifactId, string identifier, string location, string filename, long size, int? productionId = null)
+		public TestFile(int documentArtifactId, string identifier, string location, string filename, long size, int? productionId = null)
 		{
 			DocumentArtifactId = documentArtifactId;
 			Location = location;
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 		private static string _SIZE_COLUMN_NAME = "Size";
 		private static string _IDENTIFIER = "Identifier";
 
-		public static TestImageFile GetImageFile(DataRow dataRow)
+		public static TestFile GetFile(DataRow dataRow)
 		{
 			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
 			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
 			string identifier = GetValue<string>(dataRow, _IDENTIFIER);
 
-			return new TestImageFile(documentArtifactId, identifier, location, fileName, size);
+			return new TestFile(documentArtifactId, identifier, location, fileName, size);
 		}
 
 		private static T GetValue<T>(DataRow row, string columnName)
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 			}
 		}
 
-		public static void AssertAreEquivalent(TestImageFile sourceTestImage, TestImageFile destinationTestImage, string expectedIdentifier)
+		public static void AssertAreEquivalent(TestFile sourceTestImage, TestFile destinationTestImage, string expectedIdentifier)
 		{
 			destinationTestImage.Filename.Should().Be(sourceTestImage.Filename);
 			destinationTestImage.Identifier.Should().Be(expectedIdentifier);

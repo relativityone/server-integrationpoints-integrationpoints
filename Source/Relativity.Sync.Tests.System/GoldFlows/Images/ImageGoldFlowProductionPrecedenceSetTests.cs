@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 		[IdentifiedTest("64C9EBB4-9024-4123-BFE4-96B3C0433436")]
 		[TestType.MainFlow]
-		public async Task SyncJob_Should_SyncImages_When_ImagePrecedenceIsSelected()
+		public async Task SyncJob_ShouldSyncImages_WhenImagePrecedenceIsSelected()
 		{
 			// Arrange
 			int productionId = await CreateAndImportProductionAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset).ConfigureAwait(false);
@@ -56,10 +56,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			//AssertImages(
-			//	_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-			//	goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			//);
+			AssertImages(
+				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
+				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
+			);
 
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, documentsWithImagesInDestinationWorkspace.Count).ConfigureAwait(false);
 		}
