@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class SourceWorkspaceTagRepositoryTests : SystemTest
+	internal sealed class SourceWorkspaceTagRepositoryTests : SystemTest
 	{
 		private int _destinationWorkspaceArtifactId;
 

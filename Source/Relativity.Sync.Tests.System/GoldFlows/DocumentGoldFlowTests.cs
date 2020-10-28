@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
 	[TestFixture]
-	public class DocumentGoldFlowTests : SystemTest
+	internal sealed class DocumentGoldFlowTests : SystemTest
 	{
 		private GoldFlowTestSuite _goldFlowTestSuite;
 		private readonly Dataset _dataset;
@@ -25,8 +25,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		protected override async Task ChildSuiteSetup()
 		{
-			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory, DataTableFactory.CreateImportDataTable(_dataset, true))
-				.ConfigureAwait(false);
+			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory).ConfigureAwait(false);
+			await _goldFlowTestSuite.ImportDocumentsAsync(DataTableFactory.CreateImportDataTable(_dataset, true)).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("25b723da-82fe-4f56-ae9f-4a8b2a4d60f4")]
@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		public async Task SyncJob_Should_SyncDocuments()
 		{
 			// Arrange
-			var goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunAsync).ConfigureAwait(false);
+			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunAsync).ConfigureAwait(false);
 
 			// Act
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		{
 			// Arrange
 			int jobHistoryToRetryId = -1, destinationWorkspaceId = -1;
-			var goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(async (sourceWorkspace, destinationWorkspace, configuration) =>
+			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(async (sourceWorkspace, destinationWorkspace, configuration) =>
 			{
 				destinationWorkspaceId = destinationWorkspace.ArtifactID;
 					await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
@@ -69,11 +69,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			// Assert
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalDocumentCount - numberOfTaggedDocuments, _dataset.TotalDocumentCount - numberOfTaggedDocuments).ConfigureAwait(false);
 
-			var sourceWorkspaceDocuments = await Rdos
+			IList<string> sourceWorkspaceDocuments = await Rdos
 				.QueryDocumentNamesAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, $"NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{jobHistoryToRetryId}])")
 				.ConfigureAwait(false);
 
-			var destinationWorkspaceDocuments = await Rdos
+			IList<string> destinationWorkspaceDocuments = await Rdos
 				.QueryDocumentNamesAsync(ServiceFactory, destinationWorkspaceId, "")
 				.ConfigureAwait(false);
 

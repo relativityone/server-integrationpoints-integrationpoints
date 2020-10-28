@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class ImageDataSourceSnapshotTests : SystemTest
+	internal sealed class ImageDataSourceSnapshotTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
 

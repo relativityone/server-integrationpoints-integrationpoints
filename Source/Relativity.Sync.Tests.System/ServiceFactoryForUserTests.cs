@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class ServiceFactoryForUserTests : SystemTest
+	internal sealed class ServiceFactoryForUserTests : SystemTest
 	{
 		private ISyncServiceManager _servicesManager;
 		private WorkspaceRef _workspace;

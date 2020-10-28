@@ -199,8 +199,6 @@ namespace Relativity.Sync.Tests.Common
 
 		public int? JobHistoryToRetryId { get; set; }
 
-		public int[] ProductionIds { get; set; }
-
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 
 		public bool IsImageJob { get; set; }

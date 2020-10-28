@@ -20,9 +20,9 @@ namespace Relativity.Sync.Executors
 			_imageFileRepository = imageFileRepository;
 		}
 
-		protected string CreateConditionToRetrieveImages(int[] productionIds)
+		protected string CreateConditionToRetrieveImages(int[] productionImagePrecedence)
 		{
-			string imageCondition = productionIds.Any()
+			string imageCondition = productionImagePrecedence.Any()
 				? $"('{_PRODUCTION_IMAGE_COUNT_FIELD_NAME}' > 0)"
 				: $"('{_HAS_IMAGES_FIELD_NAME}' == CHOICE {_HAS_IMAGES_YES_CHOICE})";
 
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors
 		{
 			QueryImagesOptions options = new QueryImagesOptions
 			{
-				ProductionIds = configuration.ProductionIds,
+				ProductionIds = configuration.ProductionImagePrecedence,
 				IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
 			};
 

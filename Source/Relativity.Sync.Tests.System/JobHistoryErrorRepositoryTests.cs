@@ -21,7 +21,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public class JobHistoryErrorRepositoryTests : SystemTest
+	internal class JobHistoryErrorRepositoryTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
 		private ISourceServiceFactoryForUser _serviceFactory;

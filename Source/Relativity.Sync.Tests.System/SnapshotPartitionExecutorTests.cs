@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class SnapshotPartitionExecutorTests : SystemTest
+	internal sealed class SnapshotPartitionExecutorTests : SystemTest
 	{
 		private int _workspaceId;
 		private int _syncConfigurationId;

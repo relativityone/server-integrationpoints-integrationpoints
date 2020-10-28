@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Relativity.Telemetry.APM;
 using Relativity.Services.Workspace;
@@ -23,8 +23,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		public ServiceFactory ServiceFactory { get; }
 
 		public WorkspaceRef SourceWorkspace { get; }
-
-
+		
 		private GoldFlowTestSuite(TestEnvironment environment, User user, ServiceFactory serviceFactory, WorkspaceRef sourceWorkspace)
 		{
 			_environment = environment;
@@ -33,14 +32,16 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			SourceWorkspace = sourceWorkspace;
 		}
 
-		internal static async Task<GoldFlowTestSuite> CreateAsync(TestEnvironment environment, User user, ServiceFactory serviceFactory, ImportDataTableWrapper importDataTable)
+		internal static async Task<GoldFlowTestSuite> CreateAsync(TestEnvironment environment, User user, ServiceFactory serviceFactory)
 		{
 			WorkspaceRef sourceWorkspace = await environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-
-			ImportHelper importHelper = new ImportHelper(serviceFactory);
-			await importHelper.ImportDataAsync(sourceWorkspace.ArtifactID, importDataTable).ConfigureAwait(false);
-
 			return new GoldFlowTestSuite(environment, user, serviceFactory, sourceWorkspace);
+		}
+
+		public Task ImportDocumentsAsync(ImportDataTableWrapper importDataTable)
+		{
+			ImportHelper importHelper = new ImportHelper(ServiceFactory);
+			return importHelper.ImportDataAsync(SourceWorkspace.ArtifactID, importDataTable);
 		}
 
 		public async Task<IGoldFlowTestRun> CreateTestRunAsync(Func<WorkspaceRef, WorkspaceRef, ConfigurationStub, Task> configureAsync)

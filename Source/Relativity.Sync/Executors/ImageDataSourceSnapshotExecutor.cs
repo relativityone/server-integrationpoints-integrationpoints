@@ -72,7 +72,7 @@ namespace Relativity.Sync.Executors
 		private async Task<QueryRequest> CreateQueryRequestAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token)
 		{
 			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
-			string imageCondition = CreateConditionToRetrieveImages(configuration.ProductionIds);
+			string imageCondition = CreateConditionToRetrieveImages(configuration.ProductionImagePrecedence);
 
 			QueryRequest queryRequest = new QueryRequest
 			{

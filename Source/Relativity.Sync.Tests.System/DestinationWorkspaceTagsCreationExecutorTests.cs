@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class DestinationWorkspaceTagsCreationExecutorTests : SystemTest
+	internal sealed class DestinationWorkspaceTagsCreationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
 		private WorkspaceRef _sourceWorkspace;
@@ -40,8 +40,8 @@ namespace Relativity.Sync.Tests.System
 			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
 			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
-			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
-			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
+			_sourceWorkspace = sourceWorkspaceCreationTask.GetAwaiter().GetResult();
+			_destinationWorkspace = destinationWorkspaceCreationTask.GetAwaiter().GetResult();
 		}
 
 		[IdentifiedTest("98d0dd99-85cf-40df-8cfb-b037a9089a1f")]

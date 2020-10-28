@@ -122,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				RecordCount = totalRecords,
 				RunID = runId
 			};
-			_configurationMock.SetupGet(x => x.ProductionIds).Returns(new int[] { productionId });
+			_configurationMock.SetupGet(x => x.ProductionImagePrecedence).Returns(new int[] { productionId });
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			// ACT

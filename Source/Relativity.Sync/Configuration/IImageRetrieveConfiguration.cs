@@ -2,7 +2,7 @@
 {
 	internal interface IImageRetrieveConfiguration
 	{
-		int[] ProductionIds { get; }
+		int[] ProductionImagePrecedence { get; }
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
 	}
 }
