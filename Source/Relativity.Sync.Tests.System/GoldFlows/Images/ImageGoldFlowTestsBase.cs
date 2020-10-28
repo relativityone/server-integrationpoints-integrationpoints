@@ -24,10 +24,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 		protected GoldFlowTestSuite _goldFlowTestSuite;
 
-		internal ImageGoldFlowTestsBase(Dataset dataset, int expectedItemsForRetry, int expectedDocumentsForRetry)
+		internal ImageGoldFlowTestsBase(Dataset dataset, int expectedItemsForRetry)
 		{
 			ExpectedItemsForRetry = expectedItemsForRetry;
-			ExpectedDocumentsForRetry = expectedDocumentsForRetry;
 			_dataset = dataset;
 		}
 
@@ -53,7 +52,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			IList<RelativityObject> documentsWithImagesInSourceWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, condition).ConfigureAwait(false);
 			IList<RelativityObject> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId, condition).ConfigureAwait(false);
 
-			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
+			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalItemCount).ConfigureAwait(false);
 
 			documentsWithImagesInDestinationWorkspace.Count.Should().Be(_dataset.TotalDocumentCount);
 
@@ -66,8 +65,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
 			);
-
-			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, documentsWithImagesInDestinationWorkspace.Count).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("d77b1e0c-e39d-4084-9e84-6efb40ae0fe0")]
@@ -96,12 +93,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			IList<RelativityObject> documentsWithImagesInSourceWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, $"('Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}) AND (NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{jobHistoryToRetryId}]))").ConfigureAwait(false);
 			IList<RelativityObject> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId, $"'Has Images' == CHOICE {_HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
 
+			await goldFlowTestRun.AssertAsync(result, ExpectedItemsForRetry, ExpectedItemsForRetry).ConfigureAwait(false);
+
 			AssertDocuments(
 				documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
-
-			await goldFlowTestRun.AssertAsync(result, ExpectedItemsForRetry, ExpectedDocumentsForRetry).ConfigureAwait(false);
 		}
 
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)

@@ -23,7 +23,7 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
 			try
 			{
-				long allImagesSize = await _jobStatisticsContainer.ImagesBytesRequested.ConfigureAwait(false);
+				ImagesStatistics imagesStatistics = await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false);
 
 				await ReportRecordsStatisticsAsync().ConfigureAwait(false);
 
@@ -31,7 +31,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 				ReportBytesStatistics();
 
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_REQUESTED, allImagesSize);
+				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_REQUESTED, imagesStatistics.TotalSize);
 			}
 			catch (Exception e)
 			{

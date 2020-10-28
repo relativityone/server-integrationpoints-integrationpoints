@@ -1,13 +1,14 @@
-﻿using kCura.WinEDDS.Service.Export;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Extensions;
-using Relativity.Sync.KeplerFactory;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Relativity.Sync.Telemetry;
+using Relativity.Sync.Extensions;
+using Relativity.Services.Objects;
+using Relativity.Sync.KeplerFactory;
+using Relativity.Services.Objects.DataContracts;
+using kCura.WinEDDS.Service.Export;
 
 namespace Relativity.Sync.Transfer
 {
@@ -60,10 +61,13 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public async Task<long> CalculateImagesTotalSizeAsync(int workspaceId, QueryRequest request, QueryImagesOptions options)
+		public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId, QueryRequest request, QueryImagesOptions options)
 		{
-			_logger.LogInformation("Initializing calculating total image size (in chunks of {batchSize} )", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
+			_logger.LogInformation("Initializing calculating totals for images (in chunks of {batchSize} )", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
+
+			long imagesTotalCount = 0;
 			long imagesTotalSize = 0;
+			
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				IEnumerable<IList<int>> documentArtifactIdBatches = (await objectManager.QueryAllAsync(workspaceId, request).ConfigureAwait(false))
@@ -73,10 +77,15 @@ namespace Relativity.Sync.Transfer
 				foreach (IList<int> batch in documentArtifactIdBatches)
 				{
 					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
-					imagesTotalSize += imagesInBatch.Sum(x => x.Size);
+
+					foreach (ImageFile image in imagesInBatch)
+					{
+						imagesTotalCount++;
+						imagesTotalSize += image.Size;
+					}
 				}
 			}
-			return imagesTotalSize;
+			return new ImagesStatistics(imagesTotalCount, imagesTotalSize);
 		}
 
 		private ImageFile[] RetrieveImagesByProductionsForDocuments(ISearchManager searchManager, int workspaceId, int[] documentIds, QueryImagesOptions options)
