@@ -14,11 +14,7 @@ using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Transfer;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Security;
 using System.Threading;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 

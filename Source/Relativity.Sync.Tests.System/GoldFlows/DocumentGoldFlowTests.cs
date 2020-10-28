@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				.QueryDocumentNamesAsync(ServiceFactory, destinationWorkspaceId, "")
 				.ConfigureAwait(false);
 
-			AssertDocuments(sourceWorkspaceDocuments.ToArray(), destinationWorkspaceDocuments.ToArray());
+			goldFlowTestRun.AssertDocuments(sourceWorkspaceDocuments.ToArray(), destinationWorkspaceDocuments.ToArray());
 		}
 
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)

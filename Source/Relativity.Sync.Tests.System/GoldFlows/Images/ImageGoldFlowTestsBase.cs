@@ -56,12 +56,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 			documentsWithImagesInDestinationWorkspace.Count.Should().Be(_dataset.TotalDocumentCount);
 
-			AssertDocuments(
+			goldFlowTestRun.AssertDocuments(
 				documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 				);
 
-			AssertImages(
+			goldFlowTestRun.AssertImages(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
 			);
@@ -95,7 +95,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 			await goldFlowTestRun.AssertAsync(result, ExpectedItemsForRetry, ExpectedItemsForRetry).ConfigureAwait(false);
 
-			AssertDocuments(
+			goldFlowTestRun.AssertDocuments(
 				documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
