@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.Objects;
@@ -14,7 +13,7 @@ using User = Relativity.Services.User.User;
 
 namespace Relativity.Sync.Tests.System.Core
 {
-	public abstract class SystemTest : IDisposable
+	internal abstract class SystemTest : IDisposable
 	{
 		protected readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
@@ -24,6 +23,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 		protected ServiceFactory ServiceFactory { get; private set; }
 		protected TestEnvironment Environment { get; private set; }
+		protected ImportHelper ImportHelper { get; private set; }
 
 		protected User User { get; private set; }
 
@@ -36,6 +36,7 @@ namespace Relativity.Sync.Tests.System.Core
 			ServiceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			User = await Rdos.GetUserAsync(ServiceFactory, 0).ConfigureAwait(false);
 			Environment = new TestEnvironment();
+			ImportHelper = new ImportHelper(ServiceFactory);
 			Logger = TestLogHelper.GetLogger();
 
 			Logger.LogInformation("Invoking ChildSuiteSetup");
@@ -156,19 +157,20 @@ namespace Relativity.Sync.Tests.System.Core
 			return queryRequest;
 		}
 
-		#region Assertions
-
-		protected void AssertDocuments(string[] sourceDocumentsNames, string[] destinationDocumentsNames)
+		protected async Task<int> CreateAndImportProductionAsync(int workspaceId, Dataset dataset, string productionName = "")
 		{
-			var destinationDocumentsNamesSet = new HashSet<string>(destinationDocumentsNames);
-
-			foreach (var name in sourceDocumentsNames)
+			if (string.IsNullOrEmpty(productionName))
 			{
-				destinationDocumentsNamesSet.Contains(name).Should().BeTrue($"Document {name} was not created in destination workspace");
+				productionName = dataset.Name + "_" + DateTime.Now.ToLongTimeString() + "_" + DateTime.Now.Ticks;
 			}
-		}
 
-		#endregion
+			int productionId = await Environment.CreateProductionAsync(workspaceId, productionName).ConfigureAwait(false);
+
+			var dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
+			await ImportHelper.ImportDataAsync(workspaceId, dataTableWrapper, productionId).ConfigureAwait(false);
+
+			return productionId;
+		}
 
 		protected virtual void Dispose(bool disposing)
 		{

@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class SourceWorkspaceTagsCreationExecutorTests : SystemTest
+	internal sealed class SourceWorkspaceTagsCreationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
 		private WorkspaceRef _sourceWorkspace;

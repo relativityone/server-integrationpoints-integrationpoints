@@ -18,9 +18,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal sealed class DocumentSynchronizationExecutorTests : SystemTest
 	{
-		private const int _CONTROL_NUMBER_FIELD_ID = 1003667;
-		private const string _CONTROL_NUMBER_FIELD_DISPLAY_NAME = "Control Number";
-
 		private string SourceWorkspaceName => $"Source.{Guid.NewGuid()}";
 		private string DestinationWorkspaceName => $"Destination.{Guid.NewGuid()}";
 

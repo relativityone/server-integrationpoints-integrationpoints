@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class DestinationWorkspaceObjectTypesCreationExecutorTests : SystemTest
+	internal sealed class DestinationWorkspaceObjectTypesCreationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
 		private readonly List<Guid> _guids = new List<Guid>()

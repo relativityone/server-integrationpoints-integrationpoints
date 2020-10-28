@@ -115,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_cache.Setup(x => x.GetFieldValue<string>(ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
 
 			// Act & Assert
-			_instance.ProductionIds.Should().BeEquivalentTo(expectedValue);
+			_instance.ProductionImagePrecedence.Should().BeEquivalentTo(expectedValue);
 		}
 
 		[TestCase(true)]

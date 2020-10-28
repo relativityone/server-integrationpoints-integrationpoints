@@ -19,10 +19,9 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public class ImageFileRepositoryTests : SystemTest
+	internal sealed class ImageFileRepositoryTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
-		private ImportHelper _importHelper;
 
 		private IImageFileRepository _sut;
 
@@ -32,14 +31,12 @@ namespace Relativity.Sync.Tests.System
 
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
-			_importHelper = new ImportHelper(ServiceFactory);
-
 			var container = ContainerHelper.Create(new ConfigurationStub
-			{
-				SourceWorkspaceArtifactId = _workspace.ArtifactID
-			},
+				{
+					SourceWorkspaceArtifactId = _workspace.ArtifactID
+				},
 				cb => cb.RegisterInstance(Logger).As<ISyncLog>()
-				);
+			);
 
 			_sut = container.Resolve<IImageFileRepository>();
 		}
@@ -48,7 +45,7 @@ namespace Relativity.Sync.Tests.System
 		public Task TearDown()
 		{
 			// Deleting documents to restore the workspace to empty state between tests
-			return Environment.DeleteAllDocumentsInWorkspace(_workspace);
+			return Environment.DeleteAllDocumentsInWorkspaceAsync(_workspace);
 		}
 
 		[IdentifiedTest("2f71008b-89bc-4322-b700-ccd941c9b463")]
@@ -57,7 +54,7 @@ namespace Relativity.Sync.Tests.System
 			// Arrange
 			Dataset dataset = Dataset.MultipleImagesPerDocument;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await _importHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
+			await ImportHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
 			var documentIds = await GetAllDocumentArtifactIdsAsync().ConfigureAwait(false);
 
 			// Act
@@ -80,8 +77,8 @@ namespace Relativity.Sync.Tests.System
 			// Arrange
 			Dataset dataset = Dataset.Images;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await _importHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
-			var request = GetQueryRequest();
+			await ImportHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
+			QueryRequest request = GetQueryRequest();
 
 			// Act
 			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
@@ -96,7 +93,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldCalculateCorrectSize_ForProduction()
 		{
 			// Arrange
-			var productionId = await CreateAndImportProductionAsync(Dataset.ImagesBig).ConfigureAwait(false);
+			int productionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.ImagesBig).ConfigureAwait(false);
 			var request = GetQueryRequest();
 
 			// Act
@@ -112,13 +109,13 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldIncludeOriginalImagesWhenEnabled()
 		{
 			// Arrange
-			var productionId = await CreateAndImportProductionAsync(Dataset.Images).ConfigureAwait(false);
+			int productionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.Images).ConfigureAwait(false);
 
 			Dataset dataset = Dataset.ThreeImages;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await _importHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
+			await ImportHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
 
-			var request = GetQueryRequest();
+			QueryRequest request = GetQueryRequest();
 
 			// Act
 			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
@@ -133,14 +130,14 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldRespectProductionPrecedence()
 		{
 			// Arrange
-			var singleDocumentProductionId = await CreateAndImportProductionAsync(Dataset.SingleDocumentProduction).ConfigureAwait(false);
-			var twoDocumentProductionId = await CreateAndImportProductionAsync(Dataset.TwoDocumentProduction).ConfigureAwait(false);
+			int singleDocumentProductionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.SingleDocumentProduction).ConfigureAwait(false);
+			int twoDocumentProductionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.TwoDocumentProduction).ConfigureAwait(false);
 
 			Dataset dataset = Dataset.ThreeImages;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await _importHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
+			await ImportHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
 
-			var request = GetQueryRequest();
+			QueryRequest request = GetQueryRequest();
 
 			// Act
 			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
@@ -167,21 +164,6 @@ namespace Relativity.Sync.Tests.System
 			}
 
 			return new ImagesStatistics(sizes.Count, sizes.Sum(x => x.Value));
-		}
-
-		private async Task<int> CreateAndImportProductionAsync(Dataset dataset, string productionName = "")
-		{
-			if (string.IsNullOrEmpty(productionName))
-			{
-				productionName = dataset.Name + "_" + DateTime.Now.ToLongTimeString() + "_" + DateTime.Now.Ticks;
-			}
-
-			int productionId = await Environment.CreateProductionAsync(_workspace.ArtifactID, productionName).ConfigureAwait(false);
-
-			var dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await _importHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper, productionId).ConfigureAwait(false);
-
-			return productionId;
 		}
 
 		private QueryRequest GetQueryRequest()

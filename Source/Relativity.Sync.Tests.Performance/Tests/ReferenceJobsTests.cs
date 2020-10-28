@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("ReferencePerformance")]
-	public class ReferenceJobsTests : PerformanceTestBase
+	internal class ReferenceJobsTests : PerformanceTestBase
 	{
 		private readonly AzureTableHelper _tableHelper;
 

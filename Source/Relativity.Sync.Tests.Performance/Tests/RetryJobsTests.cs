@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("RETRY_Jobs")]
-	public class RetryJobsTests : PerformanceTestBase
+	internal class RetryJobsTests : PerformanceTestBase
 	{
 		public RetryJobsTests() : base(WorkspaceType.ARM, "Sync Retries 100k_Docs-30k_Errors.zip", null)
 		{

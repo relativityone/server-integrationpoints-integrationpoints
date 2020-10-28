@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.System.Core
 			return workspace;
 		}
 
-		public async Task DeleteAllDocumentsInWorkspace(WorkspaceRef workspace)
+		public async Task DeleteAllDocumentsInWorkspaceAsync(WorkspaceRef workspace)
 		{
 			var request = new MassDeleteByCriteriaRequest()
 			{

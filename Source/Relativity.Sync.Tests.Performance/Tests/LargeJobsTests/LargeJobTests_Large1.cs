@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("LARGE_Jobs-Large-1")]
-	public class LargeJobTests_Large1 : PerformanceTestBase
+	internal class LargeJobTests_Large1 : PerformanceTestBase
 	{
 		public LargeJobTests_Large1() : base(WorkspaceType.Relativity, "Large Job Tests - Large-1 [DO NOT DELETE]", null)
 		{

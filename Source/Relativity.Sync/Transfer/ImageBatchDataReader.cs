@@ -105,8 +105,8 @@ namespace Relativity.Sync.Transfer
 				IEnumerable<string> specialFieldNameAndLengthPairs = specialFieldsValues.Select(x => $"{x.Key} ({x.Value.Length})");
 
 				string message = $"Cannot determine images count for document Artifact ID: {batchItem.ArtifactID}. " +
-				                 $"Special fields builders should all return equal number of field values, but was: " +
-				                 $"{string.Join(",", specialFieldNameAndLengthPairs)}";
+								 $"Special fields builders should all return equal number of field values, but was: " +
+								 $"{string.Join(",", specialFieldNameAndLengthPairs)}";
 				throw new SyncItemLevelErrorException(message);
 			}
 

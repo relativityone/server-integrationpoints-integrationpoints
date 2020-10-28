@@ -19,7 +19,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
-	public class JobStatusConsolidationExecutorTests : SystemTest
+	internal class JobStatusConsolidationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _sourceWorkspace;
 		private WorkspaceRef _destinationWorkspace;

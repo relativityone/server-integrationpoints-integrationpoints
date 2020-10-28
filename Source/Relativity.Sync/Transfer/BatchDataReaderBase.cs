@@ -62,7 +62,6 @@ namespace Relativity.Sync.Transfer
 
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_batch = batch;
-			_batchEnumerator = GetBatchEnumerable().GetEnumerator();
 
 			_allFields = allFields;
 			_fieldManager = fieldManager;
@@ -71,6 +70,8 @@ namespace Relativity.Sync.Transfer
 			_itemLevelErrorHandler = itemLevelErrorHandler;
 
 			_cancellationToken = cancellationToken;
+
+			_batchEnumerator = GetBatchEnumerable().GetEnumerator();
 		}
 
 		protected abstract IEnumerable<object[]> GetBatchEnumerable();

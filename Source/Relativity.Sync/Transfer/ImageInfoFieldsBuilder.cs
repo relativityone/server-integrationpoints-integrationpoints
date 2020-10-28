@@ -29,7 +29,7 @@ namespace Relativity.Sync.Transfer
 		{
 			QueryImagesOptions options = new QueryImagesOptions
 			{
-				ProductionIds = _configuration.ProductionIds,
+				ProductionIds = _configuration.ProductionImagePrecedence,
 				IncludeOriginalImageIfNotFoundInProductions = _configuration.IncludeOriginalImageIfNotFoundInProductions
 			};
 

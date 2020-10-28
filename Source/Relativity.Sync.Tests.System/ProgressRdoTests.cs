@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class ProgressRdoTests : SystemTest
+	internal sealed class ProgressRdoTests : SystemTest
 	{
 		private ProgressRepository _repository;
 

@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public class DestinationWorkspaceSavedSearchCreationStepTests : SystemTest
+	internal class DestinationWorkspaceSavedSearchCreationStepTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
 		private const string _LOCAL_INSTANCE_NAME = "This Instance";

@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var expectedProductionIds = new int[] { 10, 20, 30 };
 			var expectedIncludeOriginalImageIfNotFoundInProductions = true;
 
-			_configurationFake.Setup(x => x.ProductionIds).Returns(expectedProductionIds);
+			_configurationFake.Setup(x => x.ProductionImagePrecedence).Returns(expectedProductionIds);
 			_configurationFake.Setup(x => x.IncludeOriginalImageIfNotFoundInProductions).Returns(expectedIncludeOriginalImageIfNotFoundInProductions);
 
 			// Act

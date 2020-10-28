@@ -57,12 +57,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-			_instance = new ImageDataSourceSnapshotExecutor(serviceFactory.Object, jobProgressUpdaterFactory.Object,
+			_instance = new ImageDataSourceSnapshotExecutor(serviceFactory.Object,
 				_imageFileRepositoryMock.Object, _jobStatisticsContainer, _fieldManager.Object, new EmptyLogger());
 		}
 
 		[Test]
-		public async Task ItShouldSetImagesStatistics()
+		public async Task ExecuteAsync_ShouldSetImagesSize()
 		{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 			// Arrange
@@ -86,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ItShouldInitializeExportAndSaveResult()
+		public async Task ExecuteAsync_ShouldInitializeExportAndSaveResult_WhenPushingImagesWithoutProductionPrecedence()
 		{
 			const int totalRecords = 123456789;
 			Guid runId = Guid.NewGuid();
@@ -105,22 +105,36 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 1));
+			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequestForImagesWithoutProductionPrecedence(qr)), 1));
 			_configurationMock.Verify(x => x.SetSnapshotDataAsync(runId, totalRecords));
 			_jobProgressUpdater.Verify(x => x.SetTotalItemsCountAsync(It.IsAny<int>()), Times.Never);
 		}
 
-		private bool AssertQueryRequest(QueryRequest queryRequest)
+		[Test]
+		public async Task ExecuteAsync_ShouldBuildValidQueryForExportAPI_WhenPushingImagesWithProductionPrecedence()
 		{
-			const int documentArtifactTypeId = (int)ArtifactType.Document;
-			queryRequest.ObjectType.ArtifactTypeID.Should().Be(documentArtifactTypeId);
+			const int totalRecords = 123;
+			const int productionId = 1111;
+			Guid runId = Guid.NewGuid();
 
-			queryRequest.Condition.Should().Be($"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)");
-			return true;
+			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
+			{
+				RecordCount = totalRecords,
+				RunID = runId
+			};
+			_configurationMock.SetupGet(x => x.ProductionImagePrecedence).Returns(new int[] { productionId });
+			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
+
+			// ACT
+			ExecutionResult result = await _instance.ExecuteAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			result.Status.Should().Be(ExecutionStatus.Completed);
+			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequestForImagesWithProductionPrecedence(qr)), 1));
 		}
 
 		[Test]
-		public async Task ItShouldFailWhenExportApiFails()
+		public async Task ExecuteAsync_ShouldFailWhenExportApiFails()
 		{
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).Throws<InvalidOperationException>();
 
@@ -130,6 +144,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// ASSERT
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);
 			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
+		}
+
+		private bool AssertQueryRequestForImagesWithoutProductionPrecedence(QueryRequest queryRequest)
+		{
+			AssertObjectType(queryRequest);
+			queryRequest.Condition.Should().Be($"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)");
+			return true;
+		}
+
+		private bool AssertQueryRequestForImagesWithProductionPrecedence(QueryRequest queryRequest)
+		{
+			AssertObjectType(queryRequest);
+			queryRequest.Condition.Should().Be($"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Production::Image Count' > 0)");
+			return true;
+		}
+
+		private void AssertObjectType(QueryRequest request)
+		{
+			const int documentArtifactTypeId = (int)ArtifactType.Document;
+			request.ObjectType.ArtifactTypeID.Should().Be(documentArtifactTypeId);
 		}
 	}
 }

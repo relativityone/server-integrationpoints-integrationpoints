@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class BatchRdoTests : SystemTest
+	internal sealed class BatchRdoTests : SystemTest
 	{
 		private BatchRepository _sut;
 		private int _syncConfigurationArtifactId;

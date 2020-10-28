@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
-	internal class Dataset
+	public class Dataset
 	{
 		private readonly string _elementsCountPath;
 		private readonly Func<FileInfo, string> _begBatesGetter;
