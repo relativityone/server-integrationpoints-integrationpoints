@@ -15,6 +15,7 @@ relativity.transfer.client
 Relativity.OAuth2Client
 Relativity.Logging.Interfaces
 Relativity.Kepler.Client
+Relativity.Telemetry.DataContracts.Shared
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll

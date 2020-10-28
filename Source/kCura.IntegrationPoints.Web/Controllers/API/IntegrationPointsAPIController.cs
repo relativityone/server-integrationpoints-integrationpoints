@@ -85,49 +85,28 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				_logger.LogInformation("Saving Integration Point Artifact ID: {IntegrationPointID} with changed destination workspace.", model.ArtifactID);
 			}
 			
-			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
+			IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
+
+			int createdId;
+			try
 			{
-				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
-				{
-					string nameHash = _cryptographyHelper.CalculateHash(model.Name);
-					var apmMetricProperties = new APMMetric
-					{
-						Name =
-							Core.Constants.IntegrationPoints.Telemetry
-								.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
-						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, nameHash } }
-					};
-					using (apmManger.LogTimedOperation(apmMetricProperties))
-					{
-						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR,
-							Guid.Empty, nameHash))
-						{
-							IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
-
-							int createdId;
-							try
-							{
-								createdId = integrationPointService.SaveIntegration(model);
-							}
-							catch (IntegrationPointValidationException ex)
-							{
-								var validationResultMapper = new ValidationResultMapper();
-								ValidationResultDTO validationResultDto = validationResultMapper.Map(ex.ValidationResult);
-								return Request.CreateResponse(HttpStatusCode.NotAcceptable, validationResultDto);
-							}
-
-							if (mappingHasWarnings)
-							{
-								_logger.LogWarning("Saved Integration Point ArtifactID: {IntegrationPointID} with potentially invalid field mappings.", createdId);
-							}
-
-							string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
-
-							return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
-						}
-					}
-				}
+				createdId = integrationPointService.SaveIntegration(model);
 			}
+			catch (IntegrationPointValidationException ex)
+			{
+				var validationResultMapper = new ValidationResultMapper();
+				ValidationResultDTO validationResultDto = validationResultMapper.Map(ex.ValidationResult);
+				return Request.CreateResponse(HttpStatusCode.NotAcceptable, validationResultDto);
+			}
+
+			if (mappingHasWarnings)
+			{
+				_logger.LogWarning("Saved Integration Point ArtifactID: {IntegrationPointID} with potentially invalid field mappings.", createdId);
+			}
+
+			string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+
+			return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 		}
 
 		private IntegrationPointModel RemoveInstanceToInstanceSettingsFromModel(IntegrationPointModel model)
