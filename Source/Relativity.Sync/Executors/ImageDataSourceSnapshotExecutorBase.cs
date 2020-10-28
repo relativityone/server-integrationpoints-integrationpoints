@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Executors
 			return imageCondition;
 		}
 		
-		protected Task<long> CreateCalculateImagesTotalSizeTaskAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token, QueryRequest queryRequest)
+		protected Task<ImagesStatistics> CreateCalculateImagesTotalSizeTaskAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token, QueryRequest queryRequest)
 		{
 			QueryImagesOptions options = new QueryImagesOptions
 			{
@@ -37,7 +38,7 @@ namespace Relativity.Sync.Executors
 				IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
 			};
 
-			Task<long> calculateImagesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
+			Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesStatisticsAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
 			return calculateImagesTotalSizeTask;
 		}
 	}

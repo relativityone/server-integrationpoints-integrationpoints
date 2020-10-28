@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-			_instance = new ImageDataSourceSnapshotExecutor(serviceFactory.Object, jobProgressUpdaterFactory.Object,
+			_instance = new ImageDataSourceSnapshotExecutor(serviceFactory.Object,
 				_imageFileRepositoryMock.Object, _jobStatisticsContainer, _fieldManager.Object, new EmptyLogger());
 		}
 

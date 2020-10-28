@@ -16,17 +16,15 @@ namespace Relativity.Sync.Executors
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 		
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
-		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
-		public ImageRetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IJobProgressUpdaterFactory jobProgressUpdaterFactory,
-			IImageFileRepository imageFileRepository, IJobStatisticsContainer jobStatisticsContainer, IFieldManager fieldManager, ISyncLog logger)
+		public ImageRetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IImageFileRepository imageFileRepository,
+			IJobStatisticsContainer jobStatisticsContainer, IFieldManager fieldManager, ISyncLog logger)
 			: base(imageFileRepository)
 		{
 			_serviceFactory = serviceFactory;
-			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_fieldManager = fieldManager;
 			_logger = logger;
@@ -51,14 +49,7 @@ namespace Relativity.Sync.Executors
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					_logger.LogInformation("Retrieved {documentCount} documents from saved search which have images", results.RecordCount);
 
-					QueryImagesOptions options = new QueryImagesOptions
-					{
-						ProductionIds = configuration.ProductionIds,
-						IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
-					};
-
-					Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesStatisticsAsync(configuration.SourceWorkspaceArtifactId, queryRequest, options), token);
-					_jobStatisticsContainer.ImagesStatistics = calculateImagesTotalSizeTask;
+					_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token, queryRequest);
 				}
 			}
 			catch (Exception e)

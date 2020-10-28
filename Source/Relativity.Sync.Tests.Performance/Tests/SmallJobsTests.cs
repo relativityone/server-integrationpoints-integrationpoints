@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("SMALL_Jobs")]
-	public class SmallJobsTests : PerformanceTestBase
+	internal class SmallJobsTests : PerformanceTestBase
 	{
 		public SmallJobsTests() : base(WorkspaceType.ARM, "Small_jobs_tests.zip", null)
 		{

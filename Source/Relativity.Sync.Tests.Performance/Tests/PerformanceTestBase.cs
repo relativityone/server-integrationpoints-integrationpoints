@@ -28,7 +28,7 @@ using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Performance.Tests
 {
-	public class PerformanceTestBase : SystemTest
+	internal class PerformanceTestBase : SystemTest
 	{
 		protected int _sourceWorkspaceId;
 		protected int _destinationWorkspaceId;
