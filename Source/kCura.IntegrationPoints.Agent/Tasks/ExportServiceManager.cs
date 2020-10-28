@@ -122,14 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				finally
 				{
-					using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
-						.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT))
-					using (Client.MetricsClient.LogDuration(
-						Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT,
-						Guid.Empty))
-					{
-						FinalizeExportServiceObservers(job);
-					}
+					FinalizeExportServiceObservers(job);
 				}
 			}
 			catch (OperationCanceledException e)
@@ -213,14 +206,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				if (totalRecords > 0)
 				{
 					Logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
-					using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry
-						.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT))
-					using (Client.MetricsClient.LogDuration(
-						Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT,
-						Guid.Empty))
-					{
-						synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
-					}
+
+					synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
 				}
 				LogPushingDocumentsSuccessfulEnd(job);
 			}

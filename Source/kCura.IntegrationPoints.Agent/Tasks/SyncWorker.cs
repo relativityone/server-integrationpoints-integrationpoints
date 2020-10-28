@@ -123,16 +123,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			LogExecuteStart(job);
 
-			using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR))
-			using (Client.MetricsClient.LogDuration(
-				Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR, Guid.Empty))
+			foreach (IBatchStatus batchComplete in BatchStatus)
 			{
-				foreach (IBatchStatus batchComplete in BatchStatus)
-				{
-					batchComplete.OnJobStart(job);
-				}
-				ExecuteTask(job);
+				batchComplete.OnJobStart(job);
 			}
+
+			ExecuteTask(job);
+
 			LogExecuteEnd(job);
 		}
 

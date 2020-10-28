@@ -8,8 +8,7 @@ namespace kCura.IntegrationPoints.Core
 		public static class IntegrationPoints
 		{
 			public const string APPLICATION_NAME = "Integration Points";
-			public const string INTEGRATION_POINT_OBJECT_TYPE_NAME = "IntegrationPoint";
-			public const string APPLICATION_GUID_STRING = kCura.IntegrationPoints.Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
+			public const string APPLICATION_GUID_STRING = Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
 			public const string JOBS_ALREADY_RUNNING = "There are other jobs currently running or awaiting execution.";
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
 			public const string NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT = "User does not have permission to edit the integration point.";
@@ -20,7 +19,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 			public const string RELATIVITY_CUSTOMPAGE_GUID = "dcf6e9d1-22b6-4da3-98f6-41381e93c30c";
 			public const string RELATIVITY_PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
-			public const string RELATIVITY_PROVIDER_GUID = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID;
+			public const string RELATIVITY_PROVIDER_GUID = Domain.Constants.RELATIVITY_PROVIDER_GUID;
 			public const string RELATIVITY_PROVIDER_NAME = "Relativity";
 			public const string RELATIVITY_DESTINATION_PROVIDER_GUID = DestinationProviders.RELATIVITY;
 			public const string LOAD_FILE_DESTINATION_PROVIDER_GUID = DestinationProviders.LOADFILE;
@@ -28,7 +27,6 @@ namespace kCura.IntegrationPoints.Core
 			public const string RETRY_ON_STOPPED_JOB = "The transfer cannot be retried because it has been stopped.";
 			public const string FAILED_TO_RETRIEVE_JOB_HISTORY = "Unable to retrieve the previous job history.";
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
-			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT = "Unable to retrieve Integration Point.";
 			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE = "Unable to retrieve Integration Point Profile.";
 			public const string UNABLE_TO_RETRIEVE_SOURCE_PROVIDER = "Unable to retrieve Source Provider.";
 			public const string UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_ARTIFACT_ID = "Unable to retrieve Destination Provider by Artifact ID {0}";
@@ -39,8 +37,8 @@ namespace kCura.IntegrationPoints.Core
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE = "Unable to retry this Integration Point. Please contact your system administrator.";
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to retry Integration Point.";
 			public const string UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED = "Unable to save the Integration Point. Validation has failed.";
-			public static readonly Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
-			public static readonly Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+			public static readonly Regex InvalidMultiChoicesValueFormat = new Regex($".*{Domain.Constants.MULTI_VALUE_DELIMITER}|{Domain.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+			public static readonly Regex InvalidMultiObjectsValueFormat = new Regex($".*{Domain.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 
 			public const string API_CONTROLLER_NAME = "IntegrationPointsAPI";
 			public const string OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
@@ -90,20 +88,14 @@ namespace kCura.IntegrationPoints.Core
 				public const string TELEMETRY_CATEGORY = "Integration Points";
 
 				public const string BUCKET_INTEGRATION_POINTS = "IntegrationPoints.*";
-				public const string BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncWorker.Execute.Duration";
-				public const string BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Agent.Tasks.SyncManager.Execute.Duration";
-				public const string BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR = "IntegrationPoints.Web.Controllers.API.Update.Duration";
 
 				public const string CUSTOM_DATA_CORRELATIONID = "CorrelationID";
 
-				#region Export
+				#region Custom Page
 
-				public const string BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR = "IntegrationPoints.SharedLibrary.Export.Duration";
-				public const string BUCKET_EXPORT_PUSH_KICK_OFF_IMPORT = "IntegrationPoints.ExportServiceManager.SyncData.Duration";
-				public const string BUCKET_EXPORT_PUSH_TARGET_DOCUMENTS_TAGGING_IMPORT = "IntegrationPoints.ExportServiceManager.FinalizeExportServiceObservers.Duration";
+				public const string BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME = "IntegrationPoint.CustomPage.ResponseTime";
 
-
-				#endregion //Export
+				#endregion
 
 				#region Profiles
 
@@ -147,8 +139,6 @@ namespace kCura.IntegrationPoints.Core
 		public static class IntegrationPointProfiles
 		{
 			public const string API_CONTROLLER_NAME = "IntegrationPointProfilesAPI";
-
-			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE = "Unable to retrieve Integration Point Profle.";
 
 			public static class PermissionErrors
 			{

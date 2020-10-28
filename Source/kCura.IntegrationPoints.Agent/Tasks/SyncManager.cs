@@ -410,13 +410,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public override void Execute(Job job)
 		{
 			LogExecuteStart(job);
-			using (APMClient.APMClient.TimedOperation(Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR))
-			using (Client.MetricsClient.LogDuration(
-				Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_MANAGER_EXEC_DURATION_METRIC_COLLECTOR,
-				Guid.Empty))
-			{
-				base.Execute(job);
-			}
+
+			base.Execute(job);
+
 			LogExecuteEnd(job);
 		}
 

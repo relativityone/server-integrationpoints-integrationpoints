@@ -71,6 +71,8 @@ namespace kCura.IntegrationPoints.EventHandlers
 			{
 				try
 				{
+					LogExecutionInfo();
+
 					OnRaisePostInstallPreExecuteEvent();
 					Run();
 					return response;
@@ -144,6 +146,11 @@ namespace kCura.IntegrationPoints.EventHandlers
 
 			GuidAttribute guid = type.OfType<GuidAttribute>().FirstOrDefault();
 			return guid == null ? Guid.Empty : new Guid(guid.Value);
+		}
+
+		private void LogExecutionInfo()
+		{
+			Logger.LogInformation("Post install EventHandler started: {eventHandler} in workspace {workspaceId}", this.GetType().Name, Helper.GetActiveCaseID());
 		}
 	}
 }

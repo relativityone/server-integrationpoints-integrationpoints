@@ -144,7 +144,6 @@
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
-    <Compile Include="TestCategories\Attributes\NightlyOnlyAttribute.cs" />
     <Compile Include="TestCategories\Attributes\NotWorkingOnTridentAttribute.cs" />
     <Compile Include="TestRdoGenerator.cs" />
     <Compile Include="TestCategories\Attributes\ConnectivityToTestRunnerRequiredTestAttribute.cs" />

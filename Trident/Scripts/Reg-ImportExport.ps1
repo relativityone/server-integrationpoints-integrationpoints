@@ -14,8 +14,6 @@ Set-RegressionSettings $RegEnv
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) -Configuration Release
-
-&($TaskRunner) RegTest -Configuration Release -TestFilter "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment"
+&($TaskRunner) Compile, Package, RegTest -Configuration Release -TestFilter "cat == WebImportExport && cat != NotWorkingOnRegressionEnvironment"
 
 Remove-Module Build-Util
