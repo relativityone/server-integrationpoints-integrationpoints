@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 	internal abstract class ImageGoldFlowTestsBase : SystemTest
 	{
 		public int ExpectedItemsForRetry { get; }
-		public int ExpectedDocumentsForRetry { get; }
+
 		protected readonly Dataset _dataset;
 		protected const int _HAS_IMAGES_YES_CHOICE = 1034243;
 
