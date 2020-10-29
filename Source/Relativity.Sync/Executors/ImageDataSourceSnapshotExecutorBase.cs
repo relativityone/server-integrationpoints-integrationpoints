@@ -23,7 +23,7 @@ namespace Relativity.Sync.Executors
 
 		protected string CreateConditionToRetrieveImages(int[] productionImagePrecedence)
 		{
-			string imageCondition = productionImagePrecedence.Any()
+			string imageCondition = productionImagePrecedence != null && productionImagePrecedence.Any()
 				? $"('{_PRODUCTION_IMAGE_COUNT_FIELD_NAME}' > 0)"
 				: $"('{_HAS_IMAGES_FIELD_NAME}' == CHOICE {_HAS_IMAGES_YES_CHOICE})";
 

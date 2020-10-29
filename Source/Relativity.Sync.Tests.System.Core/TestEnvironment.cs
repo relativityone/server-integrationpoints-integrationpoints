@@ -13,13 +13,9 @@ using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Production;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using FieldRef = Relativity.Services.Field.FieldRef;
-using NumberingType = Relativity.Services.Production.NumberingType;
-using ProductionDetails = Relativity.Services.Production.ProductionDetails;
-using ProductionNumberingBase = Relativity.Productions.Services.ProductionNumberingBase;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -73,15 +69,6 @@ namespace Relativity.Sync.Tests.System.Core
 			{
 				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
 				return workspaces.FirstOrDefault(x => x.Name == workspaceName);
-			}
-		}
-
-		public async Task<IEnumerable<WorkspaceRef>> GetWorkspacesAsync(string workspaceName)
-		{
-			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
-			{
-				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
-				return workspaces.Where(ws => ws.Name == workspaceName).ToList();
 			}
 		}
 
@@ -153,26 +140,10 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
-				// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
+				// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled 
 				await Task.WhenAll(_workspaces.Select(w => manager.DeleteAsync(new WorkspaceRef(w.ArtifactID)))).ConfigureAwait(false);
 			}
 			_workspaces.Clear();
-		}
-
-		public async Task DeleteWorkspacesAsync(IEnumerable<int> artifactIds)
-		{
-			List<int> artifactIdsList = artifactIds.ToList();
-			if (artifactIdsList.Any())
-			{
-				using (var manager = _serviceFactory.CreateProxy<IObjectManager>())
-				{
-					MassDeleteByObjectIdentifiersRequest request = new MassDeleteByObjectIdentifiersRequest()
-					{
-						Objects = artifactIdsList.Select(x => new RelativityObjectRef {ArtifactID = x}).ToList()
-					};
-					await manager.DeleteAsync(-1, request).ConfigureAwait(false);
-				}
-			}
 		}
 
 		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
@@ -180,14 +151,14 @@ namespace Relativity.Sync.Tests.System.Core
 			var production = new Productions.Services.Production
 			{
 				Name = productionName,
-				Details = new Productions.Services.ProductionDetails
+				Details = new ProductionDetails
 				{
 					BrandingFontSize = 10,
 					ScaleBrandingFont = false
 				},
 				Numbering = new DocumentFieldNumbering
 				{
-					NumberingType = Productions.Services.NumberingType.DocumentField,
+					NumberingType = NumberingType.DocumentField,
 					NumberingField = new FieldRef
 					{
 						ArtifactID = 1003667,
@@ -211,7 +182,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 			using (var productionManager = _serviceFactory.CreateProxy<IProductionManager>())
 			{
-				
+
 
 				return await productionManager.CreateSingleAsync(workspaceID, production).ConfigureAwait(false);
 			}
@@ -251,7 +222,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 				if (libraryAppVersion < appXmlAppVersion)
 				{
-					// Rewinding stream as it will be reused.
+					// Rewinding stream as it will be reused. 
 					fileStream.Seek(0, SeekOrigin.Begin);
 					using (var outStream = await CreateRapFileInMemoryAsync(fileStream).ConfigureAwait(false))
 					using (var keplerStream = new KeplerStream(outStream))
@@ -281,7 +252,7 @@ namespace Relativity.Sync.Tests.System.Core
 				}
 			}
 
-			// Rewinding stream as it is meant to be reused.
+			// Rewinding stream as it is meant to be reused. 
 			outStream.Seek(0, SeekOrigin.Begin);
 			return outStream;
 		}
@@ -299,12 +270,12 @@ namespace Relativity.Sync.Tests.System.Core
 			return appXmlAppVersion;
 		}
 
-		/// <summary>
-		/// To prevent insecure DTD processing we have to load the XML in a specific way.
-		/// See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca3075-insecure-dtd-processing?view=vs-2017 for more info
-		/// </summary>
-		/// <param name="fileStream">Stream to be read</param>
-		/// <returns>XML document loaded from given stream</returns>
+		/// <summary> 
+		/// To prevent insecure DTD processing we have to load the XML in a specific way. 
+		/// See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca3075-insecure-dtd-processing?view=vs-2017 for more info 
+		/// </summary> 
+		/// <param name="fileStream">Stream to be read</param> 
+		/// <returns>XML document loaded from given stream</returns> 
 		private static XmlDocument SafeLoadXml(Stream fileStream)
 		{
 			var xmlReaderSettings = new XmlReaderSettings { XmlResolver = null };
