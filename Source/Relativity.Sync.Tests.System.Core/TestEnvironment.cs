@@ -13,13 +13,9 @@ using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Production;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using FieldRef = Relativity.Services.Field.FieldRef;
-using NumberingType = Relativity.Services.Production.NumberingType;
-using ProductionDetails = Relativity.Services.Production.ProductionDetails;
-using ProductionNumberingBase = Relativity.Productions.Services.ProductionNumberingBase;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -73,15 +69,6 @@ namespace Relativity.Sync.Tests.System.Core
 			{
 				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
 				return workspaces.FirstOrDefault(x => x.Name == workspaceName);
-			}
-		}
-
-		public async Task<IEnumerable<WorkspaceRef>> GetWorkspacesAsync(string workspaceName)
-		{
-			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
-			{
-				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
-				return workspaces.Where(ws => ws.Name == workspaceName).ToList();
 			}
 		}
 
@@ -158,21 +145,6 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 			_workspaces.Clear();
 		}
-
-		public async Task DeleteWorkspacesAsync(IEnumerable<int> artifactIds)
-		{
-			List<int> artifactIdsList = artifactIds.ToList();
-			if (artifactIdsList.Any())
-			{
-				using (var manager = _serviceFactory.CreateProxy<IObjectManager>())
-				{
-					MassDeleteByObjectIdentifiersRequest request = new MassDeleteByObjectIdentifiersRequest()
-					{
-						Objects = artifactIdsList.Select(x => new RelativityObjectRef {ArtifactID = x}).ToList()
-					};
-					await manager.DeleteAsync(-1, request).ConfigureAwait(false);
-				}
-			}
 		}
 
 		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
@@ -180,14 +152,14 @@ namespace Relativity.Sync.Tests.System.Core
 			var production = new Productions.Services.Production
 			{
 				Name = productionName,
-				Details = new Productions.Services.ProductionDetails
+				Details = new ProductionDetails
 				{
 					BrandingFontSize = 10,
 					ScaleBrandingFont = false
 				},
 				Numbering = new DocumentFieldNumbering
 				{
-					NumberingType = Productions.Services.NumberingType.DocumentField,
+					NumberingType = NumberingType.DocumentField,
 					NumberingField = new FieldRef
 					{
 						ArtifactID = 1003667,

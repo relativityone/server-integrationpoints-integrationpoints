@@ -85,12 +85,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
 
-		[Test]
-		public async Task ExecuteAsync_ShouldInitializeExportAndSaveResult_WhenPushingImagesWithoutProductionPrecedence()
+		[TestCase(null)]
+		[TestCase(new int[0])]
+		public async Task ExecuteAsync_ShouldInitializeExportAndSaveResult_WhenPushingImagesWithoutProductionPrecedence(int[] productionImagePrecedence)
 		{
 			const int totalRecords = 123456789;
 			Guid runId = Guid.NewGuid();
 
+			_configurationMock.SetupGet(x => x.ProductionImagePrecedence).Returns(productionImagePrecedence);
 			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
 			{
 				RecordCount = totalRecords,
