@@ -4,14 +4,15 @@ using FluentAssertions;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
-	internal class TestFile
+	internal class TestImageFile
 	{
-		public TestFile(int documentArtifactId, string identifier, string location, string filename, long size, int? productionId = null)
+		public TestImageFile(int documentArtifactId, string identifier, string location, string filename, long size, int order, int? productionId = null)
 		{
 			DocumentArtifactId = documentArtifactId;
 			Location = location;
 			Filename = filename;
 			Size = size;
+			Order = order;
 			ProductionId = productionId;
 			Identifier = identifier;
 		}
@@ -20,6 +21,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		public string Location { get; }
 		public string Filename { get; }
 		public long Size { get; }
+		public int Order { get; }
 		public int? ProductionId { get; }
 		public string Identifier { get; }
 
@@ -28,8 +30,9 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static string _FILENAME_COLUMN_NAME = "Filename";
 		private static string _SIZE_COLUMN_NAME = "Size";
 		private static string _IDENTIFIER = "Identifier";
+		private static string _ORDER = "Order";
 
-		public static TestFile GetFile(DataRow dataRow)
+		public static TestImageFile GetFile(DataRow dataRow)
 		{
 			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
 			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
@@ -37,7 +40,10 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
 			string identifier = GetValue<string>(dataRow, _IDENTIFIER);
 
-			return new TestFile(documentArtifactId, identifier, location, fileName, size);
+			int order = GetValue<int>(dataRow, _ORDER);
+
+
+			return new TestImageFile(documentArtifactId, identifier, location, fileName, size, order);
 		}
 
 		private static T GetValue<T>(DataRow row, string columnName)
@@ -54,11 +60,12 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static void AssertAreEquivalent(TestFile sourceTestImage, TestFile destinationTestImage, string expectedIdentifier)
+		public static void AssertAreEquivalent(TestImageFile sourceTestImage, TestImageFile destinationTestImage, string expectedIdentifier)
 		{
 			destinationTestImage.Filename.Should().Be(sourceTestImage.Filename);
 			destinationTestImage.Identifier.Should().Be(expectedIdentifier);
 			destinationTestImage.Size.Should().Be(sourceTestImage.Size);
+			destinationTestImage.Order.Should().Be(sourceTestImage.Order);
 		}
 	}
 }
