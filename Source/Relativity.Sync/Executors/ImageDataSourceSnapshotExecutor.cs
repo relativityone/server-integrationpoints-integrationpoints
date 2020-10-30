@@ -11,22 +11,18 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class ImageDataSourceSnapshotExecutor : ImageDataSourceSnapshotExecutorBase, IExecutor<IImageDataSourceSnapshotConfiguration>
+	internal sealed class ImageDataSourceSnapshotExecutor : ImageDataSourceSnapshotExecutorBase<IImageDataSourceSnapshotConfiguration>, IExecutor<IImageDataSourceSnapshotConfiguration>
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
-
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
 		public ImageDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IImageFileRepository imageFileRepository,
 			IJobStatisticsContainer jobStatisticsContainer, IFieldManager fieldManager, ISyncLog logger)
-		: base(imageFileRepository)
+		: base(imageFileRepository, fieldManager)
 		{
 			_serviceFactory = serviceFactory;
 			_jobStatisticsContainer = jobStatisticsContainer;
-			_fieldManager = fieldManager;
 			_logger = logger;
 		}
 
@@ -64,27 +60,7 @@ namespace Relativity.Sync.Executors
 			return ExecutionResult.Success();
 		}
 
-		private async Task<QueryRequest> CreateQueryRequestAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token)
-		{
-			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
-			string imageCondition = CreateConditionToRetrieveImages(configuration.ProductionImagePrecedence);
-
-			QueryRequest queryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
-				},
-				Condition = $"('ArtifactId' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND {imageCondition}",
-				Fields = new[]
-				{
-					new FieldRef
-					{
-						Name = identifierField.SourceFieldName
-					}
-				}
-			};
-			return queryRequest;
-		}
+		protected override string CreateImageQueryCondition(IImageDataSourceSnapshotConfiguration configuration)
+			=> $"{DocumentsInSavedSearch(configuration.DataSourceArtifactId)} AND {DocumentsWithImages(configuration)}";
 	}
 }

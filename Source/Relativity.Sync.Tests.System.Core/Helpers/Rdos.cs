@@ -662,7 +662,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 						{
 							Guid = IncludeOriginalImagesGuid
 						},
-						Value = configuration.IncludeOriginalImages
+						Value = configuration.ProductionImagePrecedence is null || configuration.IncludeOriginalImageIfNotFoundInProductions
 					},
 					new FieldRefValuePair
 					{

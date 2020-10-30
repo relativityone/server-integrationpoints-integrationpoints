@@ -1,13 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Security;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal static class TridentHelper
 	{
-		public static void UpdateFilePathToLocalIfNeeded(int workspaceArtifactId, Dataset dataSet, bool natives)
+		public static void UpdateFilePathToLocalIfNeeded(int workspaceArtifactId, Dataset dataSet)
 		{
 			if (AppSettings.IsSettingsFileSet)
 			{
@@ -21,18 +23,27 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				#endregion
 				using (SqlConnection connection = CreateConnectionFromAppConfig(workspaceArtifactId))
 				{
-					string localFolderPath = natives
+					string localFolderPath = dataSet.ImportType == ImportType.Native
 						? Path.Combine(dataSet.FolderPath, "NATIVES")
 						: dataSet.FolderPath;
 
+					SqlParameter[] fileNames = dataSet.GetFiles()
+						.Select((x, idx) => new SqlParameter($"File{idx}", x.Name)).ToArray();
+					string fileParameterNames = string.Join(",", fileNames.Select(x => $"@{x.ParameterName}"));
+
+					string sqlStatement =
+						$@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename]) WHERE [TYPE] = @FileType AND [Filename] IN ({fileParameterNames})";
+
 					connection.Open();
 
-					const string sqlStatement =
-						@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename])";
 					SqlCommand command = new SqlCommand(sqlStatement, connection);
 					command.Parameters.AddWithValue("LocalFilePath", localFolderPath);
+					command.Parameters.AddWithValue("FileType", (int)dataSet.ImportType);
+					command.Parameters.AddRange(fileNames);
 
 					command.ExecuteNonQuery();
+
+					connection.Close();
 				}
 			}
 		}

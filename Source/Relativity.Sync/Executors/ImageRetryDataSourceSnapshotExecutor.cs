@@ -11,22 +11,18 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-	internal sealed class ImageRetryDataSourceSnapshotExecutor : ImageDataSourceSnapshotExecutorBase, IExecutor<IImageRetryDataSourceSnapshotConfiguration>
+	internal sealed class ImageRetryDataSourceSnapshotExecutor : ImageDataSourceSnapshotExecutorBase<IImageRetryDataSourceSnapshotConfiguration>, IExecutor<IImageRetryDataSourceSnapshotConfiguration>
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-		
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly IFieldManager _fieldManager;
 		private readonly ISyncLog _logger;
 
 		public ImageRetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, IImageFileRepository imageFileRepository,
 			IJobStatisticsContainer jobStatisticsContainer, IFieldManager fieldManager, ISyncLog logger)
-			: base(imageFileRepository)
+			: base(imageFileRepository, fieldManager)
 		{
 			_serviceFactory = serviceFactory;
 			_jobStatisticsContainer = jobStatisticsContainer;
-			_fieldManager = fieldManager;
 			_logger = logger;
 		}
 
@@ -65,22 +61,12 @@ namespace Relativity.Sync.Executors
 			return ExecutionResult.Success();
 		}
 
-		private async Task<QueryRequest> CreateQueryRequestAsync(IImageRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
-		{
-			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
-			string imageCondition = CreateConditionToRetrieveImages(configuration.ProductionImagePrecedence);
+		protected override string CreateImageQueryCondition(IImageRetryDataSourceSnapshotConfiguration configuration)
+			=> $"{DocumentsWithErrors(configuration.JobHistoryToRetryId)} " + 
+			   $"AND {DocumentsInSavedSearch(configuration.DataSourceArtifactId)} " +
+			   $"AND {DocumentsWithImages(configuration)}";
 
-			QueryRequest queryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
-				},
-				Condition = $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{configuration.JobHistoryToRetryId}])) " +
-				            $"AND ('Artifact ID' IN SAVEDSEARCH {configuration.DataSourceArtifactId}) AND {imageCondition}",
-				Fields = new[] {new FieldRef {Name = identifierField.SourceFieldName}}
-			};
-			return queryRequest;
-		}
+		private string DocumentsWithErrors(int? jobHistoryArtifactId) =>
+			$"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{jobHistoryArtifactId}]))";
 	}
 }

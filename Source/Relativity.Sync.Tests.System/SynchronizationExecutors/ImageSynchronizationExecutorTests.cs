@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
-				.ImportData(dataSet, images: true)
+				.ImportImageData(dataSet)
 				.SetupImageConfiguration(identifierFieldMap, batchSize: _BATCH_SIZE)
 				.SetupContainer()
 				.SetDocumentTracking()

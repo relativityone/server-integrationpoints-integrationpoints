@@ -51,11 +51,9 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			return this;
 		}
 
-		public SynchronizationExecutorSetup ImportData(Dataset dataSet, bool extractedText = false, bool natives = false, bool images = false)
+		public SynchronizationExecutorSetup ImportData(Dataset dataSet, bool extractedText = false, bool natives = false)
 		{
-			ImportDataTableWrapper dataTableWrapper = images
-				? DataTableFactory.CreateImageImportDataTable(dataSet)
-				: DataTableFactory.CreateImportDataTable(dataSet, extractedText, natives);
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(dataSet, extractedText, natives);
 
 			ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
 				.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
@@ -64,7 +62,23 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 			TotalDataCount = dataTableWrapper.Data.Rows.Count;
 
-			TridentHelper.UpdateFilePathToLocalIfNeeded(SourceWorkspace.ArtifactID, dataSet, natives);
+			TridentHelper.UpdateFilePathToLocalIfNeeded(SourceWorkspace.ArtifactID, dataSet);
+
+			return this;
+		}
+
+		public SynchronizationExecutorSetup ImportImageData(Dataset dataSet)
+		{
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataSet);
+
+			ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
+				.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
+
+			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+
+			TotalDataCount = dataTableWrapper.Data.Rows.Count;
+
+			TridentHelper.UpdateFilePathToLocalIfNeeded(SourceWorkspace.ArtifactID, dataSet);
 
 			return this;
 		}
@@ -149,7 +163,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			//Image Configuration
 			Configuration.ImportImageFileCopyMode = imageFileCopyMode;
 			Configuration.ImageImport = true;
-			Configuration.IncludeOriginalImages = true;
 
 			Configuration.SetFieldMappings(fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID));
 

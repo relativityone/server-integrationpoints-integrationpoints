@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 		{
 			_goldFlowTestSuite = await GoldFlowTestSuite.CreateAsync(Environment, User, ServiceFactory).ConfigureAwait(false);
 			await _goldFlowTestSuite.ImportDocumentsAsync(DataTableFactory.CreateImageImportDataTable(_dataset)).ConfigureAwait(false);
-			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset, false);
+			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset);
 		}
 
 		[IdentifiedTest("1af24688-54e2-44eb-86f4-60fb28d37df4")]
@@ -107,7 +107,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;
 			configuration.ImportImageFileCopyMode = ImportImageFileCopyMode.CopyFiles;
 			configuration.ImageImport = true;
-			configuration.IncludeOriginalImages = true;
 
 			IList<FieldMap> identifierMapping = await GetIdentifierMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			configuration.SetFieldMappings(identifierMapping);

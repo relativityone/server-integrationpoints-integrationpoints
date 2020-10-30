@@ -18,12 +18,12 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	internal sealed class ImageDataSourceSnapshotExecutorTests
+	internal sealed class ImageRetryDataSourceSnapshotExecutorTests
 	{
-		private ImageDataSourceSnapshotExecutor _instance;
+		private ImageRetryDataSourceSnapshotExecutor _instance;
 
 		private Mock<IObjectManager> _objectManager;
-		private Mock<IImageDataSourceSnapshotConfiguration> _configurationMock;
+		private Mock<IImageRetryDataSourceSnapshotConfiguration> _configurationMock;
 		private Mock<IImageFileRepository> _imageFileRepositoryMock;
 		private IJobStatisticsContainer _jobStatisticsContainer;
 		private Mock<IFieldManager> _fieldManager;
@@ -32,6 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private const int _WORKSPACE_ID = 458712;
 		private const int _DATA_SOURCE_ID = 485219;
+		private const int _RETRY_JOB_HISTORY_ID = 10;
 
 		[SetUp]
 		public void SetUp()
@@ -44,14 +45,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManager = new Mock<IFieldManager>();
 			_fieldManager.Setup(fm => fm.GetObjectIdentifierFieldAsync(CancellationToken.None)).ReturnsAsync(_IDENTIFIER_FIELD);
 
-			_configurationMock = new Mock<IImageDataSourceSnapshotConfiguration>();
+			_configurationMock = new Mock<IImageRetryDataSourceSnapshotConfiguration>();
 			_configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
 			_configurationMock.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
 
 			_imageFileRepositoryMock = new Mock<IImageFileRepository>();
 			_jobStatisticsContainer = new JobStatisticsContainer();
 
-			_instance = new ImageDataSourceSnapshotExecutor(serviceFactory.Object,
+			_instance = new ImageRetryDataSourceSnapshotExecutor(serviceFactory.Object,
 				_imageFileRepositoryMock.Object, _jobStatisticsContainer, _fieldManager.Object, new EmptyLogger());
 		}
 
@@ -94,22 +95,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public static IEnumerable<TestCaseData> ImageInformationTestCaseSourceData => new[]
 		{
 			new TestCaseData(true, false,
-				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Production::Image Count' > 0)"),
+				$"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_RETRY_JOB_HISTORY_ID}])) AND ('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Production::Image Count' > 0)"),
 			new TestCaseData(true, true,
-				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 1034243))"),
+				$"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_RETRY_JOB_HISTORY_ID}])) AND ('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 1034243))"),
 			new TestCaseData(false, true,
-				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)"),
+				$"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_RETRY_JOB_HISTORY_ID}])) AND ('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)"),
 			new TestCaseData(false, false,
-				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)")
+				$"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_RETRY_JOB_HISTORY_ID}])) AND ('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)")
 		};
 
 		[TestCaseSource(nameof(ImageInformationTestCaseSourceData))]
-		public async Task ExecuteAsync_ShouldBuildValidQueryForExportAPI_WhenPushingImagesInformationIsSet(bool isProductionPrecedenceSet,
+		public async Task ExecuteAsync_ShouldBuildValidQueryWithJobHistoryErrors_WhenJobHistoryIdIsSet(bool isProductionPrecedenceSet,
 			bool includeOriginalImageIfNotFoundInProductions, string expectedQueryRequestCondition)
 		{
 			// Arrange
-			_configurationMock.SetupGet(x => x.IsProductionImagePrecedenceSet).Returns(isProductionPrecedenceSet);
-			_configurationMock.SetupGet(x => x.IncludeOriginalImageIfNotFoundInProductions).Returns(includeOriginalImageIfNotFoundInProductions);
+			_configurationMock.SetupGet(x => x.IsProductionImagePrecedenceSet)
+				.Returns(isProductionPrecedenceSet);
+			_configurationMock.SetupGet(x => x.IncludeOriginalImageIfNotFoundInProductions)
+				.Returns(includeOriginalImageIfNotFoundInProductions);
+			_configurationMock.SetupGet(x => x.JobHistoryToRetryId)
+				.Returns(_RETRY_JOB_HISTORY_ID);
 
 			SetupExportInitialization();
 
