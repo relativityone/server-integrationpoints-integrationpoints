@@ -156,8 +156,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext);
 				kCura.WinEDDS.Config.ProgrammaticServiceURL = AppSettings.RelativityWebApiUrl.ToString();
 
-				ILookup<int, TestFile> sourceWorkspaceFiles;
-				Dictionary<string, TestFile> destinationWorkspaceFiles;
+				ILookup<int, TestImageFile> sourceWorkspaceFiles;
+				Dictionary<string, TestImageFile> destinationWorkspaceFiles;
 
 				Dictionary<int, string> sourceWorkspaceDocumentNames = sourceWorkspaceDocuments.ToDictionary(x => x.ArtifactID, x => x.Name);
 
@@ -165,18 +165,18 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				{
 					DataTable dataTable = searchManager.RetrieveImagesForDocuments(sourceWorkspaceId, sourceWorkspaceDocuments.Select(x => x.ArtifactID).ToArray()).Tables[0];
 					sourceWorkspaceFiles = dataTable.AsEnumerable()
-						.Select(TestFile.GetFile)
+						.Select(TestImageFile.GetFile)
 						.ToLookup(x => x.DocumentArtifactId, x => x);
 
 					destinationWorkspaceFiles = searchManager.RetrieveImagesForDocuments(destinationWorkspaceId, destinationWorkspaceDocumentIds.Select(x => x.ArtifactID).ToArray()).Tables[0].AsEnumerable()
-						.Select(TestFile.GetFile)
+						.Select(TestImageFile.GetFile)
 						.ToDictionary(x => x.Identifier, x => x);
 				}
 
-				foreach (IGrouping<int, TestFile> sourceDocumentImages in sourceWorkspaceFiles)
+				foreach (IGrouping<int, TestImageFile> sourceDocumentImages in sourceWorkspaceFiles)
 				{
 					int i = 0;
-					foreach (TestFile imageFile in sourceDocumentImages)
+					foreach (TestImageFile imageFile in sourceDocumentImages)
 					{
 						string expectedIdentifier =
 							GetExpectedIdentifier(sourceWorkspaceDocumentNames[imageFile.DocumentArtifactId], i);
@@ -184,9 +184,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 						destinationWorkspaceFiles.ContainsKey(expectedIdentifier).Should()
 							.BeTrue($"Image [{sourceDocumentImages.Key} => {expectedIdentifier}] was not pushed to destination workspace");
 
-						TestFile destinationImage = destinationWorkspaceFiles[expectedIdentifier];
+						TestImageFile destinationImage = destinationWorkspaceFiles[expectedIdentifier];
 
-						TestFile.AssertAreEquivalent(imageFile, destinationImage, expectedIdentifier);
+						TestImageFile.AssertAreEquivalent(imageFile, destinationImage, expectedIdentifier);
 						i++;
 					}
 				}
