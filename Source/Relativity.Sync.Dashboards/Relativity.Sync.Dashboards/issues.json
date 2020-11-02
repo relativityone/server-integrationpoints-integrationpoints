@@ -1,9 +1,5 @@
 [
 	{
-		"Jira": "REL-364327",
-		"Exception": "*Relativity.Services.Exceptions.NotAuthorizedException: The service endpoint denied the request*"
-	},
-	{
 		"Jira": "REL-364251",
 		"Exception": "*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: Folder creation failed*"
 	},
@@ -406,5 +402,9 @@
 	{
 		"Jira": "REL-473509",
 		"Exception": "*Relativity.Services.Exceptions.InvalidInputException: Validation failed*The field name you've entered is either reserved by the system or already in use within this object type. Please enter a different field name.*at Relativity.Sync.Executors.DestinationWorkspaceObjectTypesCreationExecutor*"
+	},
+	{
+		"Jira": "REL-491762",
+		"Exception": "Relativity.Services.Exceptions.NotAuthorizedException: The service endpoint denied the request.*ValidateUserCanCreateTagInDestinationWorkspaceAsync*"
 	}
 ]
