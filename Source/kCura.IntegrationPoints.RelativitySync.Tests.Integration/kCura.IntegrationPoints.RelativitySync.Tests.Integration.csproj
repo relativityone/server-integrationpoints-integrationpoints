@@ -461,6 +461,9 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Runtime.Caching">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Sync">
           <HintPath>..\..\packages\sync\Relativity.Sync\lib\net462\Relativity.Sync.dll</HintPath>
           <Private>True</Private>
