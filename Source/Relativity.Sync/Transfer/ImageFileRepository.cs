@@ -107,7 +107,7 @@ namespace Relativity.Sync.Transfer
 
 			ImageFile[] originalImageFiles = Array.Empty<ImageFile>();
 
-			if (options.IncludeOriginalImageIfNotFoundInProductions)
+			if (options.IncludeOriginalImageIfNotFoundInProductions && documentsWithoutImages.Any())
 			{
 				(originalImageFiles, documentsWithoutImages) = RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentsWithoutImages);
 			}

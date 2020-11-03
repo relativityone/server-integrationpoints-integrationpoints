@@ -168,20 +168,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		public void IncludeOriginalImages_ShouldReturnValue()
-		{
-			// ARRANGE
-			const bool includeOriginalImages = true;
-			_cache.Setup(x => x.GetFieldValue<bool>(IncludeOriginalImagesGuid)).Returns(includeOriginalImages);
-
-			// ACT
-			bool actualIncludeOriginalImages = _syncConfig.IncludeOriginalImages;
-
-			// ASSERT
-			actualIncludeOriginalImages.Should().Be(includeOriginalImages);
-		}
-
-		[Test]
 		public void ImageFileCopyMode_ShouldReturnValue()
 		{
 			// ARRANGE
@@ -193,23 +179,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// ASSERT
 			actualImportImageFileCopyMode.Should().Be(imageCopyMode);
-		}
-
-		[TestCase(null, new int[0])]
-		[TestCase("", new int[0])]
-		[TestCase("[]", new int[0])]
-		[TestCase("[111]", new int[]{111})]
-		[TestCase("[111,2222]", new int[]{111,2222})]
-		public void ProductionImagePrecedence_ShouldReturnValue(string jsonValue, int[] expectedArray)
-		{
-			// ARRANGE
-			_cache.Setup(x => x.GetFieldValue<string>(ProductionImagePrecedenceGuid)).Returns(jsonValue);
-
-			// ACT
-			int[] actualArray = _syncConfig.ProductionImagePrecedence;
-
-			// ASSERT
-			actualArray.Should().BeEquivalentTo(expectedArray);
 		}
 
 		[Test]

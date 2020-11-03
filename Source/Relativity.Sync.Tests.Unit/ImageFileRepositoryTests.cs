@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using FluentAssertions;
+using kCura.EDDS.WebAPI.FileManagerBase;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
@@ -131,6 +134,61 @@ namespace Relativity.Sync.Tests.Unit
 
 			result.Count(x => x.ProductionId == 1).Should().Be(5);
 			result.Count(x => x.ProductionId == null).Should().Be(5);
+		}
+
+		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldNotCallOriginalImages_WhenIncludeOriginalImagesIsSetAndAllImagesMeetProductionPrecedence()
+		{
+			// Arrange
+			var data = Enumerable.Range(1, 10)
+				.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 1 }).ToList();
+
+			MockProductions(data);
+
+			QueryImagesOptions options = new QueryImagesOptions
+				{ ProductionIds = new[] {1}, IncludeOriginalImageIfNotFoundInProductions = true };
+
+			int[] documentIds = data.Select(x => x.DocumentArtifactId).ToArray();
+
+			// Act
+			await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, documentIds, options).ConfigureAwait(false);
+
+			// Assert
+			_searchManagerMock.Verify(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()), Times.Never);
+		}
+
+		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldNotGetOriginalImages_WhenIncludeOriginalImagesIsSetAndImageForProductionWasFound()
+		{
+			// Arrange
+			const int productionId = 1;
+
+			var productionData = new DocumentImageData[]
+			{
+				new DocumentImageData { DocumentArtifactId = 1000, ProductionId = productionId },
+				new DocumentImageData { DocumentArtifactId = 1001, ProductionId = 2 }
+			};
+
+			MockProductions(productionData);
+
+			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
+				.Returns(CreateDataSet(productionData.Where(x => x.ProductionId == 1)));
+
+			var documentIdsWithProductionId = productionData
+				.Where(x => x.ProductionId == productionId)
+				.Select(x => x.DocumentArtifactId);
+
+			QueryImagesOptions options = new QueryImagesOptions
+				{ ProductionIds = new[] { productionId }, IncludeOriginalImageIfNotFoundInProductions = true };
+
+			int[] documentIds = productionData.Select(x => x.DocumentArtifactId).ToArray();
+
+			// Act
+			await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, documentIds, options).ConfigureAwait(false);
+
+			// Assert
+			_searchManagerMock.Verify(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, 
+				It.Is<int[]>(expectedIds => expectedIds.Intersect(documentIdsWithProductionId).Any())), Times.Never);
 		}
 
 

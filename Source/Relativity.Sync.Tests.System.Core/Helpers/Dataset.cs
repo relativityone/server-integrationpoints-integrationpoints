@@ -13,16 +13,19 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private const string _DATASETS_FOLDER_PATH = "Data";
 		private static string CurrentDirectory => AppDomain.CurrentDomain.BaseDirectory;
 
-		public static Dataset NativesAndExtractedText { get; } = new Dataset(@"NativesAndExtractedText", elementsCountPath: @"NativesAndExtractedText\natives");
+		public static Dataset NativesAndExtractedText { get; } = 
+			new Dataset(@"NativesAndExtractedText", ImportType.Native, elementsCountPath: @"NativesAndExtractedText\natives");
 
-		public static Dataset Images { get; } = new Dataset("Images");
-		public static Dataset ImagesBig { get; } = new Dataset("ImagesBig");
-		public static Dataset ThreeImages { get; } = new Dataset("ThreeImages");
-		public static Dataset TwoDocumentProduction { get; } = new Dataset("TwoDocumentProduction");
-		public static Dataset SingleDocumentProduction { get; } = new Dataset("SingleDocumentProduction");
-		public static Dataset MultipleImagesPerDocument { get; } = new Dataset("MultipleImagesPerDocument", GetControlNumberForMultipleImages);
+		public static Dataset Images { get; } = new Dataset("Images", ImportType.Image);
+		public static Dataset ImagesBig { get; } = new Dataset("ImagesBig", ImportType.Image);
+		public static Dataset ThreeImages { get; } = new Dataset("ThreeImages", ImportType.Image);
+		public static Dataset TwoDocumentProduction { get; } = new Dataset("TwoDocumentProduction", ImportType.Production);
+		public static Dataset SingleDocumentProduction { get; } = new Dataset("SingleDocumentProduction", ImportType.Production);
+		public static Dataset MultipleImagesPerDocument { get; } = 
+			new Dataset("MultipleImagesPerDocument", ImportType.Image, GetControlNumberForMultipleImages);
 
 		public string Name { get; }
+		public ImportType ImportType { get; }
 		public string FolderPath => GetDatasetPath(Name);
 		public int TotalItemCount => GetFiles(GetDatasetPath(_elementsCountPath)).Count();
 		public int TotalDocumentCount  => GetFiles(GetDatasetPath(_elementsCountPath)).GroupBy(_controlNumberGetter).Count();
@@ -32,7 +35,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return "DOC " + file.Name.Split('_')[1];
 		}
 
-		protected Dataset(string name, Func<FileInfo, string> controlNumberGetter = null,
+		protected Dataset(string name, ImportType importType, Func<FileInfo, string> controlNumberGetter = null,
 			Func<FileInfo, string> begBatesGetter = null, string elementsCountPath = null)
 		{
 			_elementsCountPath = elementsCountPath ?? name;
@@ -41,6 +44,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			_controlNumberGetter = controlNumberGetter ?? GetFilename;
 			_begBatesGetter = begBatesGetter ?? GetFilename;
 			Name = name;
+			ImportType = importType;
 		}
 
 		private static string GetDatasetPath(string filesPath)
@@ -64,5 +68,12 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public string GetControlNumber(FileInfo file) => _controlNumberGetter(file);
 		public string GetBegBates(FileInfo file) => _begBatesGetter(file);
+	}
+
+	public enum ImportType
+	{
+		Native = 0,
+		Image = 1,
+		Production = 3
 	}
 }
