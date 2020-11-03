@@ -23,27 +23,36 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				#endregion
 				using (SqlConnection connection = CreateConnectionFromAppConfig(workspaceArtifactId))
 				{
-					string localFolderPath = dataSet.ImportType == ImportType.Native
-						? Path.Combine(dataSet.FolderPath, "NATIVES")
-						: dataSet.FolderPath;
-
-					SqlParameter[] fileNames = dataSet.GetFiles()
-						.Select((x, idx) => new SqlParameter($"File{idx}", x.Name)).ToArray();
-					string fileParameterNames = string.Join(",", fileNames.Select(x => $"@{x.ParameterName}"));
-
-					string sqlStatement =
-						$@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename]) WHERE [TYPE] = @FileType AND [Filename] IN ({fileParameterNames})";
-
 					connection.Open();
 
-					SqlCommand command = new SqlCommand(sqlStatement, connection);
-					command.Parameters.AddWithValue("LocalFilePath", localFolderPath);
-					command.Parameters.AddWithValue("FileType", (int)dataSet.ImportType);
-					command.Parameters.AddRange(fileNames);
+					if (dataSet.ImportType == ImportType.Native)
+					{
+						string localFolderPath = Path.Combine(dataSet.FolderPath, "NATIVES");
 
-					command.ExecuteNonQuery();
+						const string sqlStatement =
+							@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename])";
+						
+						SqlCommand command = new SqlCommand(sqlStatement, connection);
+						command.Parameters.AddWithValue("LocalFilePath", localFolderPath);
 
-					connection.Close();
+						command.ExecuteNonQuery();
+					}
+					else
+					{
+						SqlParameter[] fileNames = dataSet.GetFiles()
+							.Select((x, idx) => new SqlParameter($"File{idx}", x.Name)).ToArray();
+						string fileParameterNames = string.Join(",", fileNames.Select(x => $"@{x.ParameterName}"));
+
+						string sqlStatement =
+							$@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename]) WHERE [TYPE] = @FileType AND [Filename] IN ({fileParameterNames})";
+
+						SqlCommand command = new SqlCommand(sqlStatement, connection);
+						command.Parameters.AddWithValue("LocalFilePath", dataSet.FolderPath);
+						command.Parameters.AddWithValue("FileType", (int)dataSet.ImportType);
+						command.Parameters.AddRange(fileNames);
+
+						command.ExecuteNonQuery();
+					}
 				}
 			}
 		}
