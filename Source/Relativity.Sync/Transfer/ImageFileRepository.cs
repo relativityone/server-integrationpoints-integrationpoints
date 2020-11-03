@@ -63,7 +63,7 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId, QueryRequest request, QueryImagesOptions options)
 		{
-			_logger.LogInformation("Initializing calculating totals for images (in chunks of {batchSize} )", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
+			_logger.LogInformation("Initializing calculating images totals for (in chunks of {batchSize} )", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
 
 			long imagesTotalCount = 0;
 			long imagesTotalSize = 0;
@@ -74,8 +74,11 @@ namespace Relativity.Sync.Transfer
 					.Select(x => x.ArtifactID)
 					.SplitList(_BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
 
+				int batchIndex = 1;
 				foreach (IList<int> batch in documentArtifactIdBatches)
 				{
+					_logger.LogInformation("Calculating images totals for {documentsCount} documents in chunk {batchIndex}.", batch.Count, batchIndex);
+
 					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
 
 					foreach (ImageFile image in imagesInBatch)
@@ -83,8 +86,13 @@ namespace Relativity.Sync.Transfer
 						imagesTotalCount++;
 						imagesTotalSize += image.Size;
 					}
+
+					_logger.LogInformation("Calculated images totals for {documentsCount} documents in chunk {batchIndex}.", batch.Count, batchIndex++);
 				}
 			}
+
+			_logger.LogInformation("Finished calculating images totals for (in chunks of {batchSize} ", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
+
 			return new ImagesStatistics(imagesTotalCount, imagesTotalSize);
 		}
 

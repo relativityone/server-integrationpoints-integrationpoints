@@ -73,7 +73,8 @@ namespace Relativity.Sync.Transfer
 		/// </summary>
 		public async Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request)
 		{
-			_logger.LogInformation("Initializing calculating total natives size (in chunks of {batchSize} )", _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
+			_logger.LogInformation("Initializing calculating total natives size (in chunks of {batchSize})", _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
+			
 			long nativesTotalSize = 0;
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -81,12 +82,20 @@ namespace Relativity.Sync.Transfer
 					.Select(x => x.ArtifactID)
 					.SplitList(_BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
 
+				int batchIndex = 1;
 				foreach (IList<int> batch in documentArtifactIdBatches)
 				{
-					IEnumerable<INativeFile> nativesInBatch = await this.QueryAsync(workspaceId, batch).ConfigureAwait(false);
+					_logger.LogInformation("Calculating total natives size for {documentsCount} in chunk {batchIndex}.", batch.Count, batchIndex);
+
+					IEnumerable<INativeFile> nativesInBatch = await QueryAsync(workspaceId, batch).ConfigureAwait(false);
 					nativesTotalSize += nativesInBatch.Sum(x => x.Size);
+
+					_logger.LogInformation("Calculated total natives size for {documentsCount} in chunk {batchIndex}.", batch.Count, batchIndex++);
 				}
 			}
+
+			_logger.LogInformation("Finished calculating total natives size (in chunks of {batchSize} ", _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
+
 			return nativesTotalSize;
 		}
 
