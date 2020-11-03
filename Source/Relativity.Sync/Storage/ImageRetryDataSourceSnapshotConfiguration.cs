@@ -30,8 +30,6 @@ namespace Relativity.Sync.Storage
 
 		public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue<string>(ProductionImagePrecedenceGuid));
 
-		public bool IsProductionImagePrecedenceSet => ProductionImagePrecedence.Any();
-
 		public bool IncludeOriginalImageIfNotFoundInProductions =>
 			_cache.GetFieldValue<bool>(IncludeOriginalImagesGuid);
 

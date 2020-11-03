@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors
 
 		protected string DocumentsWithImages(T configuration)
 		{
-			if (configuration.IsProductionImagePrecedenceSet)
+			if (configuration.ProductionImagePrecedence.Any())
 			{
 				return configuration.IncludeOriginalImageIfNotFoundInProductions
 					? $"({_DOCUMENTS_WITH_PRODUCED_IMAGES} OR {_DOCUMENTS_WITH_ORIGINAL_IMAGES})"

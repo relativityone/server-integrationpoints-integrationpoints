@@ -95,17 +95,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_instance.ProductionImagePrecedence.Should().BeEquivalentTo(expectedValue);
 		}
 
-		[TestCase(new [] {1, 2, 3}, true)]
-		[TestCase(new int[] { }, false)]
-		public void IsProductionImagePrecedenceSet_ShouldReturnValue_BasedOnProductionIds(int[] productionIds, bool expectedProductionIsSetValue)
-		{
-			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(productionIds));
-
-			// Act & Assert
-			_instance.IsProductionImagePrecedenceSet.Should().Be(expectedProductionIsSetValue);
-		}
-
 		[TestCase(true)]
 		[TestCase(false)]
 		public void IncludeOriginalImageIfNotFoundInProductions_ShouldBeRetrieved(bool expectedValue)

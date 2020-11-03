@@ -6,8 +6,6 @@ namespace Relativity.Sync.Configuration
 	internal interface IImageDataSourceSnapshotConfiguration : IDataSourceSnapshotConfiguration
 	{
 		int[] ProductionImagePrecedence { get; }
-		
-		bool IsProductionImagePrecedenceSet { get; }
 
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
 	}

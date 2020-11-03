@@ -93,22 +93,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		public static IEnumerable<TestCaseData> ImageInformationTestCaseSourceData => new[]
 		{
-			new TestCaseData(true, false,
+			new TestCaseData(new [] { 1 }, false,
 				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Production::Image Count' > 0)"),
-			new TestCaseData(true, true,
+			new TestCaseData(new [] { 1 }, true,
 				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 1034243))"),
-			new TestCaseData(false, true,
+			new TestCaseData(new int[] { }, true,
 				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)"),
-			new TestCaseData(false, false,
+			new TestCaseData(new int[] { }, false,
 				$"('ArtifactId' IN SAVEDSEARCH {_DATA_SOURCE_ID}) AND ('Has Images' == CHOICE 1034243)")
 		};
 
 		[TestCaseSource(nameof(ImageInformationTestCaseSourceData))]
-		public async Task ExecuteAsync_ShouldBuildValidQueryForExportAPI_WhenPushingImagesInformationIsSet(bool isProductionPrecedenceSet,
+		public async Task ExecuteAsync_ShouldBuildValidQueryForExportAPI_WhenPushingImagesInformationIsSet(int[] productionImagePrecedence,
 			bool includeOriginalImageIfNotFoundInProductions, string expectedQueryRequestCondition)
 		{
 			// Arrange
-			_configurationMock.SetupGet(x => x.IsProductionImagePrecedenceSet).Returns(isProductionPrecedenceSet);
+			_configurationMock.SetupGet(x => x.ProductionImagePrecedence).Returns(productionImagePrecedence);
 			_configurationMock.SetupGet(x => x.IncludeOriginalImageIfNotFoundInProductions).Returns(includeOriginalImageIfNotFoundInProductions);
 
 			SetupExportInitialization();
