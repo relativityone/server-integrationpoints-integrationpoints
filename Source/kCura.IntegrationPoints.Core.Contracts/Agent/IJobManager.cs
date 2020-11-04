@@ -5,20 +5,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {
-	public enum TaskType
-	{
-		None,
-		SyncManager,
-		SyncWorker,
-		SyncEntityManagerWorker,
-		SendEmailManager,
-		SendEmailWorker,
-		ExportService,
-		ExportManager,
-		ExportWorker,
-		ImportService
-	}
-
 	public interface IJobManager
 	{
 		void CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null) where T : class;

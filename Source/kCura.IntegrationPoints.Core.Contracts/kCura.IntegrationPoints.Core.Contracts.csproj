@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Agent\IJobManager.cs" />
     <Compile Include="Agent\ITaskJobSubmitter.cs" />
+    <Compile Include="Agent\TaskType.cs" />
     <Compile Include="Configuration\DestinationConfiguration.cs" />
     <Compile Include="Configuration\SourceConfigurationForLogging.cs" />
     <Compile Include="Configuration\SourceConfiguration.cs" />
