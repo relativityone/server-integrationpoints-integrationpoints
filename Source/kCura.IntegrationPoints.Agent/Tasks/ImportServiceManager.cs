@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
 		}
 
-		public override async void Execute(Job job)
+		public override void Execute(Job job)
 		{
 			try
 			{
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryErrorService.CommitErrors();
 				FinalizeService(job);
 				LogExecuteFinalize(job);
-				await SendAutomatedWorkflowsTriggerAsync(job).ConfigureAwait(false);
+				SendAutomatedWorkflowsTriggerAsync(job).GetAwaiter().GetResult();
 			}
 		}
 
