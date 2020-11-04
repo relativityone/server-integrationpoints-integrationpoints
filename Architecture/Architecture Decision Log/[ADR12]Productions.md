@@ -16,13 +16,13 @@ Next step to fully decouple Sync from RIP, is to implement pushing of production
 
 ### **Production as source**
 
-Validator should check if the user has access to the source production. We can use Kepler method `IProductionManager.ReadSingleAsync`. Validator class in RIP: `ProductionValidator`
+Validator should check if the user has access to the source production. We can use Kepler method `IProductionManager.ReadSingleAsync`. Validator class in RIP for reference: `ProductionValidator`
 
 ### **Production as destination**
 
-Validator class in RIP is `ImportProductionValidator`. It uses ImportAPI's `IProductionManager` WebAPI service, but the future of this service is uncertain at the moment. More information available here: https://einstein.kcura.com/pages/viewpage.action?pageId=227148384. However it looks like most of the functionalities of this validator can be implemented using Keplers `IProductionManager` and `IPermissionManager`. A few checks should be done here:
+Validator class in RIP is `ImportProductionValidator`. It uses ImportAPI's `IProductionManager` WebAPI service, but this service will be deprecated in the future. More information available here: https://einstein.kcura.com/pages/viewpage.action?pageId=227148384. However it looks like most of the functionalities of this validator can be implemented using Keplers `IProductionManager` and `IPermissionManager`. A few checks should be done here:
 
-- Verify if production is available in destination workspace and if user has access to it. Currently RIP uses `WinEDDS.Service.Export.IProductionManager.Read` method, but this can be easily replaced with Kepler `IProductionManager.ReadSingle`
+- Verify if production is available in destination workspace and if user has access to it. Currently RIP uses `WinEDDS.Service.Export.IProductionManager.Read` method, but this can be easily replaced with Kepler `IProductionManager.ReadSingleAsync`
 
 - Verify if the user has permissions to create production data source in destination production set. This step is straightforward and we should use `IPermissionManager` Kepler, same way as in RIP (`ValidateCreatePermissionForProductionSource`).
 
@@ -80,6 +80,14 @@ Choosing the right flow should be based on the Data Source Type and Data Destina
 
 ## Populating Production fields with Bates Number
 
- Currently in RIP, fields `Production::Begin Bates` and `Production::End Bates` are populated with the Control Number field value, which is incorrect. There is a story to change that behavior (REL-162726). The `BatesNumberField` setting should be set to name of the column in Data Reader which should contain `BatesNumber` value for each image file. There are 2 different cases, from where we should extract Bates Number value for image:
+ Currently in RIP, fields `Production::Begin Bates` and `Production::End Bates` are populated with the Control Number field value, which is incorrect. There is a story to change that behavior (REL-162726). Solution to this is to add another special field for images - `BatesNumber` and map this field to `ImageSettings.BatesNumberField` in `ImportJobFactory`. For each image, this field should contain value, taken from different source, depending on the flow:
 
- 1. Pushing images from production - each production has its own database table containing produced images - `ProductionDocumentFile_{productionID}`. There's a `BatesNumber` column and this value is what we want to put in Source Data Reader. Unfortunately, there's no 
+ 1. When source of the image is a production - each image has `BatesNumber` which is stored in `[ProductionDocumentFile_{ProductionID}]` table in database. This value can be easily extracted using `ISearchManager.RetrieveImagesForProductionDocuments` - it is another column in returned `DataRow` and is called `BatesNumber`
+ 2. When source of the image is saved search - then we should take the value from column `Identifier` in `DataRow` returned from `ISearchManager.RetrieveImagesForDocuments`. This solution is suggested by Import API team, but this should be validated with PM.
+
+ Mass Import re-calculates Begin Bates and End Bates fields automatically:
+
+- `Production::Begin Bates = MIN(bates number of document's images)`
+- `Production::End Bates = MAX(bates number of document's images)`
+
+However there is known defect in sorting mechanism for Bates Number. There is already a Jira ticket created to correct this defect - REL-315286.
