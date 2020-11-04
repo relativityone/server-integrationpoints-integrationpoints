@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -118,18 +119,28 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			{
 				using (var objectTypeManager = await _proxyFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
 				{
-					ObjectTypeResponse objectType = await objectTypeManager
-						.ReadAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID)
-						.ConfigureAwait(false);
+					string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
 
-					return await ValidateUserHasArtifactTypePermissionAsync(configuration,
-						objectType.ArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
-						$"User does not have permissions to create tag: {objectTypeName}").ConfigureAwait(false);
+					try
+					{
+						ObjectTypeResponse objectType = await objectTypeManager
+							.ReadAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID)
+							.ConfigureAwait(false);
+
+						return await ValidateUserHasArtifactTypePermissionAsync(configuration,
+							objectType.ArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
+							insufficientPermissionsMessage).ConfigureAwait(false);
+					}
+					catch (NotAuthorizedException ex)
+					{
+						_logger.LogInformation(ex, "User does not have permissions to make a call to IObjectTypeManager.");
+						return new ValidationResult(new ValidationMessage(insufficientPermissionsMessage));
+					}
 				}
 			}
 			else
 			{
-				throw new ValidationException($"Cannot find Object Type: {objectTypeName} in Destination Workspace Artifact ID: {configuration.DestinationWorkspaceArtifactId}");
+				throw new Validation.ValidationException($"Cannot find Object Type: {objectTypeName} in Destination Workspace Artifact ID: {configuration.DestinationWorkspaceArtifactId}");
 			}
 		}
 

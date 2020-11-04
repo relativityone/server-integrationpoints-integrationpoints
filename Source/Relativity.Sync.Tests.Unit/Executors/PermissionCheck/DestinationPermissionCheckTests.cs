@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -340,16 +341,39 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(permissionRefs => permissionRefs.Any(permissionRef =>
 					permissionRef.ArtifactType.ID == _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID ||
 					permissionRef.ArtifactType.ID == _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID))))
-					.ReturnsAsync(permission);
+				.ReturnsAsync(permission);
 
 			// Act
 			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
+			AssertInsufficientPermissionsToCreateTagInDestination(actualResult);
+		}
+
+		[Test]
+		public async Task Validate_ShouldFail_WhenUserDoesNotHavePermissionsToMakeQueryToObjectTypeManager()
+		{
+			// Arrange
+
+			SetupPermissions();
+			Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
+			_objectTypeManagerFake.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>())).Throws<NotAuthorizedException>();
+
+			// Act
+			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
+
+			// Assert
+			AssertInsufficientPermissionsToCreateTagInDestination(actualResult);
+		}
+
+		private static void AssertInsufficientPermissionsToCreateTagInDestination(ValidationResult actualResult)
+		{
 			actualResult.IsValid.Should().BeFalse();
 			const int expectedNumberOfErrors = 2;
 			actualResult.Messages.Should().HaveCount(expectedNumberOfErrors);
-			actualResult.Messages.All(x => x.ShortMessage.StartsWith("User does not have permissions to create tag", StringComparison.InvariantCulture));
+			actualResult.Messages
+				.All(x => x.ShortMessage.StartsWith("User does not have permissions to create tag", StringComparison.InvariantCulture))
+				.Should().BeTrue();
 		}
 
 		private Mock<IPermissionManager> SetupPermissions()
