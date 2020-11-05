@@ -38,12 +38,20 @@ var loadData = function (ko, dataContainer) {
 			return exportType + images + natives;
 		};
 
-		function getTextRepresentation(value) {
-			if (!value || value.length === 0) {
+		function getProductionPrecedenceTextRepresentation() {
+			
+			if (dataContainer.destinationConfiguration.ProductionPrecedence === 0) {
+				// Image precedence is set to Original, so we don't want to show Production Precedence list to the user
+				return "";
+			}
+			
+			var productionPrecedence = dataContainer.destinationConfiguration.ImagePrecedence;
+			
+			if (!productionPrecedence || productionPrecedence.length === 0) {
 				return "";
 			}
 
-			return ": " + value.map(function (x) {
+			return ": " + productionPrecedence.map(function (x) {
 				return x.displayName;
 			}).join("; ");
 		};
@@ -78,7 +86,7 @@ var loadData = function (ko, dataContainer) {
 		this.importImageFile = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true' &&
 			(!dataContainer.destinationConfiguration.ImagePrecedence || dataContainer.destinationConfiguration.ImagePrecedence.length == 0));
 		this.copyImages = ko.observable(dataContainer.destinationConfiguration.ImageImport == 'true');
-		this.imagePrecedence = ko.observable(getTextRepresentation(dataContainer.destinationConfiguration.ImagePrecedence));
+		this.imagePrecedence = ko.observable(getProductionPrecedenceTextRepresentation());
 		this.productionPrecedence = ko.observable(dataContainer.destinationConfiguration.ProductionPrecedence === 0 ? "Original" : "Produced");
 		this.precedenceSummary = ko.computed(function () {
 			return self.productionPrecedence() +  self.imagePrecedence();

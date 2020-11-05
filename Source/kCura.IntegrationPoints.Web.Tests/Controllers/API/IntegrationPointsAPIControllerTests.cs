@@ -37,7 +37,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private IRelativityUrlHelper _relativityUrlHelper;
 		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 		private ICPHelper _cpHelper;
-		private ICryptographyHelper _cryptographyHelper;
 		private IServicesMgr _svcMgr;
 
 		private const int _WORKSPACE_ID = 23432;
@@ -52,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 			_cpHelper = Substitute.For<ICPHelper>();
-			_cryptographyHelper = Substitute.For<ICryptographyHelper>();
+			Substitute.For<ICryptographyHelper>();
 			_svcMgr = Substitute.For<IServicesMgr>();
 
 			_cpHelper.GetServicesManager().Returns(_svcMgr);
@@ -66,7 +65,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				_relativityUrlHelper,
 				_rdoSynchronizerProvider,
 				_cpHelper,
-				_cryptographyHelper,
 				loggerFake.Object
 				)
 			{

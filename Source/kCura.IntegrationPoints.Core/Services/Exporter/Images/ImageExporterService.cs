@@ -11,9 +11,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Utility.Extensions;
 using kCura.WinEDDS.Service.Export;
-using LanguageExt;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
@@ -79,8 +77,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 			using (ISearchManager searchManager = _searchManagerFunc())
 			{
-
-
 				IDictionary<int, List<ImageFile>> documentsWithImages = new Dictionary<int, List<ImageFile>>();
 				List<int> documentsWithoutImages = new List<int>(retrievedData.Keys);
 
@@ -110,11 +106,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 					if (_settings.IncludeOriginalImages || productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Original)
 					{
-
 						ILookup<int, ImageFile> originalImageLocationsForDocuments =
 							GetOriginalImages(documentsWithoutImages.ToArray(), searchManager);
-
-
+						
 						int documentsWithImagesCount = MarkDocumentsWithImages(documentsWithImages, originalImageLocationsForDocuments, documentsWithoutImages);
 						Logger.LogInformation("Found {documentsWithImagesCount} images in original images",
 							documentsWithImagesCount);
@@ -223,8 +217,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 					searchManager);
 		}
 
-
-
 		private ILookup<int, ImageFile> GetOriginalImages(
 			int[] documentArtifactIds,
 			ISearchManager searchManager)
@@ -236,7 +228,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 					searchManager);
 
 			return imagesDataView;
-
 		}
 
 		private ArtifactDTO CreateImageArtifactDto(
