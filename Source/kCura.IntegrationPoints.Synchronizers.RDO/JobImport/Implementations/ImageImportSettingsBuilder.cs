@@ -24,6 +24,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			target.DestinationFolderArtifactID = importSettings.DestinationFolderArtifactId;
 
 			target.FileNameField = Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME;
+
+			//FRONTEO: Image by links flow enabled and set Billable and CopyFilesToDocumentRepository to true
+			target.CopyFilesToDocumentRepository = true;
+			target.Billable = true;
 		}
 	}
 }

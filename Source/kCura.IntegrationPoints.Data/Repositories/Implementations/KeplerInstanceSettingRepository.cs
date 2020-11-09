@@ -16,6 +16,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public string GetConfigurationValue(string section, string name)
 		{
+			if (section == "Relativity.Core" && name == "CloudInstance")
+			{
+				return null;
+			}
+
 			var sectionCondition = new TextCondition(InstanceSettingFieldNames.Section, TextConditionEnum.EqualTo, section);
 			var nameCondition = new TextCondition(InstanceSettingFieldNames.Name, TextConditionEnum.EqualTo, name);
 			var query = new Query
