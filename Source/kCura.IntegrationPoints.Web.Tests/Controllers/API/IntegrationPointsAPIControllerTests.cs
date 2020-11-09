@@ -51,7 +51,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
 			_serviceFactory = Substitute.For<IServiceFactory>();
 			_cpHelper = Substitute.For<ICPHelper>();
-			Substitute.For<ICryptographyHelper>();
 			_svcMgr = Substitute.For<IServicesMgr>();
 
 			_cpHelper.GetServicesManager().Returns(_svcMgr);
