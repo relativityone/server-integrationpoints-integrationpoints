@@ -286,6 +286,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			importBulkArtifactJob.Settings.BatesNumberField.Should().Be(_imageConfigurationMock.Object.IdentifierColumn);
 		}
 
+		[Test]
+		public async Task CreateImagesImportJob_ShouldSetImageFileName()
+		{
+			// Arrange
+			_imageConfigurationMock.SetupGet(x => x.FileNameColumn).Returns("MyCustomImageFileNameColumn");
+			var importBulkArtifactJob = new ImageImportBulkArtifactJob();
+			ImportJobFactory instance = GetTestInstance(GetImagesImportAPIFactoryMock(importBulkArtifactJob));
+
+			// Act
+			await instance.CreateImageImportJobAsync(_imageConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.FileNameField.Should().Be(_imageConfigurationMock.Object.FileNameColumn);
+		}
+
 		private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)
 		{
 			Mock<IImportAPI> importApiStub = new Mock<IImportAPI>(MockBehavior.Loose);
