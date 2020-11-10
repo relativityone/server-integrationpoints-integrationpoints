@@ -19,6 +19,7 @@ using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
 using Relativity.DataExchange;
+using Relativity.Sync.Configuration;
 using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
@@ -178,8 +179,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					int i = 0;
 					foreach (TestImageFile imageFile in sourceDocumentImages)
 					{
-						string expectedIdentifier =
-							GetExpectedIdentifier(sourceWorkspaceDocumentNames[imageFile.DocumentArtifactId], i);
+						string expectedIdentifier = GetExpectedIdentifier(sourceWorkspaceDocumentNames[imageFile.DocumentArtifactId], i);
 
 						destinationWorkspaceFiles.ContainsKey(expectedIdentifier).Should()
 							.BeTrue($"Image [{sourceDocumentImages.Key} => {expectedIdentifier}] was not pushed to destination workspace");
@@ -187,6 +187,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 						TestImageFile destinationImage = destinationWorkspaceFiles[expectedIdentifier];
 
 						TestImageFile.AssertAreEquivalent(imageFile, destinationImage, expectedIdentifier);
+
+						if (_configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.SetFileLinks)
+						{
+							TestImageFile.AssertImageIsLinked(imageFile, destinationImage);
+						}
+
 						i++;
 					}
 				}
