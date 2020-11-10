@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
 using Relativity.Sync.Transfer;
@@ -88,9 +89,12 @@ namespace Relativity.Sync.Executors
 
 		private ItemLevelError CreateItemLevelError(IDictionary rawItemLevelError, string identifierColumnName, string messageColumnName)
 		{
+			string identifier = GetValueOrNull(rawItemLevelError, identifierColumnName);
+			string message = $"IAPI {GetValueOrNull(rawItemLevelError, messageColumnName)}";
+			Console.WriteLine($"Item level error for document '{identifier}': {message}");
 			return new ItemLevelError(
-				GetValueOrNull(rawItemLevelError, identifierColumnName),
-				$"IAPI {GetValueOrNull(rawItemLevelError, messageColumnName)}"
+				identifier,
+				message
 			);
 		}
 
