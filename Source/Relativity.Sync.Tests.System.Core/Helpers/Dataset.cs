@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return "DOC " + file.Name.Split('_')[1];
 		}
 
-		protected Dataset(string name, ImportType importType, Func<FileInfo, string> controlNumberGetter = null,
+		public Dataset(string name, ImportType importType, Func<FileInfo, string> controlNumberGetter = null,
 			Func<FileInfo, string> begBatesGetter = null, string elementsCountPath = null)
 		{
 			_elementsCountPath = elementsCountPath ?? name;

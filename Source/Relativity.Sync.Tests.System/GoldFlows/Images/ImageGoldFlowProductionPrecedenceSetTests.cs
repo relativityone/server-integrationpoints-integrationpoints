@@ -35,11 +35,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 		public async Task SyncJob_ShouldSyncImages_WhenImagePrecedenceIsSelected()
 		{
 			// Arrange
-			int productionId = await CreateAndImportProductionAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset).ConfigureAwait(false);
+			ProductionDto production = await CreateAndImportProductionAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset).ConfigureAwait(false);
 			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset);
 
 			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync((sourceWorkspace, destinationWorkspace, config) => 
-				ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, config, productionId)).ConfigureAwait(false);
+				ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, config, production.ArtifactId)).ConfigureAwait(false);
 
 			// Act
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);

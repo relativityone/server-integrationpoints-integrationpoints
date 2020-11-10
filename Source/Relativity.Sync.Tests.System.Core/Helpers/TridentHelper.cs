@@ -25,34 +25,23 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				{
 					connection.Open();
 
-					if (dataSet.ImportType == ImportType.Native)
-					{
-						string localFolderPath = Path.Combine(dataSet.FolderPath, "NATIVES");
+					string localFolderPath = dataSet.ImportType == ImportType.Native
+						? Path.Combine(dataSet.FolderPath, "NATIVES")
+						: dataSet.FolderPath;
 
-						const string sqlStatement =
-							@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename])";
-						
-						SqlCommand command = new SqlCommand(sqlStatement, connection);
-						command.Parameters.AddWithValue("LocalFilePath", localFolderPath);
+					SqlParameter[] fileNames = Directory.GetFiles(localFolderPath)
+						.Select((x, idx) => new SqlParameter($"File{idx}", new FileInfo(x).Name)).ToArray();
+					string fileParameterNames = string.Join(",", fileNames.Select(x => $"@{x.ParameterName}"));
 
-						command.ExecuteNonQuery();
-					}
-					else
-					{
-						SqlParameter[] fileNames = dataSet.GetFiles()
-							.Select((x, idx) => new SqlParameter($"File{idx}", x.Name)).ToArray();
-						string fileParameterNames = string.Join(",", fileNames.Select(x => $"@{x.ParameterName}"));
+					string sqlStatement =
+						$@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename]) WHERE [TYPE] = @FileType AND [Filename] IN ({fileParameterNames})";
 
-						string sqlStatement =
-							$@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename]) WHERE [TYPE] = @FileType AND [Filename] IN ({fileParameterNames})";
+					SqlCommand command = new SqlCommand(sqlStatement, connection);
+					command.Parameters.AddWithValue("LocalFilePath", localFolderPath);
+					command.Parameters.AddWithValue("FileType", (int)dataSet.ImportType);
+					command.Parameters.AddRange(fileNames);
 
-						SqlCommand command = new SqlCommand(sqlStatement, connection);
-						command.Parameters.AddWithValue("LocalFilePath", dataSet.FolderPath);
-						command.Parameters.AddWithValue("FileType", (int)dataSet.ImportType);
-						command.Parameters.AddRange(fileNames);
-
-						command.ExecuteNonQuery();
-					}
+					command.ExecuteNonQuery();
 				}
 			}
 		}

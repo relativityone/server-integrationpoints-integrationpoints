@@ -93,12 +93,12 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldCalculateCorrectSize_ForProduction()
 		{
 			// Arrange
-			int productionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.ImagesBig).ConfigureAwait(false);
+			ProductionDto production = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.ImagesBig).ConfigureAwait(false);
 			var request = GetQueryRequest();
 
 			// Act
 			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new[] { productionId } }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { production.ArtifactId } }).ConfigureAwait(false);
 
 			// Assert
 			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.ImagesBig.TotalItemCount);
@@ -109,7 +109,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldIncludeOriginalImagesWhenEnabled()
 		{
 			// Arrange
-			int productionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.Images).ConfigureAwait(false);
+			ProductionDto production = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.Images).ConfigureAwait(false);
 
 			Dataset dataset = Dataset.ThreeImages;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Act
 			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new[] { productionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { production.ArtifactId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
 			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.Images.TotalItemCount + Dataset.ThreeImages.TotalItemCount);
@@ -130,8 +130,8 @@ namespace Relativity.Sync.Tests.System
 		public async Task CalculateImagesTotalSizeAsync_ShouldRespectProductionPrecedence()
 		{
 			// Arrange
-			int singleDocumentProductionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.SingleDocumentProduction).ConfigureAwait(false);
-			int twoDocumentProductionId = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.TwoDocumentProduction).ConfigureAwait(false);
+			ProductionDto singleDocumentProduction = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.SingleDocumentProduction).ConfigureAwait(false);
+			ProductionDto twoDocumentProduction = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.TwoDocumentProduction).ConfigureAwait(false);
 
 			Dataset dataset = Dataset.ThreeImages;
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Act
 			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new[] { singleDocumentProductionId, twoDocumentProductionId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
+				new QueryImagesOptions { ProductionIds = new[] { singleDocumentProduction.ArtifactId, twoDocumentProduction.ArtifactId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
 
 			// Assert
 			ImagesStatistics expectedImagesStatistics = GetExpectedImagesStatisticsWithPrecedence(new[]

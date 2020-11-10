@@ -77,6 +77,30 @@
 		<None Update="Data\MultipleImagesPerDocument\PRE_0000002_2.tif">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_3-PROD_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_4-PROD_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_5-PROD_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_4-PROD_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_6.pdf">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_7.xls">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

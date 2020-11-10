@@ -157,11 +157,11 @@ namespace Relativity.Sync.Tests.System.Core
 			return queryRequest;
 		}
 
-		protected async Task<int> CreateAndImportProductionAsync(int workspaceId, Dataset dataset, string productionName = "")
+		protected async Task<ProductionDto> CreateAndImportProductionAsync(int workspaceId, Dataset dataset, string productionName = "")
 		{
 			if (string.IsNullOrEmpty(productionName))
 			{
-				productionName = dataset.Name + "_" + DateTime.Now.ToLongTimeString() + "_" + DateTime.Now.Ticks;
+				productionName = dataset.Name.Replace('\\', '-') + "_" + DateTime.Now.ToLongTimeString() + "_" + DateTime.Now.Ticks;
 			}
 
 			int productionId = await Environment.CreateProductionAsync(workspaceId, productionName).ConfigureAwait(false);
@@ -169,7 +169,7 @@ namespace Relativity.Sync.Tests.System.Core
 			var dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
 			await ImportHelper.ImportDataAsync(workspaceId, dataTableWrapper, productionId).ConfigureAwait(false);
 
-			return productionId;
+			return new ProductionDto {ArtifactId = productionId, Name = productionName};
 		}
 
 		protected virtual void Dispose(bool disposing)

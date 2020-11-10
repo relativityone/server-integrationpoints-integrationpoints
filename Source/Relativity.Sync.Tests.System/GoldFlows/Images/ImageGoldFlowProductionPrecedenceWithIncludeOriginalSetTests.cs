@@ -87,12 +87,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
 		private async Task<int> ImportProductionTestDataAsync(Dataset productionDataset)
 		{
-			int productionId = await CreateAndImportProductionAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, productionDataset)
+			ProductionDto production = await CreateAndImportProductionAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, productionDataset)
 				.ConfigureAwait(false);
 
 			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, productionDataset);
 
-			return productionId;
+			return production.ArtifactId;
 		}
 
 		private async Task ImportImageTestDataAsync(Dataset dataset)
