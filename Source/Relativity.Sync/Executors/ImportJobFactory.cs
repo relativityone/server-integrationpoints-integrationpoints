@@ -52,6 +52,7 @@ namespace Relativity.Sync.Executors
 				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
 				configuration.IdentityFieldId);
 
+			importJob.Settings.FileNameField = configuration.FileNameColumn;
 			importJob.Settings.FileLocationField = configuration.ImageFilePathSourceFieldName;
 			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
 			

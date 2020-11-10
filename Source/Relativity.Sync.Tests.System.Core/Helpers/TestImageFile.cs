@@ -41,8 +41,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			string identifier = GetValue<string>(dataRow, _IDENTIFIER);
 
 			int order = GetValue<int>(dataRow, _ORDER);
-
-
+			
 			return new TestImageFile(documentArtifactId, identifier, location, fileName, size, order);
 		}
 
@@ -66,6 +65,14 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			destinationTestImage.Identifier.Should().Be(expectedIdentifier);
 			destinationTestImage.Size.Should().Be(sourceTestImage.Size);
 			destinationTestImage.Order.Should().Be(sourceTestImage.Order);
+		}
+
+		/// <summary>
+		/// Expects that source and destination image point to the same location.
+		/// </summary>
+		public static void AssertImageIsLinked(TestImageFile source, TestImageFile destination)
+		{
+			destination.Location.Should().Be(source.Location);
 		}
 	}
 }
