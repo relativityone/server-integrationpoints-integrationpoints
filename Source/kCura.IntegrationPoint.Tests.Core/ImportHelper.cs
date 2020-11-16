@@ -215,6 +215,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private void ImportJobOnFatalException(JobReport jobreport)
 		{
+			if (jobreport.FatalException != null)
+			{
+				ErrorMessages.Add(jobreport.FatalException.ToString());
+			}
+
 			if (jobreport.ErrorRows.Any())
 			{
 				jobreport.ErrorRows.ToList().ForEach(error =>

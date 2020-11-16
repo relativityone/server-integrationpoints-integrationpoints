@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Utils;
@@ -13,8 +11,6 @@ using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Relativity.API;
-using Relativity.Telemetry.Services.Interface;
-using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -24,7 +20,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICPHelper _cpHelper;
-		private readonly ICryptographyHelper _cryptographyHelper;
 		private readonly IAPILog _logger;
 
 		public IntegrationPointsAPIController(
@@ -32,14 +27,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
 			ICPHelper cpHelper,
-			ICryptographyHelper cryptographyHelper,
 			IAPILog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_cpHelper = cpHelper;
-			_cryptographyHelper = cryptographyHelper;
 			_logger = logger;
 		}
 
