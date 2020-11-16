@@ -182,8 +182,6 @@ namespace Relativity.Sync.Tests.System.Core
 
 			using (var productionManager = _serviceFactory.CreateProxy<IProductionManager>())
 			{
-
-
 				return await productionManager.CreateSingleAsync(workspaceID, production).ConfigureAwait(false);
 			}
 		}
