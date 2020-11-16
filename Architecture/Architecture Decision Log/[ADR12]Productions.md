@@ -33,7 +33,7 @@ Validator class in RIP is `ImportProductionValidator`. It uses ImportAPI's `IPro
 
 This step is very similar to the existing `ImageDataSourceSnapshotExecutor`. In the new `ProductionDataSourceSnapshotExecutor` we can still use Object Manager's export API to create a snapshot with documents that belong to specified production. The only difference is the query condition, which should be:
 
-`'Production' SUBQUERY ('Production::ProductionSet' == OBJECT {sourceProductionArtifactID})`
+`'Production' SUBQUERY ('Production::ProductionSet' == OBJECT {sourceProductionArtifactID}) AND 'Production::Image Count' > 0`
 
 Retries mechanism is also very similar to the one from images flow, and require changing condition to:
 
@@ -77,6 +77,11 @@ Choosing the right flow should be based on the Data Source Type and Data Destina
 - besides common validators, also execute all validators to verify production set in destination
 - use existing `ImageDataSourceSnapshotExecutor` (or `ImageRetryDataSourceSnapshotExecutor` for retries flow)
 - use new method `IImportJobFactory.CreateProductionImportJobAsync` for creating import job
+
+## Data destination initialization and finalization
+
+- Currently in Sync there is existing node `DataDestinationInitialization` step which was supposed to create production in destination. However now it makes no sense, because we are assuming that the production in destination is already created and ready to receive documents.
+- Destination finalization has to be done to make production readonly. Currently, production is finalized after import job completes. In new approach each batch will be separate import job. It could require changes in import process, so we can manually finalize production. This should be further investigated and confirmed with ImportAPI team if it is possible to import into production without marking a production as read-only.
 
 ## Populating Production fields with Bates Number
 
