@@ -8,6 +8,7 @@ using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -61,6 +62,9 @@ namespace Relativity.Sync.Executors
 			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
+			_logger.LogInformation("Import Settings: {@settings}", 
+				ImageImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
+
 			return job;
 		}
 
@@ -103,6 +107,9 @@ namespace Relativity.Sync.Executors
 
 			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+
+			_logger.LogInformation("Import Settings: {@settings}", 
+				NativeImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
 
 			return job;
 		}
