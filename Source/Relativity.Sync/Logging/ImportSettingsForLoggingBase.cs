@@ -73,7 +73,7 @@ namespace Relativity.Sync.Logging
 
 		protected string RemoveSensitiveDataIfNotEmpty(string setting)
 		{
-			if (setting == null)
+			if (setting is null)
 				return null;
 
 			return "[Sensitive data has been removed]";
