@@ -349,7 +349,7 @@
 	},
 	{
 		"Jira": "REL-457784",
-		"Exception": "kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Exception: Unknown failure during authentication*Relativity.DataExchange.HttpServiceException: The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 404 status code.*"
+		"Exception": "*Relativity.DataExchange.HttpServiceException: The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 404 status code.*"
 	},
 	{
 		"Jira": "REL-457785",
@@ -385,7 +385,7 @@
 	},
 	{
 		"Jira": "REL-473479",
-		"Exception": "*Relativity.Services.Exceptions.UnprocessableEntityException: Workspace * is not finished upgrading.*"
+		"Exception": "*Workspace * is not finished upgrading.*"
 	},
 	{
 		"Jira": "REL-473486",
@@ -406,5 +406,17 @@
 	{
 		"Jira": "REL-491762",
 		"Exception": "Relativity.Services.Exceptions.NotAuthorizedException: The service endpoint denied the request.*ValidateUserCanCreateTagInDestinationWorkspaceAsync*"
+	},
+	{
+		"Jira": "REL-494385",
+		"Exception": "Relativity.Services.Exceptions.ServiceException: Failure retrieving new value for key 'Relativity.Data.QueryFieldLookup+SimpleQueryFieldGenerator'*Relativity.Sync.Executors.DataSourceSnapshotExecutor*"
+	},
+	{
+		"Jira": "REL-497312",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: NoBcpDirectoryException*"
+	},
+	{
+		"Jira": "REL-497323",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.Web.Services.Protocols.SoapException: There is not enough space on the disk*"
 	}
 ]
