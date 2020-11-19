@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
 		}
 
-		public static async Task<bool> CreateMaxIntegrationPointAgents()
+		public static async Task<bool> CreateMaxIntegrationPointAgentsAsync()
 		{
 			global::Relativity.Services.Agent.Agent[] agents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
 
@@ -83,42 +83,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				catch (Exception ex)
 				{
 					throw new TestException($"Error: Failed deleting agent. Exception: {ex.Message}", ex);
-				}
-			}
-		}
-
-		private static async Task ChangeAllIntegrationPointAgentsEnabledStatusAsync(bool isEnabled)
-		{
-			global::Relativity.Services.Agent.Agent[] integrationPointsAgents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
-
-			IEnumerable<Task> updateAgentsTasks = integrationPointsAgents
-				.Select(agent => ChangeAgentEnabledStatusAsync(agent, isEnabled));
-
-			await Task.WhenAll(updateAgentsTasks).ConfigureAwait(false);
-		}
-
-		private static Task ChangeAgentEnabledStatusAsync(global::Relativity.Services.Agent.Agent agent, bool isEnabled)
-		{
-			if (agent.Enabled == isEnabled)
-			{
-				return Task.CompletedTask;
-			}
-
-			agent.Enabled = isEnabled;
-			return UpdateAgentAsync(agent);
-		}
-
-		private static async Task UpdateAgentAsync(global::Relativity.Services.Agent.Agent agent)
-		{
-			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
-			{
-				try
-				{
-					await proxy.UpdateSingleAsync(agent).ConfigureAwait(false);
-				}
-				catch (Exception ex)
-				{
-					throw new TestException($"Error: Failed to update agent. Exception: {ex.Message}", ex);
 				}
 			}
 		}

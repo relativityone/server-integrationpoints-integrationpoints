@@ -61,6 +61,7 @@
     <Compile Include="ScheduledJobTests.cs" />
     <Compile Include="Services\AgentJobManagerTests.cs" />
     <Compile Include="Services\IntegrationPointServiceForRetryTests.cs" />
+    <Compile Include="Services\IntegrationPointServiceForPushProductionTests.cs" />
     <Compile Include="Services\IntegrationPointServiceForRunTests.cs" />
     <Compile Include="Services\IntegrationPointServiceForSaveTests.cs" />
     <Compile Include="Services\IntegrationPointServiceForSchedulerTests.cs" />

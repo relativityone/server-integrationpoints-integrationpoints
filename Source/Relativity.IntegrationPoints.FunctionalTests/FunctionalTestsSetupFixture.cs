@@ -81,7 +81,7 @@ public class FunctionalTestsSetupFixture
 	{
 		Console.WriteLine("Creating Integration Point Agents...");
 
-		var success = Agent.CreateMaxIntegrationPointAgents().GetAwaiter().GetResult();
+		var success = Agent.CreateMaxIntegrationPointAgentsAsync().GetAwaiter().GetResult();
 		if(!success)
 		{
 			throw new TestException("Creating Integration Point Agents has been failed");
