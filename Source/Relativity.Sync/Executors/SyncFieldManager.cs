@@ -7,6 +7,7 @@ using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Services.Exceptions;
 
 namespace Relativity.Sync.Executors
 {
@@ -50,14 +51,14 @@ namespace Relativity.Sync.Executors
 
 		private async Task<int> ReadOrCreateFieldAsync(int workspaceArtifactId, BaseFieldRequest fieldRequest)
 		{
-			QueryResult queryByNameResult = await QueryFieldByNameAsync(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false);
-			if (queryByNameResult.Objects.Count > 0)
+			var fieldResult = await QueryFieldByNameAsync(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false);
+			if (fieldResult.FieldExists)
 			{
-				int fieldArtifactId = queryByNameResult.Objects.First().ArtifactID;
-				_logger.LogVerbose("Field already exists (Artifact ID {fieldArtifactId}), but may not have GUID assigned.", fieldArtifactId);
-				return fieldArtifactId;
+				_logger.LogVerbose("Field already exists (Artifact ID {fieldArtifactId}), but may not have GUID assigned.", fieldResult.FieldArtifactId);
+				return fieldResult.FieldArtifactId;
 			}
-			else
+
+			try
 			{
 				_logger.LogVerbose("Creating field.");
 				using (Services.Interfaces.Field.IFieldManager fieldManager = await _serviceFactory.CreateProxyAsync<Services.Interfaces.Field.IFieldManager>().ConfigureAwait(false))
@@ -82,23 +83,38 @@ namespace Relativity.Sync.Executors
 					}
 				}
 			}
+			catch (InvalidInputException e)
+			{
+				var retryReadFieldResult = await QueryFieldByNameAsync(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false);
+				if (retryReadFieldResult.FieldExists)
+				{
+					return retryReadFieldResult.FieldArtifactId;
+				}
+
+				string errorMsg = "Read failed after field creation request failure.";
+				_logger.LogError(e, errorMsg);
+				throw new SyncException(errorMsg, e);
+			}
 		}
 
-		private async Task<QueryResult> QueryFieldByNameAsync(int workspaceArtifactId, string fieldName)
+		private async Task<(bool FieldExists, int FieldArtifactId)> QueryFieldByNameAsync(int workspaceArtifactId, string fieldName)
 		{
 			_logger.LogVerbose("Querying for field.");
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
-				QueryRequest queryRequest = new QueryRequest()
+				QueryRequest queryRequest = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef()
+					ObjectType = new ObjectTypeRef
 					{
 						ArtifactTypeID = (int)ArtifactType.Field
 					},
 					Condition = $"'Name' == '{fieldName}'"
 				};
 				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
-				return queryResult;
+
+				return queryResult.Objects.Count > 0
+					? (true, queryResult.Objects.First().ArtifactID)
+					: (false, default);
 			}
 		}
 	}
