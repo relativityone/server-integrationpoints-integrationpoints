@@ -235,7 +235,7 @@ def testingVMsAreRequired(params)
 
 def raid()
 {
-	timeout(time: 3, unit: 'HOURS')
+	timeout(time: 6, unit: 'HOURS')
 	{
 		ripPipelineState.getServerFromPool()
 		def sut = ripPipelineState.sut
