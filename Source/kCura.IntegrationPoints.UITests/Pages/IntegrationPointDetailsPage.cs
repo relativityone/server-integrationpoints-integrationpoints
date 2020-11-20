@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -43,12 +42,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveAsAProfileIntegrationPoint()
 		{
+			return SaveAsAProfileIntegrationPoint(ProfileName);
+		}
+
+		public IntegrationPointDetailsPage SaveAsAProfileIntegrationPoint(string profileName)
+		{
 			SaveAsAProfileButton.ClickEx();
+			ProfileName = profileName;
 			SaveAsAProfileOnConfirmationDialog();
 			return this;
 		}
 
-        public ExportFirstPage EditIntegrationPoint()
+		public ExportFirstPage EditIntegrationPoint()
         {
             EditButton.ClickEx();
 			return new ExportFirstPage(Driver);
