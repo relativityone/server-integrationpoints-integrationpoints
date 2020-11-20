@@ -10,21 +10,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportEntityToFileSecondPage : GeneralPage
 	{
-		[FindsBy(How = How.Id, Using = "next")]
-		protected IWebElement NextButton { get; set; }
+		protected IWebElement NextButton=> Driver.FindElementEx(By.Id("next"));
 
-		[FindsBy(How = How.Id, Using = "add-all-fields")]
-		protected IWebElement AddAllFieldsButton { get; set; }
+		protected IWebElement AddAllFieldsButton=> Driver.FindElementEx(By.Id("add-all-fields"));
 
-		[FindsBy(How = How.Id, Using = "viewSelector")]
-		protected IWebElement ViewSelectWebElement { get; set; }
+		protected IWebElement ViewSelectWebElement=> Driver.FindElementEx(By.Id("viewSelector"));
 
 		protected SelectElement ViewSelect => new SelectElement(ViewSelectWebElement);
 
 		public string View
 		{
 			get { return ViewSelect.SelectedOption.Text; }
-			set { ViewSelect.SelectByText(value); }
+			set { ViewSelect.SelectByTextEx(value, Driver); }
 		}
 		public ExportEntityToFileSecondPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -34,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public ExportToFileThirdPage GoToNextPage()
 		{
-			NextButton.ClickEx();
+			NextButton.ClickEx(Driver);
 			return new ExportToFileThirdPage(Driver);
 
 		}
@@ -43,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			var wait = new WebDriverWait(Driver, TimeSpan.FromMilliseconds(500));
 			wait.Until(ExpectedConditions.ElementToBeClickable(AddAllFieldsButton));
-			AddAllFieldsButton.ClickEx();
+			AddAllFieldsButton.ClickEx(Driver);
 		}
 	}
 }

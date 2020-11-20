@@ -16,106 +16,81 @@ namespace kCura.IntegrationPoints.UITests.Pages
 	public class PushToRelativityThirdPage : GeneralPage
 	{
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
-		[FindsBy(How = How.Id, Using = "save")]
-		protected IWebElement SaveButton { get; set; }
+		protected IWebElement SaveButton => Driver.FindElementEx(By.Id("save"));
 
-		[FindsBy(How = How.Id, Using = "native-file-mode-radio-0")]
-		protected IWebElement SelectCopyPhysicalFilesElement { get; set; }
+		protected IWebElement SelectCopyPhysicalFilesElement => Driver.FindElementEx(By.Id("native-file-mode-radio-0"));
 
-		[FindsBy(How = How.Id, Using = "native-file-mode-radio-1")]
-		protected IWebElement SelectCopyLinksOnlyElement { get; set; }
+		protected IWebElement SelectCopyLinksOnlyElement => Driver.FindElementEx(By.Id("native-file-mode-radio-1"));
 
-		[FindsBy(How = How.Id, Using = "native-file-mode-radio-2")]
-		protected IWebElement SelectCopyNoFilesElement { get; set; }
+		protected IWebElement SelectCopyNoFilesElement => Driver.FindElementEx(By.Id("native-file-mode-radio-2"));
 
-		[FindsBy(How = How.Id, Using = "exportImages-radio-0")]
-		public IWebElement SelectCopyImagesYesElement { get; set; }
+		public IWebElement SelectCopyImagesYesElement => Driver.FindElementEx(By.Id("exportImages-radio-0"));
 
-		[FindsBy(How = How.Id, Using = "exportImages-radio-1")]
-		protected IWebElement SelectCopyImagesNoElement { get; set; }
+		protected IWebElement SelectCopyImagesNoElement => Driver.FindElementEx(By.Id("exportImages-radio-1"));
 
-		[FindsBy(How = How.Id, Using = "move-documents-radio-0")]
-		protected IWebElement SelectMoveExitstingDocumentsYesElement { get; set; }
+		protected IWebElement SelectMoveExitstingDocumentsYesElement => Driver.FindElementEx(By.Id("move-documents-radio-0"));
 
-		[FindsBy(How = How.Id, Using = "move-documents-radio-1")]
-		protected IWebElement SelectMoveExitstingDocumentsNoElement { get; set; }
+		protected IWebElement SelectMoveExitstingDocumentsNoElement => Driver.FindElementEx(By.Id("move-documents-radio-1"));
 
-		[FindsBy(How = How.Id, Using = "native-file-radio-0")]
-		protected IWebElement SelectCopyFilesToRepositoryYesElement { get; set; }
+		protected IWebElement SelectCopyFilesToRepositoryYesElement => Driver.FindElementEx(By.Id("native-file-radio-0"));
 
-		[FindsBy(How = How.Id, Using = "native-file-radio-1")]
-		protected IWebElement SelectCopyFilesToRepositoryNoElement { get; set; }
+		protected IWebElement SelectCopyFilesToRepositoryNoElement => Driver.FindElementEx(By.Id("native-file-radio-1"));
 
-		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
-		protected IWebElement MapAllFieldsElement { get; set; }
+		protected IWebElement MapAllFieldsElement => Driver.FindElementEx(By.Id("mapFieldsBtn"));
 
-		[FindsBy(How = How.Id, Using = "mapFieldsFromSavedSearchBtn")]
-		protected IWebElement MapFieldsFromSavedSearchButton { get; set; }
+		protected IWebElement MapFieldsFromSavedSearchButton => Driver.FindElementEx(By.Id("mapFieldsFromSavedSearchBtn"));
 
-		[FindsBy(How = How.Id, Using = "overwrite")]
-		protected IWebElement OverwriteElement { get; set; }
+		protected IWebElement OverwriteElement => Driver.FindElementEx(By.Id("overwrite"));
 
-		[FindsBy(How = How.Id, Using = "overlay-field-behavior")]
-		protected IWebElement MultiSelectFieldOverlayBehaviorElement { get; set; }
+		protected IWebElement MultiSelectFieldOverlayBehaviorElement => Driver.FindElementEx(By.Id("overlay-field-behavior"));
 
-		[FindsBy(How = How.Id, Using = "folderPathInformationSelect")]
-		protected IWebElement UseFolderPathElement;
+		protected IWebElement UseFolderPathElement => Driver.FindElementEx(By.Id("folderPathInformationSelect"));
 
-		[FindsBy(How = How.Id, Using = "image-production-precedence")]
-		protected IWebElement ImagePrecedenceElement { get; set; }
+		protected IWebElement ImagePrecedenceElement => Driver.FindElementEx(By.Id("image-production-precedence"));
 
-		[FindsBy(How = How.Id, Using = "folderPath")]
-		protected IWebElement ReadFromFieldElement { get; set; }
+		protected IWebElement ReadFromFieldElement => Driver.FindElementEx(By.Id("folderPath"));
 
-		[FindsBy(How = How.Id, Using = "source-fields")]
-		protected IWebElement SourceFieldsElement { get; set; }
+		protected IWebElement SourceFieldsElement => Driver.FindElementEx(By.Id("source-fields"));
 
-		[FindsBy(How = How.Id, Using = "add-source-field")]
-		protected IWebElement AddSourceFieldElement { get; set; }
+		protected IWebElement AddSourceFieldElement => Driver.FindElementEx(By.Id("add-source-field"));
 
-		[FindsBy(How = How.Id, Using = "workspace-fields")]
-		protected IWebElement DestinationFieldsElement { get; set; }
+		protected IWebElement DestinationFieldsElement => Driver.FindElementEx(By.Id("workspace-fields"));
 
-		[FindsBy(How = How.Id, Using = "add-workspace-field")]
-		protected IWebElement AddWorkspaceFieldElement { get; set; }
+		protected IWebElement AddWorkspaceFieldElement => Driver.FindElementEx(By.Id("add-workspace-field"));
 
-		[FindsBy(How = How.Id, Using = "image-production-selection")]
-		protected IWebElement ProductionPrecedenceElement { get; set; }
+		protected IWebElement ProductionPrecedenceElement => Driver.FindElementEx(By.Id("image-production-selection"));
 
-		[FindsBy(How = How.Id, Using = "image-production-precedence-button")]
-		protected IWebElement ChooseProductionPrecedenceBtn { get; set; }
+		protected IWebElement ChooseProductionPrecedenceBtn => Driver.FindElementEx(By.Id("image-production-precedence-button"));
 
-		[FindsBy(How = How.Id, Using = "image-include-original-images-checkbox")]
-		protected IWebElement IncludeOriginalImagesIfNotProducedElement { get; set; }
+		protected IWebElement IncludeOriginalImagesIfNotProducedElement => Driver.FindElementEx(By.Id("image-include-original-images-checkbox"));
 
-		[FindsBy(How = How.Id, Using = "popup-list-available")]
-		protected IWebElement AvailableProductionsSelectElement { get; set; }
+		protected IWebElement AvailableProductionsSelectElement => Driver.FindElementEx(By.Id("popup-list-available"));
 
-		[FindsBy(How = How.Id, Using = "ok-button")]
-		protected IWebElement AvailableProductionOkBtn { get; set; }
+		protected IWebElement AvailableProductionOkBtn => Driver.FindElementEx(By.Id("ok-button"));
 
-        [FindsBy(How = How.Id, Using = "proceedBtn")]
-        protected IWebElement ProceedBtn { get; set; }
-        
-        [FindsBy(How = How.Id, Using = "cancelBtn")]
-        protected IWebElement CancelBtn { get; set; }
+		protected IWebElement CancelBtn => Driver.FindElementEx(By.Id("cancelBtn"));
 
-        [FindsBy(How = How.Id, Using = "page-info-message")]
-        protected IWebElement PageInfoMessage { get; set; }
+		protected IWebElement PageInfoMessage => Driver.FindElementEx(By.Id("page-info-message"));
 
-        public IWebElement InvalidMap0WebElement => GetElementByIdOrNull("invalidMap-0");
-        public IWebElement InvalidMap1WebElement => GetElementByIdOrNull("invalidMap-1");
-        public IWebElement InvalidMap2WebElement => GetElementByIdOrNull("invalidMap-2");
-		public IWebElement InvalidReasons00WebElement => GetElementByIdOrNull("invalidReasons-0-0");
-		public IWebElement InvalidReasons10WebElement => GetElementByIdOrNull("invalidReasons-1-0");
-		public IWebElement InvalidReasons11WebElement => GetElementByIdOrNull("invalidReasons-1-1");
-		public IWebElement InvalidReasons20WebElement => GetElementByIdOrNull("invalidReasons-2-0");
+		public IWebElement InvalidMap0WebElement => GetElementById("invalidMap-0");
+		public IWebElement InvalidMap1WebElement => GetElementById("invalidMap-1");
+		public IWebElement InvalidMap2WebElement => GetElementById("invalidMap-2");
+		public IWebElement InvalidReasons00WebElement => GetElementById("invalidReasons-0-0");
+		public IWebElement InvalidReasons10WebElement => GetElementById("invalidReasons-1-0");
+		public IWebElement InvalidReasons11WebElement => GetElementById("invalidReasons-1-1");
+		public IWebElement InvalidReasons20WebElement => GetElementById("invalidReasons-2-0");
 
-		public IWebElement ObjectIdentifierWarning => GetElementByIdOrNull("objectIdentifierWarning");
+		public IWebElement ObjectIdentifierWarning => GetElementById("objectIdentifierWarning");
+		public IWebElement MappedFieldsWarning => GetElementById("mappedFieldsWarning");
+		public IWebElement ClearAndProceedBtn => GetElementById("clearAndProceedBtn");
+		
+		public IWebElement ObjectIdentifierWarningOrNull => GetElementByIdOrNull("objectIdentifierWarning");
+		public IWebElement MappedFieldsWarningOrNull => GetElementByIdOrNull("mappedFieldsWarning");
+		public IWebElement ClearAndProceedBtnOrNull => GetElementByIdOrNull("clearAndProceedBtn");
 
-		public IWebElement MappedFieldsWarning => GetElementByIdOrNull("mappedFieldsWarning");
 
-		public IWebElement ClearAndProceedBtn => GetElementByIdOrNull("clearAndProceedBtn");
+		public IWebElement ProceedBtn => GetElementById("proceedBtn");
+		public IWebElement PopupMessageDiv => GetElementById("msgDiv");
 
 		protected SelectElement SelectOverwriteElement => new SelectElement(OverwriteElement);
 
@@ -143,15 +118,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			if (mode == RelativityProviderModel.CopyNativeFilesEnum.PhysicalFiles)
 			{
-				SelectCopyPhysicalFilesElement.ClickEx();
+				SelectCopyPhysicalFilesElement.ClickEx(Driver);
 			}
 			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.LinksOnly)
 			{
-				SelectCopyLinksOnlyElement.ClickEx();
+				SelectCopyLinksOnlyElement.ClickEx(Driver);
 			}
 			else if (mode == RelativityProviderModel.CopyNativeFilesEnum.No)
 			{
-				SelectCopyNoFilesElement.ClickEx();
+				SelectCopyNoFilesElement.ClickEx(Driver);
 			}
 		}
 
@@ -164,63 +139,64 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectCopyImagesYesElement.ClickEx();
+				SelectCopyImagesYesElement.ClickEx(Driver);
 			}
 			else
 			{
-				SelectCopyImagesNoElement.ClickEx();
+				SelectCopyImagesNoElement.ClickEx(Driver);
 			}
-
-			Thread.Sleep(200);
+			WaitForPage();
 		}
 
 		public PushToRelativityThirdPage MapAllFields()
 		{
-			MapAllFieldsElement.ClickEx();
+			MapAllFieldsElement.ClickEx(Driver);
+			WaitForPage();
 			return this;
 		}
 
 		public PushToRelativityThirdPage MapFieldsFromSavedSearch()
 		{
-			MapFieldsFromSavedSearchButton.ClickEx();
+			MapFieldsFromSavedSearchButton.ClickEx(Driver);
+			WaitForPage();
 			return this;
 		}
 
 		public string SelectOverwrite
 		{
 			get { return SelectOverwriteElement.SelectedOption.Text; }
-			set { SelectOverwriteElement.SelectByText(value); }
+			set { SelectOverwriteElement.SelectByTextEx(value, Driver); }
 		}
 
 		public string SelectMultiSelectFieldOverlayBehavior
 		{
 			get { return SelectMultiSelectFieldOverlayBehaviorElement.SelectedOption.Text; }
-			set { SelectMultiSelectFieldOverlayBehaviorElement.SelectByText(value); }
+			set { SelectMultiSelectFieldOverlayBehaviorElement.SelectByTextEx(value, Driver); }
 		}
 
 		public string SelectFolderPathInfo
 		{
 			get { return SelectUseFolderPathElement.SelectedOption.Text; }
-			set { SelectUseFolderPathElement.SelectByText(value); }
+			set { SelectUseFolderPathElement.SelectByTextEx(value, Driver); }
 		}
 
 		public string SelectReadFromField
 		{
 			get { return SelectReadFromFieldElement.SelectedOption.Text; }
-			set { SelectReadFromFieldElement.SelectByText(value); }
+			set { SelectReadFromFieldElement.SelectByTextEx(value, Driver); }
 		}
 
 		public string SelectImagePrecedence
 		{
 			get { return SelectImagePrecedenceElement.SelectedOption.Text; }
-			set { SelectImagePrecedenceElement.SelectByText(value); }
+			set { SelectImagePrecedenceElement.SelectByTextEx(value, Driver); }
 		}
 
 		public string ProductionPrecedenceText => ProductionPrecedenceElement.Text;
 
 		public string PageInfoMessageText => PageInfoMessage.Text;
 
-		public void SelectMoveExitstingDocuments(bool? mode)
+		public void SelectMoveExistingDocuments(bool? mode)
 		{
 			if (!mode.HasValue)
 			{
@@ -229,11 +205,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectMoveExitstingDocumentsYesElement.ClickEx();
+				SelectMoveExitstingDocumentsYesElement.ClickEx(Driver);
 			}
 			else
 			{
-				SelectMoveExitstingDocumentsNoElement.ClickEx();
+				SelectMoveExitstingDocumentsNoElement.ClickEx(Driver);
 			}
 		}
 
@@ -246,21 +222,22 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				SelectCopyFilesToRepositoryYesElement.ClickEx();
+				SelectCopyFilesToRepositoryYesElement.ClickEx(Driver);
 			}
 			else
 			{
-				SelectCopyFilesToRepositoryNoElement.ClickEx();
+				SelectCopyFilesToRepositoryNoElement.ClickEx(Driver);
 			}
 		}
 
 		public void SelectProductionPrecedence(string productionName)
 		{
-			ChooseProductionPrecedenceBtn.ClickEx();
+			ChooseProductionPrecedenceBtn.ClickEx(Driver);
+			Thread.Sleep(1000);
 			IWebElement productionOption = SelectAvailableProductions.Options.Single(x => x.Text.Equals(productionName));
 			var action = new OpenQA.Selenium.Interactions.Actions(Driver);
 			action.DoubleClick(productionOption).Perform();
-			AvailableProductionOkBtn.ClickEx();
+			AvailableProductionOkBtn.ClickEx(Driver);
 		}
 
 		public void SelectIncludeOriginalImagesIfNotProduced(bool? mode)
@@ -272,20 +249,20 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			if (mode.Value)
 			{
-				IncludeOriginalImagesIfNotProducedElement.ClickEx();
+				IncludeOriginalImagesIfNotProducedElement.ClickEx(Driver);
 			}
 		}
 
 		private List<string> GetFieldsFromListBox(string boxId)
 		{
-			IWebElement elem = Driver.FindElement(By.Id(boxId));
+			IWebElement elem = Driver.FindElementEx(By.Id(boxId));
 
 			SelectElement selectList = new SelectElement(elem);
 			IList<IWebElement> options = selectList.Options;
 			return options.Select(option => option.GetAttribute("title")).ToList();
 		}
-		
-        public List<string> GetFieldsFromSourceWorkspaceListBox()
+
+		public List<string> GetFieldsFromSourceWorkspaceListBox()
 		{
 			string sourceWorkspaceListBoxId = "source-fields";
 			return GetFieldsFromListBox(sourceWorkspaceListBoxId);
@@ -327,39 +304,49 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, textToSearchFor);
 
-			addFieldElement.ClickEx();
+			addFieldElement.ClickEx(Driver);
+		}
+
+		public IWebElement GetElementById(string id)
+		{
+			return Driver.FindElementEx(By.Id(id));
 		}
 
 		public IWebElement GetElementByIdOrNull(string id)
 		{
-			return Driver.FindElements(By.Id(id)).FirstOrDefault();
+			return Driver.FindElementsEx(By.Id(id)).FirstOrDefault();
 		}
 
-		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
+		private void SelectOption(SelectElement selectElement, string textToSearchFor)
 		{
-			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
-			
+			IWebElement option = selectElement.WrappedElement.FindElementEx(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
+
 			if (!option.Selected)
 			{
-				option.ClickEx();
+				option.ClickEx(Driver);
 			}
 		}
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
-			SaveButton.ClickEx();
+			WaitForPage();
+			SaveButton.ClickEx(Driver);
 			Log.Information("SaveIntegrationPoint");
 			return new IntegrationPointDetailsPage(Driver);
 		}
-        public PushToRelativityThirdPage ClickSaveButtonExpectPopup()
-        {
-            SaveButton.ClickEx();
-            return this;
-        }
-        public IntegrationPointDetailsPage ClearAndProceedOnInvalidMapping()
-        {
-            ClearAndProceedBtn.ClickEx();
-            return new IntegrationPointDetailsPage(Driver);
-        }
+		public PushToRelativityThirdPage ClickSaveButtonExpectPopup()
+		{
+			SaveButton.ClickEx(Driver);
+
+			// wait for popup to show
+			IWebElement _ = CancelBtn;
+
+			return this;
+		}
+		public IntegrationPointDetailsPage ClearAndProceedOnInvalidMapping()
+		{
+			ClearAndProceedBtn.ClickEx(Driver);
+			return new IntegrationPointDetailsPage(Driver);
+		}
 	}
 }

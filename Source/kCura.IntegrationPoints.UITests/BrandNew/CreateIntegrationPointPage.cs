@@ -1,5 +1,7 @@
 ﻿using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Pages;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.BrandNew
@@ -11,8 +13,8 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 			get
 			{
 				Driver.SwitchTo().DefaultContent()
-					.SwitchTo().Frame(_mainFrameNameOldUi);
-				return new WizardPanel(Driver.FindElementById("progressButtons"));
+					.SwitchToFrameEx(_mainFrameNameOldUi);
+				return new WizardPanel(Driver.FindElementEx(By.Id("progressButtons")), Driver);
 			}
 		}
 

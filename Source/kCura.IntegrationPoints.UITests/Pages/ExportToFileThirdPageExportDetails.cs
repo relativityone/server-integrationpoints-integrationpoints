@@ -8,54 +8,49 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportToFileThirdPageExportDetails : ExportToFileThirdPagePanel
 	{
-		[FindsBy(How = How.Id, Using = "export-images-checkbox")]
-		protected IWebElement ImagesCheckbox { get; set; }
+		protected IWebElement ImagesCheckbox => Driver.FindElementEx(By.Id("export-images-checkbox"));
 
-		[FindsBy(How = How.Id, Using = "export-natives-checkbox")]
-		protected IWebElement NativesCheckbox { get; set; }
+		protected IWebElement NativesCheckbox => Driver.FindElementEx(By.Id("export-natives-checkbox"));
 
-		[FindsBy(How = How.Id, Using = "export-text-fields-as-files-checkbox")]
-		protected IWebElement TextFieldsAsFilesCheckbox { get; set; }
+		protected IWebElement TextFieldsAsFilesCheckbox => Driver.FindElementEx(By.Id("export-text-fields-as-files-checkbox"));
 
 		public TreeSelect DestinationFolder { get; set; }
 
-		[FindsBy(How = How.Id, Using = "create-export-directory-checkbox")]
-		protected IWebElement CreateExportFolderCheckbox { get; set; }
+		protected IWebElement CreateExportFolderCheckbox => Driver.FindElementEx(By.Id("create-export-directory-checkbox"));
 
-		[FindsBy(How = How.Id, Using = "overwrite-file-checkbox")]
-		protected IWebElement OverwriteFilesCheckbox { get; set; }
+		protected IWebElement OverwriteFilesCheckbox => Driver.FindElementEx(By.Id("overwrite-file-checkbox"));
 
 		public ExportToFileThirdPageExportDetails(RemoteWebDriver driver) : base(driver)
 		{
 			DestinationFolder =
 				new TreeSelect(
-					driver.FindElementByXPath(@"//div[@class='field-row']/div[contains(text(), 'Destination Folder:')]/.."),
-					"location-select", "jstree-holder-div");
+					driver.FindElementEx(By.XPath(@"//div[@class='field-row']/div[contains(text(), 'Destination Folder:')]/..")),
+					"location-select", "jstree-holder-div", Driver);
 		}
 
 		public void SelectExportImages()
 		{
-			ImagesCheckbox.ClickEx();
+			ImagesCheckbox.ClickEx(Driver);
 		}
 
 		public void SelectExportNatives()
 		{
-			NativesCheckbox.ClickEx();
+			NativesCheckbox.ClickEx(Driver);
 		}
 
 		public void SelectExportTextFieldsAsFiles()
 		{
-			TextFieldsAsFilesCheckbox.ClickEx();
+			TextFieldsAsFilesCheckbox.ClickEx(Driver);
 		}
 
 		public void DeselectDoNotCreateExportFolder()
 		{
-			CreateExportFolderCheckbox.ClickEx();
+			CreateExportFolderCheckbox.ClickEx(Driver);
 		}
 
 		public void SelectOverwriteFiles()
 		{
-			OverwriteFilesCheckbox.ClickEx();
+			OverwriteFilesCheckbox.ClickEx(Driver);
 		}
 	}
 }

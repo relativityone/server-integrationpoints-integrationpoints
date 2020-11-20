@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.Utility;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -10,20 +11,15 @@ namespace kCura.IntegrationPoints.UITests.Pages.Ldap
 {
 	public class ImportWithLdapSecondPage : ImportSecondBasePage<ImportFromLdapModel>
 	{
-		[FindsBy(How = How.Id, Using = "connectionPath")]
-		protected IWebElement ConnectionPathInput { get; set; }
+		protected IWebElement ConnectionPathInput => Driver.FindElementEx(By.Id("connectionPath"));
 
-		[FindsBy(How = How.Id, Using = "connectionFilter")]
-		protected IWebElement ConnectionFilterInput { get; set; }
+		protected IWebElement ConnectionFilterInput => Driver.FindElementEx(By.Id("connectionFilter"));
 
-		[FindsBy(How = How.Id, Using = "connectionUsername")]
-		protected IWebElement UserNameInput { get; set; }
+		protected IWebElement UserNameInput => Driver.FindElementEx(By.Id("connectionUsername"));
 
-		[FindsBy(How = How.Id, Using = "connectionPassword")]
-		protected IWebElement PasswordInput { get; set; }
+		protected IWebElement PasswordInput => Driver.FindElementEx(By.Id("connectionPassword"));
 
-		[FindsBy(How = How.Id, Using = "authentication")]
-		protected IWebElement AuthenticationSelectWebElement { get; set; }
+		protected IWebElement AuthenticationSelectWebElement => Driver.FindElementEx(By.Id("authentication"));
 		
 		protected SelectElement AuthenticationModeSelectElement => new SelectElement(AuthenticationSelectWebElement);
 
@@ -34,7 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Pages.Ldap
 			{
 				if (value != null)
 				{
-					AuthenticationModeSelectElement.SelectByText(value);
+					AuthenticationModeSelectElement.SelectByTextEx(value, Driver);
 				}
 			}
 		}

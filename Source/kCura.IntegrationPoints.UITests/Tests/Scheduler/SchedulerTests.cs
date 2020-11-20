@@ -6,6 +6,7 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
 using NUnit.Framework;
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 			});
 
 			// Pick frequency
-			firstPage.SchedulerFrequency.SelectByText(schedulerModel.Frequency);
+			firstPage.SchedulerFrequency.SelectByTextEx(schedulerModel.Frequency, Driver);
 
 			// Pick start date
 			firstPage.SchedulerStartDateTextBox.Click();
@@ -116,7 +117,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Scheduler
 				SchedulerModel.TimeMeridiemAM,
 				SchedulerModel.TimeMeridiemPM
 			});
-			firstPage.TimeMeridiem.SelectByText(schedulerModel.TimeMeridiem);
+			firstPage.TimeMeridiem.SelectByTextEx(schedulerModel.TimeMeridiem, Driver);
 
 			// Verify if timezone has been auto selected
 			firstPage.TimeZones.SelectedOption.Text.Should().NotBeNullOrWhiteSpace();

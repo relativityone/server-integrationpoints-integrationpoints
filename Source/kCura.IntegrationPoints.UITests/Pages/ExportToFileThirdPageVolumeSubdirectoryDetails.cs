@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using kCura.IntegrationPoints.UITests.Driver;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using SeleniumExtras.PageObjects;
 
@@ -6,26 +7,19 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportToFileThirdPageVolumeSubdirectoryDetails : ExportToFileThirdPagePanel
 	{
-		[FindsBy(How = How.Id, Using = "volume-prefix-input")]
-		protected IWebElement VolumePrefixInput { get; set; }
+		protected IWebElement VolumePrefixInput => Driver.FindElementEx(By.Id("volume-prefix-input"));
 
-		[FindsBy(How = How.Id, Using = "volume-start-files-input")]
-		protected IWebElement VolumeStartNumberInput { get; set; }
+		protected IWebElement VolumeStartNumberInput => Driver.FindElementEx(By.Id("volume-start-files-input"));
 
-		[FindsBy(How = How.Id, Using = "volume-digit-padding-input")]
-		protected IWebElement VolumeNumberOfDigitsInput { get; set; }
+		protected IWebElement VolumeNumberOfDigitsInput => Driver.FindElementEx(By.Id("volume-digit-padding-input"));
 
-		[FindsBy(How = How.Id, Using = "volume-max-size-input")]
-		protected IWebElement VolumeMaxSizeInput { get; set; }
+		protected IWebElement VolumeMaxSizeInput => Driver.FindElementEx(By.Id("volume-max-size-input"));
 
-		[FindsBy(How = How.Id, Using = "subdirectory-start-files-input")]
-		protected IWebElement SubdirectoryStartNumberInput { get; set; }
+		protected IWebElement SubdirectoryStartNumberInput => Driver.FindElementEx(By.Id("subdirectory-start-files-input"));
 
-		[FindsBy(How = How.Id, Using = "subdirectory-digit-padding-input")]
-		protected IWebElement SubdirectoryNumberOfDigitsInput { get; set; }
+		protected IWebElement SubdirectoryNumberOfDigitsInput => Driver.FindElementEx(By.Id("subdirectory-digit-padding-input"));
 
-		[FindsBy(How = How.Id, Using = "subdirectory-max-files-input")]
-		protected IWebElement SubdirectoryMaxFilesInput { get; set; }
+		protected IWebElement SubdirectoryMaxFilesInput => Driver.FindElementEx(By.Id("subdirectory-max-files-input"));
 
 		public ExportToFileThirdPageVolumeSubdirectoryDetails(RemoteWebDriver driver) : base(driver)
 		{

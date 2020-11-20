@@ -6,6 +6,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.Support.Extensions;
+using OpenQA.Selenium.Support.UI;
 using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Pages
@@ -16,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		protected readonly RemoteWebDriver Driver;
 
-		private static int SleepInterval { get; } = 200;
+		private static int PollingIntervalInMilliseconds { get; } = 500;
 
 		protected Page(RemoteWebDriver driver)
 		{
@@ -25,30 +27,34 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void WaitForPage()
 		{
-			Driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
-			try
+			Thread.Sleep(500);
+			using (new ImplicitTimeoutSetter(Driver, TimeSpan.FromSeconds(0)))
 			{
-				Stopwatch timeWithoutProgressIndicator = Stopwatch.StartNew();
-				Stopwatch totalTime = Stopwatch.StartNew();
-				while (timeWithoutProgressIndicator.Elapsed.Seconds < SharedVariables.UiWaitForAjaxCallsInSec)
+				var wait = new WebDriverWait(Driver
+					, TimeSpan.FromSeconds(SharedVariables.UiWaitForPageInSec)
+				);
+				wait.PollingInterval = TimeSpan.FromMilliseconds(PollingIntervalInMilliseconds);
+				wait.Until(d =>
 				{
-					if (IsAnyElementVisible(By.Id("progressIndicatorContainer"), By.ClassName("ui-widget-overlay")))
-					{
-						timeWithoutProgressIndicator.Restart();
-					}
-					Thread.Sleep(SleepInterval);
-					if (totalTime.Elapsed.Seconds > SharedVariables.UiWaitForPageInSec)
-					{
-						throw new WebDriverTimeoutException("Progress indicator is visible longer than 2 minutes. Some popup is displayed or your system is way too slow. Check screenshot.");
-						// TODO popup is recognized as progress -> IsKreciolekVisible()
-					}
-				}
-			}
-			finally
-			{
-				Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
+					return elementIsNotDisplayed(d, By.Id("progressIndicatorContainer"))
+						   && elementIsNotDisplayed(d, By.ClassName("ui-widget-overlay"))
+						   && d.ExecuteJavaScript<string>("return document.readyState").ToString() == "complete";
+				});
 			}
 		}
+
+		private static bool elementIsNotDisplayed(IWebDriver driver, By by)
+		{
+			try
+			{
+				return !driver.FindElement(by).Displayed;
+			}
+			catch (NoSuchElementException)
+			{
+				return true;
+			}
+		}
+
 
 		public void Refresh()
 		{
@@ -79,21 +85,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			return false;
 		}
 
-		public void Sleep(int milliseconds)
-		{
-			Sleep(TimeSpan.FromMilliseconds(milliseconds));
-		}
-
-		public void Sleep(TimeSpan timeSpan)
-		{
-			Thread.Sleep(timeSpan);
-		}
-
 		protected void SetInputText(IWebElement element, string text)
 		{
-			element.ClickEx();
-			element.SendKeys(Keys.Control + "a");
-			element.SetText(text);
+			element.SetTextEx(text, Driver);
 		}
 	}
 }

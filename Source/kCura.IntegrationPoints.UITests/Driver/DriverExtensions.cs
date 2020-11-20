@@ -3,15 +3,12 @@ using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Common;
-using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium.Internal;
 using OpenQA.Selenium.Support.UI;
 using Polly;
 using Polly.Retry;
-using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {
@@ -23,40 +20,68 @@ namespace kCura.IntegrationPoints.UITests.Driver
 
 		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
-		public static IWebElement ClickEx(this IWebElement element, TimeSpan? timeout = null)
+		public static IWebElement ClickEx(this IWebElement element, IWebDriver driver, bool pageShouldChange = false, TimeSpan? timeout = null)
 		{
-			TimeSpan timeoutTs = MultiplyTimeout(timeout ?? DefaultTimeout);
-			ExecuteWithTimeout(element.Click, timeoutTs, DefaultRetryInterval);
+			return element.PerformAction(driver, el =>
+			{
+				string currentUrl = driver.Url;
+				el.Click();
+				if (pageShouldChange && currentUrl == driver.Url)
+				{
+					return null;
+				}
+
+				return el;
+			}, timeout);
+		}
+
+		public static IWebElement SendKeysEx(this IWebElement element, IWebDriver driver, string keys, TimeSpan? timeout = null)
+		{
+			element.PerformAction(driver, el =>
+			{
+				el.SendKeys(keys);
+				return el;
+			}, timeout);
 			return element;
 		}
 
-		public static IWebElement FindElementEx(this ISearchContext searchContext, By by, TimeSpan? timeout = null)
+		public static IWebElement FindElementEx(this IWebElement element, By by, TimeSpan? timeout = null)
 		{
-			TimeSpan timeoutTs = MultiplyTimeout(timeout ?? DefaultTimeout);
-			return ExecuteWithTimeout<IWebElement>(() => searchContext.FindElement(by), timeoutTs, DefaultRetryInterval);
+			IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
+
+			using (new ImplicitTimeoutSetter(driver, TimeSpan.Zero))
+			{
+				return driver.GetConfiguredWait(timeout).Until(d => element.FindElement(by));
+			}
 		}
 
 		public static ReadOnlyCollection<IWebElement> FindElementsEx(this IWebElement element, By by, TimeSpan? timeout = null)
 		{
 			IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
-			driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0);
-			TimeSpan timeoutTs = MultiplyTimeout(timeout ?? TimeSpan.FromSeconds(10));
-			try
+
+			using (new ImplicitTimeoutSetter(driver, TimeSpan.Zero))
 			{
-				try
+				return driver.GetConfiguredWait(timeout).Until(d =>
 				{
-					var wait = new WebDriverWait(driver, timeoutTs);
-					wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(by));
-					return element.FindElements(by);
-				}
-				catch (WebDriverTimeoutException)
-				{
-					return new ReadOnlyCollection<IWebElement>(Enumerable.Empty<IWebElement>().ToList());
-				}
+					ReadOnlyCollection<IWebElement> elements = element.FindElements(by);
+					return elements.Any() ? elements : null;
+				});
 			}
-			finally
+		}
+
+		public static IWebElement FindElementEx(this IWebDriver driver, By by, TimeSpan? timeout = null)
+		{
+			using (new ImplicitTimeoutSetter(driver, TimeSpan.Zero))
 			{
-				driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(SharedVariables.UiImplicitWaitInSec);
+				return driver.GetConfiguredWait(timeout).Until(d => d.FindElement(by));
+			}
+		}
+
+		public static ReadOnlyCollection<IWebElement> FindElementsEx(this IWebDriver driver, By by, TimeSpan? timeout = null)
+		{
+			using (new ImplicitTimeoutSetter(driver, TimeSpan.Zero))
+			{
+				return driver.GetConfiguredWait(timeout).Until(d => d.FindElements(by));
 			}
 		}
 
@@ -65,93 +90,130 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			return TimeSpan.FromMilliseconds(timeout.TotalMilliseconds * SharedVariables.UiTimeoutMultiplier);
 		}
 
-		public static IWebElement SetText(this IWebElement element, string text)
+		public static IWebElement SetTextEx(this IWebElement element, string text, IWebDriver driver)
 		{
-			TimeSpan timeout = MultiplyTimeout(TimeSpan.FromSeconds(_DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS));
-			
-			const int sleepInMs = 250;
-			RetryPolicy<bool> retryUntilTrue = Policy.HandleResult(false)
-				.WaitAndRetryForever(retryAttempt => TimeSpan.FromMilliseconds(sleepInMs));
+			element.PerformAction(driver, el =>
+			{
+				el.Click();
+				el.Clear();
+				el.SendKeys(text);
 
-			ExecuteWithTimeout(() => element.Displayed, timeout, DefaultRetryInterval);
-
-			element.Clear();
-			Policy.Timeout(timeout)
-				.Wrap(retryUntilTrue)
-				.Execute(() => element.GetAttribute("value") == string.Empty);
-
-			ExecuteWithTimeout(() => element.SendKeys(text), timeout, DefaultRetryInterval);
-			Policy.Timeout(timeout)
-				.Wrap(retryUntilTrue)
-				.Execute(() => element.GetAttribute("value") == text);
+				if (el.GetAttribute("value") != text)
+				{
+					return null;
+				}
+				return el;
+			}, TimeSpan.FromSeconds(_DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS));
 
 			return element;
 		}
 
-		public static IWebElement ScrollIntoView(this IWebElement element, IWebDriver driver = null)
+		public static IWebElement FindByEx(this IWebDriver driver, By by, TimeSpan? timeout = null)
 		{
-			driver = driver ?? ((IWrapsDriver) element).WrappedDriver;
+			WebDriverWait wait = GetConfiguredWait(driver, timeout);
 
-			var jse = (IJavaScriptExecutor) driver;
+			return wait.Until(_ =>
+			{
+				IWebElement element = driver.FindElement(by);
+				if (element.Displayed && element.Enabled)
+				{
+					return element;
+				}
+
+				return null;
+			});
+		}
+
+		public static void GoToPage(this IWebDriver driver, string pageName)
+		{
+			IWebElement quickNavigationInput = driver.FindElementEx(By.Id("qnTextBox"));
+
+
+			PerformAction(quickNavigationInput, driver, _ =>
+			{
+				quickNavigationInput.Click();
+				quickNavigationInput.Clear();
+				quickNavigationInput.SendKeys(pageName);
+
+				IWebElement resultLinkLinkName = driver.FindElement(By.LinkText(pageName));
+				resultLinkLinkName.Click();
+
+				return resultLinkLinkName;
+			});
+		}
+
+		public static IWebDriver SwitchToFrameEx(this IWebDriver driver, string frameName)
+		{
+			WebDriverWait wait = driver.GetConfiguredWait();
+			return wait.Until(d =>
+			{
+				try
+				{
+					return driver.SwitchTo().Frame(frameName);
+				}
+				catch (NoSuchFrameException)
+				{
+					return (IWebDriver)null;
+				}
+			});
+		}
+
+		internal static WebDriverWait GetConfiguredWait(this IWebDriver driver, TimeSpan? timeout = null)
+		{
+			var wait = new WebDriverWait(driver,
+				timeout ?? TimeSpan.FromSeconds(SharedVariables.UiWaitForAjaxCallsInSec));
+
+			wait.IgnoreExceptionTypes(
+				typeof(ElementNotInteractableException),
+				typeof(ElementClickInterceptedException),
+				typeof(InvalidOperationException),
+				typeof(WebDriverException),
+				typeof(NoSuchElementException),
+				typeof(TargetInvocationException));
+			return wait;
+		}
+
+		internal static TResult PerformAction<TResult>(this IWebElement element, IWebDriver driver,
+			Func<IWebElement, TResult> action, TimeSpan? timeout = null)
+		{
+			WebDriverWait wait = driver.GetConfiguredWait(timeout);
+
+			return wait.Until(_ =>
+			{
+				return action(element);
+			});
+		}
+
+		public static IWebElement ScrollIntoView(this IWebElement element, IWebDriver driver)
+		{
+			var jse = (IJavaScriptExecutor)driver;
 			jse.ExecuteScript("arguments[0].scrollIntoView(true)", element);
 
 			return element;
 		}
 
-		public static IWebElement ScrollIntoView(this IWrapsElement element)
+		public static IWebElement ScrollIntoView(this IWrapsElement element, IWebDriver driver)
 		{
-			return ScrollIntoView(element.WrappedElement);
-		}
-		
-		public static void ExecuteWithTimeout(Action action, TimeSpan timeout, TimeSpan retryInterval)
-		{
-			try
-			{
-				Policy clickUpToTimeout = CreatePolicy(timeout, retryInterval);
-				clickUpToTimeout.Execute(action);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("Action timed out.");
-				throw new UiTestException("Action timed out.", ex);
-			}
+			return ScrollIntoView(element.WrappedElement, driver);
 		}
 
-		public static T ExecuteWithTimeout<T>(Func<T> func, TimeSpan timeout, TimeSpan retryInterval)
+		public static void SelectByTextEx(this SelectElement el, string text, IWebDriver driver)
 		{
+			WebDriverWait wait = driver.GetConfiguredWait();
+
 			try
 			{
-				Policy policy = CreatePolicy(timeout, retryInterval);
-				PolicyResult<T> result = policy.ExecuteAndCapture(func);
-
-				switch (result.Outcome)
+				wait.Until(d =>
 				{
-					case OutcomeType.Successful:
-						return result.Result;
-					case OutcomeType.Failure:
-						throw result.FinalException;
-					default:
-						throw new NotImplementedException();
-				}
+					el.SelectByText(text);
+					return true;
+				});
 			}
-			catch (Exception ex)
+			catch (WebDriverTimeoutException ex)
 			{
-				throw new UiTestException("Action timed out.", ex);
+				string availableOptions = el.Options.Aggregate("", (s, element) => s + "," + element.Text);
+				throw new WebDriverException($"Could not locate element: '{text}'. Available options: {Environment.NewLine}{availableOptions}", ex);
 			}
 		}
-
-		private static Policy CreatePolicy(TimeSpan timeout, TimeSpan retryInterval)
-		{
-			Policy retry = Policy
-				.Handle<TargetInvocationException>()
-				.Or<InvalidOperationException>()
-				.Or<WebDriverException>()
-				.Or<NoSuchElementException>()
-				.Or<StaleElementReferenceException>()
-				.WaitAndRetry(Enumerable.Repeat(retryInterval, int.MaxValue));
-			Policy policy = Policy.Timeout(timeout).Wrap(retry);
-			return policy;
-		}
-
 	}
 }
