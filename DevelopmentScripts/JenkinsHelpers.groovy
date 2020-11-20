@@ -177,7 +177,7 @@ def build()
 
 def unitTest()
 {
-	timeout(time: 3, unit: 'MINUTES')
+	timeout(time: 15, unit: 'MINUTES')
 	{
 		powershell "./build-jenkins.ps1 -sk -t $ripPipelineState.commonBuildArgs"
 		archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
