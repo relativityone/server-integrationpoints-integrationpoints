@@ -15,9 +15,8 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 		public void FillPanel(GeneralPanel panel, IntegrationPointGeneralModel model)
 		{
-			panel.Name.SetText(model.Name);
+			panel.Name.SetTextEx(model.Name, Driver);
 			panel.Type.Check(model.Type.GetDescription());
-			Thread.Sleep(2000);
 			panel.Source.SelectByText(model.SourceProvider);
 			panel.TransferredObject.SelectByText(model.TransferredObject);
 		}

@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
@@ -7,20 +8,20 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 	public class FileEncodingPanel : Component
 	{
 		protected SelectElement FileEncodingSelect =>
-			new SelectElement(Parent.FindElement(By.Id("dataFileEncodingSelector")));
+			new SelectElement(Parent.FindElementEx(By.Id("dataFileEncodingSelector")));
 
-		protected SelectElement ColumnSelect => new SelectElement(Parent.FindElement(By.Id("import-column")));
+		protected SelectElement ColumnSelect => new SelectElement(Parent.FindElementEx(By.Id("import-column")));
 
-		protected SelectElement QuoteSelect => new SelectElement(Parent.FindElement(By.Id("import-quote")));
+		protected SelectElement QuoteSelect => new SelectElement(Parent.FindElementEx(By.Id("import-quote")));
 
-		protected SelectElement NewlineSelect => new SelectElement(Parent.FindElement(By.Id("import-newline")));
+		protected SelectElement NewlineSelect => new SelectElement(Parent.FindElementEx(By.Id("import-newline")));
 
-		protected SelectElement MultiValueSelect => new SelectElement(Parent.FindElement(By.Id("import-multiValue")));
+		protected SelectElement MultiValueSelect => new SelectElement(Parent.FindElementEx(By.Id("import-multiValue")));
 
-		protected SelectElement NestedValueSelect => new SelectElement(Parent.FindElement(By.Id("import-nestedValue")));
+		protected SelectElement NestedValueSelect => new SelectElement(Parent.FindElementEx(By.Id("import-nestedValue")));
 
 
-		public FileEncodingPanel(IWebElement parent) : base(parent)
+		public FileEncodingPanel(IWebElement parent, IWebDriver driver) : base(parent, driver)
 		{
 		}
 
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 			{
 				if (value != null)
 				{
-					FileEncodingSelect.SelectByText(value);
+					FileEncodingSelect.SelectByTextEx(value, Driver);
 				}
 			}
 		}

@@ -5,7 +5,11 @@ using System.Threading;
 using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.PageObjects;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.PageObjects;
 using Serilog;
+using ByChained = SeleniumExtras.PageObjects.ByChained;
 
 namespace kCura.IntegrationPoints.UITests.Components
 {
@@ -16,7 +20,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TreeSelect));
 
-		public TreeSelect(IWebElement parent, string selectDivId, string treeDivId) : base(parent)
+		public TreeSelect(IWebElement parent, string selectDivId, string treeDivId, IWebDriver driver) : base(parent, driver)
 		{
 			_selectDivId = selectDivId;
 			_treeDivId = treeDivId;
@@ -24,9 +28,18 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		public TreeSelect Expand()
 		{
-			IWebElement select = Parent.FindElement(By.XPath($@".//div[@id='{_selectDivId}']"));
-			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			select.ClickEx();
+			WebDriverWait wait = Driver.GetConfiguredWait();
+
+			wait.Until(d =>
+			{
+				IWebElement select = Parent.FindElement(By.Id(_selectDivId));
+				select.Click();
+
+				IWebElement expandedDiv = d.FindElement(By.Id(_treeDivId));
+				
+				return expandedDiv.GetCssValue("display") != "none";
+			});
+
 			return this;
 		}
 
@@ -34,23 +47,33 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
-			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			IWebElement rootElement = selectListPopup.FindElementsEx(By.XPath(@".//a"))[0];
-			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			rootElement.ClickEx();
+			SelectNthElement(0);
+
 			return this;
+		}
+
+		private void SelectNthElement(int i)
+		{
+			Driver.GetConfiguredWait().Until(d =>
+			{
+				try
+				{
+					d.FindElements(By.XPath($@".//div[@id='{_treeDivId}']//a"))[i].Click();
+					return true;
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					return false;
+				}
+			});
 		}
 
 		public TreeSelect ChooseFirstChildElement()
 		{
 			Expand();
 
-			IWebElement selectListPopup = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
-			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			IWebElement rootElement = selectListPopup.FindElementsEx(By.XPath(@".//a"))[1];
-			Thread.Sleep(TimeSpan.FromMilliseconds(1000));
-			rootElement.ClickEx();
+			SelectNthElement(1);
+
 			return this;
 		}
 
@@ -58,37 +81,78 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			Expand();
 
-			IWebElement folderIcon = GetNode(name);
+			// for some reason this needs retry
 
-			folderIcon.ScrollIntoView();
-			Thread.Sleep(TimeSpan.FromSeconds(1));
-			folderIcon.ClickEx();
+			IWebElement folderIcon;
+			do
+			{
+				folderIcon = GetNode(name);
+			} while (folderIcon == null);
+
+			folderIcon.ScrollIntoView(Driver);
+
+			folderIcon.ClickEx(Driver);
 
 			return this;
 		}
 
 		private IWebElement GetNode(string name)
 		{
-			IWebElement tree = Parent.FindElement(By.XPath($@".//div[@id='{_treeDivId}']"));
+			By treeBy = By.Id(_treeDivId);
+			By closedNodesBy = new ByChained(treeBy, By.CssSelector(".jstree-closed"), By.TagName("i"));
+
 
 			IWebElement node = null;
 			while (node == null)
 			{
-				node = tree.FindElementsEx(By.CssSelector(".jstree-anchor")).FirstOrDefault(el => el.Text == name);
-				if(node == null)
+				try
 				{
-					Thread.Sleep(TimeSpan.FromSeconds(1));
-					ICollection<IWebElement> closedNodes = tree.FindElementsEx(By.CssSelector(".jstree-closed"));
-					if (closedNodes.Count == 0)
+					bool needsToExpand = false;
+					node = Driver.FindElementsEx(new ByChained(treeBy, By.CssSelector(".jstree-anchor")))
+						.FirstOrDefault(el => el.Text == name);
+					if (node == null)
 					{
-						break;
+						ICollection<IWebElement> closedNodes = Driver.FindElementsEx(closedNodesBy);
+						if (closedNodes.Count == 0)
+						{
+							break;
+						}
+
+						WebDriverWait wait = Driver.GetConfiguredWait();
+
+						wait.Until(d =>
+						{
+							try
+							{
+								// d.FindElement(closedNodesBy).ScrollIntoView(d);
+								d.FindElement(closedNodesBy).Click();
+
+								return true;
+							}
+							catch (StaleElementReferenceException)
+							{
+								return false;
+							}
+							catch (WebDriverTimeoutException)
+							{
+								return false;
+							}
+							catch (ElementNotInteractableException)
+							{
+								needsToExpand = true;
+								return true;
+							}
+						});
 					}
-					foreach (var closedNode in closedNodes)
+
+					if (needsToExpand)
 					{
-						IWebElement button = closedNode.FindElementEx(By.TagName("i"));
-						button.ScrollIntoView();
-						button.ClickEx();
+						Expand();
 					}
+				}
+				catch (StaleElementReferenceException)
+				{
+					continue;
 				}
 			};
 

@@ -16,9 +16,8 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(SavedSearchDialog));
 
-		public SavedSearchDialog(IWebElement parent) : base(parent)
+		public SavedSearchDialog(IWebElement parent, IWebDriver driver) : base(parent, driver)
 		{
-			Thread.Sleep(1000);
 		}
 
 		public void ChooseSavedSearch(string name)
@@ -28,14 +27,14 @@ namespace kCura.IntegrationPoints.UITests.Components
 			{
 				throw new PageException($"Cannot find Saved Search element named {name}.");
 			}
-			element.ClickEx();
-			IWebElement ok = Parent.FindElement(By.Id("saved-search-picker-ok-button"));
-			ok.ClickEx();
+			element.ClickEx(Driver);
+			IWebElement ok = Parent.FindElementEx(By.Id("saved-search-picker-ok-button"));
+			ok.ClickEx(Driver);
 		}
 
 		public IWebElement FindSavedSearchElement(string name)
 		{
-			IWebElement tree = Parent.FindElement(By.Id("saved-search-picker-browser-tree"));
+			IWebElement tree = Parent.FindElementEx(By.Id("saved-search-picker-browser-tree"));
 
 			var nodes = new Stack<IWebElement>();
 
@@ -51,7 +50,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 					if (Text(node).Equals(name))
 					{
 						Log.Verbose("Node found");
-						IWebElement a = node.FindElement(By.TagName("a"));
+						IWebElement a = node.FindElementEx(By.TagName("a"));
 						return a;
 					}
 				}
@@ -81,8 +80,8 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			string nodeId = node.GetAttribute("id");
 
-			IWebElement icon = node.FindElement(By.CssSelector("i"));
-			icon.ClickEx();
+			IWebElement icon = node.FindElementEx(By.CssSelector("i"));
+			icon.ClickEx(Driver);
 
 			return SelectNode(nodeId);
 		}
@@ -95,8 +94,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			do
 			{
 				i++;
-				Thread.Sleep(TimeSpan.FromMilliseconds(250));
-				newNode = Parent.FindElement(By.Id(nodeId));
+				newNode = Parent.FindElementEx(By.Id(nodeId));
 			}
 			while (newNode == null && i < numberOfRetries);
 			return newNode;
@@ -104,13 +102,13 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		public string Text(IWebElement li)
 		{
-			IWebElement a = li.FindElement(By.CssSelector("a"));
+			IWebElement a = li.FindElementEx(By.CssSelector("a"));
 			return a.Text;
 		}
 
 		public ReadOnlyCollection<IWebElement> GetChildren(IWebElement li)
 		{
-			return li.FindElements(By.CssSelector("ul > li"));
+			return li.FindElementsEx(By.CssSelector("ul > li"));
 		}
 
 		public bool IsLeaf(IWebElement element)

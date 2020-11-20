@@ -12,43 +12,30 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class PushToRelativitySecondPage : GeneralPage
 	{
-		[FindsBy(How = How.Id, Using = "sourceSelector")]
-		protected IWebElement SourceSelectWebElement { get; set; }
+		protected IWebElement SourceSelectWebElement => Driver.FindElementEx(By.Id("sourceSelector"));
 
-		[FindsBy(How = How.Id, Using = "workspaceSelector")]
-		protected IWebElement DestinationSelectWebElement { get; set; }
+		protected IWebElement DestinationSelectWebElement => Driver.FindElementEx(By.Id("workspaceSelector"));
 
-		[FindsBy(How = How.Id, Using = "relativitySelector")]
-		protected IWebElement InstanceSelectWebElement { get; set; }
+		protected IWebElement InstanceSelectWebElement => Driver.FindElementEx(By.Id("relativitySelector"));
 
-		[FindsBy(How = How.Id, Using = "next")]
-		protected IWebElement NextButton { get; set; }
+		protected IWebElement NextButton => Driver.FindElementEx(By.Id("next"));
 
-		[FindsBy(How = How.Id, Using = "location-0")]
-		protected IWebElement FolderLocation;
+		protected IWebElement FolderLocation => Driver.FindElementEx(By.Id("location-0"));
 
-		[FindsBy(How = How.Id, Using = "location-1")]
-		protected IWebElement ProductionLocation;
+		protected IWebElement ProductionLocation => Driver.FindElementEx(By.Id("location-1"));
 
-		[FindsBy(How = How.Id, Using = "s2id_sourceProductionSetsSelector")]
-		protected IWebElement SourceProductionSelectWebElement { get; set; }
+		protected IWebElement SourceProductionSelectWebElement => Driver.FindElementEx(By.Id("s2id_sourceProductionSetsSelector"));
 
-		[FindsBy(How = How.Id, Using = "s2id_productionSetsSelector")]
-		protected IWebElement ProductionLocationSelectWebElement { get; set; }
+		protected IWebElement ProductionLocationSelectWebElement => Driver.FindElementEx(By.Id("s2id_productionSetsSelector"));
 
-		[FindsBy(How = How.Id, Using = "location-input")]
-		protected IWebElement FolderLocationSelectTextWebElement { get; set; }
+		protected IWebElement FolderLocationSelectTextWebElement => Driver.FindElementEx(By.Id("location-input"));
 
-		[FindsBy(How = How.ClassName, Using = "field-validation-error")]
-		public IList<IWebElement> listOfValidationErrorsElements { get; set; }
+		public IList<IWebElement> listOfValidationErrorsElements => Driver.FindElementsEx(By.ClassName("field-validation-error"));
 
-		protected Select SourceProductionSelect => new Select(SourceProductionSelectWebElement);
+		protected Select SourceProductionSelect => new Select(SourceProductionSelectWebElement, Driver);
 
-		protected Select ProductionLocationSelect => new Select(ProductionLocationSelectWebElement);
+		protected Select ProductionLocationSelect => new Select(ProductionLocationSelectWebElement, Driver);
 
-		protected Select DestinationWorkspaceSelect { get; set; }
-
-		protected Select RelativityInstanceSelect { get; set; }
 
 		protected SelectElement SourceSelectElement => new SelectElement(SourceSelectWebElement);
 		protected SavedSearchSelector SavedSearchSelector { get; }
@@ -56,7 +43,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public string SourceSelect
 		{
 			get { return SourceSelectElement.SelectedOption.Text; }
-			set { SourceSelectElement.SelectByText(value); }
+			set { SourceSelectElement.SelectByTextEx(value, Driver); }
 		}
 
 		protected SelectElement DestinationWorkspaceElement => new SelectElement(DestinationSelectWebElement);
@@ -64,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public string DestinationWorkspace
 		{
 			get { return DestinationWorkspaceElement.SelectedOption.Text; }
-			set { DestinationWorkspaceElement.SelectByText(value); }
+			set { DestinationWorkspaceElement.SelectByTextEx(value, Driver); }
 		}
 
 		protected SelectElement RelativityInstanceElement => new SelectElement(InstanceSelectWebElement);
@@ -76,17 +63,19 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public string RelativityInstance
 		{
 			get { return RelativityInstanceElement.SelectedOption.Text; }
-			set { RelativityInstanceElement.SelectByText(value); }
+			set { RelativityInstanceElement.SelectByTextEx(value, Driver); }
 		}
 
 		public PushToRelativitySecondPage(RemoteWebDriver driver) : base(driver)
 		{
-			driver.SwitchTo().Frame("configurationFrame");
 			WaitForPage();
-			PageFactory.InitElements(driver, this);
+			driver.SwitchToFrameEx("configurationFrame");
 
-			FolderLocationSelect = new TreeSelect(driver.FindElement(By.XPath(@"//div[@id='location-select']/..")),
-				"location-select", "jstree-holder-div");
+			Thread.Sleep(1500);
+
+
+			FolderLocationSelect = new TreeSelect(driver.FindElementEx(By.XPath(@"//div[@id='location-select']/..")),
+				"location-select", "jstree-holder-div", Driver);
 			SavedSearchSelector = new SavedSearchSelector(Driver);
 		}
 
@@ -113,13 +102,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			const int timeoutInSeconds = 40;
-			FolderLocation.ClickEx(TimeSpan.FromSeconds(timeoutInSeconds));
+			FolderLocation.ClickEx(Driver, timeout: TimeSpan.FromSeconds(timeoutInSeconds));
 			return this;
 		}
 
 		public PushToRelativitySecondPage SelectProductionLocation(string productionName)
 		{
-			ProductionLocation.ClickEx();
+			ProductionLocation.ClickEx(Driver);
 			WaitForPage();
 			ProductionLocationSelect.Choose(productionName);
 			return this;
@@ -131,10 +120,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			Driver.SwitchTo().ParentFrame();
 			Driver.SwitchTo().ParentFrame();
-			Driver.SwitchTo().Frame(_mainFrameNameOldUi);
+			Driver.SwitchToFrameEx(_mainFrameNameOldUi);
 
-			Thread.Sleep(TimeSpan.FromMilliseconds(200));
-			NextButton.ClickEx();
+			NextButton.ClickEx(Driver);
 			return new PushToRelativityThirdPage(Driver);
 		}
 	}

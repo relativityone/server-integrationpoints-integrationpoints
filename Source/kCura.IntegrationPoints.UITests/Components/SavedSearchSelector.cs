@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			{
 				if (_savedSearch == null)
 				{
-					_savedSearch = _driver.FindElementById("s2id_savedSearchSelector");
+					_savedSearch = _driver.FindElementEx(By.Id("s2id_savedSearchSelector"));
 				}
 				return _savedSearch;
 			}
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		public void SelectSavedSearch(string savedSearchName)
 		{
-			SavedSearch.ClickEx(TimeSpan.FromSeconds(1));
+			SavedSearch.ClickEx(_driver);
 
 			string selectFullId = ReadSelectFullId();
 			IWebElement input = GetSelectInputElement(selectFullId);
@@ -44,13 +44,13 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		private string ReadSelectFullId()
 		{
-			return SavedSearch.FindElement(By.TagName("input")).GetAttribute("id");
+			return SavedSearch.FindElementEx(By.TagName("input")).GetAttribute("id");
 		}
 
 		private IWebElement GetSelectInputElement(string selectFullId)
 		{
 			string inputId = $"{selectFullId}_search";
-			IWebElement input = _driver.FindElementById(inputId);
+			IWebElement input = _driver.FindElementEx(By.Id(inputId));
 			return input;
 		}
 
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			string numericId = GetSelectNumericId(selectFullId);
 
 			string resultsContainerId = $"select2-results-{numericId}";
-			IWebElement resultsContainer = _driver.FindElementById(resultsContainerId);
+			IWebElement resultsContainer = _driver.FindElementEx(By.Id(resultsContainerId));
 			
 			var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
 			wait.Until(IsSavedSearchHighlighted(resultsContainer));
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		private Func<IWebDriver, bool> IsSavedSearchHighlighted(IWebElement resultContainer)
 		{
-			return driver => resultContainer.FindElements(By.ClassName("select2-highlighted")).Any();
+			return driver => resultContainer.FindElementsEx(By.ClassName("select2-highlighted")).Any();
 		}
 
 		private Func<IWebDriver, bool> IsSavedSearchDropdownClosed(IWebElement inputElement)
