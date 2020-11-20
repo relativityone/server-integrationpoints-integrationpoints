@@ -56,7 +56,7 @@ task test -depends get_testrunner, get_nunit, test_initalize {
                             ('/tests:' + $inputfile), 
                             ('/out:' + $testlog_directory), 
                             ('/nunit3:' + $NUnit3),
-                            ('/timeout:' + 5),
+                            ('/timeout:' + 30),
                             ('/timeoutWarning:' + 3))
     }
 }
