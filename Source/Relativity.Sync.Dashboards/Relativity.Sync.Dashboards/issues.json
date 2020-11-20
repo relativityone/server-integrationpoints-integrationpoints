@@ -116,10 +116,6 @@
 		"Exception": "Relativity.Sync.Executors.ImportFailedException: * Import API. *Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter*ServiceException: Has Permission Read Failed*"
 	},
 	{
-		"Jira": "REL-381531",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: * Import API. *Relativity.OAuth2Client.Exceptions.IdentityProviderConnectionException: Failed to retrieve access token: A task was canceled.*System.Threading.Tasks.TaskCanceledException: A task was canceled.*"
-	},
-	{
 		"Jira": "REL-389622",
 		"Exception": "Relativity.Services.Exceptions.ServiceException: Failure retrieving new value for key '*' in cache: Read Failed*"
 	},
@@ -190,10 +186,6 @@
 	{
 		"Jira": "REL-409732",
 		"Exception": "*Relativity.Services.Exceptions.*: One or more long-text fields in this saved search were migrated to Data Grid. This saved search must be updated.*DataSourceSnapshotExecutor*"
-	},
-	{
-		"Jira": "REL-410131",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter.*TaskCanceledException*GetNextItemsFromBatchAsync*"
 	},
 	{
 		"Jira": "REL-410136",
@@ -320,10 +312,6 @@
 		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter. ---> Relativity.Services.Exceptions.ServiceException: '*', hexadecimal value *, is an invalid character.*"
 	},
 	{
-		"Jira": "REL-436111",
-		"Exception": "*System.Threading.Tasks.TaskCanceledException: A task was canceled.*Relativity.Sync.Transfer.SourceWorkspaceDataReader*"
-	},
-	{
 		"Jira": "REL-436119",
 		"Exception": "Relativity.Services.Exceptions.NotFoundException: Not Found.*at Relativity.Sync.Storage.Batch.*UpdateFieldValueAsync*"
 	},
@@ -349,7 +337,7 @@
 	},
 	{
 		"Jira": "REL-457784",
-		"Exception": "kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Exception: Unknown failure during authentication*Relativity.DataExchange.HttpServiceException: The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 404 status code.*"
+		"Exception": "*Relativity.DataExchange.HttpServiceException: The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 404 status code.*"
 	},
 	{
 		"Jira": "REL-457785",
@@ -385,7 +373,7 @@
 	},
 	{
 		"Jira": "REL-473479",
-		"Exception": "*Relativity.Services.Exceptions.UnprocessableEntityException: Workspace * is not finished upgrading.*"
+		"Exception": "*Workspace * is not finished upgrading.*"
 	},
 	{
 		"Jira": "REL-473486",
@@ -406,5 +394,33 @@
 	{
 		"Jira": "REL-491762",
 		"Exception": "Relativity.Services.Exceptions.NotAuthorizedException: The service endpoint denied the request.*ValidateUserCanCreateTagInDestinationWorkspaceAsync*"
+	},
+	{
+		"Jira": "REL-494385",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException: Failure retrieving new value for key 'Relativity.Data.QueryFieldLookup+SimpleQueryFieldGenerator'*"
+	},
+	{
+		"Jira": "REL-497312",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: NoBcpDirectoryException*"
+	},
+	{
+		"Jira": "REL-497323",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.Web.Services.Protocols.SoapException: There is not enough space on the disk*"
+	},
+	{
+		"Jira": "REL-497719",
+		"Exception": "*System.Threading.Tasks.TaskCanceledException: A task was canceled.*Relativity.Services.Proxy.RPC.KeplerRPCClient.<ExecuteHttpCall>*"
+	},
+	{
+		"Jira": "REL-497730",
+		"Exception": "*kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Net.WebException: The request failed with HTTP status 503: Service Unavailable.*"
+	},
+	{
+		"Jira": "REL-497731",
+		"Exception": "*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: Bad or inaccessible location specified in external data source*"
+	},
+	{
+		"Jira": "REL-497739",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Web.Services.Protocols.SoapException: The network path was not found.*"
 	}
 ]
