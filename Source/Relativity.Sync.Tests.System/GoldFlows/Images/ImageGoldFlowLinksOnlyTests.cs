@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			// Arrange
 			await _goldFlowTestSuite.ImportDocumentsAsync(DataTableFactory.CreateImageImportDataTable(_dataset)).ConfigureAwait(false);
 			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset);
-			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunAsync).ConfigureAwait(false);
+			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunForImagesWithLinksOnlyAsync).ConfigureAwait(false);
 
 			// Act
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
@@ -64,13 +64,61 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			);
 		}
 
+		[IdentifiedTest("C8B0E268-CC1C-4E0F-97BC-EE1CDE657AA5")]
+		[TestType.MainFlow]
+		public async Task SyncJob_ShouldOverlayWithOriginalImages_UsingLinks()
+		{
+			// Arrange
+			await _goldFlowTestSuite.ImportDocumentsAsync(DataTableFactory.CreateImageImportDataTable(_dataset)).ConfigureAwait(false);
+			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset);
+			GoldFlowTestSuite.IGoldFlowTestRun pushMetadataOnlyJob = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunForMetadataOnlyAsync).ConfigureAwait(false);
+			GoldFlowTestSuite.IGoldFlowTestRun pushImagesWithLinksJob = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunForImagesWithLinksOnlyAsync, pushMetadataOnlyJob.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+
+			// Act & Assert
+			SyncJobState pushMetadataOnlyResult = await pushMetadataOnlyJob.RunAsync().ConfigureAwait(false);
+			pushMetadataOnlyResult.Status.Should().Be(SyncJobStatus.Completed);
+
+			SyncJobState pushImagesWithLinksResult = await pushImagesWithLinksJob.RunAsync().ConfigureAwait(false);
+			pushImagesWithLinksResult.Status.Should().Be(SyncJobStatus.Completed);
+
+			string condition = $"'Has Images' == CHOICE {HAS_IMAGES_YES_CHOICE}";
+			IList<RelativityObject> documentsWithImagesInSourceWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, condition).ConfigureAwait(false);
+			IList<RelativityObject> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, pushMetadataOnlyJob.DestinationWorkspaceArtifactId, condition).ConfigureAwait(false);
+
+			await pushImagesWithLinksJob.AssertAsync(pushMetadataOnlyResult, _dataset.TotalItemCount, _dataset.TotalItemCount).ConfigureAwait(false);
+
+			documentsWithImagesInDestinationWorkspace.Count.Should().Be(_dataset.TotalDocumentCount);
+
+			pushImagesWithLinksJob.AssertDocuments(
+				documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
+				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
+			);
+
+			pushImagesWithLinksJob.AssertImages(
+				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
+				pushMetadataOnlyJob.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
+			);
+		}
+		
+		private async Task ConfigureTestRunForImagesWithLinksOnlyAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
+		{
+			await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
+
+			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;
+			configuration.ImportImageFileCopyMode = ImportImageFileCopyMode.SetFileLinks;
+			configuration.ImageImport = true;
+		}
+		
+		private async Task ConfigureTestRunForMetadataOnlyAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
+		{
+			await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
+
+			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
+		}
+
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
 		{
 			configuration.FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings;
-			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
-			configuration.ImportImageFileCopyMode = ImportImageFileCopyMode.SetFileLinks;
-			configuration.ImageImport = true;
-
 			IList<FieldMap> identifierMapping = await GetIdentifierMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			configuration.SetFieldMappings(identifierMapping);
 		}

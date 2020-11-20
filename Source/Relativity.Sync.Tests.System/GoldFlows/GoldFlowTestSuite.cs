@@ -54,9 +54,23 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			return importHelper.ImportDataAsync(SourceWorkspace.ArtifactID, importDataTable);
 		}
 
-		public async Task<IGoldFlowTestRun> CreateTestRunAsync(Func<WorkspaceRef, WorkspaceRef, ConfigurationStub, Task> configureAsync)
+		/// <summary>
+		/// Creates gold flow tests run.
+		/// </summary>
+		/// <param name="configureAsync">Method used to set up configuration.</param>
+		/// <param name="destinationWorkspaceID">Artifact ID of the existing destination workspace, or null to create new workspace.</param>
+		public async Task<IGoldFlowTestRun> CreateTestRunAsync(Func<WorkspaceRef, WorkspaceRef, ConfigurationStub, Task> configureAsync, int? destinationWorkspaceID = null)
 		{
-			WorkspaceRef destinationWorkspace = await _environment.CreateWorkspaceAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
+			WorkspaceRef destinationWorkspace;
+
+			if (destinationWorkspaceID.HasValue)
+			{
+				destinationWorkspace = await _environment.GetWorkspaceAsync(destinationWorkspaceID.Value).ConfigureAwait(false);
+			}
+			else
+			{
+				destinationWorkspace = await _environment.CreateWorkspaceAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
+			}
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
