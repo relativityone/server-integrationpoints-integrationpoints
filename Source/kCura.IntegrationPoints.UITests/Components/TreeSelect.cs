@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.PageObjects;
 using Serilog;
 using ByChained = SeleniumExtras.PageObjects.ByChained;
 
@@ -26,7 +23,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			_treeDivId = treeDivId;
 		}
 
-		public TreeSelect Expand()
+		private TreeSelect Expand()
 		{
 			WebDriverWait wait = Driver.GetConfiguredWait();
 
@@ -43,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			return this;
 		}
 
-		public TreeSelect ChooseRootElement()
+		private TreeSelect ChooseRootElement()
 		{
 			Expand();
 

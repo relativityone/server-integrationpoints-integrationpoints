@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			try
 			{
-				return QueryWorkspaceByName(proxy, workspaceName).Results.First().Artifact;
+				return QueryWorkspaceByName(proxy, workspaceName).Results.Single().Artifact;
 			}
 			catch (Exception ex)
 			{

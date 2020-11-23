@@ -6,6 +6,7 @@ using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.UITests.Common;
 using OpenQA.Selenium.Internal;
+using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
 using Polly;
 using Polly.Retry;
@@ -15,10 +16,6 @@ namespace kCura.IntegrationPoints.UITests.Driver
 	public static class DriverExtensions
 	{
 		private const int _DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS = 20;
-
-		public static readonly TimeSpan DefaultRetryInterval = TimeSpan.FromSeconds(10);
-
-		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
 
 		public static IWebElement ClickEx(this IWebElement element, IWebDriver driver, bool pageShouldChange = false, TimeSpan? timeout = null)
 		{
@@ -33,6 +30,37 @@ namespace kCura.IntegrationPoints.UITests.Driver
 
 				return el;
 			}, timeout);
+		}
+
+		public static By ClickEx(this By by, IWebDriver driver, bool pageShouldChange = false, TimeSpan? timeout = null)
+		{
+			WebDriverWait wait = driver.GetConfiguredWait();
+
+			wait.Until(d =>
+			{
+				var el = d.FindElement(by);
+				string currentUrl = driver.Url;
+				el.Click();
+				if (pageShouldChange && currentUrl == driver.Url)
+				{
+					return null;
+				}
+
+				return el;
+			});
+
+			return by;
+		}
+
+		/// <summary>
+		/// This method allows to chain By instances. It makes the IWebDriver search for the next By inside of the parent, and so on.
+		/// </summary>
+		/// <param name="parent">parent</param>
+		/// <param name="children">selectors for next levels of search</param>
+		/// <returns></returns>
+		public static By Chain(this By parent, params By[] children)
+		{
+			return new ByChained(new[] { parent }.Concat(children).ToArray());
 		}
 
 		public static IWebElement SendKeysEx(this IWebElement element, IWebDriver driver, string keys, TimeSpan? timeout = null)
@@ -70,6 +98,14 @@ namespace kCura.IntegrationPoints.UITests.Driver
 		}
 
 		public static IWebElement FindElementEx(this IWebDriver driver, By by, TimeSpan? timeout = null)
+		{
+			using (new ImplicitTimeoutSetter(driver, TimeSpan.Zero))
+			{
+				return driver.GetConfiguredWait(timeout).Until(d => d.FindElement(by));
+			}
+		}
+
+		public static IWebElement FindElementEx(this By by, IWebDriver driver, TimeSpan? timeout = null)
 		{
 			using (new ImplicitTimeoutSetter(driver, TimeSpan.Zero))
 			{
