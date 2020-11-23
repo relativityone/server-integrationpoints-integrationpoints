@@ -7,8 +7,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
     public class ExportToFileThirdPage : GeneralPage
     {
-        [FindsBy(How = How.Id, Using = "save")]
-        protected IWebElement SaveButton { get; set; }
+        protected IWebElement SaveButton => Driver.FindElementEx(By.Id("save"));
 
 		public ExportToFileThirdPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -17,7 +16,6 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			ImageNativeTextOptions = new ExportToFileThirdPageImageNativeTextOptions(driver);
 			VolumeSubdirectoryDetails = new ExportToFileThirdPageVolumeSubdirectoryDetails(driver);
 
-			Sleep(200);
 			WaitForPage();
             PageFactory.InitElements(driver, this);
 		}
@@ -32,7 +30,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
         {
-            SaveButton.ClickEx();
+            SaveButton.ClickEx(Driver);
             return new IntegrationPointDetailsPage(Driver);
         }
 

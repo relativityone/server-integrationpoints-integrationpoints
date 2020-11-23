@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
@@ -12,39 +13,29 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportToFileSecondPage : GeneralPage
 	{
-		[FindsBy(How = How.Id, Using = "next")]
-		protected IWebElement NextButton { get; set; }
+		protected IWebElement NextButton => Driver.FindElementEx(By.Id("next"));
 
-		[FindsBy(How = How.Id, Using = "saved-search-selection-button")]
-		protected IWebElement SavedSearchSelectionButton { get; set; }
+		protected IWebElement SavedSearchSelectionButton => Driver.FindElementEx(By.Id("saved-search-selection-button"));
 
-		[FindsBy(How = How.Id, Using = "available-fields")]
-		protected IWebElement SourceFieldsElement { get; set; }
+		protected IWebElement SourceFieldsElement => Driver.FindElementEx(By.Id("available-fields"));
 
-		[FindsBy(How = How.Id, Using = "start-export-at-record")]
-		protected IWebElement StartExportAtRecordElement { get; set; }
+		protected IWebElement StartExportAtRecordElement => Driver.FindElementEx(By.Id("start-export-at-record"));
 
-		[FindsBy(How = How.Id, Using = "add-field")]
-		protected IWebElement AddSourceFieldElement { get; set; }
+		protected IWebElement AddSourceFieldElement => Driver.FindElementEx(By.Id("add-field"));
 
-		[FindsBy(How = How.Id, Using = "add-all-fields")]
-		protected IWebElement AddAllSourceFieldElements { get; set; }
+		protected IWebElement AddAllSourceFieldElements => Driver.FindElementEx(By.Id("add-all-fields"));
 
-		[FindsBy(How = How.Id, Using = "sourceSelector")]
-		protected IWebElement SourceSelectWebElement { get; set; }
+		protected IWebElement SourceSelectWebElement => Driver.FindElementEx(By.Id("sourceSelector"));
 
-		[FindsBy(How = How.Id, Using = "productionSetsSelector")]
-		protected IWebElement ProductionSetSelectWebElement { get; set; }
+		protected IWebElement ProductionSetSelectWebElement => Driver.FindElementEx(By.Id("productionSetsSelector"));
 
-		[FindsBy(How = How.XPath, Using = "//*[@id='location-select']/..")]
-		protected IWebElement FolderLocationTreeWebElement { get; set; }
+		protected IWebElement FolderLocationTreeWebElement => Driver.FindElementEx(By.XPath("//*[@id='location-select']/.."));
 
-		[FindsBy(How = How.Id, Using = "viewSelector")]
-		protected IWebElement ViewSelectWebElement { get; set; }
+		protected IWebElement ViewSelectWebElement => Driver.FindElementEx(By.Id("viewSelector"));
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
 		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
 		protected SelectElement ProductionSetSelect => new SelectElement(ProductionSetSelectWebElement);
-		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement, "location-select", "jstree-holder-div");
+		protected TreeSelect FolderLocationTree => new TreeSelect(FolderLocationTreeWebElement, "location-select", "jstree-holder-div", Driver);
 		protected SelectElement ViewSelect => new SelectElement(ViewSelectWebElement);
 
 		protected SavedSearchSelector SavedSearchSelector { get; }
@@ -59,13 +50,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public string Source
 		{
 			get { return SourceSelect.SelectedOption.Text; }
-			set { SourceSelect.SelectByText(value); }
+			set { SourceSelect.SelectByTextEx(value, Driver); }
 		}
 
 		public string ProductionSet
 		{
 			get { return ProductionSetSelect.SelectedOption.Text; }
-			set { ProductionSetSelect.SelectByText(value); }
+			set { ProductionSetSelect.SelectByTextEx(value, Driver); }
 		}
 
 		public string Folder
@@ -76,7 +67,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public string View
 		{
 			get { return ViewSelect.SelectedOption.Text; }
-			set { ViewSelect.SelectByText(value); }
+			set { ViewSelect.SelectByTextEx(value, Driver); }
 		}
 
 		public ExportToFileSecondPage SelectSavedSearch(string savedSearch)
@@ -103,23 +94,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllSourceFields()
 		{
-			const int maxRetryCount = 3;
-			Policy
-				.Handle<UiTestException>()
-				.WaitAndRetry(maxRetryCount, retryAttempt => DriverExtensions.DefaultRetryInterval)
-				.Execute(() =>
+			IWebElement selectAllButton = AddAllSourceFieldElements;
+			SelectElement mappedSourceFields = SelectSourceFieldsElement;
+			Driver.GetConfiguredWait().Until(d =>
 				{
-					AddAllSourceFieldElements.ClickEx();
-					ValidateAllFieldsAreMapped(SelectSourceFieldsElement);
-				});
-		}
-
-		protected void ValidateAllFieldsAreMapped(SelectElement sourceFields)
-		{
-			if (sourceFields.Options.Count != 0)
-			{
-				throw new UiTestException("All fields have not been selected!");
-			}
+					selectAllButton.Click();
+					return mappedSourceFields.Options.Count != 0;
+				}
+				);
 		}
 
 		public void SelectSourceField(string fieldName)
@@ -136,29 +118,30 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, fieldName);
 
-			addFieldElement.ClickEx();
+			addFieldElement.ClickEx(Driver);
 		}
 
-		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
+		private void SelectOption(SelectElement selectElement, string textToSearchFor)
 		{
-			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
+			IWebElement option = selectElement.WrappedElement.FindElementEx(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.ClickEx();
+				option.ClickEx(Driver);
 			}
 		}
 
 		public ExportToFileThirdPage GoToNextPage()
 		{
 			WaitForPage();
-			NextButton.ClickEx();
+			Thread.Sleep(1000);
+			NextButton.ClickEx(Driver);
 			return new ExportToFileThirdPage(Driver);
 		}
 
 		public SavedSearchDialog OpenSavedSearchSelectionDialog()
 		{
-			SavedSearchSelectionButton.ClickEx();
-			return new SavedSearchDialog(Driver.FindElementByXPath("/*"));
+			SavedSearchSelectionButton.ClickEx(Driver);
+			return new SavedSearchDialog(Driver.FindElementEx(By.XPath("/*")), Driver);
 		}
 
 	}

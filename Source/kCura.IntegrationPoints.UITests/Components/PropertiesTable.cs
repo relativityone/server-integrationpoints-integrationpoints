@@ -9,16 +9,16 @@ namespace kCura.IntegrationPoints.UITests.Components
 	{
 		private readonly string _title;
 		
-		protected IWebElement TitleLink => Parent.FindElement(By.XPath("../..")).FindElement(By.LinkText(_title));
+		protected IWebElement TitleLink => Parent.FindElementEx(By.XPath("../..")).FindElementEx(By.LinkText(_title));
 
-		public PropertiesTable(IWebElement parent, string title) : base(parent)
+		public PropertiesTable(IWebElement parent, string title, IWebDriver driver) : base(parent, driver)
 		{
 			_title = title;
 		}
 
 		public PropertiesTable Select()
 		{
-			TitleLink.ClickEx();
+			TitleLink.ClickEx(Driver);
 			return this;
 		}
 
@@ -27,10 +27,10 @@ namespace kCura.IntegrationPoints.UITests.Components
 			get
 			{
 				var properties = new Dictionary<string, string>();
-				List<IWebElement> names = Parent.FindElements(By.ClassName("dynamicViewFieldName"))
+				List<IWebElement> names = Parent.FindElementsEx(By.ClassName("dynamicViewFieldName"))
 					.Where(e => e.Displayed)
 					.ToList();
-				List<IWebElement> values = Parent.FindElements(By.ClassName("dynamicViewFieldValue"))
+				List<IWebElement> values = Parent.FindElementsEx(By.ClassName("dynamicViewFieldValue"))
 					.Where(e => e.Displayed)
 					.ToList();
 				for (var i = 0; i < names.Count; ++i)

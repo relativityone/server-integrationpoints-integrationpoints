@@ -12,19 +12,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class IntegrationPointProfilePage : GeneralPage
 	{
-        [FindsBy(How = How.CssSelector, Using = "#dashboardPanel > div > div.dashboard-controls.new-item-button-wrapper > div > button-wgt > div > button")]
-		protected IWebElement NewIntegrationPointProfileButton;
+		protected IWebElement NewIntegrationPointProfileButton => Driver.FindElementEx(By.CssSelector("#dashboardPanel > div > div.dashboard-controls.new-item-button-wrapper > div > button-wgt > div > button"));
 
 		public IntegrationPointProfilePage(RemoteWebDriver driver) : base(driver)
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			Driver.SwitchTo().DefaultContent().SwitchTo().Frame(_mainFrameNameNewUi);
+			Driver.SwitchTo().DefaultContent().SwitchToFrameEx(_mainFrameNameNewUi);
 		}
 
 		public ExportFirstPage CreateNewIntegrationPointProfile()
 		{
-			NewIntegrationPointProfileButton.ClickEx();
+			NewIntegrationPointProfileButton.ClickEx(Driver);
 			return new ExportFirstPage(Driver);
 		}
 	}

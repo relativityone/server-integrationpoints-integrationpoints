@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -12,38 +13,26 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportFirstPage : FirstPage
 	{
-		[FindsBy(How = How.Id, Using = "destinationProviderType")]
-		protected IWebElement DestinationSelectWebElement { get; set; }
+		protected IWebElement DestinationSelectWebElement => Driver.FindElementEx(By.Id("destinationProviderType"));
 
-		[FindsBy(How = How.Id, Using = "destinationRdo")]
-		protected IWebElement TransferedObjectSelectWebElement { get; set; }
+		protected IWebElement TransferedObjectSelectWebElement => Driver.FindElementEx(By.Id("destinationRdo"));
 
-		[FindsBy(How = How.Id, Using = "enableSchedulerRadioButton")]
-		protected IWebElement EnableSchedulerButton { get; set; }
+		protected IWebElement EnableSchedulerButton => Driver.FindElementEx(By.Id("enableSchedulerRadioButton"));
 
-		[FindsBy(How = How.Id, Using = "disableSchedulerRadioButton")]
-		protected IWebElement DisableSchedulerButton { get; set; }
+		protected IWebElement DisableSchedulerButton => Driver.FindElementEx(By.Id("disableSchedulerRadioButton"));
 
-		[FindsBy(How = How.Id, Using = "frequency")]
-		protected IWebElement SchedulerFrequencySelect { get; set; }
+		protected IWebElement SchedulerFrequencySelect => Driver.FindElementEx(By.Id("frequency"));
 
-		[FindsBy(How = How.Id, Using = "scheduleRulesStartDate")]
-		public IWebElement SchedulerStartDateTextBox { get; set; }
+		public IWebElement SchedulerStartDateTextBox => Driver.FindElementEx(By.Id("scheduleRulesStartDate"));
+		public IWebElement SchedulerEndDateTextBox => Driver.FindElementEx(By.Id("scheduleRulesEndDate"));
 
-		[FindsBy(How = How.Id, Using = "scheduleRulesEndDate")]
-		public IWebElement SchedulerEndDateTextBox { get; set; }
+		protected IWebElement SchedulerDatePicker => Driver.FindElementEx(By.Id("ui-datepicker-div"));
 
-		[FindsBy(How = How.Id, Using = "ui-datepicker-div")]
-		protected IWebElement SchedulerDatePicker { get; set; }
+		protected IWebElement ScheduledTime => Driver.FindElementEx(By.Id("scheduledTime"));
 
-		[FindsBy(How = How.Id, Using = "scheduledTime")]
-		protected IWebElement ScheduledTime { get; set; }
+		protected IWebElement TimeMeridiemSelect => Driver.FindElementEx(By.Id("timeMeridiem"));
 
-		[FindsBy(How = How.Id, Using = "timeMeridiem")]
-		protected IWebElement TimeMeridiemSelect { get; set; }
-
-		[FindsBy(How = How.Id, Using = "timeZones")]
-		protected IWebElement TimeZonesSelect { get; set; }
+		protected IWebElement TimeZonesSelect => Driver.FindElementEx(By.Id("timeZones"));
 
 		protected SelectElement DestinationSelect => new SelectElement(DestinationSelectWebElement);
 		protected SelectElement TransferedObjectSelect => new SelectElement(TransferedObjectSelectWebElement);
@@ -51,42 +40,42 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public SelectElement SchedulerFrequency => new SelectElement(SchedulerFrequencySelect);
 		public SelectElement TimeMeridiem => new SelectElement(TimeMeridiemSelect);
 		public SelectElement TimeZones => new SelectElement(TimeZonesSelect);
-		
+
 		public string Destination
 		{
 			get { return DestinationSelect.SelectedOption.Text; }
-			set { DestinationSelect.SelectByText(value); }
+			set { DestinationSelect.SelectByTextEx(value, Driver); }
 		}
 
 		public string TransferedObject
 		{
 			get { return TransferedObjectSelect.SelectedOption.Text; }
-			set { TransferedObjectSelect.SelectByText(value); }
+			set { TransferedObjectSelect.SelectByTextEx(value, Driver); }
 		}
 
 		public bool IsSchedulerDatePickerVisible => SchedulerDatePicker.Displayed;
 
 		public void PickSchedulerTodayDate()
 		{
-			SchedulerDatePicker.FindElement(By.CssSelector(".ui-state-default.ui-state-highlight")).Click();
+			SchedulerDatePicker.FindElementEx(By.CssSelector(".ui-state-default.ui-state-highlight")).Click();
 		}
 
 		public void SetScheduledTime(string time)
 		{
-			ScheduledTime.SetText(time);
+			ScheduledTime.SetTextEx(time, Driver);
 		}
 
 		public List<IWebElement> GetErrorLabels()
 		{
 			return Driver
-				.FindElementsByCssSelector(".icon-error.legal-hold.field-validation-error")
+				.FindElementsEx(By.CssSelector(".icon-error.legal-hold.field-validation-error"))
 				.Where(element => !string.IsNullOrWhiteSpace(element.Text))
 				.ToList();
 		}
 
 		public IWebElement GetGeneralErrorLabel()
 		{
-			return Driver.FindElementByCssSelector(".page-message.page-error");
+			return Driver.FindElementEx(By.CssSelector(".page-message.page-error"));
 		}
 
 		public void ToggleScheduler(bool enable)
@@ -104,13 +93,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public ExportFirstPage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
-			Driver.SwitchTo().Frame("externalPage");
+			driver.SwitchToFrameEx("externalPage");
 			WaitForPage();
 		}
 
 		public bool IsEntityTransferredObjectOptionAvailable() =>
 			CustodianToEntityUtils.IsEntityOptionAvailable(TransferedObjectSelect);
-		
+
 		public ExportToFileSecondPage GoToNextPage()
 		{
 			ClickNext();
@@ -131,7 +120,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void ClickNext()
 		{
-			NextButton.ClickEx();
+			Thread.Sleep(1000);
+			NextButton.ClickEx(Driver);
+			WaitForPage();
 		}
 	}
 }

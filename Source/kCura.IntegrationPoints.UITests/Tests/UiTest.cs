@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			SourceContext.InitUser();
 			Task workspaceSetupTask = SetupWorkspaceAsync();
 			DestinationContext = new TestContext();
-			Task destinationContextWorkspaceTask = DestinationContext.CreateTestWorkspaceAsync();
+			Task destinationContextWorkspaceTask = DestinationContext.CreateTestWorkspaceAsync(" - dest");
 
 			return Task.WhenAll(workspaceSetupTask, destinationContextWorkspaceTask);
 		}
@@ -182,7 +182,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			{
 				if (HasTestFailed())
 				{
-					ReadOnlyCollection<LogEntry> entries = Driver.Manage().Logs.GetLog(LogType.Browser);
+					 ReadOnlyCollection<LogEntry> entries = Driver.Manage().Logs.GetLog(LogType.Browser);
 					var builder = new StringBuilder();
 					foreach (LogEntry entry in entries)
 					{

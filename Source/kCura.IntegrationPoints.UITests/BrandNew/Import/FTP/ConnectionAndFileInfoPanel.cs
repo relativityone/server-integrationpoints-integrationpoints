@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.UITests.Components;
+using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
@@ -6,19 +7,19 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.FTP
 {
 	public class ConnectionAndFileInfoPanel : Component
 	{
-		public IWebElement Host => Parent.FindElement(By.Id("host"));
+		public IWebElement Host => Parent.FindElementEx(By.Id("host"));
 
-		public SelectElement Protocol => new SelectElement(Parent.FindElement(By.Id("protocol")));
+		public SelectElement Protocol => new SelectElement(Parent.FindElementEx(By.Id("protocol")));
 
-		public IWebElement Port => Parent.FindElement(By.Id("port"));
+		public IWebElement Port => Parent.FindElementEx(By.Id("port"));
 
-		public IWebElement Username => Parent.FindElement(By.Id("username"));
+		public IWebElement Username => Parent.FindElementEx(By.Id("username"));
 
-		public IWebElement Password => Parent.FindElement(By.Id("password"));
+		public IWebElement Password => Parent.FindElementEx(By.Id("password"));
 
-		public IWebElement CsvFilepathInput => Parent.FindElement(By.Id("filename_prefix"));
+		public IWebElement CsvFilepathInput => Parent.FindElementEx(By.Id("filename_prefix"));
 
-		public ConnectionAndFileInfoPanel(IWebElement parent) : base(parent)
+		public ConnectionAndFileInfoPanel(IWebElement parent, IWebDriver driver) : base(parent, driver)
 		{
 		}
 	}

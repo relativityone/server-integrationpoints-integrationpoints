@@ -8,12 +8,11 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public abstract class ImportSecondBasePage<TModel> : GeneralPage
 	{
-		[FindsBy(How = How.Id, Using = "next")]
-		protected IWebElement NextButton { get; set; }
+		protected IWebElement NextButton => Driver.FindElementEx(By.Id("next"));
 
 		protected ImportSecondBasePage(RemoteWebDriver driver) : base(driver)
 		{
-			driver.SwitchTo().Frame("configurationFrame");
+			driver.SwitchToFrameEx("configurationFrame");
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
 		}
@@ -23,14 +22,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public ImportThirdPage<TModel> GoToNextPage(Func<ImportThirdPage<TModel>> funcThridPageCreator)
 		{
 			Driver.SwitchTo().DefaultContent();
-			Driver.SwitchTo().Frame(_mainFrameNameOldUi);
+			Driver.SwitchToFrameEx(_mainFrameNameOldUi);
 			WaitForPage();
 
 			Driver.SwitchTo().ParentFrame();
 			Driver.SwitchTo().ParentFrame();
-			Driver.SwitchTo().Frame(_mainFrameNameOldUi);
+			Driver.SwitchToFrameEx(_mainFrameNameOldUi);
 
-			NextButton.ClickEx();
+			NextButton.ClickEx(Driver);
 			return funcThridPageCreator();
 		}
 	}

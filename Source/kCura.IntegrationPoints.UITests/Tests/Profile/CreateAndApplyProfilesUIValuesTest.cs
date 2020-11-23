@@ -143,8 +143,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				.ChooseWorkspace(newDestination)
 				.GoToIntegrationPointProfilePage();
 
-			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(model.Name);
-			resultLinkLinkName.ClickEx();
+			IWebElement resultLinkLinkName = Driver.FindElementEx(By.LinkText(model.Name));
+			resultLinkLinkName.ClickEx(Driver);
 
 			IntegrationPointDetailsPage detailsPage = new IntegrationPointDetailsPage(Driver);
 			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
@@ -185,8 +185,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				.PassWelcomeScreen()
 				.ChooseWorkspace(newDestination)
 				.GoToIntegrationPointProfilePage();
-			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(model.Name);
-			resultLinkLinkName.ClickEx();
+			IWebElement resultLinkLinkName = Driver.FindElementEx(By.LinkText(model.Name));
+			resultLinkLinkName.ClickEx(Driver);
 
 			IntegrationPointDetailsPage detailsPage = new IntegrationPointDetailsPage(Driver);
 			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
@@ -229,8 +229,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				.ChooseWorkspace(newDestination)
 				.GoToIntegrationPointProfilePage();
 
-			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(model.Name);
-			resultLinkLinkName.ClickEx();
+			IWebElement resultLinkLinkName = Driver.FindElementEx(By.LinkText(model.Name));
+			resultLinkLinkName.ClickEx(Driver);
 
 			IntegrationPointDetailsPage detailsPage = new IntegrationPointDetailsPage(Driver);
 			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			
 			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
 			secondPage.GoToNextPage();
-			Driver.SwitchTo().Frame("configurationFrame");
+			Driver.SwitchToFrameEx("configurationFrame");
 
 			//Assert
 			List<string> listOfVisibleWarningsTexts = secondPage.listOfValidationErrorsElements.Where( i => i.GetCssValue("display").Equals("inline-block")).Select( i => i.Text).ToList();

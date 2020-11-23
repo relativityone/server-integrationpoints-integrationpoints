@@ -9,6 +9,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Configuration.Helpers;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
@@ -119,6 +120,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldMappingPage.MappedFieldsWarning.Text.Should().Be(invalidFieldMappingMessageText);
 
 			//Act
+
 			IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
 
 			PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
@@ -211,7 +213,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
 
 			//Assert text on popup
-			fieldMappingPage.ObjectIdentifierWarning.Should().BeNull();
+
+			fieldMappingPage.ObjectIdentifierWarningOrNull.Should().BeNull();
 			fieldMappingPage.MappedFieldsWarning.Text.Should().Be(invalidFieldMappingMessageText);
 
 			//Act
@@ -308,8 +311,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 				//Assert
 				fieldMappingPage.ObjectIdentifierWarning.Text.Should().Be(objectIdentifierWarningText);
-				fieldMappingPage.MappedFieldsWarning.Should().BeNull();
-				fieldMappingPage.ClearAndProceedBtn.Should().BeNull();
+				fieldMappingPage.MappedFieldsWarningOrNull.Should().BeNull();
+				fieldMappingPage.ClearAndProceedBtnOrNull.Should().BeNull();
 			}
 			finally
 			{

@@ -109,11 +109,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			);
 		}
 
-		public async Task CreateTestWorkspaceAsync()
+		public async Task CreateTestWorkspaceAsync(string suffix = "")
 		{
 			var createDurationStopWatch = new Stopwatch();
 			createDurationStopWatch.Start();
-			WorkspaceName = $"RIP Test Workspace {_timeStamp}";
+			WorkspaceName = $"RIP Test Workspace {_timeStamp}" + suffix;
 			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
 			try

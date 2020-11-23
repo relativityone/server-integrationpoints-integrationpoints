@@ -9,38 +9,27 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class ExportToFileThirdPageLoadFileOptions : ExportToFileThirdPagePanel
 	{
-		[FindsBy(How = How.Id, Using = "imageDataFileFormatSelector")]
-		protected IWebElement ImageFileFormatSelectWebElement { get; set; }
+		protected IWebElement ImageFileFormatSelectWebElement => Driver.FindElementEx(By.Id("imageDataFileFormatSelector"));
 
-		[FindsBy(How = How.Id, Using = "dataFileFormatSelector")]
-		protected IWebElement DataFileFormatSelectWebElement { get; set; }
+		protected IWebElement DataFileFormatSelectWebElement => Driver.FindElementEx(By.Id("dataFileFormatSelector"));
 
-		[FindsBy(How = How.Id, Using = "dataFileEncodingSelector")]
-		protected IWebElement DataFileEncodingSelectWebElement { get; set; }
+		protected IWebElement DataFileEncodingSelectWebElement => Driver.FindElementEx(By.Id("dataFileEncodingSelector"));
 
-		[FindsBy(How = How.Id, Using = "filePath_0")]
-		protected IWebElement RelativeFilePathRadio { get; set; }
+		protected IWebElement RelativeFilePathRadio => Driver.FindElementEx(By.Id("filePath_0"));
 
-		[FindsBy(How = How.Id, Using = "filePath_1")]
-		protected IWebElement AbsoluteFilePathRadio { get; set; }
+		protected IWebElement AbsoluteFilePathRadio => Driver.FindElementEx(By.Id("filePath_1"));
 
-		[FindsBy(How = How.Id, Using = "filePath_2")]
-		protected IWebElement UserPrefixFilePathRadio { get; set; }
+		protected IWebElement UserPrefixFilePathRadio => Driver.FindElementEx(By.Id("filePath_2"));
 
-		[FindsBy(How = How.Id, Using = "filePathUserprefix_2")]
-		protected IWebElement UserPrefixInput { get; set; }
+		protected IWebElement UserPrefixInput => Driver.FindElementEx(By.Id("filePathUserprefix_2"));
 
-		[FindsBy(How = How.Id, Using = "include-native-files-path-checkbox")]
-		protected IWebElement IncludeNativeFilesPathCheckbox { get; set; }
+		protected IWebElement IncludeNativeFilesPathCheckbox => Driver.FindElementEx(By.Id("include-native-files-path-checkbox"));
 
-		[FindsBy(How = How.Id, Using = "export-multiple-choice-fields-as-nested")]
-		protected IWebElement ExportMultipleChoiceFieldsAsNestedCheckbox { get; set; }
+		protected IWebElement ExportMultipleChoiceFieldsAsNestedCheckbox => Driver.FindElementEx(By.Id("export-multiple-choice-fields-as-nested"));
 
-		[FindsBy(How = How.Id, Using = "exportNativeWithFilenameFromTypeSelector")]
-		protected IWebElement NameOutputFilesAfterSelectWebElement { get; set; }
+		protected IWebElement NameOutputFilesAfterSelectWebElement => Driver.FindElementEx(By.Id("exportNativeWithFilenameFromTypeSelector"));
 
-		[FindsBy(How = How.Id, Using = "append-original-file-name-checkbox")]
-		protected IWebElement AppendOriginalFileNameCheckbox { get; set; }
+		protected IWebElement AppendOriginalFileNameCheckbox => Driver.FindElementEx(By.Id("append-original-file-name-checkbox"));
 
 		public ExportToFileThirdPageLoadFileOptions(RemoteWebDriver driver) : base(driver)
 		{
@@ -55,7 +44,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value != null)
 				{
-					ImageFileFormatSelectElement.SelectByText(value);
+					ImageFileFormatSelectElement.SelectByTextEx(value, Driver);
 				}
 			}
 		}
@@ -69,7 +58,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value != null)
 				{
-					DataFileFormatSelectElement.SelectByText(value);
+					DataFileFormatSelectElement.SelectByTextEx(value, Driver);
 				}
 			}
 		}
@@ -83,7 +72,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value != null)
 				{
-					DataFileEncodingSelectElement.SelectByText(value);
+					DataFileEncodingSelectElement.SelectByTextEx(value, Driver);
 				}
 			}
 		}
@@ -93,13 +82,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			switch (filePath)
 			{
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.Absolute:
-					AbsoluteFilePathRadio.ClickEx();
+					AbsoluteFilePathRadio.ClickEx(Driver);
 					break;
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.Relative:
-					RelativeFilePathRadio.ClickEx();
+					RelativeFilePathRadio.ClickEx(Driver);
 					break;
 				case ExportToLoadFileProviderModel.FilePathTypeEnum.UserPrefix:
-					UserPrefixFilePathRadio.ClickEx();
+					UserPrefixFilePathRadio.ClickEx(Driver);
 					break;
 			}
 		}
@@ -112,12 +101,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void IncludeNativeFilesPath()
 		{
-			IncludeNativeFilesPathCheckbox.ClickEx();
+			IncludeNativeFilesPathCheckbox.ClickEx(Driver);
 		}
 
 		public void ExportMultipleChoiceFieldsAsNested()
 		{
-			ExportMultipleChoiceFieldsAsNestedCheckbox.ClickEx();
+			ExportMultipleChoiceFieldsAsNestedCheckbox.ClickEx(Driver);
 		}
 
 		protected SelectElement NameOutputFilesAfterSelectElement => new SelectElement(NameOutputFilesAfterSelectWebElement);
@@ -129,14 +118,14 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value != null)
 				{
-					NameOutputFilesAfterSelectElement.SelectByText(value);
+					NameOutputFilesAfterSelectElement.SelectByTextEx(value, Driver);
 				}
 			}
 		}
 
 		public void AppendOriginalFileName()
 		{
-			AppendOriginalFileNameCheckbox.ClickEx();
+			AppendOriginalFileNameCheckbox.ClickEx(Driver);
 		}
 	}
 }
