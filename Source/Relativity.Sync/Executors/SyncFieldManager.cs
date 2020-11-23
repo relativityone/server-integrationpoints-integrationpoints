@@ -7,6 +7,7 @@ using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Services.Exceptions;
 
 namespace Relativity.Sync.Executors
 {
@@ -50,14 +51,44 @@ namespace Relativity.Sync.Executors
 
 		private async Task<int> ReadOrCreateFieldAsync(int workspaceArtifactId, BaseFieldRequest fieldRequest)
 		{
-			QueryResult queryByNameResult = await QueryFieldByNameAsync(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false);
-			if (queryByNameResult.Objects.Count > 0)
+			var fieldArtifactId = await TryReadFieldByName(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false)
+				?? await TryCreateFieldAsync(workspaceArtifactId, fieldRequest).ConfigureAwait(false)
+				?? await TryReadFieldByName(workspaceArtifactId, fieldRequest.Name).ConfigureAwait(false);
+
+			if (fieldArtifactId != null)
 			{
-				int fieldArtifactId = queryByNameResult.Objects.First().ArtifactID;
-				_logger.LogVerbose("Field already exists (Artifact ID {fieldArtifactId}), but may not have GUID assigned.", fieldArtifactId);
-				return fieldArtifactId;
+				return fieldArtifactId.Value;
 			}
-			else
+
+			const string errorMsg = "Read failed after field creation request failure.";
+			_logger.LogError(errorMsg);
+			throw new SyncException(errorMsg);
+		}
+
+		private async Task<int?> TryReadFieldByName(int workspaceArtifactId, string fieldName)
+		{
+			_logger.LogVerbose("Querying for field.");
+			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				QueryRequest queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						ArtifactTypeID = (int)ArtifactType.Field
+					},
+					Condition = $"'Name' == '{fieldName}'"
+				};
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
+
+				return queryResult.Objects.Count > 0
+					? (int?)queryResult.Objects.First().ArtifactID
+					: null;
+			}
+		}
+
+		private async Task<int?> TryCreateFieldAsync(int workspaceArtifactId, BaseFieldRequest fieldRequest)
+		{
+			try
 			{
 				_logger.LogVerbose("Creating field.");
 				using (Services.Interfaces.Field.IFieldManager fieldManager = await _serviceFactory.CreateProxyAsync<Services.Interfaces.Field.IFieldManager>().ConfigureAwait(false))
@@ -82,23 +113,10 @@ namespace Relativity.Sync.Executors
 					}
 				}
 			}
-		}
-
-		private async Task<QueryResult> QueryFieldByNameAsync(int workspaceArtifactId, string fieldName)
-		{
-			_logger.LogVerbose("Querying for field.");
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			catch (InvalidInputException e)
 			{
-				QueryRequest queryRequest = new QueryRequest()
-				{
-					ObjectType = new ObjectTypeRef()
-					{
-						ArtifactTypeID = (int)ArtifactType.Field
-					},
-					Condition = $"'Name' == '{fieldName}'"
-				};
-				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
-				return queryResult;
+				_logger.LogError(e, "Field creation request failed.");
+				return null;
 			}
 		}
 	}
