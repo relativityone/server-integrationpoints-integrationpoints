@@ -3,6 +3,7 @@ ko.validation.insertValidationMessage = function (element) {
     var errorContainer = document.createElement('div');
     var iconSpan = document.createElement('span');
     iconSpan.className = 'icon-error legal-hold field-validation-error';
+    iconSpan.setAttribute('id', 'saveAsProfileValidationError');
 
     errorContainer.appendChild(iconSpan);
 

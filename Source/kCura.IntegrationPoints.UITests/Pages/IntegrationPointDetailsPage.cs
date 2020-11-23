@@ -1,10 +1,9 @@
+using System;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Pages
 {
@@ -18,11 +17,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		protected IWebElement ProfileNameInput => Driver.FindElementEx(By.Id("profile-name"));
 
+		protected IWebElement ProfileNameValidationErrorElement => Driver.FindElementEx(By.Id("saveAsProfileValidationError"));
+
 		public string ProfileName
 		{
 			get { return ProfileNameInput.Text; }
 			set { ProfileNameInput.SetTextEx(value, Driver); }
 		}
+
+		public string ProfileNameValidationErrorMessage => ProfileNameValidationErrorElement.Text;
 
 		public IntegrationPointDetailsPage(RemoteWebDriver driver) : base(driver)
 		{
@@ -38,12 +41,18 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveAsAProfileIntegrationPoint()
 		{
+			return SaveAsAProfileIntegrationPoint(ProfileName);
+		}
+
+		public IntegrationPointDetailsPage SaveAsAProfileIntegrationPoint(string profileName)
+		{
 			SaveAsAProfileButton.ClickEx(Driver);
+			ProfileName = profileName;
 			SaveAsAProfileOnConfirmationDialog();
 			return this;
 		}
 
-        public ExportFirstPage EditIntegrationPoint()
+		public ExportFirstPage EditIntegrationPoint()
         {
             EditButton.ClickEx(Driver);
 			return new ExportFirstPage(Driver);
