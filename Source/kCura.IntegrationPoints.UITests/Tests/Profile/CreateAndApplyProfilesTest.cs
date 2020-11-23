@@ -202,13 +202,17 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		[TestType.EdgeCase]
 		public void Profile_ShouldNotAllowSpecialCharactersInName_WhenCreatingFromSummaryPage()
 		{
+			// Arrange
 			IntegrationPointsAction action = new IntegrationPointsAction(Driver, SourceContext.WorkspaceName);
 			RelativityProviderModel model = CreateRelativityProviderModel($"IntegrationPoint-{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}");
 			IntegrationPointDetailsPage detailsPage = action.CreateNewRelativityProviderIntegrationPoint(model);
 
+			// Act
 			IntegrationPointDetailsPage saveAsProfilePage = detailsPage.SaveAsAProfileIntegrationPoint("IntegrationPoint-!@#$%^&*()_+[];',./{}:<>?");
-			//const string expectedMessage = "Field cannot contain special characters such as: < > : \" \\ / | ? * TAB";
-			//saveAsProfilePage.ProfileNameValidationErrorMessage.Should().Be(expectedMessage);
+
+			// Assert
+			const string expectedMessage = "Field cannot contain special characters such as: < > : \" \\ / | ? * TAB";
+			saveAsProfilePage.ProfileNameValidationErrorMessage.Should().Be(expectedMessage);
 		}
 
 		protected async Task CreateLongTextFieldsAsync(Configuration.TestContext workspaceContext, int numberOfFields)
