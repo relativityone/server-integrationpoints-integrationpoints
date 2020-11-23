@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 			return this;
 		}
 
-		private TreeSelect ChooseRootElement()
+		public TreeSelect ChooseRootElement()
 		{
 			Expand();
 
