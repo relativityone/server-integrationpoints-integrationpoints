@@ -94,22 +94,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 	    }
 
 	    public static Job GetJob(
-			long jobId,
-			long? rootJobId,
-			long? parentJobId,
-			int agentTypeId,
-			int lockedByAgentId,
-			int workspaceId,
-			int relatedObjectArtifactId,
-			TaskType taskType,
-			DateTime nextRunTime,
-			DateTime? lastRunTime,
-			string jobDetails,
-			int jobFlags,
-			DateTime submittedDate,
-			int submittedBy,
-			string scheduleRuleType,
-			string serializedScheduleRule)
+			long jobId = 0,
+			long? rootJobId = null,
+			long? parentJobId = null,
+			int agentTypeId = 0,
+			int lockedByAgentId = 0,
+			int workspaceId = 0,
+			int relatedObjectArtifactId = 0,
+			TaskType taskType = TaskType.None,
+			DateTime nextRunTime = default(DateTime),
+			DateTime? lastRunTime = null,
+			string jobDetails = null,
+			int jobFlags = 0,
+			DateTime submittedDate = default(DateTime),
+			int submittedBy = 0,
+			string scheduleRuleType = null,
+			string serializedScheduleRule = null)
 		{
 			return CreateJob(jobId, rootJobId, parentJobId, agentTypeId, lockedByAgentId, workspaceId, relatedObjectArtifactId,
 				taskType, nextRunTime, lastRunTime, jobDetails, jobFlags, submittedDate, submittedBy, scheduleRuleType,

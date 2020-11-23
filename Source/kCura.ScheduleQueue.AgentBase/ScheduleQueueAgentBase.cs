@@ -6,6 +6,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
+using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.AgentBase
@@ -122,8 +123,17 @@ namespace kCura.ScheduleQueue.AgentBase
 				{
 					Logger.LogDebug("No active job found in Schedule Agent Queue table");
 				}
+
 				while (nextJob != null)
 				{
+					bool isJobValid = PreExecuteJobValidation(nextJob);
+					if (!isJobValid)
+					{
+						_jobService.DeleteJob(nextJob.JobId);
+						nextJob = GetNextQueueJob();
+						continue;
+					}
+
 					TaskResult jobResult = ProcessJob(nextJob);
 					FinalizeJobExecution(nextJob, jobResult);
 					nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
@@ -138,6 +148,26 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				Logger.LogError(ex, "Unhandled exception occured while processing queue jobs.");
 			}
+		}
+
+		private bool PreExecuteJobValidation(Job job)
+		{
+			try
+			{
+				ValidationResult result = new QueueJobValidator(job, Helper).ValidateAsync().GetAwaiter().GetResult();
+				if (!result.IsValid)
+				{
+					LogValidationJobFailed(job, result);
+				}
+
+				return result.IsValid;
+			}
+			catch (Exception e)
+			{
+				Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
+				return true;
+			}
+
 		}
 
 		protected abstract TaskResult ProcessJob(Job job);
@@ -274,6 +304,11 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			Logger.LogError(exception, "An error occured during finalization of Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
+		}
+
+		private void LogValidationJobFailed(Job job, ValidationResult result)
+		{
+			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Message);
 		}
 		#endregion
 	}
