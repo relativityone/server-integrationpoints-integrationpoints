@@ -48,6 +48,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			target.LoadImportedFullTextFromServer = importSettings.LoadImportedFullTextFromServer;
 			target.DestinationFolderArtifactID = GetDestinationFolderArtifactId(importSettings);
 			target.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(importSettings);
+
+			//FRONTEO: Native by links flow enabled and set Billable and CopyFilesToDocumentRepository to true
+			if (target.NativeFileCopyMode == NativeFileCopyModeEnum.SetFileLinks)
+			{
+				target.CopyFilesToDocumentRepository = true;
+				target.Billable = true;
+			}
 		}
 
 		private int GetDestinationFolderArtifactId(ImportSettings importSettings)
