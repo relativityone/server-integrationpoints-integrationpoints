@@ -1,35 +1,32 @@
 ﻿using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Services.Interfaces.Workspace;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ReadResult = Relativity.Services.Objects.DataContracts.ReadResult;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {
-	public class QueueJobValidator
+	public class QueueJobValidator : IQueueJobValidator
 	{
 		private ValidationResult _validationResult = ValidationResult.Success;
 
 		private readonly IHelper _helper;
-		private readonly Job _job;
 
-		public QueueJobValidator(Job job, IHelper helper)
+		public QueueJobValidator(IHelper helper)
 		{
-			_job = job;
 			_helper = helper;
 		}
 
-		public async Task<ValidationResult> ValidateAsync()
+		public async Task<ValidationResult> ValidateAsync(Job job)
 		{
-			await ValidateWorkspaceExistsAsync().ConfigureAwait(false);
-			await ValidateIntegrationPointExistsAsync().ConfigureAwait(false);
+			await ValidateWorkspaceExistsAsync(job.WorkspaceID).ConfigureAwait(false);
+			await ValidateIntegrationPointExistsAsync(job.RelatedObjectArtifactID, job.WorkspaceID).ConfigureAwait(false);
 
 			return _validationResult;
 		}
 
-		private async Task ValidateWorkspaceExistsAsync()
+		private async Task ValidateWorkspaceExistsAsync(int workspaceId)
 		{
 			if (!_validationResult.IsValid)
 			{
@@ -41,17 +38,17 @@ namespace kCura.ScheduleQueue.Core.Validation
 				var request = new QueryRequest()
 				{
 					ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
-					Condition = $"'ArtifactID' == {_job.WorkspaceID}",
+					Condition = $"'ArtifactID' == {workspaceId}",
 				};
 
 				QueryResultSlim result = await proxy.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
 
 				_validationResult = result.TotalCount > 0
-					? ValidationResult.Success : ValidationResult.Failed($"Workspace {_job.WorkspaceID} does not exist anymore");
+					? ValidationResult.Success : ValidationResult.Failed($"Workspace {workspaceId} does not exist anymore");
 			}
 		}
 
-		private async Task ValidateIntegrationPointExistsAsync()
+		private async Task ValidateIntegrationPointExistsAsync(int integrationPointId, int workspaceId)
 		{
 			if (!_validationResult.IsValid)
 			{
@@ -62,13 +59,13 @@ namespace kCura.ScheduleQueue.Core.Validation
 			{
 				var request = new ReadRequest()
 				{
-					Object = new RelativityObjectRef() { ArtifactID = _job.RelatedObjectArtifactID }
+					Object = new RelativityObjectRef() { ArtifactID = integrationPointId }
 				};
 
-				ReadResult result = await proxy.ReadAsync(_job.WorkspaceID, request).ConfigureAwait(false);
+				ReadResult result = await proxy.ReadAsync(workspaceId, request).ConfigureAwait(false);
 
 				_validationResult = result.Object != null
-					? ValidationResult.Success : ValidationResult.Failed($"Integration Point {_job.RelatedObjectArtifactID} does not exist anymore");
+					? ValidationResult.Success : ValidationResult.Failed($"Integration Point {integrationPointId} does not exist anymore");
 			}
 		}
 	}

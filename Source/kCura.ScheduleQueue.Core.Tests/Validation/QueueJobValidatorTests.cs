@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using NUnit.Framework;
@@ -22,15 +23,18 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 		public async Task ValidateAsync_ShouldValidateJobAsValid_WhenContextWorkspaceAndIntegrationPointsExist()
 		{
 			// Arrange
-			Job job = JobHelper.GetJob(workspaceId: _TEST_WORKSPACE_ID, relatedObjectArtifactId: _TEST_INTEGRATION_POINT_ID);
+			Job job = new JobBuilder()
+				.WithWorkspaceId(_TEST_WORKSPACE_ID)
+				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+				.Build();
 
-			QueueJobValidator sut = GetSut(job);
+			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(true);
 			SetUpIntegrationPointExists(true);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync().ConfigureAwait(false);
+			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeTrue();
@@ -41,15 +45,18 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 		public async Task ValidateAsync_ShouldValidateJobAsInvalid_WhenContextWorkspaceDoesNotExist()
 		{
 			// Arrange
-			Job job = JobHelper.GetJob(workspaceId: _TEST_WORKSPACE_ID, relatedObjectArtifactId: _TEST_INTEGRATION_POINT_ID);
+			Job job = new JobBuilder()
+				.WithWorkspaceId(_TEST_WORKSPACE_ID)
+				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+				.Build();
 
-			QueueJobValidator sut = GetSut(job);
+			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(false);
 			SetUpIntegrationPointExists(false);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync().ConfigureAwait(false);
+			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeFalse();
@@ -60,15 +67,18 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 		public async Task ValidateAsync_ShouldValidateJobAsInvalid_WhenContextIntegrationPointDoesNotExist()
 		{
 			// Arrange
-			Job job = JobHelper.GetJob(workspaceId: _TEST_WORKSPACE_ID, relatedObjectArtifactId: _TEST_INTEGRATION_POINT_ID);
+			Job job = new JobBuilder()
+				.WithWorkspaceId(_TEST_WORKSPACE_ID)
+				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+				.Build();
 
-			QueueJobValidator sut = GetSut(job);
+			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(true);
 			SetUpIntegrationPointExists(false);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync().ConfigureAwait(false);
+			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeFalse();
@@ -79,22 +89,25 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 		public async Task ValidateAsync_ShouldNotValidateIntegrationPoint_WhenContextWorkspaceDoesNotExist()
 		{
 			// Arrange
-			Job job = JobHelper.GetJob(workspaceId: _TEST_WORKSPACE_ID, relatedObjectArtifactId: _TEST_INTEGRATION_POINT_ID);
+			Job job = new JobBuilder()
+				.WithWorkspaceId(_TEST_WORKSPACE_ID)
+				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+				.Build();
 
-			QueueJobValidator sut = GetSut(job);
+			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(false);
 			SetUpIntegrationPointExists(false);
 
 			// Act
-			await sut.ValidateAsync().ConfigureAwait(false);
+			await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			_objectManagerMock.Verify(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>()), 
 				Times.Never());
 		}
 
-		private QueueJobValidator GetSut(Job job)
+		private QueueJobValidator GetSut()
 		{
 			Mock<IHelper> helper = new Mock<IHelper>();
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
@@ -104,7 +117,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerMock.Object);
 
-			return new QueueJobValidator(job, helper.Object);
+			return new QueueJobValidator(helper.Object);
 		}
 
 		private void SetUpWorkspaceExists(bool exists)

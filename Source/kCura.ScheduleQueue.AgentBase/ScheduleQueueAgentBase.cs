@@ -13,9 +13,9 @@ namespace kCura.ScheduleQueue.AgentBase
 {
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
-
 		private IAgentService _agentService;
 		private IJobService _jobService;
+		private IQueueJobValidator _queueJobValidator;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
 		private readonly Lazy<IAPILog> _loggerLazy;
@@ -25,20 +25,21 @@ namespace kCura.ScheduleQueue.AgentBase
 			[LogCategory.Info] = 10
 		};
 
-		protected IAPILog Logger
-		{
-			get { return _loggerLazy.Value; }
-		}
+		protected IAPILog Logger => _loggerLazy.Value;
 
 		protected ScheduleQueueAgentBase(Guid agentGuid,
 			IAgentService agentService = null, IJobService jobService = null,
-			IScheduleRuleFactory scheduleRuleFactory = null)
+			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
+			_queueJobValidator = queueJobValidator;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
-			_loggerLazy = new Lazy<IAPILog>(InitializeLogger);
+
+			_loggerLazy = logger != null
+				? new Lazy<IAPILog>(() => logger)
+				: new Lazy<IAPILog>(InitializeLogger);
 		}
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
 
@@ -54,6 +55,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			if (_jobService == null)
 			{
 				_jobService = new JobService(_agentService, new JobServiceDataProvider(_agentService, Helper), Helper);
+			}
+
+			if (_queueJobValidator == null)
+			{
+				_queueJobValidator = new QueueJobValidator(Helper);
 			}
 		}
 
@@ -72,10 +78,16 @@ namespace kCura.ScheduleQueue.AgentBase
 			CompleteExecution();
 		}
 		
-		private bool PreExecute()
+		protected bool PreExecute()
 		{
 			try
 			{
+				//bool isAgentEnabled = CheckIfAgentIsEnabled();
+				//if (!isAgentEnabled)
+				//{
+				//	return false;
+				//}
+
 				Initialize();
 				InitializeManagerConfigSettingsFactory();
 				CheckQueueTable();
@@ -88,6 +100,17 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			return true;
 		}
+
+		//private bool CheckIfAgentIsEnabled()
+		//{
+		//	if (!Enabled)
+		//	{
+		//		NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
+		//		return false;
+		//	}
+
+		//	return true;
+		//}
 
 		private void CompleteExecution()
 		{
@@ -154,7 +177,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			try
 			{
-				ValidationResult result = new QueueJobValidator(job, Helper).ValidateAsync().GetAwaiter().GetResult();
+				ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
 				if (!result.IsValid)
 				{
 					LogValidationJobFailed(job, result);
@@ -193,6 +216,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
 				return null;
 			}
+
 			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
 			try

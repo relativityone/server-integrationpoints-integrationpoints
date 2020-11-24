@@ -206,7 +206,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
+			action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
 			);
@@ -294,7 +294,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			//assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
+			action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
 			);
@@ -373,7 +373,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			);
 
 			// assert
-			action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: documentIDs");
+			action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
 				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
 			);

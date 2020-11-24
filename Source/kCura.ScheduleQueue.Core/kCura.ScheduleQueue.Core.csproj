@@ -116,6 +116,7 @@
     <Compile Include="Services\TimeMachineService.cs" />
     <Compile Include="TimeMachine\DefaultTimeMachineProvider.cs" />
     <Compile Include="TimeMachine\AgentTimeMachineProvider.cs" />
+    <Compile Include="Validation\IQueueJobValidator.cs" />
     <Compile Include="Validation\QueueJobValidator.cs" />
     <Compile Include="Validation\ValidationResult.cs" />
   </ItemGroup>
