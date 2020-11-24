@@ -31,7 +31,7 @@ multibranchPipelineJob('DataTransfer-Jobs/RelativitySync/Nightly-Performance') {
         def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
         traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait'()
         traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-            includes('develop')
+            includes('develop REL-496807-add-test-tracker-into-performance-tests')
             excludes('')
         }
         traits << 'jenkins.plugins.git.traits.CleanAfterCheckoutTrait' {
