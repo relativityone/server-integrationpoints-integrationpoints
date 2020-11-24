@@ -96,6 +96,10 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.NativeFilePathSourceFieldName = configuration.NativeFilePathSourceFieldName;
 				importJob.Settings.OIFileIdMapped = true;
 				importJob.Settings.FileSizeMapped = true;
+
+				// Do not set DisableNativeValidation to "true" - Import API will ignore "Relativity Native Type" field
+				// and will set it to "Unknown format". Overwriting "OIFileTypeColumnName" and "SupportedByViewerColumn"
+				// in the settings is enough to disable calling OutsideIn - instead it will take the values from supplied IDataReader.
 				importJob.Settings.DisableNativeValidation = false;
 			}
 
