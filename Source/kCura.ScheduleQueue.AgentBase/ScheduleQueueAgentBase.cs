@@ -27,8 +27,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected IAPILog Logger => _loggerLazy.Value;
 
-		protected ScheduleQueueAgentBase(Guid agentGuid,
-			IAgentService agentService = null, IJobService jobService = null,
+		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
@@ -65,7 +64,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-
 			bool isPreExecuteSuccessful = PreExecute();
 			NotifyAgentTab(LogCategory.Debug, "Started.");
 
@@ -78,16 +76,10 @@ namespace kCura.ScheduleQueue.AgentBase
 			CompleteExecution();
 		}
 		
-		protected bool PreExecute()
+		private bool PreExecute()
 		{
 			try
 			{
-				//bool isAgentEnabled = CheckIfAgentIsEnabled();
-				//if (!isAgentEnabled)
-				//{
-				//	return false;
-				//}
-
 				Initialize();
 				InitializeManagerConfigSettingsFactory();
 				CheckQueueTable();
@@ -100,17 +92,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			return true;
 		}
-
-		//private bool CheckIfAgentIsEnabled()
-		//{
-		//	if (!Enabled)
-		//	{
-		//		NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
-		//		return false;
-		//	}
-
-		//	return true;
-		//}
 
 		private void CompleteExecution()
 		{

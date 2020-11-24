@@ -64,6 +64,26 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			_jobServiceMock.Verify(x => x.DeleteJob(invalidJob.JobId));
 		}
 
+		[Test]
+		public void Execute_ShouldProcessJobInQueue_WhenJobValidationThrowsException()
+		{
+			// Arrange
+			Job expectedJob = new JobBuilder().WithJobId(1).Build();
+
+			TestAgent sut = GetSut();
+
+			SetupJobQueue(expectedJob);
+
+			_queueJobValidatorFake.Setup(x => x.ValidateAsync(expectedJob))
+				.Throws<Exception>();
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			sut.ProcessedJobs.Single().ShouldBeEquivalentTo(expectedJob);
+		}
+
 		private TestAgent GetSut()
 		{
 			var agentService = new Mock<IAgentService>();
