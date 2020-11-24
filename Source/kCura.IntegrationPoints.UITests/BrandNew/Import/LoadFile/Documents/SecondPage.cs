@@ -1,21 +1,23 @@
-﻿using OpenQA.Selenium.Remote;
+﻿using kCura.IntegrationPoints.UITests.Driver;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 {
 	public class SecondPage : CreateIntegrationPointPage
 	{
-		public LoadFileSettingsPanel LoadFileSettings => new LoadFileSettingsPanel(Driver.FindElementByCssSelector("#import-provider-configuration > div:nth-child(1)"));
+		public LoadFileSettingsPanel LoadFileSettings => new LoadFileSettingsPanel(Driver.FindElementEx(By.CssSelector("#import-provider-configuration > div:nth-child(1)")), Driver);
 
 		public FileEncodingPanel FileEncoding { get; }
 
 		public SecondPage(RemoteWebDriver driver) : base(driver)
 		{
 			Driver.SwitchTo().DefaultContent()
-				.SwitchTo().Frame(_mainFrameNameOldUi)
-				.SwitchTo().Frame("configurationFrame");
+				.SwitchToFrameEx(_mainFrameNameOldUi)
+				.SwitchToFrameEx("configurationFrame");
 			WaitForPage();
 			
-			FileEncoding = new FileEncodingPanel(Driver.FindElementByCssSelector("#import-provider-configuration > div:nth-child(3)"));
+			FileEncoding = new FileEncodingPanel(Driver.FindElementEx(By.CssSelector("#import-provider-configuration > div:nth-child(3)")), Driver);
 		}
 	}
 }

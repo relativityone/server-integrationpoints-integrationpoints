@@ -12,76 +12,55 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public abstract class ImportThirdPage<TModel> : GeneralPage
 	{
-		[FindsBy(How = How.Id, Using = "save")]
-		protected IWebElement SaveButton { get; set; }
+		protected IWebElement SaveButton => Driver.FindElementEx(By.Id("save"));
 
-		[FindsBy(How = How.Id, Using = "source-fields")]
-		protected IWebElement SourceFieldsElement { get; set; }
+		protected IWebElement SourceFieldsElement => Driver.FindElementEx(By.Id("source-fields"));
 
-		[FindsBy(How = How.Id, Using = "add-source-field")]
-		protected IWebElement AddSourceFieldElement { get; set; }
+		protected IWebElement AddSourceFieldElement => Driver.FindElementEx(By.Id("add-source-field"));
 
-		[FindsBy(How = How.Id, Using = "add-all-source-fields")]
-		protected IWebElement AddAllSourceFieldsElement { get; set; }
+		protected IWebElement AddAllSourceFieldsElement => Driver.FindElementEx(By.Id("add-all-source-fields"));
 
-		[FindsBy(How = How.Id, Using = "workspace-fields")]
-		protected IWebElement DestinationFieldElement { get; set; }
+		protected IWebElement DestinationFieldElement => Driver.FindElementEx(By.Id("workspace-fields"));
 
-		[FindsBy(How = How.Id, Using = "add-workspace-field")]
-		protected IWebElement AddDestinationFieldElement { get; set; }
+		protected IWebElement AddDestinationFieldElement => Driver.FindElementEx(By.Id("add-workspace-field"));
 
-		[FindsBy(How = How.Id, Using = "add-all-workspace-fields")]
-		protected IWebElement AddAllDestinationFieldsElement { get; set; }
+		protected IWebElement AddAllDestinationFieldsElement => Driver.FindElementEx(By.Id("add-all-workspace-fields"));
 
-		[FindsBy(How = How.Id, Using = "mapFieldsBtn")]
-		protected IWebElement MapFieldsElement { get; set; }
+		protected IWebElement MapFieldsElement => Driver.FindElementEx(By.Id("mapFieldsBtn"));
 
-		[FindsBy(How = How.Id, Using = "overwrite")]
-		protected IWebElement OverwriteSelectWebElement { get; set; }
+		protected IWebElement OverwriteSelectWebElement => Driver.FindElementEx(By.Id("overwrite"));
 
-		[FindsBy(How = How.Id, Using = "overlay-identifier")]
-		protected IWebElement UniqueIdentifierSelectWebElement { get; set; }
+		protected IWebElement UniqueIdentifierSelectWebElement => Driver.FindElementEx(By.Id("overlay-identifier"));
 
-		[FindsBy(How = How.ClassName, Using = "identifier")]
-		protected IWebElement SettingsDivElement { get; set; }
+		protected IWebElement SettingsDivElement => Driver.FindElementEx(By.ClassName("identifier"));
 
 		protected IWebElement EntityManagerContainsLinkRowElement { get; set; }
 
-		[FindsBy(How = How.Id, Using = "native-file-mode-radio-0")]
-		protected IWebElement CopyNativeFilesPhysicalFilesElement { get; set; }
+		protected IWebElement CopyNativeFilesPhysicalFilesElement => Driver.FindElementEx(By.Id("native-file-mode-radio-0"));
 
-		[FindsBy(How = How.Id, Using = "native-file-mode-radio-1")]
-		protected IWebElement CopyNativeFilesLinksOnlyElement { get; set; }
+		protected IWebElement CopyNativeFilesLinksOnlyElement => Driver.FindElementEx(By.Id("native-file-mode-radio-1"));
 
-		[FindsBy(How = How.Id, Using = "native-file-mode-radio-2")]
-		protected IWebElement CopyNativeFilesNoElement { get; set; }
+		protected IWebElement CopyNativeFilesNoElement => Driver.FindElementEx(By.Id("native-file-mode-radio-2"));
 
-		[FindsBy(How = How.Id, Using = "native-filePath")]
-		protected IWebElement NativeFilePathSelectWebElement { get; set; }
+		protected IWebElement NativeFilePathSelectWebElement => Driver.FindElementEx(By.Id("native-filePath"));
 
-		[FindsBy(How = How.Id, Using = "folder-path-radio-0")]
-		protected IWebElement UseFolderPathInfoYesElement { get; set; }
+		protected IWebElement UseFolderPathInfoYesElement => Driver.FindElementEx(By.Id("folder-path-radio-0"));
 
-		[FindsBy(How = How.Id, Using = "folder-path-radio-1")]
-		protected IWebElement UseFolderPathInfoNoElement { get; set; }
+		protected IWebElement UseFolderPathInfoNoElement => Driver.FindElementEx(By.Id("folder-path-radio-1"));
 
-		[FindsBy(How = How.Id, Using = "folderPath")]
-		protected IWebElement FolderPathInfoSelectWebElement { get; set; }
+		protected IWebElement FolderPathInfoSelectWebElement => Driver.FindElementEx(By.Id("folderPath"));
 
-		[FindsBy(How = How.Id, Using = "extracted-text-radio-0")]
-		protected IWebElement CellContainsFileLocationYesElement { get; set; }
+		protected IWebElement CellContainsFileLocationYesElement => Driver.FindElementEx(By.Id("extracted-text-radio-0"));
 
-		[FindsBy(How = How.Id, Using = "extracted-text-radio-1")]
-		protected IWebElement CellContainsFileLocationNoElement { get; set; }
+		protected IWebElement CellContainsFileLocationNoElement => Driver.FindElementEx(By.Id("extracted-text-radio-1"));
 
-		[FindsBy(How = How.ClassName, Using = "margin-top-8px")]
-		protected IWebElement FileLocationCellSelectDivElement { get; set; }
+		protected IWebElement FileLocationCellSelectDivElement => Driver.FindElementEx(By.ClassName("margin-top-8px"));
 
 		protected ImportThirdPage(RemoteWebDriver driver) : base(driver)
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			EntityManagerContainsLinkRowElement = SettingsDivElement.FindElements(By.ClassName("field-row"))[11];
+			EntityManagerContainsLinkRowElement = SettingsDivElement.FindElementsEx(By.ClassName("field-row"))[11];
 		}
 
 		protected SelectElement SelectSourceFieldsElement => new SelectElement(SourceFieldsElement);
@@ -93,7 +72,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldsElement.ClickEx();
+			AddAllSourceFieldsElement.ClickEx(Driver);
 		}
 
 		protected SelectElement SelectDestinationFieldElement => new SelectElement(DestinationFieldElement);
@@ -105,12 +84,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void SelectAllDestinationFields()
 		{
-			AddAllDestinationFieldsElement.ClickEx();
+			AddAllDestinationFieldsElement.ClickEx(Driver);
 		}
 
 		public void MapFields()
 		{
-			MapFieldsElement.ClickEx();
+			MapFieldsElement.ClickEx(Driver);
 		}
 
 		protected SelectElement OverwriteSelectElement => new SelectElement(OverwriteSelectWebElement);
@@ -122,7 +101,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value != null)
 				{
-					OverwriteSelectElement.SelectByText(value);
+					OverwriteSelectElement.SelectByTextEx(value, Driver);
 				}
 			}
 		}
@@ -136,7 +115,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value != null)
 				{
-					UniqueIdentifierSelectElement.SelectByText(value);
+					UniqueIdentifierSelectElement.SelectByTextEx(value, Driver);
 				}
 			}
 		}
@@ -144,8 +123,8 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		public void SetEntityManagerContainsLink(bool value)
 		{
 			int checkboxNumber = value ? 0 : 1;
-			IWebElement input = EntityManagerContainsLinkRowElement.FindElements(By.TagName("input"))[checkboxNumber];
-			input.ClickEx();
+			IWebElement input = EntityManagerContainsLinkRowElement.FindElementsEx(By.TagName("input"))[checkboxNumber];
+			input.ClickEx(Driver);
 		}
 
 		public CopyNativeFiles CopyNativeFiles
@@ -154,15 +133,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			{
 				if (value == CopyNativeFiles.PhysicalFiles)
 				{
-					CopyNativeFilesPhysicalFilesElement.ClickEx();
+					CopyNativeFilesPhysicalFilesElement.ClickEx(Driver);
 				}
 				else if (value == CopyNativeFiles.LinksOnly)
 				{
-					CopyNativeFilesLinksOnlyElement.ClickEx();
+					CopyNativeFilesLinksOnlyElement.ClickEx(Driver);
 				}
 				else if (value == CopyNativeFiles.No)
 				{
-					CopyNativeFilesNoElement.ClickEx();
+					CopyNativeFilesNoElement.ClickEx(Driver);
 				}
 			}
 		}
@@ -173,7 +152,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			set
 			{
-				NativeFilePathSelectElement.SelectByText(value);
+				NativeFilePathSelectElement.SelectByTextEx(value, Driver);
 			}
 		}
 
@@ -182,7 +161,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set
 			{
 				IWebElement element = value ? UseFolderPathInfoYesElement : UseFolderPathInfoNoElement;
-				element.ClickEx();
+				element.ClickEx(Driver);
 			}
 		}
 
@@ -192,7 +171,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			set
 			{
-				FolderPathInfoSelectElement.SelectByText(value);
+				FolderPathInfoSelectElement.SelectByTextEx(value, Driver);
 			}
 		}
 
@@ -201,37 +180,37 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			set
 			{
 				IWebElement element = value ? CellContainsFileLocationYesElement : CellContainsFileLocationNoElement;
-				element.ClickEx();
+				element.ClickEx(Driver);
 			}
 		}
 
-		protected SelectElement FileLocationCellSelectElement => 
-			new SelectElement(FileLocationCellSelectDivElement.FindElements(By.TagName("select")).First());
+		protected SelectElement FileLocationCellSelectElement =>
+			new SelectElement(FileLocationCellSelectDivElement.FindElementsEx(By.TagName("select")).First());
 
 		public string FileLocationCell
 		{
 			set
 			{
-				FileLocationCellSelectElement.ScrollIntoView();
-				FileLocationCellSelectElement.SelectByText(value);
+				FileLocationCellSelectElement.ScrollIntoView(Driver);
+				FileLocationCellSelectElement.SelectByTextEx(value, Driver);
 			}
 		}
 
-		protected SelectElement EncodingForUndetectableFilesSelectElement => 
-			new SelectElement(FileLocationCellSelectDivElement.FindElements(By.TagName("select")).ToList()[1]);
+		protected SelectElement EncodingForUndetectableFilesSelectElement =>
+			new SelectElement(FileLocationCellSelectDivElement.FindElementsEx(By.TagName("select")).ToList()[1]);
 
 		public string EncodingForUndetectableFiles
 		{
 			set
 			{
-				EncodingForUndetectableFilesSelectElement.SelectByText(value);
+				EncodingForUndetectableFilesSelectElement.SelectByTextEx(value, Driver);
 			}
 		}
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
 			SaveButton.ScrollIntoView(Driver);
-			SaveButton.ClickEx();
+			SaveButton.ClickEx(Driver);
 			return new IntegrationPointDetailsPage(Driver);
 		}
 
@@ -278,7 +257,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 				EncodingForUndetectableFiles = model.EncodingForUndetectableFiles;
 			}
 		}
-		
+
 		public abstract void SetupModel(TModel model);
 
 		private void SelectField(SelectElement selectElement, IWebElement addFieldElement, string fieldName)
@@ -290,15 +269,15 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 			SelectOption(selectElement, fieldName);
 
-			addFieldElement.ClickEx();
+			addFieldElement.ClickEx(Driver);
 		}
 
-		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
+		private void SelectOption(SelectElement selectElement, string textToSearchFor)
 		{
-			IWebElement option = selectElement.WrappedElement.FindElement(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
+			IWebElement option = selectElement.WrappedElement.FindElementEx(By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.ClickEx();
+				option.ClickEx(Driver);
 			}
 		}
 	}

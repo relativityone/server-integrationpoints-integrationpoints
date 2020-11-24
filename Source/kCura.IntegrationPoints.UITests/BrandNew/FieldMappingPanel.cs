@@ -8,21 +8,21 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 {
 	public class FieldMappingPanel : Component
 	{
-		public SimpleSelectField SourceFields => new SimpleSelectField(Parent.FindElement(By.XPath(".//*[@id='source-fields']/..")));
+		public SimpleSelectField SourceFields => new SimpleSelectField(Parent.FindElementEx(By.XPath(".//*[@id='source-fields']/..")), Driver);
 
-		public IWebElement AddSourceFieldButton => Parent.FindElement(By.Id("add-source-field"));
+		public IWebElement AddSourceFieldButton => Parent.FindElementEx(By.Id("add-source-field"));
 
-		public IWebElement AddAllSourceFieldsButton => Parent.FindElement(By.Id("add-all-source-fields"));
+		public IWebElement AddAllSourceFieldsButton => Parent.FindElementEx(By.Id("add-all-source-fields"));
 
-		public SimpleSelectField DestinationFields => new SimpleSelectField(Parent.FindElement(By.XPath(".//*[@id='workspace-fields']/..")));
+		public SimpleSelectField DestinationFields => new SimpleSelectField(Parent.FindElementEx(By.XPath(".//*[@id='workspace-fields']/..")), Driver);
 
-		public IWebElement AddDestinationFieldButton => Parent.FindElement(By.Id("add-workspace-field"));
+		public IWebElement AddDestinationFieldButton => Parent.FindElementEx(By.Id("add-workspace-field"));
 
-		public IWebElement AddAllDestinationFieldsButton => Parent.FindElement(By.Id("add-all-workspace-fields"));
+		public IWebElement AddAllDestinationFieldsButton => Parent.FindElementEx(By.Id("add-all-workspace-fields"));
 
-		public IWebElement MapFieldsButton => Parent.FindElement(By.Id("mapFieldsBtn"));
+		public IWebElement MapFieldsButton => Parent.FindElementEx(By.Id("mapFieldsBtn"));
 		
-		public FieldMappingPanel(IWebElement parent) : base(parent)
+		public FieldMappingPanel(IWebElement parent, IWebDriver driver) : base(parent, driver)
 		{
 		}
 
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 		public void SelectAllSourceFields()
 		{
-			AddAllSourceFieldsButton.ClickEx();
+			AddAllSourceFieldsButton.ClickEx(Driver);
 		}
 
 		public void SelectDestinationField(string fieldName)
@@ -43,12 +43,12 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 		public void SelectAllDestinationFields()
 		{
-			AddAllDestinationFieldsButton.ClickEx();
+			AddAllDestinationFieldsButton.ClickEx(Driver);
 		}
 
 		public void MapFields()
 		{
-			MapFieldsButton.ClickEx();
+			MapFieldsButton.ClickEx(Driver);
 		}
 
 		public FieldMappingPanel MapFields(IDictionary<string, string> mappings)
@@ -71,16 +71,16 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 
 			SelectOption(selectElement, fieldName);
 
-			addFieldElement.ClickEx();
+			addFieldElement.ClickEx(Driver);
 		}
 
-		private static void SelectOption(SelectElement selectElement, string textToSearchFor)
+		private void SelectOption(SelectElement selectElement, string textToSearchFor)
 		{
-			IWebElement option = selectElement.WrappedElement.FindElement(
+			IWebElement option = selectElement.WrappedElement.FindElementEx(
 				By.XPath($".//option[starts-with(normalize-space(.), \"{textToSearchFor}\")]"));
 			if (!option.Selected)
 			{
-				option.ClickEx();
+				option.ClickEx(Driver);
 			}
 		}
 	}

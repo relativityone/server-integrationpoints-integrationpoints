@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public IntegrationPointDetailsPage CreateNewExportToLoadFileIntegrationPoint(
 			ExportToLoadFileProviderModel model)
-		{
+		{ 
 			GeneralPage generalPage = GoToWorkspacePage();
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
@@ -131,6 +131,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Log.Information("secondPage");
 			SelectSource(secondPage, model);
 
+			secondPage.WaitForPage();
+			
 			secondPage.DestinationWorkspace = model.DestinationWorkspace;
 			SelectDestination(secondPage, model);
 			return secondPage;
@@ -214,7 +216,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPage.SelectFolderPathInfo = "Read From Folder Tree";
 			}
 
-			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
+			thirdPage.SelectMoveExistingDocuments(model.MoveExistingDocuments);
 
 
 			thirdPage.SelectCopyFilesToRepository(model.CopyFilesToRepository);
@@ -247,6 +249,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 		{
 			ExportToFileSecondPage secondPage = firstPage.GoToNextPage();
 
+			Thread.Sleep(1000);
+			
 			Log.Information("ExportToFileSecondPage");
 			secondPage.Source = model.SourceInformationModel.Source;
 			if (model.SourceInformationModel.Source == ExportToLoadFileSourceConstants.SAVED_SEARCH)
@@ -264,7 +268,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 
 			secondPage.StartExportAtRecord = model.SourceInformationModel.StartAtRecord;
-			Thread.Sleep(200);
+			
 			if (model.SourceInformationModel.SelectAllFields)
 			{
 				secondPage.SelectAllSourceFields();
@@ -505,7 +509,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Log.Information("SetupEntityExportToFileSecondPage");
 			ExportEntityToFileSecondPage secondPage = firstPage.GotoNextPageEntity();
 			secondPage.View = model.ExportDetails.View;
-			Thread.Sleep(500);
 			if (model.ExportDetails.SelectAllFields)
 			{
 				secondPage.SelectAllFields();

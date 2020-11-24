@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -195,6 +195,24 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName);
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
 			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
+		}
+
+		[IdentifiedTest("8D563438-B41B-4892-A227-7FB4C29BEE05")]
+		[RetryOnError]
+		[TestType.EdgeCase]
+		public void Profile_ShouldNotAllowSpecialCharactersInName_WhenCreatingFromSummaryPage()
+		{
+			// Arrange
+			IntegrationPointsAction action = new IntegrationPointsAction(Driver, SourceContext.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel($"IntegrationPoint-{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}");
+			IntegrationPointDetailsPage detailsPage = action.CreateNewRelativityProviderIntegrationPoint(model);
+
+			// Act
+			IntegrationPointDetailsPage saveAsProfilePage = detailsPage.SaveAsAProfileIntegrationPoint("IntegrationPoint-!@#$%^&*()_+[];',./{}:<>?");
+
+			// Assert
+			const string expectedMessage = "Field cannot contain special characters such as: < > : \" \\ / | ? * TAB";
+			saveAsProfilePage.ProfileNameValidationErrorMessage.Should().Be(expectedMessage);
 		}
 
 		protected async Task CreateLongTextFieldsAsync(Configuration.TestContext workspaceContext, int numberOfFields)

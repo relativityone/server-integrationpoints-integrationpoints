@@ -7,22 +7,22 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile
 {
 	public class LoadFileSettingsPanel : Component
 	{
-		protected IWebElement ImportTypeSelect => Parent.FindElement(By.Id("import-importType"));
+		protected IWebElement ImportTypeSelect => Parent.FindElementEx(By.Id("import-importType"));
 
 		protected IWebElement WorkspaceDestinationTreeParent =>
-			Parent.FindElement(By.XPath("//*[@id='destination-location-select']/.."));
+			Parent.FindElementEx(By.XPath("//*[@id='destination-location-select']/.."));
 
 		protected TreeSelect WorkspaceDestinationTree => new TreeSelect(WorkspaceDestinationTreeParent,
-			"destination-location-select", "destination-jstree-holder-div");
+			"destination-location-select", "destination-jstree-holder-div", Driver);
 
-		protected IWebElement ImportSourceTreeParent => Parent.FindElement(By.XPath("//*[@id='location-select']/.."));
+		protected IWebElement ImportSourceTreeParent => Parent.FindElementEx(By.XPath("//*[@id='location-select']/.."));
 
 		protected TreeSelect ImportSourceTree =>
-			new TreeSelect(ImportSourceTreeParent, "location-select", "jstree-holder-div");
+			new TreeSelect(ImportSourceTreeParent, "location-select", "jstree-holder-div", Driver);
 
-		protected IWebElement StartLineInput => Parent.FindElement(By.Id("import-columnname-numbers"));
+		protected IWebElement StartLineInput => Parent.FindElementEx(By.Id("import-columnname-numbers"));
 
-		public LoadFileSettingsPanel(IWebElement parent) : base(parent)
+		public LoadFileSettingsPanel(IWebElement parent, IWebDriver driver) : base(parent, driver)
 		{
 		}
 
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile
 			{
 				if (value != null)
 				{
-					new SelectElement(ImportTypeSelect).SelectByText(value);
+					new SelectElement(ImportTypeSelect).SelectByTextEx(value, Driver);
 				}
 			}
 		}
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile
 		public int StartLine
 		{
 			get { return int.Parse(StartLineInput.Text); }
-			set { StartLineInput.SetText(value.ToString()); }
+			set { StartLineInput.SetTextEx(value.ToString(), Driver); }
 		}
 	}
 }

@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.FTP
 
 		public void FillPanel(ConnectionAndFileInfoPanel panel, ConnectionAndFileInfoModel model)
 		{
-			panel.Host.SetText(model.Host);
-			panel.Protocol.SelectByText(model.Protocol.GetDescription());
-			panel.Port.SetText(model.Port.ToString());
-			panel.Username.SetText(model.Username);
-			panel.Password.SetText(model.Password);
-			panel.CsvFilepathInput.SetText(model.CsvFilepath);
+			panel.Host.SetTextEx(model.Host, Driver);
+			panel.Protocol.SelectByTextEx(model.Protocol.GetDescription(), Driver);
+			panel.Port.SetTextEx(model.Port.ToString(), Driver);
+			panel.Username.SetTextEx(model.Username, Driver);
+			panel.Password.SetTextEx(model.Password, Driver);
+			panel.CsvFilepathInput.SetTextEx(model.CsvFilepath, Driver);
 		}
 	}
 }

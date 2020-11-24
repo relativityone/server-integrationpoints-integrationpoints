@@ -16,12 +16,13 @@ namespace kCura.IntegrationPoints.UITests.BrandNew
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
 			Driver.SwitchTo().DefaultContent()
-				.SwitchTo().Frame(_mainFrameNameNewUi);
+				.SwitchToFrameEx(_mainFrameNameNewUi);
 		}
 
 		public void CreateNewIntegrationPoint()
 		{
-			NewIntegrationPointButton.ClickEx();
+			WaitForPage();
+			NewIntegrationPointButton.ClickEx(Driver, true);
 		}
 	}
 }

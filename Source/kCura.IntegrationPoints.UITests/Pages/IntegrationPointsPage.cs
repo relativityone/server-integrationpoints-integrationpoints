@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		{
 			WaitForPage();
 			PageFactory.InitElements(driver, this);
-			Driver.SwitchTo().DefaultContent().SwitchTo().Frame(_mainFrameNameNewUi);
+			Driver.SwitchTo().DefaultContent().SwitchToFrameEx(_mainFrameNameNewUi);
 		}
 
 		public ExportFirstPage CreateNewExportIntegrationPoint()
 		{
-			NewIntegrationPointButton.ClickEx();
+			NewIntegrationPointButton.ClickEx(Driver);
 			return new ExportFirstPage(Driver);
 		}
 
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			where TSecondPage : ImportSecondBasePage<TModel>
 			
 		{
-			NewIntegrationPointButton.ClickEx();
+			NewIntegrationPointButton.ClickEx(Driver);
 			return funcFirstPageCreator();
 		}
 	}

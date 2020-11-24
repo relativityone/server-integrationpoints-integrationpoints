@@ -10,13 +10,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		protected ImportFirstPage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
-			Driver.SwitchTo().Frame("externalPage");
+			driver.SwitchToFrameEx("externalPage");
 			WaitForPage();
 		}
 
 		public void SelectImport()
 		{
-			ImportRadioButtonLabel.ClickEx();
+			ImportRadioButtonLabel.ClickEx(Driver);
 		}
 
 		public TSecondPage GoToNextPage() 
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 		private void InitSecondPage()
 		{
 			WaitForPage();
-			NextButton.ClickEx();
+			NextButton.ClickEx(Driver);
 		}
 	}
 }
