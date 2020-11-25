@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 				else
 				{
-					SqlCommand toggleInsertCommand = new SqlCommand(@"INSERT INTO [EDDS].[eddsdbo].[Toggle] (Name, IsEnabled) VALUES (@toggleName, @toggleValue)", connection);
+					SqlCommand toggleInsertCommand = new SqlCommand(@"INSERT INTO [EDDS].[eddsdbo].[Toggle] ([Name], [IsEnabled], [Default]) VALUES (@toggleName, @toggleValue, 0)", connection);
 					toggleInsertCommand.Parameters.AddWithValue("toggleName", toggleName);
 					toggleInsertCommand.Parameters.AddWithValue("toggleValue", toggleValue);
 

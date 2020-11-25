@@ -110,6 +110,8 @@ Task Help -Alias ? -Description "Display task information" {
 }
 
 Task OneTimeTestsSetup -Description "Should be run always before running tests that require setup in deployed environment." {
+    Move-TestSettings $LogsDir
+
     $LogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
 }
@@ -120,6 +122,20 @@ Task RegTest -Description "Run custom tests based on specified filter on regress
 
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {
     Invoke-MyTest
+}
+
+function Move-TestSettings
+{
+    param (
+        [Parameter(Mandatory=$true, Position=0)]
+        [String] $Destination
+    )
+
+    $TestSettings = Join-Path $PSScriptRoot FunctionalTestSettings
+    if(Test-Path $TestSettings) { Copy-Item -Path $TestSettings -Destination $Destination -Force }
+
+    $VS_TestSettings = Join-Path $PSScriptRoot FunctionalTest.runsettings
+    if(Test-Path $VS_TestSettings) { Copy-Item -Path $VS_TestSettings -Destination $Destination -Force }
 }
 
 function Invoke-MyTest

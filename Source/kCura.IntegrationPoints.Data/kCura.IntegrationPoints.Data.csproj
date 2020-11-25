@@ -108,7 +108,6 @@
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="IRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
-    <Compile Include="Migrations\Migration.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
@@ -342,7 +341,6 @@
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
-    <Content Include="Resources\ShowImageImportToggle.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
