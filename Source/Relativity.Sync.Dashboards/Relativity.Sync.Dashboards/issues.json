@@ -422,5 +422,9 @@
 	{
 		"Jira": "REL-497739",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Web.Services.Protocols.SoapException: The network path was not found.*"
+	},
+	{
+		"Jira": "REL-498741",
+		"Exception": "Relativity.Services.Exceptions.ServiceException: Could not retrieve ApplicationID *"
 	}
 ]
