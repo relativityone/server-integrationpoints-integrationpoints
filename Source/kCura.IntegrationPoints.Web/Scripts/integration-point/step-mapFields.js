@@ -293,15 +293,7 @@ ko.validation.insertValidationMessage = function (element) {
 		setCopyFilesLabel(this.ImageImport());
 
 		/********** Temporary UI Toggle**********/
-		this.ImageImportVisible = ko.observable("false");
-		root.data.ajax({
-			type: 'get',
-			url: root.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Web.Toggles.UI.ShowImageImportToggle'),
-			success: function (result) {
-				self.ImageImportVisible(result && self.IsRelativityProvider());
-			}
-		});
-
+		this.ImageImportVisible = ko.observable(self.IsRelativityProvider());
 
 		this.ImageImport.subscribe(function (value) {
 			setCopyFilesLabel(value);
