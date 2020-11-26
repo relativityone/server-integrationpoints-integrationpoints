@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Relativity.Client.DTOs;
+using Microsoft.VisualBasic.Logging;
 using NUnit.Framework;
 using Relativity.Automation.Utility;
 using Relativity.Automation.Utility.Api;
@@ -20,6 +21,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.Performance.Helpers;
+using Relativity.Sync.Tests.Performance.PreConditions;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
@@ -112,6 +114,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					_destinationWorkspaceId = await Environment.GetWorkspaceArtifactIdByNameAsync(DestinationWorkspaceName).ConfigureAwait(false);
 				}
 			}
+
+			PreConditionsCheckAndFix();
 		}
 
 		private async Task<int> RestoreWorkspaceAsync(string armedWorkspaceFileName)
@@ -122,7 +126,39 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
 			return await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
 		}
-		
+
+		private void PreConditionsCheckAndFix()
+		{
+			IList<FixResult> fixResults = new List<FixResult>();
+
+			IEnumerable<IPreCondition> preConditions = new List<IPreCondition>();
+			foreach (var preCondition in preConditions)
+			{
+				var isOk = preCondition.Check();
+				Logger.LogInformation("Pre-Condition check: {name} is valid - {status}");
+				if (!isOk)
+				{
+					Logger.LogInformation("Pre-Condition check is invalid. Trying to fix...");
+					fixResults.Add(preCondition.TryFix());
+				}
+			}
+
+			IList<FixResult> fixErrors = fixResults.Where(x => !x.IsFixed).ToList();
+			if (fixErrors.Any())
+			{
+				LogPreConditionChecksErrors(fixErrors);
+				throw new Exception("Some of Pre-Condition checks failed. Check logs.");
+			}
+		}
+
+		private void LogPreConditionChecksErrors(IList<FixResult> fixErrors)
+		{
+			foreach (var error in fixErrors)
+			{
+				Logger.LogError(error.Exception, "Pre-Condition: {name} fix failed.", error.PreConditionName);
+			}
+		}
+
 		[OneTimeTearDown]
 		public async Task OneTimeTearDown()
 		{
