@@ -2,13 +2,15 @@
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.Kepler.Transport;
-using Relativity.Services.Interfaces.Workspace;
 using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
+using NUnit.Framework;
 using IWorkspaceManager = Relativity.Services.Workspace.IWorkspaceManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -48,7 +50,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public async Task<string> GetFilesharePath(int workspaceId)
+		public async Task<string> GetFilesharePathAsync(int workspaceId)
 		{
 			using(var proxy = _helper.CreateProxy<IWorkspaceManager>())
 			{
@@ -57,6 +59,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 				FileShareResourceServer server = await proxy.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
 
 				return Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
+			}
+		}
+
+		public async Task<string> GetProcessingSourcePathAsync(int workspaceId)
+		{
+			using (var proxy = _helper.CreateProxy<IFileShareServerManager>())
+			{
+				FileShareResourceServer[] fileShareResourceServers = await proxy.GetUserFileshareResourceServersAsync().ConfigureAwait(false);
+				fileShareResourceServers.Length.Should().BeGreaterThan(0, "Server should have any file share available");
+
+				Uri defaultFileRepository = new Uri(fileShareResourceServers.First().UNCPath);
+				string processingSourcePath = $@"\\{defaultFileRepository.Host}\ProcessingSource";
+				return processingSourcePath;
 			}
 		}
 	}

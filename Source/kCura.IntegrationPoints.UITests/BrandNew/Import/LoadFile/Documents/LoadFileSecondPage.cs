@@ -4,13 +4,13 @@ using OpenQA.Selenium.Remote;
 
 namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 {
-	public class SecondPage : CreateIntegrationPointPage
+	public class LoadFileSecondPage : CreateIntegrationPointPage
 	{
 		public LoadFileSettingsPanel LoadFileSettings => new LoadFileSettingsPanel(Driver.FindElementEx(By.CssSelector("#import-provider-configuration > div:nth-child(1)")), Driver);
 
 		public FileEncodingPanel FileEncoding { get; }
 
-		public SecondPage(RemoteWebDriver driver) : base(driver)
+		public LoadFileSecondPage(RemoteWebDriver driver) : base(driver)
 		{
 			Driver.SwitchTo().DefaultContent()
 				.SwitchToFrameEx(_mainFrameNameOldUi)

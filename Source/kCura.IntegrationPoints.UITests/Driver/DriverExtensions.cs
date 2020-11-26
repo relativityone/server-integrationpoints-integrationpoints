@@ -4,12 +4,9 @@ using OpenQA.Selenium;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.UITests.Common;
 using OpenQA.Selenium.Internal;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
-using Polly;
-using Polly.Retry;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {
@@ -30,26 +27,6 @@ namespace kCura.IntegrationPoints.UITests.Driver
 
 				return el;
 			}, timeout);
-		}
-
-		public static By ClickEx(this By by, IWebDriver driver, bool pageShouldChange = false, TimeSpan? timeout = null)
-		{
-			WebDriverWait wait = driver.GetConfiguredWait();
-
-			wait.Until(d =>
-			{
-				var el = d.FindElement(by);
-				string currentUrl = driver.Url;
-				el.Click();
-				if (pageShouldChange && currentUrl == driver.Url)
-				{
-					return null;
-				}
-
-				return el;
-			});
-
-			return by;
 		}
 
 		/// <summary>
@@ -121,11 +98,6 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			}
 		}
 
-		private static TimeSpan MultiplyTimeout(TimeSpan timeout)
-		{
-			return TimeSpan.FromMilliseconds(timeout.TotalMilliseconds * SharedVariables.UiTimeoutMultiplier);
-		}
-
 		public static IWebElement SetTextEx(this IWebElement element, string text, IWebDriver driver)
 		{
 			element.PerformAction(driver, el =>
@@ -142,22 +114,6 @@ namespace kCura.IntegrationPoints.UITests.Driver
 			}, TimeSpan.FromSeconds(_DEFAULT_SEND_KEYS_TIMEOUT_IN_SECONDS));
 
 			return element;
-		}
-
-		public static IWebElement FindByEx(this IWebDriver driver, By by, TimeSpan? timeout = null)
-		{
-			WebDriverWait wait = GetConfiguredWait(driver, timeout);
-
-			return wait.Until(_ =>
-			{
-				IWebElement element = driver.FindElement(by);
-				if (element.Displayed && element.Enabled)
-				{
-					return element;
-				}
-
-				return null;
-			});
 		}
 
 		public static void GoToPage(this IWebDriver driver, string pageName)
