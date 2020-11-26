@@ -9,8 +9,6 @@ namespace kCura.ScheduleQueue.Core.Validation
 {
 	public class QueueJobValidator : IQueueJobValidator
 	{
-		private ValidationResult _validationResult = ValidationResult.Success;
-
 		private readonly IHelper _helper;
 
 		public QueueJobValidator(IHelper helper)
@@ -20,19 +18,19 @@ namespace kCura.ScheduleQueue.Core.Validation
 
 		public async Task<ValidationResult> ValidateAsync(Job job)
 		{
-			await ValidateWorkspaceExistsAsync(job.WorkspaceID).ConfigureAwait(false);
-			await ValidateIntegrationPointExistsAsync(job.RelatedObjectArtifactID, job.WorkspaceID).ConfigureAwait(false);
-
-			return _validationResult;
-		}
-
-		private async Task ValidateWorkspaceExistsAsync(int workspaceId)
-		{
-			if (!_validationResult.IsValid)
+			ValidationResult validationResult = await ValidateWorkspaceExistsAsync(job.WorkspaceID).ConfigureAwait(false);
+			if (!validationResult.IsValid)
 			{
-				return;
+				return validationResult;
 			}
 
+			validationResult = await ValidateIntegrationPointExistsAsync(job.RelatedObjectArtifactID, job.WorkspaceID).ConfigureAwait(false);
+
+			return validationResult;
+		}
+
+		private async Task<ValidationResult> ValidateWorkspaceExistsAsync(int workspaceId)
+		{
 			using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				var request = new QueryRequest()
@@ -43,18 +41,12 @@ namespace kCura.ScheduleQueue.Core.Validation
 
 				QueryResultSlim result = await proxy.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
 
-				_validationResult = result.TotalCount > 0
-					? ValidationResult.Success : ValidationResult.Failed($"Workspace {workspaceId} does not exist anymore");
+				return result.TotalCount > 0 ? ValidationResult.Success : ValidationResult.Failed($"Workspace {workspaceId} does not exist anymore");
 			}
 		}
 
-		private async Task ValidateIntegrationPointExistsAsync(int integrationPointId, int workspaceId)
+		private async Task<ValidationResult> ValidateIntegrationPointExistsAsync(int integrationPointId, int workspaceId)
 		{
-			if (!_validationResult.IsValid)
-			{
-				return;
-			}
-
 			using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				var request = new ReadRequest()
@@ -64,8 +56,7 @@ namespace kCura.ScheduleQueue.Core.Validation
 
 				ReadResult result = await proxy.ReadAsync(workspaceId, request).ConfigureAwait(false);
 
-				_validationResult = result.Object != null
-					? ValidationResult.Success : ValidationResult.Failed($"Integration Point {integrationPointId} does not exist anymore");
+				return result.Object != null ? ValidationResult.Success : ValidationResult.Failed($"Integration Point {integrationPointId} does not exist anymore");
 			}
 		}
 	}
