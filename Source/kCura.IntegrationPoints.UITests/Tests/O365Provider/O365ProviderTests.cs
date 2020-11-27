@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
 using kCura.IntegrationPoint.Tests.Core.Models.Import;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile;
 using kCura.IntegrationPoint.Tests.Core.Models.Import.O365;
@@ -34,9 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.O365Provider
 		public async Task OneTimeSetUpAsync()
 		{
 			RelativityApplicationManager appManager = new RelativityApplicationManager(Helper);
-			DirectoryInfo workDirectory = new DirectoryInfo(TestContext.CurrentContext.WorkDirectory);
-			string o365RapPath = Path.Combine(workDirectory.Parent.Parent.Parent.FullName, @"buildtools\IntegrationPoints.Office365\lib\Office_365_Integration.rap");
-			await appManager.ImportApplicationToLibraryAsync(o365RapPath).ConfigureAwait(false);
+			await appManager.ImportApplicationToLibraryAsync(SharedVariables.O365Path).ConfigureAwait(false);
 			await SourceContext.ApplicationInstallationHelper.InstallO365Async().ConfigureAwait(false);
 
 			await CopyTestDataToFileshareAsync().ConfigureAwait(false);
