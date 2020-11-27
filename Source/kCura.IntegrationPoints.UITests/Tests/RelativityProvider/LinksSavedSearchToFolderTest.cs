@@ -8,6 +8,8 @@ using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
@@ -65,6 +67,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[IdentifiedTest("4b2768a9-b44b-431e-bd26-cdb6d604bb47")]
 		[RetryOnError]
+		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, "REL-488523")]
 		public void RelativityProvider_TC_RTR_LO_02()
 		{
 			//Arrange
@@ -189,6 +192,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[IdentifiedTest("29fa8085-768d-4e0b-a862-e66d5b30cc89")]
 		[RetryOnError]
+		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, "REL-488523")]
 		public void RelativityProvider_TC_RTR_LO_07()
 		{
 			// Arrange
@@ -322,6 +326,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 
 		[IdentifiedTest("00b7c027-df10-4918-8ee1-a07f45634540")]
 		[RetryOnError]
+		[TestInQuarantine(TestQuarantineState.DetectsDefectInExternalDependency, "REL-488523")]
 		public void RelativityProvider_TC_RTR_LO_12()
 		{
 			// Arrange
