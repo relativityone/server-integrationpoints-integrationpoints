@@ -10,7 +10,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NUnit.Framework;
 using IWorkspaceManager = Relativity.Services.Workspace.IWorkspaceManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -62,7 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public async Task<string> GetProcessingSourcePathAsync(int workspaceId)
+		public async Task<string> GetProcessingSourcePathAsync()
 		{
 			using (var proxy = _helper.CreateProxy<IFileShareServerManager>())
 			{

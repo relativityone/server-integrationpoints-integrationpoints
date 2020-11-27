@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.Shared;
@@ -12,6 +13,7 @@ using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
+using Relativity.Services.Exceptions;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.UITests.Tests.O365Provider
@@ -32,17 +34,26 @@ namespace kCura.IntegrationPoints.UITests.Tests.O365Provider
 		public async Task OneTimeSetUpAsync()
 		{
 			RelativityApplicationManager appManager = new RelativityApplicationManager(Helper);
-			await appManager.ImportApplicationToLibraryAsync(@"C:\SourceCode\integrationpoints\buildtools\IntegrationPoints.Office365\lib\Office_365_Integration.rap").ConfigureAwait(false);
+			DirectoryInfo workDirectory = new DirectoryInfo(TestContext.CurrentContext.WorkDirectory);
+			string o365RapPath = Path.Combine(workDirectory.Parent.Parent.Parent.FullName, @"buildtools\IntegrationPoints.Office365\lib\Office_365_Integration.rap");
+			await appManager.ImportApplicationToLibraryAsync(o365RapPath).ConfigureAwait(false);
 			await SourceContext.ApplicationInstallationHelper.InstallO365Async().ConfigureAwait(false);
 
-			await CopyFilesToFileshareAsync().ConfigureAwait(false);
+			await CopyTestDataToFileshareAsync().ConfigureAwait(false);
 		}
 
-		private async Task CopyFilesToFileshareAsync()
+		private async Task CopyTestDataToFileshareAsync()
 		{
-			string testData = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataO365");
-			string fileSharePath = await _fileshare.GetProcessingSourcePathAsync(SourceContext.GetWorkspaceId()).ConfigureAwait(false);
-			await _fileshare.UploadDirectoryAsync(testData, fileSharePath).ConfigureAwait(false);
+			try
+			{
+				string testData = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataO365");
+				string fileSharePath = await _fileshare.GetProcessingSourcePathAsync().ConfigureAwait(false);
+				await _fileshare.UploadDirectoryAsync(testData, fileSharePath).ConfigureAwait(false);
+			}
+			catch (ServiceException ex) when (ex.Message.Contains("already exists"))
+			{
+				Console.WriteLine("Test data for O365 tests is already copied to file share.");
+			}
 		}
 
 		[IdentifiedTest("FE811924-3F37-4FCC-B46F-4BAA8B5610EC")]
