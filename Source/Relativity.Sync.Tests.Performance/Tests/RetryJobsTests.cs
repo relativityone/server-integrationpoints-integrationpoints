@@ -23,8 +23,12 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("RETRY_Jobs")]
 	internal class RetryJobsTests : PerformanceTestBase
 	{
-		public RetryJobsTests() : base(WorkspaceType.ARM, "Sync Retries 100k_Docs-30k_Errors.zip", null)
+		public RetryJobsTests()
 		{
+			UseArmWorkspace(
+					"Sync Retries 100k_Docs-30k_Errors.zip",
+					null)
+				.GetAwaiter().GetResult();
 		}
 
 		public static IEnumerable<TestCaseData> TestCases()
@@ -49,21 +53,19 @@ namespace Relativity.Sync.Tests.Performance.Tests
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
 
-		private async Task SetupAsync(PerformanceTestCase testCase, int? targetWorkspaceId, string savedSearchName)
+		private async Task SetupAsync(PerformanceTestCase testCase, string savedSearchName)
 		{
 			Configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
 			Configuration.ImportNativeFileCopyMode = testCase.CopyMode;
 
 			await SetupConfigurationAsync(
-				sourceWorkspaceId: _sourceWorkspaceId,
-				targetWorkspaceId: targetWorkspaceId,
 				savedSearchName: savedSearchName).ConfigureAwait(false);
 
 			IEnumerable<FieldMap> generatedFields = await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: null).ConfigureAwait(false);
 			Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(generatedFields).ToArray());
 			if (testCase.MapExtractedText)
 			{
-				IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
+				IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 				Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
 			}
 			Logger.LogInformation("Fields mapping ready");
@@ -77,11 +79,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			const int expectedItemsWithErrors = 30000;
 
 			// Sync 30% Of All Documents
-			await SetupAsync(testCase, null, "30% Of All Documents").ConfigureAwait(false);
+			await SetupAsync(testCase, "30% Of All Documents").ConfigureAwait(false);
 			await RunJobAsync().ConfigureAwait(false);
 
 			// Sync All Documents using AppendOnly to create item level errors
-			await SetupAsync(testCase, TargetWorkspace.ArtifactID, "All Documents").ConfigureAwait(false);
+			await SetupAsync(testCase, "All Documents").ConfigureAwait(false);
 			await RunJobAsync().ConfigureAwait(false);
 
 			RelativityObject jobHistory = await Rdos.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId).ConfigureAwait(false);
@@ -96,14 +98,14 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 			// Retry 
 			Configuration.JobHistoryToRetryId = Configuration.JobHistoryArtifactId;
-			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceId).ConfigureAwait(false);
+			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(Configuration);
 
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 			stopwatch.Stop();
 			TimeSpan elapsedTime = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
-			_testTimes.Add(testCase.TestCaseName, elapsedTime);
+			TestTimes.Add(testCase.TestCaseName, elapsedTime);
 
 			Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
 

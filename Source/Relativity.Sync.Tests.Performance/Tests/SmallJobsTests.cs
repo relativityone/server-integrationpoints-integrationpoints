@@ -10,8 +10,12 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("SMALL_Jobs")]
 	internal class SmallJobsTests : PerformanceTestBase
 	{
-		public SmallJobsTests() : base(WorkspaceType.ARM, "Small_jobs_tests.zip", null)
+		public SmallJobsTests()
 		{
+			UseArmWorkspace(
+					"Small_jobs_tests.zip",
+					null)
+				.GetAwaiter().GetResult();
 		}
 
 		public static IEnumerable<TestCaseData> Cases()

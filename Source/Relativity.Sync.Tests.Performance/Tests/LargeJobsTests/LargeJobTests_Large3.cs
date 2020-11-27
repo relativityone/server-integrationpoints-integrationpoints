@@ -10,8 +10,12 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("LARGE_Jobs-Large-3")]
 	internal class LargeJobTests_Large3 : PerformanceTestBase
 	{
-		public LargeJobTests_Large3() : base(WorkspaceType.Relativity, "Large Job Tests - Large-3 [DO NOT DELETE]", null)
+		public LargeJobTests_Large3()
 		{
+			UseExistingWorkspace(
+					"Large Job Tests - Large-3 [DO NOT DELETE]",
+					null)
+				.GetAwaiter().GetResult();
 		}
 
 		[Test]
