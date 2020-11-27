@@ -314,10 +314,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#endregion LDAP Configuration Settings
 
+		#region O365 Configuration Settings
+
+		public static string O365Path => AppSettingString("O365Path");
+
+		#endregion
+
 		#region Fileshare Configuration Settings
 
 		public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
-
+		
 		#endregion
 
 		#region System Tests Settings

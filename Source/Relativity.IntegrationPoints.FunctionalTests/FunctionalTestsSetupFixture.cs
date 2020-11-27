@@ -19,38 +19,37 @@ public class FunctionalTestsSetupFixture
 	[OneTimeSetUp]
 	public async Task InitializeFixture()
 	{
-		_testHelper = new TestHelper();
-
-		// REL-451648
-		await ToggleHelper.SetToggleAsync("Relativity.Core.Api.TogglePerformance.ObjectManagerUseStaticStatelessValidators", false).ConfigureAwait(false);
-
-		if (!FunctionalTemplateWorkspaceExists())
-		{
-			SetupTemplateWorkspace();
-		}
-	}
-
-	private void SetupTemplateWorkspace()
-	{
 		try
 		{
-			int workspaceID = CreateFunctionalTemplateWorkspace();
+			_testHelper = new TestHelper();
+
+			// REL-451648
+			await ToggleHelper.SetToggleAsync("Relativity.Core.Api.TogglePerformance.ObjectManagerUseStaticStatelessValidators", false).ConfigureAwait(false);
 
 			ImportIntegrationPointsToLibrary();
-
-			InstallIntegrationPointsFromLibrary(workspaceID);
 
 			CreateIntegrationPointAgents();
 
 			ConfigureWebAPI();
 
 			ConfigureFileShareServices();
+
+			if (!FunctionalTemplateWorkspaceExists())
+			{
+				SetupTemplateWorkspace();
+			}
 		}
-		catch(Exception ex)
+		catch (Exception ex)
 		{
-			Console.WriteLine($"Setup Functional Tests Template Workspace failed with error: {ex.Message}");
+			Console.WriteLine($"Functional tests setup fixture failed with error: {ex.Message}");
 			IsInitialized = false;
 		}
+	}
+
+	private void SetupTemplateWorkspace()
+	{
+		int workspaceID = CreateFunctionalTemplateWorkspace();
+		InstallIntegrationPointsFromLibrary(workspaceID);
 	}
 
 	public bool FunctionalTemplateWorkspaceExists() =>
@@ -72,7 +71,7 @@ public class FunctionalTestsSetupFixture
 	public void InstallIntegrationPointsFromLibrary(int workspaceID)
 	{
 		Console.WriteLine($"Importing Integration Points to workspace {workspaceID}...");
-		
+
 		var applicationManager = new RelativityApplicationManager(_testHelper);
 		applicationManager.InstallRipFromLibraryAsync(workspaceID).GetAwaiter().GetResult();
 	}
@@ -82,7 +81,7 @@ public class FunctionalTestsSetupFixture
 		Console.WriteLine("Creating Integration Point Agents...");
 
 		var success = Agent.CreateMaxIntegrationPointAgentsAsync().GetAwaiter().GetResult();
-		if(!success)
+		if (!success)
 		{
 			throw new TestException("Creating Integration Point Agents has been failed");
 		}
@@ -92,7 +91,7 @@ public class FunctionalTestsSetupFixture
 	{
 		Console.WriteLine("Configure Web API Path...");
 
-		bool isValid = InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl).Result;
+		bool isValid = InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl).GetAwaiter().GetResult();
 		if (!isValid)
 		{
 			throw new TestException("Upgrading Web API Path has been failed");

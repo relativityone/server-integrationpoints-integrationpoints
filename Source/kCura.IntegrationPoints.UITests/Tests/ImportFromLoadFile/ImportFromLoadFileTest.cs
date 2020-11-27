@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 		public void OneTimeSetUp()
 		{
 			Install(SourceContext.GetWorkspaceId());
-			CopyFilesToFileshare().Wait();
+			CopyFilesToFileshareAsync().GetAwaiter().GetResult();
 		}
 
 		public ImportFromLoadFileTest() : base(shouldImportDocuments: false)
@@ -41,11 +41,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportFromLoadFile
 			_fileshare = new FileShareHelper(Helper);
 		}
 
-		private async Task CopyFilesToFileshare()
+		private async Task CopyFilesToFileshareAsync()
 		{
 			string testData = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataImportFromLoadFile");
 
-			string fileSharePath = await _fileshare.GetFilesharePath(SourceContext.GetWorkspaceId()).ConfigureAwait(false);
+			string fileSharePath = await _fileshare.GetFilesharePathAsync(SourceContext.GetWorkspaceId()).ConfigureAwait(false);
 			string destinationLocation = Path.Combine(fileSharePath, "DataTransfer\\Import");
 
 			await _fileshare.UploadDirectoryAsync(testData, destinationLocation).ConfigureAwait(false);
