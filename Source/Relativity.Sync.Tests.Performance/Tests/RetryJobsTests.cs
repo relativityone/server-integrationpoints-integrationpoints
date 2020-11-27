@@ -23,12 +23,32 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("RETRY_Jobs")]
 	internal class RetryJobsTests : PerformanceTestBase
 	{
+		private readonly string _sourceWorkspaceArmFile;
+		private readonly int _expectedTotalItems;
+		private readonly int _expectedItemsWithErrors;
+
+		public RetryJobsTests(string sourceWorkspaceArmFile, int expectedTotalItems,int expectedItemsWithErrors )
+		{
+			_sourceWorkspaceArmFile = sourceWorkspaceArmFile;
+			_expectedTotalItems = expectedTotalItems;
+			_expectedItemsWithErrors = expectedItemsWithErrors;
+		}
+
 		public RetryJobsTests()
 		{
-			UseArmWorkspace(
-					"Sync Retries 100k_Docs-30k_Errors.zip",
+			_sourceWorkspaceArmFile = "Sync Retries 100k_Docs-30k_Errors.zip";
+			_expectedTotalItems = 100000;
+			_expectedItemsWithErrors = 30000;
+		}
+
+		protected override async Task ChildSuiteSetup()
+		{
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseArmWorkspace(
+					_sourceWorkspaceArmFile,
 					null)
-				.GetAwaiter().GetResult();
+				.ConfigureAwait(false);
 		}
 
 		public static IEnumerable<TestCaseData> TestCases()
@@ -72,11 +92,9 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		}
 
 		[TestCaseSource(nameof(TestCases))]
-		public async Task Run(PerformanceTestCase testCase)
+		public virtual async Task Run(PerformanceTestCase testCase)
 		{
 			// Arrange
-			const int expectedTotalItems = 100000;
-			const int expectedItemsWithErrors = 30000;
 
 			// Sync 30% Of All Documents
 			await SetupAsync(testCase, "30% Of All Documents").ConfigureAwait(false);
@@ -92,9 +110,9 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			int itemsTranferred = (int)jobHistory["Items Transferred"].Value;
 			int itemsWithErrors = (int)jobHistory["Items with Errors"].Value;
 
-			totalItems.Should().Be(expectedTotalItems);
-			itemsTranferred.Should().Be(expectedTotalItems - expectedItemsWithErrors);
-			itemsWithErrors.Should().Be(expectedItemsWithErrors);
+			totalItems.Should().Be(_expectedTotalItems);
+			itemsTranferred.Should().Be(_expectedTotalItems - _expectedItemsWithErrors);
+			itemsWithErrors.Should().Be(_expectedItemsWithErrors);
 
 			// Retry 
 			Configuration.JobHistoryToRetryId = Configuration.JobHistoryArtifactId;
@@ -110,7 +128,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
 
 			// ASSERT
-			Configuration.TotalRecordsCount.Should().Be(expectedItemsWithErrors);
+			Configuration.TotalRecordsCount.Should().Be(_expectedItemsWithErrors);
 		}
 
 		private async Task RunJobAsync()
@@ -119,7 +137,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Logger.LogInformation("Configuration RDO created");
 
 			SyncJobParameters jobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId);
-			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger());
+			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
 
 			Logger.LogInformation("Starting the job");
 			SyncJobState syncJobState = await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);

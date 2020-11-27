@@ -106,8 +106,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
 		}
 
-		[OneTimeTearDown]
-		public async Task OneTimeTearDown()
+		protected override async Task ChildSuiteTeardown()
 		{
 			await CleanUpWorkspacesAsync().ConfigureAwait(false);
 
@@ -116,6 +115,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				File.WriteAllLines(AppSettings.PerformanceResultsFilePath,
 					TestTimes.Select(pair => $"{pair.Key};{pair.Value.TotalSeconds.ToString("0.##", CultureInfo.InvariantCulture)}\n"));
 			}
+
+			await base.ChildSuiteTeardown().ConfigureAwait(false);
 		}
 
 		[SetUp]
@@ -181,7 +182,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					Configuration.JobHistoryArtifactId);
 
 				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
-					new NullAPM(), TestLogHelper.GetLogger());
+					new NullAPM(), Logger);
 
 				Logger.LogInformation("Staring the job");
 

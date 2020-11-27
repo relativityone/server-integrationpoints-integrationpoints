@@ -13,16 +13,18 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("ReferencePerformance")]
 	internal class ReferenceJobsTests : PerformanceTestBase
 	{
-		private readonly AzureTableHelper _tableHelper;
+		private AzureTableHelper _tableHelper;
 
 		public const string _PERFORMANCE_RESULTS_TABLE_NAME = "SyncReferenceJobsPerformanceTestsResults";
-
-		public ReferenceJobsTests()
+		
+		protected override async Task ChildSuiteSetup()
 		{
-			UseExistingWorkspace(
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseExistingWorkspace(
 					"Sample Workspace",
 					null)
-				.GetAwaiter().GetResult();
+				.ConfigureAwait(false);
 
 			_tableHelper = AzureTableHelper.CreateFromTestConfig();
 		}

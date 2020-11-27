@@ -11,12 +11,14 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[Category("MEDIUM_Jobs")]
 	internal class MediumJobsTests : PerformanceTestBase
 	{
-		public MediumJobsTests()
+		protected override async Task ChildSuiteSetup()
 		{
-			UseArmWorkspace(
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseArmWorkspace(
 					"Medium_jobs_tests.zip",
 					"Medium_jobs_tests_-_Destination.zip")
-				.GetAwaiter().GetResult();
+				.ConfigureAwait(false);
 		}
 
 		public static IEnumerable<TestCaseData> Cases()
