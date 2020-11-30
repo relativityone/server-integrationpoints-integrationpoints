@@ -6,15 +6,16 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
+using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
-
 		private IAgentService _agentService;
 		private IJobService _jobService;
+		private IQueueJobValidator _queueJobValidator;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 		private readonly Guid _agentGuid;
 		private readonly Lazy<IAPILog> _loggerLazy;
@@ -24,20 +25,20 @@ namespace kCura.ScheduleQueue.AgentBase
 			[LogCategory.Info] = 10
 		};
 
-		protected IAPILog Logger
-		{
-			get { return _loggerLazy.Value; }
-		}
+		protected IAPILog Logger => _loggerLazy.Value;
 
-		protected ScheduleQueueAgentBase(Guid agentGuid,
-			IAgentService agentService = null, IJobService jobService = null,
-			IScheduleRuleFactory scheduleRuleFactory = null)
+		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
+			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
+			_queueJobValidator = queueJobValidator;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
-			_loggerLazy = new Lazy<IAPILog>(InitializeLogger);
+
+			_loggerLazy = logger != null
+				? new Lazy<IAPILog>(() => logger)
+				: new Lazy<IAPILog>(InitializeLogger);
 		}
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
 
@@ -54,11 +55,15 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				_jobService = new JobService(_agentService, new JobServiceDataProvider(_agentService, Helper), Helper);
 			}
+
+			if (_queueJobValidator == null)
+			{
+				_queueJobValidator = new QueueJobValidator(Helper);
+			}
 		}
 
 		public sealed override void Execute()
 		{
-
 			bool isPreExecuteSuccessful = PreExecute();
 			NotifyAgentTab(LogCategory.Debug, "Started.");
 
@@ -122,8 +127,17 @@ namespace kCura.ScheduleQueue.AgentBase
 				{
 					Logger.LogDebug("No active job found in Schedule Agent Queue table");
 				}
+
 				while (nextJob != null)
 				{
+					bool isJobValid = PreExecuteJobValidation(nextJob);
+					if (!isJobValid)
+					{
+						_jobService.DeleteJob(nextJob.JobId);
+						nextJob = GetNextQueueJob();
+						continue;
+					}
+
 					TaskResult jobResult = ProcessJob(nextJob);
 					FinalizeJobExecution(nextJob, jobResult);
 					nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
@@ -138,6 +152,26 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				Logger.LogError(ex, "Unhandled exception occured while processing queue jobs.");
 			}
+		}
+
+		private bool PreExecuteJobValidation(Job job)
+		{
+			try
+			{
+				ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
+				if (!result.IsValid)
+				{
+					LogValidationJobFailed(job, result);
+				}
+
+				return result.IsValid;
+			}
+			catch (Exception e)
+			{
+				Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
+				return true;
+			}
+
 		}
 
 		protected abstract TaskResult ProcessJob(Job job);
@@ -163,6 +197,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
 				return null;
 			}
+
 			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
 			try
@@ -274,6 +309,11 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			Logger.LogError(exception, "An error occured during finalization of Job with ID: {JobID} in {TypeName}", job.JobId,
 				nameof(ScheduleQueueAgentBase));
+		}
+
+		private void LogValidationJobFailed(Job job, ValidationResult result)
+		{
+			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Message);
 		}
 		#endregion
 	}

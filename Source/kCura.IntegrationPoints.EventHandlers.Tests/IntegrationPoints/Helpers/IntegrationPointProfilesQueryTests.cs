@@ -221,8 +221,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 		private static void AssertWrongNumberOfArtifactIDsInCollection(Func<Task<int>> sut)
 		{
-			sut.ShouldThrowExactly<InvalidOperationException>().Which.Message.Should()
-				.BeOneOf("Sequence contains more than one element", "Sequence contains no elements");
+			sut.ShouldThrowExactly<InvalidOperationException>();
 		}
 
 		private IEnumerable<IntegrationPointProfile> CreateProfilesToUpdate()
