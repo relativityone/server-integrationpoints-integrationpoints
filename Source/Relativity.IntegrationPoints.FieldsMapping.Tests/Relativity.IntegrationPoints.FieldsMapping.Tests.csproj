@@ -55,6 +55,7 @@
     <Compile Include="FieldsClassifyRunnerFactoryTests.cs" />
     <Compile Include="FieldsMappingValidatorTests.cs" />
     <Compile Include="FieldsRepositoryTests.cs" />
+    <Compile Include="MetricBucketNameGeneratorTests.cs" />
     <Compile Include="MetricsSenderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

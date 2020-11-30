@@ -24,15 +24,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		private readonly IAutomapRunner _automapRunner;
 		private readonly IFieldsMappingValidator _fieldsMappingValidator;
 		private readonly IMetricsSender _metricsSender;
+		private readonly IMetricBucketNameGenerator _metricBucketNameGenerator;
 		private readonly IAPILog _logger;
 
 		public FieldMappingsController(IFieldsClassifyRunnerFactory fieldsClassifyRunnerFactory, IAutomapRunner automapRunner, IFieldsMappingValidator fieldsMappingValidator, IMetricsSender metricsSender,
-			IAPILog logger)
+			IMetricBucketNameGenerator metricBucketNameGenerator, IAPILog logger)
 		{
 			_fieldsClassifyRunnerFactory = fieldsClassifyRunnerFactory;
 			_automapRunner = automapRunner;
 			_fieldsMappingValidator = fieldsMappingValidator;
 			_metricsSender = metricsSender;
+			_metricBucketNameGenerator = metricBucketNameGenerator;
 			_logger = logger;
 		}
 
@@ -62,28 +64,31 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields")]
-		public HttpResponseMessage AutoMapFields([FromBody] AutomapRequest request)
+		public HttpResponseMessage AutoMapFields([FromBody] AutomapRequest request, int workspaceID, string destinationProviderGuid)
 		{
-			_metricsSender.CountOperation(_AUTOMAP_ALL_METRIC_NAME);
+			string name = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAP_ALL_METRIC_NAME, Guid.Parse(destinationProviderGuid), workspaceID).GetAwaiter().GetResult();
+			_metricsSender.CountOperation(name);
 
-			return Request.CreateResponse(HttpStatusCode.OK, _automapRunner.MapFields(request.SourceFields, request.DestinationFields, request.MatchOnlyIdentifiers), Configuration.Formatters.JsonFormatter);
+			return Request.CreateResponse(HttpStatusCode.OK, _automapRunner.MapFields(request.SourceFields, request.DestinationFields, destinationProviderGuid, workspaceID, request.MatchOnlyIdentifiers),
+				Configuration.Formatters.JsonFormatter);
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields from saved search")]
-		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapRequest request, int sourceWorkspaceID, int savedSearchID)
+		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapRequest request, int sourceWorkspaceID, int savedSearchID, string destinationProviderGuid)
 		{
-			_metricsSender.CountOperation(_AUTOMAP_SAVED_SEARCH_METRIC_NAME);
+			string name = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAP_SAVED_SEARCH_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceID).GetAwaiter().GetResult();
+			_metricsSender.CountOperation(name);
 
 			IEnumerable<FieldMap> fieldMap = await _automapRunner
-				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, sourceWorkspaceID, savedSearchID)
+				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, destinationProviderGuid, sourceWorkspaceID, savedSearchID)
 				.ConfigureAwait(false);
 			return Request.CreateResponse(HttpStatusCode.OK, fieldMap, Configuration.Formatters.JsonFormatter);
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Error while validating mapped fields")]
-		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> mappedFields, int workspaceID, int destinationWorkspaceID)
+		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> mappedFields, int workspaceID, int destinationWorkspaceID, string destinationProviderGuid)
 		{
 			FieldMappingValidationResult fieldMappingValidationResult;
 
@@ -99,7 +104,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 			if (fieldMappingValidationResult.InvalidMappedFields.Any())
 			{
-				_metricsSender.CountOperation(_INVALID_MAPPING_METRIC_NAME);
+				string name = _metricBucketNameGenerator.GetBucketNameAsync(_INVALID_MAPPING_METRIC_NAME, Guid.Parse(destinationProviderGuid), workspaceID).GetAwaiter().GetResult();
+				_metricsSender.CountOperation(name);
 			}
 
 			return Request.CreateResponse(HttpStatusCode.OK, fieldMappingValidationResult, Configuration.Formatters.JsonFormatter);

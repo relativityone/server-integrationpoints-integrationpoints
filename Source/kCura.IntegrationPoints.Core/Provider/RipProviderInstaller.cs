@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         {
             return UpdateApplicationGuidIfMissing(provider)
                 .Bind(providerWithAppGuid => ValidateProvider(dataProviderFactory, providerWithAppGuid))
-                .BindAsync(AddOrUpdateProvider);
+                .BindAsync(AddOrUpdateProviderAsync);
         }
 
         private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider> ValidateProvider(
@@ -118,9 +118,9 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-        private async Task<Either<string, Unit>> AddOrUpdateProvider(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
+        private async Task<Either<string, Unit>> AddOrUpdateProviderAsync(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
-            IDictionary<Guid, SourceProvider> installedRdoProviderDict = await GetInstalledRdoProviders(provider).ConfigureAwait(false);
+            IDictionary<Guid, SourceProvider> installedRdoProviderDict = await GetInstalledRdoProvidersAsync(provider).ConfigureAwait(false);
 
             if (installedRdoProviderDict.ContainsKey(provider.GUID))
             {
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             return AddProvider(provider);
         }
 
-        private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProviders(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
+        private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProvidersAsync(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             List<SourceProvider> installedRdoProviders = await _sourceProviderRepository
                 .GetSourceProviderRdoByApplicationIdentifierAsync(provider.ApplicationGUID)

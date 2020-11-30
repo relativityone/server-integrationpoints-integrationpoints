@@ -20,15 +20,17 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IMetricsSender _metrics;
+		private readonly IMetricBucketNameGenerator _metricBucketNameGenerator;
 
-		public AutomapRunner(IServicesMgr servicesMgr, IMetricsSender metrics)
+		public AutomapRunner(IServicesMgr servicesMgr, IMetricsSender metrics, IMetricBucketNameGenerator metricBucketNameGenerator)
 		{
 			_servicesMgr = servicesMgr;
 			_metrics = metrics;
+			_metricBucketNameGenerator = metricBucketNameGenerator;
 		}
 
-		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
-			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false)
+		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields,
+			string destinationProviderGuid, int sourceWorkspaceArtifactId, bool matchOnlyIdentifiers = false)
 		{
 			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
 			List<DocumentFieldInfo> destinationFieldsList = destinationFields.ToList();
@@ -40,17 +42,23 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				mappingBuilder = mappingBuilder
 					.MapBy(x => x.Name, out int mappedByName, out int fixedLengthTextFieldsWithDifferentLengthByNameCount);
 
-				_metrics.GaugeOperation(_AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME, mappedByName, _UNIT_OF_MEASURE);
-				_metrics.GaugeOperation(_AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME, fixedLengthTextFieldsWithDifferentLengthByNameCount, _UNIT_OF_MEASURE);
+				string automappedByNameMetricName = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
+				string fixedLengthTextsMetricName = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
+				_metrics.GaugeOperation(automappedByNameMetricName, mappedByName, _UNIT_OF_MEASURE);
+				_metrics.GaugeOperation(fixedLengthTextsMetricName, fixedLengthTextFieldsWithDifferentLengthByNameCount, _UNIT_OF_MEASURE);
 			}
 
-			_metrics.GaugeOperation(_AUTOMAPPED_COUNT_METRIC_NAME, mappingBuilder.Mapping.Count(), _UNIT_OF_MEASURE);
+			string automappedCountMetricName = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAPPED_COUNT_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
+			_metrics.GaugeOperation(automappedCountMetricName, mappingBuilder.Mapping.Count(), _UNIT_OF_MEASURE);
 
-			return mappingBuilder.Mapping.OrderByDescending(x => x.SourceField.IsIdentifier).ThenBy(x => x.SourceField.DisplayName);
+			return mappingBuilder
+				.Mapping
+				.OrderByDescending(x => x.SourceField.IsIdentifier)
+				.ThenBy(x => x.SourceField.DisplayName);
 		}
 
 		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<DocumentFieldInfo> sourceFields,
-			IEnumerable<DocumentFieldInfo> destinationFields, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
+			IEnumerable<DocumentFieldInfo> destinationFields, string destinationProviderGuid, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
 		{
 			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
 			List<DocumentFieldInfo> savedSearchFields;
@@ -75,7 +83,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				}
 			}
 
-			List<FieldMap> mappedFields = MapFields(savedSearchFields, destinationFields).ToList();
+			List<FieldMap> mappedFields = MapFields(savedSearchFields, destinationFields, destinationProviderGuid, sourceWorkspaceArtifactId).ToList();
 			return mappedFields;
 		}
 

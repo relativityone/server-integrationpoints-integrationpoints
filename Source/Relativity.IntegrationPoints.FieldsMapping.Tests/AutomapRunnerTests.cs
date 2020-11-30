@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,8 +17,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 	[TestFixture, Category("Unit")]
 	public class AutomapRunnerTests
 	{
+		private const string DestinationProviderGuid = "6C486C1B-9AEA-4809-B4F8-7123A27A0D6E";
+		private const int WorkspaceArtifactId = 1234;
+
 		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
 		private Mock<IServicesMgr> _servicesMgrFake;
+		private Mock<IMetricBucketNameGenerator> _metricBucketNameGeneratorFake;
 		private Mock<IMetricsSender> _metricsSenderMock;
 		private AutomapRunner _sut;
 
@@ -29,11 +34,13 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			_servicesMgrFake.Setup(x => x.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_keywordSearchManagerFake.Object);
 
+			_metricBucketNameGeneratorFake = new Mock<IMetricBucketNameGenerator>();
+
 			_metricsSenderMock = new Mock<IMetricsSender>();
 			_metricsSenderMock.Setup(x => x.GaugeOperation(
 				It.IsAny<string>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()));
 
-			_sut = new AutomapRunner(_servicesMgrFake.Object, _metricsSenderMock.Object);
+			_sut = new AutomapRunner(_servicesMgrFake.Object, _metricsSenderMock.Object, _metricBucketNameGeneratorFake.Object);
 		}
 
 		[Test]
@@ -53,7 +60,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(2);
@@ -84,7 +91,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Should().BeEmpty();
@@ -107,7 +114,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(0);
@@ -128,7 +135,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -154,7 +161,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(0);
@@ -175,7 +182,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -207,7 +214,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -237,7 +244,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -269,7 +276,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields, true).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId, true).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(1);
@@ -297,7 +304,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
 			mappedFields.Count().Should().Be(3);
@@ -339,7 +346,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				});
 
 			// Act
-			var mappedFields = (await _sut.MapFieldsFromSavedSearchAsync(sourceFields, destinationFields, 1, 2)
+			var mappedFields = (await _sut.MapFieldsFromSavedSearchAsync(sourceFields, destinationFields, DestinationProviderGuid, 1, 2)
 				.ConfigureAwait(false)).ToArray();
 
 			// Assert
@@ -388,7 +395,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				});
 
 			// Act
-			var mappedFields = (await _sut.MapFieldsFromSavedSearchAsync(sourceFields, destinationFields, 1, 2)
+			var mappedFields = (await _sut.MapFieldsFromSavedSearchAsync(sourceFields, destinationFields, DestinationProviderGuid, 1, 2)
 				.ConfigureAwait(false)).ToArray();
 
 			// Assert
@@ -419,11 +426,15 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
 			};
 
+			string bucketName = "FakeProvider.AutoMap.AutoMappedCount";
+			_metricBucketNameGeneratorFake.Setup(x => x.GetBucketNameAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<int>()))
+				.ReturnsAsync(bucketName);
+
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields, true).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId, true).ToArray();
 
 			// Assert
-			_metricsSenderMock.Verify(x => x.GaugeOperation("AutoMappedCount", mappedFields.Length, It.IsAny<string>(),
+			_metricsSenderMock.Verify(x => x.GaugeOperation(bucketName, mappedFields.Length, It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()), Times.Once);
 		}
 
@@ -449,14 +460,21 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
 			};
 
+			string autoMappedByNameCount = "FakeProvider.AutoMap.AutoMappedByNameCount";
+			string fixedLengthCount = "FakeProvider.AutoMap.FixedLengthTextTooShortInDestinationCount";
+			_metricBucketNameGeneratorFake
+				.SetupSequence(x => x.GetBucketNameAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<int>()))
+				.ReturnsAsync(autoMappedByNameCount)
+				.ReturnsAsync(fixedLengthCount);
+
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId).ToArray();
 
 			// Assert
-			_metricsSenderMock.Verify(x => x.GaugeOperation("AutoMappedByNameCount", It.IsAny<long>(), It.IsAny<string>(),
+			_metricsSenderMock.Verify(x => x.GaugeOperation(autoMappedByNameCount, It.IsAny<long>(), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()), Times.Once);
 
-			_metricsSenderMock.Verify(x => x.GaugeOperation("FixedLengthTextTooShortInDestinationCount", It.IsAny<long>(), It.IsAny<string>(),
+			_metricsSenderMock.Verify(x => x.GaugeOperation(fixedLengthCount, It.IsAny<long>(), It.IsAny<string>(),
 				It.IsAny<Dictionary<string, object>>()), Times.Once);
 		}
 
@@ -483,7 +501,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			// Act
-			var mappedFields = _sut.MapFields(sourceFields, destinationFields, true).ToArray();
+			var mappedFields = _sut.MapFields(sourceFields, destinationFields, DestinationProviderGuid, WorkspaceArtifactId, true).ToArray();
 
 			// Assert
 			_metricsSenderMock.Verify(x => x.GaugeOperation("AutoMappedByNameCount", It.IsAny<long>(), It.IsAny<string>(),
