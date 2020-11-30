@@ -4,13 +4,16 @@ using Relativity.Sync.Tests.Performance.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Relativity.Testing.Identification;
 using EnvironmentVariable = System.Environment;
 
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("ReferencePerformance")]
+	[TestType.Performance]
+	[TestType.MainFlow]
+	[TestLevel.L3]
 	internal class ReferenceJobsTests : PerformanceTestBase
 	{
 		private readonly AzureTableHelper _tableHelper;
@@ -47,6 +50,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		}
 
 		[TestCaseSource(nameof(Cases))]
+		[IdentifiedTest("8fe8483e-78d4-433d-b638-131d9f11845f")]
 		public async Task RunJob(PerformanceTestCase testCase)
 		{
 			await RunTestCaseAsync(testCase).ConfigureAwait(false);

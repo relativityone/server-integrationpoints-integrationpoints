@@ -32,6 +32,7 @@
   <ItemGroup>
     <PackageReference Include="kCura.Relativity.Client" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" Version="11.2.13" />
+    <PackageReference Include="Relativity.Testing.Identification" Version="3.5.0" />
   </ItemGroup>
 	<ItemGroup>
 		<Reference Include="System.Web.Services" />

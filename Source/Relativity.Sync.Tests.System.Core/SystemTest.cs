@@ -9,10 +9,12 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Testing.Identification;
 using User = Relativity.Services.User.User;
 
 namespace Relativity.Sync.Tests.System.Core
 {
+	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal abstract class SystemTest : IDisposable
 	{
 		protected readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
