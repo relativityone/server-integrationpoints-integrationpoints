@@ -245,9 +245,10 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		private void LogWarnings(IList<LogParameters> warnings, StackTrace stackTrace)
 		{
+			Exception exception = new Exception("This exception has been logged only to provide stack trace, no actual exception occurred").SetStackTrace(stackTrace);
+
 			foreach ((string messageTemplate, object[] parameters) in warnings)
 			{
-				Exception exception = new Exception().SetStackTrace(stackTrace);
 				_logger.LogWarning(exception, messageTemplate, parameters);
 			}
 		}
