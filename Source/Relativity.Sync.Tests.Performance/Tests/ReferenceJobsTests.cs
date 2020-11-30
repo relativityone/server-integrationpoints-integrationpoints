@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		{
 			await RunTestCaseAsync(testCase).ConfigureAwait(false);
 
-			//await PublishTestResult(testCase).ConfigureAwait(false);
+			await PublishTestResult(testCase).ConfigureAwait(false);
 		}
 
 		private Task PublishTestResult(PerformanceTestCase testCase)
