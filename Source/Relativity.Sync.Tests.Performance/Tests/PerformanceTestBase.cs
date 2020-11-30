@@ -130,8 +130,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					.CreateWorkspaceWithFieldsAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
 				_wasDestinationForTestCaseCreated = true;
 			}
-
-			PreConditionsCheckAndFix();
 		}
 
 		[TearDown]
@@ -148,6 +146,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		protected async Task RunTestCaseAsync(PerformanceTestCase testCase)
 		{
+			PreConditionsCheckAndFix(testCase);
+
 			Logger.LogInformation("In test case: " + testCase.TestCaseName);
 			try
 			{
@@ -329,14 +329,20 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			return queryRequest;
 		}
 
-		private void PreConditionsCheckAndFix()
+		private void PreConditionsCheckAndFix(PerformanceTestCase testCase)
 		{
 			IList<FixResult> fixResults = new List<FixResult>();
 
 			IEnumerable<IPreCondition> preConditions = new List<IPreCondition>()
 			{
 				new IndexEnabledPreCondition(SourceWorkspace.ArtifactID),
-				new IndexEnabledPreCondition(DestinationWorkspace.ArtifactID)
+				new IndexEnabledPreCondition(DestinationWorkspace.ArtifactID),
+				new DataGridEnabledPreCondition(ServiceFactory, SourceWorkspace.ArtifactID),
+				new DataGridEnabledPreCondition(ServiceFactory, DestinationWorkspace.ArtifactID),
+				new WorkspaceDocCountPreCondition(ServiceFactory, SourceWorkspace.ArtifactID,
+					testCase.ExpectedItemsTransferred),
+				new WorkspaceDocCountPreCondition(ServiceFactory, DestinationWorkspace.ArtifactID,
+					_wasDestinationForTestCaseCreated ? 0 : testCase.ExpectedItemsTransferred)
 			};
 			foreach (var preCondition in preConditions)
 			{

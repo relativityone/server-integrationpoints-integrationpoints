@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Net;
-using System.Security;
-using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 
 namespace Relativity.Sync.Tests.Performance.PreConditions
@@ -49,7 +45,7 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
 
 			return Check()
 				? FixResult.Fixed()
-				: FixResult.Error(new Exception("Check is still failing after fix"));
+				: FixResult.Error(new Exception($"{nameof(IndexEnabledPreCondition)} - Check is still failing after fix"));
 		}
 	}
 }
