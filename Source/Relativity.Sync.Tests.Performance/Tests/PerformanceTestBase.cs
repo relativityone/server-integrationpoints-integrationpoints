@@ -331,6 +331,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		private void PreConditionsCheckAndFix(PerformanceTestCase testCase)
 		{
+			Logger.LogInformation("Pre-Condition checks started...");
+
 			IList<FixResult> fixResults = new List<FixResult>();
 
 			IEnumerable<IPreCondition> preConditions = new List<IPreCondition>()
@@ -347,10 +349,10 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			foreach (var preCondition in preConditions)
 			{
 				var isOk = preCondition.Check();
-				Logger.LogInformation("Pre-Condition check: {name} is valid - {status}");
+				Logger.LogInformation("Pre-Condition check: {name} is valid - {status}", preCondition.Name, isOk);
 				if (!isOk)
 				{
-					Logger.LogInformation("Pre-Condition check is invalid. Trying to fix...");
+					Logger.LogInformation("Pre-Condition check {name} is invalid. Trying to fix...", preCondition.Name);
 					fixResults.Add(preCondition.TryFix());
 				}
 			}
@@ -361,6 +363,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				LogPreConditionChecksErrors(fixErrors);
 				throw new Exception("Some of Pre-Condition checks failed. Check logs.");
 			}
+
+			Logger.LogInformation("Pre-Condition checks completed successfully...");
 		}
 
 		private void LogPreConditionChecksErrors(IList<FixResult> fixErrors)

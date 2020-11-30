@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				//where out test data are stored. So we assume in testing that push is working correctly, but whole flow (metadata, etc.) is under tests.
 
 				#endregion
-				using (SqlConnection connection = CreateConnectionFromAppConfig(workspaceArtifactId))
+				using (SqlConnection connection = SqlHelper.CreateConnectionFromAppConfig(workspaceArtifactId))
 				{
 					connection.Open();
 
@@ -45,19 +45,5 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				}
 			}
 		}
-
-		private static SqlConnection CreateConnectionFromAppConfig(int workspaceArtifactId)
-		{
-			SecureString password = new NetworkCredential("", AppSettings.SqlPassword).SecurePassword;
-			password.MakeReadOnly();
-			SqlCredential credential = new SqlCredential(AppSettings.SqlUsername, password);
-
-			return new SqlConnection(
-				GetWorkspaceConnectionString(workspaceArtifactId),
-				credential);
-		}
-
-		private static string GetWorkspaceConnectionString(int workspaceArtifactId) => $"Data Source={AppSettings.SqlServer};Initial Catalog=EDDS{workspaceArtifactId}";
-
 	}
 }

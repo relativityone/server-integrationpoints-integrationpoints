@@ -12,6 +12,8 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
 		private readonly int _workspaceId;
 		private readonly int _expectedDocCount;
 
+		public string Name => $"{nameof(WorkspaceDocCountPreCondition)} - {_workspaceId}";
+
 		public WorkspaceDocCountPreCondition(ServiceFactory serviceFactory, int workspaceId, int expectedDocCount)
 		{
 			_serviceFactory = serviceFactory;

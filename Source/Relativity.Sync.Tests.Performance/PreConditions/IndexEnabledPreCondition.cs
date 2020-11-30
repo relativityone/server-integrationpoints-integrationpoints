@@ -6,17 +6,19 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
 {
 	internal class IndexEnabledPreCondition : IPreCondition
 	{
-		private readonly int _workspaceArtifactId;
+		private readonly int _workspaceId;
+
+		public string Name => $"{nameof(IndexEnabledPreCondition)} - {_workspaceId}";
 
 		public IndexEnabledPreCondition(int workspaceArtifactId)
 		{
-			_workspaceArtifactId = workspaceArtifactId;
+			_workspaceId = workspaceArtifactId;
 		}
 
 
 		public bool Check()
 		{
-			using (SqlConnection connection = SqlHelper.CreateConnectionFromAppConfig(_workspaceArtifactId))
+			using (SqlConnection connection = SqlHelper.CreateConnectionFromAppConfig(_workspaceId))
 			{
 				connection.Open();
 
@@ -32,7 +34,7 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
 
 		public FixResult TryFix()
 		{
-			using (SqlConnection connection = SqlHelper.CreateConnectionFromAppConfig(_workspaceArtifactId))
+			using (SqlConnection connection = SqlHelper.CreateConnectionFromAppConfig(_workspaceId))
 			{
 				connection.Open();
 

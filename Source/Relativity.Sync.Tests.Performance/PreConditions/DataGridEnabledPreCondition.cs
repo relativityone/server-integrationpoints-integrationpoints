@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework.Internal;
 using Relativity.Services.Interfaces.Workspace;
 using Relativity.Services.Interfaces.Workspace.Models;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 
 namespace Relativity.Sync.Tests.Performance.PreConditions
@@ -14,6 +9,8 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
 	{
 		private readonly ServiceFactory _serviceFactory;
 		private readonly int _workspaceId;
+
+		public string Name => $"{nameof(DataGridEnabledPreCondition)} - {_workspaceId}";
 
 		public DataGridEnabledPreCondition(ServiceFactory serviceFactory, int workspaceId)
 		{
