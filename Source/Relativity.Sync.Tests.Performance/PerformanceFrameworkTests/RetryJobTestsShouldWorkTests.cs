@@ -21,8 +21,6 @@ namespace Relativity.Sync.Tests.Performance.PerformanceFrameworkTests
 		protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
-
-			DisableLogger();
 		}
 
 		public static IEnumerable<TestCaseData> NewTestCase()

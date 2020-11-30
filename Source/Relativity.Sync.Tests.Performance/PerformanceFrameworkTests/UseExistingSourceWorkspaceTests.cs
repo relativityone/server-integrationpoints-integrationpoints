@@ -21,8 +21,6 @@ namespace Relativity.Sync.Tests.Performance.PerformanceFrameworkTests
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			DisableLogger();
-
 			var sampleWorkspace = await Environment.GetWorkspaceAsync(_WORKSPACE_NAME).ConfigureAwait(false);
 
 			await Environment.CreateFieldsInWorkspaceAsync(sampleWorkspace.ArtifactID);

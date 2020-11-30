@@ -180,11 +180,6 @@ namespace Relativity.Sync.Tests.System.Core
 			Environment?.Dispose();
 		}
 
-		public void DisableLogger()
-		{
-			Logger = new EmptyLogger();
-		}
-
 		public void Dispose()
 		{
 			Dispose(true);

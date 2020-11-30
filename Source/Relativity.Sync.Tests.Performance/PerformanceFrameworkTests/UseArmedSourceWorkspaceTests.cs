@@ -17,10 +17,8 @@ namespace Relativity.Sync.Tests.Performance.PerformanceFrameworkTests
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			DisableLogger();
-
 			await UseArmWorkspace(
-					"Sample Workspace.zip",
+					"SmallSaltPepperWorkspace.zip",
 					null)
 				.ConfigureAwait(false);
 		}
@@ -34,7 +32,7 @@ namespace Relativity.Sync.Tests.Performance.PerformanceFrameworkTests
 				new PerformanceTestCase
 				{
 					TestCaseName = "All Documents",
-					ExpectedItemsTransferred = 25,
+					ExpectedItemsTransferred = 5,
 					CopyMode = ImportNativeFileCopyMode.DoNotImportNativeFiles,
 					NumberOfMappedFields = 0
 				}
