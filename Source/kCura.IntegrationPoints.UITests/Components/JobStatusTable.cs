@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Logging;
 using OpenQA.Selenium;
 using Polly;
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
         protected static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(JobStatusTable));
 
-		public JobStatusTable(IWebElement parent) : base(parent)
+		public JobStatusTable(IWebElement parent, IWebDriver driver) : base(parent, driver)
 		{
 		}
 
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 		{
 			const int jobStatusColumnNumber = 7;
 			By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
-			return Parent.FindElements(latestJobStatus)[jobStatusColumnNumber].Text;
+			return Parent.FindElementsEx(latestJobStatus)[jobStatusColumnNumber].Text;
 		}
 
 	    public int GetTotalItems()
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.UITests.Components
         {
             By latestJobStatus = By.XPath("//table[@class='itemTable']//tbody/tr[@class='itemListRowAlt']/td");
             int totalItems = -1;
-            int.TryParse(Parent.FindElements(latestJobStatus)[columnNumber].Text, out totalItems);
+            int.TryParse(Parent.FindElementsEx(latestJobStatus)[columnNumber].Text, out totalItems);
             return totalItems;
         }
 

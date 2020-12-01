@@ -9,6 +9,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Configuration.Helpers;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
+using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
@@ -119,6 +120,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldMappingPage.MappedFieldsWarning.Text.Should().Be(invalidFieldMappingMessageText);
 
 			//Act
+
 			IntegrationPointDetailsPage detailsPage = fieldMappingPage.ClearAndProceedOnInvalidMapping();
 
 			PushToRelativityThirdPage clearedMappingPage = PointsAction.EditGoToFieldMappingPage(detailsPage);
@@ -130,6 +132,61 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			//Assert if fields were removed from mapping
 			fieldsFromSelectedDestinationWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item1));
 			fieldsFromSelectedSourceWorkspaceListBox.Should().NotContain(invalidFieldsMapping.Select(x => x.Item2));
+		}
+
+		[IdentifiedTest("6dec5ade-4c72-4360-a364-e190125b01e6")]
+		[RetryOnError]
+		public void FieldMapping_ShouldDisplayInvalidFieldsMappingReasons_WhenClickedSavedButton()
+		{
+			//Arrange
+			List<Tuple<string, string>> fieldsMapping = new List<Tuple<string, string>>
+			{
+				new Tuple<string, string>("Control Number", "Control Number"),
+			};
+			string sourceField1Name = "Alert";
+			string destinationField1Name = "Classification Index"; 
+			
+			string sourceField2Name = "aaaaa-10 FLT";
+			string destinationField2Name = "MD5 Hash";
+			
+			string sourceField3Name = "Imaging Set";
+			string destinationField3Name = "Imaging Set";
+
+			string incompatibleTypesMessage = "Types are not compatible";
+			string unicodeMessage = "Unicode is different";
+			string unsupportedMessage = "Selected fields types might fail the job";
+			
+			List<Tuple<string, string>> invalidFieldsMapping = new List<Tuple<string, string>>
+			{
+				new Tuple<string, string>(sourceField1Name, destinationField1Name),
+				new Tuple<string, string>(sourceField2Name, destinationField2Name),
+				new Tuple<string, string>(sourceField3Name, destinationField3Name)
+			};
+			fieldsMapping.AddRange(invalidFieldsMapping);
+
+			RelativityProviderModel model = CreateRelativityProviderModel();
+
+			PushToRelativityThirdPage fieldMappingPage =
+				PointsAction.CreateNewRelativityProviderFieldMappingPage(model);
+			PointsAction.MapWorkspaceFields(fieldMappingPage, fieldsMapping);
+			
+			//Act
+			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
+
+			//Assert
+			fieldMappingPage.InvalidMap0WebElement.Text.Should().Contain(sourceField1Name);
+			fieldMappingPage.InvalidMap0WebElement.Text.Should().Contain(destinationField1Name);
+			fieldMappingPage.InvalidReasons00WebElement.Text.Should().Contain(incompatibleTypesMessage);
+
+			fieldMappingPage.InvalidMap1WebElement.Text.Should().Contain(sourceField2Name);
+			fieldMappingPage.InvalidMap1WebElement.Text.Should().Contain(destinationField2Name);
+			fieldMappingPage.InvalidReasons10WebElement.Text.Should().Contain(incompatibleTypesMessage);
+			fieldMappingPage.InvalidReasons11WebElement.Text.Should().Contain(unicodeMessage);
+
+			fieldMappingPage.InvalidMap2WebElement.Text.Should().Contain(sourceField3Name);
+			fieldMappingPage.InvalidMap2WebElement.Text.Should().Contain(destinationField3Name);
+			fieldMappingPage.InvalidReasons20WebElement.Text.Should().Contain(unsupportedMessage);
+
 		}
 
 		[IdentifiedTest("4a6bbec9-24f5-421d-8233-ffbf9824c371")]
@@ -156,7 +213,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			fieldMappingPage = fieldMappingPage.ClickSaveButtonExpectPopup();
 
 			//Assert text on popup
-			fieldMappingPage.ObjectIdentifierWarning.Should().BeNull();
+
+			fieldMappingPage.ObjectIdentifierWarningOrNull.Should().BeNull();
 			fieldMappingPage.MappedFieldsWarning.Text.Should().Be(invalidFieldMappingMessageText);
 
 			//Act
@@ -253,8 +311,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 				//Assert
 				fieldMappingPage.ObjectIdentifierWarning.Text.Should().Be(objectIdentifierWarningText);
-				fieldMappingPage.MappedFieldsWarning.Should().BeNull();
-				fieldMappingPage.ClearAndProceedBtn.Should().BeNull();
+				fieldMappingPage.MappedFieldsWarningOrNull.Should().BeNull();
+				fieldMappingPage.ClearAndProceedBtnOrNull.Should().BeNull();
 			}
 			finally
 			{

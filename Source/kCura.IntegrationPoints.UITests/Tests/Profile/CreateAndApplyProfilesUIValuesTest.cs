@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -8,12 +6,10 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 using kCura.IntegrationPoints.UITests.Common;
-using kCura.IntegrationPoints.UITests.Components;
 using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
-using kCura.IntegrationPoints.UITests.Validation.RelativityProviderValidation;
 using kCura.Utility;
 using NUnit.Framework;
 using OpenQA.Selenium;
@@ -28,15 +24,15 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesUiValuesTest : RelativityProviderTestsBase
 	{
+		private IntegrationPointProfileAction _profileAction;
+
+		private readonly string _timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
+		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+		private readonly string _destinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+
 		public CreateAndApplyProfilesUiValuesTest() : base(false)
 		{
 		}
-
-		private IntegrationPointProfileAction _profileAction;
-
-		private string _timeStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss.ffff");
-		private readonly string _sourceProductionName = $"SrcProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
-		private readonly string _destinationProductionName = $"DestProd_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
 
 		private RelativityProviderModel CreateRelativityProviderSavedSearchModel(
 			string name = null,
@@ -86,11 +82,28 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			await base.SetUp().ConfigureAwait(false);
 			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext.WorkspaceName);
 		}
+		
+		[IdentifiedTest("666b2a65-7d30-42e2-82ae-e00bae92fba0")]
+		[RetryOnError]
+		[TestType.Error]
+		public void Profile_ShouldDisplayWarning_WhenNameWithIllegalCharacters()
+		{
+			const string illegalName = "Name < > : \" \\ / | ? *TAB";
+			const string expectedErrorMessage = "Field cannot contain special characters such as: < > : \" \\ / | ? * TAB";
+
+			// Arrange & Act
+			ExportFirstPage firstPage = _profileAction.GoToFirstPageIntegrationPointProfile();
+			firstPage.Name = illegalName;
+			firstPage.ClickNext();
+
+			// Assert
+			firstPage.GetErrorLabels().Select(e => e.Text).Single().Should().Contain(expectedErrorMessage);
+		}
 
 		[IdentifiedTest("76d69332-ba3b-4679-b71f-e1fd41f3eb3e")]
 		[RetryOnError]
 		[TestType.Error]
-		public async Task CopyProfile_ShouldDisplayError_SavedSearchIsMissing()
+		public async Task CopyProfile_ShouldDisplayError_WhenSavedSearchIsMissing()
 		{
 			//Arrange
 			RelativityProviderModel model = CreateRelativityProviderSavedSearchModel();
@@ -147,8 +160,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				.ChooseWorkspace(newDestination)
 				.GoToIntegrationPointProfilePage();
 
-			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(model.Name);
-			resultLinkLinkName.ClickEx();
+			IWebElement resultLinkLinkName = Driver.FindElementEx(By.LinkText(model.Name));
+			resultLinkLinkName.ClickEx(Driver);
 
 			IntegrationPointDetailsPage detailsPage = new IntegrationPointDetailsPage(Driver);
 			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
@@ -189,8 +202,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				.PassWelcomeScreen()
 				.ChooseWorkspace(newDestination)
 				.GoToIntegrationPointProfilePage();
-			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(model.Name);
-			resultLinkLinkName.ClickEx();
+			IWebElement resultLinkLinkName = Driver.FindElementEx(By.LinkText(model.Name));
+			resultLinkLinkName.ClickEx(Driver);
 
 			IntegrationPointDetailsPage detailsPage = new IntegrationPointDetailsPage(Driver);
 			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
@@ -233,8 +246,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				.ChooseWorkspace(newDestination)
 				.GoToIntegrationPointProfilePage();
 
-			IWebElement resultLinkLinkName = Driver.FindElementByLinkText(model.Name);
-			resultLinkLinkName.ClickEx();
+			IWebElement resultLinkLinkName = Driver.FindElementEx(By.LinkText(model.Name));
+			resultLinkLinkName.ClickEx(Driver);
 
 			IntegrationPointDetailsPage detailsPage = new IntegrationPointDetailsPage(Driver);
 			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
@@ -242,7 +255,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			
 			PushToRelativitySecondPage secondPage = firstPage.GoToNextPagePush();
 			secondPage.GoToNextPage();
-			Driver.SwitchTo().Frame("configurationFrame");
+			Driver.SwitchToFrameEx("configurationFrame");
 
 			//Assert
 			List<string> listOfVisibleWarningsTexts = secondPage.listOfValidationErrorsElements.Where( i => i.GetCssValue("display").Equals("inline-block")).Select( i => i.Text).ToList();

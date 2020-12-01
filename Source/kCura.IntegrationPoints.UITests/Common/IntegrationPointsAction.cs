@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Models.Constants.ExportToLoadFile;
@@ -11,14 +13,12 @@ using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Common
 {
-	using System;
-	using System.Collections.Generic;
-
 	public class IntegrationPointsAction
 	{
+		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
+
 		protected readonly RemoteWebDriver Driver;
 		protected readonly string WorkspaceName;
-		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(TestContext));
 
 		public IntegrationPointsAction(RemoteWebDriver driver, string workspaceName)
 		{
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 		public IntegrationPointDetailsPage CreateNewExportToLoadFileIntegrationPoint(
 			ExportToLoadFileProviderModel model)
-		{
+		{ 
 			GeneralPage generalPage = GoToWorkspacePage();
 
 			ExportFirstPage firstPage = SetupFirstIntegrationPointPage(generalPage, model);
@@ -131,6 +131,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Log.Information("secondPage");
 			SelectSource(secondPage, model);
 
+			secondPage.WaitForPage();
+			
 			secondPage.DestinationWorkspace = model.DestinationWorkspace;
 			SelectDestination(secondPage, model);
 			return secondPage;
@@ -142,7 +144,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Log.Information("thirdPage");
 
 			if (model.GetValueOrDefault(m => m.Source) != RelativityProviderModel.SourceTypeEnum.Production &&
-			    model.GetValueOrDefault(m => m.Location) != RelativityProviderModel.LocationEnum.ProductionSet)
+				model.GetValueOrDefault(m => m.Location) != RelativityProviderModel.LocationEnum.ProductionSet)
 			{
 				if (model.CopyImages)
 				{
@@ -170,17 +172,17 @@ namespace kCura.IntegrationPoints.UITests.Common
 
 
 			if (model.MultiSelectFieldOverlay ==
-			    RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.MergeValues)
+				RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.MergeValues)
 			{
 				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Merge Values";
 			}
 			else if (model.MultiSelectFieldOverlay ==
-			         RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.ReplaceValues)
+					 RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.ReplaceValues)
 			{
 				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Replace Values";
 			}
 			else if (model.MultiSelectFieldOverlay ==
-			         RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)
+					 RelativityProviderModel.MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)
 			{
 				thirdPage.SelectMultiSelectFieldOverlayBehavior = "Use Field Settings";
 			}
@@ -203,29 +205,29 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPage.SelectFolderPathInfo = "No";
 			}
 			else if (model.UseFolderPathInformation ==
-			         RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField)
+					 RelativityProviderModel.UseFolderPathInformationEnum.ReadFromField)
 			{
 				thirdPage.SelectFolderPathInfo = "Read From Field";
 				thirdPage.SelectReadFromField = "Document Folder Path";
 			}
 			else if (model.UseFolderPathInformation ==
-			         RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree)
+					 RelativityProviderModel.UseFolderPathInformationEnum.ReadFromFolderTree)
 			{
 				thirdPage.SelectFolderPathInfo = "Read From Folder Tree";
 			}
 
-			thirdPage.SelectMoveExitstingDocuments(model.MoveExistingDocuments);
+			thirdPage.SelectMoveExistingDocuments(model.MoveExistingDocuments);
 
 
 			thirdPage.SelectCopyFilesToRepository(model.CopyFilesToRepository);
 
 			return thirdPage;
 		}
-        public PushToRelativityThirdPage EditGoToFieldMappingPage(IntegrationPointDetailsPage detailsPage)
-        {
-            ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
-            return firstPage.GoToNextPagePush().GoToNextPage();
-        }
+		public PushToRelativityThirdPage EditGoToFieldMappingPage(IntegrationPointDetailsPage detailsPage)
+		{
+			ExportFirstPage firstPage = detailsPage.EditIntegrationPoint();
+			return firstPage.GoToNextPagePush().GoToNextPage();
+		}
 
 		private ExportFirstPage SetupFirstIntegrationPointPage(GeneralPage generalPage, IntegrationPointGeneralModel model)
 		{
@@ -247,6 +249,8 @@ namespace kCura.IntegrationPoints.UITests.Common
 		{
 			ExportToFileSecondPage secondPage = firstPage.GoToNextPage();
 
+			Thread.Sleep(1000);
+			
 			Log.Information("ExportToFileSecondPage");
 			secondPage.Source = model.SourceInformationModel.Source;
 			if (model.SourceInformationModel.Source == ExportToLoadFileSourceConstants.SAVED_SEARCH)
@@ -264,7 +268,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 
 			secondPage.StartExportAtRecord = model.SourceInformationModel.StartAtRecord;
-			Thread.Sleep(200);
+			
 			if (model.SourceInformationModel.SelectAllFields)
 			{
 				secondPage.SelectAllSourceFields();
@@ -278,7 +282,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 			Log.Information("secondPage");
 			return secondPage;
-			
+
 		}
 
 		private void SetupExportToFileThirdPageExportDetails(ExportToFileThirdPageExportDetails thirdPageExportDetails,
@@ -304,7 +308,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 				thirdPageExportDetails.DestinationFolder.ChooseRootElement();
 			}
 			else if (exportDetails.DestinationFolder ==
-			         ExportToLoadFileProviderModel.DestinationFolderTypeEnum.SubfolderOfRoot)
+					 ExportToLoadFileProviderModel.DestinationFolderTypeEnum.SubfolderOfRoot)
 			{
 				thirdPageExportDetails.DestinationFolder.ChooseFirstChildElement();
 			}
@@ -335,7 +339,7 @@ namespace kCura.IntegrationPoints.UITests.Common
 			}
 
 			if (!exportNatives && loadFileOptions.IncludeNativeFilesPath.HasValue &&
-			    loadFileOptions.IncludeNativeFilesPath.Value)
+				loadFileOptions.IncludeNativeFilesPath.Value)
 			{
 				thirdPageLoadFileOptions.IncludeNativeFilesPath();
 			}
@@ -505,7 +509,6 @@ namespace kCura.IntegrationPoints.UITests.Common
 			Log.Information("SetupEntityExportToFileSecondPage");
 			ExportEntityToFileSecondPage secondPage = firstPage.GotoNextPageEntity();
 			secondPage.View = model.ExportDetails.View;
-			Thread.Sleep(500);
 			if (model.ExportDetails.SelectAllFields)
 			{
 				secondPage.SelectAllFields();

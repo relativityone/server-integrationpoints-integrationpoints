@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.LoadFile.Documents
 			new GeneralPanelActions(Driver, Context).FillPanel(firstPage.General, _model.General);
 			firstPage.Wizard.GoNext();
 
-			var secondPage = new SecondPage(Driver);
+			var secondPage = new LoadFileSecondPage(Driver);
 			new LoadFileSettingsPanelActions(Driver, Context).FillPanel(secondPage.LoadFileSettings, _model.LoadFileSettings);
 			new FileEncodingPanelActions(Driver, Context).FillPanel(secondPage.FileEncoding, _model.FileEncoding);
 			secondPage.Wizard.GoNext();

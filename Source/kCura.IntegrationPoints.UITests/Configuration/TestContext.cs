@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Productions;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
 using Relativity;
 using Relativity.Services.Interfaces.Field;
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 				() => new RelativityFolderPathScriptHelper(this)
 			);
 			_productionHelperLazy = new Lazy<ProductionHelper>(
-				() => new ProductionHelper(this)
+				() => new ProductionHelper(GetWorkspaceId())
 			);
 			_importDocumentHelper = new Lazy<ImportDocumentsHelper>(
 				() => new ImportDocumentsHelper(this)
@@ -108,17 +109,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			);
 		}
 
-		public TestContext CreateTestWorkspace()
-		{
-			CreateTestWorkspaceAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-			return this;
-		}
-
-		public async Task CreateTestWorkspaceAsync()
+		public async Task CreateTestWorkspaceAsync(string suffix = "")
 		{
 			var createDurationStopWatch = new Stopwatch();
 			createDurationStopWatch.Start();
-			WorkspaceName = $"RIP Test Workspace {_timeStamp}";
+			WorkspaceName = $"RIP Test Workspace {_timeStamp}" + suffix;
 			string templateWorkspaceName = SharedVariables.UiTemplateWorkspace;
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
 			try
@@ -196,11 +191,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public Task CreateEntityViewAsync(string viewName)
 		{
 			return EntityObjectTypeHelper.CreateEntityView(viewName);
-		}
-
-		public  Task InstallIntegrationPointsAsync()
-		{
-			return ApplicationInstallationHelper.InstallIntegrationPointsAsync();
 		}
 
 		public Task<bool> IsIntegrationPointsInstalledAsync()

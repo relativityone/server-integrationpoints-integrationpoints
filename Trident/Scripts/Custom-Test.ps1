@@ -1,8 +1,15 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
-    [string] $TestFilter
+    [Parameter()]
+    [string] $TestFilter,
+    [Parameter()]
+    [Switch] $EmptySUT
 )
+
+if($EmptySUT)
+{
+    throw "Hopper has been saved"
+}
 
 $TaskRunner = Resolve-Path -Path build.ps1
 

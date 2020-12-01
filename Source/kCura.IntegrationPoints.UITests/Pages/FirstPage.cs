@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using kCura.IntegrationPoints.UITests.Driver;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
@@ -9,36 +10,55 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public abstract class FirstPage : GeneralPage
 	{
-		private const string _NAME_INPUT_ID = "name";
-
 		public string Name
 		{
 			get { return NameInput.GetAttribute("value"); }
-			set { NameInput.SetText(value); }
+			set { NameInput.SetTextEx(value, Driver); }
 		}
 
 		public string ProfileObject
 		{
 			get { return ProfileSelect.SelectedOption.Text; }
-			set { ProfileSelect.SelectByText(value); }
+			set { ProfileSelect.SelectByTextEx(value, Driver); }
+		}
+
+		public string Source
+		{
+			get { return SourceSelect.SelectedOption.Text; }
+			set { SourceSelect.SelectByTextEx(value, Driver); }
+		}
+
+		public string TransferredObject
+		{
+			get { return TransferredObjectSelect.SelectedOption.Text; }
+			set { TransferredObjectSelect.SelectByTextEx(value, Driver); }
 		}
 
 		public string PageMessageText => PageMessage.Text;
 
-		[FindsBy(How = How.Id, Using = "next")]
-		protected IWebElement NextButton { get; set; }
+		public IWebElement ImportRadioButtonLabel => ImportExportRadioGroup.FindElementsEx(By.TagName("label")).First(e => e.Text == "Import");
 
-		[FindsBy(How = How.Id, Using = "save")]
-		protected IWebElement SaveButton { get; set; }
+		public bool IsExportSelected => ImportExportRadioGroup.FindElementsEx(By.TagName("input")).Last().Selected;
 
-		[FindsBy(How = How.Id, Using = "apply-profile-selector")]
-		protected IWebElement ProfileElement { get; set; }
+		protected IWebElement NextButton => Driver.FindElementEx(By.Id("next"));
 
-		[FindsBy(How = How.Id, Using = _NAME_INPUT_ID)]
-		protected IWebElement NameInput { get; set; }
+		protected IWebElement SaveButton => Driver.FindElementEx(By.Id("save"));
 
-		[FindsBy(How = How.ClassName, Using = "page-message")]
-		protected IWebElement PageMessage { get; set; }
+		protected IWebElement ProfileElement => Driver.FindElementEx(By.Id("apply-profile-selector"));
+
+		protected IWebElement NameInput => Driver.FindElementEx(By.Id("name"));
+
+		protected IWebElement ImportExportRadioGroup => Driver.FindElementEx(By.Id("isExportType"));
+
+		protected IWebElement SourceSelectWebElement => Driver.FindElementEx(By.Id("sourceProvider"));
+
+		protected SelectElement SourceSelect => new SelectElement(SourceSelectWebElement);
+
+		protected IWebElement TransferredObjectWebElement => Driver.FindElementEx(By.Id("destinationRdo"));
+
+		protected SelectElement TransferredObjectSelect => new SelectElement(TransferredObjectWebElement);
+
+		protected IWebElement PageMessage => Driver.FindElementEx(By.ClassName("page-message"));
 
 		protected SelectElement ProfileSelect => new SelectElement(ProfileElement);
 
@@ -49,7 +69,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveIntegrationPoint()
 		{
-			SaveButton.ClickEx();
+			SaveButton.ClickEx(Driver);
 			return new IntegrationPointDetailsPage(Driver);
 		}
 	}

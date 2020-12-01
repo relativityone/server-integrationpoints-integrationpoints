@@ -109,6 +109,8 @@
     <Compile Include="Models\Import\FTP\ImportFromFtpModel.cs" />
     <Compile Include="Models\Import\FieldsMappingModel.cs" />
     <Compile Include="Models\Import\LoadFile\Documents\ImportDocumentsModel.cs" />
+    <Compile Include="Models\Import\O365\ImportDocumentsFromO365Model.cs" />
+    <Compile Include="Models\Import\O365\O365SettingsModel.cs" />
     <Compile Include="Models\Import\SettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\Documents\ImportDocumentsFromLoadFileModel.cs" />
     <Compile Include="Models\Import\LoadFile\Documents\FileEncodingModel.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
+    <Compile Include="Productions\ProductionHelper.cs" />
     <Compile Include="TestCategories\Attributes\NotWorkingOnTridentAttribute.cs" />
     <Compile Include="TestRdoGenerator.cs" />
     <Compile Include="TestCategories\Attributes\ConnectivityToTestRunnerRequiredTestAttribute.cs" />
@@ -1311,6 +1314,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestDataImportFromLoadFile\Small Salt\VOL0001\TEXT\TEXT0001\JWOLFE_0004718.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataO365\Extracted_text_files\22\00\34.eml.TXT">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestDataO365\Extracted_text_files\33\00\51.eml.TXT">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\AZIPPER\AZIPPER_0007747.dat">
@@ -3406,6 +3415,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestDataImportFromLoadFile\Small Salt\VOL0001\NATIVES\NATIVE0001\JWOLFE_0004718.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestDataO365\Export_load_file_small.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -7751,6 +7763,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

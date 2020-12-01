@@ -15,15 +15,11 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 		private static Guid RipGuid => Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING);
 		private static Guid LegalHoldGuid => Guid.Parse("98F31698-90A0-4EAD-87E3-DAC723FED2A6");
+		private static Guid O365Guid => Guid.Parse("4be29f9a-0d53-4e79-89c4-e83718d59354");
 
 		public ApplicationInstallationHelper(TestContext testContext)
 		{
 			_testContext = testContext;
-		}
-
-		public Task InstallIntegrationPointsAsync()
-		{
-			return InstallApplicationAsync(RipGuid, "Integration Points");
 		}
 
 		public Task InstallLegalHoldAsync()
@@ -31,12 +27,17 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			return InstallApplicationAsync(LegalHoldGuid, "Relativity Legal Hold");
 		}
 
-		public async Task<bool> IsIntegrationPointsInstalledAsync()
+		public Task InstallO365Async()
+		{
+			return InstallApplicationAsync(O365Guid, "Office 365 Integration");
+		}
+
+		public Task<bool> IsIntegrationPointsInstalledAsync()
 		{
 			int? workspaceID = _testContext.WorkspaceId;
 
-			return await new RelativityApplicationManager(_testContext.Helper)
-				.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, RipGuid).ConfigureAwait(false);
+			return new RelativityApplicationManager(_testContext.Helper)
+				.IsApplicationInstalledAndUpToDateAsync(workspaceID.Value, RipGuid);
 		}
 
 		private async Task InstallApplicationAsync(Guid guid, string appName)

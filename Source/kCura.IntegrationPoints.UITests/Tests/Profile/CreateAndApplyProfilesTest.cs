@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Components;
@@ -22,8 +23,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 	[Category(TestCategory.PROFILE)]
 	internal class CreateAndApplyProfilesTest : RelativityProviderTestsBase
 	{
-		public CreateAndApplyProfilesTest() : base(false) { }
-
 		private IntegrationPointProfileAction _profileAction;
 
 		private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
@@ -32,6 +31,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			new Tuple<string, string>("Extracted Text", "Extracted Text"),
 			new Tuple<string, string>("Title", "Title")
 		};
+
+		public CreateAndApplyProfilesTest() : base(false) { }
 
 		private RelativityProviderModel CreateRelativityProviderModel(
 			string name = null,
@@ -65,6 +66,22 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 		{
 			await base.SetUp().ConfigureAwait(false);
 			_profileAction = new IntegrationPointProfileAction(Driver, SourceContext.WorkspaceName);
+		}
+
+		[IdentifiedTest("12a7dceb-9b88-4b2a-b59c-f9ff64108ba3")]
+		[RetryOnError]
+		public void Profile_ShouldHaveDefaultValues_WhenCreatingNewProfile()
+		{
+			// Arrange & Act
+			ExportFirstPage firstPage = _profileAction.GoToFirstPageIntegrationPointProfile();
+			
+			// Assert
+			firstPage.Name.Should().BeNullOrEmpty();
+			firstPage.IsExportSelected.Should().BeTrue();
+			firstPage.Source.Should().Be("Relativity");
+			firstPage.Destination.Should().Be("Relativity");
+			firstPage.TransferedObject.Should().Be("Document");
+			firstPage.ProfileObject.Should().Be("Select...");
 		}
 
 		[IdentifiedTest("77d6c730-3f8f-4d18-83e4-640b09e16a75")]
@@ -178,6 +195,24 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			RelativityProviderModel expectedModel = CreateRelativityProviderModel(profileModelName);
 			SavedSearchToFolderValidator validator = new SavedSearchToFolderValidator();
 			validator.ValidateSummaryPage(generalProperties, expectedModel, SourceContext, DestinationContext, false);
+		}
+
+		[IdentifiedTest("8D563438-B41B-4892-A227-7FB4C29BEE05")]
+		[RetryOnError]
+		[TestType.EdgeCase]
+		public void Profile_ShouldNotAllowSpecialCharactersInName_WhenCreatingFromSummaryPage()
+		{
+			// Arrange
+			IntegrationPointsAction action = new IntegrationPointsAction(Driver, SourceContext.WorkspaceName);
+			RelativityProviderModel model = CreateRelativityProviderModel($"IntegrationPoint-{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}");
+			IntegrationPointDetailsPage detailsPage = action.CreateNewRelativityProviderIntegrationPoint(model);
+
+			// Act
+			IntegrationPointDetailsPage saveAsProfilePage = detailsPage.SaveAsAProfileIntegrationPoint("IntegrationPoint-!@#$%^&*()_+[];',./{}:<>?");
+
+			// Assert
+			const string expectedMessage = "Field cannot contain special characters such as: < > : \" \\ / | ? * TAB";
+			saveAsProfilePage.ProfileNameValidationErrorMessage.Should().Be(expectedMessage);
 		}
 
 		protected async Task CreateLongTextFieldsAsync(Configuration.TestContext workspaceContext, int numberOfFields)

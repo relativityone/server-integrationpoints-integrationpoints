@@ -17,25 +17,20 @@ namespace kCura.IntegrationPoints.UITests.Pages
 {
 	public class GeneralPage : Page
 	{
-        internal string _mainFrameNameNewUi = "ListPage";
-        internal string _mainFrameNameOldUi = "externalPage";
+		internal string _mainFrameNameNewUi = "ListPage";
+		internal string _mainFrameNameOldUi = "externalPage";
 
 		// TODO Move to some "SthBar", "Navigator" or something similar
-		[FindsBy(How = How.Id, Using = "GetNavigateHomeScript")]
-		protected IWebElement NavigateHome;
+		protected IWebElement NavigateHome => Driver.FindElementEx(By.Id("GetNavigateHomeScript"));
 
-		[FindsBy(How = How.ClassName, Using = "headerUpperRow")]
-		protected IWebElement Header;
+		protected IWebElement Header => Driver.FindElementEx(By.ClassName("headerUpperRow"));
 
-		[FindsBy(How = How.Id, Using = "horizontal-tabstrip")]
-		protected IWebElement MainMenu;
-		
-		[FindsBy(How = How.Id, Using = "qnTextBox")]
-		protected IWebElement QuickNavigationInput;
+		protected IWebElement MainMenu => Driver.FindElementEx(By.Id("horizontal-tabstrip"));
 
-		[FindsBy(How = How.CssSelector, Using = "span[title = 'User Dropdown Menu']")]
-		protected IWebElement UserDropdownMenu;
-		
+		protected IWebElement QuickNavigationInput => Driver.FindElementEx(By.Id("qnTextBox"));
+
+		protected IWebElement UserDropdownMenu => Driver.FindElementEx(By.CssSelector("span[title = 'User Dropdown Menu']"));
+
 		public GeneralPage(RemoteWebDriver driver) : base(driver)
 		{
 			PageFactory.InitElements(driver, this);
@@ -46,10 +41,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 			Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(7);
 			try
 			{
-				ReadOnlyCollection<IWebElement> buttons = Driver.FindElements(By.Id("_continue_button"));
+				ReadOnlyCollection<IWebElement> buttons = Driver.FindElementsEx(By.Id("_continue_button"));
 				if (buttons.Any())
 				{
-					buttons[0].ClickEx();
+					buttons[0].ClickEx(Driver);
 				}
 			}
 			finally
@@ -62,9 +57,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public LoginPage LogOut()
 		{
-			UserDropdownMenu.ClickEx();
-			IWebElement logOutLink = Driver.FindElement(By.LinkText("Logout"));
-			logOutLink.ClickEx();
+			UserDropdownMenu.ClickEx(Driver);
+			IWebElement logOutLink = Driver.FindElementEx(By.LinkText("Logout"));
+			logOutLink.ClickEx(Driver);
 			return new LoginPage(Driver);
 		}
 
@@ -100,19 +95,7 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public void GoToPage(string pageName)
 		{
-			const int retryCount = 3;
-			Policy policy = Policy
-				.Handle<UiTestException>()
-				.Retry(retryCount, (ex, retry) => Refresh());
-
-			policy.Execute(() =>
-			{
-				Console.WriteLine($"Load {pageName} with retries...");
-				WaitForPage();
-				QuickNavigationInput.SendKeys(pageName);
-				IWebElement resultLinkLinkName = Driver.FindElementByLinkText(pageName);
-				resultLinkLinkName.ClickEx();
-			});
+			Driver.GoToPage(pageName);
 		}
 	}
 }

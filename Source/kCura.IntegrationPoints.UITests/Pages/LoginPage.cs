@@ -9,18 +9,13 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
     public class LoginPage : Page
     {
-        
-        [FindsBy(How = How.Id, Using = "_email")]
-        protected IWebElement Username;
+        protected IWebElement Username => Driver.FindElementEx(By.Id("_email"));
 
-        [FindsBy(How = How.Id, Using = "continue")]
-        protected IWebElement ContinueButton;
+        protected IWebElement ContinueButton => Driver.FindElementEx(By.Id("continue"));
 
-        [FindsBy(How = How.Id, Using = "_password__password_TextBox")]
-        protected IWebElement Password;
+        protected IWebElement Password => Driver.FindElementEx(By.Id("_password__password_TextBox"));
 
-        [FindsBy(How = How.Id, Using = "_login")]
-        protected IWebElement LoginButton;
+        protected IWebElement LoginButton => Driver.FindElementEx(By.Id("_login"));
 
         public LoginPage(RemoteWebDriver driver) : base(driver)
         {
@@ -43,10 +38,10 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
         public GeneralPage Login(string username, string password)
         {
-            Username.SetText(username);
-            ContinueButton.ClickEx();
-            Password.SetText(password);
-            LoginButton.ClickEx();
+            Username.SetTextEx(username, Driver);
+            ContinueButton.ClickEx(Driver);
+            Password.SetTextEx(password, Driver);
+            LoginButton.ClickEx(Driver);
             return new GeneralPage(Driver);
         }
 

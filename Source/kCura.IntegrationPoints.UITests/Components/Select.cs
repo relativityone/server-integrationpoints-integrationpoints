@@ -5,13 +5,13 @@ namespace kCura.IntegrationPoints.UITests.Components
 {
 	public class Select : Component
 	{
-		protected IWebElement SelectLink => Parent.FindElement(By.CssSelector("a.select2-choice"));
-		protected IWebElement Dropdown => Parent.FindElement(By.XPath("/*")).FindElement(By.Id("select2-drop"));
-		protected IWebElement DropdownSearch => Dropdown.FindElement(By.TagName("input"));
+		protected IWebElement SelectLink => Parent.FindElementEx(By.CssSelector("a.select2-choice"));
+		protected IWebElement Dropdown => Parent.FindElementEx(By.XPath("/*")).FindElementEx(By.Id("select2-drop"));
+		protected IWebElement DropdownSearch => Dropdown.FindElementEx(By.TagName("input"));
 
-		public string Value => Parent.FindElement(By.ClassName("select2-chosen")).Text;
+		public string Value => Parent.FindElementEx(By.ClassName("select2-chosen")).Text;
 
-		public Select(IWebElement parent) : base(parent)
+		public Select(IWebElement parent, IWebDriver driver) : base(parent, driver)
 		{
 		}
 
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.UITests.Components
 
 		protected Select Toggle()
 		{
-			SelectLink.ClickEx();
+			SelectLink.ClickEx(Driver);
 			return this;
 		}
 
