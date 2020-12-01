@@ -62,6 +62,7 @@ nuget System.Reactive 4.0.0
 nuget SystemWrapper.Wrappers 0.25.0.186
 nuget Polly 5.9
 nuget ZetaLongPaths 1.0.0.16
+nuget System.ValueTuple
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0

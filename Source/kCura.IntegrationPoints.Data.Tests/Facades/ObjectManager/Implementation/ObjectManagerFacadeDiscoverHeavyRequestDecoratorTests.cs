@@ -12,6 +12,9 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
+using Field = Relativity.Services.Objects.DataContracts.Field;
+using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
+using ReadResult = Relativity.Services.Objects.DataContracts.ReadResult;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
@@ -225,7 +228,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				objectId,
 				workspaceId,
 				exceededFieldValues);
-			VerifyIfHeavyRequestIsNotLoggedIn(notExceededFieldValues);
+			VerifyIfHeavyRequestIsNotLoggedIn(operation, notExceededFieldValues);
 		}
 
 		[Test]
@@ -293,7 +296,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				objectId.ToString(),
 				workspaceId,
 				exceededFieldValues);
-			VerifyIfHeavyRequestIsNotLoggedIn(notExceededFieldValues);
+			VerifyIfHeavyRequestIsNotLoggedIn(operation, notExceededFieldValues);
 		}
 
 		[Test]
@@ -361,7 +364,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				objectId.ToString(),
 				workspaceId,
 				exceededFieldValues);
-			VerifyIfHeavyRequestIsNotLoggedIn(notExceededFieldValues);
+			VerifyIfHeavyRequestIsNotLoggedIn(operation,notExceededFieldValues);
 		}
 
 		[Test]
@@ -432,7 +435,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				objectId,
 				workspaceId,
 				exceededFieldValues);
-			VerifyIfHeavyRequestIsNotLoggedIn(notExceededFieldValues);
+			VerifyIfHeavyRequestIsNotLoggedIn(operation, notExceededFieldValues);
 		}
 
 		[Test]
@@ -577,7 +580,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				objectId,
 				workspaceId,
 				exceededFieldValues);
-			VerifyIfHeavyRequestIsNotLoggedIn(notExceededFieldValues);
+			VerifyIfHeavyRequestIsNotLoggedIn(operation, notExceededFieldValues);
 		}
 
 		[Test]
@@ -606,8 +609,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				.ConfigureAwait(false);
 
 			//assert
-			string expectedWarningMessage = $"Requested mass update operation exceeded max collection count - {objectIdsCount}, when allowed is {_MAX_COLLECTION_COUNT}";
-			_loggerMock.Verify(x => x.LogWarning(expectedWarningMessage));
+			string expectedStackTracePart = $"ObjectManagerFacadeDiscoverHeavyRequestDecorator.UpdateAsync";
+			string expectedWarningMessage =
+				"Requested mass update operation exceeded max collection count - {objectsCount}, when allowed is {maxCollectionCount}";
+			var expectedParams = new object[] { objectIdsCount, _MAX_COLLECTION_COUNT };
+			_loggerMock.Verify(x => x.LogWarning(
+				It.Is((Exception ex) => ex.StackTrace.Contains(expectedStackTracePart)),
+				expectedWarningMessage, expectedParams));
 		}
 
 		[TestCase(0)]
@@ -735,6 +743,90 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			actualResult.Should().BeSameAs(expectedResult);
 		}
 
+		[Test]
+		public async Task DeleteAsync_MassDelete_ShouldReturnDecoratedResult()
+		{
+			// arrange
+			const int workspaceId = 101;
+
+			var request = new MassDeleteByObjectIdentifiersRequest()
+			{
+				Objects = new List<RelativityObjectRef>
+				{
+					new RelativityObjectRef()
+				}
+			};
+
+			var massDeleteResult = new MassDeleteResult();
+			_objectManagerMock.Setup(x => x.DeleteAsync(
+					It.IsAny<int>(),
+					It.IsAny<MassDeleteByObjectIdentifiersRequest>()
+					))
+				.ReturnsAsync(massDeleteResult);
+
+			// act
+			MassDeleteResult result = await _sut
+				.DeleteAsync(workspaceId, request)
+				.ConfigureAwait(false);
+
+			// assert
+			result.Should().Be(massDeleteResult);
+		}
+
+		[Test]
+		public async Task DeleteAsync_MassDelete_ShouldLogWarningWhenObjectsCollectionCountIsExceeded()
+		{
+			//arrange
+			const int workspaceId = 101;
+			const int objectIdsCount = _MAX_COLLECTION_COUNT + 1;
+
+			var request = new MassDeleteByObjectIdentifiersRequest()
+			{
+				Objects = Enumerable.Range(0, objectIdsCount)
+					.Select(x => new RelativityObjectRef { ArtifactID = x })
+					.ToList()
+			};
+
+			//act
+			await _sut
+				.DeleteAsync(workspaceId, request)
+				.ConfigureAwait(false);
+
+			//assert
+			string expectedStackTracePart = $"ObjectManagerFacadeDiscoverHeavyRequestDecorator.DeleteAsync";
+			string expectedWarningMessage =
+				"Requested mass delete operation exceeded max collection count - {objectsCount}, when allowed is {maxCollectionCount}";
+			var expectedParams = new object[] { objectIdsCount, _MAX_COLLECTION_COUNT };
+			_loggerMock.Verify(x => x.LogWarning(
+				It.Is((Exception ex) => ex.StackTrace.Contains(expectedStackTracePart)),
+				expectedWarningMessage, expectedParams));
+		}
+
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(_MAX_COLLECTION_COUNT)]
+		public async Task DeleteAsync_MassDelete_ShouldNotLogWarningWhenObjectsCollectionCountIsExceeded(int objectIdsCount)
+		{
+			//arrange
+			const int workspaceId = 101;
+
+			var request = new MassDeleteByObjectIdentifiersRequest()
+			{
+				Objects = Enumerable.Range(0, objectIdsCount)
+					.Select(x => new RelativityObjectRef { ArtifactID = x })
+					.ToList()
+			};
+
+			//act
+			await _sut
+				.DeleteAsync(workspaceId, request)
+				.ConfigureAwait(false);
+
+			//assert
+			string expectedWarningMessage = $"Requested mass delete operation exceeded max collection count - {objectIdsCount}, when allowed is {_MAX_COLLECTION_COUNT}";
+			_loggerMock.Verify(x => x.LogWarning(expectedWarningMessage), Times.Never);
+		}
+
 		private CreateRequest BuildCreateRequest(
 			IEnumerable<CollectionFieldValueTestCase> fieldValueTestCases,
 			string objectTypeName)
@@ -854,13 +946,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 		}
 
 		private void VerifyIfHeavyRequestIsNotLoggedIn(
+			string operation,
 			IEnumerable<CollectionFieldValueTestCase> notExceededTestCases)
 		{
+			string expectedStackTracePart = $"ObjectManagerFacadeDiscoverHeavyRequestDecorator.{CapitilizeFirstLetter(operation)}Async";
+
 			foreach (var notExceededTestCase in notExceededTestCases)
 			{
 				_loggerMock.Verify(x => x.LogWarning(
-						$"Requested field {notExceededTestCase.Name} exceeded max collection count"
-						+ $" - {notExceededTestCase.Value.Count}, when allowed is {_MAX_COLLECTION_COUNT}")
+						It.Is((Exception ex) => ex.StackTrace.Contains(expectedStackTracePart)),
+						"Requested field {fieldName} exceeded max collection count - {count}, when allowed is {maxAllowedCount}",
+						notExceededTestCase.Name, notExceededTestCase.Value.Count, _MAX_COLLECTION_COUNT)
 					, Times.Never);
 			}
 		}
@@ -872,16 +968,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 			int workspaceId,
 			IEnumerable<CollectionFieldValueTestCase> exceededTestCases)
 		{
+			string expectedStackTracePart = $"ObjectManagerFacadeDiscoverHeavyRequestDecorator.{CapitilizeFirstLetter(operation)}Async";
+
 			_loggerMock.Verify(x => x.LogWarning(
-				$"Heavy request discovered when executing {operation}"
-				+ $" on object of type [{objectTypeName}], id {objectId} with ObjectManager"
-				+ $" (Workspace: {workspaceId})")
+					It.Is((Exception ex) => ex.StackTrace.Contains(expectedStackTracePart)),
+					"Heavy request discovered when executing {operationName} on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager (Workspace: {workspaceArtifactId}).",
+					operation, objectTypeName, objectId, workspaceId)
 				, Times.AtLeastOnce);
 			foreach (var exceededTestCase in exceededTestCases)
 			{
 				_loggerMock.Verify(x => x.LogWarning(
-					$"Requested field {exceededTestCase.Name} exceeded max collection count"
-					+ $" - {exceededTestCase.Value.Count}, when allowed is {_MAX_COLLECTION_COUNT}")
+						It.Is((Exception ex) => ex.StackTrace.Contains(expectedStackTracePart)),
+						"Requested field {fieldName} exceeded max collection count - {count}, when allowed is {maxAllowedCount}",
+						exceededTestCase.Name, exceededTestCase.Value.Count, _MAX_COLLECTION_COUNT)
 					, Times.Once);
 			}
 		}
@@ -912,5 +1011,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 				Field = new Field { Name = x.Name }
 			});
 		}
+
+		private static string CapitilizeFirstLetter(string s) => s[0].ToString().ToUpper() + s.ToLower().Substring(1);
 	}
 }

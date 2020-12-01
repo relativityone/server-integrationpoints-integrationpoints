@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.DTOs;
 using Relativity.API;
 using Relativity.Kepler.Transport;
@@ -11,6 +13,8 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 {
+	using LogParameters = ValueTuple<string, object[]>;
+
 	internal class ObjectManagerFacadeDiscoverHeavyRequestDecorator : IObjectManagerFacade
 	{
 		private bool _disposedValue;
@@ -36,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		public Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest request)
 		{
-			Func<string> getWarningMessageHeader =
+			Func<LogParameters> getWarningMessageHeader =
 				() => GetWarningMessageHeader<CreateRequest>(
 					workspaceArtifactID,
 					rdoArtifactId: _UNKNOWN,
@@ -52,7 +56,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
 		{
-			Func<string> getWarningMessageHeader =
+			Func<LogParameters> getWarningMessageHeader =
 				() => GetWarningMessageHeader<ReadRequest>(
 					workspaceArtifactID,
 					request.Object.ArtifactID.ToString(),
@@ -72,7 +76,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		public Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request)
 		{
-			Func<string> getWarningMessageHeader =
+			Func<LogParameters> getWarningMessageHeader =
 				() => GetWarningMessageHeader<UpdateRequest>(
 					workspaceArtifactID,
 					request.Object.ArtifactID.ToString(),
@@ -91,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			MassUpdateByObjectIdentifiersRequest request,
 			MassUpdateOptions updateOptions)
 		{
-			Func<string> getWarningMessage =
+			Func<LogParameters> getWarningMessage =
 				() => GetWarningMessageHeader<UpdateRequest>(
 					workspaceArtifactID,
 					rdoArtifactId: _UNKNOWN,
@@ -110,7 +114,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		public Task<MassDeleteResult> DeleteAsync(int workspaceArtifactID, MassDeleteByObjectIdentifiersRequest request)
 		{
-			Func<string> getWarningMessage =
+			Func<LogParameters> getWarningMessage =
 				() => GetWarningMessageHeader<MassDeleteByObjectIdentifiersRequest>(
 					workspaceArtifactID,
 					rdoArtifactId: _UNKNOWN,
@@ -123,7 +127,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		public async Task<QueryResult> QueryAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
 		{
-			Func<string> getWarningMessageHeader =
+			Func<LogParameters> getWarningMessageHeader =
 				() => GetWarningMessageHeader<QueryRequest>(
 					workspaceArtifactID,
 					rdoArtifactId: _UNKNOWN,
@@ -149,8 +153,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 		}
 
 		public Task<ExportInitializationResults> InitializeExportAsync(
-			int workspaceArtifactID, 
-			QueryRequest queryRequest, 
+			int workspaceArtifactID,
+			QueryRequest queryRequest,
 			int start)
 		{
 			return _objectManager.InitializeExportAsync(workspaceArtifactID, queryRequest, start);
@@ -163,40 +167,41 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			int exportIndexID)
 		{
 			return _objectManager.RetrieveResultsBlockFromExportAsync(
-				workspaceArtifactID, 
-				runID, 
+				workspaceArtifactID,
+				runID,
 				resultsBlockSize,
 				exportIndexID);
 		}
 
 		private void AnalyzeMassUpdateObjectsCollection(
-			Func<string> getWarningMessageHeader,
+			Func<LogParameters> getWarningMessageHeader,
 			MassUpdateByObjectIdentifiersRequest request)
 		{
 			if (request.Objects.Count > _MAX_COUNT_OF_COLLECTION_IN_REQUEST)
 			{
-				string massUpdateWarningMessage = "Requested mass update operation exceeded max collection count" +
-										$" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
+				LogParameters massUpdateWarningMessage = ("Requested mass update operation exceeded max collection count - {objectsCount}, when allowed is {maxCollectionCount}",
+					new object[] { request.Objects.Count, _MAX_COUNT_OF_COLLECTION_IN_REQUEST });
 
-				string[] warningsToLog = { getWarningMessageHeader(), massUpdateWarningMessage };
-				LogWarnings(warningsToLog);
+
+				LogParameters[] warningsToLog = { getWarningMessageHeader(), massUpdateWarningMessage };
+				LogWarnings(warningsToLog, new StackTrace());
 			}
 		}
 
-		private void AnalyzeMassDeleteObjectsCollection(Func<string> getWarningMessageHeader, MassDeleteByObjectIdentifiersRequest request)
+		private void AnalyzeMassDeleteObjectsCollection(Func<LogParameters> getWarningMessageHeader, MassDeleteByObjectIdentifiersRequest request)
 		{
 			if (request.Objects.Count > _MAX_COUNT_OF_COLLECTION_IN_REQUEST)
 			{
-				string massDeleteWarningMessage = "Requested mass delete operation exceeded max collection count" +
-				                                  $" - {request.Objects.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}";
+				LogParameters massDeleteWarningMessage = ("Requested mass delete operation exceeded max collection count - {objectsCount}, when allowed is {maxCollectionCount}",
+					new object[] { request.Objects.Count, _MAX_COUNT_OF_COLLECTION_IN_REQUEST });
 
-				string[] warningsToLog = { getWarningMessageHeader(), massDeleteWarningMessage };
-				LogWarnings(warningsToLog);
+				LogParameters[] warningsToLog = { getWarningMessageHeader(), massDeleteWarningMessage };
+				LogWarnings(warningsToLog, new StackTrace());
 			}
 		}
 
 		private void AnalyzeMassUpdateFields(
-			Func<string> getWarningMessageHeader,
+			Func<LogParameters> getWarningMessageHeader,
 			int workspaceArtifactID,
 			MassUpdateByObjectIdentifiersRequest request)
 		{
@@ -208,9 +213,9 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
 		private void AnalyzeFields(
 			IEnumerable<FieldValueMap> fieldValues,
-			Func<string> getWarningMessageHeader)
+			Func<LogParameters> getWarningMessageHeader)
 		{
-			IList<string> warnings = DiscoverFieldsCollectionsWhichExceedMaxCountValue(fieldValues);
+			IList<LogParameters> warnings = DiscoverFieldsCollectionsWhichExceedMaxCountValue(fieldValues);
 
 			if (!warnings.Any())
 			{
@@ -218,10 +223,10 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 			}
 
 			warnings.Insert(0, getWarningMessageHeader());
-			LogWarnings(warnings);
+			LogWarnings(warnings, new StackTrace());
 		}
 
-		private IList<string> DiscoverFieldsCollectionsWhichExceedMaxCountValue(
+		private IList<LogParameters> DiscoverFieldsCollectionsWhichExceedMaxCountValue(
 			IEnumerable<FieldValueMap> fieldValues)
 		{
 			return fieldValues
@@ -232,28 +237,30 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 				})
 				.Where(x => x.Value != null && x.Value.Count > _MAX_COUNT_OF_COLLECTION_IN_REQUEST)
 				.Select(x =>
-					$"Requested field {x.FieldValue.FieldName} exceeded max collection count" +
-					$" - {x.Value.Count}, when allowed is {_MAX_COUNT_OF_COLLECTION_IN_REQUEST}")
+				(
+					"Requested field {fieldName} exceeded max collection count - {count}, when allowed is {maxAllowedCount}",
+					new object[] { x.FieldValue.FieldName, x.Value.Count, _MAX_COUNT_OF_COLLECTION_IN_REQUEST }))
 				.ToList();
 		}
 
-		private void LogWarnings(IList<string> warnings)
+		private void LogWarnings(IList<LogParameters> warnings, StackTrace stackTrace)
 		{
-			foreach (string warning in warnings)
+			Exception exception = new Exception("This exception has been logged only to provide stack trace, no actual exception occurred").SetStackTrace(stackTrace);
+
+			foreach ((string messageTemplate, object[] parameters) in warnings)
 			{
-				_logger.LogWarning(warning);
+				_logger.LogWarning(exception, messageTemplate, parameters);
 			}
 		}
 
-		private string GetWarningMessageHeader<T>(
+		private LogParameters GetWarningMessageHeader<T>(
 			int workspaceArtifactId,
 			string rdoArtifactId,
 			string rdoType)
 		{
 			string operationName = GetOperationNameForRequestType<T>();
-			return $"Heavy request discovered when executing {operationName}"
-			 + $" on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager"
-			 + $" (Workspace: {workspaceArtifactId})";
+			return ("Heavy request discovered when executing {operationName} on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager (Workspace: {workspaceArtifactId}).",
+				new object[] { operationName, rdoType, rdoArtifactId, workspaceArtifactId});
 		}
 
 		private string GetOperationNameForRequestType<T>()

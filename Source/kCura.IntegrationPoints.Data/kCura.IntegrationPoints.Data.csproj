@@ -70,6 +70,7 @@
     <Compile Include="DTO\RelativityObjectSlimDto.cs" />
     <Compile Include="DTO\SavedSearchQueryRequest.cs" />
     <Compile Include="DTO\SavedSearchQueryResult.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\FieldExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
@@ -819,6 +820,17 @@
         </Reference>
         <Reference Include="System.Reactive">
           <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
