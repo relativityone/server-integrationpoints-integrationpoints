@@ -19,13 +19,13 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		private AzureTableHelper _tableHelper;
 
 		public const string _PERFORMANCE_RESULTS_TABLE_NAME = "SyncReferenceJobsPerformanceTestsResults";
-		
+
 		protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			await UseExistingWorkspace(
-					"Sample Workspace",
+			await UseArmWorkspace(
+					"Nightly_Performance_Tests.zip",
 					null)
 				.ConfigureAwait(false);
 
@@ -40,11 +40,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			{
 				new PerformanceTestCase
 				{
-					TestCaseName = "Reference-1",
+					TestCaseName = "Nightly-1",
 					CopyMode = ImportNativeFileCopyMode.SetFileLinks,
-					ExpectedItemsTransferred = 10,
+					ExpectedItemsTransferred = 30000,
 					MapExtractedText = true,
-					NumberOfMappedFields = 15
+					NumberOfMappedFields = 200
 				}
 			};
 
@@ -67,9 +67,15 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		private Task PublishTestResult(PerformanceTestCase testCase)
 		{
+			string buildId = EnvironmentVariable.GetEnvironmentVariable("BUILD_ID");
+			if (string.IsNullOrEmpty(buildId))
+			{
+				return Task.CompletedTask;
+			}
+
 			TestResult testResult = new TestResult(
 				testCase.TestCaseName,
-				EnvironmentVariable.GetEnvironmentVariable("BUILD_ID"))
+				buildId)
 			{
 				Duration = TestTimes[testCase.TestCaseName].TotalSeconds
 			};
