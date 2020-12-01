@@ -16,12 +16,19 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[TestLevel.L3]
 	internal class ReferenceJobsTests : PerformanceTestBase
 	{
-		private readonly AzureTableHelper _tableHelper;
+		private AzureTableHelper _tableHelper;
 
 		public const string _PERFORMANCE_RESULTS_TABLE_NAME = "SyncReferenceJobsPerformanceTestsResults";
-
-		public ReferenceJobsTests() : base(WorkspaceType.ARM, "Performance_Reference_Workspace.zip", null)
+		
+		protected override async Task ChildSuiteSetup()
 		{
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseExistingWorkspace(
+					"Sample Workspace",
+					null)
+				.ConfigureAwait(false);
+
 			_tableHelper = AzureTableHelper.CreateFromTestConfig();
 		}
 
@@ -64,7 +71,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				testCase.TestCaseName,
 				EnvironmentVariable.GetEnvironmentVariable("BUILD_ID"))
 			{
-				Duration = _testTimes[testCase.TestCaseName].TotalSeconds
+				Duration = TestTimes[testCase.TestCaseName].TotalSeconds
 			};
 
 			return _tableHelper.InsertAsync(

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.System.Core
 		[OneTimeTearDown]
 		public async Task SuiteTeardown()
 		{
-			ChildSuiteTeardown();
+			await ChildSuiteTeardown().ConfigureAwait(false);
 
 			await Environment.DoCleanupAsync().ConfigureAwait(false);
 			Client?.Dispose();
@@ -60,8 +61,9 @@ namespace Relativity.Sync.Tests.System.Core
 			return Task.CompletedTask;
 		}
 
-		protected virtual void ChildSuiteTeardown()
+		protected virtual Task ChildSuiteTeardown()
 		{
+			return Task.CompletedTask;
 		}
 
 		protected async Task<List<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId)
