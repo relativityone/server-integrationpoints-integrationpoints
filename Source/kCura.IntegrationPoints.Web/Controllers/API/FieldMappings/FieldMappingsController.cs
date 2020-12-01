@@ -64,9 +64,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields")]
-		public HttpResponseMessage AutoMapFields([FromBody] AutomapRequest request, int workspaceID, string destinationProviderGuid)
+		public async Task<HttpResponseMessage> AutoMapFields([FromBody] AutomapRequest request, int workspaceID, string destinationProviderGuid)
 		{
-			string name = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAP_ALL_METRIC_NAME, Guid.Parse(destinationProviderGuid), workspaceID).GetAwaiter().GetResult();
+			string name = await _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAP_ALL_METRIC_NAME, Guid.Parse(destinationProviderGuid), workspaceID).ConfigureAwait(false);
 			_metricsSender.CountOperation(name);
 
 			return Request.CreateResponse(HttpStatusCode.OK, _automapRunner.MapFields(request.SourceFields, request.DestinationFields, destinationProviderGuid, workspaceID, request.MatchOnlyIdentifiers),
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields from saved search")]
 		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapRequest request, int sourceWorkspaceID, int savedSearchID, string destinationProviderGuid)
 		{
-			string name = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAP_SAVED_SEARCH_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceID).GetAwaiter().GetResult();
+			string name = _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAP_SAVED_SEARCH_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceID).GetAwaiter().GetResult();
 			_metricsSender.CountOperation(name);
 
 			IEnumerable<FieldMap> fieldMap = await _automapRunner
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 			if (fieldMappingValidationResult.InvalidMappedFields.Any())
 			{
-				string name = _metricBucketNameGenerator.GetBucketNameAsync(_INVALID_MAPPING_METRIC_NAME, Guid.Parse(destinationProviderGuid), workspaceID).GetAwaiter().GetResult();
+				string name = _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_INVALID_MAPPING_METRIC_NAME, Guid.Parse(destinationProviderGuid), workspaceID).GetAwaiter().GetResult();
 				_metricsSender.CountOperation(name);
 			}
 

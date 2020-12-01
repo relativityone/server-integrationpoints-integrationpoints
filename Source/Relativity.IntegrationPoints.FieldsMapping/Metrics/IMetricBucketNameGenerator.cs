@@ -5,6 +5,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Metrics
 {
 	public interface IMetricBucketNameGenerator
 	{
-		Task<string> GetBucketNameAsync(string metricName, Guid destinationProviderGuid, int workspaceID);
+		Task<string> GetAutoMapBucketNameAsync(string metricName, Guid destinationProviderGuid, int workspaceID);
 	}
 }

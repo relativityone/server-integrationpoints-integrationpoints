@@ -42,13 +42,13 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				mappingBuilder = mappingBuilder
 					.MapBy(x => x.Name, out int mappedByName, out int fixedLengthTextFieldsWithDifferentLengthByNameCount);
 
-				string automappedByNameMetricName = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
-				string fixedLengthTextsMetricName = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
+				string automappedByNameMetricName = _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
+				string fixedLengthTextsMetricName = _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
 				_metrics.GaugeOperation(automappedByNameMetricName, mappedByName, _UNIT_OF_MEASURE);
 				_metrics.GaugeOperation(fixedLengthTextsMetricName, fixedLengthTextFieldsWithDifferentLengthByNameCount, _UNIT_OF_MEASURE);
 			}
 
-			string automappedCountMetricName = _metricBucketNameGenerator.GetBucketNameAsync(_AUTOMAPPED_COUNT_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
+			string automappedCountMetricName = _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAPPED_COUNT_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceArtifactId).GetAwaiter().GetResult();
 			_metrics.GaugeOperation(automappedCountMetricName, mappingBuilder.Mapping.Count(), _UNIT_OF_MEASURE);
 
 			return mappingBuilder

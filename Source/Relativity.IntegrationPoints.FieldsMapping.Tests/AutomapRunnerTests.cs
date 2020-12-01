@@ -427,7 +427,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			};
 
 			string bucketName = "FakeProvider.AutoMap.AutoMappedCount";
-			_metricBucketNameGeneratorFake.Setup(x => x.GetBucketNameAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<int>()))
+			_metricBucketNameGeneratorFake.Setup(x => x.GetAutoMapBucketNameAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<int>()))
 				.ReturnsAsync(bucketName);
 
 			// Act
@@ -463,7 +463,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			string autoMappedByNameCount = "FakeProvider.AutoMap.AutoMappedByNameCount";
 			string fixedLengthCount = "FakeProvider.AutoMap.FixedLengthTextTooShortInDestinationCount";
 			_metricBucketNameGeneratorFake
-				.SetupSequence(x => x.GetBucketNameAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<int>()))
+				.SetupSequence(x => x.GetAutoMapBucketNameAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<int>()))
 				.ReturnsAsync(autoMappedByNameCount)
 				.ReturnsAsync(fixedLengthCount);
 

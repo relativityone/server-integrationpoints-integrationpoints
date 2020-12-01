@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Metrics
 			_logger = logger;
 		}
 
-		public async Task<string> GetBucketNameAsync(string metricName, Guid destinationProviderGuid, int workspaceID)
+		public async Task<string> GetAutoMapBucketNameAsync(string metricName, Guid destinationProviderGuid, int workspaceID)
 		{
 			try
 			{
