@@ -41,7 +41,9 @@ namespace kCura.IntegrationPoints.UITests.Pages
 
 		public IntegrationPointDetailsPage SaveAsAProfileIntegrationPoint()
 		{
-			return SaveAsAProfileIntegrationPoint(ProfileName);
+			SaveAsAProfileButton.ClickEx(Driver);
+			SaveAsAProfileOnConfirmationDialog();
+			return this;
 		}
 
 		public IntegrationPointDetailsPage SaveAsAProfileIntegrationPoint(string profileName)
