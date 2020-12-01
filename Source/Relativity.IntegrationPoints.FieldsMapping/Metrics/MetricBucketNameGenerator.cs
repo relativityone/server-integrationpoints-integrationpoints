@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Metrics
 			}
 		}
 
-		public static string RemoveWhiteSpaces(string value)
+		private static string RemoveWhiteSpaces(string value)
 		{
 			if (string.IsNullOrEmpty(value))
 			{
