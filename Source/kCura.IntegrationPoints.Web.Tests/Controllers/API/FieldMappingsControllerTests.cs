@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		private Mock<IFieldsClassifyRunnerFactory> _fieldsClassifyRunnerFactoryMock;
 		private Mock<IFieldsClassifierRunner> _fieldsClassifierRunner;
 		private Mock<IAutomapRunner> _automapRunnerMock;
+		private Mock<IMetricBucketNameGenerator> _metricBucketNameGeneratorFake;
 		private Mock<IFieldsMappingValidator> _fieldsMappingValidator;
 		private List<FieldClassificationResult> _sourceFieldClassificationResults;
 		private List<FieldClassificationResult> _destinationFieldClassificationResults;
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		{
 			_automapRunnerMock = new Mock<IAutomapRunner>();
 			_fieldsMappingValidator = new Mock<IFieldsMappingValidator>();
+			_metricBucketNameGeneratorFake = new Mock<IMetricBucketNameGenerator>();
 
 			_fieldsClassifierRunner = new Mock<IFieldsClassifierRunner>();
 			_sourceFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new DocumentFieldInfo("1", "Name", "Type")) };
@@ -60,7 +62,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			Mock<IMetricsSender> metricsSenderFake = new Mock<IMetricsSender>();
 			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
 
-			_sut = new FieldMappingsController(_fieldsClassifyRunnerFactoryMock.Object, _automapRunnerMock.Object, _fieldsMappingValidator.Object, metricsSenderFake.Object, loggerFake.Object)
+			_sut = new FieldMappingsController(_fieldsClassifyRunnerFactoryMock.Object, _automapRunnerMock.Object, _fieldsMappingValidator.Object,
+				metricsSenderFake.Object, _metricBucketNameGeneratorFake.Object, loggerFake.Object)
 			{
 				Configuration = new HttpConfiguration(),
 				Request = new HttpRequestMessage()
@@ -133,7 +136,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_fieldsMappingValidator.Setup(x => x.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID)).ReturnsAsync(validationResult);
 
 			// Act
-			HttpResponseMessage responseMessage = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			HttpResponseMessage responseMessage = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, Guid.Empty.ToString()).ConfigureAwait(false);
 			string jsonResponse = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			// Assert

@@ -159,7 +159,6 @@
     <Compile Include="Controllers\API\WorkspaceFieldController.cs" />
     <Compile Include="Controllers\API\WorkspaceFinderController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
-    <Compile Include="Controllers\API\EntityController.cs" />
     <Compile Include="Controllers\FileshareController.cs" />
     <Compile Include="Controllers\FtpProviderController.cs" />
     <Compile Include="Controllers\IntegrationPointsController.cs" />

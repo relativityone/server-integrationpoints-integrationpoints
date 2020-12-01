@@ -6,11 +6,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public interface IAutomapRunner
 	{
-		IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields,
-			IEnumerable<DocumentFieldInfo> destinationFields, bool matchOnlyIdentifiers = false);
+		IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields, 
+			string destinationProviderGuid, int sourceWorkspaceArtifactId, bool matchOnlyIdentifiers = false);
 
-		Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(
-			IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields, 
-			int sourceWorkspaceArtifactId, int savedSearchArtifactId);
+		Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields,
+			string destinationProviderGuid, int sourceWorkspaceArtifactId, int savedSearchArtifactId);
 	}
 }

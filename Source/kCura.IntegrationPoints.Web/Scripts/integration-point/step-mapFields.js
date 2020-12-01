@@ -971,7 +971,7 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 
 			root.data.ajax({
-				type: 'POST', url: root.utils.generateWebURL('/api/FieldMappings/AutomapFields'),
+				type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFields', model.destinationProviderGuid),
 				data: JSON.stringify({
 					SourceFields: this.sourceFields.filter(fieldForAutomap),
 					DestinationFields: this.destinationFields.filter(fieldForAutomap),
@@ -985,7 +985,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.showErrors(showErrors);
 			});
 		};
-		this.autoMapFieldsFromSavedSearchWithCustomOptions = function (matchOnlyIdentifierFields) {
+		this.autoMapFieldsFromSavedSearchWithCustomOptions = function () {
 			//Remove current mappings first
 			const showErrors = self.showErrors();
 			self.showErrors(false);
@@ -1000,7 +1000,7 @@ ko.validation.insertValidationMessage = function (element) {
 			const savedSearchArtifactID = sourceConfig.SavedSearchArtifactId;
 
 			root.data.ajax({
-				type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFieldsFromSavedSearch', savedSearchArtifactID),
+				type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFieldsFromSavedSearch', savedSearchArtifactID, model.destinationProviderGuid),
 				data: JSON.stringify({
 					SourceFields: this.sourceFields.filter(fieldForAutomap),
 					DestinationFields: this.destinationFields.filter(fieldForAutomap)
@@ -1306,7 +1306,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					var validateMappedFields = root.data.ajax({
 						type: 'POST',
-						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId),
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId, this.returnModel.destinationProviderGuid),
 						data: JSON.stringify(map)
 					})
 						.fail(function (error) {

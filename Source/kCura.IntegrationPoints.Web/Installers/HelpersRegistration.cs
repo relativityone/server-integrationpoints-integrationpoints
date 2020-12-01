@@ -1,9 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Common.Metrics;
-using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Metrics;
 using kCura.Relativity.ImportAPI;
@@ -45,6 +42,10 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.ImplementedBy<FieldsMappingValidator>()
 					.LifestyleTransient(),
 
+				Component
+					.For<IMetricBucketNameGenerator>()
+					.ImplementedBy<MetricBucketNameGenerator>()
+					.LifestyleTransient(),
 				Component
 					.For<IMetricsSender>()
 					.ImplementedBy<MetricsSender>()
