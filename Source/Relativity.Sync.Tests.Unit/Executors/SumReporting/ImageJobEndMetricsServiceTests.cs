@@ -138,5 +138,23 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, It.IsAny<long>()), Times.Never);
 		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldSendJobEndStatusMetric_WhenImagesStatisticsIsNull()
+		{
+			// Arrange
+			const string expectedStatusDescription = "Completed with Errors";
+			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
+
+			_jobStatisticsContainerFake.SetupGet(x => x.ImagesStatistics).Returns((Task<ImagesStatistics>)null);
+
+			// Act
+			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
+
+			// Assert
+			actualResult.Should().NotBeNull();
+			actualResult.Status.Should().Be(ExecutionStatus.Completed);
+			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES, expectedStatusDescription), Times.Once);
+		}
 	}
 }

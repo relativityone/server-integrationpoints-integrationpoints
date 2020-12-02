@@ -30,7 +30,9 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
 			try
 			{
-				long allNativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
+				long? allNativesSize = _jobStatisticsContainer.NativesBytesRequested is null
+					? (long?)null
+					: await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
 
 				await ReportRecordsStatisticsAsync().ConfigureAwait(false);
 
@@ -40,8 +42,11 @@ namespace Relativity.Sync.Executors.SumReporting
 
 				ReportBytesStatistics();
 
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, allNativesSize);
-				
+				if (allNativesSize.HasValue)
+				{
+					_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, allNativesSize.Value);
+				}
+
 				ReportLongTextsStatistics();
 			}
 			catch (Exception e)
