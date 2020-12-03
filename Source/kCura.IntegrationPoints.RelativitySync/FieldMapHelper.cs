@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			fields = FixFolderPathMapping(fields);
 			fields = RemoveSpecialFieldMappings(fields);
 			fields = FixControlNumberFieldName(fields);
+			fields = Deduplicate(fields);
 
 			return serializer.Serialize(fields);
 		}
@@ -56,6 +57,22 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			return fields;
+		}
+
+		private static List<FieldMap> Deduplicate(List<FieldMap> fields)
+		{
+			List<FieldMap> deduplicatedList = new List<FieldMap>();
+
+			foreach (FieldMap fieldMap in fields)
+			{
+				if (!deduplicatedList.Any(x => x.SourceField.FieldIdentifier == fieldMap.SourceField.FieldIdentifier ||
+				                              x.DestinationField.FieldIdentifier == fieldMap.DestinationField.FieldIdentifier))
+				{
+					deduplicatedList.Add(fieldMap);
+				}
+			}
+
+			return deduplicatedList;
 		}
 
 		private static void FixControlNumberField(FieldEntry fieldEntry)
