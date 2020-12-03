@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.System.Core
 		public ServiceFactory CreateServiceFactory()
 		{
 			Credentials credentials = new UsernamePasswordCredentials(_userName, _password);
-			ServiceFactorySettings settings = new ServiceFactorySettings(AppSettings.RsapiServicesUrl, AppSettings.RelativityRestUrl, credentials);
+			ServiceFactorySettings settings = new ServiceFactorySettings(AppSettings.RelativityRestUrl, credentials);
 			return new ServiceFactory(settings);
 		}
 	}
