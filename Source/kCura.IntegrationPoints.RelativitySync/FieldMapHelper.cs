@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -9,7 +10,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal static class FieldMapHelper
 	{
-		public static string FixMappings(string fieldMappings, ISerializer serializer)
+		public static string FixMappings(string fieldMappings, ISerializer serializer, IAPILog logger)
 		{
 			List<FieldMap> fields = serializer.Deserialize<List<FieldMap>>(fieldMappings);
 			if (fields == null)
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			fields = FixFolderPathMapping(fields);
 			fields = RemoveSpecialFieldMappings(fields);
 			fields = FixControlNumberFieldName(fields);
-			fields = Deduplicate(fields);
+			fields = Deduplicate(fields, logger);
 
 			return serializer.Serialize(fields);
 		}
@@ -59,17 +60,23 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return fields;
 		}
 
-		private static List<FieldMap> Deduplicate(List<FieldMap> fields)
+		private static List<FieldMap> Deduplicate(List<FieldMap> fields, IAPILog logger)
 		{
 			List<FieldMap> deduplicatedList = new List<FieldMap>();
 
 			foreach (FieldMap fieldMap in fields)
 			{
-				if (!deduplicatedList.Any(x => x.SourceField.FieldIdentifier == fieldMap.SourceField.FieldIdentifier ||
+				if (deduplicatedList.Any(x => x.SourceField.FieldIdentifier == fieldMap.SourceField.FieldIdentifier ||
 				                              x.DestinationField.FieldIdentifier == fieldMap.DestinationField.FieldIdentifier))
 				{
-					deduplicatedList.Add(fieldMap);
+					logger.LogWarning("Field mapping contains duplicated field. Source field artifact ID: {sourceID}" +
+					                  " Destination field artifact ID: {destinationID}",
+						fieldMap.SourceField.FieldIdentifier, fieldMap.DestinationField.FieldIdentifier);
+
+					continue;
 				}
+
+				deduplicatedList.Add(fieldMap);
 			}
 
 			return deduplicatedList;

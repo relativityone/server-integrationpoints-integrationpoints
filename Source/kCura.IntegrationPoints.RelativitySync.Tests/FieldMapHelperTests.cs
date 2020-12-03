@@ -3,7 +3,9 @@ using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
+using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -13,18 +15,20 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 	internal sealed class FieldMapHelperTests
 	{
 		private ISerializer _serializer;
+		private Mock<IAPILog> _loggerFake;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_serializer = new JSONSerializer();
+			_loggerFake = new Mock<IAPILog>();
 		}
 
 		[Test]
 		public void FixMappings_ShouldHandleEmptyMapping()
 		{
 			// ACT
-			string result = FieldMapHelper.FixMappings(string.Empty, _serializer);
+			string result = FieldMapHelper.FixMappings(string.Empty, _serializer, _loggerFake.Object);
 
 			// ASSERT
 			Assert.That(result, Is.EqualTo(string.Empty));
@@ -53,7 +57,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
 
 			// ASSERT
 			Assert.That(result, Is.EqualTo(fieldMapping));
@@ -82,7 +86,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
 
 			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
 
@@ -141,7 +145,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
 
 			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
 
@@ -206,7 +210,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
 
 			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
 
