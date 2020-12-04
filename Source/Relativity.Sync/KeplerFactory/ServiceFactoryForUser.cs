@@ -56,7 +56,7 @@ namespace Relativity.Sync.KeplerFactory
 		{
 			string authToken = await _tokenGenerator.GetAuthTokenAsync(_userContextConfiguration.ExecutingUserId).ConfigureAwait(false);
 			Credentials credentials = new BearerTokenCredentials(authToken);
-			ServiceFactorySettings settings = new ServiceFactorySettings(_servicesMgr.GetServicesURL(), _servicesMgr.GetRESTServiceUrl(), credentials);
+			ServiceFactorySettings settings = new ServiceFactorySettings(_servicesMgr.GetRESTServiceUrl(), credentials);
 			return _serviceFactoryFactory.Create(settings);
 		}
 	}

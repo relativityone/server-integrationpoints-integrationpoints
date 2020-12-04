@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			var servicesMgr = new Mock<ISyncServiceManager>();
 			servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
-			servicesMgr.Setup(x => x.GetServicesURL()).Returns(new Uri("", UriKind.Relative));
 
 			_tokenGenerator = new Mock<IAuthTokenGenerator>();
 			_tokenGenerator.Setup(x => x.GetAuthTokenAsync(_USER_ID)).ReturnsAsync("token");

@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
 		public T CreateProxy<T>(ExecutionIdentity ident) where T : class, IDisposable
 		{
 			var userCredential = new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
-			var userSettings = new ServiceFactorySettings(AppSettings.RsapiServicesUrl, AppSettings.RelativityRestUrl, userCredential);
+			var userSettings = new ServiceFactorySettings(AppSettings.RelativityRestUrl, userCredential);
 			var userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
 		}
