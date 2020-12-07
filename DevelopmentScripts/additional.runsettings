@@ -1,5 +1,6 @@
 <RunSettings>
   <TestRunParameters>
+    <Parameter name="PerformRelativityVersionCheck" value="false" />
     <Parameter name="RsapiServicesUrl" value="/Relativity.Services" />
     <Parameter name="RelativityRestUrl" value="/Relativity.Rest/api" />
     <Parameter name="RelativityWebApiUrl" value="/RelativityWebAPI" />
