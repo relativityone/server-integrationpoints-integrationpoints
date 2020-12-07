@@ -92,12 +92,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			if (_destinationConfig == null)
 			{
-				_destinationConfig = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
+				_destinationConfig = CreateSerializedSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
 			}
 			return _destinationConfig;
 		}
 
-		protected string CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
+		protected SourceConfiguration CreateSourceConfigWithTargetWorkspace(int targetWorkspaceId)
 		{
 			return CreateSourceConfigWithCustomParameters(
 				targetWorkspaceId,
@@ -106,19 +106,38 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				SourceConfiguration.ExportType.SavedSearch);
 		}
 
-		protected string CreateSourceConfigWithCustomParameters(
+		protected string CreateSerializedSourceConfigWithTargetWorkspace(int targetWorkspaceId)
+		{
+			return CreateSerializedSourceConfigWithCustomParameters(
+				targetWorkspaceId,
+				SavedSearchArtifactID,
+				SourceWorkspaceArtifactID,
+				SourceConfiguration.ExportType.SavedSearch);
+		}
+
+		protected SourceConfiguration CreateSourceConfigWithCustomParameters(
 			int targetWorkspaceId,
 			int savedSearchArtifactId,
 			int sourceWorkspaceArtifactId,
 			SourceConfiguration.ExportType exportType)
 		{
-			var sourceConfiguration = new SourceConfiguration
+			return new SourceConfiguration
 			{
 				SavedSearchArtifactId = savedSearchArtifactId,
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				TargetWorkspaceArtifactId = targetWorkspaceId,
 				TypeOfExport = exportType
 			};
+		}
+
+		protected string CreateSerializedSourceConfigWithCustomParameters(
+			int targetWorkspaceId,
+			int savedSearchArtifactId,
+			int sourceWorkspaceArtifactId,
+			SourceConfiguration.ExportType exportType)
+		{
+			SourceConfiguration sourceConfiguration = CreateSourceConfigWithCustomParameters(targetWorkspaceId, 
+				savedSearchArtifactId, sourceWorkspaceArtifactId, exportType);
 			return Serializer.Serialize(sourceConfiguration);
 		}
 
@@ -159,7 +178,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return Serializer.Serialize(map);
 		}
 
-		protected FieldMap[] GetDefaultFieldMap()
+		protected FieldMap[] GetDefaultFieldMap(bool withObjectIdentifierBracket = true)
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
@@ -168,6 +187,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
 			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
 
+			string objectIdentifierBracket = withObjectIdentifierBracket
+				? " [Object Identifier]"
+				: string.Empty;
+
 			FieldMap[] map =
 			{
 				new FieldMap
@@ -175,7 +198,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					SourceField = new FieldEntry
 					{
 						FieldIdentifier = sourceDto.ArtifactId.ToString(),
-						DisplayName = sourceDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
+						DisplayName = sourceDto.Fields.First(field => field.Name == "Name").Value as string + objectIdentifierBracket,
 						IsIdentifier = true,
 						IsRequired = true
 					},
@@ -183,7 +206,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					DestinationField = new FieldEntry
 					{
 						FieldIdentifier = targetDto.ArtifactId.ToString(),
-						DisplayName = targetDto.Fields.First(field => field.Name == "Name").Value as string + " [Object Identifier]",
+						DisplayName = targetDto.Fields.First(field => field.Name == "Name").Value as string + objectIdentifierBracket,
 						IsIdentifier = true,
 						IsRequired = true
 					},

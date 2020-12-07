@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 
 		private string CreateSourceConfigurationWithoutTypeOfExportField()
 		{
-			string config = CreateSourceConfigWithTargetWorkspace(SourceWorkspaceArtifactID);
+			string config = CreateSerializedSourceConfigWithTargetWorkspace(SourceWorkspaceArtifactID);
 			JObject jObject = JObject.Parse(config);
 			JToken typeOfExportNode = jObject.SelectToken(SourceConfigurationTypeOfExportUpdater.TYPE_OF_EXPORT_NODE_NAME);
 			typeOfExportNode?.Parent.Remove();
