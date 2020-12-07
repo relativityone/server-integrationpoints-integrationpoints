@@ -23,10 +23,6 @@
 		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
 		<ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
 	</ItemGroup>
-  <!-- Relativity Packages with Release Versioning Schema -->
-  <ItemGroup>
-    <PackageReference Include="Relativity.Platform.Keywords" />
-  </ItemGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
     <PackageReference Include="Relativity.Testing.Identification" Version="3.5.0" />
