@@ -30,6 +30,7 @@
 	</ItemGroup>
   <!-- Relativity Packages with Release Versioning Schema -->
   <ItemGroup>
+    <PackageReference Include="Castle.Windsor" Version="4.0.0" />
     <PackageReference Include="Relativity.Testing.Framework" Version="0.22.0" />
     <PackageReference Include="Relativity.Testing.Framework.Api" Version="0.22.0" />
     <PackageReference Include="Relativity.Testing.Identification" Version="3.5.0" />
