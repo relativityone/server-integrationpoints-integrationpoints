@@ -146,7 +146,6 @@
     <Compile Include="Factories\Implementations\StreamFactory.cs" />
     <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
-    <Compile Include="Helpers\IArtifactTreeCreator.cs" />
     <Compile Include="Helpers\IButtonStateBuilder.cs" />
     <Compile Include="Helpers\IDirectoryTreeCreator.cs" />
     <Compile Include="Helpers\IFolderTreeBuilder.cs" />
@@ -159,7 +158,6 @@
     <Compile Include="Factories\Implementations\ServiceFactory.cs" />
     <Compile Include="Factories\IServiceFactory.cs" />
     <Compile Include="Helpers\Implementations\OnClickEventConstructor.cs" />
-    <Compile Include="Helpers\Implementations\ArtifactTreeCreator.cs" />
     <Compile Include="Helpers\Implementations\SavedSearchesTreeCreator.cs" />
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
     <Compile Include="Helpers\ISavedSearchesTreeCreator.cs" />
@@ -390,7 +388,6 @@
     <Compile Include="Services\IntegrationPoint\IntegrationPointProfileService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointServiceBase.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointTypeService.cs" />
-    <Compile Include="Services\IArtifactTreeService.cs" />
     <Compile Include="Services\ISavedSearchesTreeService.cs" />
     <Compile Include="Services\IViewService.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />

@@ -316,22 +316,10 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "SearchFolderInCurrentInstace",
-				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}",
-				defaults: new {controller = "SearchFolder", action = "GetCurrentInstaceFolders"}
-			);
-
-			config.Routes.MapHttpRoute(
 				name: "GetFolderFullPath",
 				routeTemplate:
 				"{workspaceID}/api/SearchFolder/GetFullPathList/{destinationWorkspaceId}/{folderArtifactId}/{federatedInstanceId}",
 				defaults: new {controller = "SearchFolder", action = "GetFullPathList"}
-			);
-
-			config.Routes.MapHttpRoute(
-				name: "SearchFolderInFederatedInstance",
-				routeTemplate: "{workspaceID}/api/SearchFolder/GetFolders/{destinationWorkspaceId}/{federatedInstanceId}",
-				defaults: new {controller = "SearchFolder", action = "GetFederatedInstaceFolders"}
 			);
 
 			config.Routes.MapHttpRoute(

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.Relativity.Client;
+﻿using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public interface IArtifactService
 	{
-		IEnumerable<Artifact> GetArtifacts(int workspaceArtifactId, string artifactTypeName);
-		Artifact GetArtifact(int workspaceArtifactId, string artifactTypeName, int artifactId);
+		RelativityObject GetArtifact(int workspaceArtifactId, string artifactTypeName, int artifactId);
 	}
 }

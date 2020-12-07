@@ -71,7 +71,6 @@
     <Compile Include="Exceptions\IntegrationPointsExceptionSource.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
-    <Compile Include="Extensions\ArtifactExtensions.cs" />
     <Compile Include="Extensions\IAPILogExtensions.cs" />
     <Compile Include="IAppDomainHelper.cs" />
     <Compile Include="IAppDomainManager.cs" />
