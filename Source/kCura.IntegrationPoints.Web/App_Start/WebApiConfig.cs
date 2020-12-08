@@ -166,12 +166,6 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetProcessingSourceLocationStructure",
-				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocationStructure/{artifactId}",
-				defaults: new {controller = "ResourcePool", action = "GetProcessingSourceLocationStructure"}
-			);
-
-			config.Routes.MapHttpRoute(
 				name: "GetProcessingSourceLocationSubItems",
 				routeTemplate: "{workspaceID}/api/ResourcePool/GetProcessingSourceLocationSubItems/{isRoot}",
 				defaults: new {controller = "ResourcePool", action = "GetSubItems"}

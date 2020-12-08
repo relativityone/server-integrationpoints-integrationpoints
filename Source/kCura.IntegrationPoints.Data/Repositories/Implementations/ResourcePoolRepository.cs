@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IResourcePoolManagerSvc resourcePoolManagerSvcProxy =
 					_helper.GetServicesManager().CreateProxy<IResourcePoolManagerSvc>(ExecutionIdentity.System))
 			{
-				var choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(
+				List<ChoiceRef> choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(
 					new ResourcePoolRef(resourcePoolId)).ConfigureAwait(false).GetAwaiter().GetResult();
 
 				return choiceRefs.Select(item => new ProcessingSourceLocationDTO

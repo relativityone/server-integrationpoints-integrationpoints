@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
@@ -15,7 +15,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
@@ -122,8 +121,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_resourcePoolManager == null)
 				{
-					var rsapiClientFactory = new RsapiClientFactory();
-					_resourcePoolManager = new ResourcePoolManager(RepositoryFactory, Helper, rsapiClientFactory);
+					_resourcePoolManager = new ResourcePoolManager(RepositoryFactory, Helper.GetServicesManager(), Helper);
 				}
 
 				return _resourcePoolManager;

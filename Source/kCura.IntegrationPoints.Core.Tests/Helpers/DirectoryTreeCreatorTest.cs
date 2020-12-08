@@ -83,54 +83,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             Assert.That(subItems.Where(i => i.IsDirectory == false).Count, Is.EqualTo(2));//2 of these subItems are not Folders
         }
 
-        [Test]
-		public void ItShouldReturnDirectoryTreeStruct()
-		{
-			//Arrange
-			MockDirHierarchy();
-
-			//Act
-			JsTreeItemDTO rootDirJsTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER);
-
-			//Assert
-
-			//Root
-			Assert.That(rootDirJsTreeItem, Is.Not.Null);
-			Assert.That(rootDirJsTreeItem.Id, Is.EqualTo(_ROOT_FOLDER));
-			Assert.That(rootDirJsTreeItem.Text, Is.EqualTo(_ROOT_FOLDER));
-			Assert.That(rootDirJsTreeItem.Children.Count, Is.EqualTo(2));
-
-			//Folder Root\A
-			JsTreeItemDTO subFolderA = rootDirJsTreeItem.Children.FirstOrDefault(item => item.Id == _subFolderAPath);
-			Assert.That(subFolderA, Is.Not.Null);
-			Assert.That(subFolderA.Text, Is.EqualTo(_SUB_FOLDER_A));
-			Assert.That(subFolderA.Children.Count, Is.EqualTo(2));
-
-			//Folder Root\A\1
-			JsTreeItemDTO subFolderA1 = subFolderA.Children.FirstOrDefault(item => item.Id == _subFolderA1Path);
-			Assert.That(subFolderA1, Is.Not.Null);
-			Assert.That(subFolderA1.Text, Is.EqualTo(_SUB_FOLDER_1));
-			Assert.That(subFolderA1.Children.Count, Is.EqualTo(0));
-
-			//Folder Root\A\2
-			JsTreeItemDTO subFolderA2 = subFolderA.Children.FirstOrDefault(item => item.Id == _subFolderA2Path);
-			Assert.That(subFolderA2, Is.Not.Null);
-			Assert.That(subFolderA2.Text, Is.EqualTo(_SUB_FOLDER_2));
-			Assert.That(subFolderA2.Children.Count, Is.EqualTo(0));
-
-			//Folder Root\B
-			JsTreeItemDTO subFolderB = rootDirJsTreeItem.Children.FirstOrDefault(item => item.Id == _subFolderBPath);
-			Assert.That(subFolderB, Is.Not.Null);
-			Assert.That(subFolderB.Text, Is.EqualTo(_SUB_FOLDER_B));
-			Assert.That(subFolderB.Children.Count, Is.EqualTo(1));
-
-			//Folder Root\B\1
-			JsTreeItemDTO subFolderB1 = subFolderB.Children.FirstOrDefault(item => item.Id == _subFolderB1Path);
-			Assert.That(subFolderB1, Is.Not.Null);
-			Assert.That(subFolderB1.Text, Is.EqualTo(_SUB_FOLDER_1));
-			Assert.That(subFolderB1.Children.Count, Is.EqualTo(0));
-		}
-
 		[Test]
 		public void ItShouldThrowExceptionWhenRootFolderPathIsEmpty()
 		{
@@ -159,38 +111,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			Assert.That(rootItem.Count,Is.EqualTo(1));
 			Assert.That(rootItem[0].Children.Count, Is.EqualTo(0));
 		}
-
-        [Test]
-        public void ItShouldReturnDirectoryTreeStructureFiles()
-        {
-            //Arrange
-            MockDirHierarchy();
-
-            //Act
-            JsTreeItemDTO rootDirJsTreeItem = _subjectUnderTest.TraverseTree(_ROOT_FOLDER, true);
-
-            //Assert
-
-            //Root
-            Assert.That(rootDirJsTreeItem, Is.Not.Null);
-            Assert.That(rootDirJsTreeItem.Id, Is.EqualTo(_ROOT_FOLDER));
-            Assert.That(rootDirJsTreeItem.Text, Is.EqualTo(_ROOT_FOLDER));
-            Assert.That(rootDirJsTreeItem.Children.Count, Is.EqualTo(2));
-
-            //Folder Root\B
-            JsTreeItemDTO subFolderB = rootDirJsTreeItem.Children.FirstOrDefault(item => item.Id == _subFolderBPath);
-            Assert.That(subFolderB, Is.Not.Null);
-            Assert.That(subFolderB.Text, Is.EqualTo(_SUB_FOLDER_B));
-            Assert.That(subFolderB.Children.Count, Is.EqualTo(3)); //Should have 3 children since we have 2 files under Sub Folder B
-            Assert.That(subFolderB.Children.Where(i => i.IsDirectory == false).Count, Is.EqualTo(2));//2 of these children are not Folders
-
-
-            //Folder Root\B\1
-            JsTreeItemDTO subFolderB1 = subFolderB.Children.FirstOrDefault(item => item.Id == _subFolderB1Path);
-            Assert.That(subFolderB1, Is.Not.Null);
-            Assert.That(subFolderB1.Text, Is.EqualTo(_SUB_FOLDER_1));
-            Assert.That(subFolderB1.Children.Count, Is.EqualTo(0));
-        }
 
 		private void MockDirHierarchy()
 		{

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -14,19 +13,12 @@ using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-
 	public class ResourcePoolController : ApiController
 	{
-		#region Fields
 		private readonly IResourcePoolManager _resourcePoolManager;
 		private readonly IRepositoryFactory _respositoryFactory;
 		private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
 	    private readonly IResourcePoolContext _resourcePoolContext;
-
-
-        #endregion //Fields
-
-        #region Constructors
 
         public ResourcePoolController(IResourcePoolManager resourcePoolManager, IRepositoryFactory respositoryFactory, 
 			IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IResourcePoolContext resourcePoolContext)
@@ -36,10 +28,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_directoryTreeCreator = directoryTreeCreator;
 		    _resourcePoolContext = resourcePoolContext;
 		}
-
-		#endregion //Constructors
-
-		#region Methods
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location list.")]
@@ -51,25 +39,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				return Request.CreateResponse(HttpStatusCode.OK, processingSourceLocations);
 			}
 			return new HttpResponseMessage(HttpStatusCode.Unauthorized);
-		}
-
-		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to retrieve processing source location folder structure (Folder is not accessible).")]
-		[Obsolete("To be removed - 2016 Nov release")]
-		public HttpResponseMessage GetProcessingSourceLocationStructure(int workspaceId, int artifactId, bool includeFiles = false)
-		{
-            List<ProcessingSourceLocationDTO> processingSourceLocations =
-                _resourcePoolManager.GetProcessingSourceLocation(workspaceId);
-
-			ProcessingSourceLocationDTO foundProcessingSourceLocation = processingSourceLocations.FirstOrDefault(
-				processingSourceLocation => processingSourceLocation.ArtifactId == artifactId);
-
-			if (foundProcessingSourceLocation == null)
-			{
-				return Request.CreateResponse(HttpStatusCode.NotFound, $"Cannot find processing source location {artifactId}");
-			}
-			JsTreeItemDTO rootFolderJsTreeDirectoryItem = _directoryTreeCreator.TraverseTree(foundProcessingSourceLocation.Location, includeFiles);
-			return Request.CreateResponse(HttpStatusCode.OK, rootFolderJsTreeDirectoryItem);
 		}
 
 		[HttpPost]
@@ -116,7 +85,5 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				throw new Exception(Constants.PERMISSION_CHECKING_UNEXPECTED_ERROR, ex);
 			}
 		}
-
-		#endregion //Methods
 	}
 }

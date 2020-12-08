@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SystemInterface.IO;
-using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 
@@ -34,44 +33,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				subItems.AddRange(GetSubItemsFiles(path));
 			}
 			return isRoot ? GetRoot(path, subItems) : subItems;
-		}
-
-		public TTreeItem TraverseTree(string root, bool includeFiles = false)
-		{
-			CreateDirectoryIfNotExists(root, true);
-
-			var directoryItemsToProcessed = new Stack<TTreeItem>();
-
-			var rootDirectoryItem = new TTreeItem
-			{
-				Id = root,
-				Text = root,
-				Icon = JsTreeItemIconEnum.Root.GetDescription(),
-				IsDirectory = true
-			};
-
-			TTreeItem currDirectoryItem = rootDirectoryItem;
-			directoryItemsToProcessed.Push(currDirectoryItem);
-
-			while (directoryItemsToProcessed.Count > 0)
-			{
-				currDirectoryItem = directoryItemsToProcessed.Pop();
-
-				List<TTreeItem> subItems = GetSubItems(currDirectoryItem);
-
-				currDirectoryItem.Children.AddRange(subItems);
-
-				// Push the subdirectories onto the stack for traversal.
-				subItems.ForEach(item => directoryItemsToProcessed.Push(item));
-
-				if (includeFiles)
-				{
-					List<TTreeItem> subItemsFiles = GetSubItemsFiles(currDirectoryItem);
-
-					currDirectoryItem.Children.AddRange(subItemsFiles);
-				}
-			}
-			return rootDirectoryItem;
 		}
 
 		private static List<TTreeItem> GetRoot(string path, IEnumerable<TTreeItem> subItems)
@@ -114,11 +75,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			}
 		}
 
-		private List<TTreeItem> GetSubItems(TTreeItem dirItem)
-		{
-			return GetSubItems(dirItem.Id);
-		}
-
 		protected virtual List<TTreeItem> GetSubItems(string path)
 		{
 			var subDirs = new string[0];
@@ -144,11 +100,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 					Id = subDir,
 					IsDirectory = true
 				}).ToList();
-		}
-
-		private List<TTreeItem> GetSubItemsFiles(TTreeItem dirItem)
-		{
-			return GetSubItemsFiles(dirItem.Id);
 		}
 
 		protected virtual List<TTreeItem> GetSubItemsFiles(string path)
