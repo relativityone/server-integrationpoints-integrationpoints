@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Utils
 {
-	internal interface ISerializer
+	public interface ISerializer
 	{
 		string Serialize(object o);
 
