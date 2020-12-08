@@ -104,7 +104,6 @@
     <Compile Include="Process\VolumeInfoBuilder.cs" />
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />
-    <Compile Include="Services\ArtifactTreeService.cs" />
     <Compile Include="Services\ViewService.cs" />
     <Compile Include="SharedLibrary\CaseManagerFactory.cs" />
     <Compile Include="ExportManagers\CoreAuditManager.cs" />

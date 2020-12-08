@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
 			container.Register(Component.For<IViewService>().ImplementedBy<ViewService>().LifestyleTransient());
 			container.Register(Component.For<IExportInitProcessService>().ImplementedBy<ExportInitProcessService>().LifestyleTransient());
-			container.Register(Component.For<IArtifactTreeService>().ImplementedBy<ArtifactTreeService>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointValidationService>().ImplementedBy<FileDestinationProviderConfigurationValidator>().Named($"{nameof(FileDestinationProviderConfigurationValidator)}+{nameof(IIntegrationPointValidationService)}").LifestyleTransient());
 
 			container.Register(Component.For<IJobInfoFactory>().ImplementedBy<JobInfoFactory>().LifestyleTransient());

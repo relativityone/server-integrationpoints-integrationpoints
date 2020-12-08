@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 		{
 			var result = new ValidationResult();
 
-			Artifact artifact = _artifactService.GetArtifact(_workspaceArtifactId, _artifactTypeName, value);
+			RelativityObject artifact = _artifactService.GetArtifact(_workspaceArtifactId, _artifactTypeName, value);
 
 			if (artifact == null)
 			{

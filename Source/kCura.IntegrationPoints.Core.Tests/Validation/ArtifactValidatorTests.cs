@@ -6,6 +6,7 @@ using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -19,7 +20,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			var artifactId = 1;
 			var workspaceArtifactId = 42;
 
-			var artifact = new Relativity.Client.Artifact { ArtifactID = artifactId };
+			var artifact = new RelativityObject
+			{
+				ArtifactID = artifactId
+			};
 
 			var artifactServiceMock = Substitute.For<IArtifactService>();
 			artifactServiceMock.GetArtifact(Arg.Any<int>(), Arg.Is<string>(artifactTypeName), artifactId)
