@@ -177,7 +177,7 @@ def build()
 
 def unitTest()
 {
-	timeout(time: 3, unit: 'MINUTES')
+	timeout(time: 30, unit: 'MINUTES')
 	{
 		powershell "./build-jenkins.ps1 -sk -t $ripPipelineState.commonBuildArgs"
 		archiveArtifacts artifacts: "TestLogs/*", fingerprint: true
@@ -235,7 +235,7 @@ def testingVMsAreRequired(params)
 
 def raid()
 {
-	timeout(time: 3, unit: 'HOURS')
+	timeout(time: 9, unit: 'HOURS')
 	{
 		ripPipelineState.getServerFromPool()
 		def sut = ripPipelineState.sut

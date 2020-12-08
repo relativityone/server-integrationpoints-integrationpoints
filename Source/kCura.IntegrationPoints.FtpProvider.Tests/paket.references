@@ -6,3 +6,5 @@ Relativity.IntegrationPoints.Contracts
 group TestPackages
 	NUnit
 	NSubstitute
+	Moq
+	FluentAssertions

@@ -10,7 +10,8 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <Platforms>AnyCPU;x64</Platforms>
     <NoWarn>NU1605</NoWarn>
-    <Features>flow-analysis</Features> 
+    <Features>flow-analysis</Features>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutputPath>bin\x64\</OutputPath>

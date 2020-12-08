@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Relativity ODA LLC")]
 [assembly: AssemblyProduct("IntegrationPoints")]
-[assembly: AssemblyCopyright("Copyright (c) 2019, Relativity ODA LLC")]
+[assembly: AssemblyCopyright("Copyright (c) 2020, Relativity ODA LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -67,6 +67,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("11.1.0.0")]
-[assembly: AssemblyVersion("11.1.0.0")]
-[assembly: AssemblyFileVersion("11.1.0.0")]
+// [assembly: AssemblyVersion("11.1.10.2")]
+[assembly: AssemblyVersion("11.1.10.2")]
+[assembly: AssemblyFileVersion("11.1.10.2")]
