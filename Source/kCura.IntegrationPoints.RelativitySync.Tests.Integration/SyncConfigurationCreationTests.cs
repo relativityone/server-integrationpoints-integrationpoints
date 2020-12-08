@@ -21,6 +21,7 @@ using Relativity.Services.Objects.DataContracts;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
+using Relativity.API;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using FieldMap = Relativity.IntegrationPoints.Services.FieldMap;
 
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobHistorySyncService = new JobHistorySyncService(Helper);
 
-			_sut = new IntegrationPointToSyncConverter(Serializer, _jobHistoryService);
+			_sut = new IntegrationPointToSyncConverter(Serializer, _jobHistoryService, Logger);
 		}
 
 		[Test]
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfiguration);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			integrationPoint.NotificationEmails = emailNotifications;
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfiguration);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			integrationPoint.NotificationEmails = emailNotifications;
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
@@ -115,7 +116,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfiguration);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.ImportOverwriteMode = syncOverwriteMode;
 			expectedSyncConfigurationRdo.FieldOverlayBehavior = fieldOverlayBehavior;
 
@@ -152,7 +153,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfigurationExt, GetDefaultFieldMap(false));
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfigurationExt);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfigurationExt);
 			expectedSyncConfigurationRdo.DestinationFolderStructureBehavior = syncFolderStructureBehavior;
 			expectedSyncConfigurationRdo.FolderPathSourceFieldName = syncFolderFieldName;
 
@@ -181,7 +182,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfiguration);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.NativesBehavior = expectedNativeCopyMode;
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
@@ -214,7 +215,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfiguration);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.ImageImport = true;
 			expectedSyncConfigurationRdo.IncludeOriginalImages = true;
 			expectedSyncConfigurationRdo.ImageFileCopyMode = syncImageCopyMode;
@@ -248,7 +249,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfiguration);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.ImageImport = true;
 			expectedSyncConfigurationRdo.ImageFileCopyMode = "Link";
 			expectedSyncConfigurationRdo.IncludeOriginalImages = includeOriginalImages;
@@ -276,7 +277,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IExtendedJob extendedJob = CreateRetryExtendedJob(integrationPoint, out JobHistory jobHistory);
 
 			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
-				Serializer, integrationPoint, sourceConfiguration, destinationConfiguration, jobHistory);
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration, jobHistory);
 
 			// Act
 			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
@@ -466,7 +467,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			public string ProductionImagePrecedence { get; set; }
 			public string ImageFileCopyMode { get; set; }
 
-			public static SyncConfigurationRDO CreateDefaultSyncConfiguration(ISerializer serializer, IntegrationPointModel integrationPoint,
+			public static SyncConfigurationRDO CreateDefaultSyncConfiguration(ISerializer serializer, IAPILog logger, IntegrationPointModel integrationPoint,
 				SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, JobHistory jobHistory = null)
 			{
 				return new SyncConfigurationRDO()
@@ -479,7 +480,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 					DestinationFolderStructureBehavior = "None",
 					DestinationWorkspaceArtifactId = sourceConfiguration.TargetWorkspaceArtifactId,
 					EmailNotificationRecipients = integrationPoint.NotificationEmails ?? "",
-					FieldMappings = FieldMapHelper.FixMappings(integrationPoint.Map, serializer),
+					FieldMappings = FieldMapHelper.FixMappings(integrationPoint.Map, serializer, logger),
 					FieldOverlayBehavior = "Use Field Settings",
 					FolderPathSourceFieldName = "",
 					ImageFileCopyMode = null,
