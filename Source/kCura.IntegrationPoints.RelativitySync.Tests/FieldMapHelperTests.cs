@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
+using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -12,25 +15,27 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 	internal sealed class FieldMapHelperTests
 	{
 		private ISerializer _serializer;
+		private Mock<IAPILog> _loggerFake;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_serializer = new JSONSerializer();
+			_loggerFake = new Mock<IAPILog>();
 		}
 
 		[Test]
-		public void ItShouldHandleEmptyMapping()
+		public void FixMappings_ShouldHandleEmptyMapping()
 		{
 			// ACT
-			string result = FieldMapHelper.FixMappings(string.Empty, _serializer);
+			string result = FieldMapHelper.FixMappings(string.Empty, _serializer, _loggerFake.Object);
 
 			// ASSERT
 			Assert.That(result, Is.EqualTo(string.Empty));
 		}
 
 		[Test]
-		public void ItShouldHandleMappingWithoutIdentifier()
+		public void FixMappings_ShouldHandleMappingWithoutIdentifier()
 		{
 			// ARRANGE
 			List<FieldMap> fieldMap = new List<FieldMap>
@@ -52,14 +57,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
 
 			// ASSERT
 			Assert.That(result, Is.EqualTo(fieldMapping));
 		}
 
 		[Test]
-		public void ItShouldRemoveSuffixFromIdentifierMapping()
+		public void FixMappings_ShouldRemoveSuffixFromIdentifierMapping()
 		{
 			// ARRANGE
 			List<FieldMap> fieldMap = new List<FieldMap>
@@ -81,7 +86,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
 
 			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
 
@@ -91,7 +96,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		}
 
 		[Test]
-		public void ItShouldRemoveSpecialFields()
+		public void FixMappings_ShouldRemoveSpecialFields()
 		{
 			// ARRANGE
 			const FieldMapTypeEnum firstFieldMapTypeEnumToRemove = FieldMapTypeEnum.FolderPathInformation;
@@ -140,15 +145,81 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
 			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer);
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
 
 			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
 
 			// ASSERT
 			Assert.That(modifiedMap.All(m => m.FieldMapType != firstFieldMapTypeEnumToRemove));
 			Assert.That(modifiedMap.All(m => m.FieldMapType != secondFieldMapTypeEnumToRemove));
-			
+
 			Assert.That(modifiedMap.Any(m => m.FieldMapType == fieldMapTypeNotToBeRemoved));
+		}
+
+		[Test]
+		public void FixMappings_ShouldDeduplicateFields()
+		{
+			// ARRANGE
+
+			const string uniqueFieldIdentifier = "111";
+			const string duplicatedFieldIdentifier = "222";
+
+			List<FieldMap> fieldMap = new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = "unique field",
+						FieldIdentifier = uniqueFieldIdentifier
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = "unique field",
+						FieldIdentifier = uniqueFieldIdentifier
+					}
+				},
+				new FieldMap()
+				{
+					SourceField = new FieldEntry()
+					{
+						DisplayName = "duplicated field",
+						FieldIdentifier = duplicatedFieldIdentifier
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "duplicated field",
+						FieldIdentifier = duplicatedFieldIdentifier
+					}
+				},
+				new FieldMap()
+				{
+					SourceField = new FieldEntry()
+					{
+						DisplayName = "duplicated field",
+						FieldIdentifier = duplicatedFieldIdentifier
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = "duplicated field",
+						FieldIdentifier = duplicatedFieldIdentifier
+					}
+				}
+			};
+
+			string fieldMapping = _serializer.Serialize(fieldMap);
+
+			// ACT
+			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
+
+			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
+
+			// ASSERT
+			modifiedMap.Count.Should().Be(2);
+			modifiedMap.Single(x => x.SourceField.FieldIdentifier == uniqueFieldIdentifier &&
+			                        x.DestinationField.FieldIdentifier == uniqueFieldIdentifier);
+			modifiedMap.Single(x => x.SourceField.FieldIdentifier == duplicatedFieldIdentifier &&
+			                        x.DestinationField.FieldIdentifier == duplicatedFieldIdentifier);
 		}
 	}
 }

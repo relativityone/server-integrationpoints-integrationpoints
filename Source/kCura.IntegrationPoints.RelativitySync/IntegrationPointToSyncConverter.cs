@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		private readonly ISerializer _serializer;
 		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IAPILog _logger;
 
 		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
@@ -45,10 +46,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
 
-		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService)
+		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService, IAPILog logger)
 		{
 			_serializer = serializer;
 			_jobHistoryService = jobHistoryService;
+			_logger = logger;
 		}
 
 		public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job, IHelper helper, IJobHistorySyncService jobHistorySyncService)
@@ -238,7 +240,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				{
 					Guid = FieldMappingsGuid
 				},
-				Value = FieldMapHelper.FixMappings(job.IntegrationPointModel.FieldMappings, _serializer)
+				Value = FieldMapHelper.FixMappings(job.IntegrationPointModel.FieldMappings, _serializer, _logger)
 			});
 			fields.Add(new FieldRefValuePair
 			{

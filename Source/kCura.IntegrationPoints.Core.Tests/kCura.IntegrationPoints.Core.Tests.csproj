@@ -113,7 +113,6 @@
     <Compile Include="Services\ProviderTypeServiceTests.cs" />
     <Compile Include="Services\Synchronizer\ImportProviderRdoSynchronizerFactoryTests.cs" />
     <Compile Include="Services\SavedSearchesTreeServiceTests.cs" />
-    <Compile Include="Helpers\ArtifactTreeCreatorTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeCreatorTests.cs" />
     <Compile Include="AgentJobManagerTest.cs" />
     <Compile Include="Agent\IntegrationPointTaskBaseTests.cs" />
