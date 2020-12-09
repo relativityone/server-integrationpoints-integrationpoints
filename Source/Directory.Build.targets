@@ -12,4 +12,9 @@
     <PackageReference Update="Relativity.Services.Interfaces.Private" Version="[13.1.4]" />
     <PackageReference Update="Relativity.Services.DataContracts" Version="[13.2.3]" />
   </ItemGroup>
+  <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
+  <!-- Changing version here also requires changing version in assembly binding present in system tests app.config -->
+  <ItemGroup>
+    <PackageReference Update="Relativity.DataExchange.Client.SDK" Version="[1.12.27]" />
+  </ItemGroup>
 </Project>
