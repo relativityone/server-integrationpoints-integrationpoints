@@ -10,11 +10,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
     public class ProcessingSourceLocationService : IProcessingSourceLocationService
     {
-        #region Fields
         private readonly IResourcePoolContext _resourcePoolContext;
         private readonly IResourcePoolManager _resourcePoolManager;
-        #endregion //Fields
-
 
         public ProcessingSourceLocationService(IResourcePoolContext resourcePoolContext,
             IResourcePoolManager resourcePoolManager)

@@ -1,80 +1,61 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.Workspace.Models;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class ResourcePoolManager : IResourcePoolManager
 	{
-		#region Fields
-
 		private readonly IResourcePoolRepository _resourcePoolRepository;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
-		private readonly IHelper _helper;
+		private readonly IServicesMgr _servicesMgr;
 		private readonly IAPILog _logger;
 
-		#endregion //Fields
-
-		#region Constructors
-
-		public ResourcePoolManager(IRepositoryFactory repositoryFactory, IHelper helper, IRsapiClientFactory rsapiClientFactory)
+		public ResourcePoolManager(IRepositoryFactory repositoryFactory, IServicesMgr servicesMgr, IHelper helper)
 		{
-			_helper = helper;
 			_resourcePoolRepository = repositoryFactory.GetResourcePoolRepository();
+			_servicesMgr = servicesMgr;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ResourcePoolManager>();
-			_rsapiClientFactory = rsapiClientFactory;
 		}
-
-		#endregion //Constructors
-
-		#region Methods
 
 		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocation(int workspaceId)
 		{
-			Workspace wksp = GetWorkspace(workspaceId);
-			if (wksp == null)
-			{
-				LogMissingWorkspaceError(workspaceId);
-				throw new ArgumentException($"Cannot find workspace with artifact id: {workspaceId}");
-			}
+			WorkspaceResponse workspace = GetWorkspaceAsync(workspaceId).GetAwaiter().GetResult();
 
 			List<ProcessingSourceLocationDTO> processingSourceLocations =
-				_resourcePoolRepository.GetProcessingSourceLocationsByResourcePool(wksp.ResourcePoolID.Value);
+				_resourcePoolRepository.GetProcessingSourceLocationsByResourcePool(workspace.ResourcePool.Value.ArtifactID);
 			return processingSourceLocations;
 		}
 
-		/// <summary>
-		///     This method is extracted to remove rsapi unit testing limitatiations
-		/// </summary>
-		protected virtual Workspace GetWorkspace(int workspaceId)
+		protected virtual async Task<WorkspaceResponse> GetWorkspaceAsync(int workspaceId)
 		{
-			using (IRSAPIClient rsApiClient = _rsapiClientFactory.CreateAdminClient(_helper))
+			try
 			{
-				rsApiClient.APIOptions.WorkspaceID = -1;
-				return rsApiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
+				using (var workspaceManager = _servicesMgr.CreateProxy<global::Relativity.Services.Interfaces.Workspace.IWorkspaceManager>(ExecutionIdentity.System))
+				{
+					WorkspaceResponse workspaceResponse = await workspaceManager.ReadAsync(workspaceId).ConfigureAwait(false);
+					return workspaceResponse;
+				}
+			}
+			catch (NotFoundException ex)
+			{
+				LogMissingWorkspaceError(ex, workspaceId);
+				throw new ArgumentException($"Cannot find workspace with artifact id: {workspaceId}", ex);
 			}
 		}
 
-		#endregion //Methods
-
 		#region Logging
 
-		private void LogMissingWorkspaceError(int workspaceId)
+		private void LogMissingWorkspaceError(NotFoundException ex, int workspaceId)
 		{
-			_logger.LogError("Cannot find workspace with artifact id: {WorkspaceId}.", workspaceId);
+			_logger.LogError(ex, "Cannot find workspace with artifact id: {WorkspaceId}.", workspaceId);
 		}
 
 		#endregion
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

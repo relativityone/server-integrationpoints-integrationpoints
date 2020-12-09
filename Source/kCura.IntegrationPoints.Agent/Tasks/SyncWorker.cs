@@ -20,7 +20,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -30,17 +29,14 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.Telemetry.MetricsCollection;
-using APMClient = Relativity.Telemetry.APM.Client;
-using Client = Relativity.Telemetry.MetricsCollection.Client;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncWorker : IntegrationPointTaskBase, ITaskWithJobHistory
 	{
-		private readonly IProviderTypeService _providerTypeService;
 		private IEnumerable<IBatchStatus> _batchStatus;
+
+		private readonly IProviderTypeService _providerTypeService;
 		private readonly bool _isStoppable;
 		private readonly IAPILog _logger;
 		private readonly JobStatisticsService _statisticsService;
