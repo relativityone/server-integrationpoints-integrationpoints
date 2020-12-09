@@ -1,12 +1,9 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -16,12 +13,14 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Moq;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Artifact = kCura.Relativity.Client.Artifact;
+using Relativity.Services.Objects.DataContracts;
 using Assert = NUnit.Framework.Assert;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
 
@@ -30,9 +29,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 	[TestFixture, Category("Unit")]
 	public class RdoSynchronizerTests : TestBase
 	{
+		private Mock<IHelper> _helper;
+		private Mock<IImportJobFactory> _importJobFactory;
+		private Mock<IObjectTypeRepository> _objectTypeRepository;
+		private Mock<IRelativityFieldQuery> _relativityFieldQuery;
+
 		public static RdoSynchronizer ChangeWebAPIPath(RdoSynchronizer synchronizer)
 		{
-			var prop = synchronizer.GetType().GetProperty(kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH);
+			PropertyInfo prop = synchronizer.GetType().GetProperty(Constants.WEB_API_PATH);
 			prop.SetValue(synchronizer, "Mock value");
 			return synchronizer;
 		}
@@ -41,40 +45,55 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public override void SetUp()
 		{
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(new TestHelper());
+
+			_objectTypeRepository = new Mock<IObjectTypeRepository>();
+			_relativityFieldQuery = new Mock<IRelativityFieldQuery>();
+			_importJobFactory = new Mock<IImportJobFactory>();
+
+			Mock<IAPILog> logger = new Mock<IAPILog>();
+			logger.Setup(x => x.ForContext<RdoEntitySynchronizer>()).Returns(logger.Object);
+			logger.Setup(x => x.ForContext<RdoSynchronizer>()).Returns(logger.Object);
+			logger.Setup(x => x.ForContext<ImportService>()).Returns(logger.Object);
+			Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
+			logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
+			_helper = new Mock<IHelper>();
+			_helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
+		}
+
+		private RdoSynchronizer PrepareSut()
+		{
+			return ChangeWebAPIPath(
+				new RdoSynchronizer(_relativityFieldQuery.Object, RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object), _importJobFactory.Object, _helper.Object));
 		}
 
 		[Test]
 		public void GetRightCountOfFieldsWithSystemAndArtifactFieldsRemoved()
 		{
 			//ARRANGE
-			var client = Substitute.For<IRSAPIClient>();
-			var helper = Substitute.For<IHelper>();
-			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
-			var rdoQuery = Substitute.For<IObjectTypeRepository>();
-			var jobFactory = Substitute.For<IImportJobFactory>();
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
+
+			var options = new ImportSettings
 			{
-				DescriptorArtifactTypeId = 1,
-				Name = "Document"
-			});
-			//
-			var options = new ImportSettings();
-			options.ArtifactTypeId = 1268820;
-			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
+				ArtifactTypeId = 1268820
+			};
+
+			var fields = new List<RelativityObject>
 			{
-				new Artifact {Name = "Name", ArtifactID = 1},
-				new Artifact {Name = "System Created On", ArtifactID = 2},
-				new Artifact {Name = "Date Modified On", ArtifactID = 3},
-				new Artifact {Name = "User", ArtifactID = 4},
-				new Artifact {Name = "Artifact ID", ArtifactID = 5}
-			});
+				new RelativityObject {Name = "Name", ArtifactID = 1},
+				new RelativityObject {Name = "System Created On", ArtifactID = 2},
+				new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
+				new RelativityObject {Name = "User", ArtifactID = 4},
+				new RelativityObject {Name = "Artifact ID", ArtifactID = 5}
+			};
+
+			_relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
+
+			RdoSynchronizer sut = PrepareSut();
+			string optionsStr = JsonConvert.SerializeObject(options);
 
 			//ACT
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
-			var str = JsonConvert.SerializeObject(options);
-			var numberOfFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).Count();
-			//ASSERT
+			int numberOfFields = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).Count();
 
+			//ASSERT
 			Assert.AreEqual(3, numberOfFields);
 		}
 
@@ -82,37 +101,39 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetRightDataInFieldsWithSystemAndArtifactFieldsRemoved()
 		{
 			//ARRANGE
-			var client = Substitute.For<IRSAPIClient>();
-			var helper = Substitute.For<IHelper>();
-			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
-			var rdoQuery = Substitute.For<IObjectTypeRepository>();
-			var jobFactory = Substitute.For<IImportJobFactory>();
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
+
+			_objectTypeRepository.Setup(x => x.GetObjectType(It.IsAny<int>())).Returns(new ObjectTypeDTO
 			{
 				DescriptorArtifactTypeId = 1,
 				Name = "Document"
 			});
-			var options = new ImportSettings { ArtifactTypeId = 1268820 };
-			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
+
+			var options = new ImportSettings
 			{
-				new Artifact {Name = "Name", ArtifactID = 1},
-				new Artifact {Name = "System Created On", ArtifactID = 2},
-				new Artifact {Name = "Date Modified On", ArtifactID = 3},
-				new Artifact {Name = "User", ArtifactID = 4},
-				new Artifact {Name = "Artifact ID", ArtifactID = 5}
-			});
-			var expectedFieldEntry = new List<FieldEntry>
-			{
-				new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
-				new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
-				new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
+				ArtifactTypeId = 1268820
 			};
 
-			//ACT
-			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+			_relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>
+				{
+					new RelativityObject {Name = "Name", ArtifactID = 1},
+					new RelativityObject {Name = "System Created On", ArtifactID = 2},
+					new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
+					new RelativityObject {Name = "User", ArtifactID = 4},
+					new RelativityObject {Name = "Artifact ID", ArtifactID = 5}
+				});
 
-			var listOfFieldEntry = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).ToList();
+			var expectedFieldEntry = new List<FieldEntry>
+				{
+					new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
+					new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
+					new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
+				};
+
+			string optionsStr = JsonConvert.SerializeObject(options);
+			RdoSynchronizer sut = PrepareSut();
+
+			//ACT
+			List<FieldEntry> listOfFieldEntry = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).ToList();
 
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
@@ -127,33 +148,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void GetRightCountOfFields()
 		{
 			//ARRANGE
-			var client = Substitute.For<IRSAPIClient>();
-			var helper = Substitute.For<IHelper>();
-			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
-			var jobFactory = Substitute.For<IImportJobFactory>();
-			//
-			var rdoQuery = Substitute.For<IObjectTypeRepository>();
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
+			_objectTypeRepository.Setup(x => x.GetObjectType(It.IsAny<int>())).Returns(new ObjectTypeDTO
 			{
 				DescriptorArtifactTypeId = 1,
 				Name = "Document"
 			});
-			var options = new ImportSettings();
-			options.ArtifactTypeId = 1268820;
-			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
+
+			var options = new ImportSettings
 			{
-				new Artifact {Name = "Name", ArtifactID = 1},
-				new Artifact {Name = "Value", ArtifactID = 2},
-				new Artifact {Name = "Date Modified On", ArtifactID = 3},
-				new Artifact {Name = "User", ArtifactID = 4},
-				new Artifact {Name = "FirstName", ArtifactID = 5}
-			});
+				ArtifactTypeId = 1268820
+			};
+
+			_relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>
+				{
+					new RelativityObject {Name = "Name", ArtifactID = 1},
+					new RelativityObject {Name = "Value", ArtifactID = 2},
+					new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
+					new RelativityObject {Name = "User", ArtifactID = 4},
+					new RelativityObject {Name = "FirstName", ArtifactID = 5}
+				});
+
+			string optionsStr = JsonConvert.SerializeObject(options);
+			RdoSynchronizer sut = PrepareSut();
 
 			//ACT
-			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
-
-			var numberOfFields = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).Count();
+			int numberOfFields = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).Count();
 
 			//ASSERT
 			Assert.AreEqual(5, numberOfFields);
@@ -162,40 +181,41 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		[Test]
 		public void GetRightDataInFields()
 		{
-			//ARRANGEk
-			var client = Substitute.For<IRSAPIClient>();
-			var helper = Substitute.For<IHelper>();
-			var fieldMock = Substitute.For<RelativityFieldQuery>(client, helper);
-			var rdoQuery = Substitute.For<IObjectTypeRepository>();
-			var jobFactory = Substitute.For<IImportJobFactory>();
-			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectTypeDTO
+			//ARRANGE
+			_objectTypeRepository.Setup(x => x.GetObjectType(It.IsAny<int>())).Returns(new ObjectTypeDTO
 			{
 				DescriptorArtifactTypeId = 1,
 				Name = "Document"
 			});
-			var options = new ImportSettings { ArtifactTypeId = 1268820 };
-			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
+
+			var options = new ImportSettings
 			{
-				new Artifact {Name = "Name", ArtifactID = 1},
-				new Artifact {Name = "Value", ArtifactID = 2},
-				new Artifact {Name = "Date Modified On", ArtifactID = 3},
-				new Artifact {Name = "User", ArtifactID = 4},
-				new Artifact {Name = "FirstName", ArtifactID = 5}
-			});
-			var expectedFieldEntry = new List<FieldEntry>
-			{
-				new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
-				new FieldEntry {DisplayName = "Value", FieldIdentifier = "2"},
-				new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
-				new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
-				new FieldEntry {DisplayName = "FirstName", FieldIdentifier = "5"}
+				ArtifactTypeId = 1268820
 			};
 
-			//ACT
-			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RdoEntitySynchronizerTests.GetMockAPI(fieldMock), jobFactory, Substitute.For<IHelper>()));
+			_relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>
+				{
+					new RelativityObject {Name = "Name", ArtifactID = 1},
+					new RelativityObject {Name = "Value", ArtifactID = 2},
+					new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
+					new RelativityObject {Name = "User", ArtifactID = 4},
+					new RelativityObject {Name = "FirstName", ArtifactID = 5}
+				});
 
-			var listOfFieldEntry = rdoSynchronizer.GetFields(new DataSourceProviderConfiguration(str)).ToList();
+			var expectedFieldEntry = new List<FieldEntry>
+				{
+					new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
+					new FieldEntry {DisplayName = "Value", FieldIdentifier = "2"},
+					new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
+					new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
+					new FieldEntry {DisplayName = "FirstName", FieldIdentifier = "5"}
+				};
+
+			string optionsStr = JsonConvert.SerializeObject(options);
+			RdoSynchronizer sut = PrepareSut();
+
+			//ACT
+			List<FieldEntry> listOfFieldEntry = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).ToList();
 
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
@@ -211,19 +231,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			//ARRANGE
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
-			{
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
-			};
+				{
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+				};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles });
+			string options = JsonConvert.SerializeObject(new ImportSettings
+			{
+				ArtifactTypeId = 1111111,
+				CaseArtifactId = 2222222,
+				ImportNativeFile = false,
+				ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles
+			});
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
+			//ASSERT
 			Assert.AreEqual(1111111, result.ArtifactTypeId);
 			Assert.AreEqual(2222222, result.CaseArtifactId);
 			Assert.AreEqual(4000001, result.IdentityFieldId);
@@ -243,14 +270,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			//ARRANGE
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
-			{
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
-			};
+				{
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+				};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			var importSettings = new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = false, ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks };
+			var importSettings = new ImportSettings
+			{
+				ArtifactTypeId = 1111111,
+				CaseArtifactId = 2222222,
+				ImportNativeFile = false,
+				ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks
+			};
 			string options = JsonConvert.SerializeObject(importSettings);
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 			rdoSynchronizer.SourceProvider = new Data.SourceProvider()
@@ -264,6 +297,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			//ACT
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
+			//ASSERT
 			Assert.AreEqual(1111111, result.ArtifactTypeId);
 			Assert.AreEqual(2222222, result.CaseArtifactId);
 			Assert.AreEqual(4000001, result.IdentityFieldId);
@@ -283,12 +317,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			//ARRANGE
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
-			{
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
-				new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.NativeFilePath, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld4"}},
-			};
+				{
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+					new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.NativeFilePath, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld4"}},
+				};
 
 			var nativeFileImportService = new NativeFileImportService();
 			var importSettings = new ImportSettings
@@ -324,11 +358,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			//ARRANGE
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
-			{
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
-			};
+				{
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+				};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
 			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
@@ -347,12 +381,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		{
 			//ARRANGE
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
-			{
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
-				new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.FolderPathInformation, SourceField = new FieldEntry() {DisplayName = "SourceFld4"}},
-			};
+				{
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+					new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+					new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.FolderPathInformation, SourceField = new FieldEntry() {DisplayName = "SourceFld4"}},
+				};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
 			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
@@ -536,7 +570,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		[Test]
 		public void SyncData_RowErrors_ShouldRaiseRowErrorEventOnException()
 		{
-			//ARRANGE
+			//ARRANGE 
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
 			{
 				new FieldMap()
@@ -547,7 +581,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				},
 			};
 
-			//ARRANGE - RDO Synchronizer
+			//ARRANGE - RDO Synchronizer 
 			IRelativityFieldQuery relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
 			IImportApiFactory importApiFactory = Substitute.For<IImportApiFactory>();
 			IImportJobFactory jobFactory = Substitute.For<IImportJobFactory>();
@@ -556,23 +590,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			RdoSynchronizer rdoSynchronizer = Substitute.For<RdoSynchronizer>(relativityFieldQuery, importApiFactory, jobFactory, helper);
 			rdoSynchronizer.InitializeImportService(Arg.Any<ImportSettings>(), Arg.Any<Dictionary<string, int>>(), Arg.Any<NativeFileImportService>()).Returns(importService);
 
-			//ARRANGE - Next row enumerator
+			//ARRANGE - Next row enumerator 
 			IEnumerable<IDictionary<FieldEntry, object>> data = Substitute.For<IEnumerable<IDictionary<FieldEntry, object>>>();
 			IEnumerator<IDictionary<FieldEntry, object>> enumerator = Substitute.For<IEnumerator<IDictionary<FieldEntry, object>>>();
 			enumerator.MoveNext().Throws(new Exception("error"));
 			data.GetEnumerator().Returns(enumerator);
 
-			//ARRANGE - Events endpoint
+			//ARRANGE - Events endpoint 
 			List<string> receivedEvents = new List<string>();
 			rdoSynchronizer.OnDocumentError += (documentIdentifier, stringError) =>
 			{
 				receivedEvents.Add(stringError);
 			};
 
-			//ACT
+			//ACT 
 			rdoSynchronizer.SyncData(data, fieldMap, null);
 
-			//ASSERT
+			//ASSERT 
 			Assert.AreEqual(1, receivedEvents.Count);
 			Assert.AreEqual("error", receivedEvents.First());
 
@@ -595,7 +629,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			int caseArtifactId = 456;
 
 			string options = String.Format("{{Provider:'relativity', WebServiceUrl:'WebServiceUrl', ArtifactTypeId:{0}, CaseArtifactId:{1}}}", artifactTypeId, caseArtifactId);
-			List<Artifact> fields = new List<Artifact>();
+			List<RelativityObject> fields = new List<RelativityObject>();
 			IEnumerable<kCura.Relativity.ImportAPI.Data.Field> mappableFields = new List<kCura.Relativity.ImportAPI.Data.Field>();
 
 			relativityFieldQuery.GetFieldsForRdo(Arg.Is(artifactTypeId))
@@ -659,5 +693,3 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

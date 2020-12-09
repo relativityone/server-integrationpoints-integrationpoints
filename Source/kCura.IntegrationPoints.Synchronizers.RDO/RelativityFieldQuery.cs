@@ -1,65 +1,76 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client;
+using kCura.IntegrationPoints.Data.Repositories;
+using Relativity;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RelativityFieldQuery : IRelativityFieldQuery
 	{
-		private readonly IRSAPIClient _client;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IAPILog _logger;
 
-		public RelativityFieldQuery(IRSAPIClient client, IHelper helper)
+		public RelativityFieldQuery(IRelativityObjectManager relativityObjectManager, IHelper helper)
 		{
-			_client = client;
+			_relativityObjectManager = relativityObjectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityFieldQuery>();
 		}
 
-		public virtual List<Artifact> GetFieldsForRdo(int rdoTypeId)
+		public virtual List<RelativityObject> GetFieldsForRdo(int rdoTypeId)
 		{
-			return GetAllFields(rdoTypeId);
-		}
-
-		public List<Artifact> GetAllFields(int rdoTypeId)
-		{
-			Query q = new Query
+			QueryRequest request = new QueryRequest()
 			{
-				ArtifactTypeName = "Field",
-				Fields =
-					new List<Field>
+				ObjectType = new ObjectTypeRef()
+				{
+					ArtifactTypeID = (int)ArtifactType.Field
+				},
+				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}",
+				IncludeNameInQueryResult = true,
+				Fields = new[]
+				{
+					new FieldRef() {Name = "Name"},
+					new FieldRef() {Name = "Choices"},
+					new FieldRef() {Name = "Object Type Artifact Type ID"},
+					new FieldRef() {Name = "Field Type"},
+					new FieldRef() {Name = "Field Type ID"},
+					new FieldRef() {Name = "Is Identifier"},
+					new FieldRef() {Name = "Field Type Name"},
+				},
+				Sorts = new[]
+				{
+					new Sort()
 					{
-						new Field("Name"),
-						new Field("Choices"),
-						new Field("Object Type Artifact Type ID"),
-						new Field("Field Type"),
-						new Field("Field Type ID"),
-						new Field("Is Identifier"),
-						new Field("Field Type Name")
-					},
-				Condition = new ObjectCondition {Field = "Object Type Artifact Type ID", Operator = ObjectConditionEnum.AnyOfThese, Value = new List<int> {rdoTypeId}},
-				Sorts = new List<Sort> {new Sort {Direction = SortEnum.Ascending, Field = "Name", Order = 1}}
+						Direction = SortEnum.Ascending,
+						FieldIdentifier = new FieldRef()
+						{
+							Name = "Name"
+						},
+						Order = 1
+					}
+				}
 			};
-			var result = _client.Query(_client.APIOptions, q);
-			if (!result.Success)
+
+			try
 			{
-				LogRetrievingAllFieldsError(rdoTypeId, result);
-				throw new Exception(result.Message);
+				List<RelativityObject> results = _relativityObjectManager.QueryAsync(request, ExecutionIdentity.System).GetAwaiter().GetResult();
+				return results;
 			}
-			return result.QueryArtifacts;
+			catch (Exception ex)
+			{
+				LogRetrievingAllFieldsError(ex, rdoTypeId);
+				throw;
+			}
 		}
 
 		#region Logging
 
-		private void LogRetrievingAllFieldsError(int rdoTypeId, QueryResult result)
+		private void LogRetrievingAllFieldsError(Exception ex, int rdoTypeId)
 		{
-			_logger.LogError("Failed to retrieve all fields for RDO type {RdoTypeId}. Details: {Message}.", rdoTypeId, result.Message);
+			_logger.LogError("Failed to retrieve all fields for RDO type {RdoTypeId}. Details: {Message}.", rdoTypeId, ex.Message);
 		}
 
 		#endregion
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public abstract class RdoFieldSynchronizerBase : IFieldProvider
 	{
-		private readonly IImportApiFactory _factory;
-		private readonly IAPILog _logger;
-		protected readonly IRelativityFieldQuery FieldQuery;
-
-		private IImportAPI _api;
-
 		private HashSet<string> _ignoredList;
-
+		private IImportAPI _api;
 		private string _webApiPath;
+
+		private readonly IAPILog _logger;
+		private readonly IImportApiFactory _factory;
+		protected readonly IRelativityFieldQuery FieldQuery;
 
 		protected RdoFieldSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IHelper helper)
 		{
@@ -67,13 +65,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			LogRetrievingFields();
 			ImportSettings settings = GetSettings(providerConfiguration.Configuration);
-			var fields = GetRelativityFields(settings);
+			List<RelativityObject> fields = GetRelativityFields(settings);
 			return ParseFields(fields);
 		}
 
 		protected ImportSettings GetSettings(string options)
 		{
-			var settings = DeserializeImportSettings(options);
+			ImportSettings settings = DeserializeImportSettings(options);
 
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
@@ -100,12 +98,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		protected List<Artifact> GetRelativityFields(ImportSettings settings)
+		protected List<RelativityObject> GetRelativityFields(ImportSettings settings)
 		{
 			LogRetrievingRelativityFields();
 			try
 			{
-				List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
+				List<RelativityObject> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
 				HashSet<int> mappableArtifactIds =
 					new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
 				return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
@@ -117,22 +115,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		protected IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
+		protected IEnumerable<FieldEntry> ParseFields(List<RelativityObject> fields)
 		{
-			foreach (var result in fields)
+			foreach (RelativityObject field in fields)
 			{
-				if (!IgnoredList.Contains(result.Name))
+				if (IgnoredList.Contains(field.Name))
 				{
-					Field idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = Convert.ToInt32(idField?.Value) == 1;
-				
-					if (isIdentifier)
-					{
-						result.Name += " [Object Identifier]";
-					}
-				
-					yield return new FieldEntry {DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false};
+					continue;
 				}
+
+				bool isIdentifier = field.FixIdentifierField();
+
+				yield return new FieldEntry
+				{
+					FieldIdentifier = field.ArtifactID.ToString(),
+					DisplayName = field.Name,
+					IsIdentifier = isIdentifier,
+					IsRequired = false
+				};
 			}
 		}
 
@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			_logger.LogVerbose("Attempting to retrieve Relativity fields.");
 		}
-
+		
 		#endregion
 	}
 }
