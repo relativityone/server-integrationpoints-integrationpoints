@@ -25,7 +25,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private readonly Guid _correlationId;
 		private readonly IntegrationPointToSyncConverter _converter;
 
-		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics, ISyncJobMetric jobMetric, IntegrationPointToSyncConverter converter)
+		private readonly IHelper _helper;
+		private readonly IJobHistorySyncService _jobHistorySyncService;
+
+		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics,
+			ISyncJobMetric jobMetric, IntegrationPointToSyncConverter converter)
 		{
 			_job = job;
 			_ripContainer = ripContainer;
@@ -34,6 +38,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_jobMetric = jobMetric;
 			_converter = converter;
 			_correlationId = Guid.NewGuid();
+
+			_helper = _ripContainer.Resolve<IHelper>();
+			_jobHistorySyncService = new JobHistorySyncService(_helper);
 		}
 
 		public async Task<TaskResult> RunAsync()
@@ -91,10 +98,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private async Task MarkJobAsValidationFailedAsync(ValidationException ex)
 		{
-			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await JobHistoryHelper.MarkJobAsValidationFailedAsync(ex, _job, helper).ConfigureAwait(false);
+				await _jobHistorySyncService.MarkJobAsValidationFailedAsync(ex, _job).ConfigureAwait(false);
 				await _jobMetric.SendJobFailedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
@@ -103,29 +109,27 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to mark job as validation failed.");
+				_logger.LogError(e, "Failed to mark job as validation failed.");
 			}
 		}
 
 		private async Task UpdateJobStatusAsync(string status)
 		{
-			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await JobHistoryHelper.UpdateJobStatusAsync(status, _job, helper).ConfigureAwait(false);
+				await _jobHistorySyncService.UpdateJobStatusAsync(status, _job).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
-				helper.GetLoggerFactory().GetLogger().LogError(e, "Failed to update job status.");
+				_logger.LogError(e, "Failed to update job status.");
 			}
 		}
 
 		private async Task MarkJobAsStartedAsync()
 		{
-			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await JobHistoryHelper.MarkJobAsStartedAsync(_job, helper).ConfigureAwait(false);
+				await _jobHistorySyncService.MarkJobAsStartedAsync(_job).ConfigureAwait(false);
 				await _jobMetric.SendJobStartedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
@@ -140,10 +144,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private async Task MarkJobAsCompletedAsync()
 		{
-			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await JobHistoryHelper.MarkJobAsCompletedAsync(_job, helper).ConfigureAwait(false);
+				await _jobHistorySyncService.MarkJobAsCompletedAsync(_job).ConfigureAwait(false);
 				await _jobMetric.SendJobCompletedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
@@ -158,10 +161,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private async Task MarkJobAsStoppedAsync()
 		{
-			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await JobHistoryHelper.MarkJobAsStoppedAsync(_job, helper).ConfigureAwait(false);
+				await _jobHistorySyncService.MarkJobAsStoppedAsync(_job).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -171,10 +173,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private async Task MarkJobAsFailedAsync(Exception exception)
 		{
-			IHelper helper = _ripContainer.Resolve<IHelper>();
 			try
 			{
-				await JobHistoryHelper.MarkJobAsFailedAsync(_job, exception, helper).ConfigureAwait(false);
+				await _jobHistorySyncService.MarkJobAsFailedAsync(_job, exception).ConfigureAwait(false);
 				await _jobMetric.SendJobFailedAsync(_job.Job).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)
@@ -192,7 +193,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			int syncConfigurationArtifactId;
 			try
 			{
-				syncConfigurationArtifactId = await _converter.CreateSyncConfigurationAsync(_job, _ripContainer.Resolve<IHelper>()).ConfigureAwait(false);
+				syncConfigurationArtifactId = await _converter.CreateSyncConfigurationAsync(_job, _helper, _jobHistorySyncService).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{

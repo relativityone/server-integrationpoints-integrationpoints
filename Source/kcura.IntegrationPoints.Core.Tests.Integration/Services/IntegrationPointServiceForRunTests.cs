@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
 				DestinationProvider = RelativityDestinationProviderArtifactId,
 				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateSourceConfigWithCustomParameters(TargetWorkspaceArtifactID, temporarySavedSearchId, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
+				SourceConfiguration = CreateSerializedSourceConfigWithCustomParameters(TargetWorkspaceArtifactID, temporarySavedSearchId, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
 				LogErrors = true,
 				Name = $"RunJobWithFailingValidation_ExpectError_SaveJobHistory {DateTime.Now:yy-MM-dd HH-mm-ss}",
 				SelectedOverwrite = "Overlay Only",

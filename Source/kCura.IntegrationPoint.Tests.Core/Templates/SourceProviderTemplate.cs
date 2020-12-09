@@ -54,7 +54,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected ICaseServiceContext CaseContext { get; private set; }
 		protected IRelativityObjectManager ObjectManager { get; private set; }
 		protected IIntegrationPointRepository IntegrationPointRepository { get; private set; }
+		protected IIntegrationPointService IntegrationPointService { get; private set; }
 		protected ISerializer Serializer { get; private set; }
+		protected IAPILog Logger { get; private set; }
 
 		protected bool CreatingAgentEnabled { get; set; } = true;
 		protected bool CreatingWorkspaceEnabled { get; set; } = true;
@@ -96,7 +98,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			CaseContext = Container.Resolve<ICaseServiceContext>();
 			ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
 			IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
+			IntegrationPointService = Container.Resolve<IIntegrationPointService>();
 			Serializer = Container.Resolve<ISerializer>();
+			Logger = Container.Resolve<IAPILog>();
 
 			SourceProviders = GetSourceProviders();
 			RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
@@ -183,13 +187,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
+		protected int CreateOrUpdateIntegrationPointRdo(IntegrationPointModel model)
+		{
+			return IntegrationPointService.SaveIntegration(model);
+		}
+
 		protected IntegrationPointModel CreateOrUpdateIntegrationPoint(IntegrationPointModel model)
 		{
-			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
+			int integrationPointArtifactId = CreateOrUpdateIntegrationPointRdo(model);
 
-			int integrationPointArtifactId = service.SaveIntegration(model);
-
-			IntegrationPoints.Data.IntegrationPoint rdo = service.ReadIntegrationPoint(integrationPointArtifactId);
+			IntegrationPoints.Data.IntegrationPoint rdo = IntegrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
 			IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
 			return newModel;
 		}
