@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Relativity.Sync.Tests.System.Core.Extensions;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 {
@@ -32,12 +33,12 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		public void AssertResult(ExecutionResult result, ExecutionStatus expectedStatus)
 		{
 			Assert.AreEqual(expectedStatus, result.Status,
-				message: AggregateJobHistoryErrorMessagesAsync(result).GetAwaiter().GetResult());
+				message: AggregateJobHistoryErrorMessagesAsync(result, Configuration.SourceWorkspaceArtifactId, Configuration.JobHistoryArtifactId).GetAwaiter().GetResult());
 		}
 
 		public void AssertTotalTransferredItems(int expectedTotalCount)
 		{
-			Assert.AreEqual(expectedTotalCount, 
+			Assert.AreEqual(expectedTotalCount,
 				GetTotalTransferredItemsCountAsync().GetAwaiter().GetResult());
 		}
 
@@ -51,42 +52,17 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 		#region Private Methods
 
-		private async Task<string> AggregateJobHistoryErrorMessagesAsync(ExecutionResult syncResult)
+		private async Task<string> AggregateJobHistoryErrorMessagesAsync(ExecutionResult syncResult, int workspaceId, int jobHistoryId)
 		{
-			IEnumerable<RelativityObject> jobHistoryErrors =
-				await GetAllJobErrorsAsync().ConfigureAwait(false);
-
-			var sb = new StringBuilder();
-			sb.AppendLine($"Synchronization step failed: {syncResult.Message}: {syncResult.Exception}");
-			foreach (RelativityObject err in jobHistoryErrors)
+			using (var objectManager = await new ServiceFactoryStub(ServiceFactory).CreateProxyAsync<IObjectManager>()
+				.ConfigureAwait(false))
 			{
-				sb.AppendLine($"Item level error: {err[ErrorMessageField].Value}")
-					.AppendLine((string)err[StackTraceField].Value)
-					.AppendLine();
-			}
+				var sb = new StringBuilder();
+				sb.AppendLine($"Synchronization step failed: {syncResult.Message}: {syncResult.Exception}");
+				sb.Append(await objectManager.AggregateJobHistoryErrorMessagesAsync( workspaceId, jobHistoryId)
+					.ConfigureAwait(false));
 
-			return sb.ToString();
-		}
-
-		private async Task<IEnumerable<RelativityObject>> GetAllJobErrorsAsync()
-		{
-			var serviceFactory = new ServiceFactoryStub(ServiceFactory);
-			using (var objectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				var request = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef { Guid = JobHistoryErrorObject },
-					Condition = $"'Job History' == {Configuration.JobHistoryArtifactId}",
-					Fields = new List<FieldRef>
-					{
-						new FieldRef { Guid = ErrorMessageField },
-						new FieldRef { Guid = StackTraceField }
-					}
-				};
-
-				IEnumerable<QueryResult> results = await objectManager.QueryAllAsync(Configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
-
-				return results.SelectMany(x => x.Objects);
+				return sb.ToString();
 			}
 		}
 

@@ -21,6 +21,7 @@ using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.Performance.PreConditions;
 using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Extensions;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
 using Relativity.Sync.Tests.System.Core.Stubs;
@@ -200,14 +201,24 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId)
 					.ConfigureAwait(false);
 
+				string aggregatedJobHistoryErrors = null;
+				using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+				{
+					aggregatedJobHistoryErrors =
+						await objectManager.AggregateJobHistoryErrorMessagesAsync(SourceWorkspace.ArtifactID, jobHistory.ArtifactID);
+
+					aggregatedJobHistoryErrors.Should().BeNullOrEmpty("There should be no item level errors");
+				}
+
 				// Assert
 				Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
 
 				int totalItems = (int)jobHistory["Total Items"].Value;
-				int itemsTranferred = (int)jobHistory["Items Transferred"].Value;
+				int itemsTransferred = (int)jobHistory["Items Transferred"].Value;
 
-				itemsTranferred.Should().Be(totalItems);
-				itemsTranferred.Should().Be(testCase.ExpectedItemsTransferred);
+				aggregatedJobHistoryErrors.Should().BeNullOrEmpty();
+				itemsTransferred.Should().Be(totalItems);
+				itemsTransferred.Should().Be(testCase.ExpectedItemsTransferred);
 			}
 			catch (Exception e)
 			{

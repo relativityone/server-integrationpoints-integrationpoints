@@ -19,7 +19,9 @@ using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Service;
 using kCura.WinEDDS.Service.Export;
 using Relativity.DataExchange;
+using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Tests.System.Core.Extensions;
 using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
@@ -136,7 +138,15 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					.ConfigureAwait(false);
 				int itemsTransferred = (int)jobHistory["Items Transferred"].Value;
 				int totalItems = (int) jobHistory["Total Items"].Value;
-				
+
+				using (var objectManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<IObjectManager>())
+				{
+					string aggregatedJobHistoryErrors =
+						await objectManager.AggregateJobHistoryErrorMessagesAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, jobHistory.ArtifactID);
+
+					aggregatedJobHistoryErrors.Should().BeNullOrEmpty("There should be no item level errors");
+				}
+
 				itemsTransferred.Should().Be(expectedItemsTransferred);
 				totalItems.Should().Be(expectedTotalItems);
 			}
