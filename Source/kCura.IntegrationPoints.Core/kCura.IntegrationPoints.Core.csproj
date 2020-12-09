@@ -440,7 +440,7 @@
     <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />
     <Compile Include="Services\Synchronizer\RdoSynchronizerProvider.cs" />
     <Compile Include="Services\Tabs\ITabService.cs" />
-    <Compile Include="Services\Tabs\RSAPITabService.cs" />
+    <Compile Include="Services\Tabs\TabService.cs" />
     <Compile Include="Services\TaskParameterHelper.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Agent\IntegrationPointTaskBase.cs" />

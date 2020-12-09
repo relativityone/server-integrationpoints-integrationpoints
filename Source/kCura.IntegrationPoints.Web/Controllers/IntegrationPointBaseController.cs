@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Web.Models;
 using System;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Common.Context;
-using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Context.UserContext;
 
 namespace kCura.IntegrationPoints.Web.Controllers
@@ -44,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			int workspaceID = _workspaceIdProvider.GetWorkspaceID();
 
 			int objectTypeID = _objectTypeRepository.GetObjectTypeID(ObjectType);
-			int tabID = _tabService.GetTabId(objectTypeID);
+			int tabID = _tabService.GetTabId(workspaceID, objectTypeID);
 			int objectID = _objectTypeRepository.GetObjectType(objectTypeID).ParentArtifactId;
 			string previousURL = $"List.aspx?AppID={workspaceID}&ArtifactID={objectID}&ArtifactTypeID={objectTypeID}&SelectedTab={tabID}";
 			if (HasPermissions(artifactId))

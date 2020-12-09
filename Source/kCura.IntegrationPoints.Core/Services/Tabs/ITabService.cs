@@ -2,6 +2,6 @@
 {
 	public interface ITabService
 	{
-		int GetTabId(int objectTypeId);
+		int GetTabId(int workspaceId, int objectTypeId);
 	}
 }
