@@ -9,6 +9,8 @@ namespace Relativity.Sync.SyncConfiguration
 				IFieldsMappingBuilder fieldsMappingBuilder, ImageSyncOptions options) 
 			: base(syncContext, servicesMgr)
 		{
+			SyncConfiguration.ImageImport = true;
+			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
 			SyncConfiguration.DataSourceType = options.DataSourceType.ToString();
 			SyncConfiguration.DataSourceArtifactId = options.DataSourceId;
 			SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode.GetDescription();

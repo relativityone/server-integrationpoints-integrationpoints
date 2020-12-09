@@ -33,6 +33,11 @@ namespace Relativity.Sync.Storage
 		
 		public IFieldsMappingBuilder WithIdentifier()
 		{
+			if (FieldsMapping.Exists(x => x.FieldMapType == FieldMapType.Identifier))
+			{
+				throw new InvalidOperationException("Identifier has been mapped already");
+			}
+
 			using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				QueryRequest query = PrepareIdentifierFieldsQueryRequest();
@@ -55,7 +60,8 @@ namespace Relativity.Sync.Storage
 						DisplayName = destinationField.Name,
 						FieldIdentifier = destinationField.ArtifactID,
 						IsIdentifier = true
-					}
+					},
+					FieldMapType = FieldMapType.Identifier
 				});
 
 				return this;
@@ -88,7 +94,9 @@ namespace Relativity.Sync.Storage
 						DisplayName = destinationField.Name,
 						FieldIdentifier = destinationField.ArtifactID,
 						IsIdentifier = false
-					}
+					},
+					FieldMapType = FieldMapType.None
+
 				});
 
 				return this;

@@ -38,7 +38,7 @@ namespace Relativity.Sync.SyncConfiguration
 			
 			if (options.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				using (IFieldManager fieldManager = ServicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
+				using (var fieldManager = ServicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 				{
 					var folderPathField = fieldManager.ReadAsync(SyncContext.SourceWorkspaceId, options.FolderPathSourceFieldId)
 						.GetAwaiter().GetResult();
@@ -84,11 +84,6 @@ namespace Relativity.Sync.SyncConfiguration
 		}
 
 		#region Private methods
-
-		private void SetFieldsMapping(List<FieldMap> fieldsMapping)
-		{
-
-		}
 
 		private void DestinationFolderStructureCleanup()
 		{

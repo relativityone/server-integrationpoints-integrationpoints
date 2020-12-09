@@ -1,5 +1,4 @@
-﻿using System;
-using Relativity.Sync.Storage;
+﻿using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration.Options;
 
 namespace Relativity.Sync.SyncConfiguration
@@ -20,12 +19,15 @@ namespace Relativity.Sync.SyncConfiguration
 			IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
 				_syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, _servicesMgr);
 
-			return new DocumentSyncConfigurationBuilder(_syncContext, _servicesMgr, options);
+			return new DocumentSyncConfigurationBuilder(_syncContext, _servicesMgr, fieldsMappingBuilder, options);
 		}
 
 		public IImageSyncConfigurationBuilder ConfigureImageSync(ImageSyncOptions options)
 		{
-			return new ImageSyncConfigurationBuilder(_syncContext, _servicesMgr, options);
+			IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
+				_syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, _servicesMgr);
+
+			return new ImageSyncConfigurationBuilder(_syncContext, _servicesMgr, fieldsMappingBuilder, options);
 		}
 	}
 }
