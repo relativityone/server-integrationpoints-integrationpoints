@@ -57,10 +57,14 @@
     <Compile Include="BrandNew\FieldMappingPanelActions.cs" />
     <Compile Include="BrandNew\Import\FTP\ImportDocumentsFromFtpActions.cs" />
     <Compile Include="BrandNew\Import\FTP\ConnectionAndFileInfoPanelActions.cs" />
+    <Compile Include="BrandNew\Import\MyFirstProvider\MyFirstProviderConfigurationPanelActions.cs" />
+    <Compile Include="BrandNew\Import\MyFirstProvider\MyFirstProviderConfigurationPanel.cs" />
+    <Compile Include="BrandNew\Import\MyFirstProvider\MyFirstProviderSecondPage.cs" />
     <Compile Include="BrandNew\Import\LoadFile\Documents\ImportDocumentsFromLoadFileActions.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
     <Compile Include="BrandNew\Import\JsonLoader\ThirdPage\JsonLoaderSettingsPanel.cs" />
+    <Compile Include="BrandNew\Import\MyFirstProvider\ImportDocumentsFromMyFirstProviderActions.cs" />
     <Compile Include="BrandNew\Import\O365\ImportDocumentsFromO365Actions.cs" />
     <Compile Include="BrandNew\Import\O365\O365SecondPage.cs" />
     <Compile Include="BrandNew\Import\O365\O365SettingsPanel.cs" />
@@ -167,6 +171,7 @@
     <Compile Include="Tests\FieldMappings\FieldsMappingTests.cs" />
     <Compile Include="Tests\FTPProvider\ImportFromFtpTest.cs" />
     <Compile Include="Tests\ImportFromLoadFile\ImportFromLoadFileTest.cs" />
+    <Compile Include="Tests\ImportSDK\MyFirstProviderTests.cs" />
     <Compile Include="Tests\LDAPProvider\ImportLdapProviderTest.cs" />
     <Compile Include="Tests\O365Provider\O365ProviderTests.cs" />
     <Compile Include="Tests\Profile\CreateAndApplyProfilesUiValuesTest.cs" />
@@ -408,6 +413,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

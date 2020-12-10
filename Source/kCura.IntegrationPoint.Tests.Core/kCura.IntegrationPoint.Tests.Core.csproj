@@ -111,6 +111,8 @@
     <Compile Include="Models\Import\JsonLoader\ImportDocumentsFromJsonLoaderModel.cs" />
     <Compile Include="Models\Import\JsonLoader\JsonLoaderSettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\Documents\ImportDocumentsModel.cs" />
+    <Compile Include="Models\Import\MyFirstProvider\ImportDocumentsFromMyFirstProviderModel.cs" />
+    <Compile Include="Models\Import\MyFirstProvider\MyFirstProviderSettingsModel.cs" />
     <Compile Include="Models\Import\O365\ImportDocumentsFromO365Model.cs" />
     <Compile Include="Models\Import\O365\O365SettingsModel.cs" />
     <Compile Include="Models\Import\SettingsModel.cs" />
@@ -7774,6 +7776,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

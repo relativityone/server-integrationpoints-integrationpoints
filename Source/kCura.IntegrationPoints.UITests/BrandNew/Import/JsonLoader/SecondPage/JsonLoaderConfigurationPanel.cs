@@ -6,7 +6,6 @@ namespace kCura.IntegrationPoints.UITests.BrandNew.Import.JsonLoader.SecondPage
 {
 	public class JsonLoaderConfigurationPanel : Component
 	{
-		//TODO Use By.Id to find Input Elements
 		public IWebElement FieldLocationInput =>
 			Parent.FindElementEx(By.XPath("//body/div[@id='jsonConfiguration']/div[1]/div[2]/input[1]"));
 

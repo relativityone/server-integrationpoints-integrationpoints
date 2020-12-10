@@ -323,6 +323,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		#region ImportSDK Configuration Settings
 
 		public static string JsonLoaderPath => AppSettingString("JsonLoaderPath");
+		public static string MyFirstProviderPath => AppSettingString("MyFirstProviderPath");
 
 		#endregion
 
