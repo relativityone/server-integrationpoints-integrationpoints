@@ -69,7 +69,7 @@ namespace Relativity.Sync.Storage
 			using (var fieldManager = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
 				var sourceField = fieldManager.ReadAsync(_sourceWorkspaceId, sourceFieldId).GetAwaiter().GetResult();
-				var destinationField = fieldManager.ReadAsync(_destinationWorkspaceId, sourceFieldId).GetAwaiter().GetResult();
+				var destinationField = fieldManager.ReadAsync(_destinationWorkspaceId, destinationFieldId).GetAwaiter().GetResult();
 
 				if (sourceField.IsIdentifier || destinationField.IsIdentifier)
 				{

@@ -8,7 +8,8 @@ namespace Relativity.Sync.SyncConfiguration.Options
 		public int FolderPathSourceFieldId { get; set; }
 		public bool MoveExistingDocuments { get; set; }
 
-		private DestinationFolderStructureOptions() { }
+		private DestinationFolderStructureOptions() 
+		{ }
 
 		public static DestinationFolderStructureOptions None()
 		{
