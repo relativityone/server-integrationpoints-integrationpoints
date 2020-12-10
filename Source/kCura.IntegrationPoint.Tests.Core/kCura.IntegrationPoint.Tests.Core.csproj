@@ -108,6 +108,8 @@
     <Compile Include="Models\Import\FTP\ConnectionAndFileInfoModel.cs" />
     <Compile Include="Models\Import\FTP\ImportFromFtpModel.cs" />
     <Compile Include="Models\Import\FieldsMappingModel.cs" />
+    <Compile Include="Models\Import\JsonLoader\ImportDocumentsFromJsonLoaderModel.cs" />
+    <Compile Include="Models\Import\JsonLoader\JsonLoaderSettingsModel.cs" />
     <Compile Include="Models\Import\LoadFile\Documents\ImportDocumentsModel.cs" />
     <Compile Include="Models\Import\O365\ImportDocumentsFromO365Model.cs" />
     <Compile Include="Models\Import\O365\O365SettingsModel.cs" />
@@ -3305,6 +3307,9 @@
     <Content Include="TestDataSaltPepper\NATIVES\NATIVE001\JWOLFE\JWOLFE_0004725.reg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestDataSDK\data.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestDataText\IMAGES\REL0000000833.0001.TIF">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -3418,6 +3423,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestDataO365\Export_load_file_small.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestDataSDK\data.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestDataSDK\fields.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

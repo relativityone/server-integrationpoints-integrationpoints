@@ -60,10 +60,17 @@
     <Compile Include="BrandNew\Import\LoadFile\Documents\ImportDocumentsFromLoadFileActions.cs" />
     <Compile Include="Actions\IntegrationPointsImportAction.cs" />
     <Compile Include="Actions\IntegrationPointsImportLdapAction.cs" />
+    <Compile Include="BrandNew\Import\JsonLoader\ThirdPage\JsonLoaderSettingsPanel.cs" />
     <Compile Include="BrandNew\Import\O365\ImportDocumentsFromO365Actions.cs" />
     <Compile Include="BrandNew\Import\O365\O365SecondPage.cs" />
     <Compile Include="BrandNew\Import\O365\O365SettingsPanel.cs" />
     <Compile Include="BrandNew\Import\O365\O365SettingsPanelActions.cs" />
+    <Compile Include="BrandNew\Import\JsonLoader\ImportDocumentsFromJsonLoaderActions.cs" />
+    <Compile Include="BrandNew\Import\JsonLoader\SecondPage\JsonLoaderSecondPage.cs" />
+    <Compile Include="BrandNew\Import\JsonLoader\SecondPage\JsonLoaderConfigurationPanel.cs" />
+    <Compile Include="BrandNew\Import\JsonLoader\SecondPage\JsonLoaderConfigurationPanelActions.cs" />
+    <Compile Include="BrandNew\Import\JsonLoader\ThirdPage\JsonLoaderSettingsPanelActions.cs" />
+    <Compile Include="BrandNew\Import\JsonLoader\ThirdPage\JsonLoaderThirdPage.cs" />
     <Compile Include="Common\CustodianToEntityUtils.cs" />
     <Compile Include="BrandNew\GeneralPanelActions.cs" />
     <Compile Include="BrandNew\CreateIntegrationPointPage.cs" />
@@ -175,6 +182,7 @@
     <Compile Include="Tests\RelativityProvider\RelativityProviderTestsBase.cs" />
     <Compile Include="Tests\RelativityProvider\SavedSearchToProductionSetTest.cs" />
     <Compile Include="Tests\Scheduler\SchedulerTests.cs" />
+    <Compile Include="Tests\ImportSDK\JsonLoaderProviderTests.cs" />
     <Compile Include="Tests\UiTest.cs" />
     <Compile Include="Common\PageException.cs" />
     <Compile Include="Tests\SelectWithSavedSearchTest.cs" />

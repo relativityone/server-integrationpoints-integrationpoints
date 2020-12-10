@@ -320,6 +320,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		#endregion
 
+		#region ImportSDK Configuration Settings
+
+		public static string JsonLoaderPath => AppSettingString("JsonLoaderPath");
+
+		#endregion
+
 		#region Fileshare Configuration Settings
 
 		public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
