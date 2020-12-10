@@ -1,21 +1,23 @@
 ﻿using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
 	public class ImageSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IImageSyncConfigurationBuilder
 	{
 		public ImageSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
-				IFieldsMappingBuilder fieldsMappingBuilder, ImageSyncOptions options) 
-			: base(syncContext, servicesMgr)
+				IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options) 
+			: base(syncContext, servicesMgr, serializer)
 		{
 			SyncConfiguration.ImageImport = true;
 			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
 			SyncConfiguration.DataSourceType = options.DataSourceType.ToString();
 			SyncConfiguration.DataSourceArtifactId = options.DataSourceId;
-			SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode.GetDescription();
 			SyncConfiguration.DataDestinationType = options.DestinationLocationType.ToString();
 			SyncConfiguration.DataDestinationArtifactId = options.DestinationLocationId;
+			SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode.GetDescription();
+			SyncConfiguration.IncludeOriginalImages = true;
 
 			var fieldsMapping = fieldsMappingBuilder.WithIdentifier().FieldsMapping;
 			SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);

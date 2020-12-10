@@ -25,7 +25,7 @@ namespace Relativity.Sync.SyncConfiguration.Options
 			};
 		}
 
-		public static OverwriteOptions AppendOverlay(FieldOverlayBehavior fieldOverlay)
+		public static OverwriteOptions AppendOverlay(FieldOverlayBehavior fieldOverlay = FieldOverlayBehavior.UseFieldSettings)
 		{
 			return new OverwriteOptions
 			{
@@ -34,7 +34,7 @@ namespace Relativity.Sync.SyncConfiguration.Options
 			};
 		}
 
-		public static OverwriteOptions OverlayOnly(FieldOverlayBehavior fieldOverlay)
+		public static OverwriteOptions OverlayOnly(FieldOverlayBehavior fieldOverlay = FieldOverlayBehavior.UseFieldSettings)
 		{
 			return new OverwriteOptions
 			{

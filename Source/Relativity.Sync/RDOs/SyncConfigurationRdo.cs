@@ -28,15 +28,13 @@ namespace Relativity.Sync.RDOs
 		public string NativesBehavior { get; set; }
 
 		public bool ImageImport { get; set; }
-		public bool? IncludeOriginalImages { get; set; }
+		public bool IncludeOriginalImages { get; set; }
 		public string ProductionImagePrecedence { get; set; }
 		public string ImageFileCopyMode { get; set; }
 
 		public string EmailNotificationRecipients { get; set; }
 
 		public RelativityObject JobHistoryToRetry { get; set; }
-
-		
 
 		#region GUIDs
 		public static readonly Guid SyncConfigurationGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");

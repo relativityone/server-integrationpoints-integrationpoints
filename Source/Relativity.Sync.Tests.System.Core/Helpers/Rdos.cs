@@ -98,6 +98,13 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static async Task<int> CreateJobHistoryInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
 		{
+			RelativityObject result = await CreateJobHistoryRelativityObjectInstanceAsync(serviceFactory, workspaceId, name).ConfigureAwait(false);
+
+			return result.ArtifactID;
+		}
+
+		public static async Task<RelativityObject> CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
+		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
 				CreateRequest request = new CreateRequest
@@ -119,7 +126,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					}
 				};
 				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
+				return result.Object;
 			}
 		}
 

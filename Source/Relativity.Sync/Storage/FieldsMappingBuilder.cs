@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Objects;
@@ -12,8 +10,6 @@ namespace Relativity.Sync.Storage
 {
 	internal class FieldsMappingBuilder : IFieldsMappingBuilder
 	{
-		private readonly int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-
 		private readonly int _sourceWorkspaceId;
 		private readonly int _destinationWorkspaceId;
 

@@ -3,6 +3,7 @@ using System.Linq;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
@@ -13,21 +14,21 @@ namespace Relativity.Sync.SyncConfiguration
 	{
 		protected readonly ISyncServiceManager ServicesMgr;
 		protected readonly ISerializer Serializer;
+		protected readonly ISyncContext SyncContext;
 
-		protected readonly SyncConfigurationRdo SyncConfiguration;
+		public readonly SyncConfigurationRdo SyncConfiguration;
 
-		protected ISyncContext SyncContext;
-
-		protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, ISyncServiceManager servicesMgr)
+		protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, ISyncServiceManager servicesMgr, ISerializer serializer)
 		{
 			SyncContext = syncContext;
 			ServicesMgr = servicesMgr;
-
-			Serializer = new JSONSerializer();
+			Serializer = serializer;
 
 			SyncConfiguration = new SyncConfigurationRdo
 			{
-				DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId
+				DestinationWorkspaceArtifactId = SyncContext.DestinationWorkspaceId,
+				ImportOverwriteMode = ImportOverwriteMode.AppendOnly.GetDescription(),
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings.GetDescription()
 			};
 		}
 

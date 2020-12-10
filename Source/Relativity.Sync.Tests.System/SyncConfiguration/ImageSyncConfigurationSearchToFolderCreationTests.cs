@@ -1,0 +1,237 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using Relativity.API;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.Storage;
+using Relativity.Sync.SyncConfiguration;
+using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
+using Relativity.Testing.Identification;
+
+namespace Relativity.Sync.Tests.System.SyncConfiguration
+{
+	[TestFixture]
+	[Feature.DataTransfer.IntegrationPoints.Sync]
+	internal class ImageSyncConfigurationSearchToFolderCreationTests : SyncConfigurationCreationTestsBase
+	{
+		private int _savedSearchId;
+		private int _destinationFolderId;
+
+		protected override async Task ChildSuiteSetup()
+		{
+			await base.ChildSuiteSetup();
+
+			_savedSearchId = await Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspaceId).ConfigureAwait(false);
+
+			_destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspaceId).ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task Create_DefaultImageSyncConfigurationSavedSearchToFolder()
+		{
+			// Arrange
+			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+
+			ISyncContext syncContext =
+				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
+
+			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+
+			// Act
+			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureImageSync(options)
+				.Build();
+
+			// Assert
+			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task Create_ImageSyncConfigurationWithCopyImage()
+		{
+			// Arrange
+			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+			expectedSyncConfiguration.ImageFileCopyMode = "Copy";
+
+			ISyncContext syncContext =
+				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
+
+			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId, ImportImageFileCopyMode.CopyFiles);
+
+			// Act
+			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureImageSync(options)
+				.Build();
+
+			// Assert
+			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task Create_ImageSyncConfigurationWithRetry()
+		{
+			// Arrange
+			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+			expectedSyncConfiguration.JobHistoryToRetry = GetBasicRelativityObject(JobHistory.ArtifactID);
+
+			ISyncContext syncContext =
+				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
+
+			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+			RetryOptions retryOptions = new RetryOptions(JobHistory);
+
+			// Act
+			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureImageSync(options)
+				.IsRetry(retryOptions)
+				.Build();
+
+			// Assert
+			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
+		}
+
+		private static IEnumerable<object[]> OverwriteModeDataSource => new List<object[]>()
+		{
+			new object[] {OverwriteOptions.AppendOnly(), "AppendOnly", "Use Field Settings"},
+			new object[] {OverwriteOptions.AppendOverlay(FieldOverlayBehavior.ReplaceValues), "AppendOverlay", "Replace Values"},
+			new object[] {OverwriteOptions.AppendOverlay(FieldOverlayBehavior.MergeValues), "AppendOverlay", "Merge Values"},
+			new object[] {OverwriteOptions.OverlayOnly(), "OverlayOnly", "Use Field Settings"}
+		};
+
+		[TestCaseSource(nameof(OverwriteModeDataSource))]
+		public async Task Create_ImageSyncConfigurationWithOverwriteAppendOnly(
+			OverwriteOptions overwriteOptions, string expectedOverwriteMode, string expectedFieldsOverlay)
+		{
+			// Arrange
+			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+			expectedSyncConfiguration.ImportOverwriteMode = expectedOverwriteMode;
+			expectedSyncConfiguration.FieldOverlayBehavior = expectedFieldsOverlay;
+
+			ISyncContext syncContext =
+				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
+
+			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+
+			// Act
+			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureImageSync(options)
+				.OverwriteMode(overwriteOptions)
+				.Build();
+
+			// Assert
+			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public async Task Create_ImageSyncConfigurationSavedSearchToFolderWithProductionsAndIncludeOriginal(bool includeOriginalImages)
+		{
+			// Arrange
+			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+			expectedSyncConfiguration.ProductionImagePrecedence = "[1,2]";
+			expectedSyncConfiguration.IncludeOriginalImages = includeOriginalImages;
+
+			ISyncContext syncContext =
+				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
+
+			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+			ProductionImagePrecedenceOptions productionOptions = new ProductionImagePrecedenceOptions(
+				new List<int> {1, 2}, includeOriginalImages);
+
+			// Act
+			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureImageSync(options)
+				.ProductionImagePrecedence(productionOptions)
+				.Build();
+
+			// Assert
+			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task Create_ImageSyncConfigurationWithEmailNotifications()
+		{
+			// Arrange
+			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+			expectedSyncConfiguration.EmailNotificationRecipients = "test1@relativity.com;test2@relativity.com";
+
+			ISyncContext syncContext =
+				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
+
+			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+			EmailNotificationsOptions emailOptions = new EmailNotificationsOptions(new List<string>()
+			{
+				"test1@relativity.com",
+				"test2@relativity.com"
+			});
+
+			// Act
+			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureImageSync(options)
+				.EmailNotifications(emailOptions)
+				.Build();
+
+			// Assert
+			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
+		}
+
+		[Test]
+		public async Task Create_DocumentSyncConfigurationWithCreateSavedSearchInDestination()
+		{
+			// Arrange
+			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+			expectedSyncConfiguration.CreateSavedSearchInDestination = true;
+
+			ISyncContext syncContext =
+				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
+
+			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+			CreateSavedSearchOptions searchOptions = new CreateSavedSearchOptions(true);
+
+			// Act
+			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureImageSync(options)
+				.CreateSavedSearch(searchOptions)
+				.Build();
+
+			// Assert
+			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
+		}
+
+		async Task<SyncConfigurationRdo> CreateDefaultExpectedConfigurationAsync(List<FieldMap> expectedFieldsMapping = null)
+		{
+			var fieldsMappingToSerialize = expectedFieldsMapping ?? await GetIdentifierMappingAsync(SourceWorkspaceId, DestinationWorkspaceId).ConfigureAwait(false);
+
+			return new SyncConfigurationRdo
+			{
+				RdoArtifactTypeId = 10,
+				DataSourceType = "SavedSearch",
+				DataSourceArtifactId = _savedSearchId,
+				DestinationWorkspaceArtifactId = DestinationWorkspaceId,
+				DataDestinationArtifactId = _destinationFolderId,
+				DataDestinationType = "Folder",
+				ImportOverwriteMode = "AppendOnly",
+				FieldOverlayBehavior = "Use Field Settings",
+
+				ImageImport = true,
+				ImageFileCopyMode = "Link",
+				IncludeOriginalImages = true,
+
+				FieldsMapping = new JSONSerializer().Serialize(fieldsMappingToSerialize)
+			};
+		}
+	}
+}

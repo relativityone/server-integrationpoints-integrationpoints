@@ -5,29 +5,30 @@ using Relativity.Services.Interfaces.Field;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
 	public class DocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IDocumentSyncConfigurationBuilder
 	{
+		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
+
 		public DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
-				IFieldsMappingBuilder fieldsMappingBuilder, DocumentSyncOptions options) 
-			: base(syncContext, servicesMgr)
+				IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options) 
+			: base(syncContext, servicesMgr, serializer)
 		{
+			_fieldsMappingBuilder = fieldsMappingBuilder;
+
 			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
-			SyncConfiguration.DataSourceType = DataSourceType.SavedSearch.ToString(); //ToString ???
-			SyncConfiguration.DestinationWorkspaceArtifactId = SyncContext.DestinationWorkspaceId;
-			SyncConfiguration.DataDestinationType = DestinationLocationType.Folder.ToString(); //ToString ???
-			SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None.ToString(); //ToString ??? 
+			SyncConfiguration.DataSourceType = DataSourceType.SavedSearch.ToString();
+			SyncConfiguration.DataDestinationType = DestinationLocationType.Folder.ToString();
+			SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None.ToString();
 
 			SyncConfiguration.DataSourceArtifactId = options.SavedSearchId;
 			SyncConfiguration.DataDestinationArtifactId = options.DestinationFolderId;
 			SyncConfiguration.NativesBehavior = options.CopyNativesMode.GetDescription();
 
-			var fieldsMapping = options.FieldsMapping != null && options.FieldsMapping.Any()
-				? options.FieldsMapping
-				: fieldsMappingBuilder.WithIdentifier().FieldsMapping;
-			SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
+			SetSyncConfigurationFieldsMapping(options.FieldsMapping);
 		}
 
 		public IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options)
@@ -84,6 +85,30 @@ namespace Relativity.Sync.SyncConfiguration
 		}
 
 		#region Private methods
+		private void SetSyncConfigurationFieldsMapping(List<FieldMap> fieldsMapping)
+		{
+			if (fieldsMapping != null && fieldsMapping.Any())
+			{
+				if (!FieldsMappingHasSingleIdentifierMap(fieldsMapping))
+				{
+					throw new InvalidSyncConfigurationException("Fields Mapping contains more than one Identifier map");
+				}
+
+				SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
+			}
+			else
+			{
+				var defaultFieldsMapping = _fieldsMappingBuilder.WithIdentifier().FieldsMapping;
+				SyncConfiguration.FieldsMapping = Serializer.Serialize(defaultFieldsMapping);
+			}
+		}
+
+		private bool FieldsMappingHasSingleIdentifierMap(List<FieldMap> fieldsMapping)
+		{
+			return fieldsMapping.Count(x => x.SourceField.IsIdentifier
+			                                || x.DestinationField.IsIdentifier
+			                                || x.FieldMapType == FieldMapType.Identifier) == 1;
+		}
 
 		private void DestinationFolderStructureCleanup()
 		{
