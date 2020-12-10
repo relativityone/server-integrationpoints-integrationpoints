@@ -4,7 +4,7 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	public class ImageSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IImageSyncConfigurationBuilder
+	internal class ImageSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IImageSyncConfigurationBuilder
 	{
 		public ImageSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
 				IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options) 

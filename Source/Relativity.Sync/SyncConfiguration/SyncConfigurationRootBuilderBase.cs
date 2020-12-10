@@ -10,12 +10,12 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	public abstract class SyncConfigurationRootBuilderBase : ISyncConfigurationRootBuilder
+	internal abstract class SyncConfigurationRootBuilderBase : ISyncConfigurationRootBuilder
 	{
 		protected readonly ISyncServiceManager ServicesMgr;
 		protected readonly ISerializer Serializer;
 		protected readonly ISyncContext SyncContext;
-
+		
 		public readonly SyncConfigurationRdo SyncConfiguration;
 
 		protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, ISyncServiceManager servicesMgr, ISerializer serializer)

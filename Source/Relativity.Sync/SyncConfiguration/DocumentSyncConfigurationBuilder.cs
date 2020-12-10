@@ -9,7 +9,7 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	public class DocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IDocumentSyncConfigurationBuilder
+	internal class DocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IDocumentSyncConfigurationBuilder
 	{
 		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
@@ -116,7 +116,6 @@ namespace Relativity.Sync.SyncConfiguration
 			SyncConfiguration.FolderPathSourceFieldName = null;
 			SyncConfiguration.MoveExistingDocuments = false;
 		}
-
 		#endregion
 	}
 }
