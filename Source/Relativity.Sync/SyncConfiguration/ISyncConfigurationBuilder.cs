@@ -1,5 +1,4 @@
-﻿using System;
-using Relativity.Sync.SyncConfiguration.Options;
+﻿using Relativity.Sync.SyncConfiguration.Options;
 
 namespace Relativity.Sync.SyncConfiguration
 {
