@@ -77,7 +77,7 @@ namespace Relativity.Sync.SyncConfiguration
 			return this;
 		}
 
-		public IDocumentSyncConfigurationBuilder IsRetry(RetryOptions options)
+		public new IDocumentSyncConfigurationBuilder IsRetry(RetryOptions options)
 		{
 			base.IsRetry(options);
 
