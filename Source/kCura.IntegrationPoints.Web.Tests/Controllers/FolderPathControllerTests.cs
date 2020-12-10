@@ -127,7 +127,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 	        _workspaceIdProvider.GetWorkspaceID().Returns(workspaceId);
 
-	        _fieldService.GetTextFields(Arg.Any<int>(), Arg.Any<bool>()).Returns(new List<FieldEntry>());
+	        _fieldService.GetAllTextFields(Arg.Any<int>(), Arg.Any<int>()).Returns(new List<FieldEntry>());
+	        _fieldService.GetLongTextFields(Arg.Any<int>(), Arg.Any<int>()).Returns(new List<FieldEntry>());
         }
 		
 	}

@@ -1,50 +1,38 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.IO;
-using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.RSAPIClient;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using kCura.IntegrationPoints.Core.Helpers;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.Workspace;
+using Relativity.Services.Interfaces.Workspace.Models;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class DataTransferLocationService : IDataTransferLocationService
 	{
-		#region Fields
-
 		private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
 		private const string _EDDS_PARENT_FOLDER = "DataTransfer";
 		private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
-		private readonly IAPILog _logger;
+		
 		private readonly IHelper _helper;
-
 		private readonly IIntegrationPointTypeService _integrationPointTypeService;
 		private readonly IDirectory _directoryService;
 		private readonly ICryptographyHelper _cryptographyHelper;
-		#endregion //Fields
-
-		#region Constructors
+		private readonly IAPILog _logger;
 
 		public DataTransferLocationService(IHelper helper, IIntegrationPointTypeService integrationPointTypeService, IDirectory directoryService, ICryptographyHelper cryptographyHelper)
 		{
 			_helper = helper;
-			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationService>();
-
 			_integrationPointTypeService = integrationPointTypeService;
 			_directoryService = directoryService;
 			_cryptographyHelper = cryptographyHelper;
+
+			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationService>();
 		}
-
-		#endregion //Constructors
-
-		#region Methods
 
 		public void CreateForAllTypes(int workspaceArtifactId)
 		{
@@ -97,24 +85,19 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public string GetWorkspaceFileLocationRootPath(int workspaceArtifactId)
 		{
-			Workspace workspace = GetWorkspace(workspaceArtifactId);
-
-			if (workspace == null)
+			try
 			{
-				LogMissingWorkspaceError(workspaceArtifactId);
-				throw new Exception(nameof(CreateForAllTypes));
+				using (IWorkspaceManager workspaceManager = _helper.GetServicesManager().CreateProxy<IWorkspaceManager>(ExecutionIdentity.System))
+				{
+					WorkspaceResponse workspaceResponse = workspaceManager.ReadAsync(workspaceArtifactId).GetAwaiter().GetResult();
+					string defaultFileLocation = workspaceResponse.DefaultFileRepository.Value.Name;
+					return Path.Combine(defaultFileLocation, string.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
+				}
 			}
-			return Path.Combine(workspace.DefaultFileLocation.Name,
-				String.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
-		}
-
-		protected virtual Workspace GetWorkspace(int workspaceId)
-		{
-			var rsapiClientFactory = new RsapiClientFactory();
-			using (IRSAPIClient rsApiClient = rsapiClientFactory.CreateAdminClient(_helper))
+			catch (NotFoundException ex)
 			{
-				rsApiClient.APIOptions.WorkspaceID = -1;
-				return rsApiClient.Repositories.Workspace.Read(workspaceId).Results.FirstOrDefault()?.Artifact;
+				LogMissingWorkspaceError(ex, workspaceArtifactId);
+				throw;
 			}
 		}
 
@@ -135,11 +118,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		#region Logging
-
-		private void LogMissingWorkspaceError(int workspaceId)
+		private void LogMissingWorkspaceError(NotFoundException ex, int workspaceId)
 		{
-			_logger.LogError("Cannot find workspace with artifact id: {WorkspaceId}.", workspaceId);
+			_logger.LogError(ex, "Cannot find workspace with artifact id: {WorkspaceId}.", workspaceId);
 		}
 
 		private void LogMissingDirectoryCreation(string path)
@@ -147,10 +128,5 @@ namespace kCura.IntegrationPoints.Core.Services
 			_logger.LogInformation("Creating missing directory: {path}", _cryptographyHelper.CalculateHash(path));
 		}
 
-		#endregion
-
-		#endregion //Methods
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
