@@ -56,21 +56,21 @@ namespace Relativity.Sync.SyncConfiguration
 			return this;
 		}
 
-		public IDocumentSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
+		public new IDocumentSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
 		{
 			base.OverwriteMode(options);
 
 			return this;
 		}
 
-		public IDocumentSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
+		public new IDocumentSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
 		{
 			base.EmailNotifications(options);
 
 			return this;
 		}
 
-		public IDocumentSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
+		public new IDocumentSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
 		{
 			base.CreateSavedSearch(options);
 

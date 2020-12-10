@@ -23,28 +23,28 @@ namespace Relativity.Sync.SyncConfiguration
 			SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
 		}
 
-		public IImageSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
+		public new IImageSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
 		{
 			base.OverwriteMode(options);
 
 			return this;
 		}
 
-		public IImageSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
+		public new IImageSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
 		{
 			base.EmailNotifications(options);
 
 			return this;
 		}
 
-		public IImageSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
+		public new IImageSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
 		{
 			base.CreateSavedSearch(options);
 
 			return this;
 		}
 
-		public IImageSyncConfigurationBuilder IsRetry(RetryOptions options)
+		public new IImageSyncConfigurationBuilder IsRetry(RetryOptions options)
 		{
 			base.IsRetry(options);
 
