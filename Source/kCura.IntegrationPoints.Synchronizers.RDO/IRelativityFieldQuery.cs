@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using Artifact = kCura.Relativity.Client.Artifact;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public interface IRelativityFieldQuery
 	{
-		List<Artifact> GetFieldsForRdo(int rdoTypeId);
-		List<Artifact> GetAllFields(int rdoTypeId);
+		List<RelativityObject> GetFieldsForRdo(int rdoTypeId);
 	}
 }

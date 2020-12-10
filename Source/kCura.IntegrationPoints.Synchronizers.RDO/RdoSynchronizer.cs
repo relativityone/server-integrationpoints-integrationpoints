@@ -20,9 +20,8 @@ using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Artifact = kCura.Relativity.Client.Artifact;
+using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
-using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
@@ -271,14 +270,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return _api ?? (_api = _factory.GetImportAPI(settings));
 		}
 
-		protected List<Artifact> GetRelativityFields(ImportSettings settings)
+		protected List<RelativityObject> GetRelativityFields(ImportSettings settings)
 		{
 			try
 			{
-				List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
-				var mappableArtifactIds = new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
-				List<Artifact> mappableFields = fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
-				LogNumbersOfFieldAndMappableFields(fields, mappableFields);
+				List<RelativityObject> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
+				HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApi(settings)
+					.GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId)
+					.Select(x => x.ArtifactID));
+				List<RelativityObject> mappableFields = fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
+				LogNumbersOfFieldAndMappableFields(fields.Count, mappableFields.Count);
 				return mappableFields;
 			}
 			catch (Exception e)
@@ -291,36 +292,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private IEnumerable<FieldEntry> GetFieldsInternal(string options)
 		{
 			ImportSettings settings = GetSettings(options);
-			List<Artifact> fields = GetRelativityFields(settings);
+			List<RelativityObject> fields = GetRelativityFields(settings);
 			return ParseFields(fields);
 		}
 
-		private IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
+		private IEnumerable<FieldEntry> ParseFields(List<RelativityObject> fields)
 		{
-			foreach (var result in fields)
+			foreach (RelativityObject field in fields)
 			{
-				if (IgnoredList.Contains(result.Name))
+				if (IgnoredList.Contains(field.Name))
 				{
 					continue;
 				}
 
-				Field idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-				bool isIdentifier = Convert.ToInt32(idField?.Value) == 1;
-
+				bool isIdentifier = field.FixIdentifierField();
 				if (isIdentifier)
 				{
-					result.Name += " [Object Identifier]";
-					LogIdentifierFields(result);
+					LogIdentifierFields(field);
 				}
 
-				Field fieldType = result.Fields.FirstOrDefault(x => x.Name.Equals("Field Type"));
+				FieldValuePair fieldType = field.FieldValues?.FirstOrDefault(x => x.Field.Name.Equals("Field Type"));
 				string type = fieldType == null ? string.Empty : Convert.ToString(fieldType.Value);
 
 				yield return new FieldEntry
 				{
-					DisplayName = result.Name,
+					DisplayName = field.Name,
 					Type = type,
-					FieldIdentifier = result.ArtifactID.ToString(),
+					FieldIdentifier = field.ArtifactID.ToString(),
 					IsIdentifier = isIdentifier,
 					IsRequired = false
 				};
@@ -757,19 +755,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogDebug("Adding destination workspace to email body.");
 		}
 
-		private void LogNumbersOfFieldAndMappableFields(List<Artifact> fields, List<Artifact> mappableFields)
+		private void LogNumbersOfFieldAndMappableFields(int fields, int mappableFields)
 		{
-			_logger.LogDebug("Retrieved {numberOfFields} fields, {numberOfMappableFields} are mappable", fields.Count, mappableFields.Count);
+			_logger.LogDebug("Retrieved {numberOfFields} fields, {numberOfMappableFields} are mappable", fields, mappableFields);
 		}
 
 		private void LogCreatingImportApi()
 		{
 			_logger.LogDebug("ImportApi was null - new instance will be created using factory");
-		}
-
-		private void LogIdentifierFields(Artifact result)
-		{
-			_logger.LogDebug("Identifier field: {identifierFieldId}", result.ArtifactID);
 		}
 
 		private void LogNullWorkspaceReturnedByIAPI()
@@ -796,6 +789,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			_logger.LogDebug("Trying to lock _importService in JobError method of RdoSynchronizer");
 		}
+
+		private void LogIdentifierFields(RelativityObject field)
+		{
+			_logger.LogDebug("Identifier field: {identifierFieldId}", field.ArtifactID);
+		}
+
 		private IEnumerable<FieldMap> CreateFieldMapWithoutFieldNames(IEnumerable<FieldMap> fieldMap)
 		{
 			IEnumerable<FieldMap> fieldMapWithoutFieldNames = fieldMap.Select(fm => new FieldMap

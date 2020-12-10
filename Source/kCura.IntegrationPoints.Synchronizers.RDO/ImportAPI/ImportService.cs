@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	public class ImportService : IImportService, IBatchReporter
 	{
-
 		private Dictionary<int, Field> _idToFieldDictionary;
 		private IImportAPI _importApi;
 		private int _lastJobStatusUpdate;
@@ -150,8 +149,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				_idToFieldDictionary = new Dictionary<int, Field>();
 
-				var workspaceFields = api.GetWorkspaceFields(Settings.CaseArtifactId, Settings.ArtifactTypeId);
-				foreach (var field in workspaceFields)
+				IEnumerable<Field> workspaceFields = api.GetWorkspaceFields(Settings.CaseArtifactId, Settings.ArtifactTypeId);
+				foreach (Field field in workspaceFields)
 				{
 					_idToFieldDictionary.Add(field.ArtifactID, field);
 				}

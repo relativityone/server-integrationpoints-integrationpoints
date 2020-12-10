@@ -1,12 +1,10 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
-using System;
 using System.Collections.Generic;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
@@ -33,32 +31,13 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		private Dictionary<string, RelativityFieldQuery> CreateRdoSynchronizerParametersDictionary(ImportSettings importSettings)
 		{
 			IHelper sourceInstanceHelper = _container.Resolve<IHelper>();
-			IRSAPIClient client = CreateRsapiClient(importSettings);
+			IRelativityObjectManagerFactory relativityObjectManagerFactory = _container.Resolve<IRelativityObjectManagerFactory>();
+			IRelativityObjectManager relativityObjectManager = relativityObjectManagerFactory.CreateRelativityObjectManager(importSettings.CaseArtifactId);
 
 			return new Dictionary<string, RelativityFieldQuery>
 			{
-				{"fieldQuery", new RelativityFieldQuery(client, sourceInstanceHelper)}
+				{"fieldQuery", new RelativityFieldQuery(relativityObjectManager, sourceInstanceHelper)}
 			};
-		}
-
-		private IRSAPIClient CreateRsapiClient(ImportSettings importSettings)
-		{
-			IRSAPIClient client;
-
-			if (importSettings.IsFederatedInstance())
-			{
-				throw new NotSupportedException("i2i is not supported");
-			}
-			else
-			{
-				client = _container.Resolve<IRSAPIClient>();
-			}
-
-			client.APIOptions.WorkspaceID = importSettings.CaseArtifactId;
-
-			return client;
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -6,17 +6,16 @@ using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.Relativity.Client;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoEntitySynchronizer : RdoSynchronizer
 	{
-		private List<Artifact> _allRdoFields;
+		private List<RelativityObject> _allRdoFields;
 		private int _artifactTypeIdForAllRdoFields;
 		private IDictionary<string, string> _entityManagerMap;
 
@@ -42,9 +41,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public override IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			LogRetrievingFields();
-			List<Artifact> relativityFields = GetAllRdoFields(GetSettings(providerConfiguration.Configuration));
+			List<RelativityObject> relativityFields = GetAllRdoFields(GetSettings(providerConfiguration.Configuration));
 			IEnumerable<FieldEntry> fields = base.GetFields(providerConfiguration);
-			Dictionary<string, Artifact> fieldLookup = relativityFields.ToDictionary(x => x.ArtifactID.ToString(), x => x);
+			Dictionary<string, RelativityObject> fieldLookup = relativityFields.ToDictionary(x => x.ArtifactID.ToString(), x => x);
 
 			foreach (FieldEntry fieldEntry in fields)
 			{
@@ -53,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					yield return fieldEntry;
 				}
 
-				Artifact artifact = fieldLookup[fieldEntry.FieldIdentifier];
+				RelativityObject artifact = fieldLookup[fieldEntry.FieldIdentifier];
 				fieldEntry.IsIdentifier = IsField(artifact, Guid.Parse(EntityFieldGuids.UniqueID));
 
 				if (IsField(artifact, Guid.Parse(EntityFieldGuids.FullName)))
@@ -74,7 +73,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			try
 			{
 				_logger.LogDebug("Entity field mapping process started...");
-				List<Artifact> allRdoFields = GetAllRdoFields(settings);
+				List<RelativityObject> allRdoFields = GetAllRdoFields(settings);
 
 				LoadFirstNameFieldId(fieldMap, allRdoFields);
 				LoadLastNameFieldId(fieldMap, allRdoFields);
@@ -103,7 +102,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		private List<Artifact> GetAllRdoFields(ImportSettings settings)
+		private List<RelativityObject> GetAllRdoFields(ImportSettings settings)
 		{
 			if ((_artifactTypeIdForAllRdoFields != settings.ArtifactTypeId) || (_allRdoFields == null))
 			{
@@ -113,9 +112,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return _allRdoFields;
 		}
 
-		private void LoadFirstNameFieldId(IEnumerable<FieldMap> fieldMap, List<Artifact> allRDOFields)
+		private void LoadFirstNameFieldId(IEnumerable<FieldMap> fieldMap, List<RelativityObject> allRDOFields)
 		{
-			int firstNameFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(EntityFieldGuids.FirstName))).Select(x => x.ArtifactID).FirstOrDefault();
+			int firstNameFieldId = allRDOFields.Where(x => x.Guids.Contains(new Guid(EntityFieldGuids.FirstName))).Select(x => x.ArtifactID).FirstOrDefault();
 			if (fieldMap.Any(x => x.DestinationField.FieldIdentifier.Equals(firstNameFieldId.ToString())))
 			{
 				FirstNameSourceFieldId =
@@ -123,9 +122,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		private void LoadLastNameFieldId(IEnumerable<FieldMap> fieldMap, List<Artifact> allRDOFields)
+		private void LoadLastNameFieldId(IEnumerable<FieldMap> fieldMap, List<RelativityObject> allRDOFields)
 		{
-			int lastNameFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(EntityFieldGuids.LastName))).Select(x => x.ArtifactID).FirstOrDefault();
+			int lastNameFieldId = allRDOFields.Where(x => x.Guids.Contains(new Guid(EntityFieldGuids.LastName))).Select(x => x.ArtifactID).FirstOrDefault();
 			if (fieldMap.Any(x => x.DestinationField.FieldIdentifier.Equals(lastNameFieldId.ToString())))
 			{
 				LastNameSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier.Equals(lastNameFieldId.ToString())).Select(x => x.SourceField.FieldIdentifier).First();
@@ -138,11 +137,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogDebug($"Entity UniqueID source field identifier: {UniqueIDSourceFieldId}");
 		}
 
-		private void LoadManagerFieldId(IEnumerable<FieldMap> fieldMap, ImportSettings settings, List<Artifact> allRDOFields)
+		private void LoadManagerFieldId(IEnumerable<FieldMap> fieldMap, ImportSettings settings, List<RelativityObject> allRDOFields)
 		{
 			HandleManagerLink = false;
 
-			int managerFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(EntityFieldGuids.Manager))).Select(x => x.ArtifactID).FirstOrDefault();
+			int managerFieldId = allRDOFields.Where(x => x.Guids.Contains(new Guid(EntityFieldGuids.Manager))).Select(x => x.ArtifactID).FirstOrDefault();
 			_logger.LogDebug($"Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId}");
 
 			if ((managerFieldId > 0) && fieldMap.Any(x => x.DestinationField.FieldIdentifier.Equals(managerFieldId.ToString())))
@@ -159,19 +158,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		private void LoadFullNameField(List<Artifact> allRDOFields, Dictionary<string, int> importFieldMap)
+		private void LoadFullNameField(List<RelativityObject> allRDOFields, Dictionary<string, int> importFieldMap)
 		{
 			HandleFullNamePopulation = false;
 			FieldEntry fullNameField =
-				allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(EntityFieldGuids.FullName)))
-					.Select(x => new FieldEntry { DisplayName = x.Name, FieldIdentifier = x.ArtifactID.ToString(), IsIdentifier = false })
+				allRDOFields.Where(x => x.Guids.Contains(new Guid(EntityFieldGuids.FullName)))
+					.Select(x => new FieldEntry
+					{
+						DisplayName = x.Name,
+						FieldIdentifier = x.ArtifactID.ToString(),
+						IsIdentifier = false
+					})
 					.FirstOrDefault();
 			int fullNameFieldId = int.Parse(fullNameField.FieldIdentifier);
 
 
 			if (!string.IsNullOrWhiteSpace(FirstNameSourceFieldId)
-				&& !string.IsNullOrWhiteSpace(LastNameSourceFieldId)
-				&& !importFieldMap.ContainsValue(fullNameFieldId))
+			    && !string.IsNullOrWhiteSpace(LastNameSourceFieldId)
+			    && !importFieldMap.ContainsValue(fullNameFieldId))
 			{
 				importFieldMap.Add(_LDAP_MAP_FULL_NAME_FIELD_NAME, fullNameFieldId);
 				HandleFullNamePopulation = true;
@@ -182,7 +186,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected override Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
 			LogGeneratingImportRow();
-			var importRow = base.GenerateImportRow(row, fieldMap, settings);
+			Dictionary<string, object> importRow = base.GenerateImportRow(row, fieldMap, settings);
 			ProcessManagerReference(importRow);
 			if (HandleFullNamePopulation && !importRow.ContainsKey(_LDAP_MAP_FULL_NAME_FIELD_NAME))
 			{
@@ -311,9 +315,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public bool IsField(Artifact artifact, Guid fieldGuid)
+		public bool IsField(RelativityObject artifact, Guid fieldGuid)
 		{
-			return artifact.ArtifactGuids.Contains(fieldGuid);
+			return artifact.Guids.Contains(fieldGuid);
 		}
 
 		#region Logging
