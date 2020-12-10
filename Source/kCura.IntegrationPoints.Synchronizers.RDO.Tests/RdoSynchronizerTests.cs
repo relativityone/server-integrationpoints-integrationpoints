@@ -6,8 +6,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using System;
@@ -41,6 +39,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			return synchronizer;
 		}
 
+		public static Mock<IHelper> MockHelper()
+		{
+			Mock<IAPILog> logger = new Mock<IAPILog>();
+			logger.Setup(x => x.ForContext<RdoEntitySynchronizer>()).Returns(logger.Object);
+			logger.Setup(x => x.ForContext<RdoSynchronizer>()).Returns(logger.Object);
+			logger.Setup(x => x.ForContext<ImportService>()).Returns(logger.Object);
+			Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
+			logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
+			var helper = new Mock<IHelper>();
+			helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
+			return helper;
+		}
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -49,21 +60,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			_objectTypeRepository = new Mock<IObjectTypeRepository>();
 			_relativityFieldQuery = new Mock<IRelativityFieldQuery>();
 			_importJobFactory = new Mock<IImportJobFactory>();
-
-			Mock<IAPILog> logger = new Mock<IAPILog>();
-			logger.Setup(x => x.ForContext<RdoEntitySynchronizer>()).Returns(logger.Object);
-			logger.Setup(x => x.ForContext<RdoSynchronizer>()).Returns(logger.Object);
-			logger.Setup(x => x.ForContext<ImportService>()).Returns(logger.Object);
-			Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
-			logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
-			_helper = new Mock<IHelper>();
-			_helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
+			_helper = MockHelper();
 		}
 
 		private RdoSynchronizer PrepareSut()
 		{
 			return ChangeWebAPIPath(
-				new RdoSynchronizer(_relativityFieldQuery.Object, RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object), _importJobFactory.Object, _helper.Object));
+				new RdoSynchronizer(
+					_relativityFieldQuery.Object,
+					RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object),
+					_importJobFactory.Object,
+					_helper.Object));
 		}
 
 		[Test]
@@ -541,10 +548,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			WorkspaceRef workspaceRef = new WorkspaceRef() { Id = workspaceId, Name = "My Test workspace" };
 			IEmailBodyData rdoSynchronizer = new MockSynchronizer(workspaceRef);
 			var settings = new ImportSettings { CaseArtifactId = workspaceId };
-			var options = JsonConvert.SerializeObject(settings);
+			string options = JsonConvert.SerializeObject(settings);
 
 			//ACT
-			var returnedString = rdoSynchronizer.GetEmailBodyData(null, options);
+			string returnedString = rdoSynchronizer.GetEmailBodyData(null, options);
 
 			//ASSERT
 			Assert.AreEqual("\r\nDestination Workspace: My Test workspace - 1111111", returnedString);
@@ -558,10 +565,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			WorkspaceRef workspaceRef = null;
 			IEmailBodyData rdoSynchronizer = new MockSynchronizer(workspaceRef);
 			var settings = new ImportSettings { CaseArtifactId = workspaceId };
-			var options = JsonConvert.SerializeObject(settings);
+			string options = JsonConvert.SerializeObject(settings);
 
 			//ACT
-			var returnedString = rdoSynchronizer.GetEmailBodyData(null, options);
+			string returnedString = rdoSynchronizer.GetEmailBodyData(null, options);
 
 			//ASSERT
 			Assert.AreEqual("", returnedString);
@@ -571,30 +578,39 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		public void SyncData_RowErrors_ShouldRaiseRowErrorEventOnException()
 		{
 			//ARRANGE 
+			const int fieldArtifactId = 4000001;
 			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
 			{
 				new FieldMap()
 				{
-					DestinationField = new FieldEntry() {FieldIdentifier = "4000001"},
+					DestinationField = new FieldEntry()
+					{
+						FieldIdentifier = fieldArtifactId.ToString()
+					},
 					FieldMapType = FieldMapTypeEnum.Identifier,
-					SourceField = new FieldEntry() {FieldIdentifier = "Any"}
+					SourceField = new FieldEntry()
+					{
+						FieldIdentifier = "Any"
+					}
 				},
 			};
 
 			//ARRANGE - RDO Synchronizer 
-			IRelativityFieldQuery relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
-			IImportApiFactory importApiFactory = Substitute.For<IImportApiFactory>();
-			IImportJobFactory jobFactory = Substitute.For<IImportJobFactory>();
-			IHelper helper = Substitute.For<IHelper>();
-			IImportService importService = Substitute.For<IImportService>();
-			RdoSynchronizer rdoSynchronizer = Substitute.For<RdoSynchronizer>(relativityFieldQuery, importApiFactory, jobFactory, helper);
-			rdoSynchronizer.InitializeImportService(Arg.Any<ImportSettings>(), Arg.Any<Dictionary<string, int>>(), Arg.Any<NativeFileImportService>()).Returns(importService);
+			_relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>()
+			{
+				new RelativityObject()
+				{
+					ArtifactID = fieldArtifactId
+				}
+			});
+
+			RdoSynchronizer rdoSynchronizer = PrepareSut();
 
 			//ARRANGE - Next row enumerator 
-			IEnumerable<IDictionary<FieldEntry, object>> data = Substitute.For<IEnumerable<IDictionary<FieldEntry, object>>>();
-			IEnumerator<IDictionary<FieldEntry, object>> enumerator = Substitute.For<IEnumerator<IDictionary<FieldEntry, object>>>();
-			enumerator.MoveNext().Throws(new Exception("error"));
-			data.GetEnumerator().Returns(enumerator);
+			Mock<IEnumerable<IDictionary<FieldEntry, object>>> data = new Mock<IEnumerable<IDictionary<FieldEntry, object>>>();
+			Mock<IEnumerator<IDictionary<FieldEntry, object>>> enumerator = new Mock<IEnumerator<IDictionary<FieldEntry, object>>>();
+			enumerator.Setup(x => x.MoveNext()).Throws(new Exception("error"));
+			data.Setup(x => x.GetEnumerator()).Returns(enumerator.Object);
 
 			//ARRANGE - Events endpoint 
 			List<string> receivedEvents = new List<string>();
@@ -604,7 +620,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			//ACT 
-			rdoSynchronizer.SyncData(data, fieldMap, null);
+			rdoSynchronizer.SyncData(data.Object, fieldMap, JsonConvert.SerializeObject(new ImportSettings()));
 
 			//ASSERT 
 			Assert.AreEqual(1, receivedEvents.Count);
@@ -618,46 +634,37 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		[Test]
 		public void GetFields_CorrectOptionsPassed()
 		{
-			var relativityFieldQuery = NSubstitute.Substitute.For<IRelativityFieldQuery>();
-			var importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
-			var importApi = NSubstitute.Substitute.For<IImportAPI>();
-			var jobFactory = Substitute.For<IImportJobFactory>();
-			var helper = Substitute.For<IHelper>();
-			var rdoSynchronizerPush = new RdoSynchronizer(relativityFieldQuery, importApiFactory, jobFactory, helper);
+			// Arrange
+			const int artifactTypeId = 123;
+			const int caseArtifactId = 456;
 
-			int artifactTypeId = 123;
-			int caseArtifactId = 456;
+			var relativityFieldQuery = new Mock<IRelativityFieldQuery>();
+			var importApiFactory = new Mock<IImportApiFactory>();
+			var importApi = new Mock<IImportAPI>();
+			var jobFactory = new Mock<IImportJobFactory>();
 
-			string options = String.Format("{{Provider:'relativity', WebServiceUrl:'WebServiceUrl', ArtifactTypeId:{0}, CaseArtifactId:{1}}}", artifactTypeId, caseArtifactId);
-			List<RelativityObject> fields = new List<RelativityObject>();
-			IEnumerable<kCura.Relativity.ImportAPI.Data.Field> mappableFields = new List<kCura.Relativity.ImportAPI.Data.Field>();
+			string options = string.Format("{{Provider:'relativity', WebServiceUrl:'WebServiceUrl', ArtifactTypeId:{0}, CaseArtifactId:{1}}}", artifactTypeId, caseArtifactId);
 
-			relativityFieldQuery.GetFieldsForRdo(Arg.Is(artifactTypeId))
-				.Returns(fields);
+			relativityFieldQuery.Setup(x => x.GetFieldsForRdo(artifactTypeId)).Returns(new List<RelativityObject>());
+			importApi.Setup(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId)).Returns(new List<kCura.Relativity.ImportAPI.Data.Field>());
+			importApiFactory.Setup(x => x.GetImportAPI(It.IsAny<ImportSettings>())).Returns(importApi.Object);
 
-			importApiFactory.GetImportAPI(Arg.Any<ImportSettings>())
-				.Returns(importApi);
+			var sut = new RdoSynchronizer(relativityFieldQuery.Object, importApiFactory.Object, jobFactory.Object, _helper.Object);
 
-			importApi.GetWorkspaceFields(caseArtifactId, artifactTypeId).Returns(mappableFields);
+			// Act
+			IEnumerable<FieldEntry> results = sut.GetFields(new DataSourceProviderConfiguration(options));
 
-			IEnumerable<FieldEntry> results = rdoSynchronizerPush.GetFields(new DataSourceProviderConfiguration(options));
-
-			relativityFieldQuery
-				.Received(1)
-				.GetFieldsForRdo(Arg.Is(artifactTypeId));
-			importApiFactory
-				.Received(1)
-				.GetImportAPI(Arg.Any<ImportSettings>());
-			importApi
-				.Received(1)
-				.GetWorkspaceFields(caseArtifactId, artifactTypeId);
+			// Assert
+			relativityFieldQuery.Verify(x => x.GetFieldsForRdo(artifactTypeId), Times.Once);
+			importApiFactory.Verify(x => x.GetImportAPI(It.IsAny<ImportSettings>()), Times.Once);
+			importApi.Verify(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId), Times.Once);
 		}
 	}
 
 	public class TestRdoSynchronizer : RdoSynchronizer
 	{
 		public TestRdoSynchronizer()
-		  : base(null, null, Substitute.For<IImportJobFactory>(), Substitute.For<IHelper>())
+		  : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object)
 		{
 			WebAPIPath = kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH;
 			DisableNativeLocationValidation = false;
@@ -677,9 +684,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 	public class MockSynchronizer : RdoSynchronizer
 	{
-		private WorkspaceRef _workspaceRef;
+		private readonly WorkspaceRef _workspaceRef;
+
 		public MockSynchronizer(WorkspaceRef workspaceRef)
-		  : base(null, null, Substitute.For<IImportJobFactory>(), Substitute.For<IHelper>())
+		  : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object)
 		{
 			WebAPIPath = "WebAPIPath";
 			DisableNativeLocationValidation = false;
