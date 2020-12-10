@@ -6,6 +6,7 @@ using FluentAssertions;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -28,11 +29,11 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			SyncServicesMgr = new ServicesManagerStub();
 
-			//WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			SourceWorkspaceId = 1019353; //sourceWorkspace.ArtifactID;
+			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
+			SourceWorkspaceId = sourceWorkspace.ArtifactID;
 
-			//WorkspaceRef destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
-			DestinationWorkspaceId = 1019356; //destinationWorkspace.ArtifactID;
+			WorkspaceRef destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			DestinationWorkspaceId = destinationWorkspace.ArtifactID;
 
 			JobHistory = await Rdos.CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory, SourceWorkspaceId).ConfigureAwait(false);
 		}
