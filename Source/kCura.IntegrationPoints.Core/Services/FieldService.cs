@@ -1,12 +1,12 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data;
+using System.Linq;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.IntegrationPoints.Contracts.Models;
-using Fields = kCura.IntegrationPoints.Core.Constants.Fields;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -14,78 +14,69 @@ namespace kCura.IntegrationPoints.Core.Services
     {
 		private const string _GET_TEXT_FIELDS_ERROR = "Integration Points failed during getting text fields";
 
-		private readonly IChoiceService _choiceService;
-		private readonly IRSAPIClient _client;
+		private const string _LONG_TEXT_QUERY = "'Field Type' == 'Long Text'";
+		private const string _FIXED_LENGTH_TEXT_QUERY = "'Field Type' == 'Fixed-Length Text'";
 
-	    public FieldService(IChoiceService choiceService, IRSAPIClient client)
+		private readonly IRelativityObjectManagerFactory _objectManagerFactory;
+
+	    public FieldService(IRelativityObjectManagerFactory objectManagerFactory)
 	    {
-			_choiceService = choiceService;
-		    _client = client;
+		    _objectManagerFactory = objectManagerFactory;
 	    }
 
-		public List<FieldEntry> GetTextFields(int rdoTypeId, bool longTextFieldsOnly)
-		{
-			var rdoCondition = new ObjectCondition
-			{
-				Field = Fields.ObjectTypeArtifactTypeId,
-				Operator = ObjectConditionEnum.AnyOfThese,
-				Value = new List<int> { rdoTypeId }
-			};
+	    public IEnumerable<FieldEntry> GetAllTextFields(int workspaceId, int rdoTypeId)
+	    {
+		    return GetFields(workspaceId, rdoTypeId, $"{_FIXED_LENGTH_TEXT_QUERY} OR {_LONG_TEXT_QUERY}");
+	    }
 
-			var longTextCondition = new TextCondition
-			{
-				Field = Fields.FieldType,
-				Operator = TextConditionEnum.EqualTo,
-				Value = FieldTypes.LongText
-			};
+	    public IEnumerable<FieldEntry> GetLongTextFields(int workspaceId, int rdoTypeId)
+	    {
+		    return GetFields(workspaceId, rdoTypeId, _LONG_TEXT_QUERY);
+	    }
 
-			var fixedLengthTextCondition = new TextCondition
-			{
-				Field = Fields.FieldType,
-				Operator = TextConditionEnum.EqualTo,
-				Value = FieldTypes.FixedLengthText
-			};
+	    private IEnumerable<FieldEntry> GetFields(int workspaceId, int rdoTypeId, string fieldTypeCondition)
+	    {
+		    try
+		    {
+			    QueryRequest request = new QueryRequest
+			    {
+				    ObjectType = new ObjectTypeRef
+				    {
+					    ArtifactTypeID = (int)ArtifactType.Field
+				    },
+				    Condition = $"'Object Type Artifact Type ID' == {rdoTypeId} AND ({fieldTypeCondition})",
+				    IncludeNameInQueryResult = true,
+				    Sorts = new[]
+				    {
+					    new Sort
+					    {
+						    Direction = SortEnum.Ascending,
+						    FieldIdentifier = new FieldRef
+						    {
+							    Name = "Name"
+						    }
+					    }
+				    }
+			    };
 
-			var query = new Query
-			{
-				ArtifactTypeName = "Field",
-				Fields = new List<Field>(),
-				Sorts = new List<Sort>()
+			    IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(workspaceId);
+			    List<RelativityObject> fields = objectManager.QueryAsync(request).GetAwaiter().GetResult();
+			    List<FieldEntry> fieldEntries = fields.Select(x => new FieldEntry()
 				{
-					new Sort
-					{
-						Field = Fields.Name,
-						Direction = SortEnum.Ascending
-					}
-				}
-			};
-			var documentLongTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, longTextCondition);
-			var documentFixedLengthTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, fixedLengthTextCondition);
-			query.Condition = longTextFieldsOnly ? documentLongTextCondition : new CompositeCondition(documentLongTextCondition, CompositeConditionEnum.Or, documentFixedLengthTextCondition);
-
-			QueryResult result;
-			try
-			{
-				result = _client.Query(_client.APIOptions, query);
-				if (!result.Success)
-				{
-					throw new IntegrationPointsException(result.Message);
-				}
-			}
-			catch (IntegrationPointsException)
-			{
-				throw;
-			}
+					DisplayName = x.Name,
+					FieldIdentifier = x.ArtifactID.ToString(),
+					IsRequired = false
+				}).ToList();
+			    return fieldEntries;
+		    }
+		    catch (IntegrationPointsException)
+		    {
+			    throw;
+		    }
 			catch (Exception ex)
-			{
-				throw new IntegrationPointsException(_GET_TEXT_FIELDS_ERROR, ex);
-			}
-
-			List<FieldEntry> fieldEntries = _choiceService.ConvertToFieldEntries(result.QueryArtifacts);
-			return fieldEntries;
-		}
-
+		    {
+			    throw new IntegrationPointsException(_GET_TEXT_FIELDS_ERROR, ex);
+		    }
+	    }
     }
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -16,22 +16,9 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	internal class IntegrationPointDestinationConfiguration
-	{
-		public bool UseFolderPathInformation;
-		public int FolderPathSourceField;
-	}
-
-	internal class IntegrationPointSourceConfiguration
-	{
-		public int SavedSearchArtifactId;
-	}
-
 	public class FolderPathController : ApiController
 	{
-
-		private const string GET_WORKSPACE_ID_ERROR =
-				"{method}: returned workspacedId {wid}, differs from old workspace id {owid}. Using the old one as a fallback.";
+		private const string _GET_WORKSPACE_ID_ERROR = "{method}: returned workspacedId {wid}, differs from old workspace id {owid}. Using the old one as a fallback.";
 
 		private readonly IRSAPIClient _client;
 		private readonly IFieldService _fieldService;
@@ -56,13 +43,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_importApiFacade = importApiFacade;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FolderPathController>();
 		}
-
-
+		
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
 		public HttpResponseMessage GetFields()
 		{
-			List<FieldEntry> textFields = _fieldService.GetTextFields(Convert.ToInt32(ArtifactType.Document), false);
+			List<FieldEntry> textFields = _fieldService.GetAllTextFields(GetWorkspaceId(), (int)ArtifactType.Document).ToList();
 
 			IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(textFields);
 
@@ -73,7 +59,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve long text fields data.")]
 		public HttpResponseMessage GetLongTextFields()
 		{
-			List<FieldEntry> textFields = _fieldService.GetTextFields(Convert.ToInt32(ArtifactType.Document), true);
+			List<FieldEntry> textFields = _fieldService.GetLongTextFields(GetWorkspaceId(), (int)ArtifactType.Document).ToList();
 
 			IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(textFields);
 
@@ -122,7 +108,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			using (_logger.LogContextPushProperty("ErrorKind", "ResultsDiscrepancy"))
 			{
-				_logger.LogError(GET_WORKSPACE_ID_ERROR, methodName, workspaceId, oldWorkspaceId);
+				_logger.LogError(_GET_WORKSPACE_ID_ERROR, methodName, workspaceId, oldWorkspaceId);
 			}
 		}
 
