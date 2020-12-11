@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Core.Helpers.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -26,7 +25,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		protected IntegrationPointMigrationEventHandlerBase()
 		{
 			_errorService = new Lazy<IErrorService>(() =>
-				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientWithWorkspaceFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
+				new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), new SystemEventLoggingService(), Logger), Logger));
 		}
 
 		protected IntegrationPointMigrationEventHandlerBase(IErrorService errorService)

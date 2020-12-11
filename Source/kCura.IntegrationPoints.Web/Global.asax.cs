@@ -69,9 +69,9 @@ namespace kCura.IntegrationPoints.Web
 		public void Application_Error(object sender, EventArgs e)
 		{
 			Exception exception = Server.GetLastError();
-			IAPILog log = ConnectionHelper.Helper().GetLoggerFactory().GetLogger();
-			var rsapiClientFactory = new RsapiClientWithWorkspaceFactory(ConnectionHelper.Helper());
-			var errorRdoCreator = new CreateErrorRdoQuery(rsapiClientFactory, log, new SystemEventLoggingService());
+			ICPHelper helper = ConnectionHelper.Helper();
+			IAPILog log = helper.GetLoggerFactory().GetLogger();
+			var errorRdoCreator = new CreateErrorRdoQuery(helper.GetServicesManager(), new SystemEventLoggingService(), log);
 			var errorService = new CustomPageErrorService(errorRdoCreator, log);
 			var errorModel = new ErrorModel(exception)
 			{
