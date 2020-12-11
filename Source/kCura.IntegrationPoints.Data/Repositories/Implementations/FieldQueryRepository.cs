@@ -1,28 +1,22 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.ArtifactGuid;
 using Relativity.Services.FieldManager;
 using Relativity.Services.Objects.DataContracts;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class FieldQueryRepository : IFieldQueryRepository
 	{
-		private readonly IHelper _helper;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly int _workspaceArtifactID;
@@ -30,12 +24,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private static readonly ObjectTypeRef _fieldObjectTypeRef = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field };
 
 		public FieldQueryRepository(
-			IHelper helper,
 			IServicesMgr servicesMgr,
 			IRelativityObjectManager relativityObjectManager,
 			int workspaceArtifactID)
 		{
-			_helper = helper;
 			_servicesMgr = servicesMgr;
 			_relativityObjectManager = relativityObjectManager;
 			_workspaceArtifactID = workspaceArtifactID;
@@ -87,24 +79,21 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldsDtos.FirstOrDefault();
 		}
 
-		public ResultSet<Field> Read(Field dto)
+		public int ReadArtifactID(Guid guid)
 		{
-			var rsapiClientFactory = new RsapiClientFactory();
-			using (IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(_helper))
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactID;
-
-				try
+				using (IArtifactGuidManager artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.CurrentUser))
 				{
-					return rsapiClient.Repositories.Field.Read(dto);
+					return artifactGuidManager.ReadSingleArtifactIdAsync(_workspaceArtifactID, guid).GetAwaiter().GetResult();
 				}
-				catch (Exception e)
+			}
+			catch (Exception ex)
+			{
+				throw new IntegrationPointsException($"Unable to read Artifact ID for given GUID: {guid}", ex)
 				{
-					throw new IntegrationPointsException("Unable to read Field dto", e)
-					{
-						ExceptionSource = IntegrationPointsExceptionSource.RSAPI
-					};
-				}
+					ExceptionSource = IntegrationPointsExceptionSource.KEPLER
+				};
 			}
 		}
 
@@ -163,5 +152,3 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

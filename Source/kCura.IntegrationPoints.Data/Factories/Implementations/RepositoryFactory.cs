@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IRelativityObjectManager relativityObjectManager =
 				CreateRelativityObjectManagerForFederatedInstance(workspaceArtifactId);
-			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_helper, _destinationServiceMgr, relativityObjectManager, workspaceArtifactId);
+			IFieldQueryRepository fieldQueryRepository = new FieldQueryRepository(_destinationServiceMgr, relativityObjectManager, workspaceArtifactId);
 
 			return fieldQueryRepository;
 		}

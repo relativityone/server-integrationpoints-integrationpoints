@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -21,7 +20,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
@@ -31,7 +29,6 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
-using Field = kCura.Relativity.Client.DTOs.Field;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -147,6 +144,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			{
 				ArtifactId = 9876546
 			};
+
+			const int entityManagerFieldArtifactId = 9876;
+			
 			TaskParameters taskParams = new TaskParameters
 			{
 				BatchInstance = Guid.NewGuid(),
@@ -182,7 +182,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 							DestinationField = new FieldEntry
 							{
 								DisplayName = "destination id",
-								FieldIdentifier = "0"
+								FieldIdentifier = entityManagerFieldArtifactId.ToString()
 							},
 							FieldMapType = FieldMapTypeEnum.Identifier,
 							SourceField = new FieldEntry
@@ -206,18 +206,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			};
 
-			ResultSet<Field> fieldResultSet = new ResultSet<Field>
-			{
-				Success = true,
-				Results = new List<Result<Field>> {
-					new Result<Field>
-					{
-						Success = true,
-						Artifact = new Field()
-					}
-				}
-			};
-
 			var associatedJobs = new List<Job> { _job };
 			var fieldsMap = new List<FieldMap>();
 			_integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
@@ -236,7 +224,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject>());
 			repositoryFactory.GetFieldQueryRepository(workspaceArtifactId).Returns(fieldQueryRepository);
-			fieldQueryRepository.Read(Arg.Any<Field>()).Returns(fieldResultSet);
+			fieldQueryRepository.ReadArtifactID(Arg.Any<Guid>()).Returns(entityManagerFieldArtifactId);
 			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
 				Arg.Any<string>()).Returns(_dataSynchronizer);
 			jobManager.CheckBatchOnJobComplete(_job, taskParams.BatchInstance.ToString()).Returns(true);

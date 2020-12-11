@@ -442,7 +442,6 @@
     <Compile Include="Services\Tabs\ITabService.cs" />
     <Compile Include="Services\Tabs\TabService.cs" />
     <Compile Include="Services\TaskParameterHelper.cs" />
-    <Compile Include="Services\UserService.cs" />
     <Compile Include="Agent\IntegrationPointTaskBase.cs" />
     <Compile Include="Telemetry\ITelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryManager.cs" />
