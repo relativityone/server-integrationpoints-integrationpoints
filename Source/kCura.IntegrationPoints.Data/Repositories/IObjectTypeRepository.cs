@@ -27,6 +27,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 		ObjectTypeDTO GetObjectType(int typeId);
 		int GetObjectTypeID(string objectTypeName);
-		Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId);
+		Dictionary<Guid, int> GetRdoGuidToArtifactIdMap();
 	}
 }

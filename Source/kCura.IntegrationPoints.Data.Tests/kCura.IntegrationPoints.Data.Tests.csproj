@@ -156,6 +156,7 @@
     <Compile Include="Repositories\Implementations\JobHistoryRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerDocumentRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\ObjectTypeRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityAuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
