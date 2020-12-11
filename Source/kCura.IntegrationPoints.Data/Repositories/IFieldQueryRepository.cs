@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.Client.DTOs;
@@ -52,11 +53,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		ArtifactDTO RetrieveIdentifierField(int rdoTypeID);
 
 		/// <summary>
-		///     Reads a given Field Dto
+		/// Reads Artifact ID for given GUID
 		/// </summary>
-		/// <param name="dto">Field Dto to be read</param>
-		/// <returns>A ResultSet of Field matching the provided Field Dto</returns>
-		ResultSet<Field> Read(Field dto);
+		int ReadArtifactID(Guid guid);
 
 		/// <summary>
 		///     Retrieves potential begin bates fields

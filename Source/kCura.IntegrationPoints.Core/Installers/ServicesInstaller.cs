@@ -115,7 +115,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IResourceDbProvider>().ImplementedBy<ResourceDbProvider>().LifestyleTransient());
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => k.Resolve<IHelper>().GetServicesManager(), true));
 			container.Register(Component.For<IRdoFilter>().ImplementedBy<RdoFilter>().LifestyleTransient());
-			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());
 			container.Register(Component.For<IChoiceService>().ImplementedBy<ChoiceService>().LifestyleTransient());
 			container.Register(Component.For<EntityService>().ImplementedBy<EntityService>().LifestyleTransient());
 			container.Register(Component.For<ITabService>().ImplementedBy<TabService>().LifestyleTransient());

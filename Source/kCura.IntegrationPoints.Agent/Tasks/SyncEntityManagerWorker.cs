@@ -21,7 +21,6 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
@@ -32,7 +31,6 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
-using Field = kCura.Relativity.Client.DTOs.Field;
 using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Entity.ObjectTypeGuids;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -99,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetIntegrationPoint(job);
 				SetJobHistory();
 				_workspaceArtifactId = job.WorkspaceID;
-				
+
 				//check if all tasks are done for this batch yet
 				bool isPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
 				if (!isPrimaryBatchWorkComplete)
@@ -147,14 +145,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_entityManagerMap.ForEach(x => x.NewManagerID = x.OldManagerID);
 				}
 
-				var managerUniqueIDs = _entityManagerMap.Where(x => x.NewManagerID != null).Select(x => x.NewManagerID).Distinct().ToArray();
+				string[] managerUniqueIDs = _entityManagerMap
+					.Where(x => x.NewManagerID != null)
+					.Select(x => x.NewManagerID)
+					.Distinct()
+					.ToArray();
+
 				IDictionary<string, int> managerArtifactIDs = GetImportedManagerArtifactIDs(destinationManagerUniqueIdFieldDisplayName, managerUniqueIDs);
 				_entityManagerMap.ForEach(x => x.ManagerArtifactID =
 							x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID) ? managerArtifactIDs[x.NewManagerID] : 0);
 
 				//change import api settings to be able to overlay and set Entity/Manager links
 				int entityManagerFieldArtifactID = GetEntityManagerFieldArtifactID();
-				var newDestinationConfiguration = ReconfigureImportAPISettings(entityManagerFieldArtifactID);
+				string newDestinationConfiguration = ReconfigureImportAPISettings(entityManagerFieldArtifactID);
 
 				//run import api to link corresponding Managers to Entity
 				FieldEntry fieldEntryEntityIdentifier = _managerFieldMap.First(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).SourceField;
@@ -168,7 +171,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						{fieldEntryManagerIdentifier, x.ManagerArtifactID}
 					});
 
-				var managerLinkMap = _managerFieldMap.Where(x =>
+				IEnumerable<FieldMap> managerLinkMap = _managerFieldMap.Where(x =>
 					x.SourceField.FieldIdentifier.Equals(fieldEntryEntityIdentifier.FieldIdentifier) ||
 					x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier));
 
@@ -210,7 +213,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				jobParameters = (EntityManagerJobParameters)taskParameters.BatchParameters;
 			}
 			_entityManagerMap = jobParameters.EntityManagerMap.Select(
-				x => new EntityManagerMap { EntityID = x.Key, OldManagerID = x.Value }).ToList();
+				x => new EntityManagerMap
+				{
+					EntityID = x.Key, OldManagerID = x.Value
+				}).ToList();
 
 			_entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
 			_managerFieldMap = jobParameters.ManagerFieldMap;
@@ -351,28 +357,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogGetImportedManagerArtifactIDsSuccessfulEnd(managerIDs);
 			return managerIDs;
 		}
-
-
+		
 		private int GetEntityManagerFieldArtifactID()
 		{
-			LogGetEntityManagerFieldArtifactIdStart();
-			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId);
-			Field dto = new Field(new Guid(EntityFieldGuids.Manager));
-
-			ResultSet<Field> resultSet = fieldQueryRepository.Read(dto);
-			if (!resultSet.Success)
+			try
 			{
-				var messages = resultSet.Results.Where(x => !x.Success).Select(x => x.Message);
-				LogRetrievingEntityManagersIdsError(messages);
-				var e = new AggregateException(resultSet.Message, messages.Select(x => new Exception(x)));
-				throw e;
+				LogGetEntityManagerFieldArtifactIdStart();
+				IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId);
+
+				int artifactID = fieldQueryRepository.ReadArtifactID(new Guid(EntityFieldGuids.Manager));
+				LogGetEntityManagerFieldArtifactIdSuccessfulEnd(artifactID);
+				return artifactID;
 			}
-
-			int artifactID = resultSet.Results[0].Artifact.ArtifactID;
-			LogGetEntityManagerFieldArtifactIdSuccessfulEnd(artifactID);
-			return artifactID;
+			catch (Exception ex)
+			{
+				LogRetrievingEntityManagersIdsError(ex);
+				throw;
+			}
 		}
-
 
 		private string ReconfigureImportAPISettings(int entityManagerFieldArtifactID)
 		{
@@ -413,16 +415,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IEnumerable<string> GetNotImportedManagersIds(IDictionary<string, string> managersLookup,
 			IDictionary<string, int> importedManagers)
 		{
-			var managersIds = managersLookup.Select(x => x.Value).ToArray();
-			var importedManagersIds = importedManagers.Select(x => x.Key);
+			string[] managersIds = managersLookup.Select(x => x.Value).ToArray();
+			IEnumerable<string> importedManagersIds = importedManagers.Select(x => x.Key);
 			return managersIds.Except(importedManagersIds);
 		}
 
 		private void AddMissingManagersErrors(IDictionary<string, string> managersLookup,
 			IDictionary<string, int> importedManagers)
 		{
-			var notImportedManagersIds = GetNotImportedManagersIds(managersLookup, importedManagers);
-			var missingManagers =
+			IEnumerable<string> notImportedManagersIds = GetNotImportedManagersIds(managersLookup, importedManagers);
+			List<KeyValuePair<string, string>> missingManagers =
 				managersLookup.Join(notImportedManagersIds, managerPair => managerPair.Value,
 					notImportedManagerId => notImportedManagerId,
 					(pair, id) => new KeyValuePair<string, string>(pair.Key, pair.Value)).ToList();
@@ -454,10 +456,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogError("Failed to get managers artifact ids with messages: {Message}.", string.Join(", ", messages));
 		}
 
-		private void LogRetrievingEntityManagersIdsError(IEnumerable<string> messages)
+		private void LogRetrievingEntityManagersIdsError(Exception ex)
 		{
-			_logger.LogError("Failed to retrieve entity manager field artifact id with messages: {Message}.",
-				string.Join(", ", messages));
+			_logger.LogError(ex, "Failed to retrieve entity manager field artifact id with message: {Message}.", ex.Message);
 		}
 
 		private void LogExecuteTaskFinalize(Job job)
