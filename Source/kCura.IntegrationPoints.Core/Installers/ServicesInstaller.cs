@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());
 			container.Register(Component.For<IChoiceService>().ImplementedBy<ChoiceService>().LifestyleTransient());
 			container.Register(Component.For<EntityService>().ImplementedBy<EntityService>().LifestyleTransient());
-			container.Register(Component.For<ITabService>().ImplementedBy<RSAPITabService>().LifestyleTransient());
+			container.Register(Component.For<ITabService>().ImplementedBy<TabService>().LifestyleTransient());
 			container.Register(Component.For<ISynchronizerFactory>().ImplementedBy<GeneralWithEntityRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IProviderFactory>().ImplementedBy<DefaultProviderFactory>().DependsOn(new { windsorContainer = container }).LifestyleTransient());
 			container.Register(Component.For<IManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
