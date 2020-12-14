@@ -48,8 +48,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectTypeManager = new Mock<IObjectTypeManager>();
 			_artifactGuidManager = new Mock<IArtifactGuidManager>();
 			_servicesMgrFake = new Mock<IServicesMgr>();
-			_servicesMgrFake.Setup(x => x.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.CurrentUser)).Returns(_artifactGuidManager.Object);
-			_servicesMgrFake.Setup(x => x.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser)).Returns(_objectTypeManager.Object);
+			_servicesMgrFake.Setup(x => x.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System)).Returns(_artifactGuidManager.Object);
+			_servicesMgrFake.Setup(x => x.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System)).Returns(_objectTypeManager.Object);
 			_relativityObjectManager = new Mock<IRelativityObjectManager>();
 
 			_sut = new ObjectTypeRepository(_WORKSPACE_ID, _servicesMgrFake.Object, _helper.Object, _relativityObjectManager.Object);
@@ -132,6 +132,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		{
 			// Arrange
 			_artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _objectTypeGuid)).Throws<NotFoundException>();
+
+			// Act
+			Action action = () => _sut.RetrieveObjectTypeDescriptorArtifactTypeId(_objectTypeGuid);
+
+			// Assert
+			action.ShouldThrow<TypeLoadException>()
+				.Which.InnerException.Should().BeOfType<NotFoundException>();
+		}
+
+		[Test]
+		public void RetrieveObjectTypeDescriptorArtifactTypeId_ShouldThrow_WhenObjectTypeNotFound()
+		{
+			// Arrange
+			_objectTypeManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(null);
 
 			// Act
 			Action action = () => _sut.RetrieveObjectTypeDescriptorArtifactTypeId(_objectTypeGuid);
