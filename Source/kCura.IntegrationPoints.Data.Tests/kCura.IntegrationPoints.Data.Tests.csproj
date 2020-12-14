@@ -140,6 +140,7 @@
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
     <Compile Include="Installers\RetryingMechanismRegistrationTests.cs" />
     <Compile Include="Queries\CreateErrorRdoQueryTests.cs" />
+    <Compile Include="Queries\GetSavedSearchQueryTests.cs" />
     <Compile Include="Repositories\DTO\MultiObjectReferenceDtoTests.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptionsTests.cs" />
     <Compile Include="Models\SecretPathTests.cs" />

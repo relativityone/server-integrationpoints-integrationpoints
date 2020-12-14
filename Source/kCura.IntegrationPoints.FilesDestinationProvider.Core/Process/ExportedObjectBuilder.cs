@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.WinEDDS;
 

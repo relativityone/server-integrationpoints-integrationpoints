@@ -143,7 +143,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				_windsorContainer.Resolve<IWebApiLoginService>(),
 				_windsorContainer.Resolve<IExtendedExporterFactory>(),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
-					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
+					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IServicesMgr>(),
+						_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
 					),
 				helper,
 				jobStats,

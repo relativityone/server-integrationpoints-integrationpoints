@@ -1,26 +1,26 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.Folder;
+using Relativity.Services.Search;
 using Artifact = kCura.EventHandler.Artifact;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
 	public class RelativityProviderSourceConfiguration : RelativityProviderConfiguration
 	{
-		private const string ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+		private const string _ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
 		private const string _ERROR_PRODUCTION_SET_NOT_FOUND = "Production Set not found!";
-		private const string SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
-		private const string RELATIVITY_THIS_INSTANCE = "This instance";
+		private const string _SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
+		private const string _RELATIVITY_THIS_INSTANCE = "This instance";
+
 		private readonly Func<IProductionManager> _productionManagerFactory;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IInstanceSettingsManager _instanceSettingsManager;
@@ -49,36 +49,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager instanceSettingsManager)
 		{
-			settings[SOURCE_RELATIVITY_INSTANCE] = $"{RELATIVITY_THIS_INSTANCE}({instanceSettingsManager.RetriveCurrentInstanceFriendlyName()})";
+			settings[_SOURCE_RELATIVITY_INSTANCE] = $"{_RELATIVITY_THIS_INSTANCE}({instanceSettingsManager.RetriveCurrentInstanceFriendlyName()})";
 		}
 
 		private void SetSavedSearchName(IDictionary<string, object> settings)
 		{
-			var savedSearchArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId));
+			int savedSearchArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId));
 			if (savedSearchArtifactId > 0)
 			{
 				int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
-				using (IRSAPIClient client = GetRsapiClient(sourceWorkspaceId))
-				{
-					GetSavedSearchId(settings, client, savedSearchArtifactId);
-				}
+				SetSavedSearch(settings, sourceWorkspaceId, savedSearchArtifactId);
 			}
 		}
 
-		private void GetSavedSearchId(IDictionary<string, object> settings, IRSAPIClient client, int savedSearchArtifactId)
+		private void SetSavedSearch(IDictionary<string, object> settings, int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			QueryResult queryResult = new GetSavedSearchQuery(client, savedSearchArtifactId).ExecuteQuery();
-			if (queryResult.Success && queryResult.QueryArtifacts != null && queryResult.QueryArtifacts.Count > 0)
+			KeywordSearchQueryResultSet queryResult = new GetSavedSearchQuery(Helper.GetServicesManager(), workspaceArtifactId, savedSearchArtifactId).ExecuteQuery();
+			if (queryResult.Success && queryResult.Results != null && queryResult.Results.Count > 0)
 			{
-				if (queryResult.QueryArtifacts != null && queryResult.QueryArtifacts.Count > 0)
-				{
-					Field savedSearchField = queryResult.QueryArtifacts[0].getFieldByName("Text Identifier");
-					if (savedSearchField != null)
-					{
-						settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] = savedSearchField.ToString();
-					}
-
-				}
+				settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)] = queryResult.Results.Single().Artifact.Name;
 			}
 			else
 			{
@@ -92,7 +81,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			const string sourceProductionName = "SourceProductionName";
 			try
 			{
-				var productionId = ParseValue<int>(settings, sourceProductionId);
+				int productionId = ParseValue<int>(settings, sourceProductionId);
 				if (productionId > 0)
 				{
 					int sourceWorkspaceId = ParseValue<int>(settings,
@@ -128,7 +117,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 				int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
 
-				var workspaceDTO = workspaceManager.RetrieveWorkspace(targetWorkspaceId);
+				WorkspaceDTO workspaceDTO = workspaceManager.RetrieveWorkspace(targetWorkspaceId);
 				settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspace)] = workspaceDTO.Name;
 			}
 			catch (Exception ex)
@@ -148,7 +137,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager();
 
 				int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
-				var workspaceDTO = workspaceManager.RetrieveWorkspace(sourceWorkspaceId);
+				WorkspaceDTO workspaceDTO = workspaceManager.RetrieveWorkspace(sourceWorkspaceId);
 				settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)] = workspaceDTO.Name;
 			}
 			catch (Exception ex)
@@ -164,7 +153,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private void SetLocationName(IDictionary<string, object> settings)
 		{
 			int folderArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.FolderArtifactId));
-			var productionArtifactId = ParseValue<int>(settings, nameof(ImportSettings.ProductionArtifactId));
+			int productionArtifactId = ParseValue<int>(settings, nameof(ImportSettings.ProductionArtifactId));
 
 			if (folderArtifactId == 0 && productionArtifactId > 0)
 			{
@@ -210,11 +199,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 				try
 				{
-					List<Folder> folders = folderManager.GetFolderTreeAsync(targetWorkspaceId, new List<int>(), folderArtifactId).Result;
+					List<Folder> folders = folderManager.GetFolderTreeAsync(targetWorkspaceId, new List<int>(), folderArtifactId).GetAwaiter().GetResult();
 					string folderName = FindFolderName(folders[0], folderArtifactId);
 					if (folderName == string.Empty)
 					{
-						folderName = ERROR_FOLDER_NOT_FOUND;
+						folderName = _ERROR_FOLDER_NOT_FOUND;
 					}
 					settings[nameof(ExportUsingSavedSearchSettings.TargetFolder)] = folderName;
 				}
@@ -223,7 +212,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					Helper.GetLoggerFactory()
 						.GetLogger()
 						.ForContext<IntegrationPointViewPreLoad>()
-						.LogError(ex, ERROR_FOLDER_NOT_FOUND);
+						.LogError(ex, _ERROR_FOLDER_NOT_FOUND);
 					settings[nameof(ExportUsingSavedSearchSettings.FolderArtifactId)] = 0;
 				}
 			}
@@ -247,5 +236,3 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -1,6 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Factories;
@@ -8,12 +5,14 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services;
 using Relativity.Services.Folder;
+using Relativity.Services.Search;
 using Folder = Relativity.Services.Folder.Folder;
+using Query = Relativity.Services.Query;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 {
@@ -87,22 +86,24 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 		private void MockSavedSearchQuery(string savedSearchName)
 		{
-			var field = new Field
+			var queryResult = new KeywordSearchQueryResultSet()
 			{
-				Name = "Text Identifier",
-				Value = savedSearchName
+				Success = true,
+				Results = new List<Result<KeywordSearch>>()
+				{
+					new Result<KeywordSearch>()
+					{
+						Artifact = new KeywordSearch()
+						{
+							Name = savedSearchName
+						}
+					}
+				}
 			};
-			var artifact = new Artifact { Fields = new List<Field>() { field } };
-			var queryResult = new QueryResult()
-			{
-				Success = true
-			};
-			queryResult.QueryArtifacts.Add(artifact);
 
-			var rsapiClient = Substitute.For<IRSAPIClient>();
-			rsapiClient.APIOptions = new APIOptions();
-			rsapiClient.Query(Arg.Any<APIOptions>(), Arg.Any<kCura.Relativity.Client.Query>()).Returns(queryResult);
-			_helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(rsapiClient);
+			IKeywordSearchManager keywordSearchManager = Substitute.For<IKeywordSearchManager>();
+			keywordSearchManager.QueryAsync(Arg.Any<int>(), Arg.Any<Query>()).Returns(queryResult);
+			_helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser).Returns(keywordSearchManager);
 		}
 
 		private void MockWorkspaceRepository(int workspaceId, string workspaceName)
@@ -152,5 +153,3 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

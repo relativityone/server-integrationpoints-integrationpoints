@@ -49,6 +49,7 @@
     <Compile Include="ExportManagers\ExportConvertingExtensionsTests.cs" />
     <Compile Include="ExportManagers\Factories\FileDownloaderFactoryTests.cs" />
     <Compile Include="Helpers\DestinationFolderHelperTests.cs" />
+    <Compile Include="Helpers\ExportedArtifactNameRepositoryTests.cs" />
     <Compile Include="Helpers\FieldConverterTests.cs" />
     <Compile Include="Installer\CoreServicesForExportRegistrationTests.cs" />
     <Compile Include="Installer\ExportRepositoryRegistrationTests.cs" />
