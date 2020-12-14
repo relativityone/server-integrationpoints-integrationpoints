@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 		private static Guid LegalHoldGuid => Guid.Parse("98F31698-90A0-4EAD-87E3-DAC723FED2A6");
 		private static Guid O365Guid => Guid.Parse("4be29f9a-0d53-4e79-89c4-e83718d59354");
 		private static Guid JsonLoaderGuid => Guid.Parse("57151c17-cd92-4a6e-800c-a75bf807d097");
+		private static Guid MyFirstProviderGuid => Guid.Parse("616c3c78-aa2c-46b9-b81c-21be354f323d");
 
 		public ApplicationInstallationHelper(TestContext testContext)
 		{
@@ -38,6 +39,10 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			return InstallApplicationAsync(JsonLoaderGuid, "JsonLoader");
 		}
 
+		public Task InstallMyFirstProviderAsync()
+		{
+			return InstallApplicationAsync(MyFirstProviderGuid, "MyFirstProvider");
+		}
 		public Task<bool> IsIntegrationPointsInstalledAsync()
 		{
 			int? workspaceID = _testContext.WorkspaceId;
