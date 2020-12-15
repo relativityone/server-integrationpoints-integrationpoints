@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			};
 
 			_objTypeQuery = Substitute.For<IObjectTypeRepository>();
-			_objTypeQuery.GetRdoGuidToArtifactIdMap(Arg.Any<int>()).Returns(guidToTypeId);
+			_objTypeQuery.GetRdoGuidToArtifactIdMap().Returns(guidToTypeId);
 			var config = new HttpConfiguration();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			var route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");

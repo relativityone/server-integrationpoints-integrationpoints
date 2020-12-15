@@ -1,9 +1,10 @@
 using System;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.Relativity.Client.DTOs;
 using kCura.Utility.Extensions;
 using Relativity.API;
+using Relativity.Services.Error;
+using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (error.AddToErrorTab)
 			{
-				CreateErrorRdo.Execute(CreateErrorFromModel(error));
+				CreateErrorRdo.LogError(CreateErrorFromModel(error));
 			}
 			string sourceContent = FormatSourceContent(error.Source);
 			string errorMessage = error.Message;
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				Server = Environment.MachineName,
 				URL = error.Location,
 				SendNotification = false,
-				Workspace = new Workspace(error.WorkspaceId)
+				Workspace = new WorkspaceRef(error.WorkspaceId)
 			};
 		}
 

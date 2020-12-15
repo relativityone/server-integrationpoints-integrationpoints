@@ -1,70 +1,68 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using kCura.IntegrationPoints.Data.Logging;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Error;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
 	public class CreateErrorRdoQuery
 	{
+		private const int _MAX_ERROR_LENGTH = 2000;
+		private const int _MAX_SOURCE_LENGTH = 255;
 		private const string _TRUNCATED_TEMPLATE = "(Truncated) {0}";
-		public const int MAX_ERROR_LEN = 2000;
-		public const int MAX_SURCE_LEN = 255;
 
 		private readonly IAPILog _logger;
-		private readonly IRsapiClientWithWorkspaceFactory _rsapiClientFactory;
+
+		private readonly IServicesMgr _servicesMgr;
 		private readonly ISystemEventLoggingService _systemEventLoggingService;
-		
-		public CreateErrorRdoQuery(IRsapiClientWithWorkspaceFactory rsapiClientFactory, IAPILog logger, ISystemEventLoggingService systemEventLoggingService)
+
+		public CreateErrorRdoQuery(IServicesMgr servicesMgr, ISystemEventLoggingService systemEventLoggingService, IAPILog logger)
 		{
-			_rsapiClientFactory = rsapiClientFactory;
-			_logger = logger.ForContext<CreateErrorRdoQuery>();
+			_servicesMgr = servicesMgr;
 			_systemEventLoggingService = systemEventLoggingService;
+			_logger = logger.ForContext<CreateErrorRdoQuery>();
 		}
 
-		public void Execute(Error errDto)
+		public void LogError(Error errorDto)
 		{
-			if (errDto.Message?.Length > MAX_ERROR_LEN)
+			if (errorDto.Message?.Length > _MAX_ERROR_LENGTH)
 			{
-				errDto.Message = TruncateMessage(errDto.Message);
+				errorDto.Message = TruncateMessage(errorDto.Message);
 			}
-			if (errDto.Source?.Length > MAX_SURCE_LEN)
+
+			if (errorDto.Source?.Length > _MAX_SOURCE_LENGTH)
 			{
-				errDto.Source = errDto.Source.Substring(0, MAX_SURCE_LEN);
+				errorDto.Source = errorDto.Source.Substring(0, _MAX_SOURCE_LENGTH);
 			}
-			using (IRSAPIClient client = _rsapiClientFactory.CreateAdminClient())
+
+			try
 			{
-				try
+				using (IErrorManager errorManager = _servicesMgr.CreateProxy<IErrorManager>(ExecutionIdentity.System))
 				{
-					client.Repositories.Error.Create(errDto);
+					errorManager.CreateSingleAsync(errorDto).GetAwaiter().GetResult();
 				}
-				catch (Exception ex)
-				{
-					_systemEventLoggingService.WriteErrorEvent(errDto.Source, "Application", ex);
-					LogErrorMessage(errDto, ex);
-				}
+			}
+			catch (Exception ex)
+			{
+				_systemEventLoggingService.WriteErrorEvent(errorDto.Source, "Application", ex);
+				LogErrorMessage(errorDto, ex);
 			}
 		}
 
 		private string TruncateMessage(string message)
 		{
-			int truncatedLength = MAX_ERROR_LEN - _TRUNCATED_TEMPLATE.Length;
+			int truncatedLength = _MAX_ERROR_LENGTH - _TRUNCATED_TEMPLATE.Length;
 			return string.Format(_TRUNCATED_TEMPLATE, message.Substring(0, truncatedLength));
 		}
 
-		private void LogErrorMessage(Error errDto, Exception ex)
+		private void LogErrorMessage(Error errorDto, Exception ex)
 		{
-			string message = $"An Error occured during creation of ErrorRDO for workspace: {errDto.Workspace?.ArtifactID}.{Environment.NewLine}"
-			+ $"Source: {errDto.Source}. {Environment.NewLine}"
-			+ $"Error message: {errDto.Message}. {Environment.NewLine}"
+			string message = $"An Error occured during creation of ErrorRDO for workspace: {errorDto.Workspace?.ArtifactID}.{Environment.NewLine}"
+			+ $"Source: {errorDto.Source}. {Environment.NewLine}"
+			+ $"Error message: {errorDto.Message}. {Environment.NewLine}"
 			+ $"Stacktrace: {ex.StackTrace}";
 
 			_logger.LogError(ex, message);
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

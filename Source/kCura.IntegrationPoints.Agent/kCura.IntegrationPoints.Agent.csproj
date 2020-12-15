@@ -66,7 +66,7 @@
     <Compile Include="Interfaces\ITaskProvider.cs" />
     <Compile Include="JobExecutor.cs" />
     <Compile Include="Logging\JobLogInformation.cs" />
-    <Compile Include="Logging\CreateErrorRdo.cs" />
+    <Compile Include="Logging\ErrorService.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContext.cs" />
     <Compile Include="RelativitySyncConstrainsChecker.cs" />
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />

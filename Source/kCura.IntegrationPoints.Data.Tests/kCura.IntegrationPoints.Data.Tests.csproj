@@ -139,6 +139,7 @@
     <Compile Include="Installers\HelpersRegistrationTests.cs" />
     <Compile Include="Installers\RepositoryRegistrationTests.cs" />
     <Compile Include="Installers\RetryingMechanismRegistrationTests.cs" />
+    <Compile Include="Queries\CreateErrorRdoQueryTests.cs" />
     <Compile Include="Repositories\DTO\MultiObjectReferenceDtoTests.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptionsTests.cs" />
     <Compile Include="Models\SecretPathTests.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Repositories\Implementations\JobHistoryRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerArtifactGuidRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerDocumentRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\ObjectTypeRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityAuditRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\RelativityObjectManagerTests.cs" />
@@ -227,6 +229,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

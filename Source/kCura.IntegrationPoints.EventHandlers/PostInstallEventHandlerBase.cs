@@ -5,7 +5,6 @@ using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Helpers.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Logging;
@@ -17,7 +16,6 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {
-
 	/// <summary>
 	/// Represents the base class for Post Install event handlers.
 	/// </summary>
@@ -45,7 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 			_objectManager = new Lazy<IRelativityObjectManager>(CreateObjectManager);
 
 			_errorService = new Lazy<IErrorService>(() =>
-				new EhErrorService(new CreateErrorRdoQuery(new RsapiClientWithWorkspaceFactory(Helper), Logger, new SystemEventLoggingService()), Logger));
+				new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), new SystemEventLoggingService(), Logger), Logger));
 		}
 
 		protected virtual IAPILog CreateLogger()

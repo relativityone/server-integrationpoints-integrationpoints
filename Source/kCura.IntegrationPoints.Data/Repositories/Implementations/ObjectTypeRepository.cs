@@ -1,83 +1,99 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data.RSAPIClient;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Interfaces.Shared;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects.DataContracts;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class ObjectTypeRepository : IObjectTypeRepository
 	{
+		private const string _NAME = "Name";
+		private const string _DESCRIPTOR_ARTIFACT_TYPE_ID = "DescriptorArtifactTypeID";
+		private const string _PARENT_ARTIFACT_TYPE_ID = "ParentArtifactTypeID";
+
 		private readonly IAPILog _logger;
-		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
 		private readonly IRelativityObjectManager _objectManager;
+		private readonly IServicesMgr _servicesMgr;
+
 		public ObjectTypeRepository(int workspaceArtifactId, IServicesMgr servicesMgr, IHelper helper, IRelativityObjectManager objectManager)
 		{
 			_workspaceArtifactId = workspaceArtifactId;
 			_servicesMgr = servicesMgr;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ObjectTypeRepository>();
-			_rsapiClientFactory = new RsapiClientFactory();
 			_objectManager = objectManager;
 		}
 
 		public int CreateObjectType(Guid objectTypeGuid, string objectTypeName, int parentArtifactTypeId)
 		{
-			var objectType = new ObjectType(objectTypeGuid)
+			var objectTypeRequest = new ObjectTypeRequest()
 			{
 				Name = objectTypeName,
-				ParentArtifactTypeID = parentArtifactTypeId,
+				ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier()
+				{
+					ArtifactTypeID = parentArtifactTypeId
+				}),
 				CopyInstancesOnParentCopy = false,
-				CopyInstancesOnWorkspaceCreation = false,
-				SnapshotAuditingEnabledOnDelete = false,
-				Pivot = true,
-				Sampling = false,
-				PersistentLists = false
+				CopyInstancesOnCaseCreation = false,
+				EnableSnapshotAuditingOnDelete = false,
+				PivotEnabled = true,
+				SamplingEnabled = false,
+				PersistentListsEnabled = false
 			};
 
-			using (Relativity.Client.IRSAPIClient rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
+			try
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+				using (IArtifactGuidManager artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+				{
+					int objectTypeArtifactId = objectTypeManager.CreateAsync(_workspaceArtifactId, objectTypeRequest).GetAwaiter().GetResult();
+					artifactGuidManager.CreateSingleAsync(_workspaceArtifactId, objectTypeArtifactId, new List<Guid>()
+					{
+						objectTypeGuid
+					}).GetAwaiter().GetResult();
 
-				try
-				{
-					return rsapiClient.Repositories.ObjectType.CreateSingle(objectType);
+					return objectTypeArtifactId;
 				}
-				catch (Exception e)
-				{
-					_logger.LogError(e, "Failed to create ObjectType {name} with {guid}.", objectTypeName, objectTypeGuid);
-					throw;
-				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to create ObjectType {name} with {guid}.", objectTypeName, objectTypeGuid);
+				throw;
 			}
 		}
 
 		public int RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid)
 		{
-			int? descriptorArtifactTypeId = null;
 			try
 			{
-				using (var rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
+				using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+				using (IArtifactGuidManager artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
 				{
-					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-					descriptorArtifactTypeId = rsapiClient.Repositories.ObjectType.ReadSingle(objectTypeGuid).DescriptorArtifactTypeID;
+					int objectTypeArtifactId = artifactGuidManager.ReadSingleArtifactIdAsync(_workspaceArtifactId, objectTypeGuid).GetAwaiter().GetResult();
+					ObjectTypeResponse objectTypeResponse = objectTypeManager.ReadAsync(_workspaceArtifactId, objectTypeArtifactId).GetAwaiter().GetResult();
+
+					if (objectTypeResponse == null)
+					{
+						throw new NotFoundException($"Cannot find object type GUID: {objectTypeGuid}");
+					}
+
+					return objectTypeResponse.ArtifactTypeID;
 				}
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_logger.LogError(e, "Failed to retrieve object type with guid {guid}.", objectTypeGuid);
+				_logger.LogError(ex, "Failed to retrieve object type with guid {guid}.", objectTypeGuid);
+				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectTypeGuid), ex);
 			}
-			if (!descriptorArtifactTypeId.HasValue)
-			{
-				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectTypeGuid));
-			}
-			return descriptorArtifactTypeId.Value;
 		}
 
 		public int? RetrieveObjectTypeArtifactId(string objectTypeName)
@@ -103,8 +119,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			FieldRef[] fields =
 			{
-				new FieldRef {Name = ObjectTypeFieldNames.DESCRIPTOR_ARTIFACT_TYPE_ID},
-				new FieldRef {Name = ObjectTypeFieldNames.NAME}
+				new FieldRef {Name = _DESCRIPTOR_ARTIFACT_TYPE_ID},
+				new FieldRef {Name = _NAME}
 			};
 			string condition = CreateNameCondition(objectTypeName);
 
@@ -116,7 +132,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			RelativityObject firstResult = _objectManager.Query(queryRequest).FirstOrDefault();
-			FieldValuePair descriptorField = firstResult?.FieldValues?.FirstOrDefault(x => x.Field.Name == ObjectTypeFieldNames.DESCRIPTOR_ARTIFACT_TYPE_ID);
+			FieldValuePair descriptorField = firstResult?.FieldValues?.FirstOrDefault(x => x.Field.Name == _DESCRIPTOR_ARTIFACT_TYPE_ID);
 			if (descriptorField?.Value == null)
 			{
 				string exceptionMessage = $"Object type with name {objectTypeName} was not found in workspace {_workspaceArtifactId}";
@@ -137,10 +153,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
+		public Dictionary<Guid, int> GetRdoGuidToArtifactIdMap()
 		{
 			var results = new Dictionary<Guid, int>();
-			List<ObjectTypeDTO> types = GetAllTypes(userId);
+			List<ObjectTypeDTO> types = GetAllRdo();
 
 			foreach (ObjectTypeDTO type in types)
 			{
@@ -155,45 +171,40 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return results;
 		}
 
-		public List<ObjectTypeDTO> GetAllTypes(int userId)
-		{
-			return GetAllRdo();
-		}
-
 		private List<ObjectTypeDTO> GetAllRdo(List<int> typeIds = null)
 		{
 			FieldRef[] fields =
 			{
 				new FieldRef
 				{
-					Name = ObjectTypeFieldNames.DESCRIPTOR_ARTIFACT_TYPE_ID
+					Name = _DESCRIPTOR_ARTIFACT_TYPE_ID
 				},
 				new FieldRef
 				{
-					Name = ObjectTypeFieldNames.NAME
+					Name = _NAME
 				},
 				new FieldRef
 				{
-					Name = ObjectTypeFieldNames.PARENT_ARTIFACT_TYPE_ID
+					Name = _PARENT_ARTIFACT_TYPE_ID
 				}
 			};
 
 			var sort = new Sort
 			{
 				Direction = SortEnum.Ascending,
-				FieldIdentifier = new FieldRef { Name = ObjectTypeFieldNames.NAME }
+				FieldIdentifier = new FieldRef { Name = _NAME }
 			};
 
 			string condition;
 			if (typeIds != null)
 			{
 				string ids = string.Join(",", typeIds);
-				condition = $"'{ObjectTypeFieldNames.DESCRIPTOR_ARTIFACT_TYPE_ID}' IN [{ids}]";
+				condition = $"'{_DESCRIPTOR_ARTIFACT_TYPE_ID}' IN [{ids}]";
 			}
 			else
 			{
-				string condition1 = $"'{ObjectTypeFieldNames.DESCRIPTOR_ARTIFACT_TYPE_ID}' > {Constants.NON_SYSTEM_FIELD_START_ID}";
-				string condition2 = $"'{ObjectTypeFieldNames.DESCRIPTOR_ARTIFACT_TYPE_ID}' == {(int)Relativity.Client.ArtifactType.Document}";
+				string condition1 = $"'{_DESCRIPTOR_ARTIFACT_TYPE_ID}' > {Constants.NON_SYSTEM_FIELD_START_ID}";
+				string condition2 = $"'{_DESCRIPTOR_ARTIFACT_TYPE_ID}' == {(int)Relativity.Client.ArtifactType.Document}";
 				condition = $"({condition1}) OR ({condition2})";
 			}
 
@@ -212,7 +223,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private static string CreateNameCondition(string objectTypeName)
 		{
-			return $"'{ObjectTypeFieldNames.NAME}' == '{objectTypeName}'";
+			return $"'{_NAME}' == '{objectTypeName}'";
 		}
 
 		private static ObjectTypeRef GetObjectTypeRef()
@@ -230,9 +241,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return null;
 			}
 
-			string name = relativityObject.FieldValues?.FirstOrDefault(x => x?.Field?.Name == ObjectTypeFieldNames.NAME)?.Value as string;
-			int parentArtifactTypeId = GetIntValueFromField(relativityObject, ObjectTypeFieldNames.PARENT_ARTIFACT_TYPE_ID);
-			int descriptorArtifactTypeId = GetIntValueFromField(relativityObject, ObjectTypeFieldNames.DESCRIPTOR_ARTIFACT_TYPE_ID);
+			string name = relativityObject.FieldValues?.FirstOrDefault(x => x?.Field?.Name == _NAME)?.Value as string;
+			int parentArtifactTypeId = GetIntValueFromField(relativityObject, _PARENT_ARTIFACT_TYPE_ID);
+			int descriptorArtifactTypeId = GetIntValueFromField(relativityObject, _DESCRIPTOR_ARTIFACT_TYPE_ID);
 
 			return new ObjectTypeDTO
 			{
@@ -265,14 +276,5 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			return valueToReturn;
 		}
-
-		private static class ObjectTypeFieldNames
-		{
-			public const string NAME = "Name";
-			public const string PARENT_ARTIFACT_TYPE_ID = "ParentArtifactTypeID";
-			public const string DESCRIPTOR_ARTIFACT_TYPE_ID = "DescriptorArtifactTypeID";
-		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

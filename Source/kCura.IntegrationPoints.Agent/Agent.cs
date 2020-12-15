@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent
 	[System.ComponentModel.Description("An agent that manages Integration Point jobs.")]
 	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IDisposable
 	{
-		private CreateErrorRdo _errorService;
+		private ErrorService _errorService;
 		private IAgentHelper _helper;
 		private JobContextProvider _jobContextProvider;
 		private IJobExecutor _jobExecutor;
@@ -246,11 +246,11 @@ namespace kCura.IntegrationPoints.Agent
 			var integrationPointsException = exception as IntegrationPointsException;
 			if (integrationPointsException != null)
 			{
-				ErrorService.Execute(job, integrationPointsException);
+				ErrorService.LogError(job, integrationPointsException);
 			}
 			else
 			{
-				ErrorService.Execute(job, exception, _AGENT_NAME);
+				ErrorService.LogError(job, exception, _AGENT_NAME);
 			}
 
 			JobExecutionError?.Invoke(job, task, exception);
@@ -276,7 +276,7 @@ namespace kCura.IntegrationPoints.Agent
 			return container;
 		}
 
-		private CreateErrorRdo ErrorService => _errorService ?? (_errorService = new CreateErrorRdo(new RsapiClientWithWorkspaceFactory(Helper), Helper, new SystemEventLoggingService()));
+		private ErrorService ErrorService => _errorService ?? (_errorService = new ErrorService(Helper, new SystemEventLoggingService()));
 
 		public void Dispose()
 		{
