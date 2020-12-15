@@ -1,9 +1,5 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data.RSAPIClient;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Artifact = kCura.EventHandler.Artifact;
 
@@ -26,17 +22,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			{
 				return default(T);
 			}
-			return (T) Convert.ChangeType(settings[parameterName], typeof(T));
-		}
 
-		protected virtual IRSAPIClient GetRsapiClient(int workspaceArtifactId)
-		{
-			var rsapiClientFactory = new RsapiClientFactory();
-			IRSAPIClient rsapiClient = rsapiClientFactory.CreateUserClient(Helper);
-			rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-			return rsapiClient;
+			return (T) Convert.ChangeType(settings[parameterName], typeof(T));
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

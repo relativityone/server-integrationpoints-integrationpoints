@@ -1,31 +1,33 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.API;
+using Relativity.Services;
+using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
 	public class GetSavedSearchQuery
 	{
-		private readonly IRSAPIClient _client;
+		private readonly IServicesMgr _servicesMgr;
+		private readonly int _workspaceArtifactId;
 		private readonly int _savedSearchArtifactId;
 
-		public GetSavedSearchQuery(IRSAPIClient client, int savedSearchArtifactId)
+		public GetSavedSearchQuery(IServicesMgr servicesMgr, int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			_client = client;
+			_servicesMgr = servicesMgr;
+			_workspaceArtifactId = workspaceArtifactId;
 			_savedSearchArtifactId = savedSearchArtifactId;
 		}
 
-		public QueryResult ExecuteQuery()
+		public KeywordSearchQueryResultSet ExecuteQuery()
 		{
-			var query = new Query
+			using (IKeywordSearchManager keywordSearchManager = _servicesMgr.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
 			{
-				ArtifactTypeID = (int) ArtifactType.Search,
-				Condition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, _savedSearchArtifactId)
-			};
-			return _client.Query(_client.APIOptions, query);
+				KeywordSearchQueryResultSet queryResult = keywordSearchManager.QueryAsync(_workspaceArtifactId, new Query()
+				{
+					Condition = $"'Artifact ID' == {_savedSearchArtifactId}"
+				}).GetAwaiter().GetResult();
+
+				return queryResult;
+			}
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

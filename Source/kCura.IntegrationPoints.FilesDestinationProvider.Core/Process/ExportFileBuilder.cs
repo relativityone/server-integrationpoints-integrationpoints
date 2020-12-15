@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using kCura.WinEDDS;
-using Relativity;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
