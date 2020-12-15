@@ -168,28 +168,13 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 					},
 					Fields = new List<FieldRef>
 					{
-						new FieldRef { Guid = SyncConfigurationRdo.CreateSavedSearchInDestinationGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.DataDestinationArtifactIdGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.DataDestinationTypeGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.DataSourceArtifactIdGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.DataSourceTypeGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.EmailNotificationRecipientsGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.FieldMappingsGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.FieldOverlayBehaviorGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.FolderPathSourceFieldNameGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.ImportOverwriteModeGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.MoveExistingDocumentsGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.NativesBehaviorGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.RdoArtifactTypeIdGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.JobHistoryToRetryGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.ImageImportGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.IncludeOriginalImagesGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.ProductionImagePrecedenceGuid },
-						new FieldRef { Guid = SyncConfigurationRdo.ImageFileCopyModeGuid },
+						new FieldRef
+						{
+							Name = "*"
+						}
 					},
-					Condition = $"'FieldArtifactTypeID' == {configurationTypeId}"
+					Condition = $"'FieldArtifactTypeID' == {configurationTypeId}" +
+					            $"AND 'DisplayName' IN [{string.Join(",", SyncConfigurationRdo.GetFieldsDefinition(0).Values.Select(x => x.Name))}]"
 				};
 
 				var result = await objectManager.QueryAsync(workspaceId, request, 1, 100).ConfigureAwait(false);
