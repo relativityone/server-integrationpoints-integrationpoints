@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
@@ -51,8 +52,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
-				using (IArtifactGuidManager artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.CurrentUser))
+				using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+				using (IArtifactGuidManager artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
 				{
 					int objectTypeArtifactId = objectTypeManager.CreateAsync(_workspaceArtifactId, objectTypeRequest).GetAwaiter().GetResult();
 					artifactGuidManager.CreateSingleAsync(_workspaceArtifactId, objectTypeArtifactId, new List<Guid>()
@@ -74,11 +75,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			try
 			{
-				using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
-				using (IArtifactGuidManager artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.CurrentUser))
+				using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+				using (IArtifactGuidManager artifactGuidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
 				{
 					int objectTypeArtifactId = artifactGuidManager.ReadSingleArtifactIdAsync(_workspaceArtifactId, objectTypeGuid).GetAwaiter().GetResult();
 					ObjectTypeResponse objectTypeResponse = objectTypeManager.ReadAsync(_workspaceArtifactId, objectTypeArtifactId).GetAwaiter().GetResult();
+
+					if (objectTypeResponse == null)
+					{
+						throw new NotFoundException($"Cannot find object type GUID: {objectTypeGuid}");
+					}
+
 					return objectTypeResponse.ArtifactTypeID;
 				}
 			}

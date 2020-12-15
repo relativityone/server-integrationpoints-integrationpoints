@@ -52,8 +52,9 @@
     <Compile Include="FieldMapHelper.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IExtendedJob.cs" />
+    <Compile Include="IJobHistorySyncService.cs" />
     <Compile Include="IntegrationPointToSyncConverter.cs" />
-    <Compile Include="JobHistoryHelper.cs" />
+    <Compile Include="JobHistorySyncService.cs" />
     <Compile Include="Metrics\EmptyMetric.cs" />
     <Compile Include="Metrics\ISyncJobMetric.cs" />
     <Compile Include="Metrics\IMetric.cs" />

@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Proposed - editing `JobDetails` is preffered
 
 ## Context
 

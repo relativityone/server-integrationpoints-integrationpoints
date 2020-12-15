@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		private readonly ISerializer _serializer;
 		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IAPILog _logger;
 
 		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
@@ -45,13 +46,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
 
-		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService)
+		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService, IAPILog logger)
 		{
 			_serializer = serializer;
 			_jobHistoryService = jobHistoryService;
+			_logger = logger;
 		}
 
-		public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job, IHelper helper)
+		public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job, IHelper helper, IJobHistorySyncService jobHistorySyncService)
 		{
 			using (IObjectManager objectManager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -62,7 +64,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				RelativityObject jobHistoryToRetry = null;
 				if (IsRetryingErrors(job.Job))
 				{
-					jobHistoryToRetry = await JobHistoryHelper.GetLastJobHistoryWithErrorsAsync(sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId, helper).ConfigureAwait(false);
+					jobHistoryToRetry = await jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 				}
 				
 				CreateRequest request = await PrepareCreateRequestAsync(job, sourceConfiguration, importSettings, folderConf, objectManager, jobHistoryToRetry).ConfigureAwait(false);
@@ -158,174 +160,170 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			string folderPathSourceFieldName = await GetFolderPathSourceFieldNameAsync(folderConf.FolderPathSourceField, sourceConfiguration.SourceWorkspaceArtifactId, objectManager).ConfigureAwait(false);
 
-			List<FieldRefValuePair> fields = new List<FieldRefValuePair>()
+			List<FieldRefValuePair> fields = new List<FieldRefValuePair>();
+
+			fields.Add(new FieldRefValuePair
 			{
-				new FieldRefValuePair
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = CreateSavedSearchInDestinationGuid
-					},
-					Value = importSettings.CreateSavedSearchForTagging
+					Guid = CreateSavedSearchInDestinationGuid
 				},
-				new FieldRefValuePair
+				Value = importSettings.CreateSavedSearchForTagging
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = DataDestinationArtifactIdGuid
-					},
-					Value = importSettings.DestinationFolderArtifactId
+					Guid = DataDestinationArtifactIdGuid
 				},
-				new FieldRefValuePair
+				Value = importSettings.DestinationFolderArtifactId
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = DataDestinationTypeGuid
-					},
-					Value = "Folder"
+					Guid = DataDestinationTypeGuid
 				},
-				new FieldRefValuePair
+				Value = "Folder"
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = DataSourceArtifactIdGuid
-					},
-					Value = sourceConfiguration.SavedSearchArtifactId
+					Guid = DataSourceArtifactIdGuid
 				},
-				new FieldRefValuePair
+				Value = sourceConfiguration.SavedSearchArtifactId
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = DataSourceTypeGuid
-					},
-					Value = "SavedSearch"
+					Guid = DataSourceTypeGuid
 				},
-				new FieldRefValuePair
+				Value = "SavedSearch"
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = DestinationFolderStructureBehaviorGuid
-					},
-					Value = DestinationFolderStructureBehavior(folderConf)
+					Guid = DestinationFolderStructureBehaviorGuid
 				},
-				new FieldRefValuePair
+				Value = DestinationFolderStructureBehavior(folderConf)
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = FolderPathSourceFieldNameGuid
-					},
-					Value = folderPathSourceFieldName
+					Guid = FolderPathSourceFieldNameGuid
 				},
-				new FieldRefValuePair
+				Value = folderPathSourceFieldName
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = DestinationWorkspaceArtifactIdGuid
-					},
-					Value = sourceConfiguration.TargetWorkspaceArtifactId
+					Guid = DestinationWorkspaceArtifactIdGuid
 				},
-				new FieldRefValuePair
+				Value = sourceConfiguration.TargetWorkspaceArtifactId
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = EmailNotificationRecipientsGuid
-					},
-					Value = job.IntegrationPointModel.EmailNotificationRecipients
+					Guid = EmailNotificationRecipientsGuid
 				},
-				new FieldRefValuePair
+				Value = job.IntegrationPointModel.EmailNotificationRecipients
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = FieldMappingsGuid
-					},
-					Value = FieldMapHelper.FixMappings(job.IntegrationPointModel.FieldMappings, _serializer)
+					Guid = FieldMappingsGuid
 				},
-				new FieldRefValuePair
+				Value = FieldMapHelper.FixMappings(job.IntegrationPointModel.FieldMappings, _serializer, _logger)
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = FieldOverlayBehaviorGuid
-					},
-					Value = importSettings.FieldOverlayBehavior
+					Guid = FieldOverlayBehaviorGuid
 				},
-				new FieldRefValuePair
+				Value = importSettings.FieldOverlayBehavior
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = ImportOverwriteModeGuid
-					},
-					Value = importSettings.ImportOverwriteMode.ToString()
+					Guid = ImportOverwriteModeGuid
 				},
-				new FieldRefValuePair
+				Value = importSettings.ImportOverwriteMode.ToString()
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = MoveExistingDocumentsGuid
-					},
-					Value = importSettings.MoveExistingDocuments
+					Guid = MoveExistingDocumentsGuid
 				},
-				new FieldRefValuePair
+				Value = importSettings.MoveExistingDocuments
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = NativesBehaviorGuid
-					},
-					Value = CopyNativeFilesBehavior(importSettings.ImportNativeFileCopyMode)
+					Guid = NativesBehaviorGuid
 				},
-				new FieldRefValuePair
+				Value = CopyNativeFilesBehavior(importSettings.ImportNativeFileCopyMode)
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = RdoArtifactTypeIdGuid
-					},
-					Value = 10
+					Guid = RdoArtifactTypeIdGuid
 				},
-				new FieldRefValuePair
+				Value = 10
+			});
+			fields.Add(new FieldRefValuePair
+			{
+				Field = new FieldRef
 				{
-					Field = new FieldRef
-					{
-						Guid = JobHistoryToRetryGuid
-					},
-					Value = jobHistoryToRetry
+					Guid = JobHistoryToRetryGuid
 				},
-				new FieldRefValuePair()
+				Value = jobHistoryToRetry
+			});
+			fields.Add(new FieldRefValuePair()
+			{
+				Field = new FieldRef()
 				{
-					Field = new FieldRef()
-					{
-						Guid = ImageImportGuid
-					},
-					Value = importSettings.ImageImport
-				}
-			};
+					Guid = ImageImportGuid
+				},
+				Value = importSettings.ImageImport
+			});
 
 			if (importSettings.ImageImport)
 			{
-				fields.AddRange(new[]
+				fields.Add(new FieldRefValuePair()
 				{
-					new FieldRefValuePair()
+					Field = new FieldRef()
 					{
-						Field = new FieldRef()
-						{
-							Guid = IncludeOriginalImagesGuid
-						},
-						Value = importSettings.IncludeOriginalImages
+						Guid = IncludeOriginalImagesGuid
 					},
-					new FieldRefValuePair()
+					Value = importSettings.IncludeOriginalImages
+				});
+				fields.Add(new FieldRefValuePair()
+				{
+					Field = new FieldRef()
 					{
-						Field = new FieldRef()
-						{
-							Guid = ImageFileCopyModeGuid
-						},
-						Value = CopyImageFilesBehavior(importSettings.ImportNativeFileCopyMode)
+						Guid = ImageFileCopyModeGuid
 					},
-					new FieldRefValuePair()
+					Value = CopyImageFilesBehavior(importSettings.ImportNativeFileCopyMode)
+				});
+				fields.Add(new FieldRefValuePair()
+				{
+					Field = new FieldRef()
 					{
-						Field = new FieldRef()
-						{
-							Guid = ProductionImagePrecedenceGuid
-						},
-						Value = GetProductionImagePrecedence(importSettings)
-					}
+						Guid = ProductionImagePrecedenceGuid
+					},
+					Value = GetProductionImagePrecedence(importSettings)
 				});
 			}
 

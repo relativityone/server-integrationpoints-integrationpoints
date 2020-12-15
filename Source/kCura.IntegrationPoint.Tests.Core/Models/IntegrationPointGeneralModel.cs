@@ -13,6 +13,10 @@
 		public const string INTEGRATION_POINT_SOURCE_PROVIDER_RELATIVITY = "Relativity";
 
 		public const string INTEGRATION_POINT_SOURCE_PROVIDER_O365 = "Office 365";
+		
+		public const string INTEGRATION_POINT_SOURCE_PROVIDER_JSON = "JSON";
+
+		public const string INTEGRATION_POINT_SOURCE_PROVIDER_MY_FIRST_PROVIDER = "My First Provider";
 
 		public const string INTEGRATION_POINT_DESTINATION_PROVIDER_RELATIVITY = "Relativity";
 
