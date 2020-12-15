@@ -1,45 +1,20 @@
-﻿using System.Collections.Generic;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
+﻿using Relativity.Sync.Configuration;
+#pragma warning disable 1591
 
 namespace Relativity.Sync.SyncConfiguration.Options
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public class DocumentSyncOptions
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public int SavedSearchId { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		public int DestinationFolderId { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		public List<FieldMap> FieldsMapping { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
+		public int SavedSearchId { get; }
+
+		public int DestinationFolderId { get; }
+
 		public ImportNativeFileCopyMode CopyNativesMode { get; set; }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="savedSearchId"></param>
-		/// <param name="destinationFolderId"></param>
-		/// <param name="fieldsMapping"></param>
-		/// <param name="copyNativesMode"></param>
-		public DocumentSyncOptions(int savedSearchId, int destinationFolderId, List<FieldMap> fieldsMapping = null, 
-			ImportNativeFileCopyMode copyNativesMode = ImportNativeFileCopyMode.DoNotImportNativeFiles)
+		public DocumentSyncOptions(int savedSearchId, int destinationFolderId)
 		{
 			SavedSearchId = savedSearchId;
 			DestinationFolderId = destinationFolderId;
-			FieldsMapping = fieldsMapping ?? new List<FieldMap>();
-			CopyNativesMode = copyNativesMode;
 		}
 	}
 }

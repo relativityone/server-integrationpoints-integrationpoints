@@ -1,23 +1,12 @@
-﻿namespace Relativity.Sync.SyncConfiguration
+﻿#pragma warning disable 1591
+namespace Relativity.Sync.SyncConfiguration
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public interface ISyncContext
 	{
-		/// <summary>
-		/// 
-		/// </summary>
 		int SourceWorkspaceId { get; }
 
-		/// <summary>
-		/// 
-		/// </summary>
 		int DestinationWorkspaceId { get; }
 
-		/// <summary>
-		/// 
-		/// </summary>
 		int ParentObjectId { get; }
 	}
 }

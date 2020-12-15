@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -12,8 +9,9 @@ using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
+using Relativity.Sync.SyncConfiguration;
 
-namespace Relativity.Sync.Tests.Unit.Storage
+namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 {
 	[TestFixture]
 	internal class FieldsMappingBuilderTests

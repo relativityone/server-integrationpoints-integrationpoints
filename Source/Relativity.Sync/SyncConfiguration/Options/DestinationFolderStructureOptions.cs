@@ -1,70 +1,30 @@
 ﻿using Relativity.Sync.Configuration;
+#pragma warning disable 1591
 
 namespace Relativity.Sync.SyncConfiguration.Options
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public class DestinationFolderStructureOptions
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		public DestinationFolderStructureBehavior DestinationFolderStructure { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
-		public int FolderPathSourceFieldId { get; set; }
-		/// <summary>
-		/// 
-		/// </summary>
+		public DestinationFolderStructureBehavior DestinationFolderStructure { get; }
+
+		public int FolderPathSourceFieldId { get; }
+
 		public bool MoveExistingDocuments { get; set; }
 
-		private DestinationFolderStructureOptions() 
-		{ }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public static DestinationFolderStructureOptions None()
+		private DestinationFolderStructureOptions(
+			DestinationFolderStructureBehavior destinationFolderStructure, int folderPathSourceFieldId = default(int))
 		{
-			return new DestinationFolderStructureOptions
-			{
-				DestinationFolderStructure = DestinationFolderStructureBehavior.None
-			};
+			DestinationFolderStructure = destinationFolderStructure;
+			FolderPathSourceFieldId = folderPathSourceFieldId;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="moveExistingDocuments"></param>
-		/// <returns></returns>
-		public static DestinationFolderStructureOptions RetainFolderStructureFromSourceWorkspace(
-			bool moveExistingDocuments = false)
-		{
-			return new DestinationFolderStructureOptions
-			{
-				DestinationFolderStructure = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
-				MoveExistingDocuments = moveExistingDocuments
-			};
-		}
+		public static DestinationFolderStructureOptions None() =>
+			new DestinationFolderStructureOptions(DestinationFolderStructureBehavior.None);
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="folderPathSourceFieldId"></param>
-		/// <param name="moveExistingDocuments"></param>
-		/// <returns></returns>
-		public static DestinationFolderStructureOptions ReadFromField(
-			int folderPathSourceFieldId, bool moveExistingDocuments = false)
-		{
-			return new DestinationFolderStructureOptions
-			{
-				DestinationFolderStructure = DestinationFolderStructureBehavior.ReadFromField,
-				FolderPathSourceFieldId = folderPathSourceFieldId,
-				MoveExistingDocuments = moveExistingDocuments
-			};
-		}
+		public static DestinationFolderStructureOptions RetainFolderStructureFromSourceWorkspace() =>
+			new DestinationFolderStructureOptions(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure);
+
+		public static DestinationFolderStructureOptions ReadFromField(int folderPathSourceFieldId) =>
+			new DestinationFolderStructureOptions(DestinationFolderStructureBehavior.ReadFromField, folderPathSourceFieldId);
 	}
 }

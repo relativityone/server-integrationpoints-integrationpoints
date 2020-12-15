@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
@@ -64,7 +60,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
 			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
-				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId, ImportImageFileCopyMode.CopyFiles);
+				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+			options.CopyImagesMode = ImportImageFileCopyMode.CopyFiles;
 
 			// Act
 			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
@@ -101,10 +98,12 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 		private static IEnumerable<object[]> OverwriteModeDataSource => new List<object[]>()
 		{
-			new object[] {OverwriteOptions.AppendOnly(), "AppendOnly", "Use Field Settings"},
-			new object[] {OverwriteOptions.AppendOverlay(FieldOverlayBehavior.ReplaceValues), "AppendOverlay", "Replace Values"},
-			new object[] {OverwriteOptions.AppendOverlay(FieldOverlayBehavior.MergeValues), "AppendOverlay", "Merge Values"},
-			new object[] {OverwriteOptions.OverlayOnly(), "OverlayOnly", "Use Field Settings"}
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly), "AppendOnly", "Use Field Settings"},
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) {FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues},
+				"AppendOverlay", "Replace Values"},
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
+				"AppendOverlay", "Merge Values"},
+			new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), "OverlayOnly", "Use Field Settings"}
 		};
 
 		[TestCaseSource(nameof(OverwriteModeDataSource))]
@@ -199,12 +198,12 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
 				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
-			CreateSavedSearchOptions searchOptions = new CreateSavedSearchOptions(true);
 
 			// Act
 			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
-				.CreateSavedSearch(searchOptions)
+				.CreateSavedSearch(
+					new CreateSavedSearchOptions { CreateSavedSearchInDestination = true })
 				.Build();
 
 			// Assert

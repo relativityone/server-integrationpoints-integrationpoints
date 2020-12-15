@@ -1,17 +1,14 @@
-﻿using Relativity.Sync.SyncConfiguration.Options;
+﻿using System;
+using Relativity.Sync.Storage;
+using Relativity.Sync.SyncConfiguration.Options;
+#pragma warning disable 1591
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public interface IDocumentSyncConfigurationBuilder : ISyncConfigurationRootBuilder<IDocumentSyncConfigurationBuilder>
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="options"></param>
-		/// <returns></returns>
 		IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options);
+
+		IDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingFunc);
 	}
 }

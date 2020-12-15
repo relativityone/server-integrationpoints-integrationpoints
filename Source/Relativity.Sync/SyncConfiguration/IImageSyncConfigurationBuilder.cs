@@ -1,17 +1,10 @@
 ﻿using Relativity.Sync.SyncConfiguration.Options;
+#pragma warning disable 1591
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public interface IImageSyncConfigurationBuilder : ISyncConfigurationRootBuilder<IImageSyncConfigurationBuilder>
 	{
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="options"></param>
-		/// <returns></returns>
 		IImageSyncConfigurationBuilder ProductionImagePrecedence(ProductionImagePrecedenceOptions options);
 	}
 }

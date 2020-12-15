@@ -21,28 +21,22 @@ namespace Relativity.Sync.RDOs
 		public int RdoArtifactTypeId { get; set; }
 		public string DataSourceType { get; set; }
 		public int DataSourceArtifactId { get; set; }
-
 		public int DestinationWorkspaceArtifactId { get; set; }
 		public int DataDestinationArtifactId { get; set; }
 		public string DataDestinationType { get; set; }
 		public string DestinationFolderStructureBehavior { get; set; }
 		public string FolderPathSourceFieldName { get; set; }
 		public bool CreateSavedSearchInDestination { get; set; }
-
 		public string ImportOverwriteMode { get; set; }
 		public string FieldOverlayBehavior { get; set; }
-
 		public string FieldsMapping { get; set; }
 		public bool MoveExistingDocuments { get; set; }
 		public string NativesBehavior { get; set; }
-
 		public bool ImageImport { get; set; }
 		public bool IncludeOriginalImages { get; set; }
 		public string ProductionImagePrecedence { get; set; }
 		public string ImageFileCopyMode { get; set; }
-
 		public string EmailNotificationRecipients { get; set; }
-
 		public RelativityObject JobHistoryToRetry { get; set; }
 
 		#region GUIDs
@@ -63,232 +57,49 @@ namespace Relativity.Sync.RDOs
 		public static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
 		public static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 		public static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
-
 		public static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
-
 		public static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
 		public static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
 		public static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 		public static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
+
+		public static readonly IDictionary<Guid, string> GuidNames = new Dictionary<Guid, string>
+		{
+			{CreateSavedSearchInDestinationGuid, "Create Saved Search in Destination"},
+			{DataDestinationArtifactIdGuid, "Data Destination Artifact ID"},
+			{DataDestinationTypeGuid, "Data Destination Type"},
+			{DataSourceArtifactIdGuid, "Data Source Artifact ID"},
+			{DataSourceTypeGuid, "Data Source Type"},
+			{DestinationFolderStructureBehaviorGuid, "Destination Folder Structure Behavior"},
+			{DestinationWorkspaceArtifactIdGuid, "Destination Workspace Artifact ID"},
+			{EmailNotificationRecipientsGuid, "Email Notification Recipients"},
+			{FieldMappingsGuid, "Field Mappings"},
+			{FieldOverlayBehaviorGuid, "Field Overlay Behavior"},
+			{FolderPathSourceFieldNameGuid, "Folder Path Source Field Name"},
+			{ImportOverwriteModeGuid, "Import Overwrite Mode"},
+			{MoveExistingDocumentsGuid, "Move Existing Documents"},
+			{NativesBehaviorGuid, "Natives Behavior"},
+			{RdoArtifactTypeIdGuid, "RDO Artifact Type ID"},
+			{JobHistoryToRetryGuid, "JobHistory To Retry"},
+			{ImageImportGuid, "Image Import"},
+			{IncludeOriginalImagesGuid, "Include Original Images"},
+			{ProductionImagePrecedenceGuid, "Production Image Precedence"},
+			{ImageFileCopyModeGuid, "Image File Copy Mode"},
+		};
+
 		#endregion
 
 		#region Fields Definitions
 
-		public static IDictionary<Guid, BaseFieldRequest> GetFieldsDefinition(int parentObjectTypeId) =>
-			new Dictionary<Guid, BaseFieldRequest>
-			{
-				{
-					CreateSavedSearchInDestinationGuid, 
-					new YesNoFieldRequest()
-					{
-						Name = "Create Saved Search in Destination",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					DataDestinationArtifactIdGuid,
-					new WholeNumberFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Data Destination Artifact ID",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					DataDestinationTypeGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Data Destination Type",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					DataSourceArtifactIdGuid,
-					new WholeNumberFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Data Source Artifact ID",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					DataSourceTypeGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Data Source Type",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					DestinationFolderStructureBehaviorGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Destination Folder Structure Behavior",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					DestinationWorkspaceArtifactIdGuid,
-					new WholeNumberFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Destination Workspace Artifact ID",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					EmailNotificationRecipientsGuid,
-					new LongTextFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Email Notification Recipients",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					FieldMappingsGuid,
-					new LongTextFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Field Mappings",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					FieldOverlayBehaviorGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Field Overlay Behavior",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					FolderPathSourceFieldNameGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Folder Path Source Field Name",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					ImportOverwriteModeGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Import Overwrite Mode",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					MoveExistingDocumentsGuid,
-					new YesNoFieldRequest()
-					{
-						FilterType = FilterType.Boolean,
-						Name = "Move Existing Documents",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					NativesBehaviorGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Natives Behavior",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					RdoArtifactTypeIdGuid,
-					new WholeNumberFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "RDO Artifact Type ID",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					JobHistoryToRetryGuid,
-					new SingleObjectFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "JobHistory To Retry",
-						AssociativeObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					ImageImportGuid,
-					new YesNoFieldRequest()
-					{
-						FilterType = FilterType.Boolean,
-						Name = "Image Import",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					IncludeOriginalImagesGuid,
-					new YesNoFieldRequest()
-					{
-						FilterType = FilterType.Boolean,
-						Name = "Include Original Images",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					ProductionImagePrecedenceGuid,
-					new LongTextFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Production Image Precedence",
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-				{
-					ImageFileCopyModeGuid,
-					new FixedLengthFieldRequest()
-					{
-						FilterType = FilterType.TextBox,
-						Name = "Image File Copy Mode",
-						Length = 255,
-						ObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
-					}
-				},
-			};
-
-		#endregion
-
-		#region EnsureSyncConfigurationExist
-
-		public static async Task<bool> Exists(int workspaceId, ISyncServiceManager servicesMgr)
+		public static ObjectTypeRequest GetObjectTypeDefinition(int parentObjectTypeId)
 		{
-			using (IArtifactGuidManager artifactGuidManager =
-				servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
-			{
-				return await artifactGuidManager.GuidExistsAsync(workspaceId, SyncConfigurationGuid).ConfigureAwait(false);
-			}
-		}
-
-		public static async Task<int> CreateType(int workspaceId, int parentObjectId, ISyncServiceManager servicesMgr)
-		{
-			ObjectTypeRequest objectTypeRequest = new ObjectTypeRequest
+			var objectTypeRequest = new ObjectTypeRequest
 			{
 				CopyInstancesOnCaseCreation = false,
 				CopyInstancesOnParentCopy = false,
 				EnableSnapshotAuditingOnDelete = true,
 				Keywords = null,
-				Name = $"{Guid.NewGuid()}",
+				Name = "Sync Configuration",
 				Notes = null,
 				ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier()),
 				PersistentListsEnabled = false,
@@ -297,13 +108,412 @@ namespace Relativity.Sync.RDOs
 				SamplingEnabled = false,
 				UseRelativityForms = null
 			};
-			
-			objectTypeRequest.ParentObjectType.Value.ArtifactTypeID = 
-				await ReadObjectTypeId(workspaceId, parentObjectId, servicesMgr).ConfigureAwait(false);
 
+			objectTypeRequest.ParentObjectType.Value.ArtifactTypeID = parentObjectTypeId;
+
+			return objectTypeRequest;
+		}
+
+		public static IDictionary<Guid, BaseFieldRequest> GetFieldsDefinition(int objectTypeId, int parentObjectTypeId) =>
+			new Dictionary<Guid, BaseFieldRequest>
+			{
+				{
+					CreateSavedSearchInDestinationGuid, 
+					new YesNoFieldRequest()
+					{
+						Name = GuidNames[CreateSavedSearchInDestinationGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					DataDestinationArtifactIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[DataDestinationArtifactIdGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					DataDestinationTypeGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[DataDestinationTypeGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					DataSourceArtifactIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[DataSourceArtifactIdGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					DataSourceTypeGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[DataSourceTypeGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					DestinationFolderStructureBehaviorGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[DestinationFolderStructureBehaviorGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					DestinationWorkspaceArtifactIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[DestinationWorkspaceArtifactIdGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					EmailNotificationRecipientsGuid,
+					new LongTextFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[EmailNotificationRecipientsGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					FieldMappingsGuid,
+					new LongTextFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[FieldMappingsGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					FieldOverlayBehaviorGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[FieldOverlayBehaviorGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					FolderPathSourceFieldNameGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[FolderPathSourceFieldNameGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					ImportOverwriteModeGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[ImportOverwriteModeGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					MoveExistingDocumentsGuid,
+					new YesNoFieldRequest()
+					{
+						FilterType = FilterType.Boolean,
+						Name = GuidNames[MoveExistingDocumentsGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					NativesBehaviorGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[NativesBehaviorGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					RdoArtifactTypeIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[RdoArtifactTypeIdGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					JobHistoryToRetryGuid,
+					new SingleObjectFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[JobHistoryToRetryGuid],
+						AssociativeObjectType = new ObjectTypeIdentifier { ArtifactID = parentObjectTypeId },
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					ImageImportGuid,
+					new YesNoFieldRequest()
+					{
+						FilterType = FilterType.Boolean,
+						Name = GuidNames[ImageImportGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					IncludeOriginalImagesGuid,
+					new YesNoFieldRequest()
+					{
+						FilterType = FilterType.Boolean,
+						Name = GuidNames[IncludeOriginalImagesGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					ProductionImagePrecedenceGuid,
+					new LongTextFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[ProductionImagePrecedenceGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					ImageFileCopyModeGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[ImageFileCopyModeGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+			};
+
+		#endregion
+
+		#region Sync Configuration RDO Methods
+
+		public async Task<int> SaveAsync(int workspaceId, int parentObjectId, ISyncServiceManager servicesMgr)
+		{
+			using (IObjectManager objectManager = servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				List<FieldRefValuePair> fields = new List<FieldRefValuePair>();
+
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = CreateSavedSearchInDestinationGuid
+					},
+					Value = CreateSavedSearchInDestination
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataDestinationArtifactIdGuid
+					},
+					Value = DataDestinationArtifactId
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataDestinationTypeGuid
+					},
+					Value = DataDestinationType
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataSourceArtifactIdGuid
+					},
+					Value = DataSourceArtifactId
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DataSourceTypeGuid
+					},
+					Value = DataSourceType
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DestinationFolderStructureBehaviorGuid
+					},
+					Value = DestinationFolderStructureBehavior
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = FolderPathSourceFieldNameGuid
+					},
+					Value = FolderPathSourceFieldName
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DestinationWorkspaceArtifactIdGuid
+					},
+					Value = DestinationWorkspaceArtifactId
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = EmailNotificationRecipientsGuid
+					},
+					Value = EmailNotificationRecipients
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = FieldMappingsGuid
+					},
+					Value = FieldsMapping
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = FieldOverlayBehaviorGuid
+					},
+					Value = FieldOverlayBehavior
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = ImportOverwriteModeGuid
+					},
+					Value = ImportOverwriteMode
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = MoveExistingDocumentsGuid
+					},
+					Value = MoveExistingDocuments
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = NativesBehaviorGuid
+					},
+					Value = NativesBehavior
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = RdoArtifactTypeIdGuid
+					},
+					Value = RdoArtifactTypeId
+				});
+				fields.Add(new FieldRefValuePair()
+				{
+					Field = new FieldRef()
+					{
+						Guid = ImageImportGuid
+					},
+					Value = ImageImport
+				});
+				fields.Add(new FieldRefValuePair()
+				{
+					Field = new FieldRef()
+					{
+						Guid = IncludeOriginalImagesGuid
+					},
+					Value = IncludeOriginalImages
+				});
+				fields.Add(new FieldRefValuePair()
+				{
+					Field = new FieldRef()
+					{
+						Guid = ImageFileCopyModeGuid
+					},
+					Value = ImageFileCopyMode
+				});
+				fields.Add(new FieldRefValuePair()
+				{
+					Field = new FieldRef()
+					{
+						Guid = ProductionImagePrecedenceGuid
+					},
+					Value = ProductionImagePrecedence
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = JobHistoryToRetryGuid
+					},
+					Value = JobHistoryToRetry
+				});
+
+				var request = new CreateRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = SyncConfigurationGuid
+					},
+					ParentObject = new RelativityObjectRef
+					{
+						ArtifactID = parentObjectId
+					},
+					FieldValues = fields
+				};
+
+				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
+				return result.Object.ArtifactID;
+			}
+		}
+
+		public static async Task<bool> ExistsAsync(int workspaceId, ISyncServiceManager servicesMgr)
+		{
+			using (IArtifactGuidManager artifactGuidManager =
+				servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+			{
+				return await artifactGuidManager.GuidExistsAsync(workspaceId, SyncConfigurationGuid).ConfigureAwait(false);
+			}
+		}
+
+		public static async Task<int> CreateTypeAsync(int workspaceId, int parentObjectId, ISyncServiceManager servicesMgr)
+		{
 			using (IObjectTypeManager objectTypeManager = servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
 			using (IArtifactGuidManager guidManager = servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
 			{
+				var parentObject = await ReadObjectAsync(workspaceId, parentObjectId, servicesMgr).ConfigureAwait(false);
+				
+				var objectTypeRequest = GetObjectTypeDefinition(parentObject.ObjectType.ArtifactTypeID);
+
 				int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
 
 				await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() { SyncConfigurationGuid })
@@ -311,9 +521,9 @@ namespace Relativity.Sync.RDOs
 
 				using (IFieldManager fieldManager = servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 				{
-					foreach (var fieldRequest in GetFieldsDefinition(objectTypeArtifactId))
+					foreach (var fieldRequest in GetFieldsDefinition(objectTypeArtifactId, parentObject.ObjectType.ArtifactID))
 					{
-						int fieldId = await CreateFieldInType(workspaceId, fieldRequest.Value, fieldManager).ConfigureAwait(false);
+						int fieldId = await CreateFieldInTypeAsync(workspaceId, fieldRequest.Value, fieldManager).ConfigureAwait(false);
 
 						await guidManager.CreateSingleAsync(workspaceId, fieldId, new List<Guid>() { fieldRequest.Key }).ConfigureAwait(false);
 					}
@@ -323,7 +533,7 @@ namespace Relativity.Sync.RDOs
 			}
 		}
 
-		private static async Task<int> CreateFieldInType(int workspaceId, 
+		private static async Task<int> CreateFieldInTypeAsync(int workspaceId, 
 			BaseFieldRequest fieldRequest, IFieldManager fieldManager)
 		{
 			if (fieldRequest is YesNoFieldRequest yesNoFieldRequest)
@@ -353,7 +563,7 @@ namespace Relativity.Sync.RDOs
 			}
 		}
 
-		private static async Task<int> ReadObjectTypeId(int workspaceId, int objectId, ISyncServiceManager servicesMgr)
+		private static async Task<ReadResult> ReadObjectAsync(int workspaceId, int objectId, ISyncServiceManager servicesMgr)
 		{
 			using (IObjectManager objectManager = servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -365,9 +575,7 @@ namespace Relativity.Sync.RDOs
 					}
 				};
 
-				var result = await objectManager.ReadAsync(workspaceId, request).ConfigureAwait(false);
-
-				return result.ObjectType.ArtifactTypeID;
+				return await objectManager.ReadAsync(workspaceId, request).ConfigureAwait(false);
 			}
 		}
 

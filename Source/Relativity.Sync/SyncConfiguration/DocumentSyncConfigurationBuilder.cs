@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Sync.Configuration;
@@ -12,6 +12,9 @@ namespace Relativity.Sync.SyncConfiguration
 	internal class DocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IDocumentSyncConfigurationBuilder
 	{
 		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
+
+		private Action<IFieldsMappingBuilder> _fieldsMappingAction;
+		private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
 		public DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
 				IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options) 
@@ -27,31 +30,18 @@ namespace Relativity.Sync.SyncConfiguration
 			SyncConfiguration.DataSourceArtifactId = options.SavedSearchId;
 			SyncConfiguration.DataDestinationArtifactId = options.DestinationFolderId;
 			SyncConfiguration.NativesBehavior = options.CopyNativesMode.GetDescription();
-
-			SetSyncConfigurationFieldsMapping(options.FieldsMapping);
 		}
 
 		public IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options)
 		{
-			DestinationFolderStructureCleanup();
+			_destinationFolderStructureOptions = options;
 
-			SyncConfiguration.DestinationFolderStructureBehavior = options.DestinationFolderStructure.ToString();
-			
-			if (options.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
-			{
-				using (var fieldManager = ServicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
-				{
-					var folderPathField = fieldManager.ReadAsync(SyncContext.SourceWorkspaceId, options.FolderPathSourceFieldId)
-						.GetAwaiter().GetResult();
+			return this;
+		}
 
-					SyncConfiguration.FolderPathSourceFieldName = folderPathField.Name;
-				}
-			}
-
-			if (options.DestinationFolderStructure != DestinationFolderStructureBehavior.None)
-			{
-				SyncConfiguration.MoveExistingDocuments = options.MoveExistingDocuments;
-			}
+		public IDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMapping)
+		{
+			_fieldsMappingAction = fieldsMapping;
 
 			return this;
 		}
@@ -84,32 +74,59 @@ namespace Relativity.Sync.SyncConfiguration
 			return this;
 		}
 
-		#region Private methods
-		private void SetSyncConfigurationFieldsMapping(List<FieldMap> fieldsMapping)
+		protected override async Task ValidateAsync()
 		{
-			if (fieldsMapping != null && fieldsMapping.Any())
-			{
-				if (!FieldsMappingHasSingleIdentifierMap(fieldsMapping))
-				{
-					throw new InvalidSyncConfigurationException("Fields Mapping contains more than one Identifier map");
-				}
+			SetFieldsMapping();
 
-				SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
+			await SetDestinationFolderStructureAsync().ConfigureAwait(false);
+		}
+
+		#region Private methods
+
+		private void SetFieldsMapping()
+		{
+			if (_fieldsMappingAction != null)
+			{
+				_fieldsMappingAction(_fieldsMappingBuilder);
 			}
 			else
 			{
-				var defaultFieldsMapping = _fieldsMappingBuilder.WithIdentifier().FieldsMapping;
-				SyncConfiguration.FieldsMapping = Serializer.Serialize(defaultFieldsMapping);
+				_fieldsMappingBuilder.WithIdentifier();
+			}
+
+			SyncConfiguration.FieldsMapping = Serializer.Serialize(
+				_fieldsMappingBuilder.FieldsMapping);
+		}
+
+		private async Task SetDestinationFolderStructureAsync()
+		{
+			if (_destinationFolderStructureOptions == null)
+			{
+				return;
+			}
+
+			DestinationFolderStructureCleanup();
+
+			SyncConfiguration.DestinationFolderStructureBehavior = 
+				_destinationFolderStructureOptions.DestinationFolderStructure.ToString();
+
+			if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
+			{
+				using (var fieldManager = ServicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
+				{
+					var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
+						_destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);
+
+					SyncConfiguration.FolderPathSourceFieldName = folderPathField.Name;
+				}
+			}
+
+			if (_destinationFolderStructureOptions.DestinationFolderStructure != DestinationFolderStructureBehavior.None)
+			{
+				SyncConfiguration.MoveExistingDocuments = _destinationFolderStructureOptions.MoveExistingDocuments;
 			}
 		}
-
-		private bool FieldsMappingHasSingleIdentifierMap(List<FieldMap> fieldsMapping)
-		{
-			return fieldsMapping.Count(x => x.SourceField.IsIdentifier
-			                                || x.DestinationField.IsIdentifier
-			                                || x.FieldMapType == FieldMapType.Identifier) == 1;
-		}
-
+		
 		private void DestinationFolderStructureCleanup()
 		{
 			SyncConfiguration.DestinationFolderStructureBehavior = null;

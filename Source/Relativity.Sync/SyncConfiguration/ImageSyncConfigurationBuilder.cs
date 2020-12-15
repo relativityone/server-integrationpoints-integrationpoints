@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Storage;
+﻿using System.Threading.Tasks;
+using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
 
@@ -6,10 +7,14 @@ namespace Relativity.Sync.SyncConfiguration
 {
 	internal class ImageSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IImageSyncConfigurationBuilder
 	{
+		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
+
 		public ImageSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
 				IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options) 
 			: base(syncContext, servicesMgr, serializer)
 		{
+			_fieldsMappingBuilder = fieldsMappingBuilder;
+
 			SyncConfiguration.ImageImport = true;
 			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
 			SyncConfiguration.DataSourceType = options.DataSourceType.ToString();
@@ -18,9 +23,6 @@ namespace Relativity.Sync.SyncConfiguration
 			SyncConfiguration.DataDestinationArtifactId = options.DestinationLocationId;
 			SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode.GetDescription();
 			SyncConfiguration.IncludeOriginalImages = true;
-
-			var fieldsMapping = fieldsMappingBuilder.WithIdentifier().FieldsMapping;
-			SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
 		}
 
 		public new IImageSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
@@ -57,6 +59,20 @@ namespace Relativity.Sync.SyncConfiguration
 			SyncConfiguration.IncludeOriginalImages = options.IncludeOriginalImagesIfNotFoundInProductions;
 
 			return this;
+		}
+
+		protected override Task ValidateAsync()
+		{
+			SetFieldsMapping();
+
+			return Task.CompletedTask;
+		}
+
+		private void SetFieldsMapping()
+		{
+			var fieldsMapping = _fieldsMappingBuilder.WithIdentifier().FieldsMapping;
+
+			SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
 		}
 	}
 }

@@ -54,10 +54,11 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		}
 
 		[Test]
-		public async Task Create_DocumentSyncConfigurationWithMappingAndNativeCopyMode()
+		public async Task Create_DocumentSyncConfigurationWithMapping()
 		{
 			// Arrange
-			var nativeCopyMode = ImportNativeFileCopyMode.CopyFiles;
+			const string extractedTextField = "Extracted Text";
+
 			var identifierFieldsMapping = await GetIdentifierMappingAsync(SourceWorkspaceId, DestinationWorkspaceId)
 				.ConfigureAwait(false);
 			var extractedTextFieldsMapping = await GetExtractedTextMappingAsync(SourceWorkspaceId, DestinationWorkspaceId)
@@ -66,17 +67,18 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			var expectedFieldsMapping = identifierFieldsMapping.Concat(extractedTextFieldsMapping).ToList();
 
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync(expectedFieldsMapping).ConfigureAwait(false);
-			expectedSyncConfiguration.NativesBehavior = "Copy";
 
 			ISyncContext syncContext =
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId, 
-				expectedFieldsMapping.ToList(), nativeCopyMode);
-
 			// Act
 			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
-				.ConfigureDocumentSync(options)
+				.ConfigureDocumentSync(
+					new DocumentSyncOptions(_savedSearchId, _destinationFolderId))
+				.WithFieldsMapping(builder => 
+					builder
+						.WithIdentifier()
+						.WithField(extractedTextField, extractedTextField))
 				.Build();
 
 			// Assert
@@ -108,10 +110,12 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 		private static IEnumerable<object[]> OverwriteModeDataSource => new List<object[]>()
 		{
-			new object[] {OverwriteOptions.AppendOnly(), "AppendOnly", "Use Field Settings"},
-			new object[] {OverwriteOptions.AppendOverlay(FieldOverlayBehavior.ReplaceValues), "AppendOverlay", "Replace Values"},
-			new object[] {OverwriteOptions.AppendOverlay(FieldOverlayBehavior.MergeValues), "AppendOverlay", "Merge Values"},
-			new object[] {OverwriteOptions.OverlayOnly(), "OverlayOnly", "Use Field Settings"}
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly), "AppendOnly", "Use Field Settings"},
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) {FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues},
+				"AppendOverlay", "Replace Values"},
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
+				"AppendOverlay", "Merge Values"},
+			new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), "OverlayOnly", "Use Field Settings"}
 		};
 
 		[TestCaseSource(nameof(OverwriteModeDataSource))]
@@ -151,7 +155,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
 			DestinationFolderStructureOptions folderOptions = 
-				DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace(true);
+				DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
+			folderOptions.MoveExistingDocuments = true;
 
 			// Act
 			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
@@ -180,8 +185,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
 			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
-			DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.ReadFromField(
-				documentFolderPathFieldId, true);
+			DestinationFolderStructureOptions folderOptions = 
+				DestinationFolderStructureOptions.ReadFromField(documentFolderPathFieldId);
+			folderOptions.MoveExistingDocuments = true;
 
 			// Act
 			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
@@ -231,12 +237,12 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
 			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
-			CreateSavedSearchOptions searchOptions = new CreateSavedSearchOptions(true);
 
 			// Act
 			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
-				.CreateSavedSearch(searchOptions)
+				.CreateSavedSearch(
+					new CreateSavedSearchOptions { CreateSavedSearchInDestination = true})
 				.Build();
 
 			// Assert
