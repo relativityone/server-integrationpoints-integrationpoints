@@ -14,6 +14,12 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
 using User = Relativity.Services.User.User;
 using Newtonsoft.Json;
+using Relativity.API;
+using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Interfaces.Shared;
+using Relativity.Services.Interfaces.Shared.Models;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
@@ -500,6 +506,43 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			using (IUserManager userInfoManager = serviceFactory.CreateProxy<IUserManager>())
 			{
 				return await userInfoManager.RetrieveCurrentAsync(workspaceId).ConfigureAwait(false);
+			}
+		}
+
+		public static async Task<int> CreateBasicRdoTypeAsync(ServiceFactory serviceFactory, 
+			int workspaceId, string typeName, ObjectTypeIdentifier parentObjectType)
+		{
+			ObjectTypeRequest objectTypeRequest = new ObjectTypeRequest
+			{
+				ParentObjectType = new Securable<ObjectTypeIdentifier>(parentObjectType),
+				Name = typeName
+			};
+
+			using (IObjectTypeManager objectTypeManager = serviceFactory.CreateProxy<IObjectTypeManager>())
+			using (IArtifactGuidManager guidManager = serviceFactory.CreateProxy<IArtifactGuidManager>())
+			{
+				int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
+
+				await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() { Guid.NewGuid() })
+					.ConfigureAwait(false);
+
+				return objectTypeArtifactId;
+			}
+		}
+
+		public static async Task<RelativityObject> CreateBasicRdoAsync(ServiceFactory serviceFactory, int workspaceId, int objectTypeId)
+		{
+			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			{
+				CreateRequest request = new CreateRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						ArtifactID = objectTypeId
+					}
+				};
+				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
+				return result.Object;
 			}
 		}
 

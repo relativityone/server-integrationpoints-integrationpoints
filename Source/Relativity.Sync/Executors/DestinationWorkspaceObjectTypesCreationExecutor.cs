@@ -98,7 +98,7 @@ namespace Relativity.Sync.Executors
 			return new ObjectTypeRequest()
 			{
 				ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier()),
-				Name = name,
+				Name = "Sync Configuration",
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnCaseCreation = false,
 				EnableSnapshotAuditingOnDelete = false,
