@@ -3,6 +3,7 @@ using Relativity.Sync.Configuration;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Caching;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {
@@ -12,7 +13,6 @@ namespace Relativity.Sync.Storage
 		private readonly IFieldMappings _fieldMappings;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Storage
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 
-		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
+		public int DataSourceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid);
 
 		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
 

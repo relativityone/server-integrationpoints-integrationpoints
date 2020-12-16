@@ -1,6 +1,7 @@
 ﻿using Relativity.Sync.Configuration;
 using System;
 using System.Threading.Tasks;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
@@ -11,7 +12,6 @@ namespace Relativity.Sync.Storage
 		private readonly ISerializer _serializer;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 		private static readonly Guid IncludeOriginalImagesGuid = new Guid("F2CAD5C5-63D5-49FC-BD47-885661EF1D8B");
@@ -31,7 +31,7 @@ namespace Relativity.Sync.Storage
 
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 
-		public int DataSourceArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
+		public int DataSourceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid);
 
 		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
 
