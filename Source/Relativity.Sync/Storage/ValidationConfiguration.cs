@@ -11,7 +11,6 @@ namespace Relativity.Sync.Storage
 		private readonly IConfiguration _cache;
 		private readonly IFieldMappings _fieldMappings;
 
-		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
@@ -52,7 +51,7 @@ namespace Relativity.Sync.Storage
 
 		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).Name;
 
-		public string GetNotificationEmails() => _cache.GetFieldValue<string>(EmailNotificationRecipientsGuid);
+		public string GetNotificationEmails() => _cache.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid);
 
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 

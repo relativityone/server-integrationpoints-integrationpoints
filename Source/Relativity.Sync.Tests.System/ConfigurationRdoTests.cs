@@ -30,7 +30,6 @@ namespace Relativity.Sync.Tests.System
 		private int _jobHistoryArtifactId;
 
 		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
-		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
@@ -101,7 +100,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid);
 			configuration.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
 			configuration.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
-			configuration.GetFieldValue<string>(EmailNotificationRecipientsGuid);
+			configuration.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid);
 			configuration.GetFieldValue<string>(FieldMappingsGuid);
 			configuration.GetFieldValue<string>(FieldOverlayBehaviorGuid);
 			configuration.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
@@ -252,7 +251,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = EmailNotificationRecipientsGuid
+					Guid = SyncConfigurationRdo.EmailNotificationRecipientsGuid
 				},
 				Value = "emails"
 			};

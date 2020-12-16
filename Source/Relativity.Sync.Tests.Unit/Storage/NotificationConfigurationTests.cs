@@ -16,7 +16,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	{
 		private static readonly string[] TestEmailRecipients = { "relativity.admin@kcura.com", string.Empty, "relativity-sync@kcura.onmicrosoft.com", "distro_list@relativity.com" };
 
-		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
 
@@ -27,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", TestEmailRecipients);
-			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -37,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualResult.Should().BeTrue();
-			cache.Verify(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]
@@ -47,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", string.Empty);
-			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -57,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualResult.Should().BeFalse();
-			cache.Verify(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]
@@ -67,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", TestEmailRecipients);
-			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -82,7 +81,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualEmailRecipients.Should().NotBeNullOrEmpty();
-			cache.Verify(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]
@@ -92,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", TestEmailRecipients);
-			cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -104,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			int expectedNumberOfRecipients = TestEmailRecipients.Length - 1;    // removing one empty entry
 			actualEmailRecipients.Should().NotBeNullOrEmpty();
 			actualEmailRecipients.Should().HaveCount(expectedNumberOfRecipients);
-			cache.Verify(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]

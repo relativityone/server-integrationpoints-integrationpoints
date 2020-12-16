@@ -75,7 +75,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
@@ -625,7 +624,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = EmailNotificationRecipientsGuid
+							Guid = SyncConfigurationRdo.EmailNotificationRecipientsGuid
 						},
 						Value = configuration.GetNotificationEmails()
 					},
