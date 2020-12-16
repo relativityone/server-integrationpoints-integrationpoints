@@ -416,6 +416,10 @@
 		"Exception": "*kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Net.WebException: The request failed with HTTP status 503: Service Unavailable.*"
 	},
 	{
+		"Jira": "REL-497730",
+		"Exception": "*System.Net.WebException: Unable to connect to the remote server*System.Net.Sockets.SocketException*at kCura.WinEDDS.Service.UserManager.LoginInternal*"
+	},
+	{
 		"Jira": "REL-497731",
 		"Exception": "*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: Bad or inaccessible location specified in external data source*"
 	},
@@ -426,5 +430,13 @@
 	{
 		"Jira": "REL-498741",
 		"Exception": "Relativity.Services.Exceptions.ServiceException: Could not retrieve ApplicationID *"
+	},
+	{
+		"Jira": "REL-503811",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.NullReferenceException: Object reference not set to an instance of an object.*at Relativity.Sync.Transfer.BatchDataReader.GetValue(Int32 i)*"
+	},
+	{
+		"Jira": "REL-503860",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.Net.WebException: The remote name could not be resolved*t kCura.WinEDDS.BulkLoadFileImporter.WaitOnPushBatchTask()*"
 	}
 ]

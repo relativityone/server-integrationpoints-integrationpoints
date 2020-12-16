@@ -1,14 +1,15 @@
 ﻿using System.Net;
+using System.Security;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
-using Relativity.Services.Environmental;
 using Relativity.Services.InstanceSetting;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using System.Data.SqlClient;
-using System.Security;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -33,6 +34,9 @@ namespace Relativity.Sync.Tests.System.Core
 			await ConfigureRequiredInstanceSettings().ConfigureAwait(false);
 
 			OverrideBanzaiLogger();
+
+			RelativityFacade.Instance.RelyOn<CoreComponent>();
+			RelativityFacade.Instance.RelyOn<ApiComponent>();
 		}
 
 		private static void SuppressCertificateCheckingIfConfigured()
