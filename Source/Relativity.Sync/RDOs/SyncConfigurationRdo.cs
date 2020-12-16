@@ -59,7 +59,7 @@ namespace Relativity.Sync.RDOs
 		public static readonly Guid ImageImportGuid = new Guid("B282BBE4-7B32-41D1-BB50-960A0E483BB5");
 		public static readonly Guid IncludeOriginalImagesGuid = new Guid("F2CAD5C5-63D5-49FC-BD47-885661EF1D8B");
 		public static readonly Guid ProductionImagePrecedenceGuid = new Guid("421CF05E-BAB4-4455-A9CA-FA83D686B5ED");
-		public static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
+		public static readonly Guid ImageFileCopyModeGuid = new Guid("BD5DC6D2-FAA2-4312-8DC0-4D1B6945DFE1");
 
 		public static readonly IDictionary<Guid, string> GuidNames = new Dictionary<Guid, string>
 		{

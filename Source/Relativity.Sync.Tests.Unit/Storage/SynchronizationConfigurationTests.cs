@@ -26,8 +26,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
 		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 
-		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -168,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// ARRANGE
 			ImportImageFileCopyMode imageCopyMode = ImportImageFileCopyMode.CopyFiles;
-			_cache.Setup(x => x.GetFieldValue<string>(ImageFileCopyModeGuid)).Returns(imageCopyMode.ToString());
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid)).Returns(imageCopyMode.ToString());
 
 			// ACT
 			ImportImageFileCopyMode actualImportImageFileCopyMode = _syncConfig.ImportImageFileCopyMode;

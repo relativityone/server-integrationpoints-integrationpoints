@@ -39,8 +39,6 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
 
-		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
-
 		protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
@@ -109,7 +107,7 @@ namespace Relativity.Sync.Tests.System
 
 			configuration.GetFieldValue<bool>(SyncConfigurationRdo.ImageImportGuid);
 			configuration.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid);
-			configuration.GetFieldValue<string>(ImageFileCopyModeGuid);
+			configuration.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.ProductionImagePrecedenceGuid);
 		}
 
@@ -376,7 +374,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef()
 				{
-					Guid = ImageFileCopyModeGuid
+					Guid = SyncConfigurationRdo.ImageFileCopyModeGuid
 				},
 				Value = "Links"
 			};
