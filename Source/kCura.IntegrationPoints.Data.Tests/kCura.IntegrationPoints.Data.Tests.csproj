@@ -173,6 +173,7 @@
     <Compile Include="Repositories\Implementations\SecretsRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\TabRepositoryTests.cs" />
     <Compile Include="ResourceDbProviderTests.cs" />
     <Compile Include="RetryHandlerFactoryTests.cs" />
     <Compile Include="RetryHandlerTests.cs" />

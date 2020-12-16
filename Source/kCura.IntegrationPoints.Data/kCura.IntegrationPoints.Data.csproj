@@ -216,7 +216,7 @@
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\ObjectTypeRepository.cs" />
-    <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
+    <Compile Include="Repositories\Implementations\TabRepository.cs" />
     <Compile Include="FileInfo.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
     <Compile Include="Repositories\IFieldQueryRepository.cs" />
