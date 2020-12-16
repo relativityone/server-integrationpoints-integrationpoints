@@ -30,7 +30,6 @@ namespace Relativity.Sync.Tests.System
 		private int _jobHistoryArtifactId;
 
 		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
-		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
@@ -101,7 +100,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldOverlayBehaviorGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid);
-			configuration.GetFieldValue<string>(ImportOverwriteModeGuid);
+			configuration.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid);
 			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
 			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryToRetryGuid);
 			configuration.GetFieldValue<bool>(MoveExistingDocumentsGuid);
@@ -280,7 +279,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = ImportOverwriteModeGuid
+					Guid = SyncConfigurationRdo.ImportOverwriteModeGuid
 				},
 				Value = "overwrite mode"
 			};

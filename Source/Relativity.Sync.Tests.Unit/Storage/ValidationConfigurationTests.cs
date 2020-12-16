@@ -18,7 +18,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private Mock<IFieldMappings> _fieldMappings;
 		private const int _WORKSPACE_ID = 111;
 		
-		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 
 		[SetUp]
@@ -96,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveImportOverwriteMode()
 		{
 			ImportOverwriteMode expected = ImportOverwriteMode.AppendOverlay;
-			_cache.Setup(x => x.GetFieldValue<string>(ImportOverwriteModeGuid)).Returns("AppendOverlay");
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid)).Returns("AppendOverlay");
 			_configuration.ImportOverwriteMode.Should().Be(expected);
 		}
 

@@ -13,7 +13,6 @@ namespace Relativity.Sync.Storage
 		private readonly ISerializer _serializer;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
@@ -48,8 +47,8 @@ namespace Relativity.Sync.Storage
 
 		public ImportOverwriteMode ImportOverwriteMode
 		{
-			get => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(ImportOverwriteModeGuid)));
-			set => _cache.UpdateFieldValueAsync(ImportOverwriteModeGuid, value.ToString());
+			get => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid)));
+			set => _cache.UpdateFieldValueAsync(SyncConfigurationRdo.ImportOverwriteModeGuid, value.ToString());
 		}
 	}
 }
