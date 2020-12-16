@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Relativity.Automation.Utility;
-using Relativity.Automation.Utility.Api;
 using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.System.Core;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 
 // ReSharper disable once CheckNamespace
 // No namespace applies this to the whole assembly
@@ -20,8 +19,6 @@ public class PerformanceTestsSetup : InstanceTestsSetup
 			throw new FileNotFoundException(
 				@"*.runsettings File is not set. Set File in VS -> Test -> Select Settings File. If file doesn't exist generate it by .\Development Scripts\New-TestSettings.ps1.");
 		}
-
-		RelativityFacade.Instance.RelyOn<ApiComponent>();
 
 		ARMHelper.CreateInstance();
 	}
