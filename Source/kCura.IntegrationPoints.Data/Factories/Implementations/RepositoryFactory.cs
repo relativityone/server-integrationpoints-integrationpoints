@@ -217,7 +217,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IErrorRepository GetErrorRepository()
 		{
-			IErrorRepository repository = new RsapiErrorRepository(_helper);
+			IErrorRepository repository = new ErrorRepository(_helper);
 
 			return repository;
 		}

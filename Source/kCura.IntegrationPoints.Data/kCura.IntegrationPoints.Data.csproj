@@ -211,7 +211,7 @@
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
     <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
-    <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\ErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
