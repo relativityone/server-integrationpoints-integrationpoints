@@ -18,7 +18,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private Mock<IFieldMappings> _fieldMappings;
 		private const int _WORKSPACE_ID = 111;
 		
-		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
@@ -109,7 +108,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveDestinationFolderStructureBehavior()
 		{
 			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
-			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns("ReadFromField");
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid)).Returns("ReadFromField");
 			_configuration.DestinationFolderStructureBehavior.Should().Be(expected);
 		}
 

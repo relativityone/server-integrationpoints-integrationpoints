@@ -75,9 +75,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		private static readonly Guid DestinationFolderStructureBehaviorGuid =
-			new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
-
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid =
 			new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 
@@ -607,7 +604,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = DestinationFolderStructureBehaviorGuid
+							Guid = SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid
 						},
 						Value = configuration.DestinationFolderStructureBehavior.ToString()
 					},

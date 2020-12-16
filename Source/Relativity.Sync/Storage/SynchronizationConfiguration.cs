@@ -25,7 +25,6 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
 
-		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
@@ -72,7 +71,7 @@ namespace Relativity.Sync.Storage
 		public int RdoArtifactTypeId => _cache.GetFieldValue<int>(RdoArtifactTypeIdGuid);
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)));
+			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid)));
 		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(ImportOverwriteModeGuid)));
 		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue<string>(FieldOverlayBehaviorGuid).GetEnumFromDescription<FieldOverlayBehavior>();
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue<string>(NativesBehaviorGuid).GetEnumFromDescription<ImportNativeFileCopyMode>();
