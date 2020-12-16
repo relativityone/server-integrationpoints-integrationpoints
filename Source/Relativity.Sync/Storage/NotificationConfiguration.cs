@@ -15,7 +15,6 @@ namespace Relativity.Sync.Storage
 		private readonly SyncJobParameters _syncJobParameters;
 
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
 
 		public NotificationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
@@ -39,6 +38,6 @@ namespace Relativity.Sync.Storage
 
 		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).Name;
 
-		public string GetSourceWorkspaceTag() => _cache.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
+		public string GetSourceWorkspaceTag() => _cache.GetFieldValue<string>(SyncConfigurationRdo.SourceWorkspaceTagNameGuid);
 	}
 }

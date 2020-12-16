@@ -16,11 +16,7 @@ namespace Relativity.Sync.Storage
 		private readonly ISerializer _serializer;
 		private readonly ISyncLog _syncLog;
 
-		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
-		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 
 		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISerializer serializer, ISyncLog syncLog)
 		{
@@ -34,12 +30,12 @@ namespace Relativity.Sync.Storage
 		public char NestedValueDelimiter => (char) _ASCII_GROUP_SEPARATOR;
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
 		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid);
-		public int DestinationWorkspaceTagArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
+		public int DestinationWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid);
 		public Guid ExportRunId
 		{
 			get
 			{
-				string runId = _cache.GetFieldValue<string>(SnapshotIdGuid);
+				string runId = _cache.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid);
 				Guid guid;
 				if (Guid.TryParse(runId, out guid))
 				{
@@ -52,9 +48,9 @@ namespace Relativity.Sync.Storage
 		}
 
 		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
-		public int SourceJobTagArtifactId => _cache.GetFieldValue<int>(SourceJobTagArtifactIdGuid);
+		public int SourceJobTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.SourceJobTagArtifactIdGuid);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
-		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
+		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid);
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 		public bool MoveExistingDocuments => _cache.GetFieldValue<bool>(SyncConfigurationRdo.MoveExistingDocumentsGuid);
 		public int RdoArtifactTypeId => _cache.GetFieldValue<int>(SyncConfigurationRdo.RdoArtifactTypeIdGuid);

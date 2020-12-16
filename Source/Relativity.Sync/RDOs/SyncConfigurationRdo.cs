@@ -25,6 +25,7 @@ namespace Relativity.Sync.RDOs
 		public string DestinationFolderStructureBehavior { get; set; }
 		public string FolderPathSourceFieldName { get; set; }
 		public bool CreateSavedSearchInDestination { get; set; }
+		public int SavedSearchInDestinationArtifactId { get; set; }
 		public string ImportOverwriteMode { get; set; }
 		public string FieldOverlayBehavior { get; set; }
 		public string FieldsMapping { get; set; }
@@ -37,10 +38,20 @@ namespace Relativity.Sync.RDOs
 		public string EmailNotificationRecipients { get; set; }
 		public RelativityObject JobHistoryToRetry { get; set; }
 
+
+		public string SnapshotId { get; set; }
+		public int SnapshotRecordsCount { get; set; }
+		public int SourceJobTagArtifactId { get; set; }
+		public string SourceJobTagName { get; set; }
+		public int SourceWorkspaceTagArtifactId { get; set; }
+		public string SourceWorkspaceTagName { get; set; }
+		public int DestinationWorkspaceTagArtifactId { get; set; }
+
 		#region GUIDs
 		public static readonly Guid SyncConfigurationGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		public static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
+		public static readonly Guid SavedSearchInDestinationArtifactIdGuid = new Guid("83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31");
 		public static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 		public static readonly Guid DataDestinationTypeGuid = new Guid("86D9A34A-B394-41CF-BFF4-BD4FF49A932D");
 		public static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
@@ -61,9 +72,18 @@ namespace Relativity.Sync.RDOs
 		public static readonly Guid ProductionImagePrecedenceGuid = new Guid("421CF05E-BAB4-4455-A9CA-FA83D686B5ED");
 		public static readonly Guid ImageFileCopyModeGuid = new Guid("BD5DC6D2-FAA2-4312-8DC0-4D1B6945DFE1");
 
+		public static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
+		public static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
+		public static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
+		public static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
+		public static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
+		public static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
+		public static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
+
 		public static readonly IDictionary<Guid, string> GuidNames = new Dictionary<Guid, string>
 		{
 			{CreateSavedSearchInDestinationGuid, "Create Saved Search in Destination"},
+			{SavedSearchInDestinationArtifactIdGuid, "Saved Search In Destination Artifact ID"},
 			{DataDestinationArtifactIdGuid, "Data Destination Artifact ID"},
 			{DataDestinationTypeGuid, "Data Destination Type"},
 			{DataSourceArtifactIdGuid, "Data Source Artifact ID"},
@@ -83,6 +103,14 @@ namespace Relativity.Sync.RDOs
 			{IncludeOriginalImagesGuid, "Include Original Images"},
 			{ProductionImagePrecedenceGuid, "Production Image Precedence"},
 			{ImageFileCopyModeGuid, "Image File Copy Mode"},
+			
+			{SnapshotIdGuid, "Snapshot ID"},
+			{SnapshotRecordsCountGuid , "Snapshot Records Count"},
+			{SourceJobTagArtifactIdGuid, "Source Job Tag Artifact ID"},
+			{SourceJobTagNameGuid, "Source Job Tag Name"},
+			{SourceWorkspaceTagArtifactIdGuid, "Source Workspace Tag Artifact ID"},
+			{SourceWorkspaceTagNameGuid, "Source Workspace Tag Name"},
+			{DestinationWorkspaceTagArtifactIdGuid, "Destination Workspace Tag Artifact ID"},
 		};
 
 		#endregion
@@ -120,6 +148,15 @@ namespace Relativity.Sync.RDOs
 					new YesNoFieldRequest()
 					{
 						Name = GuidNames[CreateSavedSearchInDestinationGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					SavedSearchInDestinationArtifactIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[SavedSearchInDestinationArtifactIdGuid],
 						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
 					}
 				},
@@ -303,6 +340,72 @@ namespace Relativity.Sync.RDOs
 						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
 					}
 				},
+				{
+					SnapshotIdGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[SnapshotIdGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					SnapshotRecordsCountGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[SnapshotRecordsCountGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					SourceJobTagArtifactIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[SourceJobTagArtifactIdGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					SourceJobTagNameGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[SourceJobTagNameGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					SourceWorkspaceTagArtifactIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[SourceWorkspaceTagArtifactIdGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					SourceWorkspaceTagNameGuid,
+					new FixedLengthFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[SourceWorkspaceTagNameGuid],
+						Length = 255,
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
+				{
+					DestinationWorkspaceTagArtifactIdGuid,
+					new WholeNumberFieldRequest()
+					{
+						FilterType = FilterType.TextBox,
+						Name = GuidNames[DestinationWorkspaceTagArtifactIdGuid],
+						ObjectType = new ObjectTypeIdentifier { ArtifactID = objectTypeId },
+					}
+				},
 			};
 
 		#endregion
@@ -322,6 +425,14 @@ namespace Relativity.Sync.RDOs
 						Guid = CreateSavedSearchInDestinationGuid
 					},
 					Value = CreateSavedSearchInDestination
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = SavedSearchInDestinationArtifactIdGuid
+					},
+					Value = SavedSearchInDestinationArtifactId
 				});
 				fields.Add(new FieldRefValuePair
 				{
@@ -474,6 +585,62 @@ namespace Relativity.Sync.RDOs
 						Guid = JobHistoryToRetryGuid
 					},
 					Value = JobHistoryToRetry
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = SnapshotIdGuid
+					},
+					Value = SnapshotId
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = SnapshotRecordsCountGuid
+					},
+					Value = SnapshotRecordsCount
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = SourceJobTagArtifactIdGuid
+					},
+					Value = SourceJobTagArtifactId
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = SourceJobTagNameGuid
+					},
+					Value = SourceJobTagName
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = SourceWorkspaceTagArtifactIdGuid
+					},
+					Value = SourceWorkspaceTagArtifactId
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = SourceWorkspaceTagNameGuid
+					},
+					Value = SourceWorkspaceTagName
+				});
+				fields.Add(new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						Guid = DestinationWorkspaceTagArtifactIdGuid
+					},
+					Value = DestinationWorkspaceTagArtifactId
 				});
 
 				var request = new CreateRequest

@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 2;
 
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 
 		[SetUp]
 		public void SetUp()
@@ -74,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetDestinationWorkspaceTagArtifactIdAsync(artifactId).ConfigureAwait(false);
 
 			// assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(DestinationWorkspaceTagArtifactIdGuid, artifactId));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid, artifactId));
 			_config.IsDestinationWorkspaceTagArtifactIdSet.Should().BeTrue();
 		}
 

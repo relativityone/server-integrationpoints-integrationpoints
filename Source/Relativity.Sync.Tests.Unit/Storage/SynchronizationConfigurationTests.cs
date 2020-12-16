@@ -20,11 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const int _JOB_ID = 2;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 3;
 
-		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
-		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
 
 		[SetUp]
 		public void SetUp()
@@ -61,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationWorkspaceTagArtifactId_ShouldReturnDestinationWorkspaceTagArtifactId()
 		{
 			const int destinationWorkspaceTagArtifactId = 3;
-			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid)).Returns(destinationWorkspaceTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid)).Returns(destinationWorkspaceTagArtifactId);
 
 			// act
 			int actualDestinationWorkspaceTagArtifactId = _syncConfig.DestinationWorkspaceTagArtifactId;
@@ -87,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SourceJobTagArtifactId_ShouldReturnSourceJobTagName()
 		{
 			const int sourceJobTagArtifactId = 105649;
-			_cache.Setup(x => x.GetFieldValue<int>(SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
 
 			// act
 			int actualSourceJobTagName = _syncConfig.SourceJobTagArtifactId;
@@ -100,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SourceWorkspaceTagArtifactId_ShouldReturnSourceWorkspaceTagName()
 		{
 			const int sourceWorkspaceTagArtifactId = 105656;
-			_cache.Setup(x => x.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
 
 			// act
 			int actualSourceJobTagName = _syncConfig.SourceWorkspaceTagArtifactId;
@@ -138,7 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// ARRANGE
 			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
 
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Guid actualRunId = _syncConfig.ExportRunId;
@@ -181,7 +177,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
 		public void ExportRunId_ShouldReturnEmptyGuidForInvalidString(string runId)
 		{
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Action action = () =>

@@ -166,11 +166,14 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 					{
 						ArtifactTypeID = (int) ArtifactType.Field
 					},
-					Condition = $"'FieldArtifactTypeID' == {configurationTypeId}" +
+					IncludeNameInQueryResult = true,
+					Condition = $"'FieldArtifactTypeID' == {configurationTypeId} " +
 					            $" AND 'DisplayName' IN [{string.Join(",", SyncConfigurationRdo.GetFieldsDefinition(0, 0).Values.Select(x => $"'{x.Name}'"))}]"
 				};
 
 				var result = await objectManager.QueryAsync(workspaceId, request, 1, 100).ConfigureAwait(false);
+
+				result.Objects.ForEach(x => x.Name = x.Name.ToLower());
 
 				return result.Objects;
 			}

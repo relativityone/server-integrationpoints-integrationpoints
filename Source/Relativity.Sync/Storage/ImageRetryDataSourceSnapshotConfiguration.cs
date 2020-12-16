@@ -13,9 +13,6 @@ namespace Relativity.Sync.Storage
 		private readonly ISerializer _serializer;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
-
 		public ImageRetryDataSourceSnapshotConfiguration(IConfiguration cache, ISerializer serializer, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
@@ -32,12 +29,12 @@ namespace Relativity.Sync.Storage
 
 		public int DataSourceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid);
 
-		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SnapshotIdGuid));
+		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid));
 
 		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{
-			await _cache.UpdateFieldValueAsync(SnapshotIdGuid, runId.ToString()).ConfigureAwait(false);
-			await _cache.UpdateFieldValueAsync(SnapshotRecordsCountGuid, totalRecordsCount).ConfigureAwait(false);
+			await _cache.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, runId.ToString()).ConfigureAwait(false);
+			await _cache.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount).ConfigureAwait(false);
 		}
 
 		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)?.ArtifactID;

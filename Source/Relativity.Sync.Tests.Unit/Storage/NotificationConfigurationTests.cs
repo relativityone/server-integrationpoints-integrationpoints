@@ -17,7 +17,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private static readonly string[] TestEmailRecipients = { "relativity.admin@kcura.com", string.Empty, "relativity-sync@kcura.onmicrosoft.com", "distro_list@relativity.com" };
 
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
 
 		[Test]
 		public void SendEmailsReturnsTrueWhenEmailsExistTest()
@@ -119,7 +118,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(expectedDestinationWorkspaceArtifactId).Verifiable();
 			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = expectedJobHistoryArtifactId, Name = expectedJobName }).Verifiable();
-			cache.Setup(x => x.GetFieldValue<string>(SourceWorkspaceTagNameGuid)).Returns(expectedSourceWorkspaceTag).Verifiable();
+			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SourceWorkspaceTagNameGuid)).Returns(expectedSourceWorkspaceTag).Verifiable();
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
