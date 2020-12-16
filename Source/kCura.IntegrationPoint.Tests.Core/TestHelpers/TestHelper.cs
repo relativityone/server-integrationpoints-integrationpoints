@@ -20,6 +20,7 @@ using Relativity.Services.Interfaces.Group;
 using ARMTestServices.Services.Interfaces;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.InternalMetricsCollection;
+using Relativity.Services.View;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -70,6 +71,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			RegisterProxyInServiceManagerMock<IFileManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IFileshareManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IInternalMetricsCollectionManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IViewManager>(ExecutionIdentity.System);
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
 		

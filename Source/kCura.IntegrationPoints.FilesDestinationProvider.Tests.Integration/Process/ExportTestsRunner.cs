@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -13,7 +11,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
@@ -143,8 +140,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				_windsorContainer.Resolve<IWebApiLoginService>(),
 				_windsorContainer.Resolve<IExtendedExporterFactory>(),
 				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder(),
-					new ExportedObjectBuilder(new ExportedArtifactNameRepository(_windsorContainer.Resolve<IServicesMgr>(),
-						_windsorContainer.Resolve<IRSAPIClient>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
+					new ExportedObjectBuilder(
+						new ExportedArtifactNameRepository(_windsorContainer.Resolve<IServicesMgr>(), _windsorContainer.Resolve<IServiceManagerProvider>()))
 					),
 				helper,
 				jobStats,
@@ -169,5 +166,3 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
