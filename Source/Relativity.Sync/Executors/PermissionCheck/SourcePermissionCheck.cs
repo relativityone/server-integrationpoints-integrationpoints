@@ -6,6 +6,7 @@ using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Executors.PermissionCheck
 {
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		private readonly Guid _jobHistory = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
 		private readonly Guid _batchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private readonly Guid _progressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
-		private readonly Guid _configurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
+
 
 		private readonly ISyncLog _logger;
 
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _jobHistory, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ArtifactType.ObjectType, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _configurationObjectTypeGuid, PermissionType.Edit, _CONFIGURATION_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, SyncConfigurationRdo.SyncConfigurationGuid, PermissionType.Edit, _CONFIGURATION_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _batchObjectTypeGuid, new[] { PermissionType.Add, PermissionType.Edit, PermissionType.View },
 				_BATCH_OBJECT_TYPE_ERROR).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _progressObjectTypeGuid,

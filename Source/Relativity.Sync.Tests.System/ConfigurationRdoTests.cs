@@ -11,6 +11,7 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
@@ -82,7 +83,7 @@ namespace Relativity.Sync.Tests.System
 				},
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
+					Guid = SyncConfigurationRdo.SyncConfigurationGuid
 				},
 				FieldValues = PrepareFields().ToList()
 			};
@@ -143,7 +144,7 @@ namespace Relativity.Sync.Tests.System
 				},
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
+					Guid = SyncConfigurationRdo.SyncConfigurationGuid
 				},
 				FieldValues = PrepareFields().ToList()
 			};
@@ -176,7 +177,7 @@ namespace Relativity.Sync.Tests.System
 				},
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
+					Guid = SyncConfigurationRdo.SyncConfigurationGuid
 				},
 				FieldValues = PrepareFields().ToList()
 			};

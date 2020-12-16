@@ -8,6 +8,7 @@ using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {
@@ -21,8 +22,6 @@ namespace Relativity.Sync.Storage
 		private readonly ISemaphoreSlim _semaphoreSlim;
 
 		private readonly Dictionary<Guid, object> _cache = new Dictionary<Guid, object>();
-
-		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
 		{
@@ -116,7 +115,7 @@ namespace Relativity.Sync.Storage
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = ConfigurationObjectTypeGuid
+						Guid = SyncConfigurationRdo.SyncConfigurationGuid
 					},
 					Condition = $"(('Artifact ID' == {_syncConfigurationArtifactId}))",
 					Fields = new[]
@@ -172,7 +171,7 @@ namespace Relativity.Sync.Storage
 		{
 			var exportObject = new RelativityObjectRef
 			{
-				Guid = ConfigurationObjectTypeGuid,
+				Guid = SyncConfigurationRdo.SyncConfigurationGuid,
 				ArtifactID = _syncConfigurationArtifactId
 			};
 			var fieldRef = new FieldRef

@@ -20,6 +20,7 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
@@ -145,7 +146,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
+						Guid = SyncConfigurationRdo.SyncConfigurationGuid
 					},
 					ParentObject = new RelativityObjectRef
 					{
@@ -562,7 +563,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
+					Guid = SyncConfigurationRdo.SyncConfigurationGuid
 				},
 				ParentObject = new RelativityObjectRef
 				{
