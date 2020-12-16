@@ -72,7 +72,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
@@ -636,7 +635,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = FieldOverlayBehaviorGuid
+							Guid = SyncConfigurationRdo.FieldOverlayBehaviorGuid
 						},
 						Value = configuration.FieldOverlayBehavior.GetDescription()
 					},

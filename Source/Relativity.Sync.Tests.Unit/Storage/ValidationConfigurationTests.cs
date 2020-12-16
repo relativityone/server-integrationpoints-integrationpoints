@@ -18,7 +18,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private Mock<IFieldMappings> _fieldMappings;
 		private const int _WORKSPACE_ID = 111;
 		
-		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
@@ -82,7 +81,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveFieldOverlayBehavior()
 		{
 			const FieldOverlayBehavior expected = FieldOverlayBehavior.UseFieldSettings;
-			_cache.Setup(x => x.GetFieldValue<string>(FieldOverlayBehaviorGuid)).Returns("Use Field Settings");
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.FieldOverlayBehaviorGuid)).Returns("Use Field Settings");
 			_configuration.FieldOverlayBehavior.Should().Be(expected);
 		}
 
