@@ -59,7 +59,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		{
 			// Arrange
 			_tabManager.Setup(x => x.GetAllNavigationTabs(_WORKSPACE_ID)).ReturnsAsync(new List<NavigationTabResponse>());
-			
+
+			// Act
+			int? tabId = _sut.RetrieveTabArtifactId(5555, "some tab");
+
+			// Assert
+			tabId.Should().BeNull();
+		}
+
+		[Test]
+		public void RetrieveTabArtifactId_ShouldReturnNull_WhenTabManagerReturnsNull()
+		{
+			// Arrange
+			_tabManager.Setup(x => x.GetAllNavigationTabs(_WORKSPACE_ID)).ReturnsAsync(null);
+
 			// Act
 			int? tabId = _sut.RetrieveTabArtifactId(5555, "some tab");
 

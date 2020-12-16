@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (ITabManager tabManager = _servicesMgr.CreateProxy<ITabManager>(ExecutionIdentity.CurrentUser))
 			{
 				List<NavigationTabResponse> allNavigationTabs = tabManager.GetAllNavigationTabs(_workspaceArtifactId).GetAwaiter().GetResult();
-				NavigationTabResponse requestedTab = allNavigationTabs.FirstOrDefault(x =>
+				NavigationTabResponse requestedTab = allNavigationTabs?.FirstOrDefault(x =>
 					x.ObjectTypeIdentifier?.Value?.ArtifactTypeID == objectTypeArtifactId && x.Name == tabName);
 
 				return requestedTab?.ArtifactID;
