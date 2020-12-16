@@ -70,9 +70,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static readonly Guid _SYNC_CONFIGURATION_FIELD_MAPPINGS_GUID =
 			new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 
-		private static readonly Guid CreateSavedSearchInDestinationGuid =
-			new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
-
 		private static readonly Guid JobHistoryToRetryGuid
 			= new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 
@@ -575,7 +572,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = CreateSavedSearchInDestinationGuid
+							Guid = SyncConfigurationRdo.CreateSavedSearchInDestinationGuid
 						},
 						Value = configuration.CreateSavedSearchForTags
 					},

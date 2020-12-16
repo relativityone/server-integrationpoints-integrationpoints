@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.System
 		private int _workspaceId;
 		private int _jobHistoryArtifactId;
 
-		private static readonly Guid CreateSavedSearchInDestinationGuid = new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
 		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 		private static readonly Guid DataDestinationTypeGuid = new Guid("86D9A34A-B394-41CF-BFF4-BD4FF49A932D");
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
@@ -100,7 +99,7 @@ namespace Relativity.Sync.Tests.System
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
-			configuration.GetFieldValue<bool>(CreateSavedSearchInDestinationGuid);
+			configuration.GetFieldValue<bool>(SyncConfigurationRdo.CreateSavedSearchInDestinationGuid);
 			configuration.GetFieldValue<int>(DataDestinationArtifactIdGuid);
 			configuration.GetFieldValue<string>(DataDestinationTypeGuid);
 			configuration.GetFieldValue<int>(DataSourceArtifactIdGuid);
@@ -195,7 +194,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = CreateSavedSearchInDestinationGuid
+					Guid = SyncConfigurationRdo.CreateSavedSearchInDestinationGuid
 				},
 				Value = true
 			};
