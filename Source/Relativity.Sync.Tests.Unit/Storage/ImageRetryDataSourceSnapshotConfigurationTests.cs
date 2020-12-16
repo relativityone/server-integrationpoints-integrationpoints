@@ -25,7 +25,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
-		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
 		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 
 		[SetUp]
@@ -122,7 +121,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void IncludeOriginalImageIfNotFoundInProductions_ShouldBeRetrieved(bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<bool>(IncludeOriginalImagesGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.IncludeOriginalImageIfNotFoundInProductions.Should().Be(expectedValue);
