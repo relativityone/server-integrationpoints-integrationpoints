@@ -75,8 +75,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		private static readonly Guid DataSourceTypeGuid = new Guid("A00E6BC1-CA1C-48D9-9712-629A63061F0D");
-
 		private static readonly Guid DestinationFolderStructureBehaviorGuid =
 			new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
 
@@ -601,7 +599,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = DataSourceTypeGuid
+							Guid = SyncConfigurationRdo.DataSourceTypeGuid
 						},
 						Value = "SavedSearch"
 					},
