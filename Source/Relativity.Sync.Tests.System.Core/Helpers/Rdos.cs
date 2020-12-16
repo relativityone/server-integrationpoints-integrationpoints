@@ -67,9 +67,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static readonly Guid _DESTINATION_WORKSPACE_NAME_GUID =
 			new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
 
-		private static readonly Guid JobHistoryToRetryGuid
-			= new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
-
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
 		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
@@ -669,7 +666,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = JobHistoryToRetryGuid
+							Guid = SyncConfigurationRdo.JobHistoryToRetryGuid
 						},
 						Value = jobHistoryToRetry
 					},

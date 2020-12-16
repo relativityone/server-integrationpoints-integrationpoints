@@ -23,7 +23,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const int _WORKSPACE_ID = 589632;
 
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 
 		[SetUp]
@@ -99,7 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 1;
 
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryToRetryGuid)).Returns(new RelativityObjectValue{ArtifactID = expectedValue});
+			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)).Returns(new RelativityObjectValue{ArtifactID = expectedValue});
 
 			// Act & Assert
 			_instance.JobHistoryToRetryId.Should().Be(expectedValue);
@@ -109,7 +108,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveJobHistoryToRetryID_WhenNull()
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryToRetryGuid)).Returns((RelativityObjectValue)null);
+			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)).Returns((RelativityObjectValue)null);
 
 			// Act & Assert
 			_instance.JobHistoryToRetryId.Should().Be(null);
