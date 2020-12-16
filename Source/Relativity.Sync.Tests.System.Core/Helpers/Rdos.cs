@@ -72,7 +72,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
 
 		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
@@ -656,7 +655,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = NativesBehaviorGuid
+							Guid = SyncConfigurationRdo.NativesBehaviorGuid
 						},
 						Value = configuration.ImportNativeFileCopyMode.GetDescription()
 					},
