@@ -10,8 +10,6 @@ namespace Relativity.Sync.Storage
 		protected readonly IConfiguration _cache;
 		private readonly IFieldMappings _fieldMappings;
 
-		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
-
 		public int SourceWorkspaceArtifactId { get; }
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
@@ -25,7 +23,7 @@ namespace Relativity.Sync.Storage
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 		}
 
-		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
+		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid);
 
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 	}

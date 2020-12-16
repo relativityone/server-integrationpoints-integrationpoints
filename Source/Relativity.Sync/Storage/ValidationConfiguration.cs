@@ -11,7 +11,6 @@ namespace Relativity.Sync.Storage
 		private readonly IConfiguration _cache;
 		private readonly IFieldMappings _fieldMappings;
 
-		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
@@ -54,6 +53,6 @@ namespace Relativity.Sync.Storage
 
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 
-		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
+		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid);
 	}
 }
