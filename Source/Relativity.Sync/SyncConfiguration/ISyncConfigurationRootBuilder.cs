@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.SyncConfiguration.Options;
+﻿using System.Threading.Tasks;
+using Relativity.Sync.SyncConfiguration.Options;
 #pragma warning disable 1591
 
 namespace Relativity.Sync.SyncConfiguration
@@ -17,6 +18,6 @@ namespace Relativity.Sync.SyncConfiguration
 
 	public interface ISyncConfigurationRootBuilder
 	{
-		int Build();
+		Task<int> SaveAsync();
 	}
 }

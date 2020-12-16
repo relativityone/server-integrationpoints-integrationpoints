@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Relativity.Sync.Storage;
+using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
 

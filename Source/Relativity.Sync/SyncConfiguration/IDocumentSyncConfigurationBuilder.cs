@@ -1,5 +1,5 @@
 ﻿using System;
-using Relativity.Sync.Storage;
+using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 #pragma warning disable 1591
 
@@ -9,6 +9,6 @@ namespace Relativity.Sync.SyncConfiguration
 	{
 		IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options);
 
-		IDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingFunc);
+		IDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMapping);
 	}
 }

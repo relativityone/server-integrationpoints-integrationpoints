@@ -52,12 +52,7 @@ namespace Relativity.Sync.SyncConfiguration
 			SyncConfiguration.JobHistoryToRetry = options.JobToRetry;
 		}
 
-		public int Build()
-		{
-			return BuildAsync().GetAwaiter().GetResult();
-		}
-
-		public async Task<int> BuildAsync()
+		public async Task<int> SaveAsync()
 		{
 			await ValidateAsync().ConfigureAwait(false);
 

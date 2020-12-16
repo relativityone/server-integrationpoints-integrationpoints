@@ -45,9 +45,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -72,14 +72,14 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(
 					new DocumentSyncOptions(_savedSearchId, _destinationFolderId))
 				.WithFieldsMapping(builder => 
 					builder
 						.WithIdentifier()
 						.WithField(extractedTextField, extractedTextField))
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -99,10 +99,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			RetryOptions retryOptions = new RetryOptions(JobHistory);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
 				.IsRetry(retryOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -133,10 +133,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
 				.OverwriteMode(overwriteOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -159,10 +159,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			folderOptions.MoveExistingDocuments = true;
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
 				.DestinationFolderStructure(folderOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -190,10 +190,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			folderOptions.MoveExistingDocuments = true;
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
 				.DestinationFolderStructure(folderOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -217,10 +217,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			});
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
 				.EmailNotifications(emailOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -239,11 +239,11 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
 				.CreateSavedSearch(
-					new CreateSavedSearchOptions { CreateSavedSearchInDestination = true})
-				.Build();
+					new CreateSavedSearchOptions(true))
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);

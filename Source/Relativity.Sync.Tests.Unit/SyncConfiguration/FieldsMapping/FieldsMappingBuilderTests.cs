@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -9,9 +10,9 @@ using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
-using Relativity.Sync.SyncConfiguration;
+using Relativity.Sync.SyncConfiguration.FieldsMapping;
 
-namespace Relativity.Sync.Tests.Unit.SyncConfiguration
+namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 {
 	[TestFixture]
 	internal class FieldsMappingBuilderTests
@@ -89,11 +90,12 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 			Action action = () => _sut.WithIdentifier().WithIdentifier();
 
 			// Assert
-			action.Should().Throw<InvalidOperationException>();
+			action.Should().Throw<InvalidFieldsMappingException>()
+				.WithMessage(InvalidFieldsMappingException.IdentifierMappedTwice().Message);
 		}
 
 		[Test]
-		public void WithField_ShouldAddFieldToFieldsMapping()
+		public void WithField_ShouldAddFieldToFieldsMappingWhenFieldIds()
 		{
 			// Arrange
 			const int sourceFieldId = 100;
@@ -132,14 +134,70 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 			fieldsMapping.Should().BeEquivalentTo(expectedFieldsMap);
 		}
 
+		[Test]
+		public void WithField_ShouldAddFieldToFieldsMappingWhenFieldNames()
+		{
+			// Arrange
+			const string sourceFieldName = "Field 1";
+			const int sourceFieldId = 1;
+			const string destinationFieldName = "Field 2";
+			const int destinationFieldId = 2;
+
+			RelativityObject sourceField = new RelativityObject
+			{
+				Name = sourceFieldName, 
+				ArtifactID = sourceFieldId,
+				FieldValues = new List<FieldValuePair> { new FieldValuePair { Value = false }}
+			};
+			RelativityObject destinationField = new RelativityObject
+			{
+				Name = destinationFieldName,
+				ArtifactID = destinationFieldId,
+				FieldValues = new List<FieldValuePair> { new FieldValuePair { Value = false } }
+			};
+
+			List<FieldMap> expectedFieldsMap = new List<FieldMap>
+			{
+				new FieldMap()
+				{
+					SourceField = new FieldEntry()
+					{
+						DisplayName = sourceField.Name,
+						FieldIdentifier = sourceField.ArtifactID,
+						IsIdentifier = false
+					},
+					DestinationField = new FieldEntry()
+					{
+						DisplayName = destinationField.Name,
+						FieldIdentifier = destinationField.ArtifactID,
+						IsIdentifier = false
+					},
+					FieldMapType = FieldMapType.None
+				}
+			};
+
+			SetupField(sourceField, sourceFieldName, _SOURCE_WORKSPACE_ID);
+			SetupField(destinationField, destinationFieldName, _DESTINATION_WORKSPACE_ID);
+
+			// Act
+			var fieldsMapping = _sut
+				.WithField(sourceFieldName, destinationFieldName)
+				.FieldsMapping;
+
+			// Assert
+			fieldsMapping.Should().BeEquivalentTo(expectedFieldsMap);
+		}
+
 		[TestCase(true, false)]
 		[TestCase(false, true)]
 		public void WithField_ShouldThrowException_WhenOneOfFieldsIsIdentifier(
 			bool isSourceIdentifier, bool isDestinationIdentifier)
 		{
 			// Arrange
-			const int sourceFieldId = 100;
-			const int destinationFieldId = 200;
+			const int identifierId = 10;
+
+			int sourceFieldId = isSourceIdentifier ? identifierId : 100;
+			int destinationFieldId = isDestinationIdentifier ? identifierId : 200;
 
 			FieldResponse sourceField = new FieldResponse { IsIdentifier = isSourceIdentifier, Name = "Test", ArtifactID = sourceFieldId };
 			FieldResponse destinationField = new FieldResponse { IsIdentifier = isDestinationIdentifier, Name = "Test", ArtifactID = destinationFieldId };
@@ -151,15 +209,19 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 			Action action = () => _sut.WithField(sourceFieldId, destinationFieldId);
 
 			// Assert
-			action.Should().Throw<ArgumentException>();
+			action.Should().Throw<InvalidFieldsMappingException>()
+				.WithMessage(InvalidFieldsMappingException.FieldIsIdentifier(identifierId).Message);
 		}
 
 		private void SetupIdentifierField(RelativityObject expectedIdentifier, int workspaceId)
 		{
 			_objectManagerFake.Setup(x =>
-					x.QueryAsync(workspaceId, It.Is<QueryRequest>(q => q.IncludeNameInQueryResult == true), 0, 1))
+					x.QueryAsync(workspaceId, It.Is<QueryRequest>(q => 
+						q.IncludeNameInQueryResult == true && q.Condition.Contains("'Is Identifier' == true")),
+						It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new QueryResult
 				{
+					ResultCount = 1,
 					Objects = new List<RelativityObject>() {expectedIdentifier},
 				});
 		}
@@ -168,6 +230,21 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 		{
 			_fieldManagerFake.Setup(x => x.ReadAsync(workspaceId, fieldId))
 				.ReturnsAsync(expectedField);
+		}
+
+		private void SetupField(RelativityObject expectedField, string fieldName, int workspaceId)
+		{
+			_objectManagerFake.Setup(x =>
+					x.QueryAsync(workspaceId, It.Is<QueryRequest>(q =>
+						q.IncludeNameInQueryResult == true 
+						&& q.Condition.Contains($"'Name' == '{fieldName}'")
+						&& q.Fields.Any(f => f.Name == "Is Identifier")),
+						It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult
+				{
+					ResultCount = 1,
+					Objects = new List<RelativityObject>() { expectedField },
+				});
 		}
 	}
 }

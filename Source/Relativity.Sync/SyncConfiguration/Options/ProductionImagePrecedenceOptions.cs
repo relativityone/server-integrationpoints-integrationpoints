@@ -5,9 +5,9 @@ namespace Relativity.Sync.SyncConfiguration.Options
 {
 	public class ProductionImagePrecedenceOptions
 	{
-		public IEnumerable<int> ProductionImagePrecedenceIds { get; set; }
+		public IEnumerable<int> ProductionImagePrecedenceIds { get; }
 
-		public bool IncludeOriginalImagesIfNotFoundInProductions { get; set; }
+		public bool IncludeOriginalImagesIfNotFoundInProductions { get; }
 
 		public ProductionImagePrecedenceOptions(IEnumerable<int> productionImagePrecedenceIds, bool includeOriginalImagesIfNotFoundInProductions)
 		{

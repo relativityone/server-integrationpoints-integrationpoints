@@ -41,9 +41,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -64,9 +64,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			options.CopyImagesMode = ImportImageFileCopyMode.CopyFiles;
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -87,10 +87,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			RetryOptions retryOptions = new RetryOptions(JobHistory);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
 				.IsRetry(retryOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -122,10 +122,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
 				.OverwriteMode(overwriteOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -149,10 +149,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				new List<int> {1, 2}, includeOriginalImages);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
 				.ProductionImagePrecedence(productionOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -177,10 +177,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			});
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
 				.EmailNotifications(emailOptions)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -200,11 +200,11 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureImageSync(options)
 				.CreateSavedSearch(
-					new CreateSavedSearchOptions { CreateSavedSearchInDestination = true })
-				.Build();
+					new CreateSavedSearchOptions(true))
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);

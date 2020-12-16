@@ -57,9 +57,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 
 			// Act
-			int createdConfigurationId = new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			var createdSyncConfiguration = await ReadSyncConfiguration(sourceWorkspaceId, createdConfigurationId).ConfigureAwait(false);
@@ -93,9 +93,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 
 			// Act
-			Action action = () => new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			Action action = async () => await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
-				.Build();
+				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
 			action.Should().Throw<InvalidObjectTypeException>();

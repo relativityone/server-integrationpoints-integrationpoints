@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
@@ -8,7 +7,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.SyncConfiguration
+namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 {
 	internal class FieldsMappingBuilder : IFieldsMappingBuilder
 	{
@@ -33,7 +32,7 @@ namespace Relativity.Sync.SyncConfiguration
 		{
 			if (FieldsMapping.Exists(x => x.FieldMapType == FieldMapType.Identifier))
 			{
-				throw new InvalidOperationException("Identifier has been mapped already");
+				throw InvalidFieldsMappingException.IdentifierMappedTwice();
 			}
 
 			using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
@@ -74,11 +73,8 @@ namespace Relativity.Sync.SyncConfiguration
 		{
 			using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				FieldEntry sourceField = ReadFieldEntryByNameAsync(_sourceWorkspaceId, sourceFieldName, objectManager)
-					.GetAwaiter().GetResult();
-
-				FieldEntry destinationField = ReadFieldEntryByNameAsync(_destinationWorkspaceId, destinationFieldName, objectManager)
-					.GetAwaiter().GetResult();
+				var sourceField = ReadFieldEntryByNameAsync(_sourceWorkspaceId, sourceFieldName, objectManager).GetAwaiter().GetResult();
+				var destinationField = ReadFieldEntryByNameAsync(_destinationWorkspaceId, destinationFieldName, objectManager).GetAwaiter().GetResult();
 
 				FieldsMapping.Add(new FieldMap
 				{
@@ -103,7 +99,12 @@ namespace Relativity.Sync.SyncConfiguration
 				IncludeNameInQueryResult = true
 			};
 
-			QueryResult result = await objectManager.QueryAsync(_sourceWorkspaceId, request, 0, 1).ConfigureAwait(false);
+			QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+
+			if (result.ResultCount == 0)
+			{
+				throw new InvalidFieldsMappingException("Identifier field not found");
+			}
 
 			RelativityObject field = result.Objects.Single();
 
@@ -121,7 +122,7 @@ namespace Relativity.Sync.SyncConfiguration
 			
 			if (field == null)
 			{
-				throw new Exception("Field not found");
+				throw InvalidFieldsMappingException.FieldNotFound(fieldId);
 			}
 
 			var fieldEntry = new FieldEntry
@@ -131,7 +132,10 @@ namespace Relativity.Sync.SyncConfiguration
 				IsIdentifier = field.IsIdentifier
 			};
 
-			ThrowIfFieldIsIdentifier(fieldEntry);
+			if (fieldEntry.IsIdentifier)
+			{
+				throw InvalidFieldsMappingException.FieldIsIdentifier(fieldEntry.FieldIdentifier);
+			}
 
 			return fieldEntry;
 		}
@@ -157,11 +161,11 @@ namespace Relativity.Sync.SyncConfiguration
 
 			if (result.ResultCount == 0)
 			{
-				throw new Exception("Field not found");
+				throw InvalidFieldsMappingException.FieldNotFound(fieldName);
 			}
 			else if (result.ResultCount > 1)
 			{
-				throw new Exception("Ambigous name fields found");
+				throw InvalidFieldsMappingException.AmbiguousMatch(fieldName);
 			}
 
 			RelativityObject field = result.Objects.Single();
@@ -172,20 +176,13 @@ namespace Relativity.Sync.SyncConfiguration
 				FieldIdentifier = field.ArtifactID,
 				IsIdentifier = (bool) field.FieldValues.Single().Value
 			};
-			
-			ThrowIfFieldIsIdentifier(fieldEntry);
 
-			return fieldEntry;
-
-		}
-
-		private void ThrowIfFieldIsIdentifier(FieldEntry field)
-		{
-			if (field.IsIdentifier)
+			if (fieldEntry.IsIdentifier)
 			{
-				throw new ArgumentException($"Specified field is identifier - {field.FieldIdentifier}");
+				throw InvalidFieldsMappingException.FieldIsIdentifier(fieldEntry.FieldIdentifier);
 			}
 
+			return fieldEntry;
 		}
 	}
 }

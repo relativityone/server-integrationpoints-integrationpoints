@@ -4,7 +4,7 @@ using Relativity.API;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration.Options;
-using Relativity.Sync.Storage;
+using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
@@ -14,6 +14,7 @@ namespace Relativity.Sync.SyncConfiguration
 		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
 		private Action<IFieldsMappingBuilder> _fieldsMappingAction;
+		
 		private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
 		public DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
@@ -116,6 +117,12 @@ namespace Relativity.Sync.SyncConfiguration
 				{
 					var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
 						_destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);
+
+					if (folderPathField == null)
+					{
+						throw new InvalidSyncConfigurationException(
+							$"Folder Path Field {_destinationFolderStructureOptions.FolderPathSourceFieldId} not found");
+					}
 
 					SyncConfiguration.FolderPathSourceFieldName = folderPathField.Name;
 				}

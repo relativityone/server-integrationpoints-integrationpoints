@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace Relativity.Sync.SyncConfiguration
 {
@@ -19,11 +18,6 @@ namespace Relativity.Sync.SyncConfiguration
 
 		/// <inheritdoc />
 		public InvalidSyncConfigurationException(string message, Exception inner) : base(message, inner)
-		{
-		}
-
-		/// <inheritdoc />
-		private InvalidSyncConfigurationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

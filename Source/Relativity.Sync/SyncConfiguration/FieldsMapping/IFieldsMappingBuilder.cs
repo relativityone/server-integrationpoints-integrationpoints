@@ -3,7 +3,7 @@ using Relativity.Sync.Storage;
 
 #pragma warning disable 1591
 
-namespace Relativity.Sync.SyncConfiguration
+namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 {
 
 	public interface IFieldsMappingBuilder
