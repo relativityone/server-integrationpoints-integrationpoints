@@ -34,7 +34,7 @@ namespace Relativity.Sync.Storage
 
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 
-		public IEnumerable<string> GetEmailRecipients() => _emailRecipients ?? (_emailRecipients = (_cache.GetFieldValue<string>(EmailNotificationRecipientsGuid) ?? string.Empty)
+		public IEnumerable<string> GetEmailRecipients() => _emailRecipients ?? (_emailRecipients = (_cache.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid) ?? string.Empty)
 			                                              .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()));
 
 		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).Name;

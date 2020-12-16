@@ -67,15 +67,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static readonly Guid _DESTINATION_WORKSPACE_NAME_GUID =
 			new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
 
-		private static readonly Guid _SYNC_CONFIGURATION_FIELD_MAPPINGS_GUID =
-			new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
-
 		private static readonly Guid JobHistoryToRetryGuid
 			= new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
 
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
@@ -141,7 +137,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						new FieldRefValuePair
 						{
-							Field = new FieldRef {Guid = _SYNC_CONFIGURATION_FIELD_MAPPINGS_GUID},
+							Field = new FieldRef {Guid = SyncConfigurationRdo.FieldMappingsGuid},
 							Value = new JSONSerializer().Serialize(fieldMappings)
 						}
 					}
@@ -632,7 +628,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = FieldMappingsGuid
+							Guid = SyncConfigurationRdo.FieldMappingsGuid
 						},
 						Value = serializer.Serialize(configuration.GetFieldMappings())
 					},

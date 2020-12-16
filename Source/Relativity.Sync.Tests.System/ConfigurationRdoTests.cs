@@ -30,7 +30,6 @@ namespace Relativity.Sync.Tests.System
 		private int _jobHistoryArtifactId;
 
 		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
 		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
 		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
@@ -101,7 +100,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
 			configuration.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid);
-			configuration.GetFieldValue<string>(FieldMappingsGuid);
+			configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid);
 			configuration.GetFieldValue<string>(FieldOverlayBehaviorGuid);
 			configuration.GetFieldValue<string>(FolderPathSourceFieldNameGuid);
 			configuration.GetFieldValue<string>(ImportOverwriteModeGuid);
@@ -141,7 +140,7 @@ namespace Relativity.Sync.Tests.System
 				FieldValues = PrepareFields().ToList()
 			};
 
-			request.FieldValues.First(x => x.Field.Guid == FieldMappingsGuid).Value = fieldMapping;
+			request.FieldValues.First(x => x.Field.Guid == SyncConfigurationRdo.FieldMappingsGuid).Value = fieldMapping;
 
 			int syncConfigurationArtifactId;
 			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
@@ -155,7 +154,7 @@ namespace Relativity.Sync.Tests.System
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
-			configuration.GetFieldValue<string>(FieldMappingsGuid).Should().Be(fieldMapping);
+			configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid).Should().Be(fieldMapping);
 		}
 
 		[IdentifiedTest("108661af-82bf-41ca-8799-4c83cc0ef976")]
@@ -259,7 +258,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = FieldMappingsGuid
+					Guid = SyncConfigurationRdo.FieldMappingsGuid
 				},
 				Value = "fields"
 			};
