@@ -21,7 +21,6 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
 		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
-		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
 		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
 
 		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
@@ -64,7 +63,7 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
-		public bool MoveExistingDocuments => _cache.GetFieldValue<bool>(MoveExistingDocumentsGuid);
+		public bool MoveExistingDocuments => _cache.GetFieldValue<bool>(SyncConfigurationRdo.MoveExistingDocumentsGuid);
 		public int RdoArtifactTypeId => _cache.GetFieldValue<int>(RdoArtifactTypeIdGuid);
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
