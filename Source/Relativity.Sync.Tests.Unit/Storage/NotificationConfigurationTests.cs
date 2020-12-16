@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -15,7 +16,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	{
 		private static readonly string[] TestEmailRecipients = { "relativity.admin@kcura.com", string.Empty, "relativity-sync@kcura.onmicrosoft.com", "distro_list@relativity.com" };
 
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
@@ -118,7 +118,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
-			cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(expectedDestinationWorkspaceArtifactId).Verifiable();
+			cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(expectedDestinationWorkspaceArtifactId).Verifiable();
 			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = expectedJobHistoryArtifactId, Name = expectedJobName }).Verifiable();
 			cache.Setup(x => x.GetFieldValue<string>(SourceWorkspaceTagNameGuid)).Returns(expectedSourceWorkspaceTag).Verifiable();
 

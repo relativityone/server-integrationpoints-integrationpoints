@@ -15,7 +15,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private Mock<IConfiguration> _cache;
 
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
 		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
 		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
@@ -34,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int expectedValue = 852147;
 
-			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(expectedValue);
 
 			_instance.DestinationWorkspaceArtifactId.Should().Be(expectedValue);
 		}

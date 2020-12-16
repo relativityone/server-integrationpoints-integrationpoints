@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.System
 		private int _workspaceId;
 		private int _jobHistoryArtifactId;
 
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
@@ -100,7 +99,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.DataSourceTypeGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid);
-			configuration.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
+			configuration.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
 			configuration.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid);
 			configuration.GetFieldValue<string>(EmailNotificationRecipientsGuid);
 			configuration.GetFieldValue<string>(FieldMappingsGuid);
@@ -237,7 +236,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = DestinationWorkspaceArtifactIdGuid
+					Guid = SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid
 				},
 				Value = 784512
 			};

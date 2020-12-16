@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
@@ -12,7 +11,6 @@ using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.SyncConfiguration;
 
 namespace Relativity.Sync.RDOs
 {
