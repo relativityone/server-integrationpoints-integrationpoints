@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.System
 		private int _workspaceId;
 		private int _jobHistoryArtifactId;
 
-		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 		private static readonly Guid DataDestinationTypeGuid = new Guid("86D9A34A-B394-41CF-BFF4-BD4FF49A932D");
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
 		private static readonly Guid DataSourceTypeGuid = new Guid("A00E6BC1-CA1C-48D9-9712-629A63061F0D");
@@ -100,7 +99,7 @@ namespace Relativity.Sync.Tests.System
 
 			// ASSERT
 			configuration.GetFieldValue<bool>(SyncConfigurationRdo.CreateSavedSearchInDestinationGuid);
-			configuration.GetFieldValue<int>(DataDestinationArtifactIdGuid);
+			configuration.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid);
 			configuration.GetFieldValue<string>(DataDestinationTypeGuid);
 			configuration.GetFieldValue<int>(DataSourceArtifactIdGuid);
 			configuration.GetFieldValue<string>(DataSourceTypeGuid);
@@ -202,7 +201,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = DataDestinationArtifactIdGuid
+					Guid = SyncConfigurationRdo.DataDestinationArtifactIdGuid
 				},
 				Value = 789456
 			};

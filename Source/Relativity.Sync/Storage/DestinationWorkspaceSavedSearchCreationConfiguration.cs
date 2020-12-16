@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Storage
 
 		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid);
 
-		public bool CreateSavedSearchForTags => _cache.GetFieldValue<bool>(CreateSavedSearchInDestinationGuid);
+		public bool CreateSavedSearchForTags => _cache.GetFieldValue<bool>(SyncConfigurationRdo.CreateSavedSearchInDestinationGuid);
 
 		public bool IsSavedSearchArtifactIdSet => _cache.GetFieldValue<int>(SavedSearchInDestinationArtifactIdGuid) != 0;
 

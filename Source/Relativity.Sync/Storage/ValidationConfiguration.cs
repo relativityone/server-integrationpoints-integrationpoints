@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {
@@ -11,7 +12,6 @@ namespace Relativity.Sync.Storage
 		private readonly IFieldMappings _fieldMappings;
 
 		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
-		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
 		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Storage
 
 		public int SavedSearchArtifactId => _cache.GetFieldValue<int>(DataSourceArtifactIdGuid);
 
-		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(DataDestinationArtifactIdGuid);
+		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid);
 
 		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(ImportOverwriteModeGuid));
 

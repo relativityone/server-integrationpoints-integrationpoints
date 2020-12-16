@@ -8,6 +8,7 @@ using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
@@ -433,7 +434,7 @@ namespace Relativity.Sync.Storage
 				{
 					ObjectType = new ObjectTypeRef()
 					{
-						Guid = ConfigurationObjectTypeGuid
+						Guid = SyncConfigurationRdo.SyncConfigurationGuid
 					},
 					Fields = new[]
 					{
