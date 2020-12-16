@@ -15,7 +15,6 @@ namespace Relativity.Sync.Storage
 
 		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
 		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
-		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 
 		public ImageRetryDataSourceSnapshotConfiguration(IConfiguration cache, ISerializer serializer, SyncJobParameters syncJobParameters)
 		{
@@ -24,7 +23,7 @@ namespace Relativity.Sync.Storage
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue<string>(ProductionImagePrecedenceGuid));
+		public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue<string>(SyncConfigurationRdo.ProductionImagePrecedenceGuid));
 
 		public bool IncludeOriginalImageIfNotFoundInProductions =>
 			_cache.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid);
