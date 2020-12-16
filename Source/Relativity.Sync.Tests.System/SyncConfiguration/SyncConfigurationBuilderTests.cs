@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Specialized;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Interfaces.Shared.Models;
@@ -93,7 +94,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 
 			// Act
-			Action action = async () => await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			Func<Task> action = async () => await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
