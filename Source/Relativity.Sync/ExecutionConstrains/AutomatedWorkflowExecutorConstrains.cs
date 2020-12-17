@@ -49,8 +49,8 @@ namespace Relativity.Sync.ExecutionConstrains
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception occurred when checking {_AUTOMATED_WORKFLOWS_APPLICATION_NAME} installation status.");
-				throw;
+				_logger.LogWarning(ex, $"Exception occurred when checking {_AUTOMATED_WORKFLOWS_APPLICATION_NAME} installation status.");
+				return true;
 			}
 		}
 	}
