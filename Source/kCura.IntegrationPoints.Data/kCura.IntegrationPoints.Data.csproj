@@ -211,12 +211,12 @@
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
     <Compile Include="Repositories\Implementations\RelativityAuditRepository.cs" />
-    <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
+    <Compile Include="Repositories\Implementations\ErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\ObjectTypeRepository.cs" />
-    <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
+    <Compile Include="Repositories\Implementations\TabRepository.cs" />
     <Compile Include="FileInfo.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
     <Compile Include="Repositories\IFieldQueryRepository.cs" />

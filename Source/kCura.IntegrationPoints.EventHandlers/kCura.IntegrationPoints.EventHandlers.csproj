@@ -117,7 +117,6 @@
     <Compile Include="Installers\RegisterIntegrationPointTypeInstaller.cs" />
     <Compile Include="Installers\RemoveAgentJobLogTableEventHandler.cs" />
     <Compile Include="Installers\RemoveBatchesFromOldJobsEventHandler.cs" />
-    <Compile Include="Installers\RemoveUnusedEventHandlers.cs" />
     <Compile Include="Installers\RenameCustodianToEntityInIntegrationPointConfigurationEventHandler.cs" />
     <Compile Include="Installers\RestoreJobHistoryDestinationWorkspaceEventHandler.cs" />
     <Compile Include="Installers\SecretStorePreWorkspaceDeleteEventHandler.cs" />

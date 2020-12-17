@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ITabRepository GetTabRepository(int workspaceArtifactId)
 		{
-			ITabRepository tabRepository = new RsapiTabRepository(_destinationServiceMgr, _helper, workspaceArtifactId);
+			ITabRepository tabRepository = new TabRepository(_destinationServiceMgr, workspaceArtifactId);
 
 			return tabRepository;
 		}
@@ -217,7 +217,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IErrorRepository GetErrorRepository()
 		{
-			IErrorRepository repository = new RsapiErrorRepository(_helper);
+			IErrorRepository repository = new ErrorRepository(_helper);
 
 			return repository;
 		}
