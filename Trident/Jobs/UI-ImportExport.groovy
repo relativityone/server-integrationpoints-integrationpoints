@@ -2,8 +2,8 @@
 
 jobWithSut {
     slackChannel = "cd_trident_rip"
-    sutTemplate = "aio-mayapple-latest"
-	relativityBranch = "release-12.0-ninebark"
+    sutTemplate = "aio-ninebark-ea"
+	relativityBranch = "release-12.0-ninebark-ea"
     jobScript = "Trident/Scripts/UI-ImportExport.ps1"
     cron = "0 1 * * *"
 }
