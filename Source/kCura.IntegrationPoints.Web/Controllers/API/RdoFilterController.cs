@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Attributes;
-using kCura.Relativity.Client;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
