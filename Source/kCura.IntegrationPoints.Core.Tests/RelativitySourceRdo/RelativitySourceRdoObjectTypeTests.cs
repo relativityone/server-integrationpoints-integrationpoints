@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 			int expectedDescriptorArtifactTypeId = 636492;
 
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(objectTypeGuid).Returns(x => { throw new TypeLoadException(); }, x => expectedDescriptorArtifactTypeId);
-			_objectTypeRepository.RetrieveObjectTypeArtifactId(objectTypeName).Returns((int?) null);
+			_objectTypeRepository.RetrieveObjectTypeArtifactId(objectTypeName).Returns((int?)null);
 			_relativityObjectRepository.CreateObjectType(parentArtifactTypeId).Returns(objectTypeArtifactId);
 			_tabRepository.RetrieveTabArtifactId(expectedDescriptorArtifactTypeId, objectTypeName).Returns(tabId);
 
