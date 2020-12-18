@@ -1,35 +1,34 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System.Linq;
 using kCura.EDDS.WebAPI.ProductionManagerBase;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.Relativity.Client;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.Services.Search;
+using Relativity.Services.View;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 {
 	public class ExportedArtifactNameRepository : IExportedArtifactNameRepository
 	{
-		private readonly IRSAPIClient _rsapiClient;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IServiceManagerProvider _serviceManagerProvider;
 
-		public ExportedArtifactNameRepository(IServicesMgr servicesMgr, IRSAPIClient rsapiClient, IServiceManagerProvider serviceManagerProvider)
+		public ExportedArtifactNameRepository(IServicesMgr servicesMgr, IServiceManagerProvider serviceManagerProvider)
 		{
 			_servicesMgr = servicesMgr;
-			_rsapiClient = rsapiClient;
 			_serviceManagerProvider = serviceManagerProvider;
 		}
 
 		public string GetViewName(int workspaceId, int viewId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceId;
-			return _rsapiClient.Repositories.View.ReadSingle(viewId).Name;
+			using (IViewManager viewManager = _servicesMgr.CreateProxy<IViewManager>(ExecutionIdentity.System))
+			{
+				View view = viewManager.ReadSingleAsync(workspaceId, viewId).GetAwaiter().GetResult();
+				return view.Name;
+			}
 		}
 
 		public string GetProductionName(int workspaceId, int productionId)
@@ -58,5 +57,3 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
