@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {
@@ -13,10 +14,7 @@ namespace Relativity.Sync.Storage
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
-		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
 
 		public NotificationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
@@ -24,7 +22,7 @@ namespace Relativity.Sync.Storage
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
 
 
 		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
@@ -35,11 +33,11 @@ namespace Relativity.Sync.Storage
 
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 
-		public IEnumerable<string> GetEmailRecipients() => _emailRecipients ?? (_emailRecipients = (_cache.GetFieldValue<string>(EmailNotificationRecipientsGuid) ?? string.Empty)
+		public IEnumerable<string> GetEmailRecipients() => _emailRecipients ?? (_emailRecipients = (_cache.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid) ?? string.Empty)
 			                                              .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()));
 
 		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).Name;
 
-		public string GetSourceWorkspaceTag() => _cache.GetFieldValue<string>(SourceWorkspaceTagNameGuid);
+		public string GetSourceWorkspaceTag() => _cache.GetFieldValue<string>(SyncConfigurationRdo.SourceWorkspaceTagNameGuid);
 	}
 }

@@ -5,6 +5,7 @@ using Relativity.Sync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit
@@ -19,15 +20,13 @@ namespace Relativity.Sync.Tests.Unit
 
 		private const string _FIELD_MAP = "field map";
 
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
-
 		[SetUp]
 		public void SetUp()
 		{
 			_configuration = new Mock<IConfiguration>();
 			_serializer = new Mock<ISerializer>();
 
-			_configuration.Setup(x => x.GetFieldValue<string>(FieldMappingsGuid)).Returns(_FIELD_MAP);
+			_configuration.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid)).Returns(_FIELD_MAP);
 
 			_instance = new FieldMappings(_configuration.Object, _serializer.Object, new EmptyLogger());
 		}
@@ -58,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.GetFieldMappings();
 
 			// ASSERT
-			_configuration.Verify(x => x.GetFieldValue<string>(FieldMappingsGuid), Times.Once);
+			_configuration.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid), Times.Once);
 			_serializer.Verify(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP), Times.Once);
 		}
 

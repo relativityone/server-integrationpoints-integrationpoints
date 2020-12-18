@@ -11,6 +11,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit
@@ -28,8 +29,6 @@ namespace Relativity.Sync.Tests.Unit
 		private const int _TEST_CONFIG_ARTIFACT_ID = 123;
 		private const int _TEST_FIELD_VALUE = 100;
 		private const int _TEST_WORKSPACE_ID = 789;
-
-		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -132,7 +131,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager.Setup(x => x.StreamLongTextAsync(
 					_TEST_WORKSPACE_ID,
-					It.Is<RelativityObjectRef>(y => y.Guid == ConfigurationObjectTypeGuid && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
+					It.Is<RelativityObjectRef>(y => y.Guid == SyncConfigurationRdo.SyncConfigurationGuid && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
 					It.Is<FieldRef>(y => y.Guid == _testFieldGuid))).ReturnsAsync(testKeplerStream.Object).Verifiable();
 
 			var concreteStreamList = new List<Stream>();
@@ -185,7 +184,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager.Setup(x => x.StreamLongTextAsync(
 				_TEST_WORKSPACE_ID,
-				It.Is<RelativityObjectRef>(y => y.Guid == ConfigurationObjectTypeGuid && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
+				It.Is<RelativityObjectRef>(y => y.Guid == SyncConfigurationRdo.SyncConfigurationGuid && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
 				It.Is<FieldRef>(y => y.Guid == _testFieldGuid))).ReturnsAsync(testKeplerStream.Object).Verifiable();
 
 			testKeplerStream.Setup(x => x.GetStreamAsync()).Throws<IOException>();
@@ -231,7 +230,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private bool AssertQueryRequest(QueryRequest request)
 		{
-			request.ObjectType.Guid.Should().Be(ConfigurationObjectTypeGuid);
+			request.ObjectType.Guid.Should().Be(SyncConfigurationRdo.SyncConfigurationGuid);
 			request.Condition.Should().Be($"(('Artifact ID' == {_TEST_CONFIG_ARTIFACT_ID}))");
 			request.Fields.First().Name.Should().Be("*");
 			return true;

@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -17,14 +18,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private Mock<IFieldMappings> _fieldMappings;
 		private const int _WORKSPACE_ID = 111;
 		
-		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
-		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
-		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
-		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
-		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
-		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
-		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 
 		[SetUp]
@@ -46,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveDestinationWorkspaceArtifactId()
 		{
 			const int expected = 1;
-			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(expected);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(expected);
 			_configuration.DestinationWorkspaceArtifactId.Should().Be(expected);
 		}
 
@@ -54,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveDataDestinationArtifactId()
 		{
 			const int expected = 1;
-			_cache.Setup(x => x.GetFieldValue<int>(DataDestinationArtifactIdGuid)).Returns(expected);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid)).Returns(expected);
 			_configuration.DestinationFolderArtifactId.Should().Be(expected);
 		}
 
@@ -62,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveDataSourceArtifactId()
 		{
 			const int expected = 1;
-			_cache.Setup(x => x.GetFieldValue<int>(DataSourceArtifactIdGuid)).Returns(expected);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid)).Returns(expected);
 			_configuration.SavedSearchArtifactId.Should().Be(expected);
 		}
 
@@ -70,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveEmailNotificationRecipients()
 		{
 			const string expected = "email1@example.com;email2@example.com";
-			_cache.Setup(x => x.GetFieldValue<string>(EmailNotificationRecipientsGuid)).Returns(expected);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(expected);
 			_configuration.GetNotificationEmails().Should().Be(expected);
 		}
 
@@ -86,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveFieldOverlayBehavior()
 		{
 			const FieldOverlayBehavior expected = FieldOverlayBehavior.UseFieldSettings;
-			_cache.Setup(x => x.GetFieldValue<string>(FieldOverlayBehaviorGuid)).Returns("Use Field Settings");
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.FieldOverlayBehaviorGuid)).Returns("Use Field Settings");
 			_configuration.FieldOverlayBehavior.Should().Be(expected);
 		}
 
@@ -94,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveFolderPathSourceFieldArtifactId()
 		{
 			const string expected = "name";
-			_cache.Setup(x => x.GetFieldValue<string>(FolderPathSourceFieldNameGuid)).Returns(expected);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid)).Returns(expected);
 			_configuration.GetFolderPathSourceFieldName().Should().Be(expected);
 		}
 
@@ -102,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveImportOverwriteMode()
 		{
 			ImportOverwriteMode expected = ImportOverwriteMode.AppendOverlay;
-			_cache.Setup(x => x.GetFieldValue<string>(ImportOverwriteModeGuid)).Returns("AppendOverlay");
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid)).Returns("AppendOverlay");
 			_configuration.ImportOverwriteMode.Should().Be(expected);
 		}
 
@@ -110,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveDestinationFolderStructureBehavior()
 		{
 			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
-			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns("ReadFromField");
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid)).Returns("ReadFromField");
 			_configuration.DestinationFolderStructureBehavior.Should().Be(expected);
 		}
 

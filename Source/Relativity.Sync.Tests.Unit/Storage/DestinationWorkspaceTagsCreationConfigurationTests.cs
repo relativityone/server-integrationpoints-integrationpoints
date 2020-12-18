@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -19,11 +20,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 2;
 
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
-		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
-		private static readonly Guid SourceJobTagNameGuid = new Guid("DA0E1931-9460-4A61-9033-A8035697C1A4");
-		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
-		private static readonly Guid SourceWorkspaceTagNameGuid = new Guid("D828B69E-AAAE-4639-91E2-416E35C163B1");
 
 		[SetUp]
 		public void SetUp()
@@ -47,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldReturnDestinationWorkspaceArtifactId()
 		{
 			const int destinationWorkspaceArtifactId = 3;
-			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
 
 			// act
 			int actualDestinationWorkspaceTagArtifactId = _config.DestinationWorkspaceArtifactId;
@@ -79,8 +75,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetSourceJobTagAsync(artifactId, name).ConfigureAwait(false);
 
 			// assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SourceJobTagArtifactIdGuid, artifactId));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SourceJobTagNameGuid, name));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SourceJobTagArtifactIdGuid, artifactId));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SourceJobTagNameGuid, name));
 		}
 
 		[Test]
@@ -93,8 +89,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetSourceWorkspaceTagAsync(artifactId, name).ConfigureAwait(false);
 
 			// assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SourceWorkspaceTagArtifactIdGuid, artifactId));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SourceWorkspaceTagNameGuid, name));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid, artifactId));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SourceWorkspaceTagNameGuid, name));
 		}
 	}
 }

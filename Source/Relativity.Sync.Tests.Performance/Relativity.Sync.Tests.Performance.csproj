@@ -27,8 +27,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
     <PackageReference Include="Moq" Version="4.13.0" />
-    <PackageReference Include="Relativity.Automation.Utility" />
-    <PackageReference Include="Relativity.Automation.Utility.API" />
   </ItemGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>

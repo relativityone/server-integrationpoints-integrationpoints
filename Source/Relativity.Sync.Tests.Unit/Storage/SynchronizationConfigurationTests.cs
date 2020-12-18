@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
 
@@ -19,18 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const int _JOB_ID = 2;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 3;
 
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
-		private static readonly Guid DestinationWorkspaceTagArtifactIdGuid = new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
 		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SourceJobTagArtifactIdGuid = new Guid("C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E");
-		private static readonly Guid SourceWorkspaceTagArtifactIdGuid = new Guid("FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6");
-		private static readonly Guid DestinationFolderStructureBehaviorGuid = new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
-
-		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
-		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
-		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
-		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
 
 		[SetUp]
 		public void SetUp()
@@ -54,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationWorkspaceArtifactId_ShouldReturnDestinationWorkspaceArtifactId()
 		{
 			const int destinationWorkspaceArtifactId = 1040589;
-			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
 
 			// act
 			int actualDestinationWorkspaceArtifactId = _syncConfig.DestinationWorkspaceArtifactId;
@@ -67,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationWorkspaceTagArtifactId_ShouldReturnDestinationWorkspaceTagArtifactId()
 		{
 			const int destinationWorkspaceTagArtifactId = 3;
-			_cache.Setup(x => x.GetFieldValue<int>(DestinationWorkspaceTagArtifactIdGuid)).Returns(destinationWorkspaceTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid)).Returns(destinationWorkspaceTagArtifactId);
 
 			// act
 			int actualDestinationWorkspaceTagArtifactId = _syncConfig.DestinationWorkspaceTagArtifactId;
@@ -93,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SourceJobTagArtifactId_ShouldReturnSourceJobTagName()
 		{
 			const int sourceJobTagArtifactId = 105649;
-			_cache.Setup(x => x.GetFieldValue<int>(SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
 
 			// act
 			int actualSourceJobTagName = _syncConfig.SourceJobTagArtifactId;
@@ -106,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SourceWorkspaceTagArtifactId_ShouldReturnSourceWorkspaceTagName()
 		{
 			const int sourceWorkspaceTagArtifactId = 105656;
-			_cache.Setup(x => x.GetFieldValue<int>(SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
 
 			// act
 			int actualSourceJobTagName = _syncConfig.SourceWorkspaceTagArtifactId;
@@ -129,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationFolderStructureBehavior_ShouldReturnDestinationFolderStructureBehavior()
 		{
 			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
-			_cache.Setup(x => x.GetFieldValue<string>(DestinationFolderStructureBehaviorGuid)).Returns(expected.ToString());
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid)).Returns(expected.ToString());
 
 			// act
 			DestinationFolderStructureBehavior actual = _syncConfig.DestinationFolderStructureBehavior;
@@ -144,7 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// ARRANGE
 			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
 
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Guid actualRunId = _syncConfig.ExportRunId;
@@ -158,7 +148,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// ARRANGE
 			const bool imageImport = true;
-			_cache.Setup(x => x.GetFieldValue<bool>(ImageImportGuid)).Returns(imageImport);
+			_cache.Setup(x => x.GetFieldValue<bool>(SyncConfigurationRdo.ImageImportGuid)).Returns(imageImport);
 
 			// ACT
 			bool actualImageImport = _syncConfig.ImageImport;
@@ -172,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// ARRANGE
 			ImportImageFileCopyMode imageCopyMode = ImportImageFileCopyMode.CopyFiles;
-			_cache.Setup(x => x.GetFieldValue<string>(ImageFileCopyModeGuid)).Returns(imageCopyMode.ToString());
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid)).Returns(imageCopyMode.ToString());
 
 			// ACT
 			ImportImageFileCopyMode actualImportImageFileCopyMode = _syncConfig.ImportImageFileCopyMode;
@@ -187,7 +177,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
 		public void ExportRunId_ShouldReturnEmptyGuidForInvalidString(string runId)
 		{
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Action action = () =>

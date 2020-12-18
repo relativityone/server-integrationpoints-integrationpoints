@@ -9,8 +9,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Automation.Utility;
-using Relativity.Automation.Utility.Api;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -40,7 +38,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		public WorkspaceRef DestinationWorkspace { get; private set; }
 
-		public ApiComponent Component { get; }
 		public ARMHelper ARMHelper { get; private set; }
 		public AzureStorageHelper StorageHelper { get; private set; }
 
@@ -50,10 +47,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		public PerformanceTestBase()
 		{
-			RelativityFacade.Instance.RelyOn<ApiComponent>();
-
-			Component = RelativityFacade.Instance.GetComponent<ApiComponent>();
-
 			Configuration = new ConfigurationStub()
 			{
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,

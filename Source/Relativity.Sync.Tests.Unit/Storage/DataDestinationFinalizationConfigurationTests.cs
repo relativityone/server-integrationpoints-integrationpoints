@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -12,8 +13,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private DataDestinationFinalizationConfiguration _instance;
 
 		private Mock<IConfiguration> _cache;
-
-		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
 
 		[SetUp]
 		public void SetUp()
@@ -28,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int expectedValue = 123;
 
-			_cache.Setup(x => x.GetFieldValue<int>(DataDestinationArtifactIdGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid)).Returns(expectedValue);
 
 			_instance.DataDestinationArtifactId.Should().Be(expectedValue);
 		}

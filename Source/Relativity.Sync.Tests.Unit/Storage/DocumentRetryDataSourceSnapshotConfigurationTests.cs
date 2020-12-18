@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
@@ -20,11 +21,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private Mock<IFieldMappings> _fieldMappings;
 
 		private const int _WORKSPACE_ID = 589632;
-
-		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
-		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 
 		[SetUp]
 		public void SetUp()
@@ -48,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 658932;
 
-			_cache.Setup(x => x.GetFieldValue<int>(DataSourceArtifactIdGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.DataSourceArtifactId.Should().Be(expectedValue);
@@ -72,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(snapshot);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(snapshot);
 
 			// Act & Assert
 			_instance.IsSnapshotCreated.Should().Be(expectedValue);
@@ -89,8 +85,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SnapshotIdGuid, snapshotId.ToString()));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SnapshotRecordsCountGuid, totalRecordsCount));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, snapshotId.ToString()));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount));
 		}
 
 		[Test]
@@ -99,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 1;
 
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryToRetryGuid)).Returns(new RelativityObjectValue{ArtifactID = expectedValue});
+			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)).Returns(new RelativityObjectValue{ArtifactID = expectedValue});
 
 			// Act & Assert
 			_instance.JobHistoryToRetryId.Should().Be(expectedValue);
@@ -109,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveJobHistoryToRetryID_WhenNull()
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryToRetryGuid)).Returns((RelativityObjectValue)null);
+			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)).Returns((RelativityObjectValue)null);
 
 			// Act & Assert
 			_instance.JobHistoryToRetryId.Should().Be(null);

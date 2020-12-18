@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -18,9 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const int _JOB_ID = 9687413;
 
 		private const int _BATCH_SIZE = 985632;
-
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 
 		[SetUp]
 		public void SetUp()
@@ -58,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int totalRecordsCount = 874596;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SnapshotRecordsCountGuid)).Returns(totalRecordsCount);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SnapshotRecordsCountGuid)).Returns(totalRecordsCount);
 
 			// ACT & ASSERT
 			_instance.TotalRecordsCount.Should().Be(totalRecordsCount);
@@ -69,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
 
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Guid actualRunId = _instance.ExportRunId;
@@ -84,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
 		public void ItShouldReturnEmptyGuidForInvalidString(string runId)
 		{
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Action action = () =>

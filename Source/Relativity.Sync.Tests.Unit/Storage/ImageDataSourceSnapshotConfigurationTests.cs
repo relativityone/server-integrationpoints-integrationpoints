@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
@@ -21,11 +22,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private const int _WORKSPACE_ID = 589632;
 
-		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
-		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
-		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
 		private ISerializer _serializer;
 
 		[SetUp]
@@ -50,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 658932;
 
-			_cache.Setup(x => x.GetFieldValue<int>(DataSourceArtifactIdGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.DataSourceArtifactId.Should().Be(expectedValue);
@@ -63,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(snapshot);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(snapshot);
 
 			// Act & Assert
 			_instance.IsSnapshotCreated.Should().Be(expectedValue);
@@ -80,8 +76,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SnapshotIdGuid, snapshotId.ToString()));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SnapshotRecordsCountGuid, totalRecordsCount));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, snapshotId.ToString()));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount));
 		}
 
 		[Test]
@@ -89,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var expectedValue = new [] {1, 2, 3};
-			_cache.Setup(x => x.GetFieldValue<string>(ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
+			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
 
 			// Act & Assert
 			_instance.ProductionImagePrecedence.Should().BeEquivalentTo(expectedValue);
@@ -100,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void IncludeOriginalImageIfNotFoundInProductions_ShouldBeRetrieved(bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<bool>(IncludeOriginalImagesGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.IncludeOriginalImageIfNotFoundInProductions.Should().Be(expectedValue);
