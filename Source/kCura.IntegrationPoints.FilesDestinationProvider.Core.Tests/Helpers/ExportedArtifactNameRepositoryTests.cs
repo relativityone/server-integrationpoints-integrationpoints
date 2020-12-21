@@ -1,16 +1,14 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
-using kCura.Relativity.Client;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Search;
+using Relativity.Services.View;
 using Action = System.Action;
 using Query = Relativity.Services.Query;
 
@@ -19,8 +17,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 	public class ExportedArtifactNameRepositoryTests
 	{
 		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
+		private Mock<IViewManager> _viewManager;
 		private Mock<IServicesMgr> _servicesMgrFake;
-		private Mock<IRSAPIClient> _rsapiFake;
 		private Mock<IServiceManagerProvider> _serviceManagerProvider;
 
 		private const int _WORKSPACE_ID = 111;
@@ -31,15 +29,39 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 		[SetUp]
 		public void SetUp()
 		{
-			_keywordSearchManagerFake = new Mock<IKeywordSearchManager>();
 			_servicesMgrFake = new Mock<IServicesMgr>();
+
+			_keywordSearchManagerFake = new Mock<IKeywordSearchManager>();
 			_servicesMgrFake.Setup(x => x.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_keywordSearchManagerFake.Object);
 
-			_serviceManagerProvider = new Mock<IServiceManagerProvider>();
-			_rsapiFake = new Mock<IRSAPIClient>();
+			_viewManager = new Mock<IViewManager>();
+			_servicesMgrFake.Setup(x => x.CreateProxy<IViewManager>(It.IsAny<ExecutionIdentity>()))
+				.Returns(_viewManager.Object);
 
-			_sut = new ExportedArtifactNameRepository(_servicesMgrFake.Object, _rsapiFake.Object, _serviceManagerProvider.Object);
+			_serviceManagerProvider = new Mock<IServiceManagerProvider>();
+
+			_sut = new ExportedArtifactNameRepository(_servicesMgrFake.Object, _serviceManagerProvider.Object);
+		}
+
+		[Test]
+		public void GetViewName_ShouldReturnViewName()
+		{
+			// Arrange
+			const int viewId = 333;
+			const string viewName = "My View";
+
+			_viewManager.Setup(x => x.ReadSingleAsync(_WORKSPACE_ID, viewId)).ReturnsAsync(new View()
+			{
+				ArtifactID = viewId,
+				Name = viewName
+			});
+
+			// Act
+			string actualViewName = _sut.GetViewName(_WORKSPACE_ID, viewId);
+
+			// Assert
+			actualViewName.Should().Be(viewName);
 		}
 
 		[Test]
@@ -108,5 +130,3 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

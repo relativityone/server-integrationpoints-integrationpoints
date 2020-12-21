@@ -150,6 +150,7 @@
     <Compile Include="Repositories\Implementations\CaseRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\ChoiceRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\CommonTests\MassUpdateTests.cs" />
+    <Compile Include="Repositories\Implementations\ErrorRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\ExportQueryResultTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Repositories\Implementations\SecretsRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\TabRepositoryTests.cs" />
     <Compile Include="ResourceDbProviderTests.cs" />
     <Compile Include="RetryHandlerFactoryTests.cs" />
     <Compile Include="RetryHandlerTests.cs" />
