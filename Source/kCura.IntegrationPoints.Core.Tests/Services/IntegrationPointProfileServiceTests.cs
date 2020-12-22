@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_instance.ReadIntegrationPointProfileModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
 				.Returns(new List<Choice>()
 				{
 					new Choice(5555)
@@ -291,7 +291,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
-			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
 				.Returns(new List<Choice>()
 				{
 					new Choice(5555)

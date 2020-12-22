@@ -23,13 +23,17 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		private IBackwardCompatibility _backwardCompatibility;
 		private ICaseServiceContext _caseContext;
 
+		private int _workspaceArtifactId = 100;
+
 		public override void SetUp()
 		{
 			_integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_backwardCompatibility = Substitute.For<IBackwardCompatibility>();
+			
 			_caseContext = Substitute.For<ICaseServiceContext>();
+			_caseContext.WorkspaceID.Returns(_workspaceArtifactId);
 
 			_integrationPointProfileRepository = new IntegrationPointProfileRepository(_backwardCompatibility, _integrationPointProfileService, _choiceQuery,
 				_integrationPointService, _caseContext);
@@ -86,7 +90,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			_choiceQuery.GetChoicesOnField(0, new Guid(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(new List<Choice>
+			_choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(new List<Choice>
 			{
 				new Choice(overwriteFieldsChoiceId)
 				{
@@ -174,7 +178,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(expectedChoices);
+			_choiceQuery.GetChoicesOnField(_workspaceArtifactId, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(expectedChoices);
 
 			var actualChoicesModels = _integrationPointProfileRepository.GetOverwriteFieldChoices();
 

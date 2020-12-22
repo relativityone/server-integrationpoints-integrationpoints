@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private Data.IntegrationPoint CreateIntegrationPoint()
 		{
 			IntegrationPointModel model = CreateIntegrationModel();
-			IList<Choice> choices = _choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
+			IList<Choice> choices = _choiceQuery.GetChoicesOnField(WorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 			Data.IntegrationPoint integrationPointRdo = model.ToRdo(choices, new PeriodicScheduleRule());
 
 			return integrationPointRdo;

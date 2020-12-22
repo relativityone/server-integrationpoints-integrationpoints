@@ -16,18 +16,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		public List<Choice> ExpectedJobTypeChoiceValues = new List<Choice>
 		{
-			new Choice
-			{
-				Name = "Run"
-			},
-			new Choice
-			{
-				Name = "Scheduled Run"
-			},
-			new Choice
-			{
-				Name = "Retry Errors"
-			}
+			new Choice { Name = "Run" },
+			new Choice { Name = "Scheduled Run" },
+			new Choice { Name = "Retry Errors" }
 		};
 
 		public ChoiceQueryTests() : base("ChoiceQueryTests Workspace")
@@ -47,17 +38,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			List<Choice> result = _sut.GetChoicesOnField(WorkspaceArtifactId, IntegrationPointsJobTypeGuid);
 
 			// Assert
-			AssertChoiceValues(result);
-		}
-
-		private void AssertChoiceValues(List<Choice> choiceValues)
-		{
-			choiceValues.ShouldAllBeEquivalentTo(ExpectedJobTypeChoiceValues, config =>
-			{
-				config.Excluding(x => x.ArtifactID);
-
-				return config;
-			});
+			result.ShouldAllBeEquivalentTo(ExpectedJobTypeChoiceValues, config => config.Excluding(x => x.ArtifactID));
 		}
 	}
 }

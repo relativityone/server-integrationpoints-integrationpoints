@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				QueryRequest request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field},
-					Condition = $"'FieldArtifactTypeID' == {(int) ArtifactType.Document} " +
+					Condition = $"'FieldArtifactTypeID' == {rdoTypeId} " +
 					            $"AND 'Field Type' IN ['{FieldTypes.SingleChoice}', '{Constants.Fields.MultipleChoice}']",
 					IncludeNameInQueryResult = true,
 					RankSortOrder = global::Relativity.Services.Objects.DataContracts.SortEnum.Ascending
