@@ -93,6 +93,7 @@ namespace kCura.IntegrationPoints.Agent
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IMetricsFactory>().ImplementedBy<MetricsFactory>().LifestyleTransient());
 						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<ISyncJobMetric>().ImplementedBy<SyncJobMetric>().LifestyleTransient());
+						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IJobHistorySyncService>().ImplementedBy<JobHistorySyncService>().LifestyleTransient());
 
 						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
 						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
@@ -113,9 +114,7 @@ namespace kCura.IntegrationPoints.Agent
 							IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
 							if (syncJob != null)
 							{
-								var helper = ripContainerForSync.Resolve<IHelper>();
-								var jobHistorySyncService = new JobHistorySyncService(helper);
-
+								IJobHistorySyncService jobHistorySyncService = ripContainerForSync.Resolve<IJobHistorySyncService>();
 								jobHistorySyncService.MarkJobAsFailedAsync(syncJob, e).ConfigureAwait(false).GetAwaiter().GetResult();
 							}
 						}

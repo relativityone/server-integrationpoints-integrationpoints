@@ -2,20 +2,47 @@
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.RelativitySync.Utils;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+
+using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
+using SyncFieldEntry = Relativity.Sync.Storage.FieldEntry;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
 	internal static class FieldMapHelper
 	{
-		public static string FixMappings(string fieldMappings, ISerializer serializer, IAPILog logger)
+		public static List<SyncFieldMap> FixedSyncMapping(string fieldsMapping, ISerializer serializer, IAPILog logger)
+		{
+			List<FieldMap> fields = FixedMapping(fieldsMapping, serializer, logger);
+
+			return fields.Select(x => new SyncFieldMap
+			{
+				SourceField = new SyncFieldEntry()
+				{
+					DisplayName = x.SourceField.DisplayName,
+					FieldIdentifier = int.Parse(x.SourceField.FieldIdentifier),
+					IsIdentifier = x.SourceField.IsIdentifier
+				},
+				DestinationField = new SyncFieldEntry()
+				{
+					DisplayName = x.DestinationField.DisplayName,
+					FieldIdentifier = int.Parse(x.DestinationField.FieldIdentifier),
+					IsIdentifier = x.DestinationField.IsIdentifier
+				},
+				FieldMapType = x.FieldMapType.ToSyncFieldMapType(),
+
+			}).ToList();
+		}
+
+		private static List<FieldMap> FixedMapping(string fieldMappings, ISerializer serializer, IAPILog logger)
 		{
 			List<FieldMap> fields = serializer.Deserialize<List<FieldMap>>(fieldMappings);
 			if (fields == null)
 			{
-				return fieldMappings;
+				return new List<FieldMap>();
 			}
 
 			fields = FixFolderPathMapping(fields);
@@ -23,7 +50,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			fields = FixControlNumberFieldName(fields);
 			fields = Deduplicate(fields, logger);
 
-			return serializer.Serialize(fields);
+			return fields;
 		}
 
 		private static List<FieldMap> FixFolderPathMapping(List<FieldMap> fields)

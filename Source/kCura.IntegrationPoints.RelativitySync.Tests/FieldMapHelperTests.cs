@@ -3,11 +3,16 @@ using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.RelativitySync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+
+using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
+using SyncFieldEntry = Relativity.Sync.Storage.FieldEntry;
+using SyncFieldMapType = Relativity.Sync.Storage.FieldMapType;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -25,142 +30,192 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		}
 
 		[Test]
-		public void FixMappings_ShouldHandleEmptyMapping()
+		public void FixedSyncMapping_ShouldHandleEmptyMapping()
 		{
-			// ACT
-			string result = FieldMapHelper.FixMappings(string.Empty, _serializer, _loggerFake.Object);
+			// Act
+			List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(string.Empty, _serializer, _loggerFake.Object);
 
-			// ASSERT
-			Assert.That(result, Is.EqualTo(string.Empty));
+			// Assert
+			fieldsMapping.Should().BeEmpty();
 		}
 
 		[Test]
-		public void FixMappings_ShouldHandleMappingWithoutIdentifier()
+		public void FixedSyncMapping_ShouldHandleMappingWithoutIdentifier()
 		{
-			// ARRANGE
+			// Arrange
 			List<FieldMap> fieldMap = new List<FieldMap>
 			{
 				new FieldMap
 				{
 					DestinationField = new FieldEntry
 					{
+						FieldIdentifier = "1",
 						DisplayName = "abc"
 					},
 					SourceField = new FieldEntry
 					{
+						FieldIdentifier = "1",
 						DisplayName = "abc [Object Identifier]"
 					},
 					FieldMapType = FieldMapTypeEnum.None
 				}
 			};
 
-			string fieldMapping = _serializer.Serialize(fieldMap);
-
-			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
-
-			// ASSERT
-			Assert.That(result, Is.EqualTo(fieldMapping));
-		}
-
-		[Test]
-		public void FixMappings_ShouldRemoveSuffixFromIdentifierMapping()
-		{
-			// ARRANGE
-			List<FieldMap> fieldMap = new List<FieldMap>
+			List<SyncFieldMap> expectedFieldsMapping = new List<SyncFieldMap>
 			{
-				new FieldMap
+				new SyncFieldMap
 				{
-					DestinationField = new FieldEntry
+					DestinationField = new SyncFieldEntry
 					{
+						FieldIdentifier = 1,
+						DisplayName = "abc"
+					},
+					SourceField = new SyncFieldEntry
+					{
+						FieldIdentifier = 1,
 						DisplayName = "abc [Object Identifier]"
 					},
-					SourceField = new FieldEntry
-					{
-						DisplayName = "abc [Object Identifier]"
-					},
-					FieldMapType = FieldMapTypeEnum.Identifier
+					FieldMapType = SyncFieldMapType.None
 				}
 			};
 
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
-			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
+			// Act
+			List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
 
-			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
-
-			// ASSERT
-			Assert.That(modifiedMap[0].SourceField.DisplayName, Is.EqualTo("abc"));
-			Assert.That(modifiedMap[0].DestinationField.DisplayName, Is.EqualTo("abc"));
+			// Assert
+			fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
 		}
 
 		[Test]
-		public void FixMappings_ShouldRemoveSpecialFields()
+		public void FixedSyncMapping_ShouldRemoveSuffixFromIdentifierMapping()
 		{
-			// ARRANGE
-			const FieldMapTypeEnum firstFieldMapTypeEnumToRemove = FieldMapTypeEnum.FolderPathInformation;
-			const FieldMapTypeEnum secondFieldMapTypeEnumToRemove = FieldMapTypeEnum.NativeFilePath;
-			const FieldMapTypeEnum fieldMapTypeNotToBeRemoved = FieldMapTypeEnum.Identifier;
+			// Arrange
 			List<FieldMap> fieldMap = new List<FieldMap>
 			{
 				new FieldMap
 				{
 					DestinationField = new FieldEntry
 					{
-						DisplayName = "field"
+						FieldIdentifier = "1",
+						DisplayName = "abc [Object Identifier]",
 					},
 					SourceField = new FieldEntry
 					{
+						FieldIdentifier = "1",
+						DisplayName = "abc [Object Identifier]",
+					},
+					FieldMapType = FieldMapTypeEnum.Identifier
+				}
+			};
+
+			List<SyncFieldMap> expectedFieldsMapping = new List<SyncFieldMap>
+			{
+				new SyncFieldMap
+				{
+					DestinationField = new SyncFieldEntry
+					{
+						FieldIdentifier = 1,
+						DisplayName = "abc"
+					},
+					SourceField = new SyncFieldEntry
+					{
+						FieldIdentifier = 1,
+						DisplayName = "abc"
+					},
+					FieldMapType = SyncFieldMapType.Identifier
+				}
+			};
+
+			string fieldMapping = _serializer.Serialize(fieldMap);
+
+			// Act
+			List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
+
+			// Assert
+			fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
+		}
+
+		[Test]
+		public void FixedSyncMapping_ShouldRemoveSpecialFields()
+		{
+			// Arrange
+			const FieldMapTypeEnum folderPathTypeEnum = FieldMapTypeEnum.FolderPathInformation;
+			const FieldMapTypeEnum nativeFileTypeEnum = FieldMapTypeEnum.NativeFilePath;
+			const FieldMapTypeEnum fieldMapTypeNotToBeRemoved = FieldMapTypeEnum.Identifier;
+			List<FieldMap> fieldMap = new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						FieldIdentifier = "1",
 						DisplayName = "Field"
 					},
-					FieldMapType = firstFieldMapTypeEnumToRemove
+					FieldMapType = folderPathTypeEnum
 				},
 				new FieldMap
 				{
 					DestinationField = new FieldEntry
 					{
+						FieldIdentifier = "2",
 						DisplayName = "field"
 					},
 					SourceField = new FieldEntry
 					{
+						FieldIdentifier = "2",
 						DisplayName = "Field"
 					},
-					FieldMapType = secondFieldMapTypeEnumToRemove
+					FieldMapType = nativeFileTypeEnum
 				},
 				new FieldMap
 				{
 					DestinationField = new FieldEntry
 					{
+						FieldIdentifier = "3",
 						DisplayName = "field"
 					},
 					SourceField = new FieldEntry
 					{
+						FieldIdentifier = "3",
 						DisplayName = "Field"
 					},
 					FieldMapType = fieldMapTypeNotToBeRemoved
 				}
 			};
 
+			List<SyncFieldMap> expectedFieldsMapping = new List<SyncFieldMap>
+			{
+				new SyncFieldMap
+				{
+					DestinationField = new SyncFieldEntry
+					{
+						FieldIdentifier = 3,
+						DisplayName = "field"
+					},
+					SourceField = new SyncFieldEntry
+					{
+						FieldIdentifier = 3,
+						DisplayName = "Field"
+					},
+					FieldMapType = fieldMapTypeNotToBeRemoved.ToSyncFieldMapType()
+				}
+			};
+
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
-			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
+			// Act
+			List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
 
-			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
-
-			// ASSERT
-			Assert.That(modifiedMap.All(m => m.FieldMapType != firstFieldMapTypeEnumToRemove));
-			Assert.That(modifiedMap.All(m => m.FieldMapType != secondFieldMapTypeEnumToRemove));
-
-			Assert.That(modifiedMap.Any(m => m.FieldMapType == fieldMapTypeNotToBeRemoved));
+			// Assert
+			fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
 		}
 
 		[Test]
-		public void FixMappings_ShouldDeduplicateFields()
+		public void FixedSyncMapping_ShouldDeduplicateFields()
 		{
-			// ARRANGE
-
+			// Arrange
 			const string uniqueFieldIdentifier = "111";
 			const string duplicatedFieldIdentifier = "222";
 
@@ -207,19 +262,43 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				}
 			};
 
+			List<SyncFieldMap> expectedFieldsMapping = new List<SyncFieldMap>
+			{
+				new SyncFieldMap
+				{
+					SourceField = new SyncFieldEntry
+					{
+						DisplayName = "unique field",
+						FieldIdentifier = int.Parse(uniqueFieldIdentifier)
+					},
+					DestinationField = new SyncFieldEntry
+					{
+						DisplayName = "unique field",
+						FieldIdentifier = int.Parse(uniqueFieldIdentifier)
+					}
+				},
+				new SyncFieldMap()
+				{
+					SourceField = new SyncFieldEntry()
+					{
+						DisplayName = "duplicated field",
+						FieldIdentifier = int.Parse(duplicatedFieldIdentifier)
+					},
+					DestinationField = new SyncFieldEntry()
+					{
+						DisplayName = "duplicated field",
+						FieldIdentifier = int.Parse(duplicatedFieldIdentifier)
+					}
+				}
+			};
+
 			string fieldMapping = _serializer.Serialize(fieldMap);
 
-			// ACT
-			string result = FieldMapHelper.FixMappings(fieldMapping, _serializer, _loggerFake.Object);
+			// Act
+			List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
 
-			List<FieldMap> modifiedMap = _serializer.Deserialize<List<FieldMap>>(result);
-
-			// ASSERT
-			modifiedMap.Count.Should().Be(2);
-			modifiedMap.Single(x => x.SourceField.FieldIdentifier == uniqueFieldIdentifier &&
-			                        x.DestinationField.FieldIdentifier == uniqueFieldIdentifier);
-			modifiedMap.Single(x => x.SourceField.FieldIdentifier == duplicatedFieldIdentifier &&
-			                        x.DestinationField.FieldIdentifier == duplicatedFieldIdentifier);
+			// Assert
+			fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
 		}
 	}
 }

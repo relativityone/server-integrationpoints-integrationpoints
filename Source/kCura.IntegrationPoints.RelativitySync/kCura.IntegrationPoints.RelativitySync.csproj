@@ -82,6 +82,7 @@
     <Compile Include="SyncConfiguration.cs" />
     <Compile Include="SyncLog.cs" />
     <Compile Include="SyncMetrics.cs" />
+    <Compile Include="Utils\EnumConvertExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />

@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
@@ -22,6 +23,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using Relativity.API;
+using Relativity.Services.Interfaces.Field;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 using FieldMap = Relativity.IntegrationPoints.Services.FieldMap;
 
@@ -34,11 +36,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		private IIntegrationPointService _integrationPointService;
 
 		private IJobHistorySyncService _jobHistorySyncService;
-
-		private IntegrationPointToSyncConverter _sut;
+		private SyncServiceManagerForRip _syncServicesMgr;
 
 		public SyncConfigurationCreationTests() 
-			: base("SyncConfigurationCreationTests - Source", "SyncConfigurationCreationTests - Destination")
+			: base("Test Workspace", null)
 		{
 		}
 
@@ -48,8 +49,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobHistorySyncService = new JobHistorySyncService(Helper);
-
-			_sut = new IntegrationPointToSyncConverter(Serializer, _jobHistoryService, Logger);
+			_syncServicesMgr = new SyncServiceManagerForRip(Helper.GetServicesManager());
 		}
 
 		[Test]
@@ -62,13 +62,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IntegrationPointModel integrationPoint =
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultDocumentSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
@@ -78,7 +80,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithEmailNotifications()
 		{
 			// Arrange
-			const string emailNotifications = "test@relativity.com; test2@relativity.com";
+			const string emailNotifications = "    test@relativity.com;;  test2@relativity.com";
 
 			ImportSettings destinationConfiguration = CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactID);
 			SourceConfiguration sourceConfiguration = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
@@ -87,14 +89,16 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 			integrationPoint.NotificationEmails = emailNotifications;
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultDocumentSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
-			integrationPoint.NotificationEmails = emailNotifications;
+			expectedSyncConfigurationRdo.EmailNotificationRecipients = "test@relativity.com;test2@relativity.com";
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
@@ -103,7 +107,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		[TestCase(ImportOverwriteModeEnum.AppendOnly, "Use Field Settings", "AppendOnly")]
 		[TestCase(ImportOverwriteModeEnum.AppendOverlay, "Merge Values", "AppendOverlay")]
 		[TestCase(ImportOverwriteModeEnum.OverlayOnly, "Replace Values", "OverlayOnly")]
-		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWitOverlayBehavior(
+		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithOverlayBehavior(
 			ImportOverwriteModeEnum importOverwriteMode, string fieldOverlayBehavior, string syncOverwriteMode)
 		{
 			// Arrange
@@ -115,26 +119,28 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IntegrationPointModel integrationPoint =
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultDocumentSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.ImportOverwriteMode = syncOverwriteMode;
 			expectedSyncConfigurationRdo.FieldOverlayBehavior = fieldOverlayBehavior;
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[TestCase(false, false, 0, "None", "")]
-		[TestCase(true, false, 0, "RetainSourceWorkspaceStructure", "")]
-		[TestCase(false, true, 1038081, "ReadFromField", "Document Folder Path")]
+		[TestCase(false, false, 0, false, "None", null)]
+		[TestCase(true, false, 0, true, "RetainSourceWorkspaceStructure", null)]
+		[TestCase(false, true, 1038081, true, "ReadFromField", "Document Folder Path")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithFolderStructureBehavior(
 			bool useDynamicFolderPath, bool useFolderPathInformation, int folderPathSourceFieldId,
-			string syncFolderStructureBehavior, string syncFolderFieldName)
+			bool moveExistingDocuments, string syncFolderStructureBehavior, string syncFolderFieldName)
 		{
 			// Arrange
 			ImportSettings destinationConfiguration = CreateDestinationConfigWithTargetWorkspace(
@@ -146,21 +152,25 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 					UseFolderPathInformation = useFolderPathInformation,
 					FolderPathSourceField = folderPathSourceFieldId
 				};
+			destinationConfigurationExt.MoveExistingDocuments = moveExistingDocuments;
 
 			SourceConfiguration sourceConfiguration = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
 
 			IntegrationPointModel integrationPoint =
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfigurationExt, GetDefaultFieldMap(false));
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultDocumentSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfigurationExt);
 			expectedSyncConfigurationRdo.DestinationFolderStructureBehavior = syncFolderStructureBehavior;
 			expectedSyncConfigurationRdo.FolderPathSourceFieldName = syncFolderFieldName;
+			expectedSyncConfigurationRdo.MoveExistingDocuments = moveExistingDocuments;
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
@@ -169,7 +179,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles, "Copy")]
 		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks, "Link")]
 		[TestCase(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, "None")]
-		public async Task SyncConfiguration_ShouldBeCreated_WhenDefaultIntegrationPointWitCopyNativesBehavior(
+		public async Task SyncConfiguration_ShouldBeCreated_WhenDefaultIntegrationPointWithCopyNativesBehavior(
 			ImportNativeFileCopyModeEnum nativeCopyMode, string expectedNativeCopyMode)
 		{
 			// Arrange
@@ -181,26 +191,27 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IntegrationPointModel integrationPoint =
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultDocumentSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.NativesBehavior = expectedNativeCopyMode;
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles, "Copy", "Copy")]
-		[TestCase(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, "Link", "None")]
-		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks, "Link", "Link")]
+		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles, "Copy")]
+		[TestCase(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, "Link")]
+		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks, "Link")]
 
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithCopyImageModeSync( 
-			ImportNativeFileCopyModeEnum imageCopyMode,
-			string syncImageCopyMode, string syncNativesCopyMode)
+			ImportNativeFileCopyModeEnum imageCopyMode, string syncImageCopyMode)
 		{
 			// Arrange
 			ImportSettings destinationConfiguration = CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactID);
@@ -214,18 +225,19 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IntegrationPointModel integrationPoint =
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultImageSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.ImageImport = true;
 			expectedSyncConfigurationRdo.IncludeOriginalImages = true;
 			expectedSyncConfigurationRdo.ImageFileCopyMode = syncImageCopyMode;
-			expectedSyncConfigurationRdo.NativesBehavior = syncNativesCopyMode;
 			expectedSyncConfigurationRdo.ProductionImagePrecedence = "[]";
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
@@ -248,7 +260,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			IntegrationPointModel integrationPoint =
 				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultImageSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
 			expectedSyncConfigurationRdo.ImageImport = true;
 			expectedSyncConfigurationRdo.ImageFileCopyMode = "Link";
@@ -257,8 +269,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 
 			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
@@ -276,14 +290,22 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			
 			IExtendedJob extendedJob = CreateRetryExtendedJob(integrationPoint, out JobHistory jobHistory);
 
-			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultSyncConfiguration(
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultDocumentSyncConfiguration(
 				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration, jobHistory);
 
+			var sut = GetSut();
+
 			// Act
-			int configurationId = await _sut.CreateSyncConfigurationAsync(extendedJob, Helper, _jobHistorySyncService).ConfigureAwait(false);
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+		}
+
+		private IntegrationPointToSyncConverter GetSut()
+		{
+			return new IntegrationPointToSyncConverter(
+				Serializer, _jobHistoryService, _jobHistorySyncService, Logger);
 		}
 
 		private async Task AssertCreatedConfiguration(int createdConfigurationId, SyncConfigurationRDO expectedConfiguration)
@@ -433,7 +455,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				RDOArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, SyncConfigurationRDO.RdoArtifactTypeIdGuid),
 				JobHistoryToRetry = jobHistoryToRetryValue == null ? null : GetBasicRelativityObject(jobHistoryToRetryValue.ArtifactID),
 				ImageImport = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRDO.ImageImportGuid),
-				IncludeOriginalImages = ReadSyncConfigurationValue<bool?>(configuration, SyncConfigurationRDO.IncludeOriginalImagesGuid),
+				IncludeOriginalImages = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRDO.IncludeOriginalImagesGuid),
 				ProductionImagePrecedence = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRDO.ProductionImagePrecedenceGuid),
 				ImageFileCopyMode = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRDO.ImageFileCopyModeGuid)
 			};
@@ -463,34 +485,76 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			public int RDOArtifactTypeId { get; set; }
 			public RelativityObject JobHistoryToRetry { get; set; }
 			public bool ImageImport { get; set; }
-			public bool? IncludeOriginalImages { get; set; }
+			public bool IncludeOriginalImages { get; set; }
 			public string ProductionImagePrecedence { get; set; }
 			public string ImageFileCopyMode { get; set; }
 
-			public static SyncConfigurationRDO CreateDefaultSyncConfiguration(ISerializer serializer, IAPILog logger, IntegrationPointModel integrationPoint,
-				SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration, JobHistory jobHistory = null)
+			public static SyncConfigurationRDO CreateDefaultDocumentSyncConfiguration(ISerializer serializer,
+				IAPILog logger, IntegrationPointModel integrationPoint, SourceConfiguration sourceConfiguration, 
+				ImportSettings destinationConfiguration, JobHistory jobHistory = null)
 			{
 				return new SyncConfigurationRDO()
 				{
+					RDOArtifactTypeId = 10,
 					CreateSavedSearchInDestination = destinationConfiguration.CreateSavedSearchForTagging,
 					DataDestinationArtifactId = destinationConfiguration.DestinationFolderArtifactId,
 					DataDestinationType = "Folder",
 					DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId,
 					DataSourceType = "SavedSearch",
-					DestinationFolderStructureBehavior = "None",
 					DestinationWorkspaceArtifactId = sourceConfiguration.TargetWorkspaceArtifactId,
 					EmailNotificationRecipients = integrationPoint.NotificationEmails ?? "",
-					FieldMappings = FieldMapHelper.FixMappings(integrationPoint.Map, serializer, logger),
-					FieldOverlayBehavior = "Use Field Settings",
-					FolderPathSourceFieldName = "",
-					ImageFileCopyMode = null,
-					ImageImport = false,
-					ImportOverwriteMode = "AppendOnly",
-					IncludeOriginalImages = null,
+					FieldMappings = serializer.Serialize(
+						FieldMapHelper.FixedSyncMapping(integrationPoint.Map, serializer, logger)),
+
+					DestinationFolderStructureBehavior = "None",
+					FolderPathSourceFieldName = null,
 					MoveExistingDocuments = false,
+
 					NativesBehavior = "None",
+
+					ImportOverwriteMode = "AppendOnly",
+					FieldOverlayBehavior = "Use Field Settings",
+
+					ImageImport = false,
+					ImageFileCopyMode = null,
+					IncludeOriginalImages = false,
 					ProductionImagePrecedence = null,
+
+					JobHistoryToRetry = jobHistory == null ? null : GetBasicRelativityObject(jobHistory.ArtifactId)
+				};
+			}
+
+			public static SyncConfigurationRDO CreateDefaultImageSyncConfiguration(ISerializer serializer, 
+				IAPILog logger, IntegrationPointModel integrationPoint, SourceConfiguration sourceConfiguration,
+				ImportSettings destinationConfiguration, JobHistory jobHistory = null)
+			{
+				return new SyncConfigurationRDO()
+				{
 					RDOArtifactTypeId = 10,
+					CreateSavedSearchInDestination = destinationConfiguration.CreateSavedSearchForTagging,
+					DataDestinationArtifactId = destinationConfiguration.DestinationFolderArtifactId,
+					DataDestinationType = "Folder",
+					DataSourceArtifactId = sourceConfiguration.SavedSearchArtifactId,
+					DataSourceType = "SavedSearch",
+					DestinationWorkspaceArtifactId = sourceConfiguration.TargetWorkspaceArtifactId,
+					EmailNotificationRecipients = integrationPoint.NotificationEmails ?? "",
+					FieldMappings = serializer.Serialize(
+						FieldMapHelper.FixedSyncMapping(integrationPoint.Map, serializer, logger)),
+
+					DestinationFolderStructureBehavior = null,
+					FolderPathSourceFieldName = null,
+					MoveExistingDocuments = false,
+
+					NativesBehavior = null,
+
+					ImportOverwriteMode = "AppendOnly",
+					FieldOverlayBehavior = "Use Field Settings",
+
+					ImageImport = true,
+					ImageFileCopyMode = "Link",
+					IncludeOriginalImages = true,
+					ProductionImagePrecedence = "[]",
+
 					JobHistoryToRetry = jobHistory == null ? null : GetBasicRelativityObject(jobHistory.ArtifactId)
 				};
 			}

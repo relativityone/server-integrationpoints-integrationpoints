@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
@@ -17,14 +15,11 @@ public class FunctionalTestsSetupFixture
 	public static bool IsInitialized = true;
 
 	[OneTimeSetUp]
-	public async Task InitializeFixture()
+	public void InitializeFixture()
 	{
 		try
 		{
 			_testHelper = new TestHelper();
-
-			// REL-451648
-			await ToggleHelper.SetToggleAsync("Relativity.Core.Api.TogglePerformance.ObjectManagerUseStaticStatelessValidators", false).ConfigureAwait(false);
 
 			ImportIntegrationPointsToLibrary();
 

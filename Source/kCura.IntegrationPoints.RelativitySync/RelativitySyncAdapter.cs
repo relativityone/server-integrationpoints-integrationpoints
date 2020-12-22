@@ -22,25 +22,21 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private readonly IAPILog _logger;
 		private readonly IAPM _apmMetrics;
 		private readonly ISyncJobMetric _jobMetric;
+		private readonly IJobHistorySyncService _jobHistorySyncService;
 		private readonly Guid _correlationId;
 		private readonly IntegrationPointToSyncConverter _converter;
 
-		private readonly IHelper _helper;
-		private readonly IJobHistorySyncService _jobHistorySyncService;
-
 		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics,
-			ISyncJobMetric jobMetric, IntegrationPointToSyncConverter converter)
+			ISyncJobMetric jobMetric, IJobHistorySyncService jobHistorySyncService, IntegrationPointToSyncConverter converter)
 		{
 			_job = job;
 			_ripContainer = ripContainer;
 			_logger = logger;
 			_apmMetrics = apmMetrics;
 			_jobMetric = jobMetric;
+			_jobHistorySyncService = jobHistorySyncService;
 			_converter = converter;
 			_correlationId = Guid.NewGuid();
-
-			_helper = _ripContainer.Resolve<IHelper>();
-			_jobHistorySyncService = new JobHistorySyncService(_helper);
 		}
 
 		public async Task<TaskResult> RunAsync()
@@ -190,10 +186,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private async Task<ISyncJob> CreateSyncJobAsync(IContainer container)
 		{
+			SyncServiceManagerForRip serviceManager = new SyncServiceManagerForRip(_ripContainer.Resolve<IHelper>().GetServicesManager());
+
 			int syncConfigurationArtifactId;
 			try
 			{
-				syncConfigurationArtifactId = await _converter.CreateSyncConfigurationAsync(_job, _helper, _jobHistorySyncService).ConfigureAwait(false);
+				syncConfigurationArtifactId = await _converter.CreateSyncConfigurationAsync(_job, serviceManager).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -206,8 +204,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 											{
 												TriggerValue = "rip"
 											};
-
-			SyncServiceManagerForRip serviceManager = new SyncServiceManagerForRip(_ripContainer.Resolve<IHelper>().GetServicesManager());
 
 			RelativityServices relativityServices = new RelativityServices(_apmMetrics, serviceManager, ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 			ISyncLog syncLog = new SyncLog(_logger);
