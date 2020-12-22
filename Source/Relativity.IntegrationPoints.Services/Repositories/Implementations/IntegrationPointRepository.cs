@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoMapper;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.IntegrationPoints.Services.Extensions;
@@ -26,7 +27,8 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 			IChoiceQuery choiceQuery, 
 			IBackwardCompatibility backwardCompatibility, 
 			IIntegrationPointService integrationPointLocalService, 
-			IIntegrationPointProfileService integrationPointProfileService) : base(backwardCompatibility)
+			IIntegrationPointProfileService integrationPointProfileService,
+			ICaseServiceContext caseServiceContext) : base(backwardCompatibility, caseServiceContext)
 		{
 			_serviceFactory = serviceFactory;
 			_objectTypeRepository = objectTypeRepository;
@@ -83,7 +85,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
 		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
-			var choices = _choiceQuery.GetChoicesOnField(IntegrationPointFieldGuids.OverwriteFieldsGuid);
+			var choices = _choiceQuery.GetChoicesOnField(Context.WorkspaceID, IntegrationPointFieldGuids.OverwriteFieldsGuid);
 			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
 		}
 

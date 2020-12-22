@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using Relativity.IntegrationPoints.Services.Helpers;
 
 namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
@@ -8,9 +9,12 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 	{
 		private readonly IBackwardCompatibility _backwardCompatibility;
 
-		protected IntegrationPointBaseRepository(IBackwardCompatibility backwardCompatibility)
+		protected ICaseServiceContext Context { get; }
+
+		protected IntegrationPointBaseRepository(IBackwardCompatibility backwardCompatibility, ICaseServiceContext context)
 		{
 			_backwardCompatibility = backwardCompatibility;
+			Context = context;
 		}
 
 		protected int SaveIntegrationPoint(CreateIntegrationPointRequest request)

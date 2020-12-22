@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using NSubstitute;
 using NUnit.Framework;
@@ -20,6 +21,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		private IIntegrationPointService _integrationPointService;
 		private IChoiceQuery _choiceQuery;
 		private IBackwardCompatibility _backwardCompatibility;
+		private ICaseServiceContext _caseContext;
 
 		public override void SetUp()
 		{
@@ -27,9 +29,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_backwardCompatibility = Substitute.For<IBackwardCompatibility>();
+			_caseContext = Substitute.For<ICaseServiceContext>();
 
 			_integrationPointProfileRepository = new IntegrationPointProfileRepository(_backwardCompatibility, _integrationPointProfileService, _choiceQuery,
-				_integrationPointService);
+				_integrationPointService, _caseContext);
 		}
 
 		[Test]
@@ -83,7 +86,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(new List<Choice>
+			_choiceQuery.GetChoicesOnField(0, new Guid(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(new List<Choice>
 			{
 				new Choice(overwriteFieldsChoiceId)
 				{
@@ -171,7 +174,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(expectedChoices);
+			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(expectedChoices);
 
 			var actualChoicesModels = _integrationPointProfileRepository.GetOverwriteFieldChoices();
 

@@ -985,7 +985,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
 			{
 				new Choice(2343)
 				{
@@ -1099,7 +1099,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
 			{
 				new Choice(2343)
 				{
@@ -1188,7 +1188,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
-			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
 			{
 				new Choice(2343)
 				{
@@ -1306,7 +1306,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_integrationPointRepository.CreateOrUpdate(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
 
-			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
 			{
 				new Choice(2343)
 				{

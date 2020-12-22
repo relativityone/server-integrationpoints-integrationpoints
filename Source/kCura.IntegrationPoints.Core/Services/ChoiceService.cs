@@ -1,93 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class ChoiceService : IChoiceService
 	{
-		private readonly IChoiceQuery _query;
-		public ChoiceService(IChoiceQuery query)
+		private readonly IServicesMgr _servicesMgr;
+
+		public ChoiceService(IServicesMgr servicesMgr)
 		{
-			_query = query;
+			_servicesMgr = servicesMgr;
 		}
 
-		public List<Relativity.Client.DTOs.Choice> GetChoicesOnField(int fieldArtifactID)
+		public List<FieldEntry> GetChoiceFields(int workspaceId, int rdoTypeId)
 		{
-			return _query.GetChoicesOnField(fieldArtifactID);
-		}
-		public List<Relativity.Client.DTOs.Choice> GetChoicesOnField(Guid fieldGuid)
-		{
-			return _query.GetChoicesOnField(fieldGuid);
-		}
-
-		public List<FieldEntry> GetChoiceFields(int rdoTypeId)
-		{
-			var rdoCondition = new ObjectCondition
+			using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				Field = Constants.Fields.ObjectTypeArtifactTypeId,
-				Operator = ObjectConditionEnum.AnyOfThese,
-				Value = new List<int> { rdoTypeId }
-			};
-
-			var choiceCondition = new TextCondition
-			{
-				Field = Constants.Fields.FieldType,
-				Operator = TextConditionEnum.EqualTo,
-				Value = FieldTypes.SingleChoice
-			};
-
-			var multiChoiceTextCondition = new TextCondition
-			{
-				Field = Constants.Fields.FieldType,
-				Operator = TextConditionEnum.EqualTo,
-				Value = Constants.Fields.MultipleChoice
-			};
-
-			Query query = new Query
-			{
-				ArtifactTypeName = "Field",
-				Fields = new List<kCura.Relativity.Client.Field>(),
-				Sorts = new List<Sort>()
+				QueryRequest request = new QueryRequest
 				{
-					new Sort()
-					{
-						Field = Constants.Fields.Name,
-						Direction = SortEnum.Ascending
-					}
-				}
-			};
-			CompositeCondition documentLongTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, choiceCondition);
-			CompositeCondition documentFixedLengthTextCondition = new CompositeCondition(rdoCondition, CompositeConditionEnum.And, multiChoiceTextCondition);
-			query.Condition = new CompositeCondition(documentLongTextCondition, CompositeConditionEnum.Or, documentFixedLengthTextCondition);
-			
-			List<FieldEntry> fieldEntries = ConvertToFieldEntries(_query.GetChoicesByQuery(query));
-			return fieldEntries;
-		}
+					ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field},
+					Condition = $"'FieldArtifactTypeID' == {(int) ArtifactType.Document} " +
+					            $"AND 'Field Type' IN ['{FieldTypes.SingleChoice}', '{Constants.Fields.MultipleChoice}']",
+					IncludeNameInQueryResult = true,
+					RankSortOrder = global::Relativity.Services.Objects.DataContracts.SortEnum.Ascending
+				};
 
-		public List<FieldEntry> ConvertToFieldEntries(List<kCura.Relativity.Client.Artifact> artifacts)
-		{
-			List<FieldEntry> fieldEntries = new List<FieldEntry>();
+				var result = objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue).GetAwaiter().GetResult();
 
-			foreach (kCura.Relativity.Client.Artifact artifact in artifacts)
-			{
-				foreach (kCura.Relativity.Client.Field field in artifact.Fields)
+				return result.Objects.Select(x => new FieldEntry
 				{
-					if (field.Name == Constants.Fields.Name)
-					{
-						fieldEntries.Add(new FieldEntry()
-						{
-							DisplayName = field.Value as string,
-							FieldIdentifier = artifact.ArtifactID.ToString(),
-							IsRequired = false
-						});
-						break;
-					}
-				}
+					DisplayName = x.Name,
+					FieldIdentifier = x.ArtifactID.ToString(),
+					IsRequired = false
+				}).ToList();
 			}
-			return fieldEntries;
 		}
 	}
 }

@@ -42,8 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
-			IRSAPIClient rsapiClient = rsapiClientFactory.CreateAdminClient(helper.GetActiveCaseID());
-			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IChoiceQuery choiceQuery = new ChoiceQuery(helper.GetServicesManager());
 
 			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, helper);

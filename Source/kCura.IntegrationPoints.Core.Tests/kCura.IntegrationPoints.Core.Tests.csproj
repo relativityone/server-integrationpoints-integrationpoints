@@ -93,7 +93,6 @@
     <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizerTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\UserFieldSanitizerTests.cs" />
     <Compile Include="Services\FieldServiceTests.cs" />
-    <Compile Include="Services\ChoiceServiceTests.cs" />
     <Compile Include="Services\Domain\DataProviderBuilderTests.cs" />
     <Compile Include="Services\Domain\ProviderFactoryCreationStrategyTests.cs" />
     <Compile Include="Services\Domain\AppDomainIsolatedFactoryCreationStrategyTests.cs" />

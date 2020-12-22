@@ -101,10 +101,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             var settings = new ImportSettings { WebServiceURL = webServiceUrl };
 
 			var listOfFields = new List<FieldEntry> {new FieldEntry()};
-	        _choiceService.GetChoiceFields(Arg.Any<int>()).Returns(listOfFields);
+	        _choiceService.GetChoiceFields(workspaceId, Arg.Any<int>()).Returns(listOfFields);
 	     
 			IImportAPI importApi = Substitute.For<IImportAPI>();
-			_choiceService.ConvertToFieldEntries(null).ReturnsForAnyArgs(new List<FieldEntry>());
 
 			_config.WebApiPath.Returns(webServiceUrl);
 

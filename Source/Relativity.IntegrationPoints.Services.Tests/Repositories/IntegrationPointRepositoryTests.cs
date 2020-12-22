@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
@@ -30,6 +31,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 		private DestinationConfiguration _destinationConfiguration;
 		private string _serializedDestinationConfiguration;
+		private ICaseServiceContext _caseContext;
 
 		public override void SetUp()
 		{
@@ -41,9 +43,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 			_userInfo = Substitute.For<IUserInfo>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_backwardCompatibility = Substitute.For<IBackwardCompatibility>();
+			_caseContext = Substitute.For<ICaseServiceContext>();
 
 			_integrationPointRepository = new IntegrationPointRepository(serviceFactory, _objectTypeRepository, _userInfo, _choiceQuery,
-				_backwardCompatibility, _integrationPointLocalService, _integrationPointProfileService);
+				_backwardCompatibility, _integrationPointLocalService, _integrationPointProfileService, _caseContext);
 
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 
@@ -138,7 +141,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 			_integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId).Returns(integrationPoint);
 
-			_choiceQuery.GetChoicesOnField(new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>
+			_choiceQuery.GetChoicesOnField(0, new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>
 			{
 				new Choice(overwriteFieldsChoiceId)
 				{
@@ -259,7 +262,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(expectedChoices);
+			_choiceQuery.GetChoicesOnField(0, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(expectedChoices);
 
 			var actualChoicesModels = _integrationPointRepository.GetOverwriteFieldChoices();
 
