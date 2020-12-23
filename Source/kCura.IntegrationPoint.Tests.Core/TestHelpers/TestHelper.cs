@@ -22,6 +22,7 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.Tab;
 using Relativity.Services.InternalMetricsCollection;
 using Relativity.Services.View;
+using Relativity.Services.ChoiceQuery;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -74,6 +75,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			RegisterProxyInServiceManagerMock<IInternalMetricsCollectionManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<ITabManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IViewManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IChoiceQueryManager>(ExecutionIdentity.System);
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
 		
