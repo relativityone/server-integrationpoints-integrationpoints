@@ -22,16 +22,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		private IJobHistoryService _jobHistoryService;
 
 		private SetHasErrorsField _instance;
-		private ICaseServiceContext _caseServiceContext;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 
-			_instance = new SetHasErrorsField(_integrationPointService, _jobHistoryService, _caseServiceContext);
+			_instance = new SetHasErrorsField(_integrationPointService, _jobHistoryService);
 			_instance.Helper = Substitute.For<IEHHelper>();
 		}
 

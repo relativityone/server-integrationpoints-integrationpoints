@@ -1,43 +1,48 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client;
+using System.Linq;
+using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.Services.ArtifactGuid;
+using Relativity.Services.ChoiceQuery;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public class ChoiceQuery : IChoiceQuery
 	{
-		private readonly IRSAPIClient _client;
+		private readonly IServicesMgr _servicesMgr;
 
-		public ChoiceQuery(IRSAPIClient client)
+		public ChoiceQuery(IServicesMgr servicesMgr)
 		{
-			_client = client;
+			_servicesMgr = servicesMgr;
 		}
 
-		public List<Relativity.Client.DTOs.Choice> GetChoicesOnField(int fieldArtifactId)
+		public List<Relativity.Client.DTOs.Choice> GetChoicesOnField(int workspaceArtifactId, Guid fieldGuid)
 		{
-			var field = _client.Repositories.Field.ReadSingle(fieldArtifactId);
-			return field.Choices;
-		}
+			var choices = GetChoicesOnFieldAsync(workspaceArtifactId, fieldGuid).GetAwaiter().GetResult();
 
-		public List<Relativity.Client.DTOs.Choice> GetChoicesOnField(Guid fieldGuid)
-		{
-			var field = _client.Repositories.Field.ReadSingle(fieldGuid);
-			return field.Choices;
-		}
-
-		public List<Artifact> GetChoicesByQuery(Query query)
-		{
-			QueryResult result = _client.Query(_client.APIOptions, query);
-			if (!result.Success)
+			return choices.Select(x => new Relativity.Client.DTOs.Choice(x.ArtifactID)
 			{
-				throw new Exception(result.Message);
-			}
+				Name = x.Name
+			}).ToList();
+		}
 
-			return result.QueryArtifacts;
+		private async Task<List<Choice>> GetChoicesOnFieldAsync(int workspaceArtifactId, Guid fieldGuid)
+		{
+			int fieldId = await ReadFieldIdByGuid(workspaceArtifactId, fieldGuid).ConfigureAwait(false);
+
+			using (IChoiceQueryManager choiceManager = _servicesMgr.CreateProxy<IChoiceQueryManager>(ExecutionIdentity.System))
+			{
+				return await choiceManager.QueryAsync(workspaceArtifactId, fieldId).ConfigureAwait(false);
+			}
+		}
+
+		private async Task<int> ReadFieldIdByGuid(int workspaceArtifactId, Guid fieldGuid)
+		{
+			using (IArtifactGuidManager guidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+			{
+				return await guidManager.ReadSingleArtifactIdAsync(workspaceArtifactId, fieldGuid).ConfigureAwait(false);
+			}
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			try
 			{
 				IList<Choice> choices =
-					ChoiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
+					ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
 
 				rule = ConvertModelToScheduleRule(model);
 				profile = model.ToRdo(choices, rule);

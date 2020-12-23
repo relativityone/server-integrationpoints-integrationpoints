@@ -139,7 +139,6 @@
     <Compile Include="Controllers\TooltipController.cs" />
     <Compile Include="DataStructures\AvailableEncodingInfo.cs" />
     <Compile Include="DataStructures\ExportSourceOptions.cs" />
-    <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\ExportFieldsController.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
     <Compile Include="Controllers\API\FolderPathController.cs" />

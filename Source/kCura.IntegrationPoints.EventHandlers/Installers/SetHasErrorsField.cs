@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +22,6 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
@@ -39,7 +36,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[RunOnce(true)]
 	public class SetHasErrorsField : PostInstallEventHandlerBase
 	{
-		private ICaseServiceContext _caseServiceContext;
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
 
@@ -47,11 +43,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		{
 		}
 
-		internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService, ICaseServiceContext caseServiceContext)
+		internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService)
 		{
 			_integrationPointService = integrationPointService;
 			_jobHistoryService = jobHistoryService;
-			_caseServiceContext = caseServiceContext;
 		}
 
 		protected override IAPILog CreateLogger()
@@ -90,12 +85,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		/// </summary>
 		private void CreateServices()
 		{
-			IRsapiClientWithWorkspaceFactory rsapiClientFactory = new RsapiClientWithWorkspaceFactory(Helper);
 			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID());
 			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-			IRSAPIClient rsapiClient = rsapiClientFactory.CreateAdminClient(Helper.GetActiveCaseID());
-			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IChoiceQuery choiceQuery = new ChoiceQuery(Helper.GetServicesManager());
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
@@ -121,7 +114,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			IManagerFactory managerFactory = new ManagerFactory(Helper);
 
-			_caseServiceContext = caseServiceContext;
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, Helper);
@@ -188,5 +180,3 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

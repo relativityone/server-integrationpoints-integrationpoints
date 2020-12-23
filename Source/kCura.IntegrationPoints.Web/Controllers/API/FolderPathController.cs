@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve choice fields data.")]
 		public HttpResponseMessage GetChoiceFields()
 		{
-			List<FieldEntry> choiceFields = _choiceService.GetChoiceFields(Convert.ToInt32(ArtifactType.Document));
+			List<FieldEntry> choiceFields = _choiceService.GetChoiceFields(_workspaceIdProvider.GetWorkspaceID(),(int)ArtifactType.Document);
 
 			IEnumerable<FieldEntry> choiceMappableFields = GetFieldCategory(choiceFields);
 

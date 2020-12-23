@@ -6,8 +6,6 @@ namespace kCura.IntegrationPoints.Data
 {
 	public interface IChoiceQuery
 	{
-		List<Choice> GetChoicesOnField(int fieldArtifactId);
-		List<Choice> GetChoicesOnField(Guid fieldGuid);
-		List<kCura.Relativity.Client.Artifact> GetChoicesByQuery(kCura.Relativity.Client.Query query);
+		List<Choice> GetChoicesOnField(int workspaceArtifactId, Guid fieldGuid);
 	}
 }
