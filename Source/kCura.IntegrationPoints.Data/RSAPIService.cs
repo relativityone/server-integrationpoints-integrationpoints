@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Data
 {
 	public class RSAPIService : IRSAPIService
 	{
-		protected ExecutionIdentity ExecutionIdentity;
 		private readonly IGenericLibraryFactory _genericLibraryFactory;
 		private readonly IDictionary<Type, object> _genericLibraries;
 		private readonly int _workspaceArtifactId;
@@ -17,6 +16,8 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual IGenericLibrary<JobHistoryError> JobHistoryErrorLibrary => GetGenericLibrary<JobHistoryError>(ExecutionIdentity);
 		public virtual IRelativityObjectManager RelativityObjectManager => GetRelativityObjectManager();
+
+		protected ExecutionIdentity ExecutionIdentity;
 
 		protected IGenericLibrary<T> GetGenericLibrary<T>(ExecutionIdentity executionIdentity) where T : BaseRdo, new()
 		{

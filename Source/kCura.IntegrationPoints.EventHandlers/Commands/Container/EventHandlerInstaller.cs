@@ -54,14 +54,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().Instance(new RsapiClientWithWorkspaceFactory(_context.Helper)).LifestyleSingleton());
 			container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());
 			container.Register(Component.For<IHelper, IEHHelper>().Instance(_context.Helper).LifestyleSingleton());
-			container.Register(Component.For<IRelativityObjectManagerFactory>().LifestyleTransient());
-
-			container.Register(Component.For<IRelativityObjectManager>().UsingFactoryMethod(k =>
-			{
-				IRelativityObjectManagerFactory serviceFactory = k.Resolve<IRelativityObjectManagerFactory>();
-				IEHContext context = k.Resolve<IEHContext>();
-				return serviceFactory.CreateRelativityObjectManager(context.Helper.GetActiveCaseID());
-			}).LifestyleTransient());
 
 			container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(k =>
 			{
