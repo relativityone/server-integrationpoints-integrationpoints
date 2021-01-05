@@ -64,6 +64,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			RegisterProxyInServiceManagerMock<IWorkspaceManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<ISearchContainerManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IOAuth2ClientManager>(ExecutionIdentity.System);
