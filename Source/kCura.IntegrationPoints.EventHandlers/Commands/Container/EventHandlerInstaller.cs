@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
@@ -53,29 +54,36 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().Instance(new RsapiClientWithWorkspaceFactory(_context.Helper)).LifestyleSingleton());
 			container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());
 			container.Register(Component.For<IHelper, IEHHelper>().Instance(_context.Helper).LifestyleSingleton());
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k =>
+			container.Register(Component.For<IRelativityObjectManagerFactory>().LifestyleTransient());
+
+			container.Register(Component.For<IRelativityObjectManager>().UsingFactoryMethod(k =>
 			{
-				IRSAPIServiceFactory serviceFactory = k.Resolve<IRSAPIServiceFactory>();
+				IRelativityObjectManagerFactory serviceFactory = k.Resolve<IRelativityObjectManagerFactory>();
 				IEHContext context = k.Resolve<IEHContext>();
-				return serviceFactory.Create(context.Helper.GetActiveCaseID());
+				return serviceFactory.CreateRelativityObjectManager(context.Helper.GetActiveCaseID());
 			}).LifestyleTransient());
+
 			container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
 				return new ServiceContextHelperForEventHandlers(context.Helper, context.Helper.GetActiveCaseID());
 			}).LifestyleSingleton());
+
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
 				return new WorkspaceDBContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
 			}).LifestyleTransient());
+
 			container.Register(Component.For<IWorkspaceContext>()
 				.ImplementedBy<EventHandlerWorkspaceContextService>()
 				.LifestyleTransient()
 			);
+
 			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
 					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>()))
 				.LifestyleSingleton());
+
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
 				new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
 					k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
@@ -92,6 +100,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 
 				return new OAuth2TokenGenerator(context.Helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
 			}).LifestyleTransient());
+
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();

@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
 	public class UpdateDestinationWorkspaceEntriesCommand : ICommand
 	{
-		private readonly IRSAPIService _rsapiService;
+		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 
-		public UpdateDestinationWorkspaceEntriesCommand(IRSAPIService rsapiService, IDestinationWorkspaceRepository destinationWorkspaceRepository)
+		public UpdateDestinationWorkspaceEntriesCommand(IRelativityObjectManager relativityObjectManager, IDestinationWorkspaceRepository destinationWorkspaceRepository)
 		{
-			_rsapiService = rsapiService;
+			_relativityObjectManager = relativityObjectManager;
 			_destinationWorkspaceRepository = destinationWorkspaceRepository;
 		}
 
 		public void Execute()
 		{
-			var thisInstance = FederatedInstanceManager.LocalInstance;
-			var entriesToUpdate = GetDestinationWorkspacesToUpdate();
+			FederatedInstanceDto thisInstance = FederatedInstanceManager.LocalInstance;
+			IList<DestinationWorkspace> entriesToUpdate = GetDestinationWorkspacesToUpdate();
+
 			foreach (var destinationWorkspace in entriesToUpdate)
 			{
 				destinationWorkspace.DestinationInstanceName = thisInstance.Name;
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 				Condition = condition
 			};
 
-			return _rsapiService.RelativityObjectManager.Query<DestinationWorkspace>(query);
+			return _relativityObjectManager.Query<DestinationWorkspace>(query);
 		}
 	}
 }
