@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects.DataContracts;
-using Field = kCura.Relativity.Client.DTOs.Field;
-using FieldType = kCura.Relativity.Client.FieldType;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
@@ -57,49 +56,45 @@ namespace kCura.IntegrationPoints.Domain.Models
 			public static readonly Guid JobHistoryNameFieldGuid = new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169");
 			public static readonly Guid JobHistoryFieldOnDocumentGuid = new Guid("7cc3faaf-cbb8-4315-a79f-3aa882f1997f");
 
-			public static IDictionary<Guid, Field> GetFieldsDefinition(int objectTypeDescriptorArtifactId)
+			public static IDictionary<Guid, BaseFieldRequest> GetFieldsDefinition(int objectTypeDescriptorArtifactId)
 			{
-				var objectType = new ObjectType
+				var objectType = new ObjectTypeIdentifier
 				{
-					DescriptorArtifactTypeID = objectTypeDescriptorArtifactId
+					ArtifactTypeID = objectTypeDescriptorArtifactId
 				};
-				return new Dictionary<Guid, Field>
+				return new Dictionary<Guid, BaseFieldRequest>
 				{
 					{
-						JobHistoryIdFieldGuid, new Field
+						JobHistoryIdFieldGuid, new WholeNumberFieldRequest()
 						{
 							Name = Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
-							Guids = new List<Guid> {JobHistoryIdFieldGuid},
-							FieldTypeID = FieldType.WholeNumber,
 							ObjectType = objectType,
 							IsRequired = true,
-							Linked = false,
+							IsLinked = false,
 							OpenToAssociations = false,
 							AllowSortTally = false,
 							AllowGroupBy = false,
 							AllowPivot = false,
-							Width = "100",
+							Width = 100,
 							Wrapping = false
 						}
 					},
 					{
-						JobHistoryNameFieldGuid, new Field
+						JobHistoryNameFieldGuid, new FixedLengthFieldRequest
 						{
 							Name = Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
-							Guids = new List<Guid> {JobHistoryNameFieldGuid},
-							FieldTypeID = FieldType.FixedLengthText,
 							ObjectType = objectType,
 							IsRequired = true,
 							IncludeInTextIndex = false,
-							Linked = false,
-							AllowHTML = false,
+							IsLinked = false,
+							AllowHtml = false,
 							AllowSortTally = false,
 							AllowGroupBy = false,
 							AllowPivot = false,
 							OpenToAssociations = false,
-							Width = "100",
+							Width = 100,
 							Wrapping = false,
-							Unicode = false,
+							HasUnicode = false,
 							Length = 255
 						}
 					}

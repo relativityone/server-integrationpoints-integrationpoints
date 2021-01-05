@@ -4,23 +4,24 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Interfaces.Field.Models;
 
 namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 {
 	public class RelativitySourceRdoFields : IRelativitySourceRdoFields
 	{
-		private readonly IRepositoryFactory _repositoryFactory;
 		private IFieldQueryRepository _fieldQueryRepository;
 		private IArtifactGuidRepository _artifactGuidRepository;
 		private IFieldRepository _fieldRepository;
+
+		private readonly IRepositoryFactory _repositoryFactory;
 
 		public RelativitySourceRdoFields(IRepositoryFactory repositoryFactory)
 		{
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public void CreateFields(int workspaceId, IDictionary<Guid, Field> fields)
+		public void CreateFields(int workspaceId, IDictionary<Guid, BaseFieldRequest> fields)
 		{
 			_fieldRepository = _repositoryFactory.GetFieldRepository(workspaceId);
 			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceId);
@@ -40,9 +41,9 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 			return _artifactGuidRepository.GuidExists(guid);
 		}
 
-		private void CreateField(Guid guid, Field field)
+		private void CreateField(Guid guid, BaseFieldRequest field)
 		{
-			int descriptorArtifactTypeId = field.ObjectType.DescriptorArtifactTypeID.Value;
+			int descriptorArtifactTypeId = field.ObjectType.ArtifactTypeID;
 			int fieldId;
 			if (FieldWithoutGuidExists(field, descriptorArtifactTypeId))
 			{
@@ -55,22 +56,25 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 			AssignGuid(fieldId, guid);
 		}
 
-		private bool FieldWithoutGuidExists(Field field, int descriptorArtifactTypeId)
+		private bool FieldWithoutGuidExists(BaseFieldRequest field, int descriptorArtifactTypeId)
 		{
 			return RetrieveField(field, descriptorArtifactTypeId) != null;
 		}
 
-		private int GetExistingFieldArtifactId(Field field, int descriptorArtifactTypeId)
+		private int GetExistingFieldArtifactId(BaseFieldRequest field, int descriptorArtifactTypeId)
 		{
 			return RetrieveField(field, descriptorArtifactTypeId).ArtifactId;
 		}
 
-		private ArtifactDTO RetrieveField(Field field, int descriptorArtifactTypeId)
+		private ArtifactDTO RetrieveField(BaseFieldRequest field, int descriptorArtifactTypeId)
 		{
-			return _fieldQueryRepository.RetrieveField(descriptorArtifactTypeId, field.Name, field.GetFieldTypeName(), new HashSet<string> {Constants.Fields.ArtifactId});
+			return _fieldQueryRepository.RetrieveField(descriptorArtifactTypeId, field.Name, field.GetFieldTypeName(), new HashSet<string>
+			{
+				Constants.Fields.ArtifactId
+			});
 		}
 
-		private int CreateField(Field field)
+		private int CreateField(BaseFieldRequest field)
 		{
 			return _fieldRepository.CreateObjectTypeField(field);
 		}

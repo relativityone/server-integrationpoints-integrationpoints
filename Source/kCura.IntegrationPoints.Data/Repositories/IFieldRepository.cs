@@ -1,5 +1,5 @@
-﻿using kCura.Relativity.Client.DTOs;
-using Relativity.API.Foundation;
+﻿using Relativity.API.Foundation;
+using Relativity.Services.Interfaces.Field.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 		int CreateMultiObjectFieldOnDocument(string name, int associatedObjectTypeDescriptorId);
 
-		int CreateObjectTypeField(Field field);
+		int CreateObjectTypeField(BaseFieldRequest field);
 
 		IField Read(int fieldArtifactId);
 

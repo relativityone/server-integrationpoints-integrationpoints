@@ -11,7 +11,6 @@ using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.FieldManager;
 using Relativity.Services.Objects.DataContracts;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
