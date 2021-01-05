@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			InitializeIocContainer();
 
 			CaseContext = Container.Resolve<ICaseServiceContext>();
-			ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+			ObjectManager = CaseContext.RelativityObjectManagerService.RelativityObjectManager;
 			IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
 			IntegrationPointService = Container.Resolve<IIntegrationPointService>();
 			Serializer = Container.Resolve<ISerializer>();
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				})
 				.LifeStyle.Transient);
 
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
+			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IntegrationPoints.Core.Factories.IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<ExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
@@ -273,7 +273,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			jobHistoryErrors.Add(jobHistoryError);
 
-			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			List<int> jobHistoryErrorArtifactIds = CaseContext.RelativityObjectManagerService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
 			return jobHistoryErrorArtifactIds;
 		}
 

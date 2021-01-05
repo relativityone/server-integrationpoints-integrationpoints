@@ -90,8 +90,8 @@
     <Compile Include="Facades\SecretStore\ISecretStoreFacade.cs" />
     <Compile Include="Factories\Implementations\RelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRelativityObjectManagerFactory.cs" />
-    <Compile Include="Factories\IRSAPIServiceFactory.cs" />
-    <Compile Include="Factories\Implementations\RSAPIServiceFactory.cs" />
+    <Compile Include="Factories\IRelativityObjectManagerServiceFactory.cs" />
+    <Compile Include="Factories\Implementations\RelativityObjectManagerServiceFactory.cs" />
     <Compile Include="GenericLibraryFactory.cs" />
     <Compile Include="Helpers\IMassUpdateHelper.cs" />
     <Compile Include="Helpers\MassUpdateHelper.cs" />
@@ -256,7 +256,7 @@
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />
     <Compile Include="IObjectTypeQuery.cs" />
-    <Compile Include="IRSAPIService.cs" />
+    <Compile Include="IRelativityObjectManagerService.cs" />
     <Compile Include="Logging\SystemEventLoggingService.cs" />
     <Compile Include="Migrations\AddWebApiConfigValueMigration.cs" />
     <Compile Include="Migrations\IMigration.cs" />
@@ -285,8 +285,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
-    <Compile Include="RSAPIServiceAdminAccess.cs" />
-    <Compile Include="RSAPIService.cs" />
+    <Compile Include="RelativityObjectManagerServiceAdminAccess.cs" />
+    <Compile Include="RelativityObjectManagerService.cs" />
     <Compile Include="Repositories\ISecretsRepository.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
     <Compile Include="Statistics\IDocumentStatistics.cs" />

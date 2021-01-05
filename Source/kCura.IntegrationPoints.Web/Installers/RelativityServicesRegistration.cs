@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetStringSanitizer(Data.Constants.ADMIN_CASE_ID))
 					.LifestylePerWebRequest(),
 				Component
-					.For<IRSAPIService>()
-					.UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService())
+					.For<IRelativityObjectManagerService>()
+					.UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRelativityObjectManagerService())
 					.LifestyleTransient(),
 				Component
 					.For<IRSAPIClient>()

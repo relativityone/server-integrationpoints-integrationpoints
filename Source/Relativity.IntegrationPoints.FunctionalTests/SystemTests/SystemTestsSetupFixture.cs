@@ -98,7 +98,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 						return client;
 					})
 					.LifeStyle.Transient);
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), SourceWorkspace.ArtifactID)).LifestyleTransient());
+			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), SourceWorkspace.ArtifactID)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<IExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());

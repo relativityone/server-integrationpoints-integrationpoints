@@ -65,9 +65,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
 				SecuredConfiguration = string.Empty
 			};
 
-			_caseContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-			_caseContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-			_caseContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
+			_caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
+			_caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
+			_caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
 
 			_instanceUnderTest = new AgentValidator(_validationExecutor, _caseContext);
 		}
@@ -93,9 +93,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
 				x.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)
 			);
 
-			_caseContext.Received().RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-			_caseContext.Received().RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-			_caseContext.Received().RsapiService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
+			_caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+			_caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
+			_caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
 		}
 
 		[Test]
@@ -118,9 +118,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
 			Assert.Throws<PermissionException>(() => _instanceUnderTest.Validate(_integrationPoint, _USER_ID));
 
 			// Assert
-			_caseContext.Received().RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-			_caseContext.Received().RsapiService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-			_caseContext.Received().RsapiService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
+			_caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+			_caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
+			_caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
 		}
 	}
 }

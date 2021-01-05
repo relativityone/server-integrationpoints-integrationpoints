@@ -18,9 +18,9 @@ namespace Relativity.IntegrationPoints.Services.Installers.Context
         {
             container.Register(
                 Component
-                    .For<IRSAPIService>()
+                    .For<IRelativityObjectManagerService>()
                     .UsingFactoryMethod(
-                        k => new RSAPIService(k.Resolve<IHelper>(), workspaceID),
+                        k => new RelativityObjectManagerService(k.Resolve<IHelper>(), workspaceID),
                         managedExternally: true),
                 Component
                     .For<IServiceContextHelper>()

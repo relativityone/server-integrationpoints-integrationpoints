@@ -22,18 +22,18 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 			{
 				Condition = $"'{SourceProviderFields.Identifier}' == '{LDAP_SOURCE_TYPE_GUID}'"
 			};
-			var s = _context.RsapiService.RelativityObjectManager.Query<SourceProvider>(request).SingleOrDefault(); //there should only be one!
+			var s = _context.RelativityObjectManagerService.RelativityObjectManager.Query<SourceProvider>(request).SingleOrDefault(); //there should only be one!
 			if (s == null)
 			{
 				var rdo = new SourceProvider();
 				rdo.Name = "LDAP";
 				rdo.Identifier = LDAP_SOURCE_TYPE_GUID;
-				_context.RsapiService.RelativityObjectManager.Create(rdo);
+				_context.RelativityObjectManagerService.RelativityObjectManager.Create(rdo);
 			}
 			else
 			{
 				s.SourceConfigurationUrl = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/LDAPConfiguration/";
-				_context.RsapiService.RelativityObjectManager.Update(s);
+				_context.RelativityObjectManagerService.RelativityObjectManager.Update(s);
 				//edit
 			}
 		}

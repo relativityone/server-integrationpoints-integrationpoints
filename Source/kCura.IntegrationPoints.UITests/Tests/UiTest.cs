@@ -321,7 +321,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 					})
 					.LifeStyle.Transient);
 
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), workspaceArtifactId)).LifestyleTransient());
+			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), workspaceArtifactId)).LifestyleTransient());
 		}
 	}
 }

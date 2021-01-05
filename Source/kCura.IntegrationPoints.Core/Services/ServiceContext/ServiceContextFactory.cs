@@ -11,10 +11,9 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			return new CaseServiceContext(new ServiceContextHelperForEventHandlers(helper, workspaceID));
 		}
 
-		public static IRSAPIService CreateRSAPIService(IHelper helper, int workspaceArtifactId)
+		public static IRelativityObjectManagerService CreateRelativityObjectManagerService(IHelper helper, int workspaceArtifactId)
 		{
-			var rsapiServiceFactory = new RSAPIServiceFactory(helper);
-			return rsapiServiceFactory.Create(workspaceArtifactId);
+			return new RelativityObjectManagerServiceFactory(helper).Create(workspaceArtifactId);
 		}
 	}
 }

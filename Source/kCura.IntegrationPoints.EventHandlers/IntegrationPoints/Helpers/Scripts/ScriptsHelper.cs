@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 		{
 			int sourceProviderId = (int) _handler.ActiveArtifact.Fields[_fieldsConstants.SourceProvider].Value.Value;
 			Guid[] fieldsGuids = {Guid.Parse(SourceProviderFieldGuids.ViewConfigurationUrl)};
-			SourceProvider provider = _context.RsapiService.RelativityObjectManager.Read<SourceProvider>(sourceProviderId, fieldsGuids);
+			SourceProvider provider = _context.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(sourceProviderId, fieldsGuids);
 			return provider.ViewConfigurationUrl;
 		}
 

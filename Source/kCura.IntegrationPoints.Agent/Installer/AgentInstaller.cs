@@ -90,10 +90,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				return jobContextProvider.Job;
 			}).LifestyleTransient());
 
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k =>
+			container.Register(Component.For<IRelativityObjectManagerService>().UsingFactoryMethod(k =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return new RSAPIService(container.Resolve<IHelper>(), jobContextProvider.Job.WorkspaceID);
+				return new RelativityObjectManagerService(container.Resolve<IHelper>(), jobContextProvider.Job.WorkspaceID);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod(k =>

@@ -540,7 +540,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				jobHistoryErrors.Add(jobHistoryError);
 			}
 
-			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			List<int> jobHistoryErrorArtifactIds = CaseContext.RelativityObjectManagerService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
 			return jobHistoryErrorArtifactIds;
 		}
 
@@ -562,7 +562,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			jobHistoryErrors.Add(jobHistoryError);
 
-			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			List<int> jobHistoryErrorArtifactIds = CaseContext.RelativityObjectManagerService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
 			return jobHistoryErrorArtifactIds;
 		}
 

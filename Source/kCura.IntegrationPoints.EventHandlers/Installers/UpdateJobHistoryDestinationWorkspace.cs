@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, Helper.GetActiveCaseID()));
 			IMessageService messageService = new MessageService();
 			return new JobHistoryService(
-				caseContext.RsapiService.RelativityObjectManager, 
+				caseContext.RelativityObjectManagerService.RelativityObjectManager, 
 				federatedInstanceManager, 
 				workspaceManager, 
 				Logger, 

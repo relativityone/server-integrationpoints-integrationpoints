@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_objectManager
 			);
 
-			_caseServiceContext.RsapiService = Substitute.For<IRSAPIService>();
+			_caseServiceContext.RelativityObjectManagerService = Substitute.For<IRelativityObjectManagerService>();
 			_caseServiceContext.WorkspaceID = _sourceWorkspaceArtifactId;
 
 			_sourceProvider = new SourceProvider();

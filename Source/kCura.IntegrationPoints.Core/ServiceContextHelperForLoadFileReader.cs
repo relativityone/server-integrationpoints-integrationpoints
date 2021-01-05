@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core
 			throw new NotImplementedException();
 		}
 
-		public IRSAPIService GetRsapiService()
+		public IRelativityObjectManagerService GetRelativityObjectManagerService()
 		{
 			throw new NotImplementedException();
 		}

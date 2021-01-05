@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IMessageService messageService = new MessageService();
 
 			_jobHistoryService = new JobHistoryService(
-				caseServiceContext.RsapiService.RelativityObjectManager,
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
 				federatedInstanceManager,
 				workspaceManager,
 				Logger,
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				Logger
 			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
-				caseServiceContext.RsapiService.RelativityObjectManager,
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
 				integrationPointSerializer,
 				secretsRepository,
 				Logger);
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				providerTypeService, 
 				messageService, 
 				integrationPointRepository,
-				caseServiceContext.RsapiService.RelativityObjectManager);
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
 		}
 
 		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceID)
