@@ -10,3 +10,5 @@ Relativity.Toggles
 Relativity.Logging.Interfaces
 NSubstitute
 relativity.testing.identification
+Relativity.Services.Interfaces
+Relativity

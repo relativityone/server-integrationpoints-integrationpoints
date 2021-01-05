@@ -1,24 +1,22 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
-using Assert = NUnit.Framework.Assert;
-using Document = kCura.Relativity.Client.DTOs.Document;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 {
@@ -33,10 +31,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 
 		private const string _INPUT_DATA_CONTROL_NUMBER = "guid";
 		private const string _INPUT_DATA_EXTRACTED_TEXT = "extractedtext";
-		private const string _INPUT_DATA_GROUP_ID = "groupid";
-		private const string _WORKSPACE_CONTROL_NUMBER = "Control Number";
 		private const string _WORKSPACE_EXTRACTED_TEXT = "Extracted Text";
-		private const string _WORKSPACE_GROUP_ID = "Group Identifier";
 
 		public RdoSynchronizerTest() : base($"RdoSynchronizerTest_{Utils.FormattedDateTimeNow}")
 		{
@@ -72,7 +67,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 
 		[IdentifiedTest("26241015-fc5b-4443-bdf1-1545fd40cdd9")]
 		[SmokeTest]
-		public void ItShouldSyncDataToWorkspace()
+		public async Task ItShouldSyncDataToWorkspace()
 		{
 			//Arrange
 			var rdoSynchronizer = new RdoSynchronizer(_fieldQuery, _factory, _jobFactory, _helper);
@@ -95,14 +90,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			rdoSynchronizer.SyncData(importData, sourceFields, settings);
 
 			//Assert
-			List<Result<Document>> documents = GetAllDocuments(WorkspaceArtifactId);
+			List<RelativityObject> documents = await GetAllDocumentsAsync().ConfigureAwait(false);
 			Assert.AreEqual(importData.Count, documents.Count);
 			VerifyDocumentsWithDefaultData(importData, documents);
 		}
 
 		#region "Helpers"
 
-		private static void VerifyDocumentsWithDefaultData(List<Dictionary<FieldEntry, object>> dataList, List<Result<Document>> documents)
+		private static void VerifyDocumentsWithDefaultData(List<Dictionary<FieldEntry, object>> dataList, List<RelativityObject> documents)
 		{
 			foreach (Dictionary<FieldEntry, object> data in dataList)
 			{
@@ -112,29 +107,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 				FieldEntry extractedTextKey = data.Keys.Single(x => x.ActualName == _INPUT_DATA_EXTRACTED_TEXT);
 				object expectedExtractedText = data[extractedTextKey];
 
-				Result<Document> docResult = documents.FirstOrDefault(x => x.Artifact.TextIdentifier == expectedControlNumber.ToString());
-				Assert.NotNull(docResult);
-				FieldValue docExtractedText = docResult.Artifact.Fields.First(x => x.Name == _WORKSPACE_EXTRACTED_TEXT);
-				Assert.AreEqual(expectedExtractedText.ToString(), docExtractedText.Value.ToString());
+				RelativityObject document = documents.FirstOrDefault(x => x.Name == expectedControlNumber.ToString());
+
+				Assert.NotNull(document);
+
+				object docExtractedTextValue = document.FieldValues.Single(x => x.Field.Name == _WORKSPACE_EXTRACTED_TEXT).Value;
+				Assert.AreEqual(expectedExtractedText.ToString(), docExtractedTextValue.ToString());
 			}
 		}
 
-		public List<Result<Document>> GetAllDocuments(int workspaceId)
+		public async Task<List<RelativityObject>> GetAllDocumentsAsync()
 		{
-			using (var proxy = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			using (var objectManager = Helper.CreateProxy<IObjectManager>())
 			{
-				proxy.APIOptions.WorkspaceID = workspaceId;
-
-				var requestedFields = new[] { _WORKSPACE_CONTROL_NUMBER, _WORKSPACE_EXTRACTED_TEXT, _WORKSPACE_GROUP_ID };
-				List<FieldValue> fields = requestedFields.Select(x => new FieldValue(x)).ToList();
-				var query = new Query<Document>
+				var request = new QueryRequest
 				{
-					Fields = fields
+					ObjectType = new ObjectTypeRef {ArtifactTypeID = (int)ArtifactType.Document},
+					Fields = new List<FieldRef>
+					{
+						new FieldRef {Name = _WORKSPACE_EXTRACTED_TEXT}
+					},
+					IncludeNameInQueryResult = true
 				};
 
-				QueryResultSet<Document> result = null;
-				result = proxy.Repositories.Document.Query(query, 0);
-				return result.Results;
+				QueryResult result = await objectManager.QueryAsync(WorkspaceArtifactId, request, 0, int.MaxValue)
+					.ConfigureAwait(false);
+
+				return result.Objects;
 			}
 		}
 
@@ -146,7 +145,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			}
 			int fieldIdUniqueId = int.Parse(destinationFields.FirstOrDefault(field => field.IsIdentifier).FieldIdentifier);
 			int fieldIdExtractedText = int.Parse(destinationFields.Single(field => field.ActualName == _WORKSPACE_EXTRACTED_TEXT).FieldIdentifier);
-			int fieldIdGroupIdentifier = int.Parse(destinationFields.Single(field => field.ActualName == _WORKSPACE_GROUP_ID).FieldIdentifier);
 
 			return new List<FieldMap>()
 			{
@@ -162,22 +160,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 					{
 						DisplayName = "",
 						FieldIdentifier = fieldIdExtractedText.ToString(),
-						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
-					},
-					FieldMapType = FieldMapTypeEnum.None
-				},
-				new FieldMap()
-				{
-					SourceField = new FieldEntry()
-					{
-						DisplayName = _INPUT_DATA_GROUP_ID,
-						FieldIdentifier = _INPUT_DATA_GROUP_ID,
-						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
-					},
-					DestinationField = new FieldEntry()
-					{
-						DisplayName = "",
-						FieldIdentifier = fieldIdGroupIdentifier.ToString(),
 						FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
 					},
 					FieldMapType = FieldMapTypeEnum.None
@@ -224,15 +206,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
 						},
 						"Art"
-					},
-					{
-						new FieldEntry()
-						{
-							DisplayName = _INPUT_DATA_GROUP_ID,
-							FieldIdentifier = _INPUT_DATA_GROUP_ID,
-							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
-						},
-						"DEV"
 					}
 				},
 				new Dictionary<FieldEntry, object>()
@@ -254,15 +227,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
 						},
 						"Chad"
-					},
-					{
-						new FieldEntry()
-						{
-							DisplayName = _INPUT_DATA_GROUP_ID,
-							FieldIdentifier = _INPUT_DATA_GROUP_ID,
-							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
-						},
-						"IT"
 					}
 				},
 				new Dictionary<FieldEntry, object>()
@@ -284,15 +248,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
 						},
 						"New"
-					},
-					{
-						new FieldEntry()
-						{
-							DisplayName = _INPUT_DATA_GROUP_ID,
-							FieldIdentifier = _INPUT_DATA_GROUP_ID,
-							FieldType = global::Relativity.IntegrationPoints.Contracts.Models.FieldType.String
-						},
-						"HR"
 					}
 				}
 			};
@@ -317,5 +272,3 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 		#endregion
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
