@@ -44,10 +44,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 			foreach (Document expectedDocument in expectedDocuments)
 			{
-				string expectedDocumentControlNumber = expectedDocument.DocumentIdentifier;
+				string expectedDocumentControlNumber = expectedDocument.ControlNumber;
 
 				//We expect only few items so don't need to worry about performance
-				Document actualDocument = actualDocuments.FirstOrDefault(document => document.DocumentIdentifier == expectedDocumentControlNumber);
+				Document actualDocument = actualDocuments.FirstOrDefault(document => document.ControlNumber == expectedDocumentControlNumber);
 
 				Assert.That(actualDocument, Is.Not.Null, "Could not find document with control number {0}.", expectedDocumentControlNumber);
 

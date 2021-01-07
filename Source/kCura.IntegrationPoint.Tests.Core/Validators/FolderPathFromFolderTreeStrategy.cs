@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			folderLookup.Wait();
 			if (folderLookup.Result == null || folderLookup.Result.Count == 0)
 			{
-				throw new Exception($"Cannot find folder for document. Workspace id: {_workspaceId}. Document control number: {document.DocumentIdentifier}. Document folder: {document.FolderName}");
+				throw new Exception($"Cannot find folder for document. Workspace id: {_workspaceId}. Document control number: {document.ControlNumber}. Document folder: {document.FolderName}");
 			}
 
 			string result = folderLookup.Result.First().FullPath;

@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 				List<string> issueValues = (List<string>) docResult[TestConstants.FieldNames.ISSUE_DESIGNATION];
 
 				int docNum = i + 1;
-				Assert.AreEqual(docNum.ToString(), docResult.DocumentIdentifier);
+				Assert.AreEqual(docNum.ToString(), docResult.ControlNumber);
 				Assert.AreEqual(CustodianSingleChoices[i], docResult[TestConstants.FieldNames.CUSTODIAN]);
 				Assert.AreEqual(3, issueValues.Count);
 				foreach (string value in issueValues)

@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
 				Document docResult = workspaceContents[i];
 
 				int docNum = i + 2;
-				Assert.AreEqual(docNum.ToString(), docResult.DocumentIdentifier);
+				Assert.AreEqual(docNum.ToString(), docResult.ControlNumber);
 				Assert.AreEqual($"Row-{docNum}-EmailSubject", docResult.ReadAsString(TestConstants.FieldNames.EMAIL_SUBJECT));
 				Assert.AreEqual($"Row-{docNum}-GroupIdentifier", docResult.ReadAsString(TestConstants.FieldNames.GROUP_IDENTIFIER));
 			}

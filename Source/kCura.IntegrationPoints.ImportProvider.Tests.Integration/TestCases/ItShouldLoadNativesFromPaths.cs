@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 				string md5Hash = DocumentService.GetNativeMD5String(workspaceId, docResult);
 
 				int docNum = i + 1;
-				Assert.AreEqual(docNum.ToString(), docResult.DocumentIdentifier);
+				Assert.AreEqual(docNum.ToString(), docResult.ControlNumber);
 				Assert.AreEqual(NativeMD5Hashes[i], md5Hash);
 			}
 		}

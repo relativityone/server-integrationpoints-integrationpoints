@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 				Assert.That(actualFieldValue, Is.EqualTo(expectedFieldValue),
 					"Actual field value is different than expected. Field name: '{0}'. Document control number: '{1}'.",
-					fieldName, destinationDocument.DocumentIdentifier);
+					fieldName, destinationDocument.ControlNumber);
 			}
 		}
 	}

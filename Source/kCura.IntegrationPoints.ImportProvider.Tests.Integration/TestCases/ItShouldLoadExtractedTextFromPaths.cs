@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 				Document docResult = workspaceContents[i];
 
 				int docNum = i + 1;
-				Assert.AreEqual(docNum.ToString(), docResult.DocumentIdentifier);
+				Assert.AreEqual(docNum.ToString(), docResult.ControlNumber);
 				Assert.AreEqual($"Doc {docNum} ET", docResult.ExtractedText);
 			}
 		}

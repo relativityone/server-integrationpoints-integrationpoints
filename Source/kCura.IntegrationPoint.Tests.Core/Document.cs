@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public int ParentArtifactId { get; }
 
-		public string DocumentIdentifier => ReadAsString(TestConstants.FieldNames.CONTROL_NUMBER);
+		public string ControlNumber => ReadAsString(TestConstants.FieldNames.CONTROL_NUMBER);
 
 		public string HasImages => ReadAsString(TestConstants.FieldNames.HAS_IMAGES);
 

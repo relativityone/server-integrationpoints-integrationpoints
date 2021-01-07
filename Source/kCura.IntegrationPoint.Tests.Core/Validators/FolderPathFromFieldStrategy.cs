@@ -13,7 +13,7 @@
 
 		protected override string GetFolderPathInternal(Document document)
 		{
-			Assert.That(document[_folderPathFieldName], Is.Not.Null, $"Document {document.DocumentIdentifier} does not have folder path defined");
+			Assert.That(document[_folderPathFieldName], Is.Not.Null, $"Document {document.ControlNumber} does not have folder path defined");
 
 			return document.ReadAsString(_folderPathFieldName);
 		}

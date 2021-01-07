@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			string actualFolderPath = _actualFolderPathStrategy.GetFolderPath(destinationDocument);
 			Assert.That(string.Equals(expectedFolderPath, actualFolderPath),
 				"Document with Control Number {0} has different path than expected. Expected {1}; Actual {2};",
-				sourceDocument.DocumentIdentifier, expectedFolderPath, actualFolderPath);
+				sourceDocument.ControlNumber, expectedFolderPath, actualFolderPath);
 		}
 
 		public static DocumentPathValidator CreateForField(int actualDocsWorkspaceId, IFolderManager folderManager)

@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		public virtual void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			string documentControlNumber = destinationDocument.DocumentIdentifier;
+			string documentControlNumber = destinationDocument.ControlNumber;
 
 			Assert.That(_documentProperty(destinationDocument), Is.EqualTo(_documentProperty(sourceDocument)), 
 				"Actual field value is different than expected. Document control number: {0}", documentControlNumber);
