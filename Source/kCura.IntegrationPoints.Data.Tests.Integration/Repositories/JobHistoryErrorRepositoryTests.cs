@@ -7,8 +7,8 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
@@ -69,25 +69,32 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.AreEqual(0, result.Count);
 		}
 
-
+		private static ChoiceRef CreateChoiceRef(Guid guid)
+		{
+			return new ChoiceRef()
+			{
+				Guid = guid
+			};
+		}
+		
 		private static readonly TestCaseData[] RetrieveJobHistoryErrorSources = new TestCaseData[]
 		{
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem}).WithId("70BDFBD8-36A4-4CD3-9AA6-DFB16BE6A965"),
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorInProgress, ErrorTypeChoices.JobHistoryErrorItem}).WithId("3AF3DFFB-9A5B-4B20-A454-8E8794996D7F"),
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorItem}).WithId("10177CE1-700C-4100-935A-16EB2F6E77F6"),
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorExpired, ErrorTypeChoices.JobHistoryErrorItem}).WithId("64DC8730-1880-422D-9F0F-7718BA15DEFF"),
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorJob}).WithId("DE3845C3-B73C-4147-8C43-9CDADF93AC88"),
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorInProgress, ErrorTypeChoices.JobHistoryErrorJob}).WithId("B8BACFF1-E44A-4FBC-BD69-AE8CE664EA33"),
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorRetried, ErrorTypeChoices.JobHistoryErrorJob}).WithId("56BAFD0F-7C07-40C3-8C66-82FEA13056F8"),
-			new TestCaseData(new object[] {ErrorStatusChoices.JobHistoryErrorExpired, ErrorTypeChoices.JobHistoryErrorJob}).WithId("BCBDD258-0A31-4046-A936-C34057B9880E"),
+			new TestCaseData(new object[] {CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorNewGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorItemGuid)}).WithId("70BDFBD8-36A4-4CD3-9AA6-DFB16BE6A965"),
+			new TestCaseData(new object[] { CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorInProgressGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorItemGuid)}).WithId("3AF3DFFB-9A5B-4B20-A454-8E8794996D7F"),
+			new TestCaseData(new object[] { CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorRetriedGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorItemGuid)}).WithId("10177CE1-700C-4100-935A-16EB2F6E77F6"),
+			new TestCaseData(new object[] { CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorExpiredGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorItemGuid)}).WithId("64DC8730-1880-422D-9F0F-7718BA15DEFF"),
+			new TestCaseData(new object[] { CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorNewGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorJobGuid)}).WithId("DE3845C3-B73C-4147-8C43-9CDADF93AC88"),
+			new TestCaseData(new object[] { CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorInProgressGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorJobGuid)}).WithId("B8BACFF1-E44A-4FBC-BD69-AE8CE664EA33"),
+			new TestCaseData(new object[] { CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorRetriedGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorJobGuid)}).WithId("56BAFD0F-7C07-40C3-8C66-82FEA13056F8"),
+			new TestCaseData(new object[] { CreateChoiceRef(ErrorStatusChoices.JobHistoryErrorExpiredGuid), CreateChoiceRef(ErrorTypeChoices.JobHistoryErrorJobGuid)}).WithId("BCBDD258-0A31-4046-A936-C34057B9880E"),
 		};
 
 		[IdentifiedTestCaseSource("B1BC4D8A",nameof(RetrieveJobHistoryErrorSources))]
-		public void RetrieveJobHistoryErrorArtifactIds(Choice errorStatus, Choice errorType)
+		public void RetrieveJobHistoryErrorArtifactIds(ChoiceRef errorStatus, ChoiceRef errorType)
 		{
 			// arrange
-			List<int> jobHistoryArtifactId = CreateJobHistoryError(_jobHistory.ArtifactId, errorStatus, errorType);
-			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType == ErrorTypeChoices.JobHistoryErrorItem
+			List<int> jobHistoryArtifactId = CreateJobHistoryErrors(_jobHistory.ArtifactId, errorStatus, errorType, new []{"Source Unique ID"});
+			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType.Guid == ErrorTypeChoices.JobHistoryErrorItemGuid
 				? JobHistoryErrorDTO.Choices.ErrorType.Values.Item
 				: JobHistoryErrorDTO.Choices.ErrorType.Values.Job;
 
@@ -112,11 +119,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[IdentifiedTestCaseSource("6F08B843",nameof(RetrieveJobHistoryErrorSources))]
-		public void RetrieveJobHistoryErrorIdsAndSourceUniqueIds(Choice errorStatus, Choice errorType)
+		public void RetrieveJobHistoryErrorIdsAndSourceUniqueIds(ChoiceRef errorStatus, ChoiceRef errorType)
 		{
 			// arrange
-			List<int> jobHistoryArtifactId = CreateJobHistoryError(_jobHistory.ArtifactId, errorStatus, errorType);
-			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType == ErrorTypeChoices.JobHistoryErrorItem
+			List<int> jobHistoryArtifactId = CreateJobHistoryErrors(_jobHistory.ArtifactId, errorStatus, errorType, new[] { "Source Unique ID" });
+			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType.Guid == ErrorTypeChoices.JobHistoryErrorItemGuid
 				? JobHistoryErrorDTO.Choices.ErrorType.Values.Item
 				: JobHistoryErrorDTO.Choices.ErrorType.Values.Job;
 
