@@ -15,39 +15,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int CreateGroup(string name)
 		{
-			try
+			using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
 			{
-				using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
+				GroupRequest request = new GroupRequest
 				{
-					GroupRequest request = new GroupRequest
-					{
-						Name = name
-					};
+					Name = name
+				};
 
-					return groupManager.CreateAsync(request).GetAwaiter().GetResult()
-						.ArtifactID;
-				}
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($@"An error occurred while creating group {name}: {ex.Message}");
-				throw;
+				return groupManager.CreateAsync(request).GetAwaiter().GetResult()
+					.ArtifactID;
 			}
 		}
 
 		public static void DeleteGroup(int artifactId)
 		{
-			try
+			using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
 			{
-				using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
-				{
-					groupManager.DeleteAsync(artifactId).GetAwaiter().GetResult();
-				}
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($@"An error occurred while deleting group {artifactId}: {ex.Message}");
-				throw;
+				groupManager.DeleteAsync(artifactId).GetAwaiter().GetResult();
 			}
 		}
 
