@@ -108,6 +108,11 @@ namespace Relativity.IntegrationPoints.Services
 			throw new InsufficientPermissionException(_NO_ACCESS_EXCEPTION_MESSAGE);
 		}
 
+		protected void LogInvocation(string endpointName)
+		{
+			Logger.LogInformation("Integration Points private service endpoint invoked: {endpointName}", endpointName);
+		}
+
 		protected void LogException(string endpointName, Exception e)
 		{
 			Logger.LogError(e, "Error occurred during request processing in {endpointName}.", endpointName);
