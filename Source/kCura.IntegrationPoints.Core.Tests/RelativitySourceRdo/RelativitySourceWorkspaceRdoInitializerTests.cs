@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 	public class RelativitySourceWorkspaceRdoInitializerTests : TestBase
 	{
 		private const int _DESTINATION_WORKSPACE_ID = 581555;
-		private const int _SOURCE_WORKSPACE_ID = 649601;
 
 		private ISourceWorkspaceRepository _sourceWorkspaceRepository;
 		private IRelativitySourceRdoObjectType _relativitySourceRdoObjectType;
@@ -56,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 				.Returns(expectedSourceJobDescriptorId);
 
 			// ACT
-			int actualSourceJobDescriptorId = _instance.InitializeWorkspaceWithSourceWorkspaceRdo(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID);
+			int actualSourceJobDescriptorId = _instance.InitializeWorkspaceWithSourceWorkspaceRdo(_DESTINATION_WORKSPACE_ID);
 
 			// ASSERT
 			Assert.That(actualSourceJobDescriptorId, Is.EqualTo(expectedSourceJobDescriptorId));

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 			_fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceId);
 			_artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(workspaceId);
 
-			foreach (var fieldGuid in fields.Keys)
+			foreach (Guid fieldGuid in fields.Keys)
 			{
 				if (!FieldWithGuidExists(fieldGuid))
 				{
