@@ -4,6 +4,7 @@ Polly
 kCura
 Relativity.API
 Relativity.IntegrationPoints.Contracts
+Relativity.Telemetry.DataContracts.Shared
 Relativity.Kepler.Client
 Relativity.OAuth2Client
 Relativity.Toggles
