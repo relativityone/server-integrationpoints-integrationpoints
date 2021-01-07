@@ -299,7 +299,6 @@ namespace kCura.IntegrationPoints.UITests.Tests
 		protected void Install(int workspaceArtifactId)
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
-			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{

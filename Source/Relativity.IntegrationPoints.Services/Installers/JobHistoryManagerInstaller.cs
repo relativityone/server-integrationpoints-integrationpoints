@@ -52,11 +52,11 @@ namespace Relativity.IntegrationPoints.Services.Installers
 
 		private IRelativityIntegrationPointsRepository CreateRelativityIntegrationPointsRepository(IKernel k, int workspaceID)
 		{
-			var rsapiAdminAccess = new RelativityObjectManagerServiceAdminAccess(k.Resolve<IHelper>(), workspaceID);
+			var relativityObjectManagerServiceAdminAccess = new RelativityObjectManagerServiceAdminAccess(k.Resolve<IHelper>(), workspaceID);
 			IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
 
 			return new RelativityIntegrationPointsRepositoryAdminAccess(
-				rsapiAdminAccess,
+				relativityObjectManagerServiceAdminAccess,
 				integrationPointRepository
 			);
 		}

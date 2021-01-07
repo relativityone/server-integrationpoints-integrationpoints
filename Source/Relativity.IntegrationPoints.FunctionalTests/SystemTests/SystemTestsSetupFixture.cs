@@ -77,7 +77,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			);
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => TestHelper, managedExternally: true));
 			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => TestHelper.GetLoggerFactory().GetLogger()));
-			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{
