@@ -38,6 +38,8 @@ namespace Relativity.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> CreateIntegrationPointAsync(CreateIntegrationPointRequest request)
 		{
+			LogInvocation(nameof(CreateIntegrationPointAsync));
+
 			CheckPermissions(
 				nameof(CreateIntegrationPointAsync), 
 				request.WorkspaceArtifactId,
@@ -63,6 +65,8 @@ namespace Relativity.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> UpdateIntegrationPointAsync(UpdateIntegrationPointRequest request)
 		{
+			LogInvocation(nameof(UpdateIntegrationPointAsync));
+
 			CheckPermissions(
 				nameof(UpdateIntegrationPointAsync), 
 				request.WorkspaceArtifactId,
@@ -106,6 +110,8 @@ namespace Relativity.IntegrationPoints.Services
 
 		public async Task<object> RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
 		{
+			LogInvocation(nameof(RunIntegrationPointAsync));
+
 			CheckPermissions(nameof(RunIntegrationPointAsync), workspaceArtifactId,
 				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)});
 			try
@@ -168,6 +174,8 @@ namespace Relativity.IntegrationPoints.Services
 
 		public async Task<IntegrationPointModel> CreateIntegrationPointFromProfileAsync(int workspaceArtifactId, int profileArtifactId, string integrationPointName)
 		{
+			LogInvocation(nameof(CreateIntegrationPointFromProfileAsync));
+
 			CheckPermissions(nameof(CreateIntegrationPointFromProfileAsync), workspaceArtifactId,
 				new[]
 				{
