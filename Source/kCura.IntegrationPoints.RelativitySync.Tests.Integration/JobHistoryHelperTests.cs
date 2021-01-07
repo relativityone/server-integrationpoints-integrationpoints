@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			job.Setup(x => x.IntegrationPointId).Returns(_jobHistory.IntegrationPoint[0]);
 			job.Setup(x => x.WorkspaceId).Returns(WorkspaceArtifactId);
 
-			CreateJobHistoryErrors(_jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, ErrorTypeChoices.JobHistoryErrorItem);
+			CreateJobHistoryErrors(_jobHistory.ArtifactId, new ChoiceRef() {Guid = ErrorStatusChoices.JobHistoryErrorNewGuid }, new ChoiceRef() { Guid = ErrorTypeChoices.JobHistoryErrorItemGuid }, new List<string>(){"Item Error"});
 
 			// ACT
 			await _sut.MarkJobAsCompletedAsync(job.Object).ConfigureAwait(false);
