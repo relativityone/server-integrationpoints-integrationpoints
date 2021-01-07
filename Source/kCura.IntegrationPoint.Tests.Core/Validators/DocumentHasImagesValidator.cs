@@ -1,5 +1,6 @@
 ﻿using System;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		protected virtual bool? DestinationDocumentHasImagesValue(Document destinationDocument)
 		{
-			string hasImagesChoiceValue = destinationDocument.HasImages?.Name;
+			string hasImagesChoiceValue = destinationDocument[TestConstants.FieldNames.HAS_IMAGES].ToString();
 
 			if (string.IsNullOrEmpty(hasImagesChoiceValue))
 			{

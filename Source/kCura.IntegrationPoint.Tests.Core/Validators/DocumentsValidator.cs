@@ -1,11 +1,10 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Validators
-{
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using NUnit.Framework;
-	using Relativity.Client.DTOs;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 
+namespace kCura.IntegrationPoint.Tests.Core.Validators
+{
 	public class DocumentsValidator : IValidator
 	{
 		private readonly Func<IList<Document>> _expectedDocumentsProvider;
@@ -45,10 +44,10 @@
 
 			foreach (Document expectedDocument in expectedDocuments)
 			{
-				FieldValue expectedDocumentControlNumber = expectedDocument[IntegrationPoints.Data.DocumentFields.ControlNumber];
+				string expectedDocumentControlNumber = expectedDocument.DocumentIdentifier;
 
 				//We expect only few items so don't need to worry about performance
-				Document actualDocument = actualDocuments.FirstOrDefault(document => document[IntegrationPoints.Data.DocumentFields.ControlNumber].Value.Equals(expectedDocumentControlNumber.Value));
+				Document actualDocument = actualDocuments.FirstOrDefault(document => document.DocumentIdentifier == expectedDocumentControlNumber);
 
 				Assert.That(actualDocument, Is.Not.Null, "Could not find document with control number {0}.", expectedDocumentControlNumber);
 

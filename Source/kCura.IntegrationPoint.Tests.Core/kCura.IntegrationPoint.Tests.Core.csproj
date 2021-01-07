@@ -100,6 +100,7 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileSourceConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileNameOutputFilesAfterConstants.cs" />
     <Compile Include="Models\Constants\Shared\TransferredObjectConstants.cs" />
+    <Compile Include="Document.cs" />
     <Compile Include="Models\EntityExportToLoadFileDetails.cs" />
     <Compile Include="Models\EntityExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />

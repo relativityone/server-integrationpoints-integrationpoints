@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base;
-using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 {
@@ -23,17 +20,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 		public override void Verify(int workspaceId)
 		{
 			int expectedDocs = 3;
-			List<Result<Document>> workspaceContents = DocumentService.GetAllDocuments(workspaceId, DocumentFields);
+			List<Document> workspaceContents = DocumentService.GetAllDocuments(workspaceId, DocumentFields);
 			Assert.AreEqual(expectedDocs, workspaceContents.Count);
 
 			for (int i = 0; i < expectedDocs; i++)
 			{
-				Result<Document> docResult = workspaceContents[i];
-				FieldValue controlNumber = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.CONTROL_NUMBER);
+				Document docResult = workspaceContents[i];
+
+				string md5Hash = DocumentService.GetNativeMD5String(workspaceId, docResult);
 
 				int docNum = i + 1;
-				Assert.AreEqual(docNum.ToString(), controlNumber.ValueAsLongText);
-				Assert.AreEqual(NativeMD5Hashes[i], DocumentService.GetNativeMD5String(workspaceId, docResult));
+				Assert.AreEqual(docNum.ToString(), docResult.DocumentIdentifier);
+				Assert.AreEqual(NativeMD5Hashes[i], md5Hash);
 			}
 		}
 	}

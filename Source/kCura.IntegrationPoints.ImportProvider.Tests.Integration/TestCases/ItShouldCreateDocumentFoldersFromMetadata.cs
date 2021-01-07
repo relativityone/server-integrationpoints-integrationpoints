@@ -2,10 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using NUnit.Framework;
-
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
-using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base
 {
@@ -23,13 +20,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
 		public override void Verify(int workspaceId)
 		{
 			const int expectedDocs = 3;
-			IEnumerable<Document> expectedDocuments = Enumerable.Range(1, expectedDocs).Select(i => new Document
-			{
-				FolderName = $"row{i}-v2",
-				[TestConstants.FieldNames.CONTROL_NUMBER] = new FieldValue(TestConstants.FieldNames.CONTROL_NUMBER, i.ToString()),
-				[TestConstants.FieldNames.GROUP_IDENTIFIER] = new FieldValue(TestConstants.FieldNames.GROUP_IDENTIFIER, $"Row-{i}-GroupIdentifier"),
-			}
-			);
+			IEnumerable<Document> expectedDocuments = Enumerable.Range(1, expectedDocs).Select(i => 
+				new Document(new Dictionary<string, object>
+				{
+					{TestConstants.FieldNames.FOLDER_NAME, $"row{i}-v2"},
+					{TestConstants.FieldNames.CONTROL_NUMBER, i.ToString()},
+					{TestConstants.FieldNames.GROUP_IDENTIFIER, $"Row-{i}-GroupIdentifier"},
+				}));
 
 			IValidator validator = new LoadFileDocumentsValidator(expectedDocuments, workspaceId)
 				.ValidateWith(new DocumentFieldsValidator(TestConstants.FieldNames.GROUP_IDENTIFIER))
