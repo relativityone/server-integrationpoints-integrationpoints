@@ -13,6 +13,7 @@ Relativity.Logging
 Relativity.OAuth2Client
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces.Private
+Relativity.Telemetry.DataContracts.Shared
 Relativity.Telemetry.APM
 relativity.transfer.client
 FluentAssertions
