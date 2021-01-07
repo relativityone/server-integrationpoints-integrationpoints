@@ -31,10 +31,6 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 					.ImplementedBy<ServiceContextHelperForWeb>()
 					.LifestyleTransient(),
 				Component
-					.For<IRsapiClientWithWorkspaceFactory>()
-					.ImplementedBy<RsapiClientWithWorkspaceFactory>()
-					.LifestyleTransient(),
-				Component
 					.For<WebClientFactory>()
 					.UsingFactoryMethod(WebClientFactoryFactory)
 					.LifestylePerWebRequest(),
@@ -67,9 +63,8 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 		private static WebClientFactory WebClientFactoryFactory(IKernel kernel)
 		{
 			IHelper helper = kernel.Resolve<IHelper>();
-			IRsapiClientWithWorkspaceFactory rsapiClientFactory = kernel.Resolve<IRsapiClientWithWorkspaceFactory>();
 			IWorkspaceContext workspaceIdProvider = kernel.Resolve<IWorkspaceContext>();
-			return new WebClientFactory(helper, rsapiClientFactory, workspaceIdProvider);
+			return new WebClientFactory(helper, workspaceIdProvider);
 		}
 	}
 }

@@ -44,7 +44,6 @@ namespace Relativity.IntegrationPoints.Services.Installers
 				.LifestyleTransient()
 			);
 			container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
-			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>());
 
 			container
 				.AddWorkspaceContext(workspaceID)

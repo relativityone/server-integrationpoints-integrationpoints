@@ -129,7 +129,6 @@
     <Compile Include="Helpers\JSONHelper.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
-    <Compile Include="ExtendedRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Factories\Implementations\ConfigFactory.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />
