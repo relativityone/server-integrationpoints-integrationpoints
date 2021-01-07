@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
-using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base
 {
@@ -21,20 +19,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
 		public override void Verify(int workspaceId)
 		{
 			int expectedDocs = 3;
-			List<Result<Document>> workspaceContents = DocumentService.GetAllDocuments(workspaceId, DocumentFields);
+			List<Document> workspaceContents = DocumentService.GetAllDocuments(workspaceId, DocumentFields);
 			Assert.AreEqual(expectedDocs, workspaceContents.Count);
 
 			for (int i = 0; i < expectedDocs; i++)
 			{
-				Result<Document> docResult = workspaceContents[i];
-				FieldValue controlNumber = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.CONTROL_NUMBER);
-				FieldValue emailSubject = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.EMAIL_SUBJECT);
-				FieldValue groupIdentifier = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.GROUP_IDENTIFIER);
+				Document docResult = workspaceContents[i];
 
 				int docNum = i + 1;
-				Assert.AreEqual(docNum.ToString(), controlNumber.ValueAsLongText);
-				Assert.AreEqual($"Row-{docNum}-EmailSubject", emailSubject.ValueAsLongText);
-				Assert.AreEqual($"Row-{docNum}-GroupIdentifier", groupIdentifier.ValueAsLongText);
+				Assert.AreEqual(docNum.ToString(), docResult.DocumentIdentifier);
+				Assert.AreEqual($"Row-{docNum}-EmailSubject", docResult.ReadAsString(TestConstants.FieldNames.EMAIL_SUBJECT));
+				Assert.AreEqual($"Row-{docNum}-GroupIdentifier", docResult.ReadAsString(TestConstants.FieldNames.GROUP_IDENTIFIER));
 			}
 		}
 	}

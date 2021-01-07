@@ -4,7 +4,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -217,7 +216,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			bool allHasNativeAsExpected = DocumentService
 				.GetAllDocuments(workspaceID, documentFields)
-				.Select(document => document.Artifact.HasNative.Value)
+				.Select(document => document.HasNatives)
 				.All(hasNative => hasNative == expectedHasNative);
 
 			Assert.IsTrue(allHasNativeAsExpected);

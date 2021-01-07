@@ -1,6 +1,4 @@
-﻿using kCura.Relativity.Client.DTOs;
-
-namespace kCura.IntegrationPoint.Tests.Core.Validators
+﻿namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
 	public interface IFolderPathStrategy
 	{

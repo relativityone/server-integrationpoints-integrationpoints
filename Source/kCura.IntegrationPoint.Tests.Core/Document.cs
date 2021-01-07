@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			_fieldValues = obj.FieldValues.ToDictionary(x => x.Field.Name, x => x.Value);
 			ArtifactId = obj.ArtifactID;
+			ParentArtifactId = obj.ParentObject.ArtifactID;
 		}
 
 		public Document(Dictionary<string, object> fieldValues)
@@ -21,7 +22,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			ArtifactId = ReadAsInt(TestConstants.FieldNames.ARTIFACT_ID);
 		}
 
-		public int ArtifactId { get; private set; }
+		public int ArtifactId { get; }
+
+		public int ParentArtifactId { get; }
 
 		public string DocumentIdentifier => ReadAsString(TestConstants.FieldNames.CONTROL_NUMBER);
 

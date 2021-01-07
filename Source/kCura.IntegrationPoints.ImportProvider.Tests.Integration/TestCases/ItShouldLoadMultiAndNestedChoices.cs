@@ -6,8 +6,6 @@ using NUnit.Framework;
 
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base;
-using kCura.Relativity.Client.DTOs;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 {
@@ -23,27 +21,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 		public override void Verify(int workspaceId)
 		{
 			int expectedDocs = 3;
-			List<Result<Document>> workspaceContents = DocumentService.GetAllDocuments(workspaceId, DocumentFields);
+			List<Document> workspaceContents = DocumentService.GetAllDocuments(workspaceId, DocumentFields);
 			Assert.AreEqual(expectedDocs, workspaceContents.Count);
 
 			for (int i = 0; i < expectedDocs; i++)
 			{
-				Result<Document> docResult = workspaceContents[i];
-				FieldValue controlNumber = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.CONTROL_NUMBER);
-				FieldValue custodian = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.CUSTODIAN);
-				FieldValue issueDesignation = docResult.Artifact.Fields.First(x => x.Name == TestConstants.FieldNames.ISSUE_DESIGNATION);
+				Document docResult = workspaceContents[i];
 
-				MultiChoiceFieldValueList issueValues = issueDesignation.ValueAsMultipleChoice;
-				Choice custodianValue = custodian.ValueAsSingleChoice;
+				List<string> issueValues = (List<string>) docResult[TestConstants.FieldNames.ISSUE_DESIGNATION];
 
 				int docNum = i + 1;
-				Assert.AreEqual(docNum.ToString(), controlNumber.ValueAsLongText);
-				Assert.AreEqual(CustodianSingleChoices[i], custodianValue.Name);
+				Assert.AreEqual(docNum.ToString(), docResult.DocumentIdentifier);
+				Assert.AreEqual(CustodianSingleChoices[i], docResult[TestConstants.FieldNames.CUSTODIAN]);
 				Assert.AreEqual(3, issueValues.Count);
-				foreach (Choice value in issueValues)
+				foreach (string value in issueValues)
 				{
-					string[] expectedRow = IssueMultiChoices[i];
-					Assert.IsNotEmpty(IssueMultiChoices[i].Where(x => x == value.Name));
+					Assert.IsNotEmpty(IssueMultiChoices[i].Where(x => x == value));
 				}
 			}
 		}
