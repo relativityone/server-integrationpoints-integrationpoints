@@ -1,14 +1,11 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Services.Interfaces.Group;
+using Relativity.Services.Interfaces.Group.Models;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -18,21 +15,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int CreateGroup(string name)
 		{
-			// STEP 1: Create a DTO and set its properties.
-			kCura.Relativity.Client.DTOs.Group newGroup = new kCura.Relativity.Client.DTOs.Group
-			{
-				Name = name
-			};
-
-			// STEP 2: Create a WriteResultSet. It provide details after the create operation completes.
-			WriteResultSet<kCura.Relativity.Client.DTOs.Group> resultSet;
-
-			// STEP 3: Create the new Group.
 			try
 			{
-				using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+				using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
 				{
-					resultSet = rsapiClient.Repositories.Group.Create(newGroup);
+					GroupRequest request = new GroupRequest
+					{
+						Name = name
+					};
+
+					return groupManager.CreateAsync(request).GetAwaiter().GetResult()
+						.ArtifactID;
 				}
 			}
 			catch (Exception ex)
@@ -40,58 +33,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 				Console.WriteLine($@"An error occurred while creating group {name}: {ex.Message}");
 				throw;
 			}
-
-			// Check for success.
-			if (!resultSet.Success)
-			{
-				Console.WriteLine($@"Creation of group {name} failed.{Environment.NewLine}{resultSet.Message}");
-				throw new Exception(resultSet.Message);
-			}
-
-			// Output the results.
-			Console.WriteLine($@"The group {name} created succeessfully.");
-			kCura.Relativity.Client.DTOs.Group createdGroup = resultSet.Results[0].Artifact;
-
-			Console.WriteLine("{0}The Artifact of the New Group is: {1}", Environment.NewLine, createdGroup.ArtifactID);
-
-			return createdGroup.ArtifactID;
 		}
 
-		public static bool DeleteGroup(int artifactId)
+		public static void DeleteGroup(int artifactId)
 		{
-			// STEP 1: Create a DTO populated with criteria for a DTO you want to delete.
-			kCura.Relativity.Client.DTOs.Group groupToDelete = new kCura.Relativity.Client.DTOs.Group(artifactId);
-
-			// STEP 2: Create a WriteResultSet. It provides details after the delete operation completes.
-			WriteResultSet<kCura.Relativity.Client.DTOs.Group> resultSet;
-
-			// STEP 3: Perform the delete operation.
 			try
 			{
-				using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+				using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
 				{
-					resultSet = rsapiClient.Repositories.Group.Delete(groupToDelete);
+					groupManager.DeleteAsync(artifactId).GetAwaiter().GetResult();
 				}
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("An error occurred: {0}", ex.Message);
-				return false;
+				Console.WriteLine($@"An error occurred while deleting group {artifactId}: {ex.Message}");
+				throw;
 			}
-
-			// Check for success.
-			if (!resultSet.Success)
-			{
-				Console.WriteLine("The Delete operation failed.{0}{1}", Environment.NewLine, resultSet.Message);
-				return false;
-			}
-
-			// Output the results.
-			Console.WriteLine("Delete completed successfully.");
-			kCura.Relativity.Client.DTOs.Group deletedGroup = resultSet.Results.ElementAt(0).Artifact;
-			Console.WriteLine("The Artifact ID of the deleted Group is: {0}", deletedGroup.ArtifactID);
-
-			return true;
 		}
 
 		public static void AddGroupToWorkspace(int workspaceId, int groupId)
@@ -128,5 +85,3 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
