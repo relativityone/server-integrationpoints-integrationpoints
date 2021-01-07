@@ -24,11 +24,6 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 			_helpersFactory = helpersFactory;
 		}
 
-		public int InitializeWorkspaceWithSourceWorkspaceRdo(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
-		{
-			return InitializeWorkspaceWithSourceWorkspaceRdo(destinationWorkspaceArtifactId);
-		}
-
 		public int InitializeWorkspaceWithSourceWorkspaceRdo(int destinationWorkspaceArtifactId)
 		{
 			try

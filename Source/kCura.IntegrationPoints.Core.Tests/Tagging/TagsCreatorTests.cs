@@ -27,25 +27,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			_sourceJobRdoInitializer = Substitute.For<IRelativitySourceJobRdoInitializer>();
 			_sourceWorkspaceRdoInitializer = Substitute.For<IRelativitySourceWorkspaceRdoInitializer>();
 
-			var helper = Substitute.For<IHelper>();
+			IHelper helper = Substitute.For<IHelper>();
 
 			_instance = new TagsCreator(_sourceJobManager, _sourceWorkspaceManager, _sourceJobRdoInitializer, _sourceWorkspaceRdoInitializer, helper);
 		}
 
+		[Test]
 		public void ItShouldCreateTags()
 		{
-			int sourceWorkspaceArtifactId = 843740;
-			int destinationWorkspaceArtifactId = 527695;
-			int jobHistoryArtifactId = 847715;
-			int? federatedInstanceArtifactId = 561710;
+			int sourceWorkspaceArtifactId = 10001;
+			int destinationWorkspaceArtifactId = 10002;
+			int jobHistoryArtifactId = 10003;
+			int? federatedInstanceArtifactId = 10004;
 
-			int sourceWorkspaceDescriptorArtifactTypeId = 625549;
-			int sourceJobDescriptorArtifactTypeId = 801242;
+			int sourceWorkspaceDescriptorArtifactTypeId = 10005;
+			int sourceJobDescriptorArtifactTypeId = 10006;
 
-			var sourceWorkspaceDto = new SourceWorkspaceDTO { ArtifactId = 831219 };
+			var sourceWorkspaceDto = new SourceWorkspaceDTO { ArtifactId = 10007, ArtifactTypeId = 10008 };
 			var sourceJobDto = new SourceJobDTO();
 
-			_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId)
+			_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(destinationWorkspaceArtifactId)
 				.Returns(sourceWorkspaceDescriptorArtifactTypeId);
 			_sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId)
 				.Returns(sourceWorkspaceDto);
@@ -55,17 +56,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 				.Returns(sourceJobDto);
 
 			// ACT
-			var tagsContainer = _instance.CreateTags(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, federatedInstanceArtifactId);
+			TagsContainer tagsContainer = _instance.CreateTags(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, federatedInstanceArtifactId);
 
 			// ASSERT
 			Assert.That(tagsContainer.SourceJobDto, Is.EqualTo(sourceJobDto));
 			Assert.That(tagsContainer.SourceWorkspaceDto, Is.EqualTo(sourceWorkspaceDto));
 
-			_sourceWorkspaceRdoInitializer.Received(1).InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+			_sourceWorkspaceRdoInitializer.Received(1).InitializeWorkspaceWithSourceWorkspaceRdo(destinationWorkspaceArtifactId);
 			_sourceWorkspaceManager.Received(1)
 				.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId);
 
-			_sourceJobRdoInitializer.Received(1).InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDto.ArtifactTypeId);
+			_sourceJobRdoInitializer.Received(1).InitializeWorkspaceWithSourceJobRdo(destinationWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId);
 			_sourceJobManager.Received(1)
 				.CreateSourceJobDto(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, jobHistoryArtifactId, sourceWorkspaceDto.ArtifactId);
 		}
