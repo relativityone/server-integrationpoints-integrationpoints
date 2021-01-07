@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			_fieldValues = fieldValues;
 			ArtifactId = ReadAsInt(TestConstants.FieldNames.ARTIFACT_ID);
+			ParentArtifactId = ReadAsInt(TestConstants.FieldNames.PARENT_ARTIFACT_ID);
 		}
 
 		public int ArtifactId { get; }
@@ -54,8 +55,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public string ReadAsString(string field) => this[field]?.ToString();
 
-		public bool ReadAsBool(string field) => (bool) this[field];
+		public bool ReadAsBool(string field) => this[field] != null && (bool) this[field];
 
-		public int ReadAsInt(string field) => (int) this[field];
+		public int ReadAsInt(string field) => this[field] != null ? (int) this[field] : default(int);
 	}
 }

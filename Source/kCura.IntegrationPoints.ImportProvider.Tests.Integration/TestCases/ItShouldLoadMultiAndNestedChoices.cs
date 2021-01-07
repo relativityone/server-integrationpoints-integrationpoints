@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using NUnit.Framework;
 
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 {
@@ -28,15 +30,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases
 			{
 				Document docResult = workspaceContents[i];
 
-				List<string> issueValues = (List<string>) docResult[TestConstants.FieldNames.ISSUE_DESIGNATION];
-
 				int docNum = i + 1;
 				Assert.AreEqual(docNum.ToString(), docResult.ControlNumber);
-				Assert.AreEqual(CustodianSingleChoices[i], docResult[TestConstants.FieldNames.CUSTODIAN]);
+
+				Choice custodianChoice = (Choice) docResult[TestConstants.FieldNames.CUSTODIAN];
+				Assert.AreEqual(CustodianSingleChoices[i], custodianChoice.Name);
+
+				List<Choice> issueValues = (List<Choice>)docResult[TestConstants.FieldNames.ISSUE_DESIGNATION];
 				Assert.AreEqual(3, issueValues.Count);
-				foreach (string value in issueValues)
+				foreach (Choice value in issueValues)
 				{
-					Assert.IsNotEmpty(IssueMultiChoices[i].Where(x => x == value));
+					Assert.IsNotEmpty(IssueMultiChoices[i].Where(x => x == value.Name));
 				}
 			}
 		}
