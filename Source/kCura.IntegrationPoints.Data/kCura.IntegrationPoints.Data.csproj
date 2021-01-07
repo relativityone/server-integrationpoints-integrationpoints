@@ -171,8 +171,6 @@
     <Compile Include="ResourcePoolContext.cs" />
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
-    <Compile Include="RSAPIClient\IRsapiClientFactory.cs" />
-    <Compile Include="RSAPIClient\RsapiClientFactory.cs" />
     <Compile Include="RSAPIClient\RsapiClientWrapperWithLogging.cs" />
     <Compile Include="RsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="SerializerWithLogging.cs" />
