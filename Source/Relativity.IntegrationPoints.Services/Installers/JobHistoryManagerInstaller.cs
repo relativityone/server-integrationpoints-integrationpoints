@@ -36,7 +36,6 @@ namespace Relativity.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IDestinationParser>().ImplementedBy<DestinationParser>().LifestyleTransient());
 			container.Register(Component.For<IJobHistoryAccess>().ImplementedBy<JobHistoryAccess>().LifestyleTransient());
 			container.Register(Component.For<IJobHistorySummaryModelBuilder>().ImplementedBy<JobHistorySummaryModelBuilder>().LifestyleTransient());
-			container.Register(Component.For<ILibraryFactory>().ImplementedBy<LibraryFactory>().LifestyleTransient());
 			container.Register(Component.For<Repositories.IJobHistoryRepository>().ImplementedBy<Repositories.Implementations.JobHistoryRepository>().LifestyleTransient());
 			container.Register(Component
 				.For<IRelativityIntegrationPointsRepository>()

@@ -92,11 +92,9 @@
     <Compile Include="Factories\IRelativityObjectManagerFactory.cs" />
     <Compile Include="Factories\IRelativityObjectManagerServiceFactory.cs" />
     <Compile Include="Factories\Implementations\RelativityObjectManagerServiceFactory.cs" />
-    <Compile Include="GenericLibraryFactory.cs" />
     <Compile Include="Helpers\IMassUpdateHelper.cs" />
     <Compile Include="Helpers\MassUpdateHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
-    <Compile Include="IGenericLibraryFactory.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
@@ -303,10 +301,8 @@
       <DependentUpon>GeneratedStringConstants.tt</DependentUpon>
     </Compile>
     <Compile Include="IBaseRdo.cs" />
-    <Compile Include="IGenericLibrary.cs" />
     <Compile Include="Installers\QueryInstallers.cs" />
     <Compile Include="Queries\CreateErrorRdoQuery.cs" />
-    <Compile Include="RsapiClientLibrary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
