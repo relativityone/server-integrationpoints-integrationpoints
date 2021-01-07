@@ -1,7 +1,4 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.Relativity.Client;
 using Relativity.Services.Search;
 using System.Collections.Generic;
 using System.Data;
@@ -10,6 +7,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.Productions.Services;
 using Relativity.Services.Objects;
@@ -35,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			string templateName = SharedVariables.UseLegacyTemplateName()
 				? WorkspaceTemplateNames.LEGACY_TEMPLATE_WORKSPACE_NAME
 				: WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME;
-			return Workspace.CreateWorkspace(name, templateName);
+			return Workspace.CreateWorkspaceAsync(name, templateName).GetAwaiter().GetResult().ArtifactID;
 		}
 
 		public void ImportData(int workspaceID, DocumentsTestData documentsTestData)
@@ -69,10 +67,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public void DeleteWorkspace(int artifactID)
 		{
-			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
-			{
-				rsapiClient.Repositories.Workspace.DeleteSingle(artifactID);
-			}
+			Workspace.DeleteWorkspaceAsync(artifactID).GetAwaiter().GetResult();
 		}
 
 		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
@@ -169,5 +164,3 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -4,7 +4,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -27,6 +26,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Testing.Identification;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
+using WorkspaceRef = Relativity.Services.Workspace.WorkspaceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private ExportServiceManager _exportManager;
 		private IIntegrationPointService _integrationPointService;
 		private IJobService _jobService;
-		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
+		private WorkspaceRef _sourceWorkspace;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _SOURCE_WORKSPACE_NAME = "Push_NativeFileCopy";
 		private const string _TARGET_WORKSPACE_NAME = "Push_NativeFileCopy_Destination";
@@ -102,7 +102,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
+			_sourceWorkspace = Workspace.GetWorkspaceAsync(SourceWorkspaceArtifactID)
+				.GetAwaiter().GetResult();
 		}
 
 		[TearDown]

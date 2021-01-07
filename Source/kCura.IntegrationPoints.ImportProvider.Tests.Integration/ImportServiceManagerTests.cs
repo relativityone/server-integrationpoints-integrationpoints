@@ -55,9 +55,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		{
 			_testDataDirectory = CopyTestData();
 
-			_workspaceId = Workspace.CreateWorkspace(
+			_workspaceId = Workspace.CreateWorkspaceAsync(
 				$"{nameof(ImportServiceManagerTests)} {DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}"
-			);
+			).GetAwaiter().GetResult().ArtifactID;
 
 			//Substitutes
 			IHelper helper = Substitute.For<IHelper>();
@@ -156,12 +156,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				integrationPointRepository,
 				jobStatusUpdater
 			);
-		}
-
-		[OneTimeTearDown]
-		public void CleanUp()
-		{
-			Workspace.DeleteWorkspace(_workspaceId);
 		}
 
 		[TearDown]

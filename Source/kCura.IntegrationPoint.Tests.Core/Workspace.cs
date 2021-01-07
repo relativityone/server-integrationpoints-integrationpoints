@@ -1,197 +1,102 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
-using kCura.IntegrationPoint.Tests.Core.Exceptions;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using kCura.Relativity.Client.Repositories;
-using Serilog;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Folder;
+using Relativity.Services.ResourceServer;
+using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Workspace
 	{
-		public static int CreateWorkspace(string workspaceName)
+		private static ITestHelper Helper => new TestHelper();
+
+		public static async Task<WorkspaceRef> GetWorkspaceAsync(int workspaceId)
 		{
-			return CreateWorkspace(workspaceName, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
-		}
-
-		public static Task<int> CreateWorkspaceAsync(string workspaceName, string templateName, ILogger log = null)
-		{
-			return Task.Run(() => CreateWorkspace(workspaceName, templateName, log));
-		}
-
-		public static int CreateWorkspace(string workspaceName, string templateName, ILogger log = null)
-		{
-			if (string.IsNullOrEmpty(workspaceName))
+			using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
 			{
-				return 0; // TODO throw
-			}
+				IEnumerable<WorkspaceRef> activeWorkspaces =
+					await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
 
-			//Create workspace DTO
-			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
-			int workspaceId;
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
-			{
-				try
-				{
-					// Query for template workspace id
-					Relativity.Client.DTOs.Workspace workspace = FindWorkspaceByName(proxy, templateName);
-					int templateWorkspaceId = workspace.ArtifactID;
-
-					ProcessOperationResult result = proxy.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspaceDto);
-
-					if (!result.Success)
-					{
-						throw new Exception(
-							$"Failed creating workspace {workspaceName}. Result Message: {result.Message} [{Environment.CurrentDirectory}]"
-						);
-					}
-
-					Status.WaitForProcessToComplete(proxy, result.ProcessID, log: log);
-					ProcessInformation processInfo = proxy.GetProcessState(proxy.APIOptions, result.ProcessID);
-					workspaceId = processInfo.OperationArtifactIDs[0].GetValueOrDefault();
-				}
-				catch (Exception ex)
-				{
-					throw new Exception(
-						$"An error occurred while creating workspace {workspaceName}. Error Message: {ex.Message}, error type: {ex.GetType()}",
-						ex
-					);
-				}
-			}
-
-			return workspaceId;
-		}
-
-		public static bool CheckIfWorkspaceExists(string workspaceName)
-		{
-			if (string.IsNullOrEmpty(workspaceName))
-			{
-				throw new ArgumentException("Workspace name is not provided.");
-			}
-
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
-			{
-				QueryResultSet<Relativity.Client.DTOs.Workspace> queryResult = QueryWorkspaceByName(
-					proxy,
-					workspaceName
-				);
-
-				return queryResult.Results != null && queryResult.Results.Any();
+				return activeWorkspaces.Single(x => x.ArtifactID == workspaceId);
 			}
 		}
 
-		public static void EnableDataGrid(int workspaceId)
+		public static async Task<WorkspaceRef> GetWorkspaceAsync(string workspaceName)
 		{
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
 			{
-				try
-				{
-					WorkspaceRepository workspaceRepository = proxy.Repositories.Workspace;
+				IEnumerable<WorkspaceRef> activeWorkspaces =
+					await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
 
-					Relativity.Client.DTOs.Workspace workspaceDTO = workspaceRepository.ReadSingle(workspaceId);
-
-					workspaceDTO.EnableDataGrid = true;
-
-					workspaceRepository.UpdateSingle(workspaceDTO);
-				}
-				catch (Exception ex)
-				{
-					throw new Exception($"An error occurred while updating workspace {workspaceId}. Error Message: {ex.Message}, error type: {ex.GetType()}", ex);
-				}
+				return activeWorkspaces.FirstOrDefault(x => x.Name == workspaceName);
 			}
 		}
 
-		public static void DeleteWorkspace(int workspaceArtifactId)
+		public static async Task<WorkspaceRef> CreateWorkspaceAsync(string name)
 		{
-			if (workspaceArtifactId == 0)
+			return await CreateWorkspaceAsync(name, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
+		}
+
+		public static async Task<WorkspaceRef> CreateWorkspaceAsync(string name, string templateWorkspaceName)
+		{
+			using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
 			{
-				return;
-			}
-			//Create workspace DTO
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
-			{
-				try
+				IEnumerable<WorkspaceRef> activeWorkspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
+				WorkspaceRef template = activeWorkspaces.FirstOrDefault(x => x.Name == templateWorkspaceName);
+
+				if (template == null)
 				{
-					proxy.Repositories.Workspace.Delete(workspaceArtifactId);
+					throw new NotFoundException($"Cannot find workspace name: '{templateWorkspaceName}'");
 				}
-				catch (Exception ex)
+
+				WorkspaceRef workspaceRef = await workspaceManager.CreateWorkspaceAsync(new WorkspaceSetttings()
 				{
-					throw new TestException($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
-				}
+					Name = name,
+					TemplateArtifactId = template.ArtifactID,
+					EnableDataGrid = true
+				}).ConfigureAwait(false);
+
+				return workspaceRef;
 			}
 		}
 
-		public static Relativity.Client.DTOs.Workspace FindWorkspaceByName(IRSAPIClient proxy, string workspaceName)
+		public static async Task DeleteWorkspaceAsync(int workspaceId)
 		{
-			try
+			using (IWorkspaceManager workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
 			{
-				return QueryWorkspaceByName(proxy, workspaceName).Results.Single().Artifact;
-			}
-			catch (Exception ex)
-			{
-				throw new TestException($"Finding workspace '{workspaceName}' failed.", ex);
+				WorkspaceRef workspace = new WorkspaceRef
+				{
+					ArtifactID = workspaceId
+				};
+
+				await workspaceManager.DeleteAsync(workspace).ConfigureAwait(false);
 			}
 		}
 
-		public static Relativity.Client.DTOs.Workspace GetWorkspaceDto(int workspaceArtifactId)
+		public static async Task<int> GetRootFolderArtifactIDAsync(int workspaceId)
 		{
-			//Create workspace DTO
-			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			using (IFolderManager folderManager = Helper.CreateProxy<IFolderManager>())
 			{
-				try
-				{
-					ResultSet<Relativity.Client.DTOs.Workspace> result = proxy.Repositories.Workspace.Read(workspaceArtifactId);
-					if (result.Success == false)
-					{
-						throw new TestException(result.Message);
-					}
-					if (result.Results.Count == 0)
-					{
-						throw new TestException("Unable to find the workspace.");
-					}
-
-					return result.Results[0].Artifact;
-				}
-				catch (Exception ex)
-				{
-					throw new TestException($"An error occurred while retrieving workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
-				}
+				Folder rootFolder = await folderManager.GetWorkspaceRootAsync(workspaceId).ConfigureAwait(false);
+				return rootFolder.ArtifactID;
 			}
 		}
 
-		private static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspaceByName(IRSAPIClient proxy, string workspaceName)
+		public static async Task<FileShareResourceServer> GetDefaultWorkspaceFileShareServerIDAsync(int workspaceId)
 		{
-			var workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, workspaceName);
-			var query = new Query<Relativity.Client.DTOs.Workspace>
+			using (IWorkspaceManager workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
 			{
-				Condition = workspaceNameCondition
-			};
-			query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
-			return QueryWorkspace(proxy, query, 0);
-		}
-
-		private static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(IRSAPIClient proxy, Query<Relativity.Client.DTOs.Workspace> query, int results)
-		{
-			try
-			{
-				QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = proxy.Repositories.Workspace.Query(query, results);
-				if (!resultSet.Success)
+				WorkspaceRef workspace = new WorkspaceRef
 				{
-					throw new TestException($"Query failed for workspace using Query: {query}");
-				}
-				return resultSet;
-			}
-			catch (Exception ex)
-			{
-				throw new TestException($"An error occurred attempting to query workspaces using query: {query}. Error Message: {ex.Message}", ex);
+					ArtifactID = workspaceId
+				};
+
+				return await workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
 			}
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

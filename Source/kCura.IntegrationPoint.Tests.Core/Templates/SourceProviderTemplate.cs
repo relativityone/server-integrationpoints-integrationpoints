@@ -90,7 +90,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			if (CreatingWorkspaceEnabled)
 			{
-				WorkspaceArtifactId = Workspace.CreateWorkspace(_workspaceName, _workspaceTemplate);
+				WorkspaceArtifactId = Workspace.CreateWorkspaceAsync(_workspaceName, _workspaceTemplate)
+					.GetAwaiter().GetResult().ArtifactID;
 			}
 
 			InitializeIocContainer();
@@ -110,7 +111,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			if (CreatingWorkspaceEnabled && WorkspaceArtifactId != 0 && !HasTestFailed())
 			{
-				Workspace.DeleteWorkspace(WorkspaceArtifactId);
+				Workspace.DeleteWorkspaceAsync(WorkspaceArtifactId).GetAwaiter().GetResult();
 			}
 
 			base.SuiteTeardown();

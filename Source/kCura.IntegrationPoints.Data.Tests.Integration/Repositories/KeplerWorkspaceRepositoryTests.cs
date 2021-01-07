@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories;
@@ -21,16 +22,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private static readonly string _workspaceName = $"Integration Test {DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}";
 
 		[SetUp]
-		public void SetUp()
+		public async Task SetUp()
 		{
-			_workspaceID = Workspace.CreateWorkspace(_workspaceName);
+			_workspaceID = (await Workspace.CreateWorkspaceAsync(_workspaceName)).ArtifactID;
 			_helper = new TestHelper();
 		}
 
 		[TearDown]
-		public void TearDown()
+		public async Task TearDown()
 		{
-			Workspace.DeleteWorkspace(_workspaceID);
+			await Workspace.DeleteWorkspaceAsync(_workspaceID).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("3b791349-9028-4126-9835-0dba48f55112")]

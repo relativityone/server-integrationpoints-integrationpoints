@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.CopyFilesToDocumentRepository = false;
 			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
 
-			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId); 
+			importJob.Settings.DestinationFolderArtifactID = Workspace.GetRootFolderArtifactIDAsync(workspaceArtifactId).GetAwaiter().GetResult();
 			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID;
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 
@@ -135,17 +135,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return !HasErrors;
 		}
 
-		private int GetWorkspaceRootFolderID(int workspaceID)
-		{ 
-			Relativity.Client.DTOs.Workspace dto = Workspace.GetWorkspaceDto(workspaceID);
-			if (dto?.RootFolderID != null)
-			{
-				return dto.RootFolderID.Value;
-			}
-
-			throw new TestException($"An error occured while retrieving RootFolderId for workspace: {workspaceID}");
-		}
-
 		private void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId)
 		{
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
@@ -162,7 +151,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.FileNameColumn = "File Name";
 			importJob.Settings.CopyFilesToDocumentRepository = _withNatives;
 
-			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId);
+			importJob.Settings.DestinationFolderArtifactID = Workspace.GetRootFolderArtifactIDAsync(workspaceArtifactId).GetAwaiter().GetResult();
 			importJob.Settings.FolderPathSourceFieldName = TestConstants.FieldNames.FOLDER_PATH;
 
 			if (!_withNatives)

@@ -22,6 +22,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
+using Relativity.Services.Workspace;
 using Relativity.Testing.Identification;
 using TestContext = kCura.IntegrationPoints.UITests.Configuration.TestContext;
 
@@ -124,13 +125,12 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			else
 			{
 				Log.Information("Going to use existing workspace '{WorkspaceName}'.", SharedVariables.UiUseThisExistingWorkspace);
-				using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
-				{
-					Relativity.Client.DTOs.Workspace workspace =
-						Workspace.FindWorkspaceByName(proxy, SharedVariables.UiUseThisExistingWorkspace);
+
+					WorkspaceRef workspace =
+						await Workspace.GetWorkspaceAsync(SharedVariables.UiUseThisExistingWorkspace);
 					SourceContext.WorkspaceId = workspace.ArtifactID;
-				}
-				SourceContext.WorkspaceName = SharedVariables.UiUseThisExistingWorkspace;
+					
+					SourceContext.WorkspaceName = SharedVariables.UiUseThisExistingWorkspace;
 				Log.Information("ID of workspace '{WorkspaceName}': {WorkspaceId}.", SourceContext.WorkspaceName, SourceContext.WorkspaceId);
 			}
 
@@ -260,7 +260,7 @@ namespace kCura.IntegrationPoints.UITests.Tests
 			{
 				if (string.IsNullOrEmpty(SharedVariables.UiUseThisExistingWorkspace) && workspaceContext.WorkspaceId != null)
 				{
-					Workspace.DeleteWorkspace(workspaceContext.GetWorkspaceId());
+					Workspace.DeleteWorkspaceAsync(workspaceContext.GetWorkspaceId()).GetAwaiter().GetResult();
 					Log.Information("Delete workspace: {workspaceId}", workspaceContext.WorkspaceId);
 					workspaceContext.WorkspaceId = null;
 				}

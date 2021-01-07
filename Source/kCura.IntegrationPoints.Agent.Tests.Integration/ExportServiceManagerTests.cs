@@ -18,7 +18,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -29,11 +28,12 @@ using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Testing.Identification;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using WorkspaceRef = Relativity.Services.Workspace.WorkspaceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IJobService _jobService;
 		private ICaseServiceContext _caseContext;
 		private IQueueDBContext _queueContext;
-		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
+		private WorkspaceRef _sourceWorkspace;
 
 		public ExportServiceManagerTests()
 			: base("ExportServiceManagerTests", "ExportServiceManagerTests_Destination")
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				exportDataSanitizer);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
+			_sourceWorkspace = Workspace.GetWorkspaceAsync(SourceWorkspaceArtifactID).GetAwaiter().GetResult();
 		}
 
 		[IdentifiedTest("b09c8436-23e8-45d7-a57c-bbe214335433")]

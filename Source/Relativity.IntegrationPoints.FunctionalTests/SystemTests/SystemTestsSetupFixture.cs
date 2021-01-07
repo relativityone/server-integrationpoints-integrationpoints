@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 {
@@ -34,8 +35,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		public static IConfigurationStore ConfigurationStore { get; private set; }
 		public static ITestHelper TestHelper { get; private set; }
 
-		public static TestWorkspace SourceWorkspace { get; private set; }
-		public static TestWorkspace DestinationWorkspace { get; private set; }
+		public static WorkspaceRef SourceWorkspace { get; private set; }
+		public static WorkspaceRef DestinationWorkspace { get; private set; }
 
 		private static readonly IList<int> _managedWorkspacesIDs = new List<int>();
 
@@ -46,27 +47,23 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			ConfigurationStore = new DefaultConfigurationStore();
 			TestHelper = new TestHelper();
 
-			CreateAndConfigureWorkspaces();
+			CreateAndConfigureWorkspaces().GetAwaiter().GetResult();
 			InitializeContainer();
 
 			InitializeRelativityInstanceSettingsClient();
 		}
 
-		private static void CreateAndConfigureWorkspaces()
+		private static async Task CreateAndConfigureWorkspaces()
 		{
 			string sourceWorkspaceName = $"Rip.SystemTests-{DateTime.Now.Ticks}";
-			int sourceWorkspaceID = Workspace.CreateWorkspace(
+			SourceWorkspace = await Workspace.CreateWorkspaceAsync(
 				sourceWorkspaceName,
-				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
-
-			SourceWorkspace = new TestWorkspace(sourceWorkspaceID, sourceWorkspaceName);
+				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false);
 
 			string destinationWorkspaceName = $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}";
-			int destinationWorkspaceID = Workspace.CreateWorkspace(
+			DestinationWorkspace = await Workspace.CreateWorkspaceAsync(
 				destinationWorkspaceName,
-				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
-
-			DestinationWorkspace = new TestWorkspace(destinationWorkspaceID, destinationWorkspaceName);
+				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false);
 		}
 
 		private static void InitializeContainer()
@@ -125,32 +122,29 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
 		}
 
-		public static Task<TestWorkspace> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
+		public static Task<WorkspaceRef> CreateManagedWorkspaceWithDefaultName(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
 			CreateManagedWorkspace($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
 
-		public static async Task<TestWorkspace> CreateManagedWorkspace(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+		public static async Task<WorkspaceRef> CreateManagedWorkspace(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
 		{
-			int workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
-			_managedWorkspacesIDs.Add(workspaceID);
-			TestWorkspace newWorkspace = new TestWorkspace(workspaceID, workspaceName);
-			return newWorkspace;
+			return await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
 		}
 
 		[OneTimeTearDown]
 		public static void TearDownFixture()
 		{
-			DeleteSourceAndDestinationWorkspaces();
+			DeleteSourceAndDestinationWorkspaces().GetAwaiter().GetResult();
 
 			foreach (int workspaceId in _managedWorkspacesIDs)
 			{
-				Workspace.DeleteWorkspace(workspaceId);
+				Workspace.DeleteWorkspaceAsync(workspaceId).GetAwaiter().GetResult();
 			}
 		}
 
-		private static void DeleteSourceAndDestinationWorkspaces()
+		private static async Task DeleteSourceAndDestinationWorkspaces()
 		{
-			Workspace.DeleteWorkspace(SourceWorkspace.ArtifactID);
-			Workspace.DeleteWorkspace(DestinationWorkspace.ArtifactID);
+			await Workspace.DeleteWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+			await Workspace.DeleteWorkspaceAsync(DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 		}
 
 		public static void Log(string message) =>
@@ -166,7 +160,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 
 			var timer = Stopwatch.StartNew();
 
-			DeleteSourceAndDestinationWorkspaces();
+			DeleteSourceAndDestinationWorkspaces().GetAwaiter().GetResult();
 			InitializeFixture();
 
 			timer.Stop();
