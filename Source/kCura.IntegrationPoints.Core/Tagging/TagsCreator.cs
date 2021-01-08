@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
 			try
 			{
 				int sourceWorkspaceDescriptorArtifactTypeId =
-					_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+					_sourceWorkspaceRdoInitializer.InitializeWorkspaceWithSourceWorkspaceRdo(destinationWorkspaceArtifactId);
 
 				SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceManager.CreateSourceWorkspaceDto(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, federatedInstanceArtifactId);
 

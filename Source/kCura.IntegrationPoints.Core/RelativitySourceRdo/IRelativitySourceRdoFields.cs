@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Interfaces.Field.Models;
 
 namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 {
 	public interface IRelativitySourceRdoFields
 	{
-		void CreateFields(int workspaceId, IDictionary<Guid, Field> fields);
+		void CreateFields(int workspaceId, IDictionary<Guid, BaseFieldRequest> fields);
 	}
 }
