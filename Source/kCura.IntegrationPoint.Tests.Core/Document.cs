@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public string ControlNumber => ReadAsString(TestConstants.FieldNames.CONTROL_NUMBER);
 
-		public string HasImages => ReadAsString(TestConstants.FieldNames.HAS_IMAGES);
+		public Choice HasImages => (Choice) this[TestConstants.FieldNames.HAS_IMAGES];
 
 		public bool? HasNatives => ReadAsBool(TestConstants.FieldNames.HAS_NATIVES);
 

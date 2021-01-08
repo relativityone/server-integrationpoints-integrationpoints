@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
 				Assert.AreEqual(ControlNumbers[i], docResult.ControlNumber);
 				Assert.AreEqual(ExtractedText[i], docResult.ExtractedText);
 				Assert.AreEqual(ImageCounts[i], docResult.ImageCount);
-				Assert.AreEqual("Yes", docResult.HasImages);
+				Assert.AreEqual("Yes", docResult.HasImages.Name);
 			}
 		}
 	}

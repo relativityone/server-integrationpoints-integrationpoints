@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		protected virtual bool? DestinationDocumentHasImagesValue(Document destinationDocument)
 		{
-			string hasImagesChoiceValue = destinationDocument[TestConstants.FieldNames.HAS_IMAGES].ToString();
+			string hasImagesChoiceValue = destinationDocument.HasImages.Name;
 
 			if (string.IsNullOrEmpty(hasImagesChoiceValue))
 			{
