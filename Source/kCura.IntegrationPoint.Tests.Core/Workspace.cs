@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,26 +16,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static ITestHelper Helper => new TestHelper();
 
 		public static async Task<WorkspaceRef> GetWorkspaceAsync(int workspaceId)
-		{
-			using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
-			{
-				IEnumerable<WorkspaceRef> activeWorkspaces =
-					await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
-
-				return activeWorkspaces.Single(x => x.ArtifactID == workspaceId);
-			}
-		}
+			=> await GetWorkspaceAsync(x => x.ArtifactID == workspaceId).ConfigureAwait(false);
 
 		public static async Task<WorkspaceRef> GetWorkspaceAsync(string workspaceName)
-		{
-			using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
-			{
-				IEnumerable<WorkspaceRef> activeWorkspaces =
-					await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
-
-				return activeWorkspaces.FirstOrDefault(x => x.Name == workspaceName);
-			}
-		}
+			=> await GetWorkspaceAsync(x => x.Name == workspaceName).ConfigureAwait(false);
 
 		public static async Task<WorkspaceRef> CreateWorkspaceAsync(string name)
 		{
@@ -96,6 +81,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 				};
 
 				return await workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
+			}
+		}
+
+		private static async Task<WorkspaceRef> GetWorkspaceAsync(Func<WorkspaceRef, bool> workspaceFunc)
+		{
+			using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
+			{
+				WorkspaceRef[] activeWorkspaces =
+					(await workspaceManager.RetrieveAllActive().ConfigureAwait(false)).ToArray();
+
+				if (activeWorkspaces.Length == 0)
+				{
+					return null;
+				}
+
+				return activeWorkspaces.First(workspaceFunc);
 			}
 		}
 	}
