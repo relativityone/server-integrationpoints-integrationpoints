@@ -198,7 +198,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				Logger.LogInformation($"Restoring workspace from: {uploadedFile}");
 
 				string remoteArchiveLocation =
-					Path.Combine(@"\\emttest",_RELATIVE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
+					Path.Combine(AppSettings.RemoteArchivesLocation,_RELATIVE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
 
 				int jobId = await CreateRestoreJobAsync(remoteArchiveLocation).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {jobId} has been created");
