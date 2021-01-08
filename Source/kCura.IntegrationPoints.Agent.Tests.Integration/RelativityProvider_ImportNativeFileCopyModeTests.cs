@@ -24,9 +24,9 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.ResourcePool;
 using Relativity.Testing.Identification;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
-using WorkspaceRef = Relativity.Services.Workspace.WorkspaceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private ExportServiceManager _exportManager;
 		private IIntegrationPointService _integrationPointService;
 		private IJobService _jobService;
-		private WorkspaceRef _sourceWorkspace;
+		private ResourcePool _workspaceResourcePool;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _SOURCE_WORKSPACE_NAME = "Push_NativeFileCopy";
 		private const string _TARGET_WORKSPACE_NAME = "Push_NativeFileCopy_Destination";
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspace = Workspace.GetWorkspaceAsync(SourceWorkspaceArtifactID)
+			_workspaceResourcePool = Workspace.GetWorkspaceResourcePoolAsync(SourceWorkspaceArtifactID)
 				.GetAwaiter().GetResult();
 		}
 
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			Job job = null;
 			try
 			{
-				int[] resourcePools = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				int[] resourcePools = { _workspaceResourcePool.ArtifactID };
 				job = GetNextJobInScheduleQueue(resourcePools, integrationPointModel.ArtifactID, SourceWorkspaceArtifactID);
 
 				// act

@@ -25,6 +25,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
+using WorkspaceRef = Relativity.Services.Workspace.WorkspaceRef;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 {
@@ -75,7 +76,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		public async Task EventHandler_ShouldDeleteAndUpdateExistingProfiles()
 		{
 			// Act
-			TestWorkspace createdWorkspace = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.SourceWorkspace.Name)
+			WorkspaceRef createdWorkspace = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.SourceWorkspace.Name)
 				.ConfigureAwait(false);
 
 			// Assert
