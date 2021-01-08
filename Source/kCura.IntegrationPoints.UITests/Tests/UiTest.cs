@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
@@ -9,7 +7,6 @@ using kCura.IntegrationPoints.UITests.Configuration;
 using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoints.UITests.Pages;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
@@ -311,19 +308,8 @@ namespace kCura.IntegrationPoints.UITests.Tests
 					.ImplementedBy<WorkspaceDBContext>()
 					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(workspaceArtifactId)))
 					.LifeStyle.Transient);
-			Container.Register(
-				Component.For<IRSAPIClient>()
-					.UsingFactoryMethod(k =>
-					{
-						IRSAPIClient client = Rsapi.CreateRsapiClient();
-						client.APIOptions.WorkspaceID = workspaceArtifactId;
-						return client;
-					})
-					.LifeStyle.Transient);
 
 			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), workspaceArtifactId)).LifestyleTransient());
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

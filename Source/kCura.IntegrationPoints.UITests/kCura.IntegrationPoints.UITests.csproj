@@ -52,7 +52,6 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Auxiliary\WorkspaceRemover.cs" />
     <Compile Include="BrandNew\ImportActions.cs" />
     <Compile Include="BrandNew\FieldMappingPanelActions.cs" />
     <Compile Include="BrandNew\Import\FTP\ImportDocumentsFromFtpActions.cs" />
@@ -413,6 +412,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
