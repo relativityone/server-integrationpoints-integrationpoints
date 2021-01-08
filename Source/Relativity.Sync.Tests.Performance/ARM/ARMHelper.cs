@@ -1,43 +1,26 @@
 ﻿using Refit;
-using Relativity.Services.Interfaces.LibraryApplication.Models;
-using Relativity.Sync.Tests.Performance.ARM.Contracts;
 using Relativity.Sync.Tests.Performance.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using ARMTestServices.Services.Interfaces;
-using Relativity.ARM.Services.Interfaces;
-using Relativity.ARM.Services.Interfaces.V1.Archive;
 using Relativity.ARM.Services.Interfaces.V1.JobAction;
 using Relativity.ARM.Services.Interfaces.V1.JobStatus;
-using Relativity.ARM.Services.Interfaces.V1.Models.Archive;
-using Relativity.ARM.Services.Interfaces.V1.ArchiveInformation;
 using Relativity.ARM.Services.Interfaces.V1.Models;
 using Relativity.ARM.Services.Interfaces.V1.Models.JobStatus;
 using Relativity.ARM.Services.Interfaces.V1.Models.Restore;
 using Relativity.ARM.Services.Interfaces.V1.Restore;
-using Relativity.Services.Interfaces.InstanceSetting.Model;
-using Relativity.Services.Interfaces.Matter;
-using Relativity.Services.Interfaces.ResourceServer;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ResourcePool;
-using Relativity.Services.ServiceProxy;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
-using ResourcePool = Relativity.Services.ResourcePool.ResourcePool;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -49,8 +32,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private readonly AzureStorageHelper _storage;
 
 		private static readonly string _RELATIVE_ARCHIVES_LOCATION = AppSettings.RelativeArchivesLocation;
-		private static readonly string _UNC_ARCHIVE_LOCATION = Path.Combine(AppSettings.RemoteArchivesLocation, _RELATIVE_ARCHIVES_LOCATION);
-		private IKeplerServiceFactory _serviceFactory;
+		private readonly IKeplerServiceFactory _serviceFactory;
 
 
 		private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storage)
@@ -92,18 +74,18 @@ namespace Relativity.Sync.Tests.Performance.ARM
 					InstallARM();
 				}
 
-				EnsureRemoteLocationExists().GetAwaiter().GetResult();
+				EnsureRemoteLocationExistsAsync().GetAwaiter().GetResult();
 
 				_isInitialized = true;
 				Logger.LogInformation("ARM has been initialized.");
 			}
 		}
 
-		private async Task EnsureRemoteLocationExists()
+		private Task EnsureRemoteLocationExistsAsync()
 		{
 			Logger.LogInformation("Creating remote archive location directory");
 
-			await _fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
+			return _fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION);
 		}
 
 		private bool ShouldBeInstalled()
@@ -218,16 +200,14 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 				await ThrowIfWorkspaceAlreadyExistsAsync(workspaceName, environment).ConfigureAwait(false);
 
-				string remoteLocation = _RELATIVE_ARCHIVES_LOCATION;
-
-				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, remoteLocation)
+				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, _RELATIVE_ARCHIVES_LOCATION)
 					.ConfigureAwait(false);
 				Logger.LogInformation($"Archived workspace has been uploaded to fileshare ({uploadedFile})");
 
 				Logger.LogInformation($"Restoring workspace from: {uploadedFile}");
 
 				string remoteArchiveLocation =
-					Path.Combine(@"\\emttest",remoteLocation, Path.GetFileNameWithoutExtension(uploadedFile));
+					Path.Combine(@"\\emttest",_RELATIVE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
 
 				int jobId = await CreateRestoreJobAsync(remoteArchiveLocation).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {jobId} has been created");
