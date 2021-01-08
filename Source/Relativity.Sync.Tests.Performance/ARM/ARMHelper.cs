@@ -1,12 +1,9 @@
-﻿using Refit;
-using Relativity.Sync.Tests.Performance.Helpers;
+﻿using Relativity.Sync.Tests.Performance.Helpers;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -49,12 +46,6 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		public static ARMHelper CreateInstance()
 		{
-			HttpClient armClient = RestService.CreateHttpClient(
-				AppSettings.RelativityRestUrl.AbsoluteUri,
-				new RefitSettings());
-			armClient.DefaultRequestHeaders.Authorization =
-				AuthenticationHeaderValue.Parse($"Basic {AppSettings.BasicAccessToken}");
-
 			ARMHelper instance = new ARMHelper(
 				FileShareHelper.CreateInstance(),
 				AzureStorageHelper.CreateFromTestConfig());
@@ -74,14 +65,14 @@ namespace Relativity.Sync.Tests.Performance.ARM
 					InstallARM();
 				}
 
-				EnsureRemoteLocationExistsAsync().GetAwaiter().GetResult();
+				CreateRemoteLocationExistsAsync().GetAwaiter().GetResult();
 
 				_isInitialized = true;
 				Logger.LogInformation("ARM has been initialized.");
 			}
 		}
 
-		private Task EnsureRemoteLocationExistsAsync()
+		private Task CreateRemoteLocationExistsAsync()
 		{
 			Logger.LogInformation("Creating remote archive location directory");
 
@@ -284,11 +275,6 @@ namespace Relativity.Sync.Tests.Performance.ARM
 					};
 					return await restoreJobManager.CreateAsync(request).ConfigureAwait(false);
 				}
-			}
-			catch (ApiException ex)
-			{
-				Logger.LogError(ex, "API Exception occurred during ARM restore. Content: {content}", ex.Content);
-				throw;
 			}
 			catch (Exception ex)
 			{
