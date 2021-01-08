@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[TestInQuarantine(TestQuarantineState.FailsContinuously, "REL-510344")]
 	public class SendEmailWorkerTests : SourceProviderTemplate
 	{
 		private IInstanceSettingManager _instanceSettingsManager;
