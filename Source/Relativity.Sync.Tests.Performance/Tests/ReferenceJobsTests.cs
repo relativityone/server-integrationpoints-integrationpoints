@@ -42,9 +42,9 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				{
 					TestCaseName = "Nightly-1",
 					CopyMode = ImportNativeFileCopyMode.SetFileLinks,
-					ExpectedItemsTransferred = 30000,
+					ExpectedItemsTransferred = 50000,
 					MapExtractedText = true,
-					NumberOfMappedFields = 200
+					NumberOfMappedFields = 50
 				}
 			};
 
