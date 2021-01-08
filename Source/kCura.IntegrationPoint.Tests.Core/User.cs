@@ -1,14 +1,13 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Interfaces.Group;
+using Relativity.Services.Interfaces.Shared;
+using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Interfaces.UserInfo;
+using Relativity.Services.Interfaces.UserInfo.Models;
 using Relativity.Services.Security;
 using Relativity.Services.Security.Models;
-using Artifact = kCura.Relativity.Client.DTOs.Artifact;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -19,11 +18,67 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static UserModel CreateUser(string firstName, string lastName, string emailAddress, IList<int> groupIds = null)
 		{
-			Relativity.Client.DTOs.User userToCreate = GetUserToCreate(firstName, lastName, emailAddress, groupIds);
-			int createdUserArtifactId = CreateUser(userToCreate);
-			CreateLoginProfile(createdUserArtifactId, userToCreate.EmailAddress);
+			if (groupIds == null || groupIds.Count == 0)
+			{
+				groupIds = new List<int>()
+				{
+					_SYSTEM_ADMINISTRATOR_GROUP_ID
+				};
+			}
 
-			return new UserModel(createdUserArtifactId, userToCreate.EmailAddress, userToCreate.Password);
+			using (IUserInfoManager userManager = Helper.CreateProxy<IUserInfoManager>())
+			using (ILoginProfileManager loginProfileManager = Helper.CreateProxy<ILoginProfileManager>())
+			using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
+			{
+				const string password = "Test1234!";
+
+				UserResponse userResponse = userManager.CreateAsync(new UserRequest()
+				{
+					FirstName = firstName,
+					LastName = lastName,
+					EmailAddress = emailAddress,
+					ItemListPageLength = 200,
+					AllowSettingsChange = true,
+					RelativityAccess = true,
+					Client = new Securable<ObjectIdentifier>()
+					{
+						Value = new ObjectIdentifier()
+						{
+							ArtifactID = 1006066
+						}
+					},
+					Type = new ObjectIdentifier()
+					{
+						ArtifactID = 663
+					},
+					DocumentViewerProperties = new DocumentViewerProperties()
+					{
+					},
+				}).GetAwaiter().GetResult();
+
+				loginProfileManager.SaveLoginProfileAsync(new LoginProfile()
+				{
+					UserId = userResponse.ArtifactID,
+					Password = new PasswordMethod()
+					{
+						Email = emailAddress,
+						IsEnabled = true,
+						UserCanChangePassword = true,
+						MustResetPasswordOnNextLogin = false
+					}
+				}).GetAwaiter().GetResult();
+				loginProfileManager.SetPasswordAsync(userResponse.ArtifactID, password).GetAwaiter().GetResult();
+
+				foreach (int groupId in groupIds)
+				{
+					groupManager.AddMembersAsync(groupId, new ObjectIdentifier()
+					{
+						ArtifactID = userResponse.ArtifactID
+					}).GetAwaiter().GetResult();
+				}
+
+				return new UserModel(userResponse.ArtifactID, userResponse.EmailAddress, password);
+			}
 		}
 		
 		public static void DeleteUser(int userArtifactId)
@@ -33,114 +88,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return;
 			}
 
-			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+			using (IUserInfoManager userManager = Helper.CreateProxy<IUserInfoManager>())
 			{
-				rsapiClient.Repositories.User.Delete(userArtifactId);
+				userManager.DeleteAsync(userArtifactId).GetAwaiter().GetResult();
 			}
 		}
 
-		private static Relativity.Client.DTOs.User GetUserToCreate(string firstName, string lastName, string emailAddress, IList<int> groupIds)
-		{
-			IEnumerable<Relativity.Client.DTOs.Group> groups = GetGroupsForUser(groupIds);
-
-			return new Relativity.Client.DTOs.User
-			{
-				ArtifactTypeID = 2,
-				ArtifactTypeName = "User",
-				ParentArtifact = new Artifact(20),
-				Groups = new FieldValueList<Relativity.Client.DTOs.Group>(groups),
-				FirstName = firstName,
-				LastName = lastName,
-				EmailAddress = emailAddress,
-				Type = new Relativity.Client.DTOs.Choice(663)
-				{
-					ArtifactTypeID = 7,
-					ArtifactTypeName = "Choice"
-				},
-				ItemListPageLength = 25,
-				Client = new Client(1006066)
-				{
-					ArtifactTypeID = 5,
-					ArtifactTypeName = "Client"
-				},
-				AuthenticationData = string.Empty,
-				DefaultSelectedFileType = new Relativity.Client.DTOs.Choice(1014420)
-				{
-					ArtifactTypeID = 7,
-					ArtifactTypeName = "Choice"
-				},
-				BetaUser = false,
-				ChangeSettings = true,
-				TrustedIPs = string.Empty,
-				RelativityAccess = true,
-				AdvancedSearchPublicByDefault = false,
-				NativeViewerCacheAhead = true,
-				ChangePassword = true,
-				MaximumPasswordAge = 0,
-				ChangePasswordNextLogin = false,
-				SendPasswordTo = new Relativity.Client.DTOs.Choice(1015049)
-				{
-					ArtifactTypeID = 7,
-					ArtifactTypeName = "Choice"
-				},
-				PasswordAction = new Relativity.Client.DTOs.Choice(1015048)
-				{
-					ArtifactTypeID = 7,
-					ArtifactTypeName = "Choice"
-				},
-				Password = "Test1234!",
-				DocumentSkip = new Relativity.Client.DTOs.Choice(1015042)
-				{
-					ArtifactTypeID = 7,
-					ArtifactTypeName = "Choice"
-				},
-				DataFocus = 1,
-				KeyboardShortcuts = true,
-				EnforceViewerCompatibility = true,
-				SkipDefaultPreference = new Relativity.Client.DTOs.Choice(1015044)
-				{
-					ArtifactTypeID = 7,
-					ArtifactTypeName = "Choice"
-				}
-			};
-		}
-
-		private static IEnumerable<Relativity.Client.DTOs.Group> GetGroupsForUser(IList<int> groupIds)
-		{
-			groupIds = groupIds ?? new List<int> { _SYSTEM_ADMINISTRATOR_GROUP_ID };
-			return groupIds.Select(groupId => new Relativity.Client.DTOs.Group(groupId));
-		}
-
-		private static int CreateUser(Relativity.Client.DTOs.User userToCreate)
-		{
-			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
-			{
-				WriteResultSet<Relativity.Client.DTOs.User> result = rsapiClient.Repositories.User.Create(userToCreate);
-				return result.Results.Single().Artifact.ArtifactID;
-			}
-		}
-
-		private static void CreateLoginProfile(int userArtifactId, string userEmail)
-		{
-			using (var manager = Helper.CreateProxy<ILoginProfileManager>())
-			{
-				manager.SaveLoginProfileAsync(new LoginProfile
-				{
-					Password = new PasswordMethod
-					{
-						Email = userEmail,
-						InvalidLoginAttempts = 0,
-						IsEnabled = true,
-						MustResetPasswordOnNextLogin = false,
-						PasswordExpirationInDays = 0,
-						TwoFactorMode = TwoFactorMode.None,
-						UserCanChangePassword = true
-					},
-					UserId = userArtifactId
-				}).Wait();
-			}
-		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
