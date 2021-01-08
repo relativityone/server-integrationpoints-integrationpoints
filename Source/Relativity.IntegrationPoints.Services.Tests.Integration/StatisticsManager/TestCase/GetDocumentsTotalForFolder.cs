@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.StatisticsMana
 			long total;
 			using (IStatisticsManager statisticsManager = helper.CreateProxy<IStatisticsManager>())
 			{
-				total = statisticsManager.GetDocumentsTotalForFolderAsync(workspaceArtifactId, testCaseSettings.FolderId, testCaseSettings.ViewId, false).Result;
+				total = statisticsManager.GetDocumentsTotalForFolderAsync(workspaceArtifactId, testCaseSettings.FolderId, testCaseSettings.ViewId, false).GetAwaiter().GetResult();
 			}
 
 			var sqlText =
