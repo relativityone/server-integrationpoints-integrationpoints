@@ -1,14 +1,19 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity;
+using Relativity.Services.Client;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.Group;
+using Relativity.Services.Interfaces.Group.Models;
+using Relativity.Services.Interfaces.Shared;
+using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -18,80 +23,41 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int CreateGroup(string name)
 		{
-			// STEP 1: Create a DTO and set its properties.
-			kCura.Relativity.Client.DTOs.Group newGroup = new kCura.Relativity.Client.DTOs.Group
+			using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
+			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
 			{
-				Name = name
-			};
-
-			// STEP 2: Create a WriteResultSet. It provide details after the create operation completes.
-			WriteResultSet<kCura.Relativity.Client.DTOs.Group> resultSet;
-
-			// STEP 3: Create the new Group.
-			try
-			{
-				using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+				var clientRequest = new QueryRequest
 				{
-					resultSet = rsapiClient.Repositories.Group.Create(newGroup);
+					ObjectType = new ObjectTypeRef() {ArtifactTypeID = (int) ArtifactType.Client}
+				};
+				
+				QueryResultSlim result = objectManager.QuerySlimAsync(-1, clientRequest, 0, int.MaxValue)
+					.GetAwaiter().GetResult();
+				
+				if(result.ResultCount == 0)
+				{
+					throw new NotFoundException("There is no client in the instance");
 				}
+
+				int clientArtifactId = result.Objects.First().ArtifactID;
+
+				GroupRequest request = new GroupRequest
+				{
+					Name = name,
+					Client = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = clientArtifactId })
+				};
+
+				return groupManager.CreateAsync(request).GetAwaiter().GetResult()
+					.ArtifactID;
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($@"An error occurred while creating group {name}: {ex.Message}");
-				throw;
-			}
-
-			// Check for success.
-			if (!resultSet.Success)
-			{
-				Console.WriteLine($@"Creation of group {name} failed.{Environment.NewLine}{resultSet.Message}");
-				throw new Exception(resultSet.Message);
-			}
-
-			// Output the results.
-			Console.WriteLine($@"The group {name} created succeessfully.");
-			kCura.Relativity.Client.DTOs.Group createdGroup = resultSet.Results[0].Artifact;
-
-			Console.WriteLine("{0}The Artifact of the New Group is: {1}", Environment.NewLine, createdGroup.ArtifactID);
-
-			return createdGroup.ArtifactID;
 		}
 
-		public static bool DeleteGroup(int artifactId)
+		public static void DeleteGroup(int artifactId)
 		{
-			// STEP 1: Create a DTO populated with criteria for a DTO you want to delete.
-			kCura.Relativity.Client.DTOs.Group groupToDelete = new kCura.Relativity.Client.DTOs.Group(artifactId);
-
-			// STEP 2: Create a WriteResultSet. It provides details after the delete operation completes.
-			WriteResultSet<kCura.Relativity.Client.DTOs.Group> resultSet;
-
-			// STEP 3: Perform the delete operation.
-			try
+			using (IGroupManager groupManager = Helper.CreateProxy<IGroupManager>())
 			{
-				using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
-				{
-					resultSet = rsapiClient.Repositories.Group.Delete(groupToDelete);
-				}
+				groupManager.DeleteAsync(artifactId).GetAwaiter().GetResult();
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine("An error occurred: {0}", ex.Message);
-				return false;
-			}
-
-			// Check for success.
-			if (!resultSet.Success)
-			{
-				Console.WriteLine("The Delete operation failed.{0}{1}", Environment.NewLine, resultSet.Message);
-				return false;
-			}
-
-			// Output the results.
-			Console.WriteLine("Delete completed successfully.");
-			kCura.Relativity.Client.DTOs.Group deletedGroup = resultSet.Results.ElementAt(0).Artifact;
-			Console.WriteLine("The Artifact ID of the deleted Group is: {0}", deletedGroup.ArtifactID);
-
-			return true;
 		}
 
 		public static void AddGroupToWorkspace(int workspaceId, int groupId)
@@ -128,5 +94,3 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
