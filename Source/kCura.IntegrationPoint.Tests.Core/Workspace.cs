@@ -4,8 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Folder;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ResourcePool;
 using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
 
@@ -81,6 +85,35 @@ namespace kCura.IntegrationPoint.Tests.Core
 				};
 
 				return await workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
+			}
+		}
+
+
+		public static async Task<ResourcePool> GetWorkspaceResourcePoolAsync(int workspaceId)
+		{
+			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
+			using (IResourcePoolManager resourcePoolManager = Helper.CreateProxy<IResourcePoolManager>())
+			{
+
+				QueryRequest request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
+					Condition = $"'ArtifactID' == {workspaceId}",
+					Fields = new List<FieldRef>()
+					{
+						new FieldRef {Name = "Resource Pool"}
+					}
+				};
+
+				QueryResult workspaceResult = await objectManager.QueryAsync(-1, request, 0, 1).ConfigureAwait(false);
+
+				string resourcePoolName = workspaceResult.Objects.Single()
+					.FieldValues.Single().Value.ToString();
+
+				return await resourcePoolManager.ReadSingleAsync(new ResourcePoolRef
+				{
+					Name = resourcePoolName
+				}).ConfigureAwait(false);
 			}
 		}
 
