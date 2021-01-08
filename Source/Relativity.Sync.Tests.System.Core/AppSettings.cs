@@ -12,7 +12,6 @@ namespace Relativity.Sync.Tests.System.Core
 		private static Uri _relativityServicesUrl;
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
-
 		public static bool IsSettingsFileSet => TestContext.Parameters.Names.Any();
 
 		public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
@@ -65,7 +64,13 @@ namespace Relativity.Sync.Tests.System.Core
 		public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
 
 		public static bool UseLogger => !bool.TryParse(GetConfigValue("SuppressCertificateCheck"), out bool useLogger) || useLogger;
-
+		
+		public static int ArmRelativityTemplateMatterId => int.Parse(GetConfigValue("ArmRelativityTemplateMatterId"));
+		
+		public static int ArmCacheLocationId => int.Parse(GetConfigValue("ArmCacheLocationId"));
+		
+		public static int ArmFileRepositoryId => int.Parse(GetConfigValue("ArmFileRepositoryId"));
+		
 		private static Uri BuildHostNamedBasedUri(string path)
 		{
 			if (string.IsNullOrEmpty(RelativityHostName))

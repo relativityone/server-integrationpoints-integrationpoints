@@ -12,5 +12,8 @@
     <Parameter name="RelativeArchivesLocation" value="DefaultFileRepository\Archives" />
     <Parameter name="ResourcePoolName" value="Default" />
     <Parameter name="PerformanceResultsFilePath" value="S:\results.csv" />
+    <Parameter name="ArmRelativityTemplateMatterId" value="1000002" />
+    <Parameter name="ArmCacheLocationId" value="1015534" />
+    <Parameter name="ArmFileRepositoryId" value="1014887" />     
   </TestRunParameters>
 </RunSettings>
