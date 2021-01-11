@@ -54,19 +54,19 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 			return _userContext.GetWorkspaceUserID();
 		}
 
-		public IRSAPIService GetRsapiService()
+		public IRelativityObjectManagerService GetRelativityObjectManagerService()
 		{
 			if (WorkspaceID < _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID)
 			{
 				_logger.LogWarning(
 					"Cannot create {service} because workspaceId is invalid: {workspaceId}", 
-					nameof(IRSAPIService), 
+					nameof(IRelativityObjectManagerService), 
 					WorkspaceID
 				);
 				return null;
 			}
 
-			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
+			return ServiceContextFactory.CreateRelativityObjectManagerService(_helper, WorkspaceID);
 		}
 
 		public IDBContext GetDBContext(int workspaceId = _ADMIN_CASE_WORKSPACE_ARTIFACT_ID)

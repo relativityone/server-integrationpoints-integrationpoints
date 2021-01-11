@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(_serializer);
 			_dataTransferLocationService = Container.Resolve<IDataTransferLocationService>();
 			_ehHelper = new EHHelper(Helper, WorkspaceArtifactId);
-			_relativityObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+			_relativityObjectManager = CaseContext.RelativityObjectManagerService.RelativityObjectManager;
 			_integrationPointRepository = new IntegrationPointRepository(
 				_relativityObjectManager, 
 				Substitute.For<IIntegrationPointSerializer>(),

@@ -41,12 +41,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 					Identifier = guid.ToString(),
 					ApplicationIdentifier = Constants.IntegrationPoints.APPLICATION_GUID_STRING
 				};
-				_caseContext.RsapiService.RelativityObjectManager.Create(integrationPointType);
+				_caseContext.RelativityObjectManagerService.RelativityObjectManager.Create(integrationPointType);
 			}
 			else
 			{
 				integrationPointType.Name = name;
-				_caseContext.RsapiService.RelativityObjectManager.Update(integrationPointType);
+				_caseContext.RelativityObjectManagerService.RelativityObjectManager.Update(integrationPointType);
 			}
 		}
 

@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			else
 			{
 				IntegrationPointProfile integrationPointProfile =
-					_context.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointId);
+					_context.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointId);
 
 				return new Tuple<int, int>(integrationPointProfile.SourceProvider.Value,
 					integrationPointProfile.DestinationProvider.Value);

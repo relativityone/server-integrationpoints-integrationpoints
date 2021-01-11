@@ -7,13 +7,14 @@ using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class RSAPIService : IRSAPIService
+	public class RelativityObjectManagerService : IRelativityObjectManagerService
 	{
 		protected ExecutionIdentity ExecutionIdentity;
-		private readonly IGenericLibraryFactory _genericLibraryFactory;
+
 		private readonly IDictionary<Type, object> _genericLibraries;
-		private readonly int _workspaceArtifactId;
+		private readonly IGenericLibraryFactory _genericLibraryFactory;
 		private readonly IHelper _helper;
+		private readonly int _workspaceArtifactId;
 
 		public virtual IGenericLibrary<JobHistoryError> JobHistoryErrorLibrary => GetGenericLibrary<JobHistoryError>(ExecutionIdentity);
 		public virtual IRelativityObjectManager RelativityObjectManager => GetRelativityObjectManager();
@@ -27,14 +28,14 @@ namespace kCura.IntegrationPoints.Data
 			return (IGenericLibrary<T>)_genericLibraries[typeof(T)];
 		}
 
-		public RSAPIService(IHelper helper, int workspaceArtifactId)
+		public RelativityObjectManagerService(IHelper helper, int workspaceArtifactId)
 			: this(new GenericLibraryFactory(helper, workspaceArtifactId))
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		internal RSAPIService(IGenericLibraryFactory genericLibraryFactory)
+		internal RelativityObjectManagerService(IGenericLibraryFactory genericLibraryFactory)
 		{
 			_genericLibraryFactory = genericLibraryFactory;
 			_genericLibraries = new ConcurrentDictionary<Type, object>();

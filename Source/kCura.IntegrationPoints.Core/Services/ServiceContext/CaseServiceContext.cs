@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 	{
 		private int? _eddsUserId;
 		private int? _workspaceUserId;
-		private IRSAPIService _rsapiService;
+		private IRelativityObjectManagerService _relativityObjectManagerService;
 		private IDBContext _sqlContext;
 		private readonly IServiceContextHelper _serviceContextHelper;
 
@@ -47,17 +47,17 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		}
 
 		[DoNotWire]
-		public IRSAPIService RsapiService
+		public IRelativityObjectManagerService RelativityObjectManagerService
 		{
 			get
 			{
-				if (_rsapiService == null)
+				if (_relativityObjectManagerService == null)
 				{
-					_rsapiService = _serviceContextHelper.GetRsapiService();
+					_relativityObjectManagerService = _serviceContextHelper.GetRelativityObjectManagerService();
 				}
-				return _rsapiService;
+				return _relativityObjectManagerService;
 			}
-			set { _rsapiService = value; }
+			set { _relativityObjectManagerService = value; }
 		}
 
 		[DoNotWire]

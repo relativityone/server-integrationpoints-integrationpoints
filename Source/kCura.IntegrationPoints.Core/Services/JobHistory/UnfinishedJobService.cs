@@ -10,11 +10,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
 	public class UnfinishedJobService : IUnfinishedJobService
 	{
-		private readonly IRSAPIServiceFactory _rsapiServiceFactory;
+		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-		public UnfinishedJobService(IRSAPIServiceFactory rsapiServiceFactory)
+		public UnfinishedJobService(IRelativityObjectManagerFactory relativityObjectManagerFactory)
 		{
-			_rsapiServiceFactory = rsapiServiceFactory;
+			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public IList<Data.JobHistory> GetUnfinishedJobs(int workspaceArtifactId)
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				Condition = $"'{JobHistoryFields.JobStatus}' IN CHOICE [{string.Join(",", unfinishedChoicesNames)}]"
 			};
 
-			return _rsapiServiceFactory.Create(workspaceArtifactId).RelativityObjectManager.Query<Data.JobHistory>(request);
+			return _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId).Query<Data.JobHistory>(request);
 		}
 	}
 }

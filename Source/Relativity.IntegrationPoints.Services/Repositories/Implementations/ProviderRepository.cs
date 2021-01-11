@@ -11,12 +11,12 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 	public class ProviderRepository : IProviderRepository
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IRSAPIService _rsapiService;
+		private readonly IRelativityObjectManagerService _relativityObjectManagerService;
 
-		public ProviderRepository(IRepositoryFactory repositoryFactory, IRSAPIService rsapiService)
+		public ProviderRepository(IRepositoryFactory repositoryFactory, IRelativityObjectManagerService relativityObjectManagerService)
 		{
 			_repositoryFactory = repositoryFactory;
-			_rsapiService = rsapiService;
+			_relativityObjectManagerService = relativityObjectManagerService;
 		}
 
 		public int GetSourceProviderArtifactId(int workspaceArtifactId, string sourceProviderGuidIdentifier)
@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
 		public IList<ProviderModel> GetSourceProviders(int workspaceArtifactId)
 		{
-			var sourceProviders = _rsapiService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest()
+			var sourceProviders = _relativityObjectManagerService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest()
 			{
 				Fields = new List<FieldRef>() {new FieldRef() { Guid = SourceProviderFieldGuids.NameGuid },
 					new FieldRef() { Guid = SourceProviderFieldGuids.IdentifierGuid }
@@ -38,7 +38,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
 		public IList<ProviderModel> GetDesinationProviders(int workspaceArtifactId)
 		{
-			var destinationProviders = _rsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()
+			var destinationProviders = _relativityObjectManagerService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()
 			{
 				Fields = new List<FieldRef>() {
 					new FieldRef() { Guid = DestinationProviderFieldGuids.NameGuid },

@@ -23,14 +23,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		public IList<IntegrationPointType> GetAllIntegrationPointTypes()
 		{
 			QueryRequest query = GetQueryToRetrieveAllIntegrationPointTypes();
-			return _context.RsapiService.RelativityObjectManager.Query<IntegrationPointType>(query);
+			return _context.RelativityObjectManagerService.RelativityObjectManager.Query<IntegrationPointType>(query);
 		}
 
 		public IntegrationPointType GetIntegrationPointType(Guid guid)
 		{
 			QueryRequest query = GetQueryToRetrieveAllIntegrationPointTypes();
 			query.Condition = $"'{IntegrationPointTypeFields.Identifier}' == '{guid}'";
-			List<IntegrationPointType> integrationPointTypes = _context.RsapiService.RelativityObjectManager.Query<IntegrationPointType>(query);
+			List<IntegrationPointType> integrationPointTypes = _context.RelativityObjectManagerService.RelativityObjectManager.Query<IntegrationPointType>(query);
 
 			if (integrationPointTypes.Count > 1)
 			{

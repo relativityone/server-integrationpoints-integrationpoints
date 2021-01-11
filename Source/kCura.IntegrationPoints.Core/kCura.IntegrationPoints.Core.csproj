@@ -434,7 +434,6 @@
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForKeplerService.cs" />
     <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
-    <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
     <Compile Include="Services\Synchronizer\GeneralWithEntityRdoSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />

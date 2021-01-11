@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				logger
 			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
-				_caseServiceContext.RsapiService.RelativityObjectManager,
+				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
 				_serializer,
 				secretsRepository,
 				logger
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_providerTypeService,
 				_messageService,
 				integrationPointRepository,
-				_caseServiceContext.RsapiService.RelativityObjectManager);
+				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
 		}
 
 		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IJobHistoryService CreateJobHistoryService(IAPILog logger)
 		{
 			IJobHistoryService jobHistoryService = new JobHistoryService(
-				_caseServiceContext.RsapiService.RelativityObjectManager,
+				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
 				_managerFactory.CreateFederatedInstanceManager(),
 				_managerFactory.CreateWorkspaceManager(),
 				logger,

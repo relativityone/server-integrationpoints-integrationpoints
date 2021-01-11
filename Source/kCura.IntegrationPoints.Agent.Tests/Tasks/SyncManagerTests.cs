@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			   batchStatuses, _agentValidator);
 
 			_data = "data";
-			_caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
+			_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			dataProviderFactory.GetDataProvider(
 					Arg.Is<Guid>(appGuid => appGuid == new Guid(_sourceProvider.ApplicationIdentifier)),
 					Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier))).Returns(dataSourceProvider);

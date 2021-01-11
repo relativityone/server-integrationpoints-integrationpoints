@@ -9,14 +9,14 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 {
 	public class RelativityIntegrationPointsRepositoryAdminAccess : IRelativityIntegrationPointsRepository
 	{
-		private readonly IRSAPIService _rsapiService;
+		private readonly IRelativityObjectManagerService _relativityObjectManagerService;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		public RelativityIntegrationPointsRepositoryAdminAccess(
-			IRSAPIService rsapiService,
+			IRelativityObjectManagerService relativityObjectManagerService,
 			IIntegrationPointRepository integrationPointRepository)
 		{
-			_rsapiService = rsapiService;
+			_relativityObjectManagerService = relativityObjectManagerService;
 			_integrationPointRepository = integrationPointRepository;
 		}
 
@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 			{
 				Condition = $"'{SourceProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID}'"
 			};
-			return GetArtifactIds(_rsapiService.RelativityObjectManager.Query<SourceProvider>(request));
+			return GetArtifactIds(_relativityObjectManagerService.RelativityObjectManager.Query<SourceProvider>(request));
 		}
 
 		private IList<int> RetrieveRelativityDestinationProviderIds()
@@ -43,7 +43,7 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 			{
 				Condition = $"'{DestinationProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"
 			};
-			return GetArtifactIds(_rsapiService.RelativityObjectManager.Query<DestinationProvider>(request));
+			return GetArtifactIds(_relativityObjectManagerService.RelativityObjectManager.Query<DestinationProvider>(request));
 		}
 
 		private List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(IList<int> sourceProvider, IList<int> destinationProvider)

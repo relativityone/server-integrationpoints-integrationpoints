@@ -20,11 +20,11 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 	public class EntityExportToLoadFile : UiTest
 	{
 		private IntegrationPointsAction _integrationPointsAction;
-		private IRSAPIService _rsapiService;
+		private IRelativityObjectManagerService _relativityObjectManagerService;
 
 		private const string _VIEW_NAME = "RIP_TC_ELF_CUST_UI_TEST";
 
-		private IRelativityObjectManager ObjectManager => _rsapiService.RelativityObjectManager;
+		private IRelativityObjectManager ObjectManager => _relativityObjectManagerService.RelativityObjectManager;
 
 		public EntityExportToLoadFile() : base(shouldImportDocuments: true) 
 		{ }
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.ExportToLoadFile
 			await SourceContext.CreateEntityViewAsync(_VIEW_NAME).ConfigureAwait(false);
 
 			Install(SourceContext.WorkspaceId.Value);
-			_rsapiService = Container.Resolve<IRSAPIService>();
+			_relativityObjectManagerService = Container.Resolve<IRelativityObjectManagerService>();
 
 			SetupEntities();
 		}

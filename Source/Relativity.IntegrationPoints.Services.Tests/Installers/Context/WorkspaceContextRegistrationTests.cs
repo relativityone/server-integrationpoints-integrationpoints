@@ -31,7 +31,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
 			RegisterInstallerDependencies(_container);
 
 			// assert
-			_container.Should().ResolveWithoutThrowing<IRSAPIService>();
+			_container.Should().ResolveWithoutThrowing<IRelativityObjectManagerService>();
 		}
 
 		[Test]
@@ -41,7 +41,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
 			RegisterInstallerDependencies(_container);
 
 			// assert
-			_container.Should().ResolveImplementationWithoutThrowing<IRSAPIService, RSAPIService>();
+			_container.Should().ResolveImplementationWithoutThrowing<IRelativityObjectManagerService, RelativityObjectManagerService>();
 		}
 
 		[Test]

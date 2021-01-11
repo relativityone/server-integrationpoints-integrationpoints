@@ -9,6 +9,6 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		int GetEddsUserID();
 		int GetWorkspaceUserID();
 		IDBContext GetDBContext(int workspaceID = -1);
-		IRSAPIService GetRsapiService();
+		IRelativityObjectManagerService GetRelativityObjectManagerService();
 	}
 }

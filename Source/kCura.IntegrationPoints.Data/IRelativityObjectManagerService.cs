@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data
 {
-	public interface IRSAPIService
+	public interface IRelativityObjectManagerService
 	{
 		// all references to IGenericLibrary except mass operations should be removed
 		IGenericLibrary<JobHistoryError> JobHistoryErrorLibrary { get; }

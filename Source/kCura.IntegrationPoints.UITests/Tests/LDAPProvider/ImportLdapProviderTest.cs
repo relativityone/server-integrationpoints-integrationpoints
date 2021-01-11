@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 	[NotWorkingOnTrident] // no access to LDAP from R1 (REL-250027)
 	public class ImportLdapProviderTest : UiTest
 	{
-		private IRSAPIService _service;
+		private IRelativityObjectManagerService _service;
 		private IntegrationPointsImportLdapAction _integrationPointsAction;
 
 		public ImportLdapProviderTest() : base(shouldImportDocuments: false)
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.LDAPProvider
 			await SourceContext.AddEntityObjectToWorkspaceAsync().ConfigureAwait(false);
 
 			Install(SourceContext.WorkspaceId.Value);
-			_service = Container.Resolve<IRSAPIService>();
+			_service = Container.Resolve<IRelativityObjectManagerService>();
 		}
 
 		[SetUp]
