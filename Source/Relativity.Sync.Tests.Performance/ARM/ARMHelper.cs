@@ -234,16 +234,16 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
 			try
 			{
-				using (var fileStream = new FileStream(archivedWorkspaceLocalPath, FileMode.Open))
+				using (ZipArchive archive = ZipFile.OpenRead(archivedWorkspaceLocalPath))
 				{
-					using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
+					ZipArchiveEntry archiveInformationEntry = archive.Entries.First(e => e.Name == "ArchiveInformation.xml");
+
+					string archiveInformationFile = Path.GetTempFileName();
+					archiveInformationEntry.ExtractToFile(archiveInformationFile, true);
+					using (var stream = File.OpenRead(archiveInformationFile))
 					{
-						ZipArchiveEntry applicationXml = archive.Entries.First(e => e.Name == "ArchiveInformation.xml");
-						using (var stream = applicationXml.Open())
-						{
-							var xmlDoc = XDocument.Load(stream);
-							return xmlDoc.XPathSelectElement(@"//ArchiveInformation/CaseInformation/Name").Value;
-						}
+						var xmlDoc = XDocument.Load(stream);
+						return xmlDoc.XPathSelectElement(@"//ArchiveInformation/CaseInformation/Name").Value;
 					}
 				}
 			}
