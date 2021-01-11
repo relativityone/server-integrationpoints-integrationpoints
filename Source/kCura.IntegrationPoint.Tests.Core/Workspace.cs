@@ -88,7 +88,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-
 		public static async Task<ResourcePool> GetWorkspaceResourcePoolAsync(int workspaceId)
 		{
 			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
@@ -121,15 +120,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
 			{
-				WorkspaceRef[] activeWorkspaces =
-					(await workspaceManager.RetrieveAllActive().ConfigureAwait(false)).ToArray();
+				IEnumerable<WorkspaceRef> activeWorkspaces = 
+					await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
 
-				if (activeWorkspaces.Length == 0)
-				{
-					return null;
-				}
-
-				return activeWorkspaces.First(workspaceFunc);
+				return activeWorkspaces.FirstOrDefault(workspaceFunc);
 			}
 		}
 	}
