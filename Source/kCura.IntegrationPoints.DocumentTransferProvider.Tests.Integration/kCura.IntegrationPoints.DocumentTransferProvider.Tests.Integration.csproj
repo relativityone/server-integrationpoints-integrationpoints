@@ -209,9 +209,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="System.Data">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
           <Private>True</Private>
@@ -223,6 +220,9 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Data">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="System.Runtime.Serialization">
           <Paket>True</Paket>
         </Reference>
@@ -329,20 +329,6 @@
       <ItemGroup>
         <Reference Include="Relativity.Toggles">
           <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="mscorlib">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Data.SqlClient">
-          <HintPath>..\..\packages\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

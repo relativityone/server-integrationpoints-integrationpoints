@@ -1,15 +1,15 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Services.Field;
 using Relativity.Services.ItemListView;
 using Relativity.Services.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -19,20 +19,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static int QueryView(int workspaceID, string viewName)
 		{
-			using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
+			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
 			{
-				rsapiClient.APIOptions.WorkspaceID = workspaceID;
-				var viewQuery = new Query<Relativity.Client.DTOs.View>
+				QueryResult queryResult = objectManager.QueryAsync(workspaceID, new QueryRequest()
 				{
-					Condition = new TextCondition(ViewFieldNames.Name, TextConditionEnum.EqualTo, viewName)
-				};
-				return rsapiClient.Repositories.View.Query(viewQuery).Results[0].Artifact.ArtifactID;
+					ObjectType = new ObjectTypeRef()
+					{
+						ArtifactTypeID = (int)ArtifactType.View
+					},
+					Condition = $"'Name' == '{viewName}'"
+				}, 0, int.MaxValue).GetAwaiter().GetResult();
+
+				if (!queryResult.Objects.Any())
+				{
+					throw new NotFoundException($"Cannot find view: '{viewName}'");
+				}
+
+				return queryResult.Objects.First().ArtifactID;
 			}
 		}
 
 		public static async Task<int> CreateViewAsync(int workspaceID, string viewName, int objectTypeID, IEnumerable<Guid> fieldsGuids)
 		{
-			List<FieldRef> viewFields = await GetViewFieldsReferences(workspaceID, objectTypeID, fieldsGuids).ConfigureAwait(false);
+			List<FieldRef> viewFields = await GetViewFieldsReferencesAsync(workspaceID, objectTypeID, fieldsGuids).ConfigureAwait(false);
 
 			var viewToCreate = new global::Relativity.Services.View.View
 			{
@@ -49,7 +58,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private static async Task<List<FieldRef>> GetViewFieldsReferences(int workspaceID, int objectTypeID, IEnumerable<Guid> fieldsGuids)
+		private static async Task<List<FieldRef>> GetViewFieldsReferencesAsync(int workspaceID, int objectTypeID, IEnumerable<Guid> fieldsGuids)
 		{
 			using (IItemListViewManager viewManager = Helper.CreateProxy<IItemListViewManager>())
 			{
@@ -65,5 +74,3 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
