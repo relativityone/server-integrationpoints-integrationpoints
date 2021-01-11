@@ -23,6 +23,7 @@ using Relativity.Services.Interfaces.Tab;
 using Relativity.Services.InternalMetricsCollection;
 using Relativity.Services.View;
 using Relativity.Services.ChoiceQuery;
+using Relativity.Services.Interfaces.UserInfo;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -64,16 +65,23 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			RegisterProxyInServiceManagerMock<IWorkspaceManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<ISearchContainerManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IOAuth2ClientManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IFolderManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<global:: Relativity.Productions.Services.IProductionManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IGroupManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IGroupManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<IUserInfoManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<IUserInfoManager>(ExecutionIdentity.CurrentUser);
+			RegisterProxyInServiceManagerMock<ILoginProfileManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<ILoginProfileManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IFileManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IFileshareManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IInternalMetricsCollectionManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.System);
+			RegisterProxyInServiceManagerMock<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<ITabManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IViewManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IChoiceQueryManager>(ExecutionIdentity.System);

@@ -5,10 +5,10 @@ using kCura.IntegrationPoints.Core.RelativitySourceRdo;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Interfaces.Field.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 {
@@ -48,21 +48,21 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 		[Test]
 		public void ItShouldInitializeDestinationWorkspace()
 		{
-			var expectedSourceJobDescriptorId = 888672;
+			const int expectedSourceJobDescriptorId = 888672;
 
 			_relativitySourceRdoObjectType.CreateObjectType(_DESTINATION_WORKSPACE_ID, SourceJobDTO.ObjectTypeGuid, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 					_SOURCE_WORKSPACE_ARTIFACT_TYPE_ID)
 				.Returns(expectedSourceJobDescriptorId);
 
 			// ACT
-			var actualSourceJobDescriptorId = _instance.InitializeWorkspaceWithSourceJobRdo(_DESTINATION_WORKSPACE_ID, _SOURCE_WORKSPACE_ARTIFACT_TYPE_ID);
+			int actualSourceJobDescriptorId = _instance.InitializeWorkspaceWithSourceJobRdo(_DESTINATION_WORKSPACE_ID, _SOURCE_WORKSPACE_ARTIFACT_TYPE_ID);
 
 			// ASSERT
 			Assert.That(actualSourceJobDescriptorId, Is.EqualTo(expectedSourceJobDescriptorId));
 
 			_relativitySourceRdoObjectType.Received(1)
 				.CreateObjectType(_DESTINATION_WORKSPACE_ID, SourceJobDTO.ObjectTypeGuid, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, _SOURCE_WORKSPACE_ARTIFACT_TYPE_ID);
-			_relativitySourceRdoFields.Received(1).CreateFields(_DESTINATION_WORKSPACE_ID, Arg.Any<IDictionary<Guid, Field>>());
+			_relativitySourceRdoFields.Received(1).CreateFields(_DESTINATION_WORKSPACE_ID, Arg.Any<IDictionary<Guid, BaseFieldRequest>>());
 			_relativitySourceRdoDocumentField.Received(1)
 				.CreateDocumentField(_DESTINATION_WORKSPACE_ID, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 					expectedSourceJobDescriptorId);

@@ -1,30 +1,24 @@
-﻿#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-using kCura.IntegrationPoints.Data.Repositories.Implementations.DTO;
-using kCura.IntegrationPoints.Data.RSAPIClient;
+﻿using kCura.IntegrationPoints.Data.Repositories.Implementations.DTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.API.Foundation;
 using Relativity.Services.FieldManager;
 using System;
-using System.Linq;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.Relativity.Client;
-using Field = kCura.Relativity.Client.DTOs.Field;
-using FieldType = kCura.Relativity.Client.FieldType;
+using Relativity;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class FieldRepository : IFieldRepository
 	{
-		private readonly IAPILog _logger;
 		private readonly IServicesMgr _servicesMgr;
 		private readonly int _workspaceArtifactId;
-		private readonly IRsapiClientFactory _rsapiClientFactory;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 		private readonly IFoundationRepositoryFactory _foundationRepositoryFactory;
+		private readonly IAPILog _logger;
 
 		public FieldRepository(
 			IServicesMgr servicesMgr, 
@@ -36,9 +30,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_instrumentationProvider = instrumentationProvider;
 			_servicesMgr = servicesMgr;
 			_workspaceArtifactId = workspaceArtifactId;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FieldRepository>();
-			_rsapiClientFactory = new RsapiClientFactory();
 			_foundationRepositoryFactory = foundationRepositoryFactory;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<FieldRepository>();
 		}
 
 		public void UpdateFilterType(int artifactViewFieldId, string filterType)
@@ -61,64 +54,63 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateMultiObjectFieldOnDocument(string name, int associatedObjectTypeDescriptorId)
 		{
-			var documentObjectType = new ObjectType { DescriptorArtifactTypeID = 10 };
-			var associatedObjectType = new ObjectType { DescriptorArtifactTypeID = associatedObjectTypeDescriptorId };
 
-			var field = new Field
+			try
 			{
-				Name = name,
-				FieldTypeID = FieldType.MultipleObject,
-				ObjectType = documentObjectType,
-				AssociativeObjectType = associatedObjectType,
-				AllowGroupBy = false,
-				AllowPivot = false,
-				AvailableInFieldTree = false,
-				IsRequired = false,
-				Width = "100"
-			};
+				using (var fieldManager = _servicesMgr.CreateProxy<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.CurrentUser))
+				{
+					int artifactId = fieldManager.CreateMultipleObjectFieldAsync(_workspaceArtifactId, new MultipleObjectFieldRequest()
+					{
+						ObjectType = new ObjectTypeIdentifier()
+						{
+							ArtifactTypeID = (int) ArtifactType.Document
+						},
+						AssociativeObjectType = new ObjectTypeIdentifier()
+						{
+							ArtifactTypeID = associatedObjectTypeDescriptorId
+						},
+						Name = name,
+						AllowGroupBy = false,
+						AllowPivot = false,
+						AvailableInFieldTree = false,
+						IsRequired = false,
+						Width = 100
+					}).GetAwaiter().GetResult();
 
-			using (IRSAPIClient rsapiClient = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
+					return artifactId;
+				}
+			}
+			catch (Exception ex)
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				try
-				{
-					return rsapiClient.Repositories.Field.CreateSingle(field);
-				}
-				catch (Exception e)
-				{
-					_logger.LogError(e, "Failed to create MultiObject field on Document for object {name}.", name);
-					throw;
-				}
+				_logger.LogError(ex, "Failed to create MultiObject field on Document for object {name}.", name);
+				throw;
 			}
 		}
 
-		public int CreateObjectTypeField(Field field)
+		public int CreateObjectTypeField(BaseFieldRequest field)
 		{
-			using (IRSAPIClient proxy = _rsapiClientFactory.CreateUserClient(_servicesMgr, _logger))
+			try
 			{
-				proxy.APIOptions.WorkspaceID = _workspaceArtifactId;
-
-				var createResult = proxy.Repositories.Field.Create(field);
-
-				if (!createResult.Success)
+				using (var fieldManager = _servicesMgr.CreateProxy<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.CurrentUser))
 				{
-					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
-					throw new Exception($"Failed to create fields: {createResult.Message}.");
+					if (field is WholeNumberFieldRequest wholeNumberFieldRequest)
+					{
+						return fieldManager.CreateWholeNumberFieldAsync(_workspaceArtifactId, wholeNumberFieldRequest).GetAwaiter().GetResult();
+					}
+					else if (field is FixedLengthFieldRequest fixedLengthFieldRequest)
+					{
+						return fieldManager.CreateFixedLengthFieldAsync(_workspaceArtifactId, fixedLengthFieldRequest).GetAwaiter().GetResult();
+					}
+					else
+					{
+						throw new IntegrationPointsException($"Cannot create field of unsupported type: {field.GetType()}");
+					}
 				}
-
-				int newFieldId = createResult.Results.First().Artifact.ArtifactID;
-
-				var readResult = proxy.Repositories.Field.Read(newFieldId);
-
-				if (!readResult.Success)
-				{
-					_logger.LogError("Failed to create fields: {message}.", createResult.Message);
-					proxy.Repositories.Field.Delete(newFieldId);
-					throw new Exception($"Failed to create fields: {readResult.Message}.");
-				}
-
-				return newFieldId;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError("Failed to create fields: {message}.", ex.Message);
+				throw new Exception($"Failed to create fields: {ex.Message}.", ex);
 			}
 		}
 
@@ -166,5 +158,3 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
