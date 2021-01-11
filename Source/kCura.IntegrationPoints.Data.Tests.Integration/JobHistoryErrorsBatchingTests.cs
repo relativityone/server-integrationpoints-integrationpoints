@@ -22,6 +22,7 @@ using kCura.ScheduleQueue.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Testing.Identification;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
@@ -47,6 +48,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private const string _ITEM_START_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart";
 		private const string _ITEM_START_EXCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		private const string _ITEM_COMPLETE_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
+
+		private readonly ChoiceRef _jobHistoryErrorNewStatus = new ChoiceRef() { Guid = ErrorStatusChoices.JobHistoryErrorNewGuid };
 
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
@@ -237,7 +240,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactID, tempTableSuffix);
 
 			//Create job level error
-			List<int> expectedJobHistoryErrorArtifactIds = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
+			List<int> expectedJobHistoryErrorArtifactIds = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, _jobHistoryErrorNewStatus);
 
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
@@ -314,8 +317,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactID, tempTableSuffix);
 
 			//Create item level error
-			ICollection<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
-			ICollection<int> expectedJobHistoryErrorsForRetry = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
+			ICollection<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, _jobHistoryErrorNewStatus, importTable);
+			ICollection<int> expectedJobHistoryErrorsForRetry = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, _jobHistoryErrorNewStatus);
 
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
@@ -389,7 +392,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
 			//Create item level error
-			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
+			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, _jobHistoryErrorNewStatus, importTable);
 
 			//Act
 			SavedSearch.ModifySavedSearchByAddingPrefix(RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, docPrefix, true);
@@ -443,7 +446,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			_jobHistoryErrorManager = new JobHistoryErrorManager(RepositoryFactory, helper, SourceWorkspaceArtifactID, tempTableSuffix);
 
 			//Create item level error
-			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
+			
+			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, _jobHistoryErrorNewStatus, importTable);
 
 			IDictionary<int, string> expectedNonExpiredJobHistoryArtifacts = _jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(jobHistory.ArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			List<int> expectedJobHistoryErrorsForRetry = GetExpectedInprogressAndRetriedErrors(expectedNonExpiredJobHistoryArtifacts);
@@ -518,52 +522,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			_jobHistoryErrorRepository = RepositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactID);
 		}
 
-		private List<int> CreateItemLevelJobHistoryErrors(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus, DataTable importedDocuments)
+		private List<int> CreateItemLevelJobHistoryErrors(int jobHistoryArtifactId, ChoiceRef errorStatus, DataTable importedDocuments)
 		{
-			var jobHistoryErrors = new List<JobHistoryError>();
-
-			foreach (DataRow dataRow in importedDocuments.Rows)
+			List<string> sourceUniqueIds = new List<string>();
+			foreach (DataRow importedDocument in importedDocuments.Rows)
 			{
-				var jobHistoryError = new JobHistoryError
-				{
-					ParentArtifactId = jobHistoryArtifactId,
-					JobHistory = jobHistoryArtifactId,
-					Name = Guid.NewGuid().ToString(),
-					SourceUniqueID = Convert.ToString((object)dataRow["Control Number"]),
-					ErrorType = ErrorTypeChoices.JobHistoryErrorItem,
-					ErrorStatus = errorStatus,
-					Error = "Inserted Error for testing.",
-					StackTrace = "Error created from JobHistoryErrorsBatchingTests",
-					TimestampUTC = DateTime.Now,
-				};
-
-				jobHistoryErrors.Add(jobHistoryError);
+				sourceUniqueIds.Add(importedDocument["Control Number"].ToString());
 			}
 
-			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
-			return jobHistoryErrorArtifactIds;
+			ChoiceRef errorType = new ChoiceRef(){Guid = ErrorTypeChoices.JobHistoryErrorItemGuid };
+			return CreateJobHistoryErrors(jobHistoryArtifactId, errorStatus, errorType, sourceUniqueIds);
 		}
 
-		private List<int> CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus)
+		private List<int> CreateJobLevelJobHistoryError(int jobHistoryArtifactId, ChoiceRef errorStatus)
 		{
-			var jobHistoryErrors = new List<JobHistoryError>();
-			var jobHistoryError = new JobHistoryError
-			{
-				ParentArtifactId = jobHistoryArtifactId,
-				JobHistory = jobHistoryArtifactId,
-				Name = Guid.NewGuid().ToString(),
-				SourceUniqueID = null,
-				ErrorType = ErrorTypeChoices.JobHistoryErrorJob,
-				ErrorStatus = errorStatus,
-				Error = "Inserted Error for testing.",
-				StackTrace = "Error created from JobHistoryErrorsBatchingTests",
-				TimestampUTC = DateTime.Now,
-			};
-
-			jobHistoryErrors.Add(jobHistoryError);
-
-			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
-			return jobHistoryErrorArtifactIds;
+			ChoiceRef errorType = new ChoiceRef() { Guid = ErrorTypeChoices.JobHistoryErrorJobGuid };
+			return CreateJobHistoryErrors(jobHistoryArtifactId, errorStatus, errorType, new string[]{null});
 		}
 
 		private DataTable GetTempTable(string tempTableName)
@@ -660,7 +634,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
 			{
-				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactID, savedSearchQuery).Result;
+				KeywordSearchQueryResultSet resultSet = proxy.QueryAsync(SourceWorkspaceArtifactID, savedSearchQuery).GetAwaiter().GetResult();
 				if (resultSet.TotalCount != 0)
 				{
 					throw new Exception($"Expected temp Saved Search: {tempSavedSearchName} to be deleted after the retry job completed.");

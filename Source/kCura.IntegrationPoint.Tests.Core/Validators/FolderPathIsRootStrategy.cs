@@ -1,7 +1,5 @@
 ﻿namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
-	using Relativity.Client.DTOs;
-
 	public class FolderPathIsRootStrategy : FolderPathStrategyWithCache
 	{
 		private readonly string _folderName;

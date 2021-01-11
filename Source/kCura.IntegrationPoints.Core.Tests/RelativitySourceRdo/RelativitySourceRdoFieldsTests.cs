@@ -6,11 +6,10 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
-using Field = kCura.Relativity.Client.DTOs.Field;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 {
@@ -42,22 +41,21 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 		[Test]
 		public void ItShouldCreateNonExistingFields()
 		{
-			var fieldGuid = Guid.NewGuid();
-			var fieldName = "field_name_316";
-			var descriptorArtifactTypeID = 100138;
+			Guid fieldGuid = Guid.NewGuid();
+			string fieldName = "field_name_316";
+			const int descriptorArtifactTypeID = 100138;
 
-			var fieldId = 444186;
+			const int fieldId = 444186;
 
-			IDictionary<Guid, Field> fields = new Dictionary<Guid, Field>
+			IDictionary<Guid, BaseFieldRequest> fields = new Dictionary<Guid, BaseFieldRequest>
 			{
 				{
-					fieldGuid, new Field
+					fieldGuid, new WholeNumberFieldRequest
 					{
 						Name = fieldName,
-						FieldTypeID = FieldType.WholeNumber,
-						ObjectType = new ObjectType
+						ObjectType = new ObjectTypeIdentifier
 						{
-							DescriptorArtifactTypeID = descriptorArtifactTypeID
+							ArtifactTypeID = descriptorArtifactTypeID
 						}
 					}
 				}
@@ -66,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 			_artifactGuidRepository.GuidExists(fieldGuid).Returns(false);
 			_fieldQueryRepository.RetrieveField(descriptorArtifactTypeID, fieldName, fields[fieldGuid].GetFieldTypeName(),
 					Arg.Is<HashSet<string>>(x => x.Contains(Constants.Fields.ArtifactId)))
-				.Returns((ArtifactDTO) null);
+				.Returns((ArtifactDTO)null);
 			_fieldRepository.CreateObjectTypeField(fields[fieldGuid]).Returns(fieldId);
 
 			// ACT
@@ -83,22 +81,21 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 		[Test]
 		public void ItShouldUpdateExistingFields()
 		{
-			var fieldGuid = Guid.NewGuid();
-			var fieldName = "field_name_526";
-			var descriptorArtifactTypeID = 488469;
+			Guid fieldGuid = Guid.NewGuid();
+			string fieldName = "field_name_526";
+			const int descriptorArtifactTypeID = 488469;
 
-			var fieldId = 431240;
+			const int fieldId = 431240;
 
-			IDictionary<Guid, Field> fields = new Dictionary<Guid, Field>
+			IDictionary<Guid, BaseFieldRequest> fields = new Dictionary<Guid, BaseFieldRequest>
 			{
 				{
-					fieldGuid, new Field
+					fieldGuid, new WholeNumberFieldRequest
 					{
 						Name = fieldName,
-						FieldTypeID = FieldType.WholeNumber,
-						ObjectType = new ObjectType
+						ObjectType = new ObjectTypeIdentifier
 						{
-							DescriptorArtifactTypeID = descriptorArtifactTypeID
+							ArtifactTypeID = descriptorArtifactTypeID
 						}
 					}
 				}
@@ -124,18 +121,17 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 		[Test]
 		public void ItShouldSkipCreationForExistingField()
 		{
-			var fieldGuid = Guid.NewGuid();
+			Guid fieldGuid = Guid.NewGuid();
 
-			IDictionary<Guid, Field> fields = new Dictionary<Guid, Field>
+			IDictionary<Guid, BaseFieldRequest> fields = new Dictionary<Guid, BaseFieldRequest>
 			{
 				{
-					fieldGuid, new Field
+					fieldGuid, new WholeNumberFieldRequest
 					{
 						Name = "field_name_246",
-						FieldTypeID = FieldType.WholeNumber,
-						ObjectType = new ObjectType
+						ObjectType = new ObjectTypeIdentifier
 						{
-							DescriptorArtifactTypeID = 402331
+							ArtifactTypeID = 402331
 						}
 					}
 				}
@@ -150,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 			_artifactGuidRepository.Received(1).GuidExists(fieldGuid);
 
 			_fieldQueryRepository.DidNotReceive().RetrieveField(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<HashSet<string>>());
-			_fieldRepository.DidNotReceive().CreateObjectTypeField(Arg.Any<Field>());
+			_fieldRepository.DidNotReceive().CreateObjectTypeField(Arg.Any<BaseFieldRequest>());
 			_artifactGuidRepository.DidNotReceive().InsertArtifactGuidForArtifactId(Arg.Any<int>(), Arg.Any<Guid>());
 		}
 	}

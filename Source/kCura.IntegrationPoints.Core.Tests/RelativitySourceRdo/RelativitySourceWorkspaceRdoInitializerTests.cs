@@ -5,11 +5,11 @@ using kCura.IntegrationPoints.Core.RelativitySourceRdo;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
-using Field = kCura.Relativity.Client.DTOs.Field;
+using Relativity.Services.Interfaces.Field.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 {
@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 	public class RelativitySourceWorkspaceRdoInitializerTests : TestBase
 	{
 		private const int _DESTINATION_WORKSPACE_ID = 581555;
-		private const int _SOURCE_WORKSPACE_ID = 649601;
 
 		private ISourceWorkspaceRepository _sourceWorkspaceRepository;
 		private IRelativitySourceRdoObjectType _relativitySourceRdoObjectType;
@@ -49,21 +48,21 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 		[Test]
 		public void ItShouldInitializeDestinationWorkspace()
 		{
-			var expectedSourceJobDescriptorId = 612268;
+			const int expectedSourceJobDescriptorId = 612268;
 
 			_relativitySourceRdoObjectType.CreateObjectType(_DESTINATION_WORKSPACE_ID, SourceWorkspaceDTO.ObjectTypeGuid,
-					IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, (int) ArtifactType.Case)
+					IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, (int)ArtifactType.Case)
 				.Returns(expectedSourceJobDescriptorId);
 
 			// ACT
-			var actualSourceJobDescriptorId = _instance.InitializeWorkspaceWithSourceWorkspaceRdo(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID);
+			int actualSourceJobDescriptorId = _instance.InitializeWorkspaceWithSourceWorkspaceRdo(_DESTINATION_WORKSPACE_ID);
 
 			// ASSERT
 			Assert.That(actualSourceJobDescriptorId, Is.EqualTo(expectedSourceJobDescriptorId));
 
 			_relativitySourceRdoObjectType.Received(1)
-				.CreateObjectType(_DESTINATION_WORKSPACE_ID, SourceWorkspaceDTO.ObjectTypeGuid, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, (int) ArtifactType.Case);
-			_relativitySourceRdoFields.Received(1).CreateFields(_DESTINATION_WORKSPACE_ID, Arg.Any<IDictionary<Guid, Field>>());
+				.CreateObjectType(_DESTINATION_WORKSPACE_ID, SourceWorkspaceDTO.ObjectTypeGuid, IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, (int)ArtifactType.Case);
+			_relativitySourceRdoFields.Received(1).CreateFields(_DESTINATION_WORKSPACE_ID, Arg.Any<IDictionary<Guid, BaseFieldRequest>>());
 			_relativitySourceRdoDocumentField.Received(1).CreateDocumentField(_DESTINATION_WORKSPACE_ID, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid,
 				IntegrationPoints.Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, expectedSourceJobDescriptorId);
 		}

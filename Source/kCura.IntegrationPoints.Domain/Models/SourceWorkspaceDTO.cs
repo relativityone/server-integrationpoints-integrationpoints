@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Relativity.Services.Interfaces.Field.Models;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects.DataContracts;
-using Field = kCura.Relativity.Client.DTOs.Field;
-using FieldType = kCura.Relativity.Client.FieldType;
-using ObjectType = kCura.Relativity.Client.DTOs.ObjectType;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
@@ -90,72 +89,64 @@ namespace kCura.IntegrationPoints.Domain.Models
 			public static readonly Guid InstanceNameFieldGuid = new Guid("C5212F20-BEC4-426C-AD5C-8EBE2697CB19");
 			public static readonly Guid SourceWorkspaceFieldOnDocumentGuid = new Guid("2fa844e3-44f0-47f9-abb7-d6d8be0c9b8f");
 
-			public static IDictionary<Guid, Field> GetFieldsDefinition(int objectTypeDescriptorArtifactTypeId)
+			public static IDictionary<Guid, BaseFieldRequest> GetFieldsDefinition(int objectTypeDescriptorArtifactTypeId)
 			{
-				var objectType = new ObjectType
+				var objectType = new ObjectTypeIdentifier()
 				{
-					DescriptorArtifactTypeID = objectTypeDescriptorArtifactTypeId
+					ArtifactTypeID = objectTypeDescriptorArtifactTypeId
 				};
-				return new Dictionary<Guid, Field>
+				return new Dictionary<Guid, BaseFieldRequest>
 				{
 					{
-						CaseIdFieldNameGuid, new Field
+						CaseIdFieldNameGuid, new WholeNumberFieldRequest
 						{
 							Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
-							Guids = new List<Guid> {CaseIdFieldNameGuid},
-							FieldTypeID = FieldType.WholeNumber,
 							ObjectType = objectType,
 							IsRequired = true,
-							Linked = false,
+							IsLinked = false,
 							OpenToAssociations = false,
 							AllowSortTally = false,
 							AllowGroupBy = false,
 							AllowPivot = false,
-							Width = "100",
+							Width = 100,
 							Wrapping = false
 						}
 					},
 					{
-						CaseNameFieldNameGuid,
-						new Field
+						CaseNameFieldNameGuid, new FixedLengthFieldRequest
 						{
 							Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
-							Guids = new List<Guid> {CaseNameFieldNameGuid},
-							FieldTypeID = FieldType.FixedLengthText,
 							ObjectType = objectType,
 							IsRequired = true,
 							IncludeInTextIndex = false,
-							Linked = false,
-							AllowHTML = false,
+							IsLinked = false,
+							AllowHtml = false,
 							AllowSortTally = false,
 							AllowGroupBy = false,
 							AllowPivot = false,
 							OpenToAssociations = false,
-							Width = "100",
+							Width = 100,
 							Wrapping = false,
-							Unicode = false,
+							HasUnicode = false,
 							Length = 255
 						}
 					},
 					{
-						InstanceNameFieldGuid,
-						new Field
+						InstanceNameFieldGuid, new FixedLengthFieldRequest
 						{
 							Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME,
-							Guids = new List<Guid> {InstanceNameFieldGuid},
-							FieldTypeID = FieldType.FixedLengthText,
 							ObjectType = objectType,
 							IsRequired = true,
 							IncludeInTextIndex = false,
-							Linked = false,
-							AllowHTML = false,
+							IsLinked = false,
+							AllowHtml = false,
 							AllowSortTally = false,
 							AllowGroupBy = false,
 							AllowPivot = false,
 							OpenToAssociations = false,
-							Width = "100",
+							Width = 100,
 							Wrapping = false,
-							Unicode = false,
+							HasUnicode = false,
 							Length = 255
 						}
 					}

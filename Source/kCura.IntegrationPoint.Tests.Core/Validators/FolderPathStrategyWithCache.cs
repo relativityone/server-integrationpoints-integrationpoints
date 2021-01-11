@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
@@ -12,13 +11,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 		public string GetFolderPath(Document document)
 		{
 			string folderPath;
-			if (_folderCache.TryGetValue(document.ParentArtifact.ArtifactID, out folderPath))
+			if (_folderCache.TryGetValue(document.ParentArtifactId, out folderPath))
 			{
 				return folderPath;
 			}
 
 			folderPath = GetFolderPathInternal(document);
-			_folderCache[document.ParentArtifact.ArtifactID] = folderPath;
+			_folderCache[document.ParentArtifactId] = folderPath;
 
 			return folderPath;
 		}

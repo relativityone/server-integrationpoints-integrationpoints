@@ -18,6 +18,7 @@
 			public const string FIELD_CATEGORY_ID = "Field Category ID";
 			public const string OBJECT_TYPE_ARTIFACT_TYPE_ID = "Object Type Artifact Type ID";
 			public const string ARTIFACT_ID = "Artifact ID";
+			public const string PARENT_ARTIFACT_ID = "Parent Artifact ID";
 			public const string PRODUCTION_BEGIN_BATES = "Production::Begin Bates";
 			public const string PRODUCTION_END_BATES = "Production::End Bates";
 			public const string DOCUMENT_EXTENSION = "Document Extension";

@@ -18,12 +18,12 @@ using System.Threading.Tasks;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.Testing.Identification;
 using InstanceSetting = Relativity.Services.InstanceSetting.InstanceSetting;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints]
+	[NotWorkingOnTrident("REL-510344")]
 	public class SendEmailWorkerTests : SourceProviderTemplate
 	{
 		private IInstanceSettingManager _instanceSettingsManager;

@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			bool allHasNativeAsExpected = DocumentService
 				.GetAllDocuments(workspaceID, documentFields)
-				.Select(document => document.Artifact.HasNative.Value)
+				.Select(document => document.HasNatives)
 				.All(hasNative => hasNative == expectedHasNative);
 
 			Assert.IsTrue(allHasNativeAsExpected);

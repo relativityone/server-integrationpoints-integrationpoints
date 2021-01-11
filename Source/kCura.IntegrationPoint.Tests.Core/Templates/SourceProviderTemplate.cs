@@ -4,7 +4,6 @@ using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core.Exceptions;
-using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
@@ -40,6 +39,8 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 using kCura.Apps.Common.Utils.Serializers;
+using Relativity.Services.Objects;
+using MassCreateResult = Relativity.Services.Objects.DataContracts.MassCreateResult;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -256,26 +257,53 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return jobHistory;
 		}
 
-		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Relativity.Client.DTOs.Choice errorStatus, Relativity.Client.DTOs.Choice type)
+		protected List<int> CreateJobHistoryErrors(int jobHistoryArtifactId, ChoiceRef errorStatus, ChoiceRef errorType, IEnumerable<string> sourceUniqueIds)
 		{
-			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
-			JobHistoryError jobHistoryError = new JobHistoryError
+			List<List<object>> values = sourceUniqueIds.Select(sourceUniqueId => new List<object>()
 			{
-				ParentArtifactId = jobHistoryArtifactId,
-				JobHistory = jobHistoryArtifactId,
-				Name = Guid.NewGuid().ToString(),
-				SourceUniqueID = type == ErrorTypeChoices.JobHistoryErrorItem ? Guid.NewGuid().ToString() : null,
-				ErrorType = type,
-				ErrorStatus = errorStatus,
-				Error = "Inserted Error for testing.",
-				StackTrace = "Error created from JobHistoryErrorsBatchingTests",
-				TimestampUTC = DateTime.Now,
+				"Inserted Error for testing.",
+				errorStatus,
+				errorType,
+				Guid.NewGuid().ToString(),
+				sourceUniqueId,
+				"Error created from JobHistoryErrorsBatchingTests",
+				DateTime.Now
+			}).ToList();
+
+			var massCreateRequest = new MassCreateRequest()
+			{
+				ObjectType = new ObjectTypeRef()
+				{
+					Guid = ObjectTypeGuids.JobHistoryErrorGuid
+				},
+				ParentObject = new RelativityObjectRef()
+				{
+					ArtifactID = jobHistoryArtifactId
+				},
+				Fields = new[]
+				{
+					new FieldRef { Guid = JobHistoryErrorFieldGuids.ErrorGuid },
+					new FieldRef { Guid = JobHistoryErrorFieldGuids.ErrorStatusGuid },
+					new FieldRef { Guid = JobHistoryErrorFieldGuids.ErrorTypeGuid },
+					new FieldRef { Guid = JobHistoryErrorFieldGuids.NameGuid },
+					new FieldRef { Guid = JobHistoryErrorFieldGuids.SourceUniqueIDGuid },
+					new FieldRef { Guid = JobHistoryErrorFieldGuids.StackTraceGuid },
+					new FieldRef { Guid = JobHistoryErrorFieldGuids.TimestampUTCGuid }
+				},
+				ValueLists = values
 			};
 
-			jobHistoryErrors.Add(jobHistoryError);
+			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
+			{
+				MassCreateResult massCreateResult = objectManager.CreateAsync(CaseContext.WorkspaceID, massCreateRequest).GetAwaiter().GetResult();
 
-			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
-			return jobHistoryErrorArtifactIds;
+				if (!massCreateResult.Success)
+				{
+					throw new Exception($"Mass create of job history errors failed: {massCreateResult.Message}");
+				}
+
+				return massCreateResult.Objects.Select(x => x.ArtifactID).ToList();
+			}
 		}
 
 		protected int GetLastScheduledJobId(int workspaceArtifactTypeId, int ripId)
@@ -350,12 +378,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			{
 				jobServiceManager.UnlockJobs(agentIdToUnlock);
 			}
-		}
-
-		private async Task AddAgentServerToResourcePool()
-		{
-			ResourceServer agentServer = await ResourceServerHelper.GetAgentServerAsync().ConfigureAwait(false);
-			await ResourcePoolHelper.AddAgentServerToResourcePool(agentServer, "Default").ConfigureAwait(false);
 		}
 
 		private IEnumerable<SourceProvider> GetSourceProviders()

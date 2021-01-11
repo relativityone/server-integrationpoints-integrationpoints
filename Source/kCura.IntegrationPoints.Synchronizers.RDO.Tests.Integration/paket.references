@@ -2,12 +2,14 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
+kCura
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Kepler.Client
 relativity.transfer.client
 Relativity.Toggles
 Relativity.Logging.Interfaces
+Relativity.Telemetry.DataContracts.Shared
 NSubstitute
 relativity.testing.identification
 Relativity.Services.Interfaces
