@@ -2,7 +2,6 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using Relativity.IntegrationPoints.Services.Installers.Authentication;
 using Relativity.IntegrationPoints.Services.Installers.Context;
@@ -28,8 +27,6 @@ namespace Relativity.IntegrationPoints.Services.Installers
 
         protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
         {
-            container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
-
             container
                 .AddWorkspaceContext(workspaceID)
                 .AddAuthTokenGenerator();

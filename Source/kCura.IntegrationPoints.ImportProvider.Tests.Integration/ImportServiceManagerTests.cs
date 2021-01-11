@@ -93,12 +93,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
 			//RSAPI
-			IRSAPIService rsapiServiceMock = Substitute.For<IRSAPIService>();
-			caseServiceContext.RsapiService.Returns(rsapiServiceMock);
+			IRelativityObjectManagerService relativityObjectManagerServiceMock = Substitute.For<IRelativityObjectManagerService>();
+			caseServiceContext.RelativityObjectManagerService.Returns(relativityObjectManagerServiceMock);
 
 			//Source library
 			IRelativityObjectManager objectManager = Substitute.For<IRelativityObjectManager>();
-			rsapiServiceMock.RelativityObjectManager.Returns(objectManager);
+			relativityObjectManagerServiceMock.RelativityObjectManager.Returns(objectManager);
 
 			SourceProvider p = new SourceProvider();
 			p.Configuration = "{}";

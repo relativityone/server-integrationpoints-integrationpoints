@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 				}
 				if (_destinationProvider == null)
 				{
-					_destinationProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(IntegrationPoint.DestinationProvider.Value);
+					_destinationProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(IntegrationPoint.DestinationProvider.Value);
 				}
 				return _destinationProvider;
 			}
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 				}
 				if (_sourceProvider == null)
 				{
-					_sourceProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
+					_sourceProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
 				}
 				return _sourceProvider;
 			}

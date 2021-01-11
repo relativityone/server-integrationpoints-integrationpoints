@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
@@ -11,7 +9,6 @@ using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -20,7 +17,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Service.Export;
@@ -65,13 +61,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<JobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
 
-			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
-			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return k.Resolve<IRsapiClientWithWorkspaceFactory>().CreateAdminClient(jobContextProvider.Job.WorkspaceID);
-
-			}).LifestyleTransient());
-
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
@@ -90,10 +79,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				return jobContextProvider.Job;
 			}).LifestyleTransient());
 
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k =>
+			container.Register(Component.For<IRelativityObjectManagerService>().UsingFactoryMethod(k =>
 			{
 				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
-				return new RSAPIService(container.Resolve<IHelper>(), jobContextProvider.Job.WorkspaceID);
+				return new RelativityObjectManagerService(container.Resolve<IHelper>(), jobContextProvider.Job.WorkspaceID);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod(k =>
@@ -146,8 +135,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				.ImplementedBy<ExporterFactory>()
 				.LifestyleTransient()
 			);
-				
-			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<ExtendedRsapiClientWithWorkspaceFactory>().LifestyleTransient());
+
 			container.Register(Component
 				.For<IExternalServiceInstrumentationProvider>()
 				.ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>()
@@ -174,5 +162,3 @@ namespace kCura.IntegrationPoints.Agent.Installer
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

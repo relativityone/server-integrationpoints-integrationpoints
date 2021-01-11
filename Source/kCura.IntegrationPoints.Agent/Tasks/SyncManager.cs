@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
+				SourceProvider sourceProviderRdo = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
 				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid);

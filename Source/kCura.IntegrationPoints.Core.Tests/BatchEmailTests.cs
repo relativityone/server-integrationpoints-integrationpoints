@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private Mock<IJobStatusUpdater> _jobStatusUpdaterMock;
 		private Mock<IManagerFactory> _managerFactoryMock;
 		private Mock<IRelativityObjectManager> _objectManagerMock;
-		private Mock<IRSAPIService> _rsapiServiceMock;
+		private Mock<IRelativityObjectManagerService> _rsapiServiceMock;
 
 		private static object[] _generateEmailSource =
 		{
@@ -60,14 +60,14 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_emailFormatterMock = new Mock<IEmailFormatter>();
 			_caseServiceContextMock = new Mock<ICaseServiceContext>();
 			_jobStatusUpdaterMock = new Mock<IJobStatusUpdater>();
-			_rsapiServiceMock = new Mock<IRSAPIService>();
+			_rsapiServiceMock = new Mock<IRelativityObjectManagerService>();
 			_objectManagerMock = new Mock<IRelativityObjectManager>();
 			_managerFactoryMock = new Mock<IManagerFactory>();
 			_jobServiceMock = new Mock<IJobService>();
 			_integrationPointRepositoryMock = new Mock<IIntegrationPointRepository>();
 			_jobManagerMock = new Mock<IJobManager>();
 			_rsapiServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
-			_caseServiceContextMock.Setup(x => x.RsapiService).Returns(_rsapiServiceMock.Object);
+			_caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_rsapiServiceMock.Object);
 
 			_sut = new BatchEmail(_caseServiceContextMock.Object,
 				_helperMock.Object,

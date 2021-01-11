@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			InitializeIocContainer();
 
 			CaseContext = Container.Resolve<ICaseServiceContext>();
-			ObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+			ObjectManager = CaseContext.RelativityObjectManagerService.RelativityObjectManager;
 			IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
 			IntegrationPointService = Container.Resolve<IIntegrationPointService>();
 			Serializer = Container.Resolve<ISerializer>();
@@ -127,7 +127,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
-			Container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>().LifestyleTransient());
 			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{
@@ -149,7 +148,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				})
 				.LifeStyle.Transient);
 
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
+			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IntegrationPoints.Core.Factories.IExporterFactory>().ImplementedBy<ExporterFactory>());
 			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<ExportServiceObserversFactory>());
 			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());

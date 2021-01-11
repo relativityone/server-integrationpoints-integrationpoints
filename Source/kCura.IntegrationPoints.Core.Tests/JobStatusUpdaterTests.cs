@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 	public class JobStatusUpdaterTests : TestBase
 	{
 		private IJobHistoryService _jobHistoryService;
-		private IRSAPIService _rsapi;
+		private IRelativityObjectManagerService _relativityObjectManager;
 		private JobHistoryErrorQuery _service;
 		private JobStatusUpdater _instance;
 		private const int _JOB_ID = 1;
@@ -22,8 +22,8 @@ namespace kCura.IntegrationPoints.Core.Tests
 		[SetUp]
 		public override void SetUp()
 		{
-			_rsapi = Substitute.For<IRSAPIService>();
-			_service = Substitute.For<JobHistoryErrorQuery>(_rsapi);
+			_relativityObjectManager = Substitute.For<IRelativityObjectManagerService>();
+			_service = Substitute.For<JobHistoryErrorQuery>(_relativityObjectManager);
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 
 			_instance = new JobStatusUpdater(_service, _jobHistoryService);

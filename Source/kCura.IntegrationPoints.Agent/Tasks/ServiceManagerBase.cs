@@ -314,7 +314,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void LoadSourceProvider()
 		{
 			LogLoadSourceProviderStart();
-			SourceProvider = CaseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(IntegrationPointDto.SourceProvider.Value);
+			SourceProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPointDto.SourceProvider.Value);
 			LogLoadSourceProviderEnd();
 		}
 

@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		public override void SetUp()
 		{
 			_objectManager = Substitute.For<IRelativityObjectManager>();
-			var rsapiService = Substitute.For<IRSAPIService>();
+			var rsapiService = Substitute.For<IRelativityObjectManagerService>();
 			rsapiService.RelativityObjectManager.Returns(_objectManager);
 
 			_integrationPointTypeRepository = new IntegrationPointTypeRepository(rsapiService);

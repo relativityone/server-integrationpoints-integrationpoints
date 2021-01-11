@@ -45,7 +45,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 
 			IntegrationPointModel createdIntegrationPointProfile = _client.CreateIntegrationPointProfileAsync(createRequest).Result;
 
-			IntegrationPointProfile actualIntegrationPointProfile = CaseContext.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(createdIntegrationPointProfile.ArtifactId);
+			IntegrationPointProfile actualIntegrationPointProfile = CaseContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointProfile>(createdIntegrationPointProfile.ArtifactId);
 			IntegrationPointModel expectedIntegrationPointModel = createRequest.IntegrationPoint;
 
 			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPointProfile, expectedIntegrationPointModel,
@@ -62,7 +62,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 			var integrationPointProfileModel =
 				_client.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspaceArtifactID, integrationPoint.ArtifactID, profileName).Result;
 
-			var actualIntegrationPointProfile = CaseContext.RsapiService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointProfileModel.ArtifactId);
+			var actualIntegrationPointProfile = CaseContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointProfileModel.ArtifactId);
 
 			Assert.That(actualIntegrationPointProfile.Name, Is.EqualTo(profileName));
 			Assert.That(actualIntegrationPointProfile.SourceProvider, Is.EqualTo(integrationPoint.SourceProvider));

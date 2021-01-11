@@ -1,12 +1,9 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices;
 using kCura.IntegrationPoints.Web.RelativityServices;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.CustomPages;
 
@@ -32,12 +29,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.UsingFactoryMethod(k => k.Resolve<IHelper>().GetStringSanitizer(Data.Constants.ADMIN_CASE_ID))
 					.LifestylePerWebRequest(),
 				Component
-					.For<IRSAPIService>()
-					.UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRsapiService())
-					.LifestyleTransient(),
-				Component
-					.For<IRSAPIClient>()
-					.UsingFactoryMethod(k => k.Resolve<WebClientFactory>().CreateClient())
+					.For<IRelativityObjectManagerService>()
+					.UsingFactoryMethod(k => k.Resolve<IServiceContextHelper>().GetRelativityObjectManagerService())
 					.LifestyleTransient(),
 				Component
 					.For<global::Relativity.API.IDBContext>()
@@ -47,5 +40,3 @@ namespace kCura.IntegrationPoints.Web.Installers
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 			QueryRequest queryRequest = _integrationPointsCompletedJobsQueryBuilder.CreateQuery(request.SortColumnName, sortDescending, integrationPointIds);
 
 			IList<kCura.IntegrationPoints.Data.JobHistory> queryResult =
-				_caseServiceContext.RsapiService.RelativityObjectManager
+				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager
 					.Query<kCura.IntegrationPoints.Data.JobHistory>(queryRequest);
 			
 			return queryResult.Select(x => new JobHistoryModel

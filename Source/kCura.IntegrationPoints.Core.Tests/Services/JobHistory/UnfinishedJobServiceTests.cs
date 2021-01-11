@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
@@ -16,29 +13,29 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 	[TestFixture, Category("Unit")]
 	public class UnfinishedJobServiceTests : TestBase
 	{
-		private const int _WORKSPACE_ID = 551970;
+		private IRelativityObjectManager _objectManager;
+		private UnfinishedJobService _sut;
 
-		private UnfinishedJobService _instance;
-		private IRSAPIService _rsapiService;
+		private const int _WORKSPACE_ID = 551970;
 
 		public override void SetUp()
 		{
-			_rsapiService = Substitute.For<IRSAPIService>();
+			_objectManager = Substitute.For<IRelativityObjectManager>();
 
-			IRSAPIServiceFactory rsapiServiceFactory = Substitute.For<IRSAPIServiceFactory>();
-			rsapiServiceFactory.Create(_WORKSPACE_ID).Returns(_rsapiService);
+			IRelativityObjectManagerFactory relativityObjectManagerFactory = Substitute.For<IRelativityObjectManagerFactory>();
+			relativityObjectManagerFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_objectManager);
 
-			_instance = new UnfinishedJobService(rsapiServiceFactory);
+			_sut = new UnfinishedJobService(relativityObjectManagerFactory);
 		}
 
 		[Test]
 		public void ItShouldQueryForUnfinishedJobs()
 		{
 			// ACT
-			_instance.GetUnfinishedJobs(_WORKSPACE_ID);
+			_sut.GetUnfinishedJobs(_WORKSPACE_ID);
 
 			// ASSERT
-			_rsapiService.RelativityObjectManager.Received(1).Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => CheckCondition(x)));
+			_objectManager.Received(1).Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => CheckCondition(x)));
 		}
 
 		private bool CheckCondition(QueryRequest query)

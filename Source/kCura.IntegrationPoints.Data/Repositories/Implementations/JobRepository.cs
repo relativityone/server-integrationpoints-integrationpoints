@@ -11,16 +11,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class JobRepository : IJobRepository
 	{
-		private readonly IRSAPIServiceFactory _rsapiServiceFactory;
+		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-		public JobRepository(IRSAPIServiceFactory rsapiServiceFactory)
+		public JobRepository(IRelativityObjectManagerFactory relativityObjectManagerFactory)
 		{
-			_rsapiServiceFactory = rsapiServiceFactory;
+			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public IList<RDO> GetRunningJobs(int workspaceArtifactId)
 		{
-			IRSAPIService rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
+			IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 
 			var unfinishedJobsStatusesGuids = new List<Guid>
 			{
@@ -33,20 +33,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = $"'{JobHistoryFields.JobStatus}' IN CHOICE [{string.Join(",", unfinishedJobsStatusesGuids)}]"
 			};
 
-			List<JobHistory> results = rsapiService.RelativityObjectManager.Query<JobHistory>(request, ExecutionIdentity.System);
+			List<JobHistory> results = objectManager.Query<JobHistory>(request, ExecutionIdentity.System);
 
 			return results.Select(x => x.Rdo).ToList();
 		}
 
 		public IList<JobHistory> GetStuckJobs(IList<int> stuckJobsIds, int workspaceId)
 		{
-			IRSAPIService rsapiService = _rsapiServiceFactory.Create(workspaceId);
+			IRelativityObjectManager relativityObjectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
 			QueryRequest request = new QueryRequest
 			{
 				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", stuckJobsIds)}]",
 				Fields = new JobHistory().ToFieldList()
 			};
-			return rsapiService.RelativityObjectManager.Query<JobHistory>(request);
+			return relativityObjectManager.Query<JobHistory>(request);
 		}
 	}
 }

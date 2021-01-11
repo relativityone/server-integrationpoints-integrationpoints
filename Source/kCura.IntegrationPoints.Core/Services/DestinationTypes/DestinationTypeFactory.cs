@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.DestinationTypes
 
 		public virtual IEnumerable<DestinationType> GetDestinationTypes()
 		{
-			var types = _context.RsapiService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()
+			var types = _context.RelativityObjectManagerService.RelativityObjectManager.Query<DestinationProvider>(new QueryRequest()
 			{
 				Fields = new List<FieldRef>()
 				{

@@ -29,13 +29,13 @@ namespace kCura.IntegrationPoints.Agent.Validation
 
 		public void Validate(IntegrationPoint integrationPoint, int submittedByUserId)
 		{
-			var sourceProvider = _caseServiceContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
-			var destinationProvider = _caseServiceContext.RsapiService.RelativityObjectManager.Read<DestinationProvider>(integrationPoint.DestinationProvider.Value);
+			var sourceProvider = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
+			var destinationProvider = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(integrationPoint.DestinationProvider.Value);
 
 			IntegrationPointModelBase model = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
 
 			IntegrationPointType integrationPointType =
-				_caseServiceContext.RsapiService.RelativityObjectManager.Read<IntegrationPointType>(integrationPoint.Type.Value);
+				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(integrationPoint.Type.Value);
 
 			var context = new ValidationContext
 			{

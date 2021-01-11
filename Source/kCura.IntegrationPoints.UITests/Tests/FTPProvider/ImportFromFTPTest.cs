@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 	[Category(TestCategory.WEB_IMPORT_EXPORT)]
 	public class ImportFromFtpTest : UiTest
 	{
-		private IRSAPIService _service;
+		private IRelativityObjectManagerService _service;
 
 		private const string _CSV_FILEPATH = "upload/ImportFromFtpTest.csv";
 
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FTPProvider
 		public void OneTimeSetUp()
 		{
 			Install(SourceContext.WorkspaceId.Value);
-			_service = Container.Resolve<IRSAPIService>();
+			_service = Container.Resolve<IRelativityObjectManagerService>();
 		}
 
 		[Category(TestCategory.SMOKE)]
