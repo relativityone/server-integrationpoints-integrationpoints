@@ -244,9 +244,9 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			return Task.Run(() => ImportDocuments(withNatives, testDataType));
 		}
 
-		public bool ExecuteRelativityFolderPathScript()
+		public void ExecuteRelativityFolderPathScript()
 		{
-			return RelativityFolderPathScriptHelper.ExecuteRelativityFolderPathScript();
+			RelativityFolderPathScriptHelper.ExecuteRelativityFolderPathScript();
 		}
 
 		public TestContext TearDown()

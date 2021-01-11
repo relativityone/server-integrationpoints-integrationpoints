@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +19,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -88,15 +85,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceDBContext>()
 					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspace.ArtifactID)))
-					.LifeStyle.Transient);
-			Container.Register(
-				Component.For<IRSAPIClient>()
-					.UsingFactoryMethod(k =>
-					{
-						IRSAPIClient client = Rsapi.CreateRsapiClient();
-						client.APIOptions.WorkspaceID = SourceWorkspace.ArtifactID;
-						return client;
-					})
 					.LifeStyle.Transient);
 			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), SourceWorkspace.ArtifactID)).LifestyleTransient());
 			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
@@ -189,5 +177,3 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
