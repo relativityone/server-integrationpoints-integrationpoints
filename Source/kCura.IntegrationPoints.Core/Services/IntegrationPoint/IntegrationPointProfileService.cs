@@ -12,7 +12,6 @@ using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -98,13 +97,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			PeriodicScheduleRule rule;
 			try
 			{
-				IList<Choice> choices =
+				IList<global::Relativity.Services.Choice.ChoiceRef> choices =
 					ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
 
 				rule = ConvertModelToScheduleRule(model);
 				profile = model.ToRdo(choices, rule);
 
-				var integrationProfilePointModel = IntegrationPointProfileModel.FromIntegrationPointProfile(profile);
+				IntegrationPointProfileModel integrationProfilePointModel = IntegrationPointProfileModel.FromIntegrationPointProfile(profile);
 
 				SourceProvider sourceProvider = GetSourceProvider(profile.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(profile.DestinationProvider);
@@ -156,13 +155,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected IList<IntegrationPointProfile> GetAllRDOsWithBasicProfileColumns()
 		{
-			var fields = BaseRdo.GetFieldMetadata(typeof(IntegrationPointProfile)).Values.ToList()
+			IEnumerable<FieldRef> fields = BaseRdo.GetFieldMetadata(typeof(IntegrationPointProfile)).Values.ToList()
 				.Select(field => new FieldValue(field.FieldGuid))
 				.Where(field => field.Guids.Contains(IntegrationPointProfileFieldGuids.DestinationProviderGuid) ||
 				                field.Guids.Contains(IntegrationPointProfileFieldGuids.SourceProviderGuid) ||
 				                field.Guids.Contains(IntegrationPointProfileFieldGuids.NameGuid) ||
 				                field.Guids.Contains(IntegrationPointProfileFieldGuids.TypeGuid))
-				.Select(field => new FieldRef { Guid = field.Guids.First() });
+				.Select(field => new FieldRef
+				{
+					Guid = field.Guids.First()
+				});
 
 			var query = new QueryRequest()
 			{

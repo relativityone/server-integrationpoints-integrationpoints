@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories.Implementations;
+using Relativity.Services.Choice;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
@@ -145,9 +146,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 			_integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId).Returns(integrationPoint);
 
-			_choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>
+			_choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>
 			{
-				new Choice(overwriteFieldsChoiceId)
+				new ChoiceRef(overwriteFieldsChoiceId)
 				{
 					Name = overwriteFieldsChoiceName
 				}
@@ -254,13 +255,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		[Test]
 		public void ItShouldRetrieveAllOverwriteFieldChoices()
 		{
-			var expectedChoices = new List<Choice>
+			var expectedChoices = new List<ChoiceRef>
 			{
-				new Choice(756)
+				new ChoiceRef(756)
 				{
 					Name = "name_653"
 				},
-				new Choice(897)
+				new ChoiceRef(897)
 				{
 					Name = "name_466"
 				}
@@ -271,7 +272,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 			var actualChoicesModels = _integrationPointRepository.GetOverwriteFieldChoices();
 
 			Assert.That(actualChoicesModels,
-				Is.EquivalentTo(expectedChoices).Using(new Func<OverwriteFieldsModel, Choice, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactID))));
+				Is.EquivalentTo(expectedChoices).Using(new Func<OverwriteFieldsModel, ChoiceRef, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactID))));
 		}
 
 		[Test]

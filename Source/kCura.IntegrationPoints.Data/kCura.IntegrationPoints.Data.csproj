@@ -353,7 +353,6 @@
       <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>

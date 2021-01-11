@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
@@ -17,9 +18,9 @@ namespace kCura.IntegrationPoints.Core.Models
 			HasErrors = false;
 		}
 
-		public IntegrationPoint ToRdo(IEnumerable<Choice> choices, PeriodicScheduleRule rule)
+		public IntegrationPoint ToRdo(IEnumerable<ChoiceRef> choices, PeriodicScheduleRule rule)
 		{
-			var choice = choices.FirstOrDefault(x => x.Name.Equals(SelectedOverwrite));
+			ChoiceRef choice = choices.FirstOrDefault(x => x.Name.Equals(SelectedOverwrite));
 			if (choice == null)
 			{
 				throw new Exception("Cannot find choice by the name " + SelectedOverwrite);

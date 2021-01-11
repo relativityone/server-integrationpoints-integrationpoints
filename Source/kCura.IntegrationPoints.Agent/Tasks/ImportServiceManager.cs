@@ -28,7 +28,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.AutomatedWorkflows.Services.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
-using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using Relativity.Services.Objects;

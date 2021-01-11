@@ -20,6 +20,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Choice;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					}
 				}
 
-				IList<Choice> choices =
+				IList<ChoiceRef> choices =
 					ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 
 				PeriodicScheduleRule rule = ConvertModelToScheduleRule(model);

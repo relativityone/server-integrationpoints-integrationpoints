@@ -15,6 +15,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Choice;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
@@ -156,9 +157,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_instance.ReadIntegrationPointProfileModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
 			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
-				.Returns(new List<Choice>()
+				.Returns(new List<ChoiceRef>()
 				{
-					new Choice(5555)
+					new ChoiceRef(5555)
 					{
 						Name = model.SelectedOverwrite
 					}
@@ -292,9 +293,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields))
-				.Returns(new List<Choice>()
+				.Returns(new List<ChoiceRef>()
 				{
-					new Choice(5555)
+					new ChoiceRef(5555)
 					{
 						Name = model.SelectedOverwrite
 					}

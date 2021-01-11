@@ -29,6 +29,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.Services.Choice;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
@@ -985,9 +986,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}
@@ -1099,9 +1100,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}
@@ -1188,9 +1189,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}
@@ -1306,9 +1307,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_integrationPointRepository.CreateOrUpdate(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
 
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}
