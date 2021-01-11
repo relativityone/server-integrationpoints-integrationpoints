@@ -1,19 +1,22 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.UITests.Logging;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using NUnit.Framework;
+using Relativity;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.Script;
+using Relativity.Services.Interfaces.Scripts.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Serilog;
 
 namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 {
 	internal class RelativityFolderPathScriptHelper
 	{
+		private const string _SCRIPT_NAME = "Set Relativity Folder Path Field";
 		private readonly TestContext _testContext;
-
 		private static readonly ILogger Log = LoggerFactory.CreateLogger(typeof(RelativityFolderPathScriptHelper));
 
 		public RelativityFolderPathScriptHelper(TestContext testContext)
@@ -21,63 +24,73 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 			_testContext = testContext;
 		}
 
-		public bool ExecuteRelativityFolderPathScript()
+		public void ExecuteRelativityFolderPathScript()
 		{
-			using (var client = _testContext.Helper.CreateProxy<IRSAPIClient>())
-			{
-				client.APIOptions.WorkspaceID = _testContext.GetWorkspaceId();
-
-				RelativityScript relativityScript = FindRelativityFolderPathScript(client);
-				Assert.That(relativityScript, Is.Not.Null, "Cannot find Relativity Script to set folder paths");
-
-				var inputParameter = new RelativityScriptInput("FolderPath", "DocumentFolderPath");
-
-				try
-				{
-					RelativityScriptResult scriptResult = client.Repositories.RelativityScript.ExecuteRelativityScript(relativityScript, new List<RelativityScriptInput>() { inputParameter });
-
-					if (!scriptResult.Success)
-					{
-						Log.Error(@"Execution of Relativity Script failed: {0}", scriptResult.Message);
-						return false;
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Error(ex, @"An error occurred during executing Relativity Script: {0}", ex.Message);
-					return false;
-				}
-			}
-			return true;
-		}
-
-		private RelativityScript FindRelativityFolderPathScript(IRSAPIClient proxy)
-		{
-			var nameCondition = new TextCondition(RelativityScriptFieldNames.Name, TextConditionEnum.EqualTo,
-				"Set Relativity Folder Path Field");
-			var relScriptQuery = new Query<RelativityScript>()
-			{
-				Condition = nameCondition,
-				Fields = FieldValue.NoFields
-			};
-
 			try
 			{
-				QueryResultSet<RelativityScript> relScriptQueryResults = proxy.Repositories.RelativityScript.Query(relScriptQuery);
+				int workspaceId = _testContext.GetWorkspaceId();
 
-				if (!relScriptQueryResults.Success)
+				using (IScriptManager scriptManager = _testContext.Helper.CreateProxy<IScriptManager>())
+				using (IObjectManager objectManager = _testContext.Helper.CreateProxy<IObjectManager>())
 				{
-					Log.Error(@"An error occurred finding the script: {0}", relScriptQueryResults.Message);
+					QueryResult queryResult = objectManager.QueryAsync(workspaceId, new QueryRequest()
+					{
+						ObjectType = new ObjectTypeRef()
+						{
+							ArtifactTypeID = (int)ArtifactType.RelativityScript
+						},
+						Condition = $"'Name' == '{_SCRIPT_NAME}'"
+					}, 0, 1).GetAwaiter().GetResult();
+
+					if (!queryResult.Objects.Any())
+					{
+						string message = $"Cannot find script: '{_SCRIPT_NAME}'";
+						Log.Error(message);
+						throw new NotFoundException(message);
+					}
+
+					EnqueueRunJobResponse response = scriptManager.EnqueueRunJobAsync(workspaceId, queryResult.Objects.First().ArtifactID, new List<ScriptInput>()
+					{
+						new SingleScriptInput()
+						{
+							ID = "FolderPath",
+							Value = "DocumentFolderPath"
+						}
+					}, 0).GetAwaiter().GetResult();
+
+
+					TimeSpan waitTime = TimeSpan.FromSeconds(2);
+					TimeSpan scriptExecutionTimeout = TimeSpan.FromMinutes(2);
+					bool jobExecutionFinished = false;
+
+					do
+					{
+						if (scriptExecutionTimeout.TotalSeconds == 0)
+						{
+							throw new TimeoutException($"Script '{_SCRIPT_NAME}' execution has timed out. Make sure 'Script Run Manager' agent is enabled.");
+						}
+
+						Task.Delay(waitTime).GetAwaiter().GetResult();
+						scriptExecutionTimeout = scriptExecutionTimeout.Subtract(waitTime);
+
+						RunJob runJob = scriptManager.ReadRunJobAsync(workspaceId, response.RunJobID).GetAwaiter().GetResult();
+
+						if (runJob.Status == RunJobStatus.FailedToComplete || runJob.Status == RunJobStatus.CompletedWithErrors)
+						{
+							throw new Exception($"Script '{_SCRIPT_NAME}' execution error: {runJob.ErrorMessage}");
+						}
+
+						jobExecutionFinished = runJob.Status == RunJobStatus.Completed;
+
+					} while (!jobExecutionFinished);
+
 				}
-				return relScriptQueryResults.Results[0].Artifact;
 			}
 			catch (Exception ex)
 			{
-				Log.Error("An error occurred querying for Relativity Scripts: {0}", ex.Message);
+				Log.Error(ex, "Script execution error.");
+				throw;
 			}
-			return null;
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)
