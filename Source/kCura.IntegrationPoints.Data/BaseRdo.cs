@@ -6,8 +6,8 @@ using System.Reflection;
 using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Choice;
 using Artifact = kCura.Relativity.Client.DTOs.Artifact;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
-			var value = Rdo[fieldGuid].Value;
+			object value = Rdo[fieldGuid].Value;
 			object v = ConvertForGet(FieldMetadata[fieldGuid].Type, value);
 			return (T)v;
 		}
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Data
 					var choice = value as Relativity.Client.DTOs.Choice;
 					if (choice != null)
 					{
-						return new Choice(choice.ArtifactID) { Name = choice.Name, Guids = choice.Guids };
+						return new ChoiceRef(choice.ArtifactID) { Name = choice.Name, Guids = choice.Guids };
 					}
 					return value;
 				default:
@@ -102,18 +102,18 @@ namespace kCura.IntegrationPoints.Data
 			switch (fieldType)
 			{
 				case FieldTypes.MultipleChoice:
-					Choice[] choices = null;
-					if (value is List<Choice>)
+					ChoiceRef[] choices = null;
+					if (value is List<ChoiceRef>)
 					{
-						choices = ((List<Choice>)value).ToArray();
+						choices = ((List<ChoiceRef>)value).ToArray();
 					}
 					else if (value is object[])
 					{
-						choices = ((object[])value).Select(x => ((Choice)x)).ToArray();
+						choices = ((object[])value).Select(x => ((ChoiceRef)x)).ToArray();
 					}
-					else if (value is Choice[])
+					else if (value is ChoiceRef[])
 					{
-						choices = (Choice[])value;
+						choices = (ChoiceRef[])value;
 					}
 					MultiChoiceFieldValueList multiChoices = new MultiChoiceFieldValueList();
 					multiChoices.UpdateBehavior = MultiChoiceUpdateBehavior.Replace;
@@ -128,14 +128,14 @@ namespace kCura.IntegrationPoints.Data
 					}
 					break;
 				case FieldTypes.SingleChoice:
-					Choice singleChoice = null;
-					if (value is Choice)
+					ChoiceRef singleChoice = null;
+					if (value is ChoiceRef)
 					{
-						singleChoice = (Choice)value;
+						singleChoice = (ChoiceRef)value;
 
 						if (singleChoice.ArtifactID > 0 || singleChoice.Guids.Any())
 						{
-							newValue = new Choice(singleChoice.ArtifactID) { Name = singleChoice.Name, Guids = singleChoice.Guids };
+							newValue = new ChoiceRef(singleChoice.ArtifactID) { Name = singleChoice.Name, Guids = singleChoice.Guids };
 						}
 						else
 						{

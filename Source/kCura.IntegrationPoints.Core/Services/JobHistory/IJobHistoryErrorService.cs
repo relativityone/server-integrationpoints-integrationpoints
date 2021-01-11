@@ -1,5 +1,6 @@
 using System;
 using kCura.IntegrationPoints.Core.Managers;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
@@ -12,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		void SubscribeToBatchReporterEvents(object batchReporter);
 		void CommitErrors();
-		void AddError(Relativity.Client.DTOs.Choice errorType, Exception ex);
-		void AddError(Relativity.Client.DTOs.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace);
+		void AddError(ChoiceRef errorType, Exception ex);
+		void AddError(ChoiceRef errorType, string documentIdentifier, string errorMessage, string stackTrace);
 	}
 }

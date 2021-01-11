@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			{
 				ArtifactId = ArtifactID,
 				Name = Name,
-				OverwriteFields = new Choice(choice.ArtifactID) {Name = choice.Name},
+				OverwriteFields = new ChoiceRef(choice.ArtifactID) {Name = choice.Name},
 				SourceConfiguration = SourceConfiguration,
 				SourceProvider = SourceProvider,
 				Type = Type,

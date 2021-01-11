@@ -12,7 +12,6 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.Services.Choice;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
@@ -175,7 +174,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				SourceProvider = 718,
 				SourceConfiguration = "",
 				NextScheduledRuntimeUTC = null,
-				OverwriteFields = new Choice(overwriteFieldsChoiceId) {Name = overwriteFieldsChoiceName},
+				OverwriteFields = new ChoiceRef(overwriteFieldsChoiceId) {Name = overwriteFieldsChoiceName},
 				ScheduleRule = String.Empty,
 				Type = null,
 				SecuredConfiguration = string.Empty
@@ -288,7 +287,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 			var profile = new IntegrationPointProfile
 			{
-				OverwriteFields = new Choice(179935),
+				OverwriteFields = new ChoiceRef(179935),
 				SourceProvider = 237,
 				DestinationConfiguration = _serializedDestinationConfiguration,
 				SourceConfiguration = "391908",

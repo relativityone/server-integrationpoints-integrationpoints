@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Crypto;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
-using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -177,21 +174,21 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var errorStatusChoice = new ChoiceRef
 			{
-				Guid = ErrorStatusChoices.JobHistoryErrorNewGuid
+				Guids = new List<Guid>() { ErrorStatusChoices.JobHistoryErrorNewGuid }
 			};
 			return errorStatusChoice;
 		}
 
-		private ChoiceRef GetErrorTypeChoice(Choice errorType)
+		private ChoiceRef GetErrorTypeChoice(ChoiceRef errorType)
 		{
 			var errorTypeChoice = new ChoiceRef
 			{
-				Guid = errorType.Guids.Single()
+				Guids = new List<Guid>() { errorType.Guids.Single() }
 			};
 			return errorTypeChoice;
 		}
 
-		public void AddError(Choice errorType, Exception ex)
+		public void AddError(ChoiceRef errorType, Exception ex)
 		{
 			string message = ex.FlattenErrorMessagesWithStackTrace();
 
@@ -204,7 +201,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			AddError(errorType, string.Empty, ex.Message, message);
 		}
 
-		public void AddError(Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)
+		public void AddError(ChoiceRef errorType, string documentIdentifier, string errorMessage, string stackTrace)
 		{
 			lock (_jobHistoryErrorList)
 			{

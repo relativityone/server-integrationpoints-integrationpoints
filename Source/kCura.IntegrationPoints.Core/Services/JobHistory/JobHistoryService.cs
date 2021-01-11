@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -14,9 +12,8 @@ using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Objects.DataContracts;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
@@ -97,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		public Data.JobHistory CreateRdo(
 			Data.IntegrationPoint integrationPoint, 
 			Guid batchInstance, 
-			Choice jobType, 
+			ChoiceRef jobType, 
 			DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;

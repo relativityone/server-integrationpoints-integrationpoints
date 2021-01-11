@@ -10,7 +10,6 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories.Implementations;
 using Relativity.Services.Choice;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
@@ -196,7 +195,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 			var integrationPoint = new IntegrationPoint
 			{
-				OverwriteFields = new Choice(271635),
+				OverwriteFields = new ChoiceRef(271635),
 				SourceProvider = 284,
 				DestinationConfiguration = "975426",
 				SourceConfiguration = "559417",

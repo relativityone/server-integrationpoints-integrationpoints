@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -18,13 +18,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobHistoryService = jobHistoryService;
 		}
 
-		public Choice GenerateStatus(Guid batchId)
+		public ChoiceRef GenerateStatus(Guid batchId)
 		{
 			Data.JobHistory result = _jobHistoryService.GetRdo(batchId);
 			return GenerateStatus(result);
 		}
 
-		public Choice GenerateStatus(Data.JobHistory jobHistory)
+		public ChoiceRef GenerateStatus(Data.JobHistory jobHistory)
 		{
 			if (jobHistory == null)
 			{

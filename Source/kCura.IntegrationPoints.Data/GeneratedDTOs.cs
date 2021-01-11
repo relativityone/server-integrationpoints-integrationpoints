@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Attributes;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -94,15 +95,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(DocumentFields.BatchStatus, DocumentFieldGuids.BatchStatus, FieldTypes.SingleChoice)]
-		public Choice BatchStatus
+		public ChoiceRef BatchStatus
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(DocumentFieldGuids.BatchStatus));
+				return GetField<ChoiceRef>(new System.Guid(DocumentFieldGuids.BatchStatus));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(DocumentFieldGuids.BatchStatus), value);
+				SetField<ChoiceRef>(new System.Guid(DocumentFieldGuids.BatchStatus), value);
 			}
 		}
 		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
@@ -229,15 +230,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(IntegrationPointFields.OverwriteFields, IntegrationPointFieldGuids.OverwriteFields, FieldTypes.SingleChoice)]
-		public Choice OverwriteFields
+		public ChoiceRef OverwriteFields
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields));
+				return GetField<ChoiceRef>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields), value);
+				SetField<ChoiceRef>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields), value);
 			}
 		}
 		[DynamicField(IntegrationPointFields.DestinationProvider, IntegrationPointFieldGuids.DestinationProvider, FieldTypes.SingleObject)]
@@ -569,15 +570,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(JobHistoryFields.JobStatus, JobHistoryFieldGuids.JobStatus, FieldTypes.SingleChoice)]
-		public Choice JobStatus
+		public ChoiceRef JobStatus
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus));
+				return GetField<ChoiceRef>(new System.Guid(JobHistoryFieldGuids.JobStatus));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
+				SetField<ChoiceRef>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
 			}
 		}
 		[DynamicField(JobHistoryFields.ItemsTransferred, JobHistoryFieldGuids.ItemsTransferred, FieldTypes.WholeNumber)]
@@ -679,15 +680,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(JobHistoryFields.JobType, JobHistoryFieldGuids.JobType, FieldTypes.SingleChoice)]
-		public Choice JobType
+		public ChoiceRef JobType
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType));
+				return GetField<ChoiceRef>(new System.Guid(JobHistoryFieldGuids.JobType));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType), value);
+				SetField<ChoiceRef>(new System.Guid(JobHistoryFieldGuids.JobType), value);
 			}
 		}
 		public const int DestinationInstanceFieldLength = 400;
@@ -820,15 +821,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(JobHistoryErrorFields.ErrorType, JobHistoryErrorFieldGuids.ErrorType, FieldTypes.SingleChoice)]
-		public Choice ErrorType
+		public ChoiceRef ErrorType
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorType));
+				return GetField<ChoiceRef>(new System.Guid(JobHistoryErrorFieldGuids.ErrorType));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorType), value);
+				SetField<ChoiceRef>(new System.Guid(JobHistoryErrorFieldGuids.ErrorType), value);
 			}
 		}
 		[DynamicField(JobHistoryErrorFields.StackTrace, JobHistoryErrorFieldGuids.StackTrace, FieldTypes.LongText)]
@@ -844,15 +845,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(JobHistoryErrorFields.ErrorStatus, JobHistoryErrorFieldGuids.ErrorStatus, FieldTypes.SingleChoice)]
-		public Choice ErrorStatus
+		public ChoiceRef ErrorStatus
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorStatus));
+				return GetField<ChoiceRef>(new System.Guid(JobHistoryErrorFieldGuids.ErrorStatus));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorStatus), value);
+				SetField<ChoiceRef>(new System.Guid(JobHistoryErrorFieldGuids.ErrorStatus), value);
 			}
 		}
 		public const int NameFieldLength = 255;
@@ -1172,15 +1173,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(IntegrationPointProfileFields.OverwriteFields, IntegrationPointProfileFieldGuids.OverwriteFields, FieldTypes.SingleChoice)]
-		public Choice OverwriteFields
+		public ChoiceRef OverwriteFields
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(IntegrationPointProfileFieldGuids.OverwriteFields));
+				return GetField<ChoiceRef>(new System.Guid(IntegrationPointProfileFieldGuids.OverwriteFields));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(IntegrationPointProfileFieldGuids.OverwriteFields), value);
+				SetField<ChoiceRef>(new System.Guid(IntegrationPointProfileFieldGuids.OverwriteFields), value);
 			}
 		}
 		[DynamicField(IntegrationPointProfileFields.ScheduleRule, IntegrationPointProfileFieldGuids.ScheduleRule, FieldTypes.LongText)]

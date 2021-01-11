@@ -1,5 +1,7 @@
 ﻿using System;
-using kCura.Relativity.Client.DTOs;
+using System.Collections.Generic;
+using Relativity.Services.Choice;
+
 namespace kCura.IntegrationPoints.Data
 {
  
@@ -16,7 +18,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string SingleObject = "Single Object";
 		public const string MultipleObject = "Multiple Object";
 		public const string FixedLengthText = "Fixed Length Text";
-		public const string SingleChoice = "Single Choice";
+		public const string SingleChoice = "Single ChoiceRef";
 		public const string MultipleChoice = "MultipleChoice";
 		public const string LongText = "Long Text";
 		public const string User = "User";
@@ -107,7 +109,7 @@ namespace kCura.IntegrationPoints.Data
 		internal const string ControlNumber = @"2a3f1212-c8ca-4fa9-ad6b-f76c97f05438";
 		public static readonly Guid  ControlNumberGuid = Guid.Parse(ControlNumber);
 	}
-
+	
 
 
 	public partial class IntegrationPointFields : BaseFields
@@ -415,233 +417,81 @@ namespace kCura.IntegrationPoints.Data
 		internal const string Name = @"ad0552e0-4511-4507-a60d-23c0c6d05972";
 		public static readonly Guid  NameGuid = Guid.Parse(Name);
 	}
-
-
-
-	public partial class SyncConfigurationFields : BaseFields
-	{
-		public const string JobHistory = @"JobHistory";
-		public const string EmailNotificationRecipients = @"Email notification recipients";
-		public const string FieldMappings = @"Field mappings";
-		public const string DataSourceArtifactID = @"Data source artifact ID";
-		public const string DataSourceType = @"Data source type";
-		public const string DestinationWorkspaceArtifactID = @"Destination workspace artifact ID";
-		public const string RDOArtifactTypeID = @"RDO artifact type ID";
-		public const string CreateSavedSearchInDestination = @"Create saved search in destination";
-		public const string DataDestinationArtifactID = @"Data destination artifact ID";
-		public const string DataDestinationType = @"Data destination type";
-		public const string ImportOverwriteMode = @"Import overwrite mode";
-		public const string NativesBehavior = @"Natives behavior";
-		public const string DestinationFolderStructureBehavior = @"Destination folder structure behavior";
-		public const string MoveExistingDocuments = @"Move existing documents";
-		public const string FieldOverlayBehavior = @"Field overlay behavior";
-		public const string SnapshotID = @"Snapshot ID";
-		public const string SnapshotRecordsCount = @"Snapshot records count";
-		public const string SavedSearchInDestinationArtifactID = @"Saved search in destination artifact ID";
-		public const string SourceJobTagArtifactID = @"Source job tag artifact ID";
-		public const string SourceJobTagName = @"Source job tag name";
-		public const string SourceWorkspaceTagArtifactID = @"Source workspace tag artifact ID";
-		public const string SourceWorkspaceTagName = @"Source workspace tag name";
-		public const string DestinationWorkspaceTagArtifactID = @"Destination workspace tag artifact ID";
-		public const string FolderPathSourceFieldName = @"Folder path source field name";
-		public const string Name = @"Name";
-	}
-
-	public partial class SyncConfigurationFieldGuids 
-	{
-		internal const string JobHistory = @"5d8f7f01-25cf-4246-b2e2-c05882539bb2";
-		public static readonly Guid  JobHistoryGuid = Guid.Parse(JobHistory);
-		internal const string EmailNotificationRecipients = @"4f03914d-9e86-4b72-b75c-ee48feebb583";
-		public static readonly Guid  EmailNotificationRecipientsGuid = Guid.Parse(EmailNotificationRecipients);
-		internal const string FieldMappings = @"e3cb5c64-c726-47f8-9cb0-1391c5911628";
-		public static readonly Guid  FieldMappingsGuid = Guid.Parse(FieldMappings);
-		internal const string DataSourceArtifactID = @"6d8631f9-0ea1-4eb9-b7b2-c552f43959d0";
-		public static readonly Guid  DataSourceArtifactIDGuid = Guid.Parse(DataSourceArtifactID);
-		internal const string DataSourceType = @"a00e6bc1-ca1c-48d9-9712-629a63061f0d";
-		public static readonly Guid  DataSourceTypeGuid = Guid.Parse(DataSourceType);
-		internal const string DestinationWorkspaceArtifactID = @"15b88438-6cf7-47ab-b630-424633159c69";
-		public static readonly Guid  DestinationWorkspaceArtifactIDGuid = Guid.Parse(DestinationWorkspaceArtifactID);
-		internal const string RDOArtifactTypeID = @"4df15f2b-e566-43ce-830d-671bd0786737";
-		public static readonly Guid  RDOArtifactTypeIDGuid = Guid.Parse(RDOArtifactTypeID);
-		internal const string CreateSavedSearchInDestination = @"bfab4af6-4704-4a12-a8ca-c96a1fbcb77d";
-		public static readonly Guid  CreateSavedSearchInDestinationGuid = Guid.Parse(CreateSavedSearchInDestination);
-		internal const string DataDestinationArtifactID = @"0e9d7b8e-4643-41cc-9b07-3a66c98248a1";
-		public static readonly Guid  DataDestinationArtifactIDGuid = Guid.Parse(DataDestinationArtifactID);
-		internal const string DataDestinationType = @"86d9a34a-b394-41cf-bff4-bd4ff49a932d";
-		public static readonly Guid  DataDestinationTypeGuid = Guid.Parse(DataDestinationType);
-		internal const string ImportOverwriteMode = @"1914d2a3-a1ff-480b-81dc-7a2aa563047a";
-		public static readonly Guid  ImportOverwriteModeGuid = Guid.Parse(ImportOverwriteMode);
-		internal const string NativesBehavior = @"d18f0199-7096-4b0c-ab37-4c9a3ea1d3d2";
-		public static readonly Guid  NativesBehaviorGuid = Guid.Parse(NativesBehavior);
-		internal const string DestinationFolderStructureBehavior = @"a1593105-bd99-4a15-a51a-3aa8d4195908";
-		public static readonly Guid  DestinationFolderStructureBehaviorGuid = Guid.Parse(DestinationFolderStructureBehavior);
-		internal const string MoveExistingDocuments = @"26f9bf88-420d-4eff-914b-c47ba36e10bf";
-		public static readonly Guid  MoveExistingDocumentsGuid = Guid.Parse(MoveExistingDocuments);
-		internal const string FieldOverlayBehavior = @"34ecb263-1370-4d6c-ac11-558447504ec4";
-		public static readonly Guid  FieldOverlayBehaviorGuid = Guid.Parse(FieldOverlayBehavior);
-		internal const string SnapshotID = @"d1210a1b-c461-46cb-9b73-9d22d05880c5";
-		public static readonly Guid  SnapshotIDGuid = Guid.Parse(SnapshotID);
-		internal const string SnapshotRecordsCount = @"57b93f20-2648-4acf-973b-bcba8a08e2bd";
-		public static readonly Guid  SnapshotRecordsCountGuid = Guid.Parse(SnapshotRecordsCount);
-		internal const string SavedSearchInDestinationArtifactID = @"83f4dd7a-2231-4c54-baaa-d1d5b0fe6e31";
-		public static readonly Guid  SavedSearchInDestinationArtifactIDGuid = Guid.Parse(SavedSearchInDestinationArtifactID);
-		internal const string SourceJobTagArtifactID = @"c0a63a29-abae-4bf4-a3f4-59e5bd87a33e";
-		public static readonly Guid  SourceJobTagArtifactIDGuid = Guid.Parse(SourceJobTagArtifactID);
-		internal const string SourceJobTagName = @"da0e1931-9460-4a61-9033-a8035697c1a4";
-		public static readonly Guid  SourceJobTagNameGuid = Guid.Parse(SourceJobTagName);
-		internal const string SourceWorkspaceTagArtifactID = @"feab129b-aeef-4aa4-bc91-9eae9a4c35f6";
-		public static readonly Guid  SourceWorkspaceTagArtifactIDGuid = Guid.Parse(SourceWorkspaceTagArtifactID);
-		internal const string SourceWorkspaceTagName = @"d828b69e-aaae-4639-91e2-416e35c163b1";
-		public static readonly Guid  SourceWorkspaceTagNameGuid = Guid.Parse(SourceWorkspaceTagName);
-		internal const string DestinationWorkspaceTagArtifactID = @"e2100c10-b53b-43fa-bb1b-51e43dce8208";
-		public static readonly Guid  DestinationWorkspaceTagArtifactIDGuid = Guid.Parse(DestinationWorkspaceTagArtifactID);
-		internal const string FolderPathSourceFieldName = @"66a37443-ef92-47ed-beea-392464c853d3";
-		public static readonly Guid  FolderPathSourceFieldNameGuid = Guid.Parse(FolderPathSourceFieldName);
-		internal const string Name = @"ef8bbd3d-79b0-47fa-9fc9-8faa535788b0";
-		public static readonly Guid  NameGuid = Guid.Parse(Name);
-	}
-
-
-
-	public partial class SyncBatchFields : BaseFields
-	{
-		public const string SyncConfiguration = @"SyncConfiguration";
-		public const string FailedItemsCount = @"Failed items count";
-		public const string TransferredItemsCount = @"Transferred items count";
-		public const string TotalItemsCount = @"Total items count";
-		public const string StartingIndex = @"Starting index";
-		public const string LockedBy = @"Locked by";
-		public const string Progress = @"Progress";
-		public const string Status = @"Status";
-		public const string Name = @"Name";
-	}
-
-	public partial class SyncBatchFieldGuids 
-	{
-		internal const string SyncConfiguration = @"f673e67f-e606-4155-8e15-ca1c83931e16";
-		public static readonly Guid  SyncConfigurationGuid = Guid.Parse(SyncConfiguration);
-		internal const string FailedItemsCount = @"dc3228e4-2765-4c3b-b3b1-a0f054e280f6";
-		public static readonly Guid  FailedItemsCountGuid = Guid.Parse(FailedItemsCount);
-		internal const string TransferredItemsCount = @"b2d112ca-e81e-42c7-a6b2-c0e89f32f567";
-		public static readonly Guid  TransferredItemsCountGuid = Guid.Parse(TransferredItemsCount);
-		internal const string TotalItemsCount = @"f84589fe-a583-4eb3-ba8a-4a2eee085c81";
-		public static readonly Guid  TotalItemsCountGuid = Guid.Parse(TotalItemsCount);
-		internal const string StartingIndex = @"b56f4f70-ceb3-49b8-bc2b-662d481ddc8a";
-		public static readonly Guid  StartingIndexGuid = Guid.Parse(StartingIndex);
-		internal const string LockedBy = @"befc75d3-5825-4479-b499-58c6ef719ddb";
-		public static readonly Guid  LockedByGuid = Guid.Parse(LockedBy);
-		internal const string Progress = @"8c6daf67-9428-4f5f-98d7-3c71a1ff3ae8";
-		public static readonly Guid  ProgressGuid = Guid.Parse(Progress);
-		internal const string Status = @"d16faf24-bc87-486c-a0ab-6354f36af38e";
-		public static readonly Guid  StatusGuid = Guid.Parse(Status);
-		internal const string Name = @"3ab49704-f843-4e09-aff2-5380b1bf7a35";
-		public static readonly Guid  NameGuid = Guid.Parse(Name);
-	}
-
-
-
-	public partial class SyncProgressFields : BaseFields
-	{
-		public const string SyncConfiguration = @"SyncConfiguration";
-		public const string Exception = @"Exception";
-		public const string Message = @"Message";
-		public const string Order = @"Order";
-		public const string Status = @"Status";
-		public const string Name = @"Name";
-	}
-
-	public partial class SyncProgressFieldGuids 
-	{
-		internal const string SyncConfiguration = @"e0188dd7-4b1b-454d-afa4-3ccc7f9dc001";
-		public static readonly Guid  SyncConfigurationGuid = Guid.Parse(SyncConfiguration);
-		internal const string Exception = @"2f2cfc2b-c9c0-406d-bd90-fb0133bcb939";
-		public static readonly Guid  ExceptionGuid = Guid.Parse(Exception);
-		internal const string Message = @"2e296f79-1b81-4bf6-98ad-68da13f8da44";
-		public static readonly Guid  MessageGuid = Guid.Parse(Message);
-		internal const string Order = @"610a1e44-7aaa-47fc-8fa0-92f8c8c8a94a";
-		public static readonly Guid  OrderGuid = Guid.Parse(Order);
-		internal const string Status = @"698e1bbe-13b7-445c-8a28-7d40fd232e1b";
-		public static readonly Guid  StatusGuid = Guid.Parse(Status);
-		internal const string Name = @"ae2fca2b-0e5c-4f35-948f-6c1654d5cf95";
-		public static readonly Guid  NameGuid = Guid.Parse(Name);
-	}
-
-
-
+	
 	#endregion
 
-	#region "Choice Constants"
+	#region "ChoiceRef Constants"
 
 	public partial class OverwriteFieldsChoices
 	{
 		public static Guid IntegrationPointAppendOnlyGuid = Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8");
-		public static Choice IntegrationPointAppendOnly = new Choice(IntegrationPointAppendOnlyGuid) {Name=@"Append Only"};
+		public static ChoiceRef IntegrationPointAppendOnly = new ChoiceRef() {Name=@"Append Only", Guids = new List<Guid>(){ IntegrationPointAppendOnlyGuid } };
 		public static Guid IntegrationPointAppendOverlayGuid = Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd");
-		public static Choice IntegrationPointAppendOverlay = new Choice(IntegrationPointAppendOverlayGuid) {Name=@"Append/Overlay"};
+		public static ChoiceRef IntegrationPointAppendOverlay = new ChoiceRef() {Name=@"Append/Overlay", Guids = new List<Guid>() { IntegrationPointAppendOverlayGuid } };
 		public static Guid IntegrationPointOverlayOnlyGuid = Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515");
-		public static Choice IntegrationPointOverlayOnly = new Choice(IntegrationPointOverlayOnlyGuid) {Name=@"Overlay Only"};
+		public static ChoiceRef IntegrationPointOverlayOnly = new ChoiceRef() {Name=@"Overlay Only", Guids = new List<Guid>(){ IntegrationPointOverlayOnlyGuid } };
 	}
 
 	public partial class JobStatusChoices
 	{
 		public static Guid JobHistoryValidatingGuid = Guid.Parse("6a2dcef5-5826-4f61-9bac-59fef879ebc2");
-		public static Choice JobHistoryValidating = new Choice(JobHistoryValidatingGuid) {Name=@"Validating"};
+		public static ChoiceRef JobHistoryValidating = new ChoiceRef() {Name=@"Validating", Guids = new List<Guid>(){ JobHistoryValidatingGuid } };
 		public static Guid JobHistoryValidationFailedGuid = Guid.Parse("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a");
-		public static Choice JobHistoryValidationFailed = new Choice(JobHistoryValidationFailedGuid) {Name=@"Validation Failed"};
+		public static ChoiceRef JobHistoryValidationFailed = new ChoiceRef() {Name=@"Validation Failed", Guids = new List<Guid>(){ JobHistoryValidationFailedGuid } };
 		public static Guid JobHistoryPendingGuid = Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96");
-		public static Choice JobHistoryPending = new Choice(JobHistoryPendingGuid) {Name=@"Pending"};
+		public static ChoiceRef JobHistoryPending = new ChoiceRef() {Name=@"Pending", Guids = new List<Guid>() { JobHistoryPendingGuid } };
 		public static Guid JobHistoryProcessingGuid = Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54");
-		public static Choice JobHistoryProcessing = new Choice(JobHistoryProcessingGuid) {Name=@"Processing"};
+		public static ChoiceRef JobHistoryProcessing = new ChoiceRef() {Name=@"Processing", Guids = new List<Guid>() { JobHistoryProcessingGuid } };
 		public static Guid JobHistoryCompletedGuid = Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c");
-		public static Choice JobHistoryCompleted = new Choice(JobHistoryCompletedGuid) {Name=@"Completed"};
+		public static ChoiceRef JobHistoryCompleted = new ChoiceRef() {Name=@"Completed", Guids = new List<Guid>() { JobHistoryCompletedGuid } };
 		public static Guid JobHistoryCompletedWithErrorsGuid = Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37");
-		public static Choice JobHistoryCompletedWithErrors = new Choice(JobHistoryCompletedWithErrorsGuid) {Name=@"Completed with errors"};
+		public static ChoiceRef JobHistoryCompletedWithErrors = new ChoiceRef() {Name=@"Completed with errors", Guids = new List<Guid>() { JobHistoryCompletedWithErrorsGuid } };
 		public static Guid JobHistoryErrorJobFailedGuid = Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63");
-		public static Choice JobHistoryErrorJobFailed = new Choice(JobHistoryErrorJobFailedGuid) {Name=@"Error - job failed"};
+		public static ChoiceRef JobHistoryErrorJobFailed = new ChoiceRef() {Name=@"Error - job failed", Guids = new List<Guid>() { JobHistoryErrorJobFailedGuid } };
 		public static Guid JobHistoryStoppingGuid = Guid.Parse("97c1410d-864d-4811-857b-952464872baa");
-		public static Choice JobHistoryStopping = new Choice(JobHistoryStoppingGuid) {Name=@"Stopping"};
+		public static ChoiceRef JobHistoryStopping = new ChoiceRef() {Name=@"Stopping", Guids = new List<Guid>() { JobHistoryStoppingGuid } };
 		public static Guid JobHistoryStoppedGuid = Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3");
-		public static Choice JobHistoryStopped = new Choice(JobHistoryStoppedGuid) {Name=@"Stopped"};
+		public static ChoiceRef JobHistoryStopped = new ChoiceRef() {Name=@"Stopped", Guids = new List<Guid>() { JobHistoryStoppedGuid } };
 	}
 
 	public partial class JobTypeChoices
 	{
 		public static Guid JobHistoryRunGuid = Guid.Parse("86c8c17d-74ec-4187-bdb1-9380252f4c20");
-		public static Choice JobHistoryRun = new Choice(JobHistoryRunGuid) {Name=@"Run"};
+		public static ChoiceRef JobHistoryRun = new ChoiceRef() {Name=@"Run", Guids = new List<Guid>() { JobHistoryRunGuid } };
 		public static Guid JobHistoryScheduledRunGuid = Guid.Parse("79510ad3-49cb-4b4f-840c-c64247404a4d");
-		public static Choice JobHistoryScheduledRun = new Choice(JobHistoryScheduledRunGuid) {Name=@"Scheduled Run"};
+		public static ChoiceRef JobHistoryScheduledRun = new ChoiceRef() {Name=@"Scheduled Run", Guids = new List<Guid>() { JobHistoryScheduledRunGuid } };
 		public static Guid JobHistoryRetryErrorsGuid = Guid.Parse("b0171a20-2042-44eb-a957-5dbc9c377c2f");
-		public static Choice JobHistoryRetryErrors = new Choice(JobHistoryRetryErrorsGuid) {Name=@"Retry Errors"};
+		public static ChoiceRef JobHistoryRetryErrors = new ChoiceRef() {Name=@"Retry Errors", Guids = new List<Guid>() { JobHistoryRetryErrorsGuid } };
 	}
 
 	public partial class ErrorTypeChoices
 	{
 		public static Guid JobHistoryErrorItemGuid = Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b");
-		public static Choice JobHistoryErrorItem = new Choice(JobHistoryErrorItemGuid) {Name=@"Item"};
+		public static ChoiceRef JobHistoryErrorItem = new ChoiceRef() {Name=@"Item", Guids = new List<Guid>() { JobHistoryErrorItemGuid } };
 		public static Guid JobHistoryErrorJobGuid = Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b");
-		public static Choice JobHistoryErrorJob = new Choice(JobHistoryErrorJobGuid) {Name=@"Job"};
+		public static ChoiceRef JobHistoryErrorJob = new ChoiceRef() {Name=@"Job", Guids = new List<Guid>() { JobHistoryErrorJobGuid } };
 	}
 
 	public partial class ErrorStatusChoices
 	{
 		public static Guid JobHistoryErrorNewGuid = Guid.Parse("f881b199-8a67-4d49-b1c1-f9e68658fb5a");
-		public static Choice JobHistoryErrorNew = new Choice(JobHistoryErrorNewGuid) {Name=@"New"};
+		public static ChoiceRef JobHistoryErrorNew = new ChoiceRef() {Name=@"New", Guids = new List<Guid>() { JobHistoryErrorNewGuid } };
 		public static Guid JobHistoryErrorExpiredGuid = Guid.Parse("af01a8fa-b419-49b1-bd71-25296e221e57");
-		public static Choice JobHistoryErrorExpired = new Choice(JobHistoryErrorExpiredGuid) {Name=@"Expired"};
+		public static ChoiceRef JobHistoryErrorExpired = new ChoiceRef() {Name=@"Expired", Guids = new List<Guid>() { JobHistoryErrorExpiredGuid } };
 		public static Guid JobHistoryErrorInProgressGuid = Guid.Parse("e5ebd98c-c976-4fa2-936f-434e265ea0aa");
-		public static Choice JobHistoryErrorInProgress = new Choice(JobHistoryErrorInProgressGuid) {Name=@"In Progress"};
+		public static ChoiceRef JobHistoryErrorInProgress = new ChoiceRef() {Name=@"In Progress", Guids = new List<Guid>() { JobHistoryErrorInProgressGuid } };
 		public static Guid JobHistoryErrorRetriedGuid = Guid.Parse("7d3d393d-384f-434e-9776-f9966550d29a");
-		public static Choice JobHistoryErrorRetried = new Choice(JobHistoryErrorRetriedGuid) {Name=@"Retried"};
+		public static ChoiceRef JobHistoryErrorRetried = new ChoiceRef() {Name=@"Retried", Guids = new List<Guid>() { JobHistoryErrorRetriedGuid } };
 	}
 
 	public partial class OverwriteFieldsChoices
 	{
 		public static Guid IntegrationPointProfileAppendOnlyGuid = Guid.Parse("12105945-5fb8-4640-8516-11a96f12279c");
-		public static Choice IntegrationPointProfileAppendOnly = new Choice(IntegrationPointProfileAppendOnlyGuid) {Name=@"Append Only"};
+		public static ChoiceRef IntegrationPointProfileAppendOnly = new ChoiceRef() {Name=@"Append Only", Guids = new List<Guid>() { IntegrationPointProfileAppendOnlyGuid } };
 		public static Guid IntegrationPointProfileAppendOverlayGuid = Guid.Parse("e5c80435-d876-4cba-b645-658a545eaea1");
-		public static Choice IntegrationPointProfileAppendOverlay = new Choice(IntegrationPointProfileAppendOverlayGuid) {Name=@"Append/Overlay"};
+		public static ChoiceRef IntegrationPointProfileAppendOverlay = new ChoiceRef() {Name=@"Append/Overlay", Guids = new List<Guid>() { IntegrationPointProfileAppendOverlayGuid } };
 		public static Guid IntegrationPointProfileOverlayOnlyGuid = Guid.Parse("e08fc9e5-416c-4656-a9a1-6323013160fb");
-		public static Choice IntegrationPointProfileOverlayOnly = new Choice(IntegrationPointProfileOverlayOnlyGuid) {Name=@"Overlay Only"};
+		public static ChoiceRef IntegrationPointProfileOverlayOnly = new ChoiceRef() {Name=@"Overlay Only", Guids = new List<Guid>() { IntegrationPointProfileOverlayOnlyGuid } };
 	}
 
 	#endregion								

@@ -5,18 +5,17 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -108,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 		[Test]
 		[TestCaseSource(nameof(JobCompletedStatusChoices))]
-		public void OnJobComplete_SendJobCompletedMessage(Choice status)
+		public void OnJobComplete_SendJobCompletedMessage(ChoiceRef status)
 		{
 			// ARRANGE
 			Job job = JobExtensions.CreateJob();
@@ -233,7 +232,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_messageService.Received().Send(Arg.Is<JobCompletedRecordsCountMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
 		}
 
-		private static IEnumerable<Choice> JobCompletedStatusChoices()
+		private static IEnumerable<ChoiceRef> JobCompletedStatusChoices()
 		{
 			yield return JobStatusChoices.JobHistoryCompletedWithErrors;
 			yield return JobStatusChoices.JobHistoryCompleted;

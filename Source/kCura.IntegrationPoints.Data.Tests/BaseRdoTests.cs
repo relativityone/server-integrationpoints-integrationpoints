@@ -7,7 +7,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
@@ -42,10 +42,9 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public void ConvertValue_MultipleChoiceFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
-			Choice[] choices = new Choice[]
-			{
-				new Choice(){Guids = new List<Guid>(){guidChoice1}, Name = "AAA"},
-				new Choice(){Guids= new List<Guid>(){guidChoice2}, Name= "bbb" }
+			ChoiceRef[] choices = {
+				new ChoiceRef {Guids = new List<Guid> {guidChoice1}, Name = "AAA"},
+				new ChoiceRef {Guids= new List<Guid> {guidChoice2}, Name= "bbb" }
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
 			
@@ -67,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public void ConvertValue_SingleChoiceFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
-			Choice myChoice = new Choice() { Guids = new List<Guid>() { guidChoice1 }, Name = "AAA" };
+			ChoiceRef myChoice = new ChoiceRef { Guids = new List<Guid> { guidChoice1 }, Name = "AAA" };
 			TestBaseRdo baseRdo = new TestBaseRdo();
 			
 			//ACT
@@ -75,8 +74,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.SingleChoice, myChoice });
 			
 			//ASSERT 
-			Assert.IsTrue(returnValue is Relativity.Client.DTOs.Choice);
-			Relativity.Client.DTOs.Choice returnedChoice = (Relativity.Client.DTOs.Choice)returnValue;
+			Assert.IsTrue(returnValue is ChoiceRef);
+			ChoiceRef returnedChoice = (ChoiceRef)returnValue;
 			Assert.AreEqual(guidChoice1, returnedChoice.Guids.First());
 			Assert.AreEqual("AAA", returnedChoice.Name);
 		}
@@ -85,8 +84,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public void ConvertValue_MultipleObjectFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
-			int[] multiObjectIDs = new int[]
-			{
+			int[] multiObjectIDs = {
 				111,
 				222
 			};
@@ -124,7 +122,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public void ConvertForGet_SingleChoiceFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
-			Choice myChoice = new Choice(111) { Name = "AAA" };
+			ChoiceRef myChoice = new ChoiceRef(111) { Name = "AAA" };
 			TestBaseRdo baseRdo = new TestBaseRdo();
 			
 			//ACT
@@ -132,8 +130,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.SingleChoice, myChoice });
 			
 			//ASSERT 
-			Assert.IsTrue(returnValue is kCura.Relativity.Client.DTOs.Choice);
-			var returnedChoice = (kCura.Relativity.Client.DTOs.Choice)returnValue;
+			Assert.IsTrue(returnValue is ChoiceRef);
+			var returnedChoice = (ChoiceRef)returnValue;
 			Assert.AreEqual(111, returnedChoice.ArtifactID);
 			Assert.AreEqual("AAA", returnedChoice.Name);
 		}
@@ -142,8 +140,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		public void ConvertForGet_MultipleObjectFieldValueIsNull_CorrectValue()
 		{
 			//ARRANGE
-			int[] multiObjectIDs = new int[]
-			{
+			int[] multiObjectIDs = {
 				111,
 				222
 			};
@@ -154,15 +151,14 @@ namespace kCura.IntegrationPoints.Data.Tests
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, multiObjectIDs });
 			
 			//ASSERT 
-			Assert.IsTrue(returnValue is System.Int32[]);
+			Assert.IsTrue(returnValue is Int32[]);
 		}
 
 		[Test]
 		public void ConvertForGet_MultipleObjectFieldValueEmptyArray_CorrectValue()
 		{
 			//ARRANGE
-			int[] multiObjectIDs = new int[]
-			{
+			int[] multiObjectIDs = {
 				111,
 				222
 			};
@@ -173,14 +169,14 @@ namespace kCura.IntegrationPoints.Data.Tests
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, multiObjectIDs });
 
 			//ASSERT 
-			Assert.IsTrue(returnValue is System.Int32[]);
+			Assert.IsTrue(returnValue is Int32[]);
 		}
 
 		[Test]
 		public void ConvertForGet_MultipleObjectFieldValueFieldValueList_CorrectValue()
 		{
 			//ARRANGE
-			var fieldList = new FieldValueList<Artifact>()
+			var fieldList = new FieldValueList<Artifact>
 			{
 				new Artifact(123),
 				new Artifact(456)
@@ -193,7 +189,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, fieldList });
 
 			//ASSERT 
-			Assert.IsTrue(returnValue is System.Int32[]);
+			Assert.IsTrue(returnValue is Int32[]);
 			Assert.AreEqual(123, ((int[])returnValue)[0]);
 			Assert.AreEqual(456, ((int[])returnValue)[1]);
 		}
@@ -247,22 +243,22 @@ namespace kCura.IntegrationPoints.Data.Tests
 		{
 			get
 			{
-				return GetField<string>(new System.Guid(_RELATIVITY_FIELD_GUID));
+				return GetField<string>(new Guid(_RELATIVITY_FIELD_GUID));
 			}
 			set
 			{
-				SetField<string>(new System.Guid(_RELATIVITY_FIELD_GUID), value);
+				SetField(new Guid(_RELATIVITY_FIELD_GUID), value);
 			}
 		}
 
-		public override System.Collections.Generic.Dictionary<System.Guid, Attributes.DynamicFieldAttribute> FieldMetadata
+		public override Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
 		{
-			get { throw new System.NotImplementedException(); }
+			get { throw new NotImplementedException(); }
 		}
 
-		public override Attributes.DynamicObjectAttribute ObjectMetadata
+		public override DynamicObjectAttribute ObjectMetadata
 		{
-			get { throw new System.NotImplementedException(); }
+			get { throw new NotImplementedException(); }
 		}
 	}
 }

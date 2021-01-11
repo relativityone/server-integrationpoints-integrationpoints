@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.RelativitySync.RipOverride
 {
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.RelativitySync.RipOverride
 			return _ordinaryJobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, batchInstance, startTimeUtc);
 		}
 
-		public JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, Choice jobType, DateTime? startTimeUtc)
+		public JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, ChoiceRef jobType, DateTime? startTimeUtc)
 		{
 			return _ordinaryJobHistoryService.CreateRdo(integrationPoint, batchInstance, jobType, startTimeUtc);
 		}

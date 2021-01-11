@@ -28,6 +28,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.Services.Choice;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
@@ -303,7 +304,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IEnumerable<String> ids = _instance.GetUnbatchedIDs(_job);
 
 			// ASSERT
-			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(errorType => errorType.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), exception);
+			_jobHistoryErrorService.Received(1).AddError(Arg.Is<ChoiceRef>(errorType => errorType.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), exception);
 			_jobHistoryErrorService.Received(1).CommitErrors();
 			Assert.IsNotNull(ids);
 			Assert.AreEqual(0, ids.Count());
@@ -344,7 +345,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			_jobHistoryErrorService.Received(1).AddError(
-				Arg.Is<Choice>(errorType => errorType.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+				Arg.Is<ChoiceRef>(errorType => errorType.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
 				Arg.Is<Exception>(ex => ex.Message == "Failed to get Batch Instance."));
 			_jobHistoryErrorService.Received(1).CommitErrors();
 		}
@@ -423,7 +424,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			_jobHistoryErrorService.Received(1).AddError(
-				Arg.Is<Choice>(errorType => errorType.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+				Arg.Is<ChoiceRef>(errorType => errorType.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
 				Arg.Is<Exception>((exception) => ValidatePostExecuteExceptions(exception, exception1, exception2, exception3, exception4, exception5)));
 			_jobHistoryErrorService.Received().CommitErrors();
 		}

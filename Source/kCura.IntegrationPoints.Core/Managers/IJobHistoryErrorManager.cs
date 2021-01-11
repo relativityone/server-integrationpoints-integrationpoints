@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Managers
 {
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="job">Job object representing the currently running job</param>
 		/// <param name="jobType">Job Type of the currently running job</param>
 		/// <returns>An UpdateStatusType that houses the job type and error types to make error status changes with</returns>
-		JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.DTOs.Choice jobType);
+		JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, ChoiceRef jobType);
 
 		/// <summary>
 		/// Creates a saved search to temporarily be used for retry error jobs.
