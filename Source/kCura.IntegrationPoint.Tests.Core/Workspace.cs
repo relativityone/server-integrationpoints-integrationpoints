@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity;
+using Relativity.Services;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
@@ -109,10 +110,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 				string resourcePoolName = workspaceResult.Objects.Single()
 					.FieldValues.Single().Value.ToString();
 
-				return await resourcePoolManager.ReadSingleAsync(new ResourcePoolRef
+				Query resoucePoolByNameQuery = new Query
 				{
-					Name = resourcePoolName
-				}).ConfigureAwait(false);
+					Condition = $"'Name' == '{resourcePoolName}'"
+				};
+				
+				ResourcePoolQueryResultSet resourcePoolResult =
+					await resourcePoolManager.QueryAsync(resoucePoolByNameQuery).ConfigureAwait(false);
+
+				if (resourcePoolResult.TotalCount == 0)
+				{
+					return null;
+				}
+
+				return resourcePoolResult.Results.First().Artifact;
 			}
 		}
 
