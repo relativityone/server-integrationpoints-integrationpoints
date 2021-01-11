@@ -40,13 +40,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public IList<JobHistory> GetStuckJobs(IList<int> stuckJobsIds, int workspaceId)
 		{
-			IRelativityObjectManager rsapiService = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
+			IRelativityObjectManager relativityObjectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
 			QueryRequest request = new QueryRequest
 			{
 				Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", stuckJobsIds)}]",
 				Fields = new JobHistory().ToFieldList()
 			};
-			return rsapiService.Query<JobHistory>(request);
+			return relativityObjectManager.Query<JobHistory>(request);
 		}
 	}
 }
