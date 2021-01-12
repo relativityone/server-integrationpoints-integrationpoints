@@ -65,6 +65,8 @@ namespace Relativity.Sync.Tests.Performance.ARM
 					InstallARM();
 				}
 
+				ConfigureBCPPath();
+
 				CreateRemoteLocationExistsAsync().GetAwaiter().GetResult();
 
 				_isInitialized = true;
@@ -77,6 +79,12 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			Logger.LogInformation("Creating remote archive location directory");
 
 			return _fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION);
+		}
+
+		private void ConfigureBCPPath()
+		{
+			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+				.UpdateValue("BcpShareFolderName", "kCura.ARM", AppSettings.RemoteBCPPathLocation);
 		}
 
 		private bool ShouldBeInstalled()
@@ -198,7 +206,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				Logger.LogInformation($"Restoring workspace from: {uploadedFile}");
 
 				string remoteArchiveLocation =
-					Path.Combine(AppSettings.RemoteArchivesLocation,_RELATIVE_ARCHIVES_LOCATION, Path.GetFileNameWithoutExtension(uploadedFile));
+					Path.Combine(AppSettings.RemoteArchivesLocation, Path.GetFileNameWithoutExtension(uploadedFile));
 
 				int jobId = await CreateRestoreJobAsync(remoteArchiveLocation).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {jobId} has been created");
@@ -236,15 +244,24 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			{
 				using (ZipArchive archive = ZipFile.OpenRead(archivedWorkspaceLocalPath))
 				{
-					ZipArchiveEntry archiveInformationEntry = archive.Entries.First(e => e.Name == "ArchiveInformation.xml");
+					ZipArchiveEntry archiveInformationEntry =
+						archive.Entries.First(e => e.Name == "ArchiveInformation.xml");
 
 					string archiveInformationFile = Path.GetTempFileName();
-					archiveInformationEntry.ExtractToFile(archiveInformationFile, true);
-					using (var stream = File.OpenRead(archiveInformationFile))
+					try
 					{
-						var xmlDoc = XDocument.Load(stream);
-						return xmlDoc.XPathSelectElement(@"//ArchiveInformation/CaseInformation/Name").Value;
+						archiveInformationEntry.ExtractToFile(archiveInformationFile, true);
+						using (var stream = File.OpenRead(archiveInformationFile))
+						{
+							var xmlDoc = XDocument.Load(stream);
+							return xmlDoc.XPathSelectElement(@"//ArchiveInformation/CaseInformation/Name").Value;
+						}
 					}
+					finally
+					{
+						File.Delete(archiveInformationFile);
+					}
+
 				}
 			}
 			catch (Exception ex)

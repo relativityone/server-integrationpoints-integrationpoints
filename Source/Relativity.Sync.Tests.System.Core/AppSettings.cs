@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using System.Text;
@@ -57,7 +58,13 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static string RelativeArchivesLocation => GetConfigValue("RelativeArchivesLocation");
 
-		public static string RemoteArchivesLocation => GetConfigValue("RemoteArchivesLocation");
+		public static string RelativeBCPPathLocation => GetConfigValue("RelativeBCPPathLocation");
+
+		public static string RemoteServerRoot => GetConfigValue("RemoteServerRoot");
+
+		public static string RemoteArchivesLocation => Path.Combine(RemoteServerRoot, RelativeArchivesLocation);
+		
+		public static string RemoteBCPPathLocation => Path.Combine(RemoteServerRoot, RelativeBCPPathLocation);
 
 		public static string ResourcePoolName => GetConfigValue("ResourcePoolName");
 

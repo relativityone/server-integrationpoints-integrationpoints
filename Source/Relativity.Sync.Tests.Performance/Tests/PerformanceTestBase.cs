@@ -91,13 +91,25 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		private async Task<WorkspaceRef> RestoreWorkspaceAsync(string armedWorkspaceFileName)
 		{
-			string filePath = await StorageHelper
-				.DownloadFileAsync(armedWorkspaceFileName, Path.GetTempPath()).ConfigureAwait(false);
+			string filePath = "";
+			try
+			{
+				filePath = await StorageHelper
+					.DownloadFileAsync(armedWorkspaceFileName, Path.GetTempPath()).ConfigureAwait(false);
 
-			Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
-			int workspaceArtifactId = await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
-			
-			return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
+				Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
+				int workspaceArtifactId =
+					await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
+
+				await Environment.CreateFieldsInWorkspaceAsync(workspaceArtifactId);
+
+				return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
+			}
+			finally
+			{
+				File.Delete(filePath);
+			}
+
 		}
 
 		protected override async Task ChildSuiteTeardown()
@@ -123,6 +135,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				DestinationWorkspace = await Environment
 					.CreateWorkspaceWithFieldsAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
 				_wasDestinationForTestCaseCreated = true;
+
+				Logger.LogInformation($"Destination workspace was created: {DestinationWorkspace.ArtifactID}");
 			}
 		}
 
@@ -235,6 +249,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Configuration.DataSourceArtifactId = Configuration.SavedSearchArtifactId;
 			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 			Configuration.SetFieldMappings(fieldsMapping.ToList());
+
+			Logger.LogInformation("Create Job History...");
 			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now.ToString("yyyy MMMM dd HH.mm.ss.fff")}").ConfigureAwait(false);
 
 			if (useRootWorkspaceFolder)

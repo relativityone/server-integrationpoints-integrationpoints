@@ -8,8 +8,9 @@
     <Parameter name="AzureStorageAccount" value="relativitysyncstorage" />
     <Parameter name="AzureStorageAuthorizationKey" value="HjBqFlighpywrOE+og8gtNA9GqCwcL/6hRH7wCKdvkqD2snOIvTJ3+zgRweVfeXPmCCUZB4clHgueoWVANSglw==" />
     <Parameter name="AzureStoragePerformanceContainer" value="performance-tests" />
-    <Parameter name="RemoteArchivesLocation" value="\\emttest" />
+    <Parameter name="RemoteServerRoot" value="\\emttest" />
     <Parameter name="RelativeArchivesLocation" value="DefaultFileRepository\Archives" />
+    <Parameter name="RelativeBCPPathLocation" value="BCPPath" />
     <Parameter name="ResourcePoolName" value="Default" />
     <Parameter name="PerformanceResultsFilePath" value="S:\results.csv" />
     <Parameter name="ArmRelativityTemplateMatterId" value="1000002" />
