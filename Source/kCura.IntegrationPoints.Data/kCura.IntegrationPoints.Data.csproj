@@ -73,7 +73,6 @@
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\FieldExtensions.cs" />
-    <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Facades\ObjectManager\DTOs\FieldValueMap.cs" />
     <Compile Include="Facades\ObjectManager\Implementation\ObjectManagerFacade.cs" />
@@ -260,7 +259,6 @@
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="Queries\JobStatisticsQuery.cs" />
-    <Compile Include="RdoHelper.cs" />
     <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\IWorkspaceRepository.cs" />
     <Compile Include="ResourceDbProvider.cs" />

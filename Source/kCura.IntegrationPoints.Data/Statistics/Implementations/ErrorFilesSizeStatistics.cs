@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations

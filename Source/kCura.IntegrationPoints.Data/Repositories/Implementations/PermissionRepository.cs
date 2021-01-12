@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Permission;

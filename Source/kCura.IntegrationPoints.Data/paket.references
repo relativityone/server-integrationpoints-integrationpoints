@@ -4,6 +4,7 @@ CSharpGuidelineAnalyzer
 kCura
 kCura.Relativity.Client
 kCura.Apps.Common.Utils
+Relativity
 Relativity.API
 Relativity.Data
 Relativity.IntegrationPoints.Contracts

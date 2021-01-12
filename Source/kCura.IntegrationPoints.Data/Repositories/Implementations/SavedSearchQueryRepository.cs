@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
