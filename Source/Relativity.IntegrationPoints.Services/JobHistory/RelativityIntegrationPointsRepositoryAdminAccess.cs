@@ -3,7 +3,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Services.JobHistory
 {
@@ -32,7 +31,7 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 		{
 			QueryRequest request = new QueryRequest()
 			{
-				Condition = $"'{SourceProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID}'"
+				Condition = $"'{SourceProviderFields.Identifier}' == '{kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID}'"
 			};
 			return GetArtifactIds(_relativityObjectManagerService.RelativityObjectManager.Query<SourceProvider>(request));
 		}
@@ -41,7 +40,7 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 		{
 			QueryRequest request = new QueryRequest()
 			{
-				Condition = $"'{DestinationProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"
+				Condition = $"'{DestinationProviderFields.Identifier}' == '{kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"
 			};
 			return GetArtifactIds(_relativityObjectManagerService.RelativityObjectManager.Query<DestinationProvider>(request));
 		}

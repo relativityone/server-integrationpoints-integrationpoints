@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using ReadResult = Relativity.Services.Objects.DataContracts.ReadResult;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {

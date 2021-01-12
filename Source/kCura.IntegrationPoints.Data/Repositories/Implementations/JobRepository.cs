@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Transformers;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
-		public IList<RDO> GetRunningJobs(int workspaceArtifactId)
+		public IList<RelativityObject> GetRunningJobs(int workspaceArtifactId)
 		{
 			IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 
@@ -33,9 +33,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = $"'{JobHistoryFields.JobStatus}' IN CHOICE [{string.Join(",", unfinishedJobsStatusesGuids)}]"
 			};
 
-			List<JobHistory> results = objectManager.Query<JobHistory>(request, ExecutionIdentity.System);
-
-			return results.Select(x => x.Rdo).ToList();
+			List<RelativityObject> results = objectManager.Query(request, ExecutionIdentity.System);
+			return results;
 		}
 
 		public IList<JobHistory> GetStuckJobs(IList<int> stuckJobsIds, int workspaceId)

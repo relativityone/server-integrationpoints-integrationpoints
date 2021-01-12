@@ -3,7 +3,6 @@ System.Reactive
 System.ValueTuple
 Relativity.API
 Relativity.DataExchange.Client.SDK
-kCura.Relativity.Client
 Relativity.IntegrationPoints.Contracts
 
 Relativity.Kepler.Service

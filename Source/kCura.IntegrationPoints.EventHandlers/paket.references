@@ -2,7 +2,6 @@ Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
-kCura.Relativity.Client
 LanguageExt.Core
 Relativity
 Relativity.Data
