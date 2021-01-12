@@ -4,9 +4,8 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Data.Attributes;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
-using Choice = Relativity.Services.Objects.DataContracts.Choice;
 
 namespace kCura.IntegrationPoints.Data.Transformers
 {
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 						$"Error while converting Relativity object to RDO. Type: '{rdoType}', fieldName: '{fieldName}' ");
 				}
 
-				var property = propertiesDictionary[fieldName];
+				PropertyInfo property = propertiesDictionary[fieldName];
 				object valueToSet = ConvertFieldValueToExpectedFormat(item, property.PropertyType);
 
 				property.SetValue(rdo, valueToSet, null);
@@ -95,24 +94,24 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			return valueToSet;
 		}
 
-		private static Relativity.Client.DTOs.Choice ConvertChoice(Choice choice)
+		private static global::Relativity.Services.Choice.ChoiceRef ConvertChoice(Choice choice)
 		{
-			return new Relativity.Client.DTOs.Choice(choice.ArtifactID)
+			return new global::Relativity.Services.Choice.ChoiceRef(choice.ArtifactID)
 			{
 				Guids = choice.Guids,
 				Name = choice.Name
 			};
 		}
 
-		private static ChoiceRef ConvertChoice(Relativity.Client.DTOs.Choice choice)
+		private static ChoiceRef ConvertChoice(global::Relativity.Services.Choice.ChoiceRef choiceRef)
 		{
-			return new ChoiceRef
+			return new ChoiceRef()
 			{
-				ArtifactID = choice.ArtifactID,
-				Guid = choice.Guids?.FirstOrDefault()
+				ArtifactID = choiceRef.ArtifactID,
+				Guid = choiceRef.Guids?.FirstOrDefault()
 			};
 		}
-
+		
 		private static Dictionary<string, PropertyInfo> GetPropertiesDictionary(Type rdoType)
 		{
 			var output = new Dictionary<string, PropertyInfo>();
@@ -134,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 
 		private static IEnumerable<FieldRefValuePair> ConvertPropertiesToFieldValuePairs(BaseRdo rdo, BindingFlags bindingAttr)
 		{
-			var properties = rdo.GetType().GetProperties(bindingAttr);
+			PropertyInfo[] properties = rdo.GetType().GetProperties(bindingAttr);
 			foreach (PropertyInfo prop in properties)
 			{
 				DynamicFieldAttribute attributes = prop?.GetCustomAttribute<DynamicFieldAttribute>();
@@ -181,19 +180,21 @@ namespace kCura.IntegrationPoints.Data.Transformers
 			}
 			if (attributes.Type == FieldTypes.SingleChoice)
 			{
-				var choice = (Relativity.Client.DTOs.Choice)rawValue;
-				return ConvertChoice(choice);
+				var choice = (global::Relativity.Services.Choice.ChoiceRef)rawValue;
+				ChoiceRef convertedChoice = ConvertChoice(choice);
+				return convertedChoice;
 			}
 			if (attributes.Type == FieldTypes.MultipleChoice)
 			{
-				var choices = (IEnumerable<Relativity.Client.DTOs.Choice>)rawValue;
-				return choices.Select(ConvertChoice).ToArray();
+				var choices = (IEnumerable<global::Relativity.Services.Choice.ChoiceRef>)rawValue;
+				ChoiceRef[] convertedChoices = choices.Select(ConvertChoice).ToArray();
+				return convertedChoices;
 			}
 			if (attributes.Type == FieldTypes.Date)
 			{
 				var dateTime = (DateTime)rawValue;
-				var dateTimeInUTC = dateTime.ToUniversalTime();
-				var dateTimeAsString = dateTimeInUTC.ToString("yyyy-MM-ddTHH:mm:ss.ff");
+				DateTime dateTimeInUTC = dateTime.ToUniversalTime();
+				string dateTimeAsString = dateTimeInUTC.ToString("yyyy-MM-ddTHH:mm:ss.ff");
 				return dateTimeAsString;
 			}
 			return rawValue;
@@ -231,7 +232,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 
 		public static ObjectTypeRef ToObjectType(this BaseRdo rdo)
 		{
-			var dynamiCobject = rdo.GetType().GetCustomAttribute<DynamicObjectAttribute>();
+			DynamicObjectAttribute dynamiCobject = rdo.GetType().GetCustomAttribute<DynamicObjectAttribute>();
 			return new ObjectTypeRef() { Guid = Guid.Parse(dynamiCobject.ArtifactTypeGuid) };
 		}
 
