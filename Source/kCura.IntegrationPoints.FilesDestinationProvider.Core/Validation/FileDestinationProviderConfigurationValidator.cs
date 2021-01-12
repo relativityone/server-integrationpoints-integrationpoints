@@ -6,8 +6,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using Relativity;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
@@ -72,7 +71,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 				case ExportSettings.ExportType.FolderAndSubfolders:
 					if (model.ArtifactTypeId == (int)ArtifactType.Document)
 					{
-						var folderValidator = _validatorsFactory.CreateArtifactValidator(exportSettings.WorkspaceId, ArtifactTypeNames.Folder);
+						var folderValidator = _validatorsFactory.CreateArtifactValidator(exportSettings.WorkspaceId, "Folder");
 						result.Add(folderValidator.Validate(exportSettings.FolderArtifactId));
 					}
 
