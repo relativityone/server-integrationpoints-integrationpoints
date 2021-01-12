@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 	[TestLevel.L3]
 	internal class ReferenceJobsTests : PerformanceTestBase
 	{
-		private AzureTableHelper _tableHelper;
+		//private AzureTableHelper _tableHelper;
 
 		public const string _PERFORMANCE_RESULTS_TABLE_NAME = "SyncReferenceJobsPerformanceTestsResults";
 
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					null)
 				.ConfigureAwait(false);
 
-			_tableHelper = AzureTableHelper.CreateFromTestConfig();
+			//_tableHelper = AzureTableHelper.CreateFromTestConfig();
 		}
 
 		public static IEnumerable<TestCaseData> Cases()
@@ -62,27 +62,27 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		{
 			await RunTestCaseAsync(testCase).ConfigureAwait(false);
 
-			await PublishTestResult(testCase).ConfigureAwait(false);
+			//await PublishTestResult(testCase).ConfigureAwait(false);
 		}
 
-		private Task PublishTestResult(PerformanceTestCase testCase)
-		{
-			string buildId = EnvironmentVariable.GetEnvironmentVariable("BUILD_ID");
-			if (string.IsNullOrEmpty(buildId))
-			{
-				return Task.CompletedTask;
-			}
+		//private Task PublishTestResult(PerformanceTestCase testCase)
+		//{
+		//	string buildId = EnvironmentVariable.GetEnvironmentVariable("BUILD_ID");
+		//	if (string.IsNullOrEmpty(buildId))
+		//	{
+		//		return Task.CompletedTask;
+		//	}
 
-			TestResult testResult = new TestResult(
-				testCase.TestCaseName,
-				buildId)
-			{
-				Duration = TestTimes[testCase.TestCaseName].TotalSeconds
-			};
+		//	TestResult testResult = new TestResult(
+		//		testCase.TestCaseName,
+		//		buildId)
+		//	{
+		//		Duration = TestTimes[testCase.TestCaseName].TotalSeconds
+		//	};
 
-			return _tableHelper.InsertAsync(
-				_PERFORMANCE_RESULTS_TABLE_NAME,	
-				testResult);
-		}
+		//	return _tableHelper.InsertAsync(
+		//		_PERFORMANCE_RESULTS_TABLE_NAME,	
+		//		testResult);
+		//}
 	}
 }

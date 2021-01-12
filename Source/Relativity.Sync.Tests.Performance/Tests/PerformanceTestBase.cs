@@ -91,13 +91,23 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 		private async Task<WorkspaceRef> RestoreWorkspaceAsync(string armedWorkspaceFileName)
 		{
-			string filePath = await StorageHelper
-				.DownloadFileAsync(armedWorkspaceFileName, Path.GetTempPath()).ConfigureAwait(false);
+			string filePath = "";
+			try
+			{
+				filePath = await StorageHelper
+					.DownloadFileAsync(armedWorkspaceFileName, Path.GetTempPath()).ConfigureAwait(false);
 
-			Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
-			int workspaceArtifactId = await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
-			
-			return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
+				Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
+				int workspaceArtifactId =
+					await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
+
+				return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
+			}
+			finally
+			{
+				File.Delete(filePath);
+			}
+
 		}
 
 		protected override async Task ChildSuiteTeardown()
