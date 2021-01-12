@@ -18,7 +18,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -29,11 +28,13 @@ using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.ResourcePool;
 using Relativity.Testing.Identification;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
+using WorkspaceRef = Relativity.Services.Workspace.WorkspaceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IJobService _jobService;
 		private ICaseServiceContext _caseContext;
 		private IQueueDBContext _queueContext;
-		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
+		private ResourcePool _workspaceResourcePool;
 
 		public ExportServiceManagerTests()
 			: base("ExportServiceManagerTests", "ExportServiceManagerTests_Destination")
@@ -116,7 +117,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				exportDataSanitizer);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
+			_workspaceResourcePool = Workspace.GetWorkspaceResourcePoolAsync(SourceWorkspaceArtifactID).GetAwaiter().GetResult();
 		}
 
 		[IdentifiedTest("b09c8436-23e8-45d7-a57c-bbe214335433")]
@@ -146,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			Job job = null;
 			try
 			{
-				int[] resourcePoolsIDs = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				int[] resourcePoolsIDs = { _workspaceResourcePool.ArtifactID };
 				job = GetNextJobInScheduleQueue(resourcePoolsIDs, model.ArtifactID, SourceWorkspaceArtifactID);
 
 				TaskParameters parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
@@ -198,10 +199,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					Console.WriteLine(string.Join(", ", row.ItemArray));
 				}
 				Console.WriteLine();
-				Console.WriteLine($"Resource pool ID: {_sourceWorkspaceDto.ResourcePoolID.Value}");
+				Console.WriteLine($"Resource pool ID: {_workspaceResourcePool.ArtifactID}");
 				Console.WriteLine($"IntegrationPointModel: {JsonConvert.SerializeObject(model)}");
 				Console.WriteLine();
-				int[] resourcePoolsIDs = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				int[] resourcePoolsIDs = { _workspaceResourcePool.ArtifactID };
 				job = GetNextJobInScheduleQueue(resourcePoolsIDs, model.ArtifactID, SourceWorkspaceArtifactID);
 
 				Guid batchInstance = Guid.NewGuid();

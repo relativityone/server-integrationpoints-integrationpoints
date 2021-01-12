@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers.Dto;
 using NUnit.Framework;
-using Document = kCura.Relativity.Client.DTOs.Document;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
@@ -22,11 +21,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		public void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			IList<FileTestDto> destinationImages = _productionImagesService.GetProductionImagesFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactID);
-			Assert.That(destinationImages, Is.Not.Null, $"Could not find production image file for document {destinationDocument.ArtifactID}");
+			IList<FileTestDto> destinationImages = _productionImagesService.GetProductionImagesFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactId);
+			Assert.That(destinationImages, Is.Not.Null, $"Could not find production image file for document {destinationDocument.ArtifactId}");
 
-			int expectedNumberOfImages = Math.Max(sourceDocument.RelativityImageCount.GetValueOrDefault(), 1);
-			Assert.That(destinationImages.Count, Is.EqualTo(expectedNumberOfImages), $"Number of produced images is different than expected for document {destinationDocument.ArtifactID}");
+			int expectedNumberOfImages = Math.Max(sourceDocument.ImageCount.GetValueOrDefault(), 1);
+			Assert.That(destinationImages.Count, Is.EqualTo(expectedNumberOfImages), $"Number of produced images is different than expected for document {destinationDocument.ArtifactId}");
 
 			foreach (FileTestDto destinationImage in destinationImages)
 			{

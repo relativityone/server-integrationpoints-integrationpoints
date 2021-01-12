@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.Services.Workspace;
 using Relativity.Testing.Identification;
 
 namespace Rip.E2ETests.Installation
@@ -51,7 +52,7 @@ namespace Rip.E2ETests.Installation
 		{
 			foreach (int workspaceID in _createdWorkspaces)
 			{
-				Workspace.DeleteWorkspace(workspaceID);
+				Workspace.DeleteWorkspaceAsync(workspaceID).GetAwaiter().GetResult();
 			}
 		}
 
@@ -87,9 +88,9 @@ namespace Rip.E2ETests.Installation
 
 		private async Task<int> CreateWorkspaceAsync(string workspaceName, string templateName)
 		{
-			int workspaceID = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
-			_createdWorkspaces.Add(workspaceID);
-			return workspaceID;
+			WorkspaceRef workspace = await Workspace.CreateWorkspaceAsync(workspaceName, templateName).ConfigureAwait(false);
+			_createdWorkspaces.Add(workspace.ArtifactID);
+			return workspace.ArtifactID;
 		}
 
 		private int ValidateAndGetMainWorkspaceID()

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -31,7 +32,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_workspaceId = Workspace.FindWorkspaceByName(Rsapi.CreateRsapiClient(), "Functional Tests Template").ArtifactID;
+			_workspaceId = Workspace.GetWorkspaceAsync(WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+				.GetAwaiter().GetResult().ArtifactID;
 			_helper = new TestHelper();
 			_relativityObjectManager = CreateObjectManager();
 		}

@@ -25,19 +25,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			_expectInRepository = expectInRepository;
 		}
 
-		public override void ValidateDocument(Relativity.Client.DTOs.Document destinationDocument, Relativity.Client.DTOs.Document sourceDocument)
+		public override void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
 			base.ValidateDocument(destinationDocument, sourceDocument);
 
-			FileTestDto destinationFile = _nativesService.GetNativeFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactID);
+			FileTestDto destinationFile = _nativesService.GetNativeFileInfo(_destinationWorkspaceId, destinationDocument.ArtifactId);
 
 			if (!ShouldExpectNativesForDocument(sourceDocument))
 			{
-				Assert.IsNull(destinationFile, $"There should be no natives in repository for document {destinationDocument.ArtifactID}");
+				Assert.IsNull(destinationFile, $"There should be no natives in repository for document {destinationDocument.ArtifactId}");
 				return;
 			}
 
-			FileTestDto sourceFile = _nativesService.GetNativeFileInfo(_sourceWorkspaceId, sourceDocument.ArtifactID);
+			FileTestDto sourceFile = _nativesService.GetNativeFileInfo(_sourceWorkspaceId, sourceDocument.ArtifactId);
 
 			if (_expectInRepository)
 			{
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 				Assert.That(destinationFile.Location, Is.EqualTo(sourceFile.Location));
 			}
 
-			Assert.That(destinationFile, Is.Not.Null, $"Could not find file for document {destinationDocument.ArtifactID}");
+			Assert.That(destinationFile, Is.Not.Null, $"Could not find file for document {destinationDocument.ArtifactId}");
 			Assert.That(destinationFile.InRepository, Is.EqualTo(_expectInRepository));
 		}
 	}

@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
 using System.Net;
 using Castle.MicroKernel.Registration;
@@ -21,7 +19,6 @@ using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 
@@ -39,7 +36,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 			RegisterJobManagers(windsorContainer);
 			RegisterLoggingClasses(windsorContainer);
 			RegisterSerializer(windsorContainer);
-			RegisterRSAPIClient(windsorContainer);
 			RegisterConfig(windsorContainer);
 			RegisterDomainClasses(windsorContainer);
 			RegisterSyncClasses(windsorContainer);
@@ -88,14 +84,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
 		}
 
-		private static void RegisterRSAPIClient(WindsorContainer windsorContainer)
-		{
-			windsorContainer.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
-			{
-				return new RSAPIClient(SharedVariables.RsapiUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
-			}));
-		}
-
 		private static void RegisterConfig(WindsorContainer windsorContainer)
 		{
 			IWebApiConfig webApiConfig = Substitute.For<IWebApiConfig>();
@@ -122,12 +110,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
 		private static void RegisterDomainClasses(WindsorContainer windsorContainer)
 		{
-			windsorContainer.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel => new RSAPIClientTokenGenerator(kernel.Resolve<IRSAPIClient>())).LifestyleTransient());
+			windsorContainer.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
 			windsorContainer.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
 			windsorContainer.Register(Component.For<IMessageService>().Instance(Substitute.For<IMessageService>()));
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

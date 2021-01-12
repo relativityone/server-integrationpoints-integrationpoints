@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			if(!HasTestFailed())
 			{
-				Workspace.DeleteWorkspace(TargetWorkspaceArtifactID);
+				Workspace.DeleteWorkspaceAsync(TargetWorkspaceArtifactID).GetAwaiter().GetResult();
 			}
 
 			base.SuiteTeardown();
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			TargetWorkspaceArtifactID = string.IsNullOrEmpty(_targetWorkspaceName)
 				? SourceWorkspaceArtifactID
-				: await Task.Run(() => Workspace.CreateWorkspace(_targetWorkspaceName, _targetWorkspaceTemplate)).ConfigureAwait(false);
+				: (await Workspace.CreateWorkspaceAsync(_targetWorkspaceName, _targetWorkspaceTemplate).ConfigureAwait(false)).ArtifactID;
 
 			SavedSearchArtifactID = await Task.Run(() => SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, "All documents")).ConfigureAwait(false);
 			TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch;

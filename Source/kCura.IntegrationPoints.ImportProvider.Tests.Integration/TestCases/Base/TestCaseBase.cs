@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base
 {

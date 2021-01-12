@@ -6,12 +6,14 @@ kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
 kCura.Relativity.Client
 Relativity.Authentication
+Relativity.DataExchange.Client.SDK
 Relativity.Data
 Relativity.DataTransfer.MessageService
 Relativity.Logging
 Relativity.OAuth2Client
 Relativity.Services.DataContracts
 Relativity.Services.Interfaces.Private
+Relativity.Telemetry.DataContracts.Shared
 Relativity.Telemetry.APM
 relativity.transfer.client
 FluentAssertions

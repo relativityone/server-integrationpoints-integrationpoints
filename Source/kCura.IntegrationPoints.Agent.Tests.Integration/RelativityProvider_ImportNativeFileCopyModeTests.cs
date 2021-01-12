@@ -4,7 +4,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -25,6 +24,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.ResourcePool;
 using Relativity.Testing.Identification;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private ExportServiceManager _exportManager;
 		private IIntegrationPointService _integrationPointService;
 		private IJobService _jobService;
-		private Relativity.Client.DTOs.Workspace _sourceWorkspaceDto;
+		private ResourcePool _workspaceResourcePool;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _SOURCE_WORKSPACE_NAME = "Push_NativeFileCopy";
 		private const string _TARGET_WORKSPACE_NAME = "Push_NativeFileCopy_Destination";
@@ -102,7 +102,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			);
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_sourceWorkspaceDto = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactID);
+			_workspaceResourcePool = Workspace.GetWorkspaceResourcePoolAsync(SourceWorkspaceArtifactID)
+				.GetAwaiter().GetResult();
 		}
 
 		[TearDown]
@@ -146,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			Job job = null;
 			try
 			{
-				int[] resourcePools = { _sourceWorkspaceDto.ResourcePoolID.Value };
+				int[] resourcePools = { _workspaceResourcePool.ArtifactID };
 				job = GetNextJobInScheduleQueue(resourcePools, integrationPointModel.ArtifactID, SourceWorkspaceArtifactID);
 
 				// act
@@ -217,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			bool allHasNativeAsExpected = DocumentService
 				.GetAllDocuments(workspaceID, documentFields)
-				.Select(document => document.Artifact.HasNative.Value)
+				.Select(document => document.HasNatives)
 				.All(hasNative => hasNative == expectedHasNative);
 
 			Assert.IsTrue(allHasNativeAsExpected);

@@ -46,12 +46,13 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			base.TestSetup();
 
-			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult();
+			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+				.GetAwaiter().GetResult().ArtifactID;
 		}
 
 		public override void TestTeardown()
 		{
-			Workspace.DeleteWorkspace(_targetWorkspaceArtifactID);
+			Workspace.DeleteWorkspaceAsync(_targetWorkspaceArtifactID).GetAwaiter().GetResult();
 
 			base.TestTeardown();
 		}

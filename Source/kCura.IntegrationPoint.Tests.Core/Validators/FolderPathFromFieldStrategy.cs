@@ -1,23 +1,21 @@
-﻿using kCura.Relativity.Client.DTOs;
-
-namespace kCura.IntegrationPoint.Tests.Core.Validators
+﻿namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
 	using NUnit.Framework;
 
 	public class FolderPathFromFieldStrategy : FolderPathStrategyWithCache
 	{
-		private readonly string _folderPathfieldName;
+		private readonly string _folderPathFieldName;
 
-		public FolderPathFromFieldStrategy(string folderPathfieldName)
+		public FolderPathFromFieldStrategy(string folderPathFieldName)
 		{
-			_folderPathfieldName = folderPathfieldName;
+			_folderPathFieldName = folderPathFieldName;
 		}
 
 		protected override string GetFolderPathInternal(Document document)
 		{
-			Assert.That(document[_folderPathfieldName].Value, Is.Not.Null, $"Document {document[IntegrationPoints.Data.DocumentFields.ControlNumber].Value} does not have folder path defined");
+			Assert.That(document[_folderPathFieldName], Is.Not.Null, $"Document {document.ControlNumber} does not have folder path defined");
 
-			return document[_folderPathfieldName].Value.ToString();
+			return document.ReadAsString(_folderPathFieldName);
 		}
 	}
 }
