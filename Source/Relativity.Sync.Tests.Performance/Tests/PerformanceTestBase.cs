@@ -101,6 +101,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				int workspaceArtifactId =
 					await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
 
+				await Environment.CreateFieldsInWorkspaceAsync(workspaceArtifactId);
+
 				return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
 			}
 			finally
@@ -133,6 +135,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				DestinationWorkspace = await Environment
 					.CreateWorkspaceWithFieldsAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
 				_wasDestinationForTestCaseCreated = true;
+
+				Logger.LogInformation($"Destination workspace was created: {DestinationWorkspace.ArtifactID}");
 			}
 		}
 
@@ -245,6 +249,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Configuration.DataSourceArtifactId = Configuration.SavedSearchArtifactId;
 			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 			Configuration.SetFieldMappings(fieldsMapping.ToList());
+
+			Logger.LogInformation("Create Job History...");
 			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now.ToString("yyyy MMMM dd HH.mm.ss.fff")}").ConfigureAwait(false);
 
 			if (useRootWorkspaceFolder)
