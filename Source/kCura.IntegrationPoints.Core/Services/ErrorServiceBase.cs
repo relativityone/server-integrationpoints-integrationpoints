@@ -1,10 +1,12 @@
 using System;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Data.Queries;
-using kCura.Utility.Extensions;
+using System.Reflection;
+using System.Diagnostics;
 using Relativity.API;
 using Relativity.Services.Error;
 using Relativity.Services.Workspace;
+using kCura.Utility.Extensions;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -21,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			_log = log;
 			CreateErrorRdo = createError;
-			string appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			string appVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
 			AppName = $"Integration Points v({appVersion})";
 		}
 

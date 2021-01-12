@@ -1,5 +1,5 @@
 ﻿@using System.Reflection
-@using System.Text.RegularExpressions
+@using System.Diagnostics
 @using kCura.IntegrationPoints.Web
 <!DOCTYPE html>
 <html>
@@ -35,7 +35,7 @@
     @RenderSection("scripts", required: false)
 
     <script>
-        IP.assemblyVersion = "@Assembly.GetAssembly(typeof(WindsorFilterProvider)).GetName().Version.ToString(4)"
+        IP.assemblyVersion = "@FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(WindsorFilterProvider)).Location).FileVersion";
     </script>
 
     <script>
