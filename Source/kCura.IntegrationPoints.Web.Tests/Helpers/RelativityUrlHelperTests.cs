@@ -1,12 +1,13 @@
-﻿using System.Reflection;
-using FluentAssertions;
+﻿using System.Web;
+using System.Reflection;
+using System.Diagnostics;
+using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Web.Helpers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using Moq;
 using NUnit.Framework;
-using System.Web;
-using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using FluentAssertions;
 
 namespace kCura.IntegrationPoints.Web.Tests.Helpers
 {
@@ -33,8 +34,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Helpers
 			var objectTypeService = new ObjectTypeService(objectTypeRepositoryMock.Object);
 
 			var sut = new RelativityUrlHelper(httpRequest.Object, objectTypeService);
-
-			string version = Assembly.GetAssembly(typeof(UrlVersionDecorator)).GetName().Version.ToString(4);
+			
+			string version = FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UrlVersionDecorator)).Location).FileVersion;
 
 			// act
 			string actualViewUrl = sut.GetRelativityViewUrl(_WORKSPACE_ID, _ARTIFACT_ID, _OBJECT_TYPE_NAME);

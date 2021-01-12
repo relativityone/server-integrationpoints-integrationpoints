@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Diagnostics;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
@@ -13,7 +9,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 		static UrlVersionDecorator()
 		{
-			Version = Assembly.GetAssembly(typeof(UrlVersionDecorator)).GetName().Version.ToString(4);
+			Version = FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UrlVersionDecorator)).Location).FileVersion;
 		}
 
 		public static string AppendVersion(string url)
