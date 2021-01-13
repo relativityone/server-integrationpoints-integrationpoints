@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string SingleObject = "Single Object";
 		public const string MultipleObject = "Multiple Object";
 		public const string FixedLengthText = "Fixed Length Text";
-		public const string SingleChoice = "Single ChoiceRef";
+		public const string SingleChoice = "Single Choice";
 		public const string MultipleChoice = "MultipleChoice";
 		public const string LongText = "Long Text";
 		public const string User = "User";

@@ -2,7 +2,7 @@
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {

@@ -84,10 +84,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			private static Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
 			public override Dictionary<Guid, DynamicFieldAttribute> FieldMetadata =>
 				_fieldMetadata ?? (_fieldMetadata = GetFieldMetadata(typeof(RdoStub)));
-
-			private static DynamicObjectAttribute _objectMetadata;
-			public override DynamicObjectAttribute ObjectMetadata =>
-				_objectMetadata ?? (_objectMetadata = GetObjectMetadata(typeof(RdoStub)));
 		}
 	}
 }

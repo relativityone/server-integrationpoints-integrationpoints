@@ -12,9 +12,9 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.WinEDDS.Service.Export;
+using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Images

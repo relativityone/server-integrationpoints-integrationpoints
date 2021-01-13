@@ -117,17 +117,6 @@ namespace kCura.IntegrationPoints.Data
 				return _fieldMetadata;
 			}
 		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(Document));
-				return _objectMetadata;
-			}
-		}
 	}
  
 	[DynamicObject(ObjectTypes.IntegrationPoint, ObjectTypes.Workspace, "", ObjectTypeGuids.IntegrationPoint)]
@@ -361,17 +350,6 @@ namespace kCura.IntegrationPoints.Data
 				return _fieldMetadata;
 			}
 		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(IntegrationPoint));
-				return _objectMetadata;
-			}
-		}
 	}
  
 	[DynamicObject(ObjectTypes.SourceProvider, ObjectTypes.Workspace, "", ObjectTypeGuids.SourceProvider)]
@@ -463,17 +441,6 @@ namespace kCura.IntegrationPoints.Data
 				return _fieldMetadata;
 			}
 		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(SourceProvider));
-				return _objectMetadata;
-			}
-		}
 	}
  
 	[DynamicObject(ObjectTypes.DestinationProvider, ObjectTypes.Workspace, "", ObjectTypeGuids.DestinationProvider)]
@@ -527,17 +494,6 @@ namespace kCura.IntegrationPoints.Data
 					return _fieldMetadata;
 				_fieldMetadata = GetFieldMetadata(typeof(DestinationProvider));
 				return _fieldMetadata;
-			}
-		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(DestinationProvider));
-				return _objectMetadata;
 			}
 		}
 	}
@@ -767,17 +723,6 @@ namespace kCura.IntegrationPoints.Data
 				return _fieldMetadata;
 			}
 		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(JobHistory));
-				return _objectMetadata;
-			}
-		}
 	}
  
 	[DynamicObject(ObjectTypes.JobHistoryError, ObjectTypes.JobHistory, "", ObjectTypeGuids.JobHistoryError)]
@@ -892,17 +837,6 @@ namespace kCura.IntegrationPoints.Data
 				return _fieldMetadata;
 			}
 		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(JobHistoryError));
-				return _objectMetadata;
-			}
-		}
 	}
  
 	[DynamicObject(ObjectTypes.DestinationWorkspace, ObjectTypes.Workspace, "", ObjectTypeGuids.DestinationWorkspace)]
@@ -1006,17 +940,6 @@ namespace kCura.IntegrationPoints.Data
 				return _fieldMetadata;
 			}
 		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(DestinationWorkspace));
-				return _objectMetadata;
-			}
-		}
 	}
  
 	[DynamicObject(ObjectTypes.IntegrationPointType, ObjectTypes.Workspace, "", ObjectTypeGuids.IntegrationPointType)]
@@ -1070,17 +993,6 @@ namespace kCura.IntegrationPoints.Data
 					return _fieldMetadata;
 				_fieldMetadata = GetFieldMetadata(typeof(IntegrationPointType));
 				return _fieldMetadata;
-			}
-		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(IntegrationPointType));
-				return _objectMetadata;
 			}
 		}
 	}
@@ -1268,17 +1180,5 @@ namespace kCura.IntegrationPoints.Data
 				return _fieldMetadata;
 			}
 		}
-		private static DynamicObjectAttribute _objectMetadata;
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get
-			{
-				if (!(_objectMetadata == null))
-					return _objectMetadata;
-				_objectMetadata = GetObjectMetadata(typeof(IntegrationPointProfile));
-				return _objectMetadata;
-			}
-		}
 	}
-
 }

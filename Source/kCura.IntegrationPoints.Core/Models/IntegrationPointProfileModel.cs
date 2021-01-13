@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.Services.Choice;
 

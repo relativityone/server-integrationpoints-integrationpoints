@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 
 				if (fieldName == ArtifactFieldNames.TextIdentifier)
 				{
-					rdo.Rdo.TextIdentifier = item?.Value as string;
+					rdo.RelativityObject.Name = item?.Value as string;
 					continue;
 				}
 

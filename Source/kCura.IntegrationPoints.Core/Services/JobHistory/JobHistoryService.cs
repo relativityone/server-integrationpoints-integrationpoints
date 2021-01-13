@@ -10,8 +10,8 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 

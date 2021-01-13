@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
@@ -110,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			{
 				ArtifactValidator destinationFolderValidator =
 					_validatorsFactory.CreateArtifactValidator(destinationConfiguration.CaseArtifactId,
-						ArtifactTypeNames.Folder,
+						"Folder",
 						sourceConfiguration.FederatedInstanceArtifactId,
 						integrationModel.SecuredConfiguration);
 				result.Add(destinationFolderValidator.Validate(destinationConfiguration.DestinationFolderArtifactId));

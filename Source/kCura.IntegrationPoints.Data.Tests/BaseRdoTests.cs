@@ -255,10 +255,5 @@ namespace kCura.IntegrationPoints.Data.Tests
 		{
 			get { throw new NotImplementedException(); }
 		}
-
-		public override DynamicObjectAttribute ObjectMetadata
-		{
-			get { throw new NotImplementedException(); }
-		}
 	}
 }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.Services.Objects;
@@ -29,10 +28,10 @@ namespace kCura.IntegrationPoints.Core.Services
 					Condition = $"'FieldArtifactTypeID' == {rdoTypeId} " +
 					            $"AND 'Field Type' IN ['{FieldTypes.SingleChoice}', '{Constants.Fields.MultipleChoice}']",
 					IncludeNameInQueryResult = true,
-					RankSortOrder = global::Relativity.Services.Objects.DataContracts.SortEnum.Ascending
+					RankSortOrder = SortEnum.Ascending
 				};
 
-				var result = objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue).GetAwaiter().GetResult();
+				QueryResult result = objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue).GetAwaiter().GetResult();
 
 				return result.Objects.Select(x => new FieldEntry
 				{

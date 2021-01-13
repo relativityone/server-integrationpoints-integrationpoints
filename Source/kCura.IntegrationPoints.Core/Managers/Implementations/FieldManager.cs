@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
