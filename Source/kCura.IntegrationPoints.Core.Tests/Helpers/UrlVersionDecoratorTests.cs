@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using System.Reflection;
+using System.Diagnostics;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using NUnit.Framework;
+using FluentAssertions;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
@@ -18,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		[SetUp]
 		public void Setup()
 		{
-			_assemblyVersion = Assembly.GetAssembly(typeof(UrlVersionDecorator)).GetName().Version.ToString(4);
+			_assemblyVersion = FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UrlVersionDecorator)).Location).FileVersion;
 		}
 
 		[Test]

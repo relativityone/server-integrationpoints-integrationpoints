@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
 		}
 
 		[Test]
-		public void IRSAPIService_ShouldBeResolvedAndNotThrow()
+		public void ObjectManagerService_ShouldBeResolvedAndNotThrow()
 		{
 			// arrange
 			RegisterInstallerDependencies(_container);
@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
 		}
 
 		[Test]
-		public void IRSAPIService_ShouldResolveProperImplementation()
+		public void ObjectManagerService_ShouldResolveProperImplementation()
 		{
 			// arrange
 			RegisterInstallerDependencies(_container);

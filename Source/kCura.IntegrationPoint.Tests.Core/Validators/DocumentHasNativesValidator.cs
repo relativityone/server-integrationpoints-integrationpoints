@@ -1,8 +1,7 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Validators
-{
-	using NUnit.Framework;
-	using Relativity.Client.DTOs;
+﻿using NUnit.Framework;
 
+namespace kCura.IntegrationPoint.Tests.Core.Validators
+{
 	public class DocumentHasNativesValidator : IDocumentValidator
 	{
 		protected bool? ExpectHasNatives { get; }
@@ -16,12 +15,12 @@
 		{
 			bool shouldExpectNatives = ShouldExpectNativesForDocument(sourceDocument);
 
-			Assert.That(destinationDocument.HasNative, Is.EqualTo(shouldExpectNatives));
+			Assert.That(destinationDocument.HasNatives, Is.EqualTo(shouldExpectNatives));
 		}
 
 		protected  virtual bool ShouldExpectNativesForDocument(Document expectedDocument)
 		{
-			return ExpectHasNatives ?? expectedDocument.HasNative.GetValueOrDefault();
+			return ExpectHasNatives ?? expectedDocument.HasNatives.GetValueOrDefault();
 		}
 	}
 }

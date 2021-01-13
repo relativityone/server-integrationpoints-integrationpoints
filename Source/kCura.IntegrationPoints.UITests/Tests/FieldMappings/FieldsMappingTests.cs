@@ -18,6 +18,7 @@ using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Workspace;
 using Relativity.Testing.Identification;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
@@ -329,7 +330,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			const string newDestination = "New destination";
 			ObjectTypeIdentifier documentObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document };
 
-			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, DestinationContext.WorkspaceName, Log)
+			WorkspaceRef newWorkspace = await Workspace.CreateWorkspaceAsync(newDestination, DestinationContext.WorkspaceName)
 				.ConfigureAwait(false);
 
 			await SourceFieldManager.CreateDecimalFieldAsync(SourceContext.WorkspaceId.Value, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType })
@@ -337,7 +338,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			await DestinationFieldManager.CreateDecimalFieldAsync(DestinationContext.WorkspaceId.Value, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType })
 				.ConfigureAwait(false);
 
-			await SourceFieldManager.CreateDecimalFieldAsync(newWorkspaceID, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType }).ConfigureAwait(false);
+			await SourceFieldManager.CreateDecimalFieldAsync(newWorkspace.ArtifactID, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType }).ConfigureAwait(false);
 
 			try
 			{
@@ -357,7 +358,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 				//Act
 				PushToRelativitySecondPage destinationPage = detailsPage.EditIntegrationPoint().GoToNextPagePush();
-				destinationPage.DestinationWorkspace = $"{newDestination} - {newWorkspaceID}";
+				destinationPage.DestinationWorkspace = $"{newDestination} - {newWorkspace.ArtifactID}";
 
 				destinationPage.SelectFolderLocation();
 				destinationPage.WaitForPage();
@@ -376,7 +377,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			}
 			finally
 			{
-				Workspace.DeleteWorkspace(newWorkspaceID);
+				await Workspace.DeleteWorkspaceAsync(newWorkspace.ArtifactID).ConfigureAwait(false);
 			}
 		}
 

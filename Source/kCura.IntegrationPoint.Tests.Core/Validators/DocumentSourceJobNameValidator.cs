@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using Document = kCura.Relativity.Client.DTOs.Document;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
@@ -25,7 +24,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 		{
 			int relativitySourceJobArtifactId = RetrieveDocumentFieldArtifactId("Relativity Source Job", FieldTypes.MultipleObject);
 
-			int destinationDocumentArtifactId = destinationDocument.ArtifactID;
+			int destinationDocumentArtifactId = destinationDocument.ArtifactId;
 			Assert.That(relativitySourceJobArtifactId, Is.Not.Zero, $"Could not find field 'Relativity Source Job' in document {destinationDocumentArtifactId}");
 
 			object fieldValue = GetFieldValue(destinationDocumentArtifactId, relativitySourceJobArtifactId);

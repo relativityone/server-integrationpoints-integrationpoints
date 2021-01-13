@@ -9,6 +9,7 @@ kCura.FreeImage
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.DataExchange.Client.SDK
+Relativity.Toggles
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll

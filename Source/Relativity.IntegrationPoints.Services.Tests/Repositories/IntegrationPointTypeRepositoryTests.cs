@@ -19,10 +19,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		public override void SetUp()
 		{
 			_objectManager = Substitute.For<IRelativityObjectManager>();
-			var rsapiService = Substitute.For<IRelativityObjectManagerService>();
-			rsapiService.RelativityObjectManager.Returns(_objectManager);
+			IRelativityObjectManagerService objectManagerService = Substitute.For<IRelativityObjectManagerService>();
+			objectManagerService.RelativityObjectManager.Returns(_objectManager);
 
-			_integrationPointTypeRepository = new IntegrationPointTypeRepository(rsapiService);
+			_integrationPointTypeRepository = new IntegrationPointTypeRepository(objectManagerService);
 		}
 
 		[Test]
@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 			_objectManager.Query<IntegrationPointType>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
-			var actualResult = _integrationPointTypeRepository.GetIntegrationPointTypes();
+			IList<IntegrationPointTypeModel> actualResult = _integrationPointTypeRepository.GetIntegrationPointTypes();
 
 			Assert.That(actualResult,
 				Is.EquivalentTo(expectedResult).Using(new Func<IntegrationPointTypeModel, IntegrationPointType, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactId))));

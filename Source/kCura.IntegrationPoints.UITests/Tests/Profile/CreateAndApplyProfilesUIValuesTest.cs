@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
 using kCura.Utility;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using Relativity.Services.Workspace;
 using Relativity.Testing.Identification;
 using DateTime = System.DateTime;
 
@@ -110,7 +111,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
 
 			string newDestination = $"RIP New destination_{_timeStamp}";
-			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName, Log)
+			WorkspaceRef newWorkspace = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName)
 				.ConfigureAwait(false);
 			string profileModelName = "Created From Profile";
 
@@ -137,7 +138,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 				.Be(errorMessage);
 
 			//TearDown
-			Workspace.DeleteWorkspace(newWorkspaceID);
+			await Workspace.DeleteWorkspaceAsync(newWorkspace.ArtifactID).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("e4d45cc5-3b75-405d-b6e0-caf151136d02")]
@@ -151,7 +152,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
 
 			string newDestination = $"RIP New destination {_timeStamp}";
-			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName, Log)
+			WorkspaceRef newWorkspace = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName)
 				.ConfigureAwait(false);
 
 			//Act
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			secondPage.DestinationWorkspace.Should().Be(model.DestinationWorkspace);
 			secondPage.FolderLocationSelectText.Should().Be(string.Empty); //this should always be empty;
 
-			Workspace.DeleteWorkspace(newWorkspaceID);
+			await Workspace.DeleteWorkspaceAsync(newWorkspace.ArtifactID).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("62c16b2a-ed88-419d-a4e9-252550fde0fc")]
@@ -194,7 +195,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
 
 			string newDestination = $"RIP New destination {_timeStamp}";
-			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName, Log)
+			WorkspaceRef newWorkspace = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName)
 				.ConfigureAwait(false);
 
 			//Act
@@ -219,7 +220,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			thirdPage.SelectImagePrecedence.Should().Be(EnumExtensions.GetDescription(ImagePrecedence.ProducedImages));
 			thirdPage.ProductionPrecedenceText.Should().Be("Select...");
 
-			Workspace.DeleteWorkspace(newWorkspaceID);
+			await Workspace.DeleteWorkspaceAsync(newWorkspace.ArtifactID).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("b5c2ffc1-06a6-47c7-92fb-8a13c1f87061")]
@@ -236,8 +237,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			_profileAction.CreateNewRelativityProviderIntegrationPointProfile(model);
 
 			string newDestination = $"RIP New destination {_timeStamp}";
-			
-			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName, Log)
+
+			WorkspaceRef newWorkspace = await Workspace.CreateWorkspaceAsync(newDestination, SourceContext.WorkspaceName)
 				.ConfigureAwait(false);
 
 			//Act
@@ -261,8 +262,8 @@ namespace kCura.IntegrationPoints.UITests.Tests.Profile
 			List<string> listOfVisibleWarningsTexts = secondPage.listOfValidationErrorsElements.Where( i => i.GetCssValue("display").Equals("inline-block")).Select( i => i.Text).ToList();
 			listOfVisibleWarningsTexts.Should().Contain(emptySavedSearchErrorMessage);
 			listOfVisibleWarningsTexts.Should().Contain(emptyLocationErrorMessage);
-			
-			Workspace.DeleteWorkspace(newWorkspaceID);
+
+			await Workspace.DeleteWorkspaceAsync(newWorkspace.ArtifactID).ConfigureAwait(false);
 		}
 
 	}

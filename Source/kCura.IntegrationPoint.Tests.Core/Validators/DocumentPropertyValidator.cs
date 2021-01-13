@@ -1,10 +1,8 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core.Validators
-{
-	using System;
-	using NUnit.Framework;
-	using Relativity.Client.DTOs;
-	using TestHelpers;
+﻿using System;
+using NUnit.Framework;
 
+namespace kCura.IntegrationPoint.Tests.Core.Validators
+{
 	public class DocumentPropertyValidator<T> : IDocumentValidator
 	{
 		private readonly Func<Document, T> _documentProperty;
@@ -16,9 +14,10 @@
 
 		public virtual void ValidateDocument(Document destinationDocument, Document sourceDocument)
 		{
-			FieldValue documentControlNumber = destinationDocument[TestConstants.FieldNames.CONTROL_NUMBER];
+			string documentControlNumber = destinationDocument.ControlNumber;
 
-			Assert.That(_documentProperty(destinationDocument), Is.EqualTo(_documentProperty(sourceDocument)), "Actual field value is different than expected. Document control number: {0}", documentControlNumber);
+			Assert.That(_documentProperty(destinationDocument), Is.EqualTo(_documentProperty(sourceDocument)), 
+				"Actual field value is different than expected. Document control number: {0}", documentControlNumber);
 		}
 	}
 }

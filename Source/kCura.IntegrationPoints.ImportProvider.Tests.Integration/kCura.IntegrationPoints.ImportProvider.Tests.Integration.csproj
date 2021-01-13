@@ -53,7 +53,6 @@
     <Compile Include="Abstract\IImportTestCase.cs" />
     <Compile Include="Helpers\ContainerInstaller.cs" />
     <Compile Include="Helpers\EmbeddedResource.cs" />
-    <Compile Include="Helpers\RSAPIClientTokenGenerator.cs" />
     <Compile Include="Helpers\SettingsObjects.cs" />
     <Compile Include="ImportServiceManagerTests.cs" />
     <Compile Include="Synchronizer\TestRdoSynchronizer.cs" />
@@ -636,6 +635,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Testing.Identification">
           <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Toggles">
+          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

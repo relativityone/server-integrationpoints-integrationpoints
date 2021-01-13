@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Helpers.Implementations;
-using kCura.IntegrationPoints.Core.Managers;
+using System.Diagnostics;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using NSubstitute;
 using NUnit.Framework;
+using kCura.IntegrationPoint.Tests.Core;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
@@ -144,8 +145,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			Assert.AreEqual(String.Empty, onClickEvents.RunOnClickEvent);
 			Assert.AreEqual(String.Empty, onClickEvents.StopOnClickEvent);
 		}
-
-
+		
 		private string ViewErrorsLinkSetup()
 		{
 			const int jobHistoryErrorStatusFieldArtifactId = 1076600;
@@ -177,8 +177,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			_fieldManager.RetrieveArtifactViewFieldId(_workspaceId, guidsAndArtifactIds[jobHistoryFieldGuid]).Returns(jobHistoryArtifactViewFieldId);
 			_jobHistoryManager.GetLastJobHistoryArtifactId(_workspaceId, _integrationPointId).Returns(jobHistoryInstanceArtifactId);
 
-			string version = Assembly.GetAssembly(typeof(UrlVersionDecorator)).GetName().Version.ToString(4);
-
+			string version = FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UrlVersionDecorator)).Location).FileVersion;
 
 			string onClickEventForViewErrors = $"window.location='../../Case/IntegrationPoints/ErrorsRedirect.aspx?ErrorStatusArtifactViewFieldID={jobHistoryErrorStatusArtifactViewFieldId}"
 					+ $"&ErrorStatusNewChoiceArtifactId={jobHistoryErrorStatusNewChoiceArtifactId}&JobHistoryErrorArtifactTypeId={jobHistoryErrorDescriptorArtifactTypeId}"

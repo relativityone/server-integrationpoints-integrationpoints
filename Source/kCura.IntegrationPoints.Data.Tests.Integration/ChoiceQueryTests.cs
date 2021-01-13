@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using NUnit.Framework;
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			List<ChoiceRef> result = _sut.GetChoicesOnField(WorkspaceArtifactId, IntegrationPointsJobTypeGuid);
 
 			// Assert
-			result.ShouldAllBeEquivalentTo(ExpectedJobTypeChoiceValues, config => config.Excluding(x => x.ArtifactID));
+			result.Select(x => x.Name).ShouldAllBeEquivalentTo(ExpectedJobTypeChoiceValues.Select(x => x.Name));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
 {
@@ -9,9 +9,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			params IDocumentValidator[] documentValidators)
 			: base(
 				() => DocumentService.GetAllDocuments(sourceWorkspaceId)
-					.Where(doc => doc.GetValueOrDefault(x => x.RelativityImageCount) > 0).ToList(),
+					.Where(doc => doc.ImageCount.GetValueOrDefault() > 0).ToList(),
 				() => DocumentService.GetAllDocuments(destinationWorkspaceId)
-					.Where(doc => doc.GetValueOrDefault(x => x.RelativityImageCount) > 0).ToList(),
+					.Where(doc => doc.ImageCount.GetValueOrDefault() > 0).ToList(),
 				documentValidators
 			)
 		{
