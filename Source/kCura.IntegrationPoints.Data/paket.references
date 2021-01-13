@@ -2,7 +2,6 @@ System.ValueTuple
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura
-kCura.Relativity.Client
 kCura.Apps.Common.Utils
 Relativity
 Relativity.API

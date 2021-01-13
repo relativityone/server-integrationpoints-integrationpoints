@@ -1,7 +1,7 @@
 ﻿using System;
-using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Attributes;
 using Relativity.Services.Choice;
+using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -47,15 +47,15 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 		[DynamicField(DocumentFields.MarkupSetPrimary, DocumentFieldGuids.MarkupSetPrimary, FieldTypes.MultipleChoice)]
-		public Choice[] MarkupSetPrimary
+		public ChoiceRef[] MarkupSetPrimary
 		{
 			get
 			{
-				return GetField<Choice[]>(new System.Guid(DocumentFieldGuids.MarkupSetPrimary));
+				return GetField<ChoiceRef[]>(new System.Guid(DocumentFieldGuids.MarkupSetPrimary));
 			}
 			set
 			{
-				SetField<Choice[]>(new System.Guid(DocumentFieldGuids.MarkupSetPrimary), value);
+				SetField<ChoiceRef[]>(new System.Guid(DocumentFieldGuids.MarkupSetPrimary), value);
 			}
 		}
 		[DynamicField(DocumentFields.Batch, DocumentFieldGuids.Batch, FieldTypes.MultipleObject)]

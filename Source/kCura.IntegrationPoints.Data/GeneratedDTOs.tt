@@ -9,7 +9,6 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="GeneratorHelper" #>
 using System;
-using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Attributes;
 
 namespace kCura.IntegrationPoints.Data
