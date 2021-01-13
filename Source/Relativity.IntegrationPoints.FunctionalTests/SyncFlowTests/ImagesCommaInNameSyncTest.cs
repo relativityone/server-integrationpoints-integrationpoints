@@ -100,7 +100,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SyncFlowTests
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
-				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
+				ArtifactTypeId = (int)ArtifactType.Document,
 				DestinationProviderType = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY,
 				CaseArtifactId = TargetWorkspaceArtifactID,
 				DestinationFolderArtifactId = GetRootFolder(Helper, TargetWorkspaceArtifactID),

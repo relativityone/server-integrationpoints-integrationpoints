@@ -16,7 +16,6 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Choice;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {

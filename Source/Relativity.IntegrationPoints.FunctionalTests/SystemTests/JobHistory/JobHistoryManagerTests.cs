@@ -14,7 +14,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 {
@@ -104,7 +104,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 
 		private void CreateJobHistoryErrorsForJobHistory(
 			int jobHistoryArtifactID,
-			Choice errorType,
+			ChoiceRef errorType,
 			int numberOfErrorsToCreate)
 		{
 			for (int i = 0; i < numberOfErrorsToCreate; i++)
@@ -118,7 +118,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
 
 		private void CreateJobHistoryErrorForJobHistory(
 			int jobHistoryArtifactID,
-			Choice errorType,
+			ChoiceRef errorType,
 			int ID)
 		{
 			var jobHistoryError = new JobHistoryError

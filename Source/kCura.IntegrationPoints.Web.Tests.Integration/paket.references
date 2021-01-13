@@ -3,7 +3,6 @@ CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
-kCura.Relativity.Client
 Microsoft.AspNet.Mvc
 Microsoft.AspNet.WebApi.Core
 Relativity.API

@@ -110,13 +110,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			KeywordSearch itemLevelSearch = new KeywordSearch
 			{
 				Name = $"{Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME} - {integrationPointArtifactId} - {jobHistoryArtifactId}",
-				ArtifactTypeID = (int)Relativity.Client.ArtifactType.Document,
+				ArtifactTypeID = (int)global::Relativity.ArtifactType.Document,
 				SearchCriteria = searchCondition
 			};
 
 			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 			{
-				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(_workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
+				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(_workspaceArtifactId, (int)global::Relativity.ArtifactType.Document)
 					.GetAwaiter().GetResult();
 
 				FieldRef field = fields.FieldsNotIncluded.First(x => x.Name == "Artifact ID");

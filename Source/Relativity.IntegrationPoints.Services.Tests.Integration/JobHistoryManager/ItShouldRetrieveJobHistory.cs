@@ -11,8 +11,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
 using User = kCura.IntegrationPoint.Tests.Core.User;
@@ -240,7 +240,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 			public bool PreventUserAccess { get; set; }
 			public bool DeletedAfterRun { get; set; }
 			public bool IsLdapProvider { get; set; }
-			public Choice JobHistoryStatus { get; set; }
+			public ChoiceRef JobHistoryStatus { get; set; }
 
 			public static async Task<IList<TestData>> Create(int sourceWorkspaceId)
 			{

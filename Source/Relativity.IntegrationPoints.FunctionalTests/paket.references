@@ -1,7 +1,6 @@
 ﻿Castle.Windsor
 kCura
 kCura.Apps.Common.Config
-kCura.Relativity.Client
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private

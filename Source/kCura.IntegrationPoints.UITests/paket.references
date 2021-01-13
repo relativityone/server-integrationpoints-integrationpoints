@@ -9,7 +9,6 @@ Relativity.Data
 Relativity.IntegrationPoints.Contracts
 Relativity.Logging
 Relativity.Productions.Services.Interfaces
-kCura.Relativity.Client
 Relativity.DataExchange.Client.SDK
 
 Relativity.Kepler.Service

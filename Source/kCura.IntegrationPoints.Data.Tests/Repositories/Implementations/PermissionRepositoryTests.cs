@@ -4,15 +4,13 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
-using Relativity.Services.Group;
 using Relativity.Services.Permission;
-using Relativity.Services.User;
+using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {

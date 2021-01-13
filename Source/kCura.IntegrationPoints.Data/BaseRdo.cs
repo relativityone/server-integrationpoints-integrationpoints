@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		private object ConvertForGet(string fieldType, object value)
+		internal object ConvertForGet(string fieldType, object value)
 		{
 			switch (fieldType)
 			{
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Data
 
 		}
 
-		private object ConvertValue(string fieldType, object value)
+		internal object ConvertValue(string fieldType, object value)
 		{
 			if (value == null)
 			{

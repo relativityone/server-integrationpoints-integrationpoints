@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
@@ -13,7 +12,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 	[TestFixture, Category("Unit")]
 	public class ArtifactValidatorTests
 	{
-		[TestCase(ArtifactTypeNames.Folder)]
+		[TestCase("Folder")]
 		public void ItShouldValidateArtifact(string artifactTypeName)
 		{
 			// arrange
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
 		}
 
-		[TestCase(ArtifactTypeNames.Folder)]
+		[TestCase("Folder")]
 		public void ItShouldFailValidationForUnknownArtifact(string artifactTypeName)
 		{
 			// arrange

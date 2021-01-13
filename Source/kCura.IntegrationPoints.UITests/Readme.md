@@ -105,18 +105,3 @@ Check if WebDriver libraries, especially Selenium.WebDriver.ChromeDriver, are up
 Version of browser can be found in logs - example above: "Browser version: 71.0.3578.98".
 Compatibility of ChromeDriver with different Chrome versions can be checked on https://sites.google.com/a/chromium.org/chromedriver/downloads
 
-
-
-### Test fails with "Metadata contains a reference that cannot be resolved"
-
-#### Symptoms
-
-Test fails with message like
-```
-kCura.Relativity.Client.EndpointInvalidException : Metadata contains a reference that cannot be resolved: 'https://p-dv-vm-pan4pal.kcura.corp.kcura.corp/relativity.services/Authentication.svc?wsdl'.
-```
-
-#### Fix procedure
-
-The reason of this error is that API call (like workspace creation request) is hitting wrong URL.
-Check if correct URL is set in config file.

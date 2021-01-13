@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
 using NUnit.Framework;
+using Relativity;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators

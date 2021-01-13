@@ -3,7 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 

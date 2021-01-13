@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using SystemInterface.IO;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
-using Workspace = kCura.Relativity.Client.DTOs.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {

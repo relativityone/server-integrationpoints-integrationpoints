@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
@@ -15,19 +13,16 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ResourceServer;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -139,15 +134,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					.ImplementedBy<WorkspaceDBContext>()
 					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
 					.LifeStyle.Transient);
-			Container.Register(
-				Component.For<IRSAPIClient>()
-				.UsingFactoryMethod(k =>
-				{
-					IRSAPIClient client = Rsapi.CreateRsapiClient();
-					client.APIOptions.WorkspaceID = WorkspaceArtifactId;
-					return client;
-				})
-				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
 			Container.Register(Component.For<IntegrationPoints.Core.Factories.IExporterFactory>().ImplementedBy<ExporterFactory>());
@@ -231,8 +217,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new[] { agentIdParam, jobIdParam });
 		}
 
-		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, ChoiceRef jobTypeChoice,
-			ChoiceRef jobStatusChoice = null, bool jobEnded = false)
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, ChoiceRef jobTypeChoice, ChoiceRef jobStatusChoice = null, bool jobEnded = false)
 		{
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IntegrationPoints.Data.IntegrationPoint integrationPoint =
@@ -262,8 +247,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			List<List<object>> values = sourceUniqueIds.Select(sourceUniqueId => new List<object>()
 			{
 				"Inserted Error for testing.",
-				errorStatus,
-				errorType,
+				new global::Relativity.Services.Objects.DataContracts.ChoiceRef(){Guid = errorStatus.Guids.SingleOrDefault()},
+				new global::Relativity.Services.Objects.DataContracts.ChoiceRef(){Guid = errorType.Guids.SingleOrDefault()},
 				Guid.NewGuid().ToString(),
 				sourceUniqueId,
 				"Error created from JobHistoryErrorsBatchingTests",
@@ -404,5 +389,3 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

@@ -322,7 +322,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
-				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
+				ArtifactTypeId = (int)ArtifactType.Document,
 				DestinationProviderType = DestinationProviders.RELATIVITY,
 				CaseArtifactId = _targetWorkspaceArtifactID,
 				DestinationFolderArtifactId = GetRootFolder(Helper, _targetWorkspaceArtifactID),
@@ -341,7 +341,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
-				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
+				ArtifactTypeId = (int)ArtifactType.Document,
 				DestinationProviderType = DestinationProviders.RELATIVITY,
 				CaseArtifactId = _targetWorkspaceArtifactID,
 				DestinationFolderArtifactId = GetRootFolder(Helper, _targetWorkspaceArtifactID),

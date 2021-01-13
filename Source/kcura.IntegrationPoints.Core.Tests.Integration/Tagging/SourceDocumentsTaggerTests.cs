@@ -21,6 +21,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
@@ -205,7 +206,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 
 			int? documentJobHistoryFieldArtifactID = _fieldQueryRepository
 				.RetrieveField(
-					(int)Relativity.Client.ArtifactType.Document,
+					(int)ArtifactType.Document,
 					DocumentFields.JobHistory,
 					FieldTypes.MultipleObject,
 					fieldsToRetrieve)
@@ -213,7 +214,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Tagging
 
 			int? documentDestinationCaseFieldArtifactID = _fieldQueryRepository
 				.RetrieveField(
-					(int)Relativity.Client.ArtifactType.Document,
+					(int)ArtifactType.Document,
 					DocumentFields.RelativityDestinationCase,
 					FieldTypes.MultipleObject,
 					fieldsToRetrieve)
