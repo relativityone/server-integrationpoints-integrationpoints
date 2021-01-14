@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -44,8 +44,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
 		private readonly Guid _errorStatusNew = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
-		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
-
 
 		[SetUp]
 		public override void SetUp()
@@ -315,25 +313,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// assert 
 			request.ValueLists.Count.Should().Be(JobHistoryErrorService.ERROR_BATCH_SIZE);
 		}
-
-		[TestCase(true)]
-		[TestCase(false)]
-		[Category(TestConstants.TestCategories.STOP_JOB)]
-		public void OnJobError_AlwaysAddError(bool isStopped)
-		{
-			// arrange
-			Reporter reporter = new Reporter();
-			Exception exception = new Exception();
-			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(isStopped);
-
-			// act
-			_instance.SubscribeToBatchReporterEvents(reporter);
-			reporter.RaiseOnJobError(exception);
-
-			// assert 
-			Assert.IsTrue(_instance.JobLevelErrorOccurred);
-		}
-
+		
 		[Test]
 		public void CommitErrors_SetHasErrorToFalseWhenStopAndNoErrorOccured()
 		{
@@ -434,35 +414,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				SourceUniqueID = x.ElementAt(4).ToString(),
 				StackTrace = x.ElementAt(5).ToString(),
 			});
-		}
-
-		private MassCreateRequest GetObjectManagerRequestForErrors(IEnumerable<JobHistoryError> errors)
-		{
-			return new MassCreateRequest
-			{
-				ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
-				ParentObject = new RelativityObjectRef { ArtifactID = _jobHistory.ArtifactId },
-				Fields = new[]
-				{
-					new FieldRef { Guid = _errorMessageField },
-					new FieldRef { Guid = _errorStatusField },
-					new FieldRef { Guid = _errorTypeField },
-					new FieldRef { Guid = _nameField },
-					new FieldRef { Guid = _sourceUniqueIdField },
-					new FieldRef { Guid = _stackTraceField },
-					new FieldRef { Guid = _timestampUtcField }
-				},
-				ValueLists = errors.Select(x => new List<object>()
-				{
-					x.Error,
-					new ChoiceRef{Guids = new List<Guid>(){_errorStatusNew}},
-					new ChoiceRef{Guids = new List<Guid>() {x.ErrorType.Guids.Single()}},
-					Guid.NewGuid().ToString(),
-					x.SourceUniqueID,
-					x.StackTrace,
-					DateTime.UtcNow
-				}).ToList()
-			};
 		}
 	}
 }

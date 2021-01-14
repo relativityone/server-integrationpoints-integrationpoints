@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -36,7 +35,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>();
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			_errorOccurredDuringJob = false;
-			JobLevelErrorOccurred = false;
 		}
 
 		internal int PendingErrorCount => _jobHistoryErrorList.Count;
@@ -50,9 +48,6 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
 		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
-		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
-
-		public bool JobLevelErrorOccurred { get; private set; }
 
 		public Data.JobHistory JobHistory { get; set; }
 		public Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -174,21 +169,21 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var errorStatusChoice = new ChoiceRef
 			{
-				Guids = new List<Guid>() { ErrorStatusChoices.JobHistoryErrorNewGuid }
+				Guid = ErrorStatusChoices.JobHistoryErrorNewGuid
 			};
 			return errorStatusChoice;
 		}
 
-		private ChoiceRef GetErrorTypeChoice(ChoiceRef errorType)
+		private ChoiceRef GetErrorTypeChoice(global::Relativity.Services.Choice.ChoiceRef errorType)
 		{
 			var errorTypeChoice = new ChoiceRef
 			{
-				Guids = new List<Guid>() { errorType.Guids.Single() }
+				Guid = errorType.Guids.Single()
 			};
 			return errorTypeChoice;
 		}
 
-		public void AddError(ChoiceRef errorType, Exception ex)
+		public void AddError(global::Relativity.Services.Choice.ChoiceRef errorType, Exception ex)
 		{
 			string message = ex.FlattenErrorMessagesWithStackTrace();
 
@@ -201,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			AddError(errorType, string.Empty, ex.Message, message);
 		}
 
-		public void AddError(ChoiceRef errorType, string documentIdentifier, string errorMessage, string stackTrace)
+		public void AddError(global::Relativity.Services.Choice.ChoiceRef errorType, string documentIdentifier, string errorMessage, string stackTrace)
 		{
 			lock (_jobHistoryErrorList)
 			{
@@ -226,7 +221,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 					if (errorType == ErrorTypeChoices.JobHistoryErrorJob)
 					{
-						JobLevelErrorOccurred = true;
 						CommitErrors();
 					}
 					else if (_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)

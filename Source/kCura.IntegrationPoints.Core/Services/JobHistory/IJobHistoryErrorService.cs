@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		Data.JobHistory JobHistory { get; set; }
 		Data.IntegrationPoint IntegrationPoint { get; set; }
 		IJobStopManager JobStopManager { get; set; }
-		bool JobLevelErrorOccurred { get; }
 
 		void SubscribeToBatchReporterEvents(object batchReporter);
 		void CommitErrors();
