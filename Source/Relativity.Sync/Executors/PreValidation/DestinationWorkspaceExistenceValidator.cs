@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Executors.Validation.PreValidation
+namespace Relativity.Sync.Executors.PreValidation
 {
 	internal sealed class DestinationWorkspaceExistenceValidator : IPreValidator
 	{
-		private const string _DESTINATION_WORKSPACE_DOES_NOT_EXIST_MESSAGE = "Destination Workspace does not exist";
+		private const string _DESTINATION_WORKSPACE_DOES_NOT_EXIST_MESSAGE = "Destination Workspace {0} does not exist";
 
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		private readonly ISyncLog _logger;
@@ -35,7 +36,8 @@ namespace Relativity.Sync.Executors.Validation.PreValidation
 					bool exists = await workspaceManager.WorkspaceExists(destinationWorkspace).ConfigureAwait(false);
 					if (!exists)
 					{
-						result.Add(_DESTINATION_WORKSPACE_DOES_NOT_EXIST_MESSAGE);
+						result.Add(string.Format(CultureInfo.InvariantCulture, _DESTINATION_WORKSPACE_DOES_NOT_EXIST_MESSAGE,
+							configuration.DestinationWorkspaceArtifactId));
 					}
 				}
 			}
