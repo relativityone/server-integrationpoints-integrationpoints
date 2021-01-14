@@ -18,7 +18,6 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
@@ -410,7 +409,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			return values.Select(x => new JobHistoryError
 			{
 				Error = x.ElementAt(0).ToString(),
-				ErrorType = (x.ElementAt(2) as ChoiceRef).Guids.Single() == ErrorTypeChoices.JobHistoryErrorItemGuid ? ErrorTypeChoices.JobHistoryErrorItem : ErrorTypeChoices.JobHistoryErrorJob,
+				ErrorType = (x.ElementAt(2) as ChoiceRef).Guid == ErrorTypeChoices.JobHistoryErrorItemGuid ? ErrorTypeChoices.JobHistoryErrorItem : ErrorTypeChoices.JobHistoryErrorJob,
 				SourceUniqueID = x.ElementAt(4).ToString(),
 				StackTrace = x.ElementAt(5).ToString(),
 			});
