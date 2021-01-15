@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PreValidation
 			SetupWorkspaceExists(true);
 
 			// Act
-			var validationResult = await _sut.ValidateAsync(_configurationFake.Object, new CancellationToken()).ConfigureAwait(false);
+			var validationResult = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			validationResult.IsValid.Should().BeTrue();
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PreValidation
 			SetupWorkspaceExists(false);
 
 			// Act
-			var validationResult = await _sut.ValidateAsync(_configurationFake.Object, new CancellationToken()).ConfigureAwait(false);
+			var validationResult = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			validationResult.IsValid.Should().BeFalse();
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PreValidation
 				.Throws<Exception>();
 
 			// Act
-			var validationResult = await _sut.ValidateAsync(_configurationFake.Object, new CancellationToken()).ConfigureAwait(false);
+			var validationResult = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			validationResult.IsValid.Should().BeFalse();
