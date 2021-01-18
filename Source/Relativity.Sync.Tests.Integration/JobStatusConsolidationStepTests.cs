@@ -16,6 +16,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
+			typeof(IPreValidationConfiguration),
 			typeof(IValidationConfiguration),
 			typeof(IPermissionsCheckConfiguration),
 			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),

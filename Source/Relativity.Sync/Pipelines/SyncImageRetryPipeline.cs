@@ -9,6 +9,7 @@ namespace Relativity.Sync.Pipelines
 		public void BuildFlow(IFlowBuilder<SyncExecutionContext> flowBuilder)
 		{
 			flowBuilder.AddRoot<SyncRootNode>()
+				.AddChild<PreValidationNode>()
 				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()

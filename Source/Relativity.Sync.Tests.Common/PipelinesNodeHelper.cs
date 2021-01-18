@@ -36,6 +36,7 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
@@ -65,6 +66,7 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
@@ -94,6 +96,7 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
@@ -123,6 +126,7 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},

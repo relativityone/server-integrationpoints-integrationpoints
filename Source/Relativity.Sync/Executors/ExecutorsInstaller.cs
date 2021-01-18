@@ -1,13 +1,13 @@
-﻿using System.Linq;
-using System.Reflection;
-using System.Threading;
+﻿using System.Threading;
 using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
 using Relativity.Sync.Executors.PermissionCheck;
+using Relativity.Sync.Executors.PreValidation;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
@@ -45,6 +45,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceObjectTypesCreationExecutorConstrains>().As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceObjectTypesCreationExecutor>().As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
+			builder.RegisterType<PreValidationExecutionConstrains>().As<IExecutionConstrains<IPreValidationConfiguration>>();
+			builder.RegisterType<PreValidationExecutor>().As<IExecutor<IPreValidationConfiguration>>();
 			builder.RegisterType<ValidationExecutionConstrains>().As<IExecutionConstrains<IValidationConfiguration>>();
 			builder.RegisterType<ValidationExecutor>().As<IExecutor<IValidationConfiguration>>();
 			builder.RegisterType<PermissionCheckExecutionConstrains>().As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
@@ -83,7 +85,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<AutomatedWorkflowExecutorConstrains>().As<IExecutionConstrains<IAutomatedWorkflowTriggerConfiguration>>();
 			builder.RegisterType<AutomatedWorkflowExecutor>().As<IExecutor<IAutomatedWorkflowTriggerConfiguration>>();
 
-			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && t.IsAssignableTo<IPermissionCheck>()).ToArray()).As<IPermissionCheck>();
+			builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
+			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
