@@ -4,6 +4,7 @@ using Relativity.Sync.Tests.Performance.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Relativity.Testing.Identification;
 using EnvironmentVariable = System.Environment;
 
@@ -19,6 +20,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		private AzureTableHelper _tableHelper;
 
 		public const string _PERFORMANCE_RESULTS_TABLE_NAME = "SyncReferenceJobsPerformanceTestsResults";
+		public const double _THRESHOLD_FACTOR = 0.1;
+		public const int _HISTORICAL_RUNS_COUNT = 10;
 
 		protected override async Task ChildSuiteSetup()
 		{
@@ -60,29 +63,47 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		[IdentifiedTest("8fe8483e-78d4-433d-b638-131d9f11845f")]
 		public async Task RunJob(PerformanceTestCase testCase)
 		{
+			// Act
 			await RunTestCaseAsync(testCase).ConfigureAwait(false);
-
-			await PublishTestResult(testCase).ConfigureAwait(false);
+			
+			// Assert
+			TestResult result = PrepareTestResult(testCase);
+			try
+			{
+				AssertWithHistoricalData(result);
+			}
+			finally
+			{
+				await Publish(result).ConfigureAwait(false);
+			}
 		}
 
-		private Task PublishTestResult(PerformanceTestCase testCase)
+		private Task Publish(TestResult result)
+		{
+			return _tableHelper.InsertAsync(_PERFORMANCE_RESULTS_TABLE_NAME, result);
+		}
+
+		private void AssertWithHistoricalData(TestResult result)
+		{
+			double averageTestRunDuration = _tableHelper
+				.QueryAll<TestResult>(_PERFORMANCE_RESULTS_TABLE_NAME)
+				.ToList()
+				.OrderByDescending(x => x.Timestamp)
+				.Take(_HISTORICAL_RUNS_COUNT).Average(x => x.Duration);
+
+			double testRunThreshold = averageTestRunDuration * _THRESHOLD_FACTOR;
+
+			result.Duration.Should().BeLessThan(averageTestRunDuration + testRunThreshold);
+		}
+
+		private TestResult PrepareTestResult(PerformanceTestCase testCase)
 		{
 			string buildId = EnvironmentVariable.GetEnvironmentVariable("BUILD_ID");
-			if (string.IsNullOrEmpty(buildId))
-			{
-				return Task.CompletedTask;
-			}
 
-			TestResult testResult = new TestResult(
-				testCase.TestCaseName,
-				buildId)
+			return new TestResult(testCase.TestCaseName, buildId)
 			{
 				Duration = TestTimes[testCase.TestCaseName].TotalSeconds
 			};
-
-			return _tableHelper.InsertAsync(
-				_PERFORMANCE_RESULTS_TABLE_NAME,	
-				testResult);
 		}
 	}
 }
