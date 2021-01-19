@@ -1,7 +1,6 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
 kCura.Agent
-kCura.Relativity.Client
 Relativity.Authentication
 Relativity.IntegrationPoints.Contracts
 Relativity.Services.Interfaces

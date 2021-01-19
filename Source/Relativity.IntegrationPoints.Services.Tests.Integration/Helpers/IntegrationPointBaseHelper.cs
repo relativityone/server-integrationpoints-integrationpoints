@@ -4,9 +4,9 @@ using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.Services.Choice;
 using Relativity.Services.Folder;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Integration.Helpers
@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.Helpers
 			Assert.That(integrationPointBaseRdo.GetField<bool>(new Guid(guidsConstants.LogErrors)), Is.EqualTo(expectedIntegrationPointModel.LogErrors));
 			Assert.That(integrationPointBaseRdo.GetField<string>(new Guid(guidsConstants.Name)), Is.EqualTo(expectedIntegrationPointModel.Name));
 			Assert.That(integrationPointBaseRdo.GetField<int?>(new Guid(guidsConstants.Type)), Is.EqualTo(expectedIntegrationPointModel.Type));
-			Assert.That(integrationPointBaseRdo.GetField<Choice>(new Guid(guidsConstants.OverwriteFields)).ArtifactID, Is.EqualTo(expectedIntegrationPointModel.OverwriteFieldsChoiceId));
+			Assert.That(integrationPointBaseRdo.GetField<ChoiceRef>(new Guid(guidsConstants.OverwriteFields)).ArtifactID, Is.EqualTo(expectedIntegrationPointModel.OverwriteFieldsChoiceId));
 
 
 			Assert.That(actualSourceConfiguration.SourceWorkspaceArtifactId, Is.EqualTo(expectedSourceConfiguration.SourceWorkspaceArtifactId));

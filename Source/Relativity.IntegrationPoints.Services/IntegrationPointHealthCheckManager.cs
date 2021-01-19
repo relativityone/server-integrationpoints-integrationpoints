@@ -5,7 +5,6 @@ using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Installers;
 using Relativity.Logging;
 using Relativity.Telemetry.APM;
-using Constants = kCura.IntegrationPoints.Data.Constants;
 
 namespace Relativity.IntegrationPoints.Services
 {
@@ -25,7 +24,7 @@ namespace Relativity.IntegrationPoints.Services
 
 		public async Task<HealthCheckOperationResult> RunHealthChecksAsync()
 		{
-			IWindsorContainer container = GetDependenciesContainer(Constants.ADMIN_CASE_ID);
+			IWindsorContainer container = GetDependenciesContainer(kCura.IntegrationPoints.Data.Constants.ADMIN_CASE_ID);
 
 			List<IHealthCheck> healthChecks = new List<IHealthCheck>();
 

@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.RelativitySourceRdo

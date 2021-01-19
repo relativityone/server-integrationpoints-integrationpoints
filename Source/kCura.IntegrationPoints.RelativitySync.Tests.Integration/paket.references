@@ -3,7 +3,6 @@ kCura
 kCura.Apps.Common.Utils
 Relativity.API
 Relativity.Services.Interfaces
-kCura.Relativity.Client
 Polly
 Relativity.Toggles
 kCura.OutsideIn.FI.Win32

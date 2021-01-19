@@ -9,7 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories.Implementations;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using Relativity.Services.Choice;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 {
@@ -90,9 +90,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 				}
 			};
 
-			_choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(new List<Choice>
+			_choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>
 			{
-				new Choice(overwriteFieldsChoiceId)
+				new ChoiceRef(overwriteFieldsChoiceId)
 				{
 					Name = overwriteFieldsChoiceName
 				}
@@ -166,13 +166,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		[Test]
 		public void ItShouldRetrieveAllOverwriteFieldChoices()
 		{
-			var expectedChoices = new List<Choice>
+			var expectedChoices = new List<ChoiceRef>
 			{
-				new Choice(688)
+				new ChoiceRef(688)
 				{
 					Name = "name_516"
 				},
-				new Choice(498)
+				new ChoiceRef(498)
 				{
 					Name = "name_712"
 				}
@@ -183,7 +183,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 			var actualChoicesModels = _integrationPointProfileRepository.GetOverwriteFieldChoices();
 
 			Assert.That(actualChoicesModels,
-				Is.EquivalentTo(expectedChoices).Using(new Func<OverwriteFieldsModel, Choice, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactID))));
+				Is.EquivalentTo(expectedChoices).Using(new Func<OverwriteFieldsModel, ChoiceRef, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactID))));
 		}
 
 		[Test]
@@ -195,7 +195,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
 			var integrationPoint = new IntegrationPoint
 			{
-				OverwriteFields = new Choice(271635),
+				OverwriteFields = new ChoiceRef(271635),
 				SourceProvider = 284,
 				DestinationConfiguration = "975426",
 				SourceConfiguration = "559417",

@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
@@ -62,7 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			int rv = importSettings.DestinationFolderArtifactId;
 			if (rv == 0)
 			{
-				rv = importSettings.ArtifactTypeId == (int) ArtifactType.Document ? currentWorkspace.RootFolderID : currentWorkspace.RootArtifactID;
+				rv = importSettings.ArtifactTypeId == (int) global::Relativity.ArtifactType.Document ? currentWorkspace.RootFolderID : currentWorkspace.RootArtifactID;
 			}
 			return rv;
 		}

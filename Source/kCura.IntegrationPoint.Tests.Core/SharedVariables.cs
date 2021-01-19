@@ -236,12 +236,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		/// Returns Relativity fronted URI
 		/// </summary>
 		public static Uri RelativityFrontedUri => new Uri(RelativityFrontendUrlValue);
-
-		/// <summary>
-		/// Returns RSAPI URL
-		/// </summary>
-		public static Uri RsapiUri => new Uri($"{ServerBindingType}://{RsapiServerAddress}/Relativity.Services/");
-
+		
 		/// <summary>
 		/// Returns Relativity REST URL
 		/// </summary>
@@ -253,10 +248,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string RelativityWebApiUrl => $"{RelativityBaseAdressUrlValue}/RelativityWebAPI/";
 
 		private static string ServerBindingType => AppSettingString("ServerBindingType");
-
-		private static string RsapiServerAddress =>
-			AppSettingString("RsapiServicesHostAddress") ?? GetAppSettingStringOrDefault("RSAPIServerAddress", () => RelativityHostAddress).NullIfEmpty(); //REL-390973
-
+		
 		#endregion Relativity Settings
 
 		#region ConnectionString Settings

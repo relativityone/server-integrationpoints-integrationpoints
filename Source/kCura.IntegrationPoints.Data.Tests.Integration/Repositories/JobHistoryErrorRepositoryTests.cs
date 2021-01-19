@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -8,7 +9,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
@@ -51,8 +52,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Guid batchInstance = Guid.NewGuid();
 			_jobHistory = CreateJobHistoryOnIntegrationPoint(
 				integrationPointCreated.ArtifactID, 
-				batchInstance, 
-				JobTypeChoices.JobHistoryRun, 
+				batchInstance,
+				JobTypeChoices.JobHistoryRun,
 				JobStatusChoices.JobHistoryCompletedWithErrors, 
 				true);
 		}
@@ -73,7 +74,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			return new ChoiceRef()
 			{
-				Guid = guid
+				Guids = new List<Guid>()
+				{
+					guid
+				}
 			};
 		}
 		
@@ -94,7 +98,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			// arrange
 			List<int> jobHistoryArtifactId = CreateJobHistoryErrors(_jobHistory.ArtifactId, errorStatus, errorType, new []{"Source Unique ID"});
-			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType.Guid == ErrorTypeChoices.JobHistoryErrorItemGuid
+			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType.Guids.Single() == ErrorTypeChoices.JobHistoryErrorItemGuid
 				? JobHistoryErrorDTO.Choices.ErrorType.Values.Item
 				: JobHistoryErrorDTO.Choices.ErrorType.Values.Job;
 
@@ -123,7 +127,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		{
 			// arrange
 			List<int> jobHistoryArtifactId = CreateJobHistoryErrors(_jobHistory.ArtifactId, errorStatus, errorType, new[] { "Source Unique ID" });
-			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType.Guid == ErrorTypeChoices.JobHistoryErrorItemGuid
+			JobHistoryErrorDTO.Choices.ErrorType.Values type = errorType.Guids.Single() == ErrorTypeChoices.JobHistoryErrorItemGuid
 				? JobHistoryErrorDTO.Choices.ErrorType.Values.Item
 				: JobHistoryErrorDTO.Choices.ErrorType.Values.Job;
 

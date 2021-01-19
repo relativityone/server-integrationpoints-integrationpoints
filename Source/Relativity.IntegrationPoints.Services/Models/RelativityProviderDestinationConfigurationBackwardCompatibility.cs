@@ -1,6 +1,4 @@
-﻿using kCura.IntegrationPoints.Core;
-
-namespace Relativity.IntegrationPoints.Services.Models
+﻿namespace Relativity.IntegrationPoints.Services.Models
 {
 	internal class RelativityProviderDestinationConfigurationBackwardCompatibility
 	{
@@ -65,7 +63,7 @@ namespace Relativity.IntegrationPoints.Services.Models
 			RelativityProviderSourceConfiguration sourceConfiguration, string overwriteFieldsChoice)
 		{
 			ArtifactTypeID = destinationConfiguration.ArtifactTypeID;
-			DestinationProviderType = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+			DestinationProviderType = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 			CaseArtifactId = destinationConfiguration.CaseArtifactId;
 			DestinationFolderArtifactId = destinationConfiguration.DestinationFolderArtifactId;
 			Provider = "relativity";

@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
+using Relativity;
 using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Folder;
 using Relativity.Toggles;
@@ -184,8 +185,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
 			IFieldQueryRepository destinationFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(TargetWorkspaceArtifactID);
 
-			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
-			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int) Relativity.Client.ArtifactType.Document);
+			ArtifactDTO sourceDto = sourceFieldQueryRepository.RetrieveIdentifierField((int) ArtifactType.Document);
+			ArtifactDTO targetDto = destinationFieldQueryRepository.RetrieveIdentifierField((int) ArtifactType.Document);
 
 			string objectIdentifierBracket = withObjectIdentifierBracket
 				? " [Object Identifier]"

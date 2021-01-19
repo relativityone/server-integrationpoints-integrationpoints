@@ -2,16 +2,15 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.DataTransfer.MessageService;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 {
@@ -52,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		{
 			string providerName = GetProviderName(job);
 			JobHistory jobHistory = GetHistory(job);
-			Choice status = _updater.GenerateStatus(jobHistory);
+			ChoiceRef status = _updater.GenerateStatus(jobHistory);
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			string correlationId = taskParameters.BatchInstance.ToString();
 
@@ -79,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			});
 		}
 
-		private void SendLifetimeMessage(Choice status, string providerName, string correlationId)
+		private void SendLifetimeMessage(ChoiceRef status, string providerName, string correlationId)
 		{
 			if (status.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed))
 			{

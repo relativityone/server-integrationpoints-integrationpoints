@@ -5,10 +5,10 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
+using Relativity.Services.Choice;
 using Relativity.Telemetry.APM;
 using Client = Relativity.Telemetry.APM.Client;
 
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core
 			}
 
 			JobHistory jobHistory = GetHistory(job);
-			Choice newStatus = JobStatusChoices.JobHistoryProcessing;
+			ChoiceRef newStatus = JobStatusChoices.JobHistoryProcessing;
 			string oldStatusName = jobHistory.JobStatus.Name;
 
 			jobHistory.JobStatus = newStatus;
@@ -67,8 +67,8 @@ namespace kCura.IntegrationPoints.Core
 		public void OnJobComplete(Job job)
 		{
 			JobHistory jobHistory = GetHistory(job);
-			
-			Choice newStatus = _updater.GenerateStatus(jobHistory);
+
+			ChoiceRef newStatus = _updater.GenerateStatus(jobHistory);
 			string oldStatusName = jobHistory.JobStatus.Name;
 
 			jobHistory.JobStatus = newStatus;
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Core
 			healthCheck.Write();
 		}
 
-		private bool IsJobFailed(Choice jobStatusChoice)
+		private bool IsJobFailed(ChoiceRef jobStatusChoice)
 		{
 			return jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed) || jobStatusChoice.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed);
 		}

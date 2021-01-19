@@ -56,7 +56,6 @@ NUGET
     kCura.Injection (13.1.0)
     kCura.LongPath (1.0.20)
     kCura.OutsideIn.FI.Win32 (2020.6.0) - content: none
-    kCura.Relativity.Client (13.3.0)
     LanguageExt.Core (3.1.15)
       Microsoft.CSharp (>= 4.5)
       System.Reflection.Emit (>= 4.3)

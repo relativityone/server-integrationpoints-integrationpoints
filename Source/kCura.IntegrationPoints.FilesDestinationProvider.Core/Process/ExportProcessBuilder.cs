@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -20,7 +19,7 @@ using System.Linq;
 using System.Net;
 using FileNaming.CustomFileNaming;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.DataExchange.Io;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
 using IServiceFactory = kCura.WinEDDS.Service.Export.IServiceFactory;

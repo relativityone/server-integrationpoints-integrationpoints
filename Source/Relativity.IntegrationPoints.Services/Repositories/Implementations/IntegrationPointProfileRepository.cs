@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Services.Extensions;
 using Relativity.IntegrationPoints.Services.Helpers;
+using Relativity.Services.Choice;
 
 namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 {
@@ -58,7 +59,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
 		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
-			var choices = _choiceQuery.GetChoicesOnField(Context.WorkspaceID, IntegrationPointProfileFieldGuids.OverwriteFieldsGuid);
+			List<ChoiceRef> choices = _choiceQuery.GetChoicesOnField(Context.WorkspaceID, IntegrationPointProfileFieldGuids.OverwriteFieldsGuid);
 			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
 		}
 

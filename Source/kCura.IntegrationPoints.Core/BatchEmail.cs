@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.Core
 		private void SendEmails(Job job, List<string> emails)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-			Relativity.Client.DTOs.Choice jobStatus = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
+			ChoiceRef jobStatus = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
 
 			EmailJobParameters jobParameters = GenerateEmailJobParameters(jobStatus, emails);
 
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.Core
 			JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
 		}
 
-		private EmailJobParameters GenerateEmailJobParameters(Relativity.Client.DTOs.Choice choice, List<string> emails)
+		private EmailJobParameters GenerateEmailJobParameters(ChoiceRef choice, List<string> emails)
 		{
 			(string Subject, string MessageBody) subjectAndBody = GetEmailSubjectAndBodyForJobStatus(choice);
 			EmailJobParameters jobParameters = new EmailJobParameters
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoints.Core
 			return jobParameters;
 		}
 
-		public (string Subject, string MessageBody) GetEmailSubjectAndBodyForJobStatus(Relativity.Client.DTOs.Choice choice)
+		public (string Subject, string MessageBody) GetEmailSubjectAndBodyForJobStatus(ChoiceRef choice)
 		{
 			string messageBody;
 			string messageSubject;

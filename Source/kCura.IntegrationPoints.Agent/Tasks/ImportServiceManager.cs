@@ -28,11 +28,11 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.AutomatedWorkflows.Services.Interfaces;
 using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
-using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = JobHistoryService.GetRdo(taskParameters.BatchInstance);
-			Relativity.Client.DTOs.Choice status = _jobStatusUpdater.GenerateStatus(jobHistory);
+			ChoiceRef status = _jobStatusUpdater.GenerateStatus(jobHistory);
 
 			if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted))
 			{

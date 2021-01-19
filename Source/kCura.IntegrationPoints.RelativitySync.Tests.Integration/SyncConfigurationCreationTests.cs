@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -15,7 +14,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -23,8 +21,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using Relativity.API;
-using Relativity.Services.Interfaces.Field;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using FieldMap = Relativity.IntegrationPoints.Services.FieldMap;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
@@ -373,7 +370,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			return new ExtendedJob(job, _jobHistoryService, _integrationPointService, Serializer, Logger);
 		}
 
-		private IntegrationPointModel CreateIntegrationPointWithLinkedJobHistory(IntegrationPointModel integrationPoint, Choice jobType, Guid jobHistoryBatchInstanceGuid, out JobHistory jobHistory)
+		private IntegrationPointModel CreateIntegrationPointWithLinkedJobHistory(IntegrationPointModel integrationPoint, ChoiceRef jobType, Guid jobHistoryBatchInstanceGuid, out JobHistory jobHistory)
 		{
 			var integrationPointModel = CreateOrUpdateIntegrationPoint(integrationPoint);
 

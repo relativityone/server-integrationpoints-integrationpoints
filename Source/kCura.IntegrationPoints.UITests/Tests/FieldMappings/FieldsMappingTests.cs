@@ -9,18 +9,17 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Configuration.Helpers;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
-using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
 using NUnit.Framework;
+using Relativity;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Workspace;
 using Relativity.Testing.Identification;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 {

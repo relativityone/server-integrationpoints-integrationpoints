@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
 

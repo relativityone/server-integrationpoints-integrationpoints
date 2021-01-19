@@ -1,14 +1,10 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.Commands;
-using kCura.Relativity.Client;
 using Moq;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Exceptions;

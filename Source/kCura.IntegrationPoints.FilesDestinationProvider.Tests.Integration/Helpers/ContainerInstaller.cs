@@ -1,12 +1,9 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using Castle.Facilities.TypedFactory;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
-using kCura.Relativity.Client;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -55,7 +52,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			RegisterMetrics(windsorContainer);
 			RegisterJobManagers(windsorContainer);
 			RegisterConfig(testConfiguration, testContext, windsorContainer);
-			RegisterRSAPIClient(windsorContainer);
 
 			windsorContainer.Register(Component.For<IWebApiLoginService>().ImplementedBy<UserPasswordCredentialProvider>());
 			windsorContainer.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
@@ -90,15 +86,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
 				.LifestyleSingleton());
 		}
-
-		private static void RegisterRSAPIClient(WindsorContainer windsorContainer)
-		{
-			windsorContainer.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
-			{
-				return new RSAPIClient(SharedVariables.RsapiUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
-			}));
-		}
-
+		
 		private static void RegisterConfig(
 			ExportTestConfiguration testConfiguration,
 			ExportTestContext configSettings,
@@ -184,5 +172,3 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

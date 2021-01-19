@@ -8,11 +8,9 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -98,13 +96,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			PeriodicScheduleRule rule;
 			try
 			{
-				IList<Choice> choices =
+				IList<global::Relativity.Services.Choice.ChoiceRef> choices =
 					ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
 
 				rule = ConvertModelToScheduleRule(model);
 				profile = model.ToRdo(choices, rule);
 
-				var integrationProfilePointModel = IntegrationPointProfileModel.FromIntegrationPointProfile(profile);
+				IntegrationPointProfileModel integrationProfilePointModel = IntegrationPointProfileModel.FromIntegrationPointProfile(profile);
 
 				SourceProvider sourceProvider = GetSourceProvider(profile.SourceProvider);
 				DestinationProvider destinationProvider = GetDestinationProvider(profile.DestinationProvider);
@@ -156,13 +154,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 		protected IList<IntegrationPointProfile> GetAllRDOsWithBasicProfileColumns()
 		{
-			var fields = BaseRdo.GetFieldMetadata(typeof(IntegrationPointProfile)).Values.ToList()
-				.Select(field => new FieldValue(field.FieldGuid))
-				.Where(field => field.Guids.Contains(IntegrationPointProfileFieldGuids.DestinationProviderGuid) ||
-				                field.Guids.Contains(IntegrationPointProfileFieldGuids.SourceProviderGuid) ||
-				                field.Guids.Contains(IntegrationPointProfileFieldGuids.NameGuid) ||
-				                field.Guids.Contains(IntegrationPointProfileFieldGuids.TypeGuid))
-				.Select(field => new FieldRef { Guid = field.Guids.First() });
+			IEnumerable<FieldRef> fields = BaseRdo
+				.GetFieldMetadata(typeof(IntegrationPointProfile))
+				.Values
+				.ToList()
+				.Select(fieldGuid => fieldGuid.FieldGuid)
+				.Where(fieldGuid => fieldGuid.Equals(IntegrationPointProfileFieldGuids.DestinationProviderGuid) ||
+				                    fieldGuid.Equals(IntegrationPointProfileFieldGuids.SourceProviderGuid) ||
+				                    fieldGuid.Equals(IntegrationPointProfileFieldGuids.NameGuid) ||
+				                    fieldGuid.Equals(IntegrationPointProfileFieldGuids.TypeGuid))
+				.Select(fieldGuid => new FieldRef
+				{
+					Guid = fieldGuid
+				});
 
 			var query = new QueryRequest()
 			{

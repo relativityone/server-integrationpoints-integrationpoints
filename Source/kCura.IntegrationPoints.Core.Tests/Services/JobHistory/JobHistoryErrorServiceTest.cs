@@ -1,30 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions.Moq;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using Moq;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
@@ -50,8 +43,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
 		private readonly Guid _errorStatusNew = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
-		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
-		
 
 		[SetUp]
 		public override void SetUp()
@@ -67,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_stopJobManagerFake = new Mock<IJobStopManager>();
 			_integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
 			_objectManagerFake = new Mock<IObjectManager>();
-			
+
 			_helperFake.Setup(x => x.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 				.Returns(_objectManagerFake.Object);
 			_errors = new List<JobHistoryError>();
@@ -118,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 				_timestampUtcField
 			});
 		}
-		
+
 		[Test]
 		public void CommitErrors_ShouldThrowWhenMassCreateFails()
 		{
@@ -158,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier2", "Fake item error2.", "stack trace2");
-			
+
 			_instance.IntegrationPoint.HasErrors = false;
 
 			// act
@@ -166,7 +157,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
 			// assert
 			_objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Once);
-			
+
 			Assert.AreEqual(2, _errors.Count);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, _errors[0].ErrorType.Name);
 			Assert.AreEqual("Fake item error.", _errors[0].Error);
@@ -177,7 +168,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
 			Assert.IsTrue(_instance.IntegrationPoint.HasErrors.Value);
 		}
-		
+
 		[Test]
 		public void AddError_CommitsJobHistoryErrors_ForJobLevelErrors()
 		{
@@ -191,7 +182,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Exactly(2));
 			Assert.AreEqual(2, _errors.Count);
 		}
-		
+
 		[Test]
 		public void CommitErrors_HasJobHistory_NoErrorsToCommit()
 		{
@@ -321,31 +312,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// assert 
 			request.ValueLists.Count.Should().Be(JobHistoryErrorService.ERROR_BATCH_SIZE);
 		}
-
-		[TestCase(true)]
-		[TestCase(false)]
-		[Category(TestConstants.TestCategories.STOP_JOB)]
-		public void OnJobError_AlwaysAddError(bool isStopped)
-		{
-			// arrange
-			Reporter reporter = new Reporter();
-			Exception exception = new Exception();
-			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(isStopped);
-			
-			// act
-			_instance.SubscribeToBatchReporterEvents(reporter);
-			reporter.RaiseOnJobError(exception);
-
-			// assert 
-			Assert.IsTrue(_instance.JobLevelErrorOccurred);
-		}
-
+		
 		[Test]
 		public void CommitErrors_SetHasErrorToFalseWhenStopAndNoErrorOccured()
 		{
 			// arrange
 			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
-			
+
 			// act
 			_instance.CommitErrors();
 
@@ -374,7 +347,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			// arrange
 			_instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, new Exception());
 			_stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
-			
+
 			// act
 			_instance.CommitErrors();
 
@@ -436,39 +409,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			return values.Select(x => new JobHistoryError
 			{
 				Error = x.ElementAt(0).ToString(),
-				ErrorType = (x.ElementAt(2) as ChoiceRef).Guid.Value == ErrorTypeChoices.JobHistoryErrorItemGuid ? ErrorTypeChoices.JobHistoryErrorItem : ErrorTypeChoices.JobHistoryErrorJob,
+				ErrorType = (x.ElementAt(2) as ChoiceRef).Guid == ErrorTypeChoices.JobHistoryErrorItemGuid ? ErrorTypeChoices.JobHistoryErrorItem : ErrorTypeChoices.JobHistoryErrorJob,
 				SourceUniqueID = x.ElementAt(4).ToString(),
 				StackTrace = x.ElementAt(5).ToString(),
 			});
-		}
-
-		private MassCreateRequest GetObjectManagerRequestForErrors(IEnumerable<JobHistoryError> errors)
-		{
-			return new MassCreateRequest
-			{
-				ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
-				ParentObject = new RelativityObjectRef { ArtifactID = _jobHistory.ArtifactId },
-				Fields = new[]
-				{
-					new FieldRef { Guid = _errorMessageField },
-					new FieldRef { Guid = _errorStatusField },
-					new FieldRef { Guid = _errorTypeField },
-					new FieldRef { Guid = _nameField },
-					new FieldRef { Guid = _sourceUniqueIdField },
-					new FieldRef { Guid = _stackTraceField },
-					new FieldRef { Guid = _timestampUtcField }
-				},
-				ValueLists = errors.Select(x => new List<object>()
-				{
-					x.Error,
-					new ChoiceRef{Guid = _errorStatusNew},
-					new ChoiceRef{Guid = x.ErrorType.Guids.Single()},
-					Guid.NewGuid().ToString(),
-					x.SourceUniqueID,
-					x.StackTrace,
-					DateTime.UtcNow
-				}).ToList()
-			};
 		}
 	}
 }

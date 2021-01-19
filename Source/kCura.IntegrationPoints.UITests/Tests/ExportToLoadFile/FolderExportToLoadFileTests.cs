@@ -12,7 +12,7 @@ using kCura.IntegrationPoints.UITests.Validation;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.Testing.Identification;
 using IntegrationPointType = kCura.IntegrationPoint.Tests.Core.Models.IntegrationPointType;
 

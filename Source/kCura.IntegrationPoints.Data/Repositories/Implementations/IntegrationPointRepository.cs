@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Transformers;
-using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -332,7 +331,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					.EncryptAsync(secretPath, secretData)
 					.ConfigureAwait(false);
 			}
-			catch (FieldNotFoundException ex)
+			catch (Exception ex)
 			{
 				_logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process.");
 				//Ignore as Integration Point RDO doesn't always include SecuredConfiguration

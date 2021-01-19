@@ -19,12 +19,12 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		protected void UpdateJobStatus(Choice state)
+		protected void UpdateJobStatus(ChoiceRef state)
 		{
 			JobHistory.JobStatus = state;
 			UpdateJobStatus(JobHistory);

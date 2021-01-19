@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
@@ -22,10 +21,9 @@ using kCura.ScheduleQueue.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Choice;
 using Relativity.Services.Search;
 using Relativity.Testing.Identification;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
@@ -49,7 +47,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		private const string _ITEM_START_EXCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
 		private const string _ITEM_COMPLETE_INCLUDED_TEMP_TABLE_PREFIX = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
 
-		private readonly ChoiceRef _jobHistoryErrorNewStatus = new ChoiceRef() { Guid = ErrorStatusChoices.JobHistoryErrorNewGuid };
+		private readonly ChoiceRef _jobHistoryErrorNewStatus = new ChoiceRef()
+		{
+			Guids = new List<Guid>()
+			{
+				ErrorStatusChoices.JobHistoryErrorNewGuid
+			}
+		};
 
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
@@ -530,13 +534,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 				sourceUniqueIds.Add(importedDocument["Control Number"].ToString());
 			}
 
-			ChoiceRef errorType = new ChoiceRef(){Guid = ErrorTypeChoices.JobHistoryErrorItemGuid };
+			ChoiceRef errorType = new ChoiceRef(){Guids = new List<Guid>(){ ErrorTypeChoices.JobHistoryErrorItemGuid } };
 			return CreateJobHistoryErrors(jobHistoryArtifactId, errorStatus, errorType, sourceUniqueIds);
 		}
 
 		private List<int> CreateJobLevelJobHistoryError(int jobHistoryArtifactId, ChoiceRef errorStatus)
 		{
-			ChoiceRef errorType = new ChoiceRef() { Guid = ErrorTypeChoices.JobHistoryErrorJobGuid };
+			ChoiceRef errorType = new ChoiceRef() { Guids = new List<Guid>() { ErrorTypeChoices.JobHistoryErrorJobGuid } };
 			return CreateJobHistoryErrors(jobHistoryArtifactId, errorStatus, errorType, new string[]{null});
 		}
 
@@ -555,7 +559,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			}
 		}
 
-		private void CompareJobHistoryErrorStatuses(ICollection<int> jobHistoryErrorArtifactIds, Choice expectedErrorStatus)
+		private void CompareJobHistoryErrorStatuses(ICollection<int> jobHistoryErrorArtifactIds, global::Relativity.Services.Choice.ChoiceRef expectedErrorStatus)
 		{
 			IList<JobHistoryError> jobHistoryErrors = _jobHistoryErrorRepository.Read(jobHistoryErrorArtifactIds);
 			foreach (JobHistoryError jobHistoryError in jobHistoryErrors)

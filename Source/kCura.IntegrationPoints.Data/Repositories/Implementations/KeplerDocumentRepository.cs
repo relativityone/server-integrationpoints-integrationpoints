@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {

@@ -29,7 +29,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				SourceProvider = _sourceProviderId,
 				SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId}, SavedSearchArtifactId: {_savedSearchArtifactId} }}",
 				NextScheduledRuntimeUTC = null,
-				OverwriteFields = new Choice(1000) { Name = "AppendOnly" },
+				OverwriteFields = new ChoiceRef(1000) { Name = "AppendOnly" },
 				ScheduleRule = String.Empty,
 				Type = _integrationPointTypeArtifactId,
 				PromoteEligible = false,
@@ -599,7 +599,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// arrange
 			_jobHistoryService.CreateRdo(
 					Arg.Any<Data.IntegrationPoint>(),
-					Arg.Any<Guid>(), Arg.Any<Choice>(),
+					Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
 					Arg.Any<DateTime?>())
 				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
@@ -636,7 +636,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
 
 			// Check if Job History Error has benn created
-			_jobHistoryErrorService.Received().AddError(Arg.Is<Choice>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), string.Empty, Arg.Any<string>(), string.Empty);
+			_jobHistoryErrorService.Received().AddError(Arg.Is<ChoiceRef>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), string.Empty, Arg.Any<string>(), string.Empty);
 			// Check if Job status changed to Validation Failed
 			_jobHistoryService.Received().UpdateRdo(Arg.Is<Data.JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryValidationFailed.Name));
 			// Check If Integration Points objest has been set HasErrors flag to YES
@@ -715,7 +715,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_jobHistoryService.CreateRdo(
 							Arg.Any<Data.IntegrationPoint>(),
-							Arg.Any<Guid>(), Arg.Any<Choice>(),
+							Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
 							Arg.Any<DateTime?>())
 						.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
@@ -747,7 +747,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				x.ObjectTypeGuid == _objectTypeGuid)
 			);
 
-			_jobHistoryErrorService.Received().AddError(Arg.Is<Choice>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), string.Empty, Arg.Any<string>(), string.Empty);
+			_jobHistoryErrorService.Received().AddError(Arg.Is<ChoiceRef>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), string.Empty, Arg.Any<string>(), string.Empty);
 			_jobHistoryService.Received().UpdateRdo(Arg.Is<Data.JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryValidationFailed.Name));
 
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
@@ -985,9 +985,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}
@@ -1099,9 +1099,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			};
 
 			_instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}
@@ -1188,9 +1188,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
 			};
 
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}
@@ -1306,9 +1306,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_integrationPointRepository.CreateOrUpdate(Arg.Any<Data.IntegrationPoint>())
 				.Returns(integrationPointArtifactId);
 
-			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			_choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
 			{
-				new Choice(2343)
+				new ChoiceRef(2343)
 				{
 					Name = model.SelectedOverwrite
 				}

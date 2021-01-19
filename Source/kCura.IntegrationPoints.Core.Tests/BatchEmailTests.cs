@@ -4,7 +4,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
@@ -13,12 +12,12 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -162,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		}
 
 		[TestCaseSource(nameof(_generateEmailSource))]
-		public void GenerateEmail(Choice jobStatus, string expectedSubject, string expectedBody)
+		public void GenerateEmail(ChoiceRef jobStatus, string expectedSubject, string expectedBody)
 		{
 			// ACT
 			_emailFormatterMock.Setup(x => x.Format(It.IsAny<string>())).Returns<string>(y => y);
