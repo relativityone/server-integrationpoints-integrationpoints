@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Service.Export;
@@ -105,51 +104,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			// assert
 			sut.Should()
 				.ResolveWithoutThrowing<IFieldManager>();
-		}
-
-
-		[Test]
-		public void ExportFileDownloaderFactory_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.HaveRegisteredSingleComponent<IExportFileDownloaderFactory>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
-
-		[Test]
-		public void ExportFileDownloaderFactory_ShouldBeRegisteredWithProperImplementation()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.HaveRegisteredProperImplementation<IExportFileDownloaderFactory, FileDownloaderFactory>();
-		}
-
-		[Test]
-		public void ExportFileDownloaderFactory_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			IWindsorContainer sut = new WindsorContainer();
-			RegisterDependencies(sut);
-
-			// act
-			sut.AddCoreServicesForExport();
-
-			// assert
-			sut.Should()
-				.ResolveWithoutThrowing<IExportFileDownloaderFactory>();
 		}
 
 		[Test]

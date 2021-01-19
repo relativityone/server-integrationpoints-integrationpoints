@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Moq;
@@ -16,7 +15,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		private ExportFile _exportFile;
 		private Mock<IServiceFactory> _webApiServiceFactoryMock;
 		private Mock<Func<IAuditManager>> _auditManagerFactoryMock;
-		private Mock<IExportFileDownloaderFactory> _exportFileDownloaderFactoryMock;
 
 		private const int _EXPORT_ARTIFACT_TYPE_ID = 123;
 
@@ -27,7 +25,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 
 			_webApiServiceFactoryMock = new Mock<IServiceFactory>();
 			_auditManagerFactoryMock = new Mock<Func<IAuditManager>>();
-			_exportFileDownloaderFactoryMock = new Mock<IExportFileDownloaderFactory>();
 
 			_sut = CreateCoreServiceFactory();
 		}
@@ -187,45 +184,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_webApiServiceFactoryMock.Verify(x => x.CreateProductionManager(), Times.Exactly(numberOfCalls));
 		}
 
-		[Test]
-		public void CreateExportFileDownloader_ShouldReturnProperObject()
-		{
-			// arrange
-			var exportFileDownloaderMock = new Mock<IExportFileDownloader>();
-			_exportFileDownloaderFactoryMock
-				.Setup(x => x.Create(_exportFile))
-				.Returns(exportFileDownloaderMock.Object);
-
-			// act
-			IExportFileDownloader actualExportFileDownloader = _sut.CreateExportFileDownloader();
-
-			// assert
-			actualExportFileDownloader.Should().Be(exportFileDownloaderMock.Object);
-		}
-
-		[Test]
-		public void CreateExportFileDownloader_ShouldCallFactoryForEachCall()
-		{
-			// arrange
-			int numberOfCalls = 2;
-
-			// act
-			for (int i = 0; i < numberOfCalls; i++)
-			{
-				_sut.CreateExportFileDownloader();
-			}
-
-			// assert
-			_exportFileDownloaderFactoryMock.Verify(
-				x => x.Create(_exportFile),
-				Times.Exactly(numberOfCalls));
-		}
-
 		private CoreServiceFactory CreateCoreServiceFactory()
 		{
 			return new CoreServiceFactory(
 				_auditManagerFactoryMock.Object,
-				_exportFileDownloaderFactoryMock.Object,
 				_exportFile,
 				_webApiServiceFactoryMock.Object);
 		}
