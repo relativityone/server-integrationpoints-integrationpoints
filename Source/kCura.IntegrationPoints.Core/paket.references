@@ -13,6 +13,8 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.MetricsCollection
 Relativity.Toggles
+Relativity.OAuth2Client
+Relativity.OAuth2Client.Interfaces
 SystemWrapper.Wrappers
 
 Relativity.Kepler.Service

@@ -60,6 +60,7 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Authentication\AuthConstants.cs" />
     <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperFacade.cs" />
     <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperFacadeFactoryDeprecated.cs" />
     <Compile Include="Authentication\WebApi\LoginHelperFacade\LoginHelperInstrumentationDecorator.cs" />
@@ -812,17 +813,6 @@
         </Reference>
         <Reference Include="Relativity.OAuth2Client.IdentityModel">
           <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.OAuth2Client.Implicit">
-          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
