@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Credentials;
 using Relativity.OAuth2Client.Interfaces;
@@ -9,11 +11,34 @@ namespace Relativity.Sync.Authentication
 {
 	internal sealed class OAuth2TokenGenerator : IAuthTokenGenerator
 	{
-		private const string _RELATIVITY_AUTH_ENDPOINT = "Identity/connect/token";
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
 		private readonly ITokenProviderFactoryFactory _tokenProviderFactoryFactory;
 		private readonly Uri _authenticationUri;
 		private readonly ISyncLog _logger;
+
+#pragma warning disable RG0001
+		private class OAuth2ClientCredentials : ICredentialsProvider
+		{
+			private readonly ITokenProvider _tokenProvider;
+
+			public OAuth2ClientCredentials(ITokenProvider tokenProvider)
+			{
+				_tokenProvider = tokenProvider;
+			}
+
+			public NetworkCredential GetCredentials()
+			{
+				return GetCredentialsAsync().GetAwaiter().GetResult();
+			}
+
+			public async Task<NetworkCredential> GetCredentialsAsync(CancellationToken cancellationToken = default)
+			{
+				string accessToken = await _tokenProvider.GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+
+				return new NetworkCredential(AuthConstants._RELATIVITY_BEARER_USERNAME, accessToken);
+			}
+		}
+#pragma warning restore RG0001
 
 		public OAuth2TokenGenerator(IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactoryFactory, Uri authenticationUri, ISyncLog logger)
 		{
@@ -53,7 +78,7 @@ namespace Relativity.Sync.Authentication
 		private Uri GetRelativityStsUri()
 		{
 			string relativityInstance = _authenticationUri.ToString();
-			var relativityStsUri = new Uri(Path.Combine(relativityInstance, _RELATIVITY_AUTH_ENDPOINT));
+			var relativityStsUri = new Uri(Path.Combine(relativityInstance, AuthConstants._RELATIVITY_AUTH_ENDPOINT));
 			return relativityStsUri;
 		}
 	}
