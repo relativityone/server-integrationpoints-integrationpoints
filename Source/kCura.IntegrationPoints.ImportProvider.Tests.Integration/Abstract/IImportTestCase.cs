@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract
 {

@@ -87,11 +87,9 @@
     <Compile Include="JobHistory\CompletedJobsHistoryRepository.cs" />
     <Compile Include="JobHistory\ICompletedJobsHistoryRepository.cs" />
     <Compile Include="JobHistory\IJobHistoryAccess.cs" />
-    <Compile Include="JobHistory\ILibraryFactory.cs" />
     <Compile Include="JobHistory\IJobHistorySummaryModelBuilder.cs" />
     <Compile Include="JobHistory\IRelativityIntegrationPointsRepository.cs" />
     <Compile Include="JobHistory\JobHistoryAccess.cs" />
-    <Compile Include="JobHistory\LibraryFactory.cs" />
     <Compile Include="JobHistory\JobHistorySummaryModelBuilder.cs" />
     <Compile Include="JobHistory\RelativityIntegrationPointsRepositoryAdminAccess.cs" />
     <Compile Include="KeplerServiceBase.cs" />
@@ -212,17 +210,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.Relativity.Client">
-          <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="LanguageExt.Core">
           <HintPath>..\..\packages\LanguageExt.Core\lib\net45\LanguageExt.Core.dll</HintPath>
           <Private>True</Private>
@@ -236,6 +223,26 @@
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualBasic">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Services">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity">
+          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

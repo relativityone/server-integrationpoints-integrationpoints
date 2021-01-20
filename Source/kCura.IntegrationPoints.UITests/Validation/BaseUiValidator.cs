@@ -8,9 +8,9 @@ using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.UITests.Logging;
 using kCura.IntegrationPoints.UITests.Pages;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using Relativity.Services.Choice;
 using Serilog;
 
 
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.UITests.Validation
 			_jobExecutionTimeoutInMinutes = _DEFAULT_JOB_EXECUTION_TIMEOUT_IN_MINUTES;
 		}
 
-		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, params Choice[] expectedJobStatuses)
+		public void ValidateJobStatus(IntegrationPointDetailsPage integrationPointDetailsPage, params ChoiceRef[] expectedJobStatuses)
 		{
 			var sw = new Stopwatch();
 			sw.Start();

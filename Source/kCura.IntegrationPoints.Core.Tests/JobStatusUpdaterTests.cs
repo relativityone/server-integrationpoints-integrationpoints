@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -14,16 +15,15 @@ namespace kCura.IntegrationPoints.Core.Tests
 	public class JobStatusUpdaterTests : TestBase
 	{
 		private IJobHistoryService _jobHistoryService;
-		private IRSAPIService _rsapi;
+		private IRelativityObjectManagerService _relativityObjectManager;
 		private JobHistoryErrorQuery _service;
 		private JobStatusUpdater _instance;
-		private const int _JOB_ID = 1;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_rsapi = Substitute.For<IRSAPIService>();
-			_service = Substitute.For<JobHistoryErrorQuery>(_rsapi);
+			_relativityObjectManager = Substitute.For<IRelativityObjectManagerService>();
+			_service = Substitute.For<JobHistoryErrorQuery>(_relativityObjectManager);
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 
 			_instance = new JobStatusUpdater(_service, _jobHistoryService);
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			JobHistory jobHistory = new JobHistory() {JobStatus = JobStatusChoices.JobHistoryStopping};
 
 			// ACT
-			Relativity.Client.DTOs.Choice status = _instance.GenerateStatus(jobHistory);
+			ChoiceRef status = _instance.GenerateStatus(jobHistory);
 
 			// ASSERT
 			Assert.IsTrue(status.EqualsToChoice(JobStatusChoices.JobHistoryStopped));

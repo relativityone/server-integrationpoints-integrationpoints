@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System.Linq;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
@@ -13,7 +11,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
@@ -27,7 +24,6 @@ using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementa
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators;
 using kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup;
 using kCura.IntegrationPoints.Security;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
@@ -50,32 +46,30 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 
 		private void InstallDependencies(IWindsorContainer container)
 		{
-			container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().Instance(new RsapiClientWithWorkspaceFactory(_context.Helper)).LifestyleSingleton());
 			container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());
 			container.Register(Component.For<IHelper, IEHHelper>().Instance(_context.Helper).LifestyleSingleton());
-			container.Register(Component.For<IRSAPIService>().UsingFactoryMethod(k =>
-			{
-				IRSAPIServiceFactory serviceFactory = k.Resolve<IRSAPIServiceFactory>();
-				IEHContext context = k.Resolve<IEHContext>();
-				return serviceFactory.Create(context.Helper.GetActiveCaseID());
-			}).LifestyleTransient());
+
 			container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
 				return new ServiceContextHelperForEventHandlers(context.Helper, context.Helper.GetActiveCaseID());
 			}).LifestyleSingleton());
+
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
 				IEHContext context = k.Resolve<IEHContext>();
 				return new WorkspaceDBContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
 			}).LifestyleTransient());
+
 			container.Register(Component.For<IWorkspaceContext>()
 				.ImplementedBy<EventHandlerWorkspaceContextService>()
 				.LifestyleTransient()
 			);
+
 			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
 					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>()))
 				.LifestyleSingleton());
+
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
 				new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
 					k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
@@ -92,12 +86,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 
 				return new OAuth2TokenGenerator(context.Helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
 			}).LifestyleTransient());
-			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
-			{
-				IEHContext context = k.Resolve<IEHContext>();
-				IRsapiClientWithWorkspaceFactory clientFactory = k.Resolve<IRsapiClientWithWorkspaceFactory>();
-				return clientFactory.CreateAdminClient(context.Helper.GetActiveCaseID());
-			}));
 
 			container.Register(Component.For<IErrorService>().ImplementedBy<EhErrorService>().LifestyleTransient());
 
@@ -130,5 +118,3 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

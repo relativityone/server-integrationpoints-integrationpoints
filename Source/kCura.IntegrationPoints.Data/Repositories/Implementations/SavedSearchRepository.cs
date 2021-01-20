@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client.DTOs;
 using Relativity;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;

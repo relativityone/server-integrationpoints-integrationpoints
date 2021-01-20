@@ -1,6 +1,4 @@
-﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client.DTOs;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Relativity.Services.Folder;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
@@ -22,12 +20,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 			string actualFolderPath = _actualFolderPathStrategy.GetFolderPath(destinationDocument);
 			Assert.That(string.Equals(expectedFolderPath, actualFolderPath),
 				"Document with Control Number {0} has different path than expected. Expected {1}; Actual {2};",
-				GetControlNumber(sourceDocument), expectedFolderPath, actualFolderPath);
-		}
-
-		private static FieldValue GetControlNumber(Document document)
-		{
-			return document[TestConstants.FieldNames.CONTROL_NUMBER];
+				sourceDocument.ControlNumber, expectedFolderPath, actualFolderPath);
 		}
 
 		public static DocumentPathValidator CreateForField(int actualDocsWorkspaceId, IFolderManager folderManager)

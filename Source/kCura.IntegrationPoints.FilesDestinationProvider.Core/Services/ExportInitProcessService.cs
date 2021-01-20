@@ -2,7 +2,7 @@
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services

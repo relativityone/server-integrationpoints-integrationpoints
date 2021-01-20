@@ -19,6 +19,7 @@ using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
 using Workspace = kCura.IntegrationPoint.Tests.Core.Workspace;
 
 namespace kCura.IntegrationPoints.UITests.Configuration
@@ -118,7 +119,8 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 			Log.Information($"Attempting to create workspace '{WorkspaceName}' using template '{templateWorkspaceName}'.");
 			try
 			{
-				WorkspaceId = await Workspace.CreateWorkspaceAsync(WorkspaceName, templateWorkspaceName, Log).ConfigureAwait(false);
+				WorkspaceRef workspace = await Workspace.CreateWorkspaceAsync(WorkspaceName, templateWorkspaceName).ConfigureAwait(false);
+				WorkspaceId = workspace.ArtifactID;
 			}
 			catch (Exception ex)
 			{
@@ -134,7 +136,6 @@ namespace kCura.IntegrationPoints.UITests.Configuration
 		public async Task EnableDataGridForFieldAsync(string fieldName)
 		{
 			int workspaceId = GetWorkspaceId();
-			Workspace.EnableDataGrid(GetWorkspaceId());
 			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
 			using (IFieldManager fieldManager = Helper.CreateProxy<IFieldManager>())
 			{

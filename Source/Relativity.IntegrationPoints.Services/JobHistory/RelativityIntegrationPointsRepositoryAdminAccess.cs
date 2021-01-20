@@ -3,20 +3,19 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Services.JobHistory
 {
 	public class RelativityIntegrationPointsRepositoryAdminAccess : IRelativityIntegrationPointsRepository
 	{
-		private readonly IRSAPIService _rsapiService;
+		private readonly IRelativityObjectManagerService _relativityObjectManagerService;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		public RelativityIntegrationPointsRepositoryAdminAccess(
-			IRSAPIService rsapiService,
+			IRelativityObjectManagerService relativityObjectManagerService,
 			IIntegrationPointRepository integrationPointRepository)
 		{
-			_rsapiService = rsapiService;
+			_relativityObjectManagerService = relativityObjectManagerService;
 			_integrationPointRepository = integrationPointRepository;
 		}
 
@@ -32,18 +31,18 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 		{
 			QueryRequest request = new QueryRequest()
 			{
-				Condition = $"'{SourceProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID}'"
+				Condition = $"'{SourceProviderFields.Identifier}' == '{kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID}'"
 			};
-			return GetArtifactIds(_rsapiService.RelativityObjectManager.Query<SourceProvider>(request));
+			return GetArtifactIds(_relativityObjectManagerService.RelativityObjectManager.Query<SourceProvider>(request));
 		}
 
 		private IList<int> RetrieveRelativityDestinationProviderIds()
 		{
 			QueryRequest request = new QueryRequest()
 			{
-				Condition = $"'{DestinationProviderFields.Identifier}' == '{Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"
+				Condition = $"'{DestinationProviderFields.Identifier}' == '{kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"
 			};
-			return GetArtifactIds(_rsapiService.RelativityObjectManager.Query<DestinationProvider>(request));
+			return GetArtifactIds(_relativityObjectManagerService.RelativityObjectManager.Query<DestinationProvider>(request));
 		}
 
 		private List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(IList<int> sourceProvider, IList<int> destinationProvider)

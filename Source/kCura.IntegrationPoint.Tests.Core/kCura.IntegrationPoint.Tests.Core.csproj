@@ -100,6 +100,7 @@
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileSourceConstants.cs" />
     <Compile Include="Models\Constants\ExportToLoadFile\ExportToLoadFileNameOutputFilesAfterConstants.cs" />
     <Compile Include="Models\Constants\Shared\TransferredObjectConstants.cs" />
+    <Compile Include="Document.cs" />
     <Compile Include="Models\EntityExportToLoadFileDetails.cs" />
     <Compile Include="Models\EntityExportToLoadFileModel.cs" />
     <Compile Include="Models\DocumentsTestData.cs" />
@@ -171,7 +172,6 @@
     <Compile Include="RelativityApplicationManager.cs" />
     <Compile Include="ResourcePoolHelper.cs" />
     <Compile Include="ResourceServerHelper.cs" />
-    <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
     <Compile Include="SharedVariables.cs" />
     <Compile Include="Status.cs" />
@@ -7871,17 +7871,6 @@
       <ItemGroup>
         <Reference Include="oi">
           <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="kCura.Relativity.Client">
-          <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

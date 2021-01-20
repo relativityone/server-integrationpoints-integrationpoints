@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects.DataContracts;
@@ -198,13 +199,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			var setOfArtifactIDField = new HashSet<string> { "ArtifactID" };
 
 			ArtifactDTO relativitySourceCaseField = _fieldQueryRepository.RetrieveField(
-				(int)Relativity.Client.ArtifactType.Document,
+				(int)ArtifactType.Document,
 				_RELATIVITY_SOURCE_CASE,
 				FieldTypes.MultipleObject,
 				setOfArtifactIDField);
 			int? relativitySourceCaseFieldArtifactID = relativitySourceCaseField?.ArtifactId;
 			ArtifactDTO relativitySourceJobField = _fieldQueryRepository.RetrieveField(
-				(int)Relativity.Client.ArtifactType.Document,
+				(int)ArtifactType.Document,
 				_RELATIVITY_SOURCE_JOB,
 				FieldTypes.MultipleObject,
 				setOfArtifactIDField);

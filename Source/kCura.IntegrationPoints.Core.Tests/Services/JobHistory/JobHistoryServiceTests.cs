@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -18,6 +17,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Objects.DataContracts;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 {
@@ -28,8 +28,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private IWorkspaceManager _workspaceManager;
 		private IFederatedInstanceManager _federatedInstanceManager;
 		private IAPILog _logger;
-		private IProviderTypeService _providerTypeService;
-		private IMessageService _messageService;
 
 		private JobHistoryService _instance;
 		private IIntegrationPointSerializer _serializer;
@@ -47,8 +45,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 			_logger = Substitute.For<IAPILog>();
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
-			_providerTypeService = Substitute.For<IProviderTypeService>();
-			_messageService = Substitute.For<IMessageService>();
 
 			_integrationPoint = new Data.IntegrationPoint()
 			{
@@ -307,7 +303,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 			ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
 		}
 
-		private void ValidateJobHistory(Data.JobHistory jobHistory, Relativity.Client.DTOs.Choice jobType)
+		private void ValidateJobHistory(Data.JobHistory jobHistory, ChoiceRef jobType)
 		{
 			Assert.IsNotNull(jobHistory);
 			Assert.AreEqual(_jobHistoryArtifactId, jobHistory.ArtifactId);

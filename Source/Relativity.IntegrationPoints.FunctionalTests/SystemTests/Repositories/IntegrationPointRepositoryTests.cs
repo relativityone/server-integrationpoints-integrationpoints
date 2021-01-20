@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 

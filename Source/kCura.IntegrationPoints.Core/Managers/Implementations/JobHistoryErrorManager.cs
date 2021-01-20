@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public IScratchTableRepository JobHistoryErrorItemComplete { get; set; }
 		public IScratchTableRepository JobHistoryErrorItemStartExcluded { get; }
 
-		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.DTOs.Choice jobType)
+		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, ChoiceRef jobType)
 		{
 			ICollection<int> jobLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, JobHistoryErrorDTO.Choices.ErrorType.Values.Job);
 			ICollection<int> itemLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return updateStatusType;
 		}
 
-		private JobHistoryErrorDTO.UpdateStatusType DetermineUpdateStatusType(Relativity.Client.DTOs.Choice jobType, bool hasJobLevelErrors, bool hasItemLevelErrors)
+		private JobHistoryErrorDTO.UpdateStatusType DetermineUpdateStatusType(ChoiceRef jobType, bool hasJobLevelErrors, bool hasItemLevelErrors)
 		{
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
 

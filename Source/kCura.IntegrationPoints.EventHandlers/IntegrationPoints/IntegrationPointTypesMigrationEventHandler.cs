@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private List<IntegrationPointType> GetExistingIntegrationPointTypes()
 		{
 			var query = new QueryRequest { Fields = GetAllIntegrationPointTypeFields() };
-			return WorkspaceTemplateServiceContext.RsapiService.RelativityObjectManager.Query<IntegrationPointType>(query);
+			return WorkspaceTemplateServiceContext.RelativityObjectManagerService.RelativityObjectManager.Query<IntegrationPointType>(query);
 		}
 
 		private List<FieldRef> GetAllIntegrationPointTypeFields()

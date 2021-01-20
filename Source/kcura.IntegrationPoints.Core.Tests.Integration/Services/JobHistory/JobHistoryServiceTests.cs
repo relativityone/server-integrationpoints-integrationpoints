@@ -10,12 +10,11 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 {
@@ -98,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 			{
 				int[] docs = result.Documents;
 			};
-			getDocuments.ShouldThrow<FieldNotFoundException>();
+			getDocuments.ShouldThrow<Exception>();
 
 			Action getOtherFields = () =>
 			{
@@ -106,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 				string name = result.Name;
 				string jobId = result.JobID;
 				int[] integrationPoint = result.IntegrationPoint;
-				Choice jobStatus = result.JobStatus;
+				ChoiceRef jobStatus = result.JobStatus;
 				int? itemsTransferred = result.ItemsTransferred;
 				int? itemsWithErrors = result.ItemsWithErrors;
 				DateTime? startTimeUtc = result.StartTimeUTC;
@@ -119,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services.JobHistory
 				string fileSize = result.FilesSize;
 				string overwrite = result.Overwrite;
 			};
-			getOtherFields.ShouldNotThrow<FieldNotFoundException>();
+			getOtherFields.ShouldNotThrow<Exception>();
 
 			result.ArtifactId.Should().Be(jobHistoryWithAllFieldsFetched.ArtifactId);
 			result.Name.Should().Be(jobHistoryWithAllFieldsFetched.Name);

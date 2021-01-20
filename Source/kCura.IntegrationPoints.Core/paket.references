@@ -3,7 +3,6 @@ CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
 kCura.LongPath
-kCura.Relativity.Client
 LanguageExt.Core
 Mono.TextTransform
 Relativity

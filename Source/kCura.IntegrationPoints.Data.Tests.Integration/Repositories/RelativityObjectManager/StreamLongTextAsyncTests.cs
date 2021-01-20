@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
@@ -39,10 +40,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 			};
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public async Task OneTimeSetUp()
 		{
 			string workspaceName = GetWorkspaceRandomizedName();
-			_workspaceId = Workspace.CreateWorkspace(workspaceName);
+			_workspaceId = (await Workspace.CreateWorkspaceAsync(workspaceName).ConfigureAwait(false)).ArtifactID;
 			_importHelper = new ImportHelper();
 			_workspaceService = new WorkspaceService(_importHelper);
 			_helper = new TestHelper();
@@ -50,9 +51,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories.Relativity
 		}
 
 		[OneTimeTearDown]
-		public void OneTimeTearDown()
+		public async Task OneTimeTearDown()
 		{
-			Workspace.DeleteWorkspace(_workspaceId);
+			await Workspace.DeleteWorkspaceAsync(_workspaceId).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("be26fb26-a1c5-401d-84ba-57122d8c6e75")]

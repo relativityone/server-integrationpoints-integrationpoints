@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client;
 using Relativity.Services.Agent;
 using Relativity.Services.ResourceServer;
 using System;
@@ -19,22 +18,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		private static ITestHelper Helper => new TestHelper();
 
-		public static async Task<Result> CreateIntegrationPointAgentAsync()
-		{
-			global::Relativity.Services.Agent.Agent[] agents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
-
-			if (agents.Length >= _MAX_NUMBER_OF_AGENTS_TO_CREATE)
-			{
-				return new Result
-				{
-					ArtifactID = agents[0].ArtifactID,
-					Success = false
-				};
-			}
-
-			return await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
-		}
-
 		public static async Task<bool> CreateMaxIntegrationPointAgentsAsync()
 		{
 			global::Relativity.Services.Agent.Agent[] agents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
@@ -42,8 +25,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			int agentsToCreate = _MAX_NUMBER_OF_AGENTS_TO_CREATE - agents.Length;
 			for (int i = 0; i < agentsToCreate; ++i)
 			{
-				Result agent = await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
-				if(!agent.Success)
+				bool success = await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
+				if(!success)
 				{
 					return false;
 				}
@@ -51,42 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			return true;
 		}
-
-		public static async Task<Result> CreateIntegrationPointAgentIfNotExistsAsync()
-		{
-			global::Relativity.Services.Agent.Agent[] agents = await GetIntegrationPointsAgentsAsync().ConfigureAwait(false);
-
-			if (agents.Any())
-			{
-				return new Result
-				{
-					ArtifactID = agents[0].ArtifactID,
-					Success = false
-				};
-			}
-
-			return await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
-		}
-
-		public static async Task DeleteAgentAsync(int artifactID)
-		{
-			if (artifactID == 0)
-			{
-				return;
-			}
-			using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
-			{
-				try
-				{
-					await proxy.DeleteSingleAsync(artifactID).ConfigureAwait(false);
-				}
-				catch (Exception ex)
-				{
-					throw new TestException($"Error: Failed deleting agent. Exception: {ex.Message}", ex);
-				}
-			}
-		}
-
+		
 		private static async Task<global::Relativity.Services.Agent.Agent[]> GetIntegrationPointsAgentsAsync()
 		{
 			AgentTypeRef agentTypeRef = await GetAgentTypeByNameAsync(_INTEGRATION_POINT_AGENT_TYPE_NAME).ConfigureAwait(false);
@@ -108,7 +56,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				.ToArray();
 		}
 
-		private static async Task<Result> CreateIntegrationPointAgentInternalAsync()
+		private static async Task<bool> CreateIntegrationPointAgentInternalAsync()
 		{
 			List<ResourceServer> resourceServers = await GetAgentServersAsync().ConfigureAwait(false);
 
@@ -135,13 +83,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				using (IAgentManager proxy = Helper.CreateProxy<IAgentManager>())
 				{
-					int artifactID = await proxy.CreateSingleAsync(agentDto).ConfigureAwait(false);
-
-					return new Result
-					{
-						ArtifactID = artifactID,
-						Success = true
-					};
+					await proxy.CreateSingleAsync(agentDto).ConfigureAwait(false);
+					return true;
 				}
 			}
 			catch (Exception ex)

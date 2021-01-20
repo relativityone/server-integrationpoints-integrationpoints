@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using NUnit.Framework;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
@@ -14,11 +15,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 		public Guid IntegrationPointsJobTypeGuid = new Guid("e809db5e-5e99-4a75-98a1-26129313a3f5");
 
-		public List<Choice> ExpectedJobTypeChoiceValues = new List<Choice>
+		public List<ChoiceRef> ExpectedJobTypeChoiceValues = new List<ChoiceRef>
 		{
-			new Choice { Name = "Run" },
-			new Choice { Name = "Scheduled Run" },
-			new Choice { Name = "Retry Errors" }
+			new ChoiceRef { Name = "Run" },
+			new ChoiceRef { Name = "Scheduled Run" },
+			new ChoiceRef { Name = "Retry Errors" }
 		};
 
 		public ChoiceQueryTests() : base("ChoiceQueryTests Workspace")
@@ -35,10 +36,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		public void GetChoicesOnField_ShouldReturnExpectedChoiceValues_WhenChoiceGuidIsPassed()
 		{
 			// Arrange & Act
-			List<Choice> result = _sut.GetChoicesOnField(WorkspaceArtifactId, IntegrationPointsJobTypeGuid);
+			List<ChoiceRef> result = _sut.GetChoicesOnField(WorkspaceArtifactId, IntegrationPointsJobTypeGuid);
 
 			// Assert
-			result.ShouldAllBeEquivalentTo(ExpectedJobTypeChoiceValues, config => config.Excluding(x => x.ArtifactID));
+			result.Select(x => x.Name).ShouldAllBeEquivalentTo(ExpectedJobTypeChoiceValues.Select(x => x.Name));
 		}
 	}
 }

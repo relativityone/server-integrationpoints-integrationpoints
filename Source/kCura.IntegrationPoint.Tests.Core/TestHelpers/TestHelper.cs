@@ -1,7 +1,4 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System;
-using kCura.Relativity.Client;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using Relativity.API;
@@ -52,7 +49,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_logFactory = Substitute.For<ILogFactory>();
 			_instanceSettingsBundleMock = Substitute.For<IInstanceSettingsBundle>();
 			_serviceManager = Substitute.For<IServicesMgr>();
-			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(_ => Rsapi.CreateRsapiClient());
 			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.CurrentUser);
 			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.System);
 			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.CurrentUser);
@@ -102,7 +98,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public T CreateProxy<T>(string username) where T : IDisposable
 		{
 			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, RelativityPassword);
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiUri, SharedVariables.RelativityRestUri, userCredential);
+			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RelativityRestUri, userCredential);
 			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
 		}
@@ -203,5 +199,3 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

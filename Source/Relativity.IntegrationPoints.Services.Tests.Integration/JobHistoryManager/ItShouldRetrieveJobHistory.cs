@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -10,8 +11,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
+using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
 using User = kCura.IntegrationPoint.Tests.Core.User;
@@ -45,7 +46,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 
 			Group.AddGroupToWorkspace(SourceWorkspaceArtifactID, _groupId);
 
-			_testData = TestData.Create(SourceWorkspaceArtifactID);
+			_testData = TestData.Create(SourceWorkspaceArtifactID).GetAwaiter().GetResult();
 			_expectedResult = TestData.GetExpectedData(_testData);
 
 			foreach (var testData in _testData)
@@ -108,7 +109,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 
 			foreach (var testData in _testData)
 			{
-				ExceptionHelper.IgnoreExceptions(() => Workspace.DeleteWorkspace(testData.WorkspaceId));
+				ExceptionHelper.IgnoreExceptions(() => Workspace.DeleteWorkspaceAsync(testData.WorkspaceId).GetAwaiter().GetResult());
 			}
 			ExceptionHelper.IgnoreExceptions(() => Group.DeleteGroup(_groupId));
 			ExceptionHelper.IgnoreExceptions(() => User.DeleteUser(_user.ArtifactID));
@@ -239,20 +240,20 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 			public bool PreventUserAccess { get; set; }
 			public bool DeletedAfterRun { get; set; }
 			public bool IsLdapProvider { get; set; }
-			public Choice JobHistoryStatus { get; set; }
+			public ChoiceRef JobHistoryStatus { get; set; }
 
-			public static IList<TestData> Create(int sourceWorkspaceId)
+			public static async Task<IList<TestData>> Create(int sourceWorkspaceId)
 			{
 				var workspaceName = $"target_1_{Utils.FormattedDateTimeNow}";
-				var workspaceId = Workspace.CreateWorkspace(workspaceName);
+				var workspace = await Workspace.CreateWorkspaceAsync(workspaceName).ConfigureAwait(false);
 
 				var workspaceNoAccessName = $"target_2_{Utils.FormattedDateTimeNow}";
-				var workspaceNoAccessId = Workspace.CreateWorkspace(workspaceNoAccessName);
+				var workspaceNoAccess= await Workspace.CreateWorkspaceAsync(workspaceNoAccessName).ConfigureAwait(false);
 
 				var testCase1 = new TestData
 				{
 					WorkspaceName = workspaceNoAccessName,
-					WorkspaceId = workspaceNoAccessId,
+					WorkspaceId = workspaceNoAccess.ArtifactID,
 					DocsTransferred = 17,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted,
 					PreventUserAccess = true
@@ -260,14 +261,14 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 				var testCase2 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 11,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors
 				};
 				var testCase3 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 31,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors,
 					DeletedAfterRun = true
@@ -275,42 +276,42 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.JobHistoryMana
 				var testCase4 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 23,
 					JobHistoryStatus = JobStatusChoices.JobHistoryCompleted
 				};
 				var testCase5 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 59,
 					JobHistoryStatus = JobStatusChoices.JobHistoryStopped
 				};
 				var testCase6 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 47,
 					JobHistoryStatus = JobStatusChoices.JobHistoryStopping
 				};
 				var testCase7 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 41,
 					JobHistoryStatus = JobStatusChoices.JobHistoryErrorJobFailed
 				};
 				var testCase8 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 61,
 					JobHistoryStatus = JobStatusChoices.JobHistoryPending
 				};
 				var testCase9 = new TestData
 				{
 					WorkspaceName = workspaceName,
-					WorkspaceId = workspaceId,
+					WorkspaceId = workspace.ArtifactID,
 					DocsTransferred = 53,
 					JobHistoryStatus = JobStatusChoices.JobHistoryProcessing
 				};

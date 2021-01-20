@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client.DTOs;
 using Relativity.Services.Folder;
 
 namespace kCura.IntegrationPoint.Tests.Core.Validators
@@ -35,20 +33,15 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
 
 		private string GetFullFolderPathFromManager(Document document)
 		{
-			Task<List<FolderPath>> folderLookup = _folderManager.GetFullPathListAsync(_workspaceId, new List<int>() { document.ParentArtifact.ArtifactID });
+			Task<List<FolderPath>> folderLookup = _folderManager.GetFullPathListAsync(_workspaceId, new List<int>() { document.ParentArtifactId });
 			folderLookup.Wait();
 			if (folderLookup.Result == null || folderLookup.Result.Count == 0)
 			{
-				throw new Exception($"Cannot find folder for document. Workspace id: {_workspaceId}. Document control number: {GetControlNumber(document)}. Document folder: {document.FolderName}");
+				throw new Exception($"Cannot find folder for document. Workspace id: {_workspaceId}. Document control number: {document.ControlNumber}. Document folder: {document.FolderName}");
 			}
 
 			string result = folderLookup.Result.First().FullPath;
 			return result.Replace(@" \ ", FOLDER_TREE_SEPARATOR);
-		}
-
-		private static FieldValue GetControlNumber(Document document)
-		{
-			return document[TestConstants.FieldNames.CONTROL_NUMBER];
 		}
 
 		private string StripWorkspaceNameFromFolderPath(string folderPath)

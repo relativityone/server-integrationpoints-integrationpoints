@@ -11,7 +11,6 @@
 		public static readonly string DATA_GRID = "Integration Points - Data Grid";
 		public static readonly string LDAP = "Integration Points - LDAP Provider";
 		public static readonly string FTP = "Integration Points - FTP Provider";
-		public static readonly string RSAPI = "Integration Points - RsApi";
 		public static readonly string KEPLER = "Kepler/ObjectManager";
 		public static readonly string WIN_EDDS = "WinEDDS";
 		public static readonly string SECRET_STORE_MIGRATOR = "Secret Store Migrator";

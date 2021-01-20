@@ -22,8 +22,8 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoints
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 			_dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(_serializer);
 			_dataTransferLocationService = Container.Resolve<IDataTransferLocationService>();
 			_ehHelper = new EHHelper(Helper, WorkspaceArtifactId);
-			_relativityObjectManager = CaseContext.RsapiService.RelativityObjectManager;
+			_relativityObjectManager = CaseContext.RelativityObjectManagerService.RelativityObjectManager;
 			_integrationPointRepository = new IntegrationPointRepository(
 				_relativityObjectManager, 
 				Substitute.For<IIntegrationPointSerializer>(),
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.IntegrationPoi
 		private Data.IntegrationPoint CreateIntegrationPoint()
 		{
 			IntegrationPointModel model = CreateIntegrationModel();
-			IList<Choice> choices = _choiceQuery.GetChoicesOnField(WorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
+			IList<ChoiceRef> choices = _choiceQuery.GetChoicesOnField(WorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 			Data.IntegrationPoint integrationPointRdo = model.ToRdo(choices, new PeriodicScheduleRule());
 
 			return integrationPointRdo;

@@ -1,14 +1,9 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Data.RSAPIClient;
 using Relativity.IntegrationPoints.Services.Installers.Context;
-using kCura.Relativity.Client;
 using Relativity.API;
 using System.Collections.Generic;
 using Relativity.IntegrationPoints.Services.Installers.Authentication;
@@ -39,19 +34,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
         protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
         {
             container.Register(Component.For<IUserInfo>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>().GetAuthenticationManager().UserInfo, true));
-            container.Register(Component.For<IRsapiClientWithWorkspaceFactory>().ImplementedBy<RsapiClientWithWorkspaceFactory>());
             
-            container.Register(
-                Component.For<IRSAPIClient>()
-                    .UsingFactoryMethod(k =>
-                    {
-                        IAPILog logger = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
-                        IRSAPIClient client = container.Resolve<IServiceHelper>().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
-                        client.APIOptions.WorkspaceID = workspaceID;
-                        return new RsapiClientWrapperWithLogging(client, logger);
-                    })
-                    .LifeStyle.Transient);
-
             container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<IntegrationPointRepository>().LifestyleTransient());
             container.Register(Component.For<IIntegrationPointProfileRepository>().ImplementedBy<IntegrationPointProfileRepository>().LifestyleTransient());
             container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
@@ -64,5 +47,3 @@ namespace Relativity.IntegrationPoints.Services.Installers
         }
     }
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

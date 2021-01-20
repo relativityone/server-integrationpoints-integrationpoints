@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
@@ -28,16 +29,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private const string _WORKSPACE_NAME = "Tests_ResourceServerManager_RIP_Integrations";
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public async Task OneTimeSetUp()
 		{
-			_workspaceId = Workspace.CreateWorkspace(_WORKSPACE_NAME);
+			_workspaceId = (await Workspace.CreateWorkspaceAsync(_WORKSPACE_NAME).ConfigureAwait(false)).ArtifactID;
 			_helper = new TestHelper();
 		}
 
 		[OneTimeTearDown]
-		public void OneTimeTearDown()
+		public async Task OneTimeTearDown()
 		{
-			Workspace.DeleteWorkspace(_workspaceId);
+			await Workspace.DeleteWorkspaceAsync(_workspaceId).ConfigureAwait(false);
 		}
 
 		[SetUp]

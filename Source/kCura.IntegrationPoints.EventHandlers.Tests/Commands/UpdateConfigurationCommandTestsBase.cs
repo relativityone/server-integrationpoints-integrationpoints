@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.EventHandlers.Commands;
 using Moq;
 using NSubstitute;
 using NUnit.Framework;
@@ -15,7 +12,6 @@ using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Field;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {

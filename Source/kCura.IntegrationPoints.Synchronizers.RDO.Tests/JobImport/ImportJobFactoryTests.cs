@@ -2,11 +2,11 @@
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
-using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 

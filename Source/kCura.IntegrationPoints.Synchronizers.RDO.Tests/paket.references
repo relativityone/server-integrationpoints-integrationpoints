@@ -1,7 +1,6 @@
 CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
-kCura.Relativity.Client
 Relativity.API
 Relativity.Data
 Relativity.DataExchange.Client.SDK

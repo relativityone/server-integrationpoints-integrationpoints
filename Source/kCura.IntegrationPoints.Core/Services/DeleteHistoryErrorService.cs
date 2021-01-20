@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class DeleteHistoryErrorService : IDeleteHistoryErrorService
 	{
-		private readonly IRSAPIServiceFactory _rsapiServiceFactory;
+		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-		public DeleteHistoryErrorService(IRSAPIServiceFactory rsapiServiceFactory)
+		public DeleteHistoryErrorService(IRelativityObjectManagerFactory relativityObjectManagerFactory)
 		{
-			_rsapiServiceFactory = rsapiServiceFactory;
+			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public void DeleteErrorAssociatedWithHistories(List<int> historiesId, int workspaceArtifactId)
 		{
-			IRSAPIService rsapiService = _rsapiServiceFactory.Create(workspaceArtifactId);
+			IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 
 			var query = new QueryRequest
 			{
@@ -30,10 +31,9 @@ namespace kCura.IntegrationPoints.Core.Services
 				Condition = CreateCondition(historiesId)
 			};
 
-			List<JobHistoryError> result = rsapiService.RelativityObjectManager.Query<JobHistoryError>(query);
+			List<JobHistoryError> result = objectManager.Query<JobHistoryError>(query);
 			List<int> allJobHistoryError = result.Select(x => x.ArtifactId).ToList();
-			
-			rsapiService.JobHistoryErrorLibrary.Delete(allJobHistoryError);
+			objectManager.MassDeleteAsync(allJobHistoryError).GetAwaiter().GetResult();
 		}
 
 		private string CreateCondition(List<int> historiesId)

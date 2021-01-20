@@ -7,12 +7,12 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			// ARRANGE
 			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
 
-			Choice expectedStatus = JobStatusChoices.JobHistoryCompleted;
+			ChoiceRef expectedStatus = JobStatusChoices.JobHistoryCompleted;
 			var expectedEndTimeUtc = new DateTime(2010, 10, 10, 10, 10, 10);
 
 			ArrangeJobComplete(expectedStatus, expectedEndTimeUtc, job);
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			// ARRANGE
 			Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
 
-			Choice expectedStatus = JobStatusChoices.JobHistoryCompleted;
+			ChoiceRef expectedStatus = JobStatusChoices.JobHistoryCompleted;
 			var expectedEndTimeUtc = new DateTime(2010, 10, 10, 10, 10, 10);
 
 			ArrangeJobComplete(expectedStatus, expectedEndTimeUtc, job);
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_logger.Received(1).LogError(Arg.Any<NullReferenceException>(), Arg.Any<string>(), Arg.Any<object[]>());
 		}
 
-		private void ArrangeJobComplete(Choice expectedStatus, DateTime expectedEndTimeUtc, Job job)
+		private void ArrangeJobComplete(ChoiceRef expectedStatus, DateTime expectedEndTimeUtc, Job job)
 		{
 			JobHistory history = new JobHistory
 			{

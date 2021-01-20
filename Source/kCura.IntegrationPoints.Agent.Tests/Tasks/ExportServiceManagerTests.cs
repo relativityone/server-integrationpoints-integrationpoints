@@ -39,7 +39,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -194,10 +194,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_serializer.Deserialize<SourceConfiguration>(_integrationPoint.SourceConfiguration).Returns(_configuration);
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
 			_jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(_jobHistory);
-			_caseContext.RsapiService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
+			_caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
 			_serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(mappings);
 			_managerFactory.CreateJobHistoryErrorManager(_configuration.SourceWorkspaceArtifactId, GetUniqueJobId(job, _taskParameters.BatchInstance)).Returns(_jobHistoryErrorManager);
-			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<Choice>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
+			_jobHistoryErrorManager.StageForUpdatingErrors(job, Arg.Is<ChoiceRef>(obj => obj.EqualsToChoice(JobTypeChoices.JobHistoryRun))).Returns(_updateStatusType);
 			_repositoryFactory.GetSavedSearchQueryRepository(_configuration.SourceWorkspaceArtifactId).Returns(_savedSearchQueryRepository);
 			_savedSearchQueryRepository.RetrieveSavedSearch(_configuration.SavedSearchArtifactId).Returns(new SavedSearchDTO());
 			_repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
@@ -355,8 +355,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// ASSERT
 			Assert.AreEqual(0, _jobHistory.TotalItems);
-			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<Choice>(), Arg.Any<Exception>());
-			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<Choice>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<ChoiceRef>(), Arg.Any<Exception>());
+			_jobHistoryErrorService.DidNotReceive().AddError(Arg.Any<ChoiceRef>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
 			AssertFinalizedJob(_job);
 		}
 
@@ -586,7 +586,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// ASSERT
 			_updateJobHistoryStatus.Received(1).OnJobComplete(_job);
-			_jobHistoryErrorService.Received(1).AddError(Arg.Is<Choice>(type => type.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), exception);
+			_jobHistoryErrorService.Received(1).AddError(Arg.Is<ChoiceRef>(type => type.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)), exception);
 		}
 
 		[Test]
@@ -745,7 +745,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorService
 				.Received(1)
 				.AddError(
-					Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+					Arg.Is<ChoiceRef>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
 					Arg.Is<T>(ex => ex.Message == message));
 		}
 
@@ -754,7 +754,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorService
 				.Received(1)
 				.AddError(
-					Arg.Is<Choice>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+					Arg.Is<ChoiceRef>(choice => choice.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
 					Arg.Is<AggregateException>(ex => ex.InnerExceptions[0].Message == innerMessage));
 		}
 

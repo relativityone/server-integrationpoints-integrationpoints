@@ -4,60 +4,74 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using kCura.IntegrationPoints.Data.Attributes;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Artifact = kCura.Relativity.Client.DTOs.Artifact;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using Relativity.Services.Objects.DataContracts;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public abstract class BaseRdo : IBaseRdo
 	{
-		private RDO _rdo;
-
-		internal RDO Rdo
+		private RelativityObject _relativityObject;
+		
+		internal RelativityObject RelativityObject
 		{
 			get
 			{
-				if (_rdo == null)
+				if (_relativityObject == null)
 				{
-					_rdo = new RDO();
-					_rdo.ArtifactTypeGuids.Add(Guid.Parse(ObjectMetadata.ArtifactTypeGuid));
+					_relativityObject = new RelativityObject()
+					{
+						Guids = new List<Guid>(),
+						FieldValues = new List<FieldValuePair>()
+					};
 				}
-				return _rdo;
-			}
-			set { _rdo = value; }
-		}
 
-		protected BaseRdo() { }
+				return _relativityObject;
+			}
+			set
+			{
+				_relativityObject = value;
+			}
+		}
 
 		public virtual bool HasField(Guid fieldGuid)
 		{
-			return Rdo.Fields.Any(x => x.Guids.Contains(fieldGuid));
+			return RelativityObject.FieldValuePairExists(fieldGuid);
 		}
 
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
-			var value = Rdo[fieldGuid].Value;
-			object v = ConvertForGet(FieldMetadata[fieldGuid].Type, value);
-			return (T)v;
+			string fieldType = FieldMetadata[fieldGuid].Type;
+			object fieldValue = RelativityObject[fieldGuid].Value;
+			object convertedValue = ConvertForGet(fieldType, fieldValue);
+			return (T)convertedValue;
 		}
 
 		public string GetFieldName(Guid fieldGuid)
 		{
-			return this.FieldMetadata.Single(x => x.Value.FieldGuid == fieldGuid).Value.FieldName;
+			return FieldMetadata.Single(x => x.Value.FieldGuid == fieldGuid).Value.FieldName;
 		}
 
-		public virtual void SetField<T>(Guid fieldName, T fieldValue, bool markAsUpdated = true)
+		public virtual void SetField<T>(Guid fieldGuid, T fieldValue, bool markAsUpdated = true)
 		{
-			object value = ConvertValue(FieldMetadata[fieldName].Type, fieldValue);
-			if (!Rdo.Fields.Any(x => x.Guids.Contains(fieldName)))
+			object value = ConvertValue(FieldMetadata[fieldGuid].Type, fieldValue);
+			if (!RelativityObject.FieldValuePairExists(fieldGuid))
 			{
-				Rdo.Fields.Add(new FieldValue(fieldName, value));
+				RelativityObject.FieldValues.Add(new FieldValuePair()
+				{
+					Field = new Field()
+					{
+						Guids = new List<Guid>()
+						{
+							fieldGuid
+						}
+					},
+					Value = value
+				});
 			}
 			else
 			{
-				Rdo[fieldName].Value = value;
+				RelativityObject[fieldGuid].Value = value;
 			}
 		}
 
@@ -66,25 +80,20 @@ namespace kCura.IntegrationPoints.Data
 			switch (fieldType)
 			{
 				case FieldTypes.MultipleObject:
-					if (value is IEnumerable<Artifact>)
+					if (value is IEnumerable<RelativityObject>)
 					{
-						return ((IEnumerable<Artifact>)value).Select(x => x.ArtifactID).ToArray();
+						return ((IEnumerable<RelativityObject>)value).Select(x => x.ArtifactID).ToArray();
 					}
 					return new int[] { };
 				case FieldTypes.SingleObject:
-					var a = value as Artifact;
-					if (a != null)
+					var singleObjectValue = value as RelativityObject;
+					if (singleObjectValue != null)
 					{
-						return a.ArtifactID;
+						return singleObjectValue.ArtifactID;
 					}
 					return value;
 				case FieldTypes.SingleChoice:
-					var choice = value as Relativity.Client.DTOs.Choice;
-					if (choice != null)
-					{
-						return new Choice(choice.ArtifactID) { Name = choice.Name, Guids = choice.Guids };
-					}
-					return value;
+					return value as ChoiceRef;
 				default:
 					return value;
 			}
@@ -102,40 +111,30 @@ namespace kCura.IntegrationPoints.Data
 			switch (fieldType)
 			{
 				case FieldTypes.MultipleChoice:
-					Choice[] choices = null;
-					if (value is List<Choice>)
+					ChoiceRef[] choices = null;
+					if (value is List<ChoiceRef>)
 					{
-						choices = ((List<Choice>)value).ToArray();
+						choices = ((List<ChoiceRef>)value).ToArray();
 					}
 					else if (value is object[])
 					{
-						choices = ((object[])value).Select(x => ((Choice)x)).ToArray();
+						choices = ((object[])value).Select(x => ((ChoiceRef)x)).ToArray();
 					}
-					else if (value is Choice[])
-					{
-						choices = (Choice[])value;
-					}
-					MultiChoiceFieldValueList multiChoices = new MultiChoiceFieldValueList();
-					multiChoices.UpdateBehavior = MultiChoiceUpdateBehavior.Replace;
-					if (choices != null)
-					{
-						foreach (var choice in choices)
-						{
-							var choiceDto = new Relativity.Client.DTOs.Choice(choice.Guids.First()) { Name = choice.Name };
-							multiChoices.Add(choiceDto);
-						}
-						newValue = multiChoices;
-					}
+					newValue = choices;
 					break;
 				case FieldTypes.SingleChoice:
-					Choice singleChoice = null;
-					if (value is Choice)
+					ChoiceRef singleChoice = null;
+					if (value is ChoiceRef)
 					{
-						singleChoice = (Choice)value;
+						singleChoice = (ChoiceRef)value;
 
 						if (singleChoice.ArtifactID > 0 || singleChoice.Guids.Any())
 						{
-							newValue = new Choice(singleChoice.ArtifactID) { Name = singleChoice.Name, Guids = singleChoice.Guids };
+							newValue = new ChoiceRef(singleChoice.ArtifactID)
+							{
+								Name = singleChoice.Name,
+								Guids = singleChoice.Guids
+							};
 						}
 						else
 						{
@@ -146,21 +145,22 @@ namespace kCura.IntegrationPoints.Data
 				case FieldTypes.SingleObject:
 					if (value is int)
 					{
-						RDO obj = new RDO((int)value);
-						newValue = obj;
+						RelativityObject relativityObject = new RelativityObject()
+						{
+							ArtifactID = (int) value
+						};
+						newValue = relativityObject;
 					}
 					break;
 				case FieldTypes.MultipleObject:
-					int[] multipleObjectIDs = null;
+					int[] multipleObjectIDs;
 					if (value is int[])
 					{
-						multipleObjectIDs = ((int[])value);
-						FieldValueList<RDO> objects = new FieldValueList<RDO>();
-						foreach (var objectID in multipleObjectIDs)
+						multipleObjectIDs = (int[])value;
+						newValue = multipleObjectIDs.Select(x => new RelativityObject()
 						{
-							objects.Add(new RDO(objectID));
-						}
-						newValue = objects;
+							ArtifactID = x
+						}).ToArray();
 					}
 					break;
 				default:
@@ -183,12 +183,7 @@ namespace kCura.IntegrationPoints.Data
 
 			return dynamicFieldAttributesDictionary;
 		}
-
-		protected static DynamicObjectAttribute GetObjectMetadata(Type t)
-		{
-			return (DynamicObjectAttribute)t.GetCustomAttributes(typeof(DynamicObjectAttribute), false).First();
-		}
-
+		
 		public static Guid GetFieldGuid<TRdo, TProperty>(Expression<Func<TRdo, TProperty>> propertySelector)
 			where TRdo : BaseRdo
 		{
@@ -228,15 +223,11 @@ namespace kCura.IntegrationPoints.Data
 		{
 			get
 			{
-				return this.Rdo.ArtifactID;
+				return RelativityObject.ArtifactID;
 			}
 			set
 			{
-				//this is the shittiest hack ever
-				var newRdo = new RDO(value);
-				newRdo.ArtifactTypeGuids.AddRange(this.Rdo.ArtifactTypeGuids);
-				newRdo.Fields.AddRange(this.Rdo.Fields);
-				this.Rdo = newRdo;
+				RelativityObject.ArtifactID = value;
 			}
 		}
 
@@ -244,9 +235,9 @@ namespace kCura.IntegrationPoints.Data
 		{
 			get
 			{
-				if (this.Rdo.ParentArtifact != null)
+				if (RelativityObject.ParentObject != null)
 				{
-					return this.Rdo.ParentArtifact.ArtifactID;
+					return RelativityObject.ParentObject.ArtifactID;
 				}
 				return null;
 			}
@@ -254,11 +245,13 @@ namespace kCura.IntegrationPoints.Data
 			{
 				if (value.HasValue)
 				{
-					this.Rdo.ParentArtifact = new kCura.Relativity.Client.DTOs.Artifact(value.Value);
+					RelativityObject.ParentObject = new RelativityObjectRef()
+					{
+						ArtifactID = value.Value
+					};
 				}
 			}
 		}
 		public abstract Dictionary<Guid, DynamicFieldAttribute> FieldMetadata { get; }
-		public abstract DynamicObjectAttribute ObjectMetadata { get; }
 	}
 }

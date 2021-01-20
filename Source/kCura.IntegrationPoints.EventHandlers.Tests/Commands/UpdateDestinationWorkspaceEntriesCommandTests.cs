@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.Commands;
-using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
@@ -15,14 +14,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 	public class UpdateDestinationWorkspaceEntriesCommandTests : TestBase
 	{
 		private UpdateDestinationWorkspaceEntriesCommand _command;
-		private IRSAPIService _rsapiService;
+		private IRelativityObjectManager _relativityObjectManager;
 		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 
 		public override void SetUp()
 		{
-			_rsapiService = Substitute.For<IRSAPIService>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 			_destinationWorkspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
-			_command = new UpdateDestinationWorkspaceEntriesCommand(_rsapiService, _destinationWorkspaceRepository);
+			_command = new UpdateDestinationWorkspaceEntriesCommand(_relativityObjectManager, _destinationWorkspaceRepository);
 		}
 
 		[Test]
@@ -39,13 +38,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 				new DestinationWorkspace(),
 				new DestinationWorkspace()
 			};
-			_rsapiService.RelativityObjectManager.Query<DestinationWorkspace>(Arg.Any<QueryRequest>()).Returns(entriesToUpdate);
+			_relativityObjectManager.Query<DestinationWorkspace>(Arg.Any<QueryRequest>()).Returns(entriesToUpdate);
 
 			// ACT
 			_command.Execute();
 
 			// ASSERT
-			_rsapiService.RelativityObjectManager.Received(1).Query<DestinationWorkspace>(Arg.Any<QueryRequest>());
+			_relativityObjectManager.Received(1).Query<DestinationWorkspace>(Arg.Any<QueryRequest>());
 
 			foreach (var destinationWorkspace in entriesToUpdate)
 			{

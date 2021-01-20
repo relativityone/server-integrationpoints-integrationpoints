@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Relativity.Client.DTOs;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public interface IChoiceQuery
 	{
-		List<Choice> GetChoicesOnField(int workspaceArtifactId, Guid fieldGuid);
+		List<ChoiceRef> GetChoicesOnField(int workspaceArtifactId, Guid fieldGuid);
 	}
 }

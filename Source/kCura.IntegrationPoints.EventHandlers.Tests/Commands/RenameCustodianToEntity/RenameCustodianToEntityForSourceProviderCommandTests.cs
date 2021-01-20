@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianToEntity
 {

@@ -3,7 +3,6 @@ kCura
 kCura.Apps.Common.Utils
 Relativity.API
 Relativity.Services.Interfaces
-kCura.Relativity.Client
 Relativity.Telemetry.APM
 kCura.OutsideIn.FI.Win32
 Relativity.IntegrationPoints.Contracts

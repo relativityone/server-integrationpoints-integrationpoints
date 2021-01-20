@@ -48,10 +48,13 @@ public class FunctionalTestsSetupFixture
 	}
 
 	public bool FunctionalTemplateWorkspaceExists() =>
-		Workspace.CheckIfWorkspaceExists(WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
+		Workspace.GetWorkspaceAsync(
+			WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult() != null;
 
 	public int CreateFunctionalTemplateWorkspace() =>
-			Workspace.CreateWorkspace(WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME, WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME);
+		Workspace.CreateWorkspaceAsync(
+			WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
+			WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME).GetAwaiter().GetResult().ArtifactID;
 
 	public void ImportIntegrationPointsToLibrary()
 	{

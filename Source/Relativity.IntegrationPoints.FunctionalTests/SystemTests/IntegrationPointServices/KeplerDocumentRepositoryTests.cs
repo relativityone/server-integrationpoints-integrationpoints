@@ -265,7 +265,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 		{
 			var queryRequest = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) kCura.Relativity.Client.ArtifactType.Field},
+				ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field},
 				Fields = new List<FieldRef>(),
 				Condition = $"((('Object Type' IN ['Document']))) AND ((('Name' LIKE ['{fieldName}'])))"
 			};
@@ -280,7 +280,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 				.ToList();
 			var request = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)kCura.Relativity.Client.ArtifactType.Document },
+				ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
 				Fields = fields,
 				Condition = $"'Production::Begin Bates' STARTSWITH '{productionBegBatesPrefix}'"
 			};

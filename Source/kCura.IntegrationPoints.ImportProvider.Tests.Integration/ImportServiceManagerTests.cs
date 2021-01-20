@@ -10,6 +10,7 @@ using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
@@ -36,28 +37,29 @@ using kCura.IntegrationPoints.Common;
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
 	[TestFixture]
-	public class ImportServiceManagerTests : IntegrationTestBase
+	public class ImportServiceManagerTests : SourceProviderTemplate
 	{
 		private Data.IntegrationPoint _ip;
 		private IImportFileLocationService _importFileLocationService;
 		private ImportServiceManager _instanceUnderTest;
 
-		private int _workspaceId;
 		private ISerializer _serializer;
 		private string _testDataDirectory;
 		private static WindsorContainer _windsorContainer;
 		private const string _INPUT_FOLDER_KEY = "InputFolder";
 		private const string _TEST_DATA_PATH = "TestDataForImport";
 
-
-		[OneTimeSetUp]
-		public void Init()
+		public ImportServiceManagerTests()
+			: base($"{nameof(ImportServiceManagerTests)} {DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}")
 		{
-			_testDataDirectory = CopyTestData();
+			
+		}
 
-			_workspaceId = Workspace.CreateWorkspace(
-				$"{nameof(ImportServiceManagerTests)} {DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}"
-			);
+		public override void SuiteSetup()
+		{
+			base.SuiteSetup();
+
+			_testDataDirectory = CopyTestData();
 
 			//Substitutes
 			IHelper helper = Substitute.For<IHelper>();
@@ -81,6 +83,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			lsFactory.CreateService(Arg.Any<int>()).Returns(ls);
 			_windsorContainer.Register(Component.For<IDataTransferLocationServiceFactory>().Instance(lsFactory));
 
+			_windsorContainer.Register(Component.For<IRelativityObjectManager>().Instance(ObjectManager));
+
 			//TestRdoSynchronizer
 			TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(_windsorContainer.Resolve<IRelativityFieldQuery>(),
 				_windsorContainer.Resolve<IImportApiFactory>(),
@@ -89,12 +93,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
 			//RSAPI
-			IRSAPIService rsapiServiceMock = Substitute.For<IRSAPIService>();
-			caseServiceContext.RsapiService.Returns(rsapiServiceMock);
+			IRelativityObjectManagerService relativityObjectManagerServiceMock = Substitute.For<IRelativityObjectManagerService>();
+			caseServiceContext.RelativityObjectManagerService.Returns(relativityObjectManagerServiceMock);
 
 			//Source library
 			IRelativityObjectManager objectManager = Substitute.For<IRelativityObjectManager>();
-			rsapiServiceMock.RelativityObjectManager.Returns(objectManager);
+			relativityObjectManagerServiceMock.RelativityObjectManager.Returns(objectManager);
 
 			SourceProvider p = new SourceProvider();
 			p.Configuration = "{}";
@@ -158,16 +162,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			);
 		}
 
-		[OneTimeTearDown]
-		public void CleanUp()
+		public override void TestTeardown()
 		{
-			Workspace.DeleteWorkspace(_workspaceId);
-		}
+			base.TestTeardown();
 
-		[TearDown]
-		public void TearDown()
-		{
-			DocumentService.DeleteAllDocuments(_workspaceId);
+			DocumentService.DeleteAllDocuments(WorkspaceArtifactId);
 		}
 
 		[SmokeTest]
@@ -179,7 +178,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
 		private void RunTestCase(IImportTestCase testCase)
 		{
-			SettingsObjects settingsObjects = testCase.Prepare(_workspaceId);
+			SettingsObjects settingsObjects = testCase.Prepare(WorkspaceArtifactId);
 
 			settingsObjects.ImportSettings.RelativityUsername = SharedVariables.RelativityUserName;
 			settingsObjects.ImportSettings.RelativityPassword = SharedVariables.RelativityPassword;
@@ -191,7 +190,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
 			_instanceUnderTest.Execute(JobExtensions.CreateJob());
 
-			testCase.Verify(_workspaceId);
+			testCase.Verify(WorkspaceArtifactId);
 		}
 
 		private static IEnumerable<IImportTestCase> ImportTestCaseSource()

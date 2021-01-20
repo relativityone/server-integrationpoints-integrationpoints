@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
@@ -25,16 +26,14 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		private readonly WorkspaceService _workspaceService;
 
 		private IIntegrationPointService _integrationPointService;
-		private int _targetWorkspaceArtifactID;
 
 		private const int _ADMIN_USER_ID = 9;
-		private const string _TARGET_WORKSPACE_NAME = "IntegrationPoints Billing - Destination";
 		private int _sourceProductionId;
 		private int _targetProductionId;
 		
 
 		public BillingFlagRelativityProviderProductionTests()
-			: base(sourceWorkspaceName: "IntegrationPoints Billing - Source Productions", targetWorkspaceName: null)
+			: base(sourceWorkspaceName: "IntegrationPoints Billing - Source Productions", targetWorkspaceName: "IntegrationPoints Billing - Destination")
 		{
 			_importHelper = new ImportHelper();
 			_workspaceService = new WorkspaceService(_importHelper);
@@ -48,23 +47,27 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 
 			_sourceProductionId = _workspaceService.CreateProductionAsync(SourceWorkspaceArtifactID, "Production").GetAwaiter().GetResult();
 
-			_importHelper.ImportToProductionSet(
+			bool importToProduction = _importHelper.ImportToProductionSet(
 				SourceWorkspaceArtifactID,
 				_sourceProductionId,
 				DocumentTestDataBuilder.BuildTestData(testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure).Images);
+
+			if (!importToProduction)
+			{
+				throw new Exception("Import to production failed");
+			}
 		}
 
 		public override void TestSetup()
 		{
 			base.TestSetup();
-
-			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult();
-			_targetProductionId = _workspaceService.CreateProductionAsync(_targetWorkspaceArtifactID, "Target Production").GetAwaiter().GetResult();
+			
+			_targetProductionId = _workspaceService.CreateProductionAsync(TargetWorkspaceArtifactID, "Target Production").GetAwaiter().GetResult();
 		}
 
 		public override void TestTeardown()
 		{
-			Workspace.DeleteWorkspace(_targetWorkspaceArtifactID);
+			Workspace.DeleteWorkspaceAsync(TargetWorkspaceArtifactID).GetAwaiter().GetResult();
 
 			base.TestTeardown();
 		}
@@ -85,7 +88,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper,_targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidator.AssertFiles(true);
 		}
 
@@ -105,7 +108,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidator.AssertFiles(false);
 		}
 
@@ -137,7 +140,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
 				DestinationProviderType = DestinationProviders.RELATIVITY,
-				CaseArtifactId = _targetWorkspaceArtifactID,
+				CaseArtifactId = TargetWorkspaceArtifactID,
 				Provider = RELATIVITY_PROVIDER_NAME,
 				FieldOverlayBehavior = "Use Field Settings",
 				ExtractedTextFileEncoding = Encoding.Unicode.EncodingName,
@@ -160,7 +163,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			var sourceConfiguration = new SourceConfiguration
 			{
 				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
-				TargetWorkspaceArtifactId = _targetWorkspaceArtifactID,
+				TargetWorkspaceArtifactId = TargetWorkspaceArtifactID,
 				TypeOfExport = exportType
 			};
 

@@ -19,14 +19,12 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 	public class BillingFlagRelativityProviderSavedSearchTests : RelativityProviderTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
-		private int _targetWorkspaceArtifactID;
 
 		private const int _ADMIN_USER_ID = 9;
-		private const string _TARGET_WORKSPACE_NAME = "IntegrationPoints Billing - Destination";
 
 		public BillingFlagRelativityProviderSavedSearchTests()
 			: base(sourceWorkspaceName: "IntegrationPoints Billing - Source",
-				   targetWorkspaceName: null)
+				   targetWorkspaceName: "IntegrationPoints Billing - Destination")
 		{
 		}
 
@@ -41,21 +39,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 				SourceWorkspaceArtifactID,
 				DocumentTestDataBuilder.BuildTestData(testDataType: DocumentTestDataBuilder.TestDataType.SmallWithoutFolderStructure));
 		}
-
-		public override void TestSetup()
-		{
-			base.TestSetup();
-
-			_targetWorkspaceArtifactID = Workspace.CreateWorkspaceAsync(_TARGET_WORKSPACE_NAME, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult();
-		}
-
-		public override void TestTeardown()
-		{
-			Workspace.DeleteWorkspace(_targetWorkspaceArtifactID);
-
-			base.TestTeardown();
-		}
-
+		
 		[IdentifiedTest("4b57b5dd-3217-4419-9325-5b3bdf657f97")]
 		public void SavedSearchBillingTest_ShouldNotHaveBilledFilesInDestinationWorkspace_WhenUserPushesNativesWithLinksOnly()
 		{
@@ -72,7 +56,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidator.AssertFiles(false);
 		}
 
@@ -92,7 +76,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidator.AssertFiles(true);
 		}
 
@@ -114,7 +98,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithLinksOnly.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep1.AssertFiles(false);
 
 			//<--- Step 2 --->//
@@ -132,7 +116,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep2.AssertFiles(false);
 		}
 
@@ -154,7 +138,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithCopyFiles.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep1.AssertFiles(true);
 
 			//<--- Step 2 --->//
@@ -172,7 +156,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep2.AssertFiles(true);
 		}
 
@@ -194,7 +178,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithCopyFiles.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep1.AssertFiles(true);
 
 			//<--- Step 2 --->//
@@ -212,7 +196,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep2.AssertFiles(false);
 		}
 
@@ -232,7 +216,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidator.AssertFiles(true);
 		}
 
@@ -252,7 +236,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPoint.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidator.AssertFiles(false);
 		}
 
@@ -274,7 +258,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointWithCopyFiles.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep1 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep1.AssertFiles(true);
 
 			//<--- Step 2 --->//
@@ -292,7 +276,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactID, integrationPointOverlayMetadata.ArtifactID);
 
 			// Assert
-			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, _targetWorkspaceArtifactID);
+			FileBillingFlagValidator documentFlagValidatorStep2 = new FileBillingFlagValidator(Helper, TargetWorkspaceArtifactID);
 			documentFlagValidatorStep2.AssertFiles(false);
 		}
 
@@ -321,10 +305,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
-				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
+				ArtifactTypeId = (int)ArtifactType.Document,
 				DestinationProviderType = DestinationProviders.RELATIVITY,
-				CaseArtifactId = _targetWorkspaceArtifactID,
-				DestinationFolderArtifactId = GetRootFolder(Helper, _targetWorkspaceArtifactID),
+				CaseArtifactId = TargetWorkspaceArtifactID,
+				DestinationFolderArtifactId = GetRootFolder(Helper, TargetWorkspaceArtifactID),
 				Provider = RELATIVITY_PROVIDER_NAME,
 				FieldOverlayBehavior = "Use Field Settings",
 				ExtractedTextFileEncoding = "UTF-8",
@@ -340,10 +324,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 		{
 			ImportSettings destinationConfiguration = new ImportSettings()
 			{
-				ArtifactTypeId = (int)kCura.Relativity.Client.ArtifactType.Document,
+				ArtifactTypeId = (int)ArtifactType.Document,
 				DestinationProviderType = DestinationProviders.RELATIVITY,
-				CaseArtifactId = _targetWorkspaceArtifactID,
-				DestinationFolderArtifactId = GetRootFolder(Helper, _targetWorkspaceArtifactID),
+				CaseArtifactId = TargetWorkspaceArtifactID,
+				DestinationFolderArtifactId = GetRootFolder(Helper, TargetWorkspaceArtifactID),
 				Provider = RELATIVITY_PROVIDER_NAME,
 				FieldOverlayBehavior = "Use Field Settings",
 				ExtractedTextFileEncoding = "UTF-8",
@@ -361,7 +345,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.TestCasesBilling
 			var sourceConfiguration = new SourceConfiguration
 			{
 				SourceWorkspaceArtifactId = SourceWorkspaceArtifactID,
-				TargetWorkspaceArtifactId = _targetWorkspaceArtifactID,
+				TargetWorkspaceArtifactId = TargetWorkspaceArtifactID,
 				TypeOfExport = exportType
 			};
 

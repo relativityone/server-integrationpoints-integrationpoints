@@ -40,13 +40,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_workspaceId = Workspace.CreateWorkspace(_WORKSPACE_NAME);
+			_workspaceId = Workspace.CreateWorkspaceAsync(_WORKSPACE_NAME)
+				.GetAwaiter().GetResult().ArtifactID;
 		}
 
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			Workspace.DeleteWorkspace(_workspaceId);
+			Workspace.DeleteWorkspaceAsync(_workspaceId).GetAwaiter().GetResult();
 		}
 
 		[SetUp]
@@ -61,7 +62,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 		{
 			//arrange
 			CancellationToken token = new CancellationTokenSource().Token;
-			string actualDefaultFileRepo = Workspace.GetWorkspaceDto(_workspaceId).DefaultFileLocation.Name;
+
+
+			var defaultWorkspaceFileShareServer =
+				await Workspace.GetDefaultWorkspaceFileShareServerIDAsync(_workspaceId).ConfigureAwait(false);
 
 			// act
 			IHttpActionResult actionResult = _sut.GetDefaultFileRepo(_workspaceId);
@@ -71,7 +75,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Integration.Controllers
 
 			// assert
 			response.IsSuccessStatusCode.Should().BeTrue();
-			resultDefaultFileRepo.Should().Be(actualDefaultFileRepo);
+			resultDefaultFileRepo.Should().Be(defaultWorkspaceFileShareServer.Name);
 		}
 
 		[IdentifiedTest("b93abcde-8826-449b-8a0a-671e090285c1")]

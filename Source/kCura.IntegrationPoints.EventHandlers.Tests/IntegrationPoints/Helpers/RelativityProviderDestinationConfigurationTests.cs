@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		private RelativityProviderDestinationConfiguration _instace;
 		private IEHHelper _helper;
 		private IFederatedInstanceManager _federatedInstanceManager;
-		private IObjectTypeRepository _rsapiRdoQuery;
+		private IObjectTypeRepository _objectTypeRepository;
 		private const int _ARTIFACT_TYPE_ID = 0;
 		private const int _FEDERATED_INSTANCE_ID = 3;
 		private const string _ARTIFACT_TYPE_NAME = "ArtifactTypeName";
@@ -28,10 +28,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		{
 			_helper = Substitute.For<IEHHelper>();
 			_federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
-			_rsapiRdoQuery = Substitute.For<IObjectTypeRepository>();
+			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 
 			var repositoryFactory = Substitute.For<IRepositoryFactory>();
-			repositoryFactory.GetObjectTypeRepository(Arg.Any<int>()).Returns(_rsapiRdoQuery);
+			repositoryFactory.GetObjectTypeRepository(Arg.Any<int>()).Returns(_objectTypeRepository);
 
 			_instace = new RelativityProviderDestinationConfiguration(_helper, _federatedInstanceManager, repositoryFactory);
 		}

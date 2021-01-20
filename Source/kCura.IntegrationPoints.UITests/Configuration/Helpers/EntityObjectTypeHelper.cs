@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity;
 
 namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 {
@@ -89,7 +90,7 @@ namespace kCura.IntegrationPoints.UITests.Configuration.Helpers
 
 			var objectTypeRef = new ObjectTypeRef
 			{
-				ArtifactTypeID = (int)Relativity.Client.ArtifactType.ObjectType
+				ArtifactTypeID = (int)ArtifactType.ObjectType
 			};
 
 			string condition = $"'Name' == '{entityObjectName}'";

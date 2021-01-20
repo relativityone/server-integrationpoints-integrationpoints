@@ -2,7 +2,6 @@
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.IntegrationPoints.Services
@@ -20,7 +19,7 @@ namespace Relativity.IntegrationPoints.Services
         public Task<HealthCheckOperationResult> Check()
         {
             IInstanceSettingRepository isRepo = _container.Resolve<IRepositoryFactory>().GetInstanceSettingRepository();
-            string value = isRepo.GetConfigurationValue(Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION, Constants.WEB_API_PATH);
+            string value = isRepo.GetConfigurationValue(kCura.IntegrationPoints.Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION, kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH);
             if (string.IsNullOrWhiteSpace(value))
             {
                 return Task.FromResult(new HealthCheckOperationResult(false, "WebApiPath InstanceSetting is null or empty"));
@@ -28,7 +27,7 @@ namespace Relativity.IntegrationPoints.Services
 
             WebApiPath = value;
 
-            return Task.FromResult(new HealthCheckOperationResult(true, $"HealthCheck for: InstanceSetting {Constants.WEB_API_PATH} Result: OK"));
+            return Task.FromResult(new HealthCheckOperationResult(true, $"HealthCheck for: InstanceSetting {kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH} Result: OK"));
         }
     }
 }

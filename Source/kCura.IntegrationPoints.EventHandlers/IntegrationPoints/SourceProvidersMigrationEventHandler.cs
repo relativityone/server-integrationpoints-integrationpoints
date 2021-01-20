@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         protected virtual List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
         {
-            List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RsapiService.RelativityObjectManager.Query<Data.SourceProvider>(new QueryRequest());
+            List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RelativityObjectManagerService.RelativityObjectManager.Query<Data.SourceProvider>(new QueryRequest());
 
             if (sourceProviderRdos == null || sourceProviderRdos.Count == 0)
             {

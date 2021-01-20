@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
-using kCura.Relativity.Client;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation

@@ -31,9 +31,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _helper.GetDBContext(workspaceID);
 		}
 
-		public IRSAPIService GetRsapiService()
+		public IRelativityObjectManagerService GetRelativityObjectManagerService()
 		{
-			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
+			return ServiceContextFactory.CreateRelativityObjectManagerService(_helper, WorkspaceID);
 		}
 	}
 }

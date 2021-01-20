@@ -1,20 +1,22 @@
-#pragma warning disable CS0618 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning disable CS0612 // Type or member is obsolete (IRSAPI deprecation)
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.API;
+using Relativity;
+using Relativity.Kepler.Transport;
+using Relativity.Services.Interfaces.Document;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class DocumentService
 	{
 		private static ITestHelper _testHelper = null;
-		private static readonly string[] _allFields = FieldValue.AllFields.Select(fv => fv.Name).ToArray();
+		
+		private static readonly string[] AllFields = new[] { "*" };
 
 		private static ITestHelper Helper
 		{
@@ -28,67 +30,54 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static List<Result<Document>> GetAllDocuments(int workspaceId, string[] requestedFields)
+		public static List<Document> GetAllDocuments(int workspaceId, string[] requestedFields)
 		{
-			using (IRSAPIClient proxy = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
 			{
-				proxy.APIOptions.WorkspaceID = workspaceId;
-
-				List<FieldValue> fields = requestedFields.Select(x => new FieldValue(x)).ToList();
-				Query<Document> query = new Query<Document>
+				QueryRequest request = new QueryRequest
 				{
-					Fields = fields
+					ObjectType	= new ObjectTypeRef {ArtifactTypeID = (int)ArtifactType.Document},
+					Fields = requestedFields.Select(x => new FieldRef {Name = x})
 				};
 
-				QueryResultSet<Document> result = null;
-				result = proxy.Repositories.Document.Query(query, 0);
-				return result.Results;
+				return objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue)
+					.GetAwaiter().GetResult().Objects.Select(x => new Document(x)).ToList();
 			}
 		}
 
 		public static List<Document> GetAllDocuments(int workspaceId)
 		{
-			return GetAllDocuments(workspaceId, _allFields).Where(result => result.Success)
-				.Select(result => result.Artifact).ToList();
+			return GetAllDocuments(workspaceId, AllFields);
 		}
 
 		public static void DeleteAllDocuments(int workspaceId)
 		{
-			using (IRSAPIClient proxy = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
 			{
-				proxy.APIOptions.WorkspaceID = workspaceId;
-
-				Query<Document> query = new Query<Document>
+				MassDeleteByCriteriaRequest request = new MassDeleteByCriteriaRequest
 				{
-					Fields = new List<FieldValue> { new FieldValue("Control Number") }
+					ObjectIdentificationCriteria = new ObjectIdentificationCriteria
+					{
+						ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document}
+					}
 				};
-				  
-				QueryResultSet<Document> result = null;
-				result = proxy.Repositories.Document.Query(query, 0);
-				proxy.Repositories.Document.Delete(result.Results.Select(x => x.Artifact).ToList());
+
+				objectManager.DeleteAsync(workspaceId, request).GetAwaiter().GetResult();
 			}
 		}
 
-		public static string GetNativeMD5String(int workspaceId, Result<Document> docResult)
+		public static string GetNativeMD5String(int workspaceId, Document document)
 		{
-			string result = string.Empty;
-
-			using (IRSAPIClient proxy = Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			using (IDocumentFileManager documentFileManager = Helper.CreateProxy<IDocumentFileManager>())
 			{
-				proxy.APIOptions.WorkspaceID = workspaceId;
+				IKeplerStream nativeFile = documentFileManager
+					.DownloadNativeFileAsync(workspaceId, document.ArtifactId)
+					.GetAwaiter().GetResult();
 
-				KeyValuePair<DownloadResponse, Stream> nativeResponse = proxy.Repositories.Document.DownloadNative(docResult.Artifact);
+				Stream nativeStream = nativeFile.GetStreamAsync().GetAwaiter().GetResult();
 
-				if (nativeResponse.Key != null && nativeResponse.Value != null)
-				{
-					nativeResponse.Value.Seek(0, SeekOrigin.Begin);
-					result = System.BitConverter.ToString(MD5.Create().ComputeHash(nativeResponse.Value));
-				}
+				return System.BitConverter.ToString(MD5.Create().ComputeHash(nativeStream));
 			}
-
-			return result;
 		}
 	}
 }
-#pragma warning restore CS0612 // Type or member is obsolete (IRSAPI deprecation)
-#pragma warning restore CS0618 // Type or member is obsolete (IRSAPI deprecation)

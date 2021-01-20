@@ -16,14 +16,14 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 	{
 		private ProviderRepository _providerRepository;
 		private IRepositoryFactory _repositoryFactory;
-		private IRSAPIService _rsapiService;
+		private IRelativityObjectManagerService _relativityObjectManagerService;
 
 		public override void SetUp()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_rsapiService = Substitute.For<IRSAPIService>();
+			_relativityObjectManagerService = Substitute.For<IRelativityObjectManagerService>();
 
-			_providerRepository = new ProviderRepository(_repositoryFactory, _rsapiService);
+			_providerRepository = new ProviderRepository(_repositoryFactory, _relativityObjectManagerService);
 		}
 
 		[Test]
@@ -66,7 +66,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		public void ItShouldGetAllSourceProviders()
 		{
 			var objectManager = Substitute.For<IRelativityObjectManager>();
-			_rsapiService.RelativityObjectManager.Returns(objectManager);
+			_relativityObjectManagerService.RelativityObjectManager.Returns(objectManager);
 
 			var expectedResult = new List<SourceProvider>
 			{
@@ -94,7 +94,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 		public void ItShouldGetAllDestinationProviders()
 		{
 			var objectManager = Substitute.For<IRelativityObjectManager>();
-			_rsapiService.RelativityObjectManager.Returns(objectManager);
+			_relativityObjectManagerService.RelativityObjectManager.Returns(objectManager);
 
 			var expectedResult = new List<DestinationProvider>
 			{

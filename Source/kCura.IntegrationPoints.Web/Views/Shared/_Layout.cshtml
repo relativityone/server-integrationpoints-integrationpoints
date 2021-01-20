@@ -1,4 +1,5 @@
 ﻿@using System.Reflection
+@using System.Diagnostics
 @using System.Text.RegularExpressions
 @using kCura.IntegrationPoints.Web
 <!DOCTYPE html>
@@ -40,7 +41,7 @@
     <script src="~/Scripts/moment-timezone-with-data.js"></script>
     <script async type="text/javascript" src="/Relativity/Scripts/click-tracking.min.js"></script>
     <script>
-        IP.assemblyVersion = "@Assembly.GetAssembly(typeof(WindsorFilterProvider)).GetName().Version.ToString(4)"
+        IP.assemblyVersion = "@FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(WindsorFilterProvider)).Location).FileVersion";
     </script>
 
     @*User-Agent of IE11 is

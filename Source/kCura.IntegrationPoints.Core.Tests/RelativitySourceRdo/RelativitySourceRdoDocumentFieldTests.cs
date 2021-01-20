@@ -6,9 +6,9 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
 {

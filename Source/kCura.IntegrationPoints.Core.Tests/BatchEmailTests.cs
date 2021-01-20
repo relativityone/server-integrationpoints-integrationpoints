@@ -4,7 +4,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
@@ -13,12 +12,12 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private Mock<IJobStatusUpdater> _jobStatusUpdaterMock;
 		private Mock<IManagerFactory> _managerFactoryMock;
 		private Mock<IRelativityObjectManager> _objectManagerMock;
-		private Mock<IRSAPIService> _rsapiServiceMock;
+		private Mock<IRelativityObjectManagerService> _objectManagerServiceMock;
 
 		private static object[] _generateEmailSource =
 		{
@@ -60,14 +59,14 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_emailFormatterMock = new Mock<IEmailFormatter>();
 			_caseServiceContextMock = new Mock<ICaseServiceContext>();
 			_jobStatusUpdaterMock = new Mock<IJobStatusUpdater>();
-			_rsapiServiceMock = new Mock<IRSAPIService>();
+			_objectManagerServiceMock = new Mock<IRelativityObjectManagerService>();
 			_objectManagerMock = new Mock<IRelativityObjectManager>();
 			_managerFactoryMock = new Mock<IManagerFactory>();
 			_jobServiceMock = new Mock<IJobService>();
 			_integrationPointRepositoryMock = new Mock<IIntegrationPointRepository>();
 			_jobManagerMock = new Mock<IJobManager>();
-			_rsapiServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
-			_caseServiceContextMock.Setup(x => x.RsapiService).Returns(_rsapiServiceMock.Object);
+			_objectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
+			_caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_objectManagerServiceMock.Object);
 
 			_sut = new BatchEmail(_caseServiceContextMock.Object,
 				_helperMock.Object,
@@ -162,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		}
 
 		[TestCaseSource(nameof(_generateEmailSource))]
-		public void GenerateEmail(Choice jobStatus, string expectedSubject, string expectedBody)
+		public void GenerateEmail(ChoiceRef jobStatus, string expectedSubject, string expectedBody)
 		{
 			// ACT
 			_emailFormatterMock.Setup(x => x.Format(It.IsAny<string>())).Returns<string>(y => y);

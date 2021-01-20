@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Exceptions;
@@ -204,7 +205,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			else
 			{
 				string condition1 = $"'{_DESCRIPTOR_ARTIFACT_TYPE_ID}' > {Constants.NON_SYSTEM_FIELD_START_ID}";
-				string condition2 = $"'{_DESCRIPTOR_ARTIFACT_TYPE_ID}' == {(int)Relativity.Client.ArtifactType.Document}";
+				string condition2 = $"'{_DESCRIPTOR_ARTIFACT_TYPE_ID}' == {(int)ArtifactType.Document}";
 				condition = $"({condition1}) OR ({condition2})";
 			}
 
@@ -230,7 +231,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			return new ObjectTypeRef
 			{
-				ArtifactTypeID = (int)Relativity.Client.ArtifactType.ObjectType
+				ArtifactTypeID = (int)ArtifactType.ObjectType
 			};
 		}
 

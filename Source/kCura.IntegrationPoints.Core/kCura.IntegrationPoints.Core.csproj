@@ -129,7 +129,6 @@
     <Compile Include="Helpers\JSONHelper.cs" />
     <Compile Include="Helpers\Logging\LogHelper.cs" />
     <Compile Include="Exceptions\PermissionException.cs" />
-    <Compile Include="ExtendedRsapiClientWithWorkspaceFactory.cs" />
     <Compile Include="Factories\Implementations\ConfigFactory.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\IArtifactServiceFactory.cs" />
@@ -434,7 +433,6 @@
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForKeplerService.cs" />
     <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
-    <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
     <Compile Include="Services\Synchronizer\GeneralWithEntityRdoSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />
@@ -648,17 +646,6 @@
       <ItemGroup>
         <Reference Include="oi">
           <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="kCura.Relativity.Client">
-          <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

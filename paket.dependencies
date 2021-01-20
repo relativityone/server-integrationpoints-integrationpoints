@@ -12,7 +12,6 @@ nuget Relativity.IntegrationPoints.SDK 1.0.7
 nuget kCura 13.1.0
 nuget kCura.Agent ~> 13.1
 nuget kCura.EventHandler ~> 11.3 // update to version 13.1 requires update packages in Relativity.IntegrationPoints.SDK
-nuget kCura.Relativity.Client ~> 13.1
 nuget Relativity.Authentication ~> 12.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1

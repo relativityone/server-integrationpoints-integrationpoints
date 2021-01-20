@@ -12,7 +12,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
-using Choice = kCura.Relativity.Client.DTOs.Choice;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -66,14 +66,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsFalse(isStopRequested);
 		}
 
-		private static Choice[] JobHistoryStatuses = new []
+		private static ChoiceRef[] JobHistoryStatuses = new []
 		{
 			JobStatusChoices.JobHistoryPending,
 			JobStatusChoices.JobHistoryProcessing
 		};
 
 		[TestCaseSource(nameof(JobHistoryStatuses))]
-		public void IsStopRequested_StoppingJob(Choice status)
+		public void IsStopRequested_StoppingJob(ChoiceRef status)
 		{
 			// arrange
 			_jobHistory.JobStatus = status;

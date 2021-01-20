@@ -10,9 +10,9 @@ namespace kCura.IntegrationPoints.UITests.Validation
 	public class ImportValidator : BaseUiValidator
 	{
 		private IList<RelativityObject> _entities;
-		private readonly IRSAPIService _service;
+		private readonly IRelativityObjectManagerService _service;
 
-		public ImportValidator(IRSAPIService service)
+		public ImportValidator(IRelativityObjectManagerService service)
 		{
 			_service = service;
 		}

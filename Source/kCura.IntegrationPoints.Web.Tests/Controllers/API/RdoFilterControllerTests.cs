@@ -8,9 +8,9 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {

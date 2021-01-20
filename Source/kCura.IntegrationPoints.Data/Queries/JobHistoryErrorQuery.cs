@@ -7,8 +7,8 @@ namespace kCura.IntegrationPoints.Data.Queries
 {
 	public class JobHistoryErrorQuery
 	{
-		private readonly IRSAPIService _service;
-		public JobHistoryErrorQuery(IRSAPIService service)
+		private readonly IRelativityObjectManagerService _service;
+		public JobHistoryErrorQuery(IRelativityObjectManagerService service)
 		{
 			_service = service;
 		}

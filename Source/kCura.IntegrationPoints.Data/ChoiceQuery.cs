@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Choice;
 using Relativity.Services.ChoiceQuery;
 
 namespace kCura.IntegrationPoints.Data
@@ -17,11 +18,10 @@ namespace kCura.IntegrationPoints.Data
 			_servicesMgr = servicesMgr;
 		}
 
-		public List<Relativity.Client.DTOs.Choice> GetChoicesOnField(int workspaceArtifactId, Guid fieldGuid)
+		public List<ChoiceRef> GetChoicesOnField(int workspaceArtifactId, Guid fieldGuid)
 		{
-			var choices = GetChoicesOnFieldAsync(workspaceArtifactId, fieldGuid).GetAwaiter().GetResult();
-
-			return choices.Select(x => new Relativity.Client.DTOs.Choice(x.ArtifactID)
+			List<Choice> choices = GetChoicesOnFieldAsync(workspaceArtifactId, fieldGuid).GetAwaiter().GetResult();
+			return choices.Select(x => new ChoiceRef(x.ArtifactID)
 			{
 				Name = x.Name
 			}).ToList();

@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IMessageService messageService = new MessageService();
 
 			IJobHistoryService jobHistoryService = new JobHistoryService(
-				caseServiceContext.RsapiService.RelativityObjectManager, 
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager, 
 				federatedInstanceManager, 
 				workspaceManager, 
 				logger, 
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				logger
 			);
 			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
-				caseServiceContext.RsapiService.RelativityObjectManager,
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
 				integrationPointSerializer,
 				secretsRepository,
 				logger);
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
 				integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
 				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository,
-				caseServiceContext.RsapiService.RelativityObjectManager);
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
 
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
 				helper,

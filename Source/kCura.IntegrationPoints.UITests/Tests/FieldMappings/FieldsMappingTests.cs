@@ -9,17 +9,17 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.UITests.Common;
 using kCura.IntegrationPoints.UITests.Configuration.Helpers;
 using kCura.IntegrationPoints.UITests.Configuration.Models;
-using kCura.IntegrationPoints.UITests.Driver;
 using kCura.IntegrationPoints.UITests.NUnitExtensions;
 using kCura.IntegrationPoints.UITests.Pages;
 using kCura.IntegrationPoints.UITests.Tests.RelativityProvider;
 using NUnit.Framework;
+using Relativity;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Workspace;
 using Relativity.Testing.Identification;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 {
@@ -329,7 +329,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			const string newDestination = "New destination";
 			ObjectTypeIdentifier documentObjectType = new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Document };
 
-			int newWorkspaceID = await Workspace.CreateWorkspaceAsync(newDestination, DestinationContext.WorkspaceName, Log)
+			WorkspaceRef newWorkspace = await Workspace.CreateWorkspaceAsync(newDestination, DestinationContext.WorkspaceName)
 				.ConfigureAwait(false);
 
 			await SourceFieldManager.CreateDecimalFieldAsync(SourceContext.WorkspaceId.Value, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType })
@@ -337,7 +337,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			await DestinationFieldManager.CreateDecimalFieldAsync(DestinationContext.WorkspaceId.Value, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType })
 				.ConfigureAwait(false);
 
-			await SourceFieldManager.CreateDecimalFieldAsync(newWorkspaceID, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType }).ConfigureAwait(false);
+			await SourceFieldManager.CreateDecimalFieldAsync(newWorkspace.ArtifactID, new DecimalFieldRequest { Name = addtionalFieldName, ObjectType = documentObjectType }).ConfigureAwait(false);
 
 			try
 			{
@@ -357,7 +357,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 
 				//Act
 				PushToRelativitySecondPage destinationPage = detailsPage.EditIntegrationPoint().GoToNextPagePush();
-				destinationPage.DestinationWorkspace = $"{newDestination} - {newWorkspaceID}";
+				destinationPage.DestinationWorkspace = $"{newDestination} - {newWorkspace.ArtifactID}";
 
 				destinationPage.SelectFolderLocation();
 				destinationPage.WaitForPage();
@@ -376,7 +376,7 @@ namespace kCura.IntegrationPoints.UITests.Tests.FieldMappings
 			}
 			finally
 			{
-				Workspace.DeleteWorkspace(newWorkspaceID);
+				await Workspace.DeleteWorkspaceAsync(newWorkspace.ArtifactID).ConfigureAwait(false);
 			}
 		}
 

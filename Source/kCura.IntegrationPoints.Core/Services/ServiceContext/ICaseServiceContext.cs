@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		int WorkspaceUserID { get; set; }
 		int WorkspaceID { get; set; }
 
-		IRSAPIService RsapiService { get; set; }
+		IRelativityObjectManagerService RelativityObjectManagerService { get; set; }
 		IDBContext SqlContext { get; set; }
 	}
 }

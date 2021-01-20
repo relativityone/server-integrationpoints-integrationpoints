@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 		private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
 		private const int _USERID = 9;
 		private const int _WORKSPACE_ARTIFACT_ID = 1020530;
-		private const string _CREDENTIALS = "{}";
 		private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
 		private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
 		private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
@@ -105,12 +104,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				.CreateAuditRecord(_payload.ArtifactId,
 				Arg.Is<AuditElement>(audit => audit.AuditMessage == _RUN_AUDIT_MESSAGE));
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
+			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
 		}
 
 		[TestCase(null)]
 		[TestCase(1000)]
-		public async Task RsapiCallThrowsException(int? federatedInstanceArtifactId)
+		public async Task KeplerCallThrowsException(int? federatedInstanceArtifactId)
 		{
 			// Arrange
 			var claims = new List<Claim>(1)
@@ -140,7 +139,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			// Assert
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
+			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
 		}
 
 		[TestCase(null)]
@@ -248,7 +247,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 				Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-			Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().Result.Trim('"'));
+			Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().GetAwaiter().GetResult().Trim('"'));
 		}
 
 		[Test]

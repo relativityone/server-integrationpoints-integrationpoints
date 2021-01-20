@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Models;
+using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 		{
 			return fieldQueryRepository
 				.RetrieveFieldsAsync(
-					(int)Relativity.Client.ArtifactType.Document,
+					(int)ArtifactType.Document,
 					new HashSet<string>(new string[0]))
 				.GetAwaiter().GetResult()
 				.ToDictionary(k => k.ArtifactId, v => v.TextIdentifier);

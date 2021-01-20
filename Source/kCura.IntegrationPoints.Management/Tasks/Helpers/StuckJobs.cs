@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 {
@@ -29,9 +29,9 @@ namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 
 			var result = new Dictionary<int, IList<JobHistory>>();
 
-			foreach (var workspaceId in pickedUpJobs.Select(x => x.WorkspaceID).Distinct())
+			foreach (int workspaceId in pickedUpJobs.Select(x => x.WorkspaceID).Distinct())
 			{
-				IList<RDO> jobsInProgress = _jobRepository.GetRunningJobs(workspaceId);
+				IList<RelativityObject> jobsInProgress = _jobRepository.GetRunningJobs(workspaceId);
 
 				List<string> pickedUpJobsBatchInstances = pickedUpJobs.Where(x => x.WorkspaceID == workspaceId)
 					.Select(x => JsonConvert.DeserializeObject<TaskParameters>(x.JobDetails).BatchInstance.ToString()).ToList();
@@ -53,11 +53,12 @@ namespace kCura.IntegrationPoints.Management.Tasks.Helpers
 			return scheduledJobs.Where(x => x.LockedByAgentID.HasValue).ToList();
 		}
 
-		private IList<int> GetStuckJobsIds(IList<RDO> jobsInProgress, List<string> jobs)
+		private IList<int> GetStuckJobsIds(IList<RelativityObject> jobsInProgress, List<string> jobs)
 		{
 			return jobsInProgress
-				.Where(x => jobs.Any(y => string.Equals(y, x[JobHistoryFieldGuids.BatchInstanceGuid].ValueAsFixedLengthText, StringComparison.InvariantCultureIgnoreCase)))
-				.Where(x => x.SystemLastModifiedOn < GetStuckTime())
+				.Where(jobRdo => jobs.Any(jobBatchInstanceGuid => string.Equals(jobBatchInstanceGuid, jobRdo[JobHistoryFieldGuids.BatchInstanceGuid].Value.ToString(),
+					StringComparison.InvariantCultureIgnoreCase)))
+				.Where(jobRdo => DateTime.Parse(jobRdo["SystemLastModifiedOn"].Value.ToString()) < GetStuckTime())
 				.Select(x => x.ArtifactID).ToList();
 		}
 
