@@ -10,6 +10,8 @@ Relativity.IntegrationPoints.SDK
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataGrid
+Relativity.OAuth2Client
+Relativity.OAuth2Client.Interfaces
 SystemWrapper.Interfaces
 
 Relativity.Kepler.Service

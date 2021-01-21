@@ -1,4 +1,7 @@
 using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
@@ -16,6 +19,28 @@ namespace kCura.IntegrationPoints.Core.Authentication
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
 		private readonly ITokenProviderFactoryFactory _tokenProviderFactory;
 		private readonly CurrentUser _contextUser;
+
+		private class OAuth2ClientCredentials : ICredentialsProvider
+		{
+			private readonly ITokenProvider _tokenProvider;
+
+			public OAuth2ClientCredentials(ITokenProvider tokenProvider)
+			{
+				_tokenProvider = tokenProvider;
+			}
+
+			public NetworkCredential GetCredentials()
+			{
+				return GetCredentialsAsync().GetAwaiter().GetResult();
+			}
+
+			public async Task<NetworkCredential> GetCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken))
+			{
+				string accessToken = await _tokenProvider.GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+
+				return new NetworkCredential(AuthConstants._RELATIVITY_BEARER_USERNAME, accessToken);
+			}
+		}
 
 		public OAuth2TokenGenerator(IHelper helper, IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactory, CurrentUser contextUser)
 		{
@@ -45,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 		private ITokenProvider CreateTokenProvider(OAuth2Client client)
 		{
 			ITokenProviderFactory providerFactory = _tokenProviderFactory.Create(GetRelativityStsUri(), client.Id, client.Secret);
-			ITokenProvider tokenProvider = providerFactory.GetTokenProvider("WebApi", new List<string>() { "UserInfoAccess" });
+			ITokenProvider tokenProvider = providerFactory.GetTokenProvider("WebApi", new List<string> { "UserInfoAccess" });
 			RelativityWebApiCredentialsProvider.Instance().SetProvider(new OAuth2ClientCredentials(tokenProvider));
 			return tokenProvider;
 		}

@@ -15,7 +15,7 @@ nuget kCura.EventHandler ~> 11.3 // update to version 13.1 requires update packa
 nuget Relativity.Authentication ~> 12.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
-nuget Relativity.DataExchange.Client.SDK 1.11.33
+nuget Relativity.DataExchange.Client.SDK 1.13.4
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0
 nuget Relativity.API 15.1.0
 nuget Relativity ~> 15.1
@@ -36,6 +36,7 @@ nuget Relativity.Kepler.Client 2.14.3
 nuget Relativity.Logging 2018.11.8
 nuget Relativity.Logging.Interfaces 2018.11.8
 nuget Relativity.OAuth2Client 1.5.2
+nuget Relativity.OAuth2Client.Interfaces 1.5.2
 nuget Relativity.Productions.Services.Interfaces 11.1.0
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
@@ -45,7 +46,7 @@ nuget Relativity.Vfs.IO 1.0.24
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre.6
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 2020.6.0 content: none 		//Relativity.DataExchange.Client.SDK
+nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget AutoMapper 4.2.1
@@ -88,7 +89,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-    nuget Relativity.Sync 0.6.0-pre.59
+    nuget Relativity.Sync 0.6.68
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9

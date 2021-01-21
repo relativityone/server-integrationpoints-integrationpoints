@@ -1,7 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers.Factories;
 using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
@@ -18,10 +17,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 				Component
 					.For<IFieldManager>()
 					.ImplementedBy<CoreFieldManager>()
-					.LifestyleTransient(),
-				Component
-					.For<IExportFileDownloaderFactory>()
-					.ImplementedBy<FileDownloaderFactory>()
 					.LifestyleTransient(),
 				Component
 					.For<WebApiServiceFactory>()
