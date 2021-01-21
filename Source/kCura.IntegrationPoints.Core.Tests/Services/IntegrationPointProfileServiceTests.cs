@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -15,7 +16,8 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Choice;
+using Relativity.Services.Objects.DataContracts;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -95,6 +97,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_objectManager.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId)
 				.Returns(_integrationPointProfile);
+			_objectManager.StreamUnicodeLongText(_integrationPointProfileArtifactId, Arg.Is<FieldRef>(x => x.Guid == IntegrationPointProfileFieldGuids.DestinationConfigurationGuid),
+					Arg.Any<ExecutionIdentity>())
+				.Returns(new MemoryStream());
+			_objectManager.StreamUnicodeLongText(_integrationPointProfileArtifactId, Arg.Is<FieldRef>(x => x.Guid == IntegrationPointProfileFieldGuids.SourceConfigurationGuid),
+					Arg.Any<ExecutionIdentity>())
+				.Returns(new MemoryStream());
+			_objectManager.StreamUnicodeLongText(_integrationPointProfileArtifactId, Arg.Is<FieldRef>(x => x.Guid == IntegrationPointProfileFieldGuids.FieldMappingsGuid),
+					Arg.Any<ExecutionIdentity>())
+				.Returns(new MemoryStream());
 			_objectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
 
 			_integrationModelValidator.Validate(
