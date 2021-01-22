@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -63,11 +64,41 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		{
 			try
 			{
-				return ObjectManager.Read<IntegrationPointProfile>(artifactId);
+				IntegrationPointProfile integrationPointProfile = ObjectManager.Read<IntegrationPointProfile>(artifactId);
+
+				integrationPointProfile.DestinationConfiguration = GetDestinationConfiguration(artifactId);
+				integrationPointProfile.SourceConfiguration = GetSourceConfiguration(artifactId);
+				integrationPointProfile.FieldMappings = GetFieldMappings(artifactId);
+
+				return integrationPointProfile;
 			}
 			catch (Exception ex)
 			{
 				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE, ex);
+			}
+		}
+
+		private string GetDestinationConfiguration(int integrationPointProfileArtifactId)
+		{
+			return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid });
+		}
+
+		private string GetSourceConfiguration(int integrationPointProfileArtifactId)
+		{
+			return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
+		}
+
+		private string GetFieldMappings(int integrationPointProfileArtifactId)
+		{
+			return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
+		}
+
+		private string GetUnicodeLongText(int artifactId, FieldRef field)
+		{
+			Stream unicodeLongTextStream = ObjectManager.StreamUnicodeLongText(artifactId, field);
+			using (StreamReader unicodeLongTextStreamReader = new StreamReader(unicodeLongTextStream))
+			{
+				return unicodeLongTextStreamReader.ReadToEnd();
 			}
 		}
 
