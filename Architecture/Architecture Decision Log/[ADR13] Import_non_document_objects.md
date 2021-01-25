@@ -20,6 +20,8 @@ The most common scenarios for pushing non-document objects using Sync, is to pus
 
 It is possible to automatically create non-existing Object Types in destination. However, the problem is that we obviously don't want to create aforementioned `Entity` which belongs to Legal Hold application. Such Object Types and their fields, usually have their own GUIDs defined in application schema. If we create them in destination, they might not be fully compatible with types defined in schema (e.g. missing GUIDs) thus making it impossible to install application in that workspace afterwards. Possible solution to this, might be showing a warning to the user, with information that he should make sure that the Object Type he is transferring is not a part of any Relativity Application and that all missing Object Types will be created on his own risk.
 
+We can also consider detecting if selected Object Type belongs to any Relativity Application. This is probably possible to do with `ObjectTypeManager` Kepler, but it should be done with extra caution, to ensure we are not breaking breaking application installation in destination workspace.
+
 With this approach, there will be also required UI changes in RIP, because of the field mapping. When Object Type doesn't exist in destination, it's impossible to map fields as usual. Instead we could for example disable panels on the right (destination), and only choose fields from left panel (source). Or - what's probably even better solution - we can add an option to create Object Types hierarchy in destination earlier on second step - see `Required UI changes - destination location` for more details about this idea.
 
 As a side note, having that functionality implemented will be also helpful in supporting Object / Multi Object fields in Document sync flow in the future.
@@ -79,6 +81,8 @@ There will be two new Pipelines:
 
 - SyncRdoRunPipeline
 - SyncRdoRetryPipeline
+
+We should also extend `SyncConfigurationBuilder` to enable creating configuration for import non-document objects Sync job.
 
 ### Metrics
 
