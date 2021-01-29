@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.ScheduleQueue.Core;
@@ -12,7 +10,6 @@ using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.ServiceBus.Contracts.Interfaces;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
@@ -82,6 +79,23 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 			// Assert
 			sut.ProcessedJobs.Single().ShouldBeEquivalentTo(expectedJob);
+		}
+
+		[Test]
+		public void Execute_ShouldNotExecuteJob_WhenToBeRemovedIsTrue()
+		{
+			// Arrange
+			Job job = new JobBuilder().WithJobId(1).Build();
+			TestAgent sut = GetSut();
+			SetupJobQueue(job);
+
+			sut.ToBeRemoved = true;
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			sut.ProcessedJobs.Count.Should().Be(0);
 		}
 
 		private TestAgent GetSut()

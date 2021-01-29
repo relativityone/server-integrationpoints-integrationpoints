@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public void IsStopRequested_UnableToFindTheJob()
 		{
 			// act
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 			bool isStopRequested = _instance.IsStopRequested();
 
 			// assert
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobService.GetJob(_jobId).Returns(job);
 
 			// act
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 			bool isStopRequested = _instance.IsStopRequested();
 
 			// assert
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryService.GetRdoWithoutDocuments(_guid).Returns(_jobHistory);
 
 			// act
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 			bool isStopRequested = _instance.IsStopRequested();
 
 			// assert
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobService.GetJob(_jobId).Throws(new Exception("something"));
 
 			// act
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 			bool isStopRequested = _instance.IsStopRequested();
 
 			// assert
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobHistoryService.GetRdoWithoutDocuments(_guid).Throws(new Exception("something"));
 
 			// act
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 			bool isStopRequested = _instance.IsStopRequested();
 
 			// assert
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			job = job.CopyJobWithStopState(StopState.Stopping);
 			_jobService.GetJob(_jobId).Returns(job);
 			_jobHistoryService.GetRdo(_guid).Returns(_jobHistory);
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 
 			// act & assert
 			Assert.Throws<OperationCanceledException>(() =>	_instance.ThrowIfStopRequested());
@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			job = job.CopyJobWithStopState(StopState.Stopping);
 			_jobService.GetJob(_jobId).Returns(job);
 			_jobHistoryService.GetRdo(_guid).Returns(_jobHistory);
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 
 			// act & assert
 			Assert.True(eventTriggered);
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			job = job.CopyJobWithStopState(StopState.None);
 			_jobService.GetJob(_jobId).Returns(job);
 			_jobHistoryService.GetRdo(_guid).Returns(_jobHistory);
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 
 			// act & assert
 			Assert.DoesNotThrow(() => _instance.ThrowIfStopRequested());
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			job = job.CopyJobWithStopState(StopState.None);
 			_jobService.GetJob(_jobId).Returns(job);
 			_jobHistoryService.GetRdo(_guid).Returns(_jobHistory);
-			_instance.Callback.Invoke(null);
+			_instance.Execute();
 
 			// act & assert
 			Assert.False(eventTriggered);

@@ -21,64 +21,60 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly CancellationToken _token;
 		private bool _disposed;
 
-		/// <summary>
-		///     for testing only.
-		/// </summary>
-		internal TimerCallback Callback { get; }
-
 		public object SyncRoot { get; }
 
 		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId, CancellationTokenSource cancellationTokenSource)
 		{
 			SyncRoot = new object();
+
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_jobBatchIdentifier = jobHistoryInstanceId;
 			_jobId = jobId;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStopManager>();
-
-			Callback = state =>
-			{
-				lock (SyncRoot)
-				{
-					try
-					{
-						Job job = _jobService.GetJob(_jobId);
-						if (job != null)
-						{
-							if (job.StopState.HasFlag(StopState.Stopping))
-							{
-								JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
-								if ((jobHistory != null) && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
-															|| jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
-								{
-									jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
-									jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
-								}
-
-								_cancellationTokenSource.Cancel();
-								_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-								LogStoppingJob();
-								RaiseStopRequestedEvent();
-							}
-							else if (job.StopState.HasFlag(StopState.Unstoppable))
-							{
-								_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-							}
-						}
-					}
-					catch (Exception e)
-					{
-						LogErrorDuringStopCheck(e);
-						// expect the caller to move on, timerThread will check the status again in the next iteration.
-					}
-				}
-			};
+			
 			_cancellationTokenSource = cancellationTokenSource;
 			_token = _cancellationTokenSource.Token;
-			_timerThread = new Timer(Callback, null, 0, 500);
+			_timerThread = new Timer(state => Execute(), null, 0, 500);
 		}
 
+		internal void Execute()
+		{
+			lock (SyncRoot)
+			{
+				try
+				{
+					Job job = _jobService.GetJob(_jobId);
+					if (job != null)
+					{
+						if (job.StopState.HasFlag(StopState.Stopping))
+						{
+							JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
+							if ((jobHistory != null) && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
+														 || jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
+							{
+								jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
+								_jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+							}
+
+							_cancellationTokenSource.Cancel();
+							_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+							LogStoppingJob();
+							RaiseStopRequestedEvent();
+						}
+						else if (job.StopState.HasFlag(StopState.Unstoppable))
+						{
+							_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					LogErrorDuringStopCheck(e);
+					// expect the caller to move on, timerThread will check the status again in the next iteration.
+				}
+			}
+		}
 		public bool IsStopRequested()
 		{
 			return _token.IsCancellationRequested;
