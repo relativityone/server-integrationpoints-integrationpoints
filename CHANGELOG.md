@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] - 2021-01-29
+### Changed
+- Add ImportFileCopyMode property to CreateIntegrationPointRequest
+
 ## [1.0.4] - 2020-03-26
 ### Changed
 - Mark IIntegrationPointManager.GetEligibleToPromoteIntegrationPointsAsync method as obsolete

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 
 namespace Relativity.IntegrationPoints.Services
 {
@@ -24,5 +25,7 @@ namespace Relativity.IntegrationPoints.Services
 		public int OverwriteFieldsChoiceId { get; set; }
 		public object SecuredConfiguration { get; set; }
 		public bool PromoteEligible { get; set; }
+
+		public ImportFileCopyModeEnum? ImportFileCopyMode { get; set; }
 	}
 }
