@@ -5,7 +5,7 @@
   </PropertyGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
-    <PackageReference Update="Relativity" Version="[13.*,14)" />
+    <PackageReference Update="Relativity" Version="[15.*,16)" />
     <PackageReference Update="Relativity.Services.Interfaces" Version="[13.2.5]" />
     <PackageReference Update="Relativity.Services.Interfaces.Private" Version="[13.1.4]" />
     <PackageReference Update="Relativity.Services.DataContracts" Version="[13.2.5]" />
