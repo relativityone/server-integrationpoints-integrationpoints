@@ -23,6 +23,7 @@ namespace Relativity.Sync.Executors
 		private readonly Guid _sourceJobTagFieldMultiObject = new Guid("7CC3FAAF-CBB8-4315-A79F-3AA882F1997F");
 
 		public SourceWorkspaceTagRepository(IDestinationServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics, IFieldMappings fieldMappings)
+		: base(logger)
 		{
 			_fieldMappings = fieldMappings;
 			_logger = logger;

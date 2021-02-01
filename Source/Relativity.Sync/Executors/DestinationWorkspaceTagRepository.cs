@@ -33,6 +33,7 @@ namespace Relativity.Sync.Executors
 
 		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
 			ISyncLog logger, ISyncMetrics syncMetrics)
+			: base(logger)
 		{
 			_federatedInstance = federatedInstance;
 			_logger = logger;
