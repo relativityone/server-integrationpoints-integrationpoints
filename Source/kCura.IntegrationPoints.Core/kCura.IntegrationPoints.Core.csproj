@@ -579,6 +579,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="kCura.Agent">
+          <HintPath>..\..\packages\kCura.Agent\lib\net462\kCura.Agent.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="kCura.Apps.Common.Config">
           <HintPath>..\..\packages\kCura.Apps.Common.Config\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
           <Private>True</Private>
@@ -705,6 +716,17 @@
       <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Authentication.Interfaces">
+          <HintPath>..\..\packages\Relativity.Authentication.Interfaces\lib\net462\Relativity.Authentication.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -845,6 +867,91 @@
         </Reference>
         <Reference Include="Relativity.Productions.Services.Interfaces.Private">
           <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.ServiceBus">
+          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.Contracts">
+          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Contracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.Providers.Configuration">
+          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.ServiceBus.PriorityQueue">
+          <HintPath>..\..\packages\Relativity.ServiceBus.PriorityQueue\lib\net462\Relativity.ServiceBus.PriorityQueue.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.ServiceBus.AzureProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Azure\lib\net462\Relativity.ServiceBus.AzureProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.LegacyAzureProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Azure\lib\net462\Relativity.ServiceBus.LegacyAzureProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.Provider.Azure">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Azure\lib\net462\Relativity.ServiceBus.Provider.Azure.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.ServiceBus.LegacyWindowsProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.LegacyWindowsProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.Provider.Windows1_1">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.Provider.Windows1_1.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.ServiceBus.WindowsProvider">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.WindowsProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.ServiceBus.Utilities">
+          <HintPath>..\..\packages\Relativity.ServiceBus.Utilities\lib\net462\Relativity.ServiceBus.Utilities.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

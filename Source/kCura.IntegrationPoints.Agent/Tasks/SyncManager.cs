@@ -25,9 +25,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.Telemetry.MetricsCollection;
-using APMClient = Relativity.Telemetry.APM.Client;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -156,6 +153,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			return new List<string>();
 		}
+
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
 			LogCreateBatchJobStart(job, batchIDs);

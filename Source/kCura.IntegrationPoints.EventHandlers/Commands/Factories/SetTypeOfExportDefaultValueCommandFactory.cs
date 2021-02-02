@@ -23,6 +23,7 @@ using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using System;
 using System.Linq;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				logger, 
 				integrationPointSerializer);
 
-			IManagerFactory managerFactory = new ManagerFactory(helper);
+			IManagerFactory managerFactory = new ManagerFactory(helper, new EmptyRemovableAgent());
 
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 

@@ -50,7 +50,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int _workspaceArtifactId;
 
-		public SyncEntityManagerWorker(ICaseServiceContext caseServiceContext, 
+		public SyncEntityManagerWorker(
+			ICaseServiceContext caseServiceContext, 
 			IDataProviderFactory dataProviderFactory,
 			IHelper helper, 
 			ISerializer serializer, 
@@ -66,7 +67,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IRelativityObjectManager relativityObjectManager,
 			IProviderTypeService providerTypeService,
 			IIntegrationPointRepository integrationPointRepository)
-			: base(caseServiceContext, 
+			: base(
+				caseServiceContext, 
 				helper, 
 				dataProviderFactory, 
 				serializer,

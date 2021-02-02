@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using kCura.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -65,13 +66,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IStateManager CreateStateManager();
 		
 		/// <summary>
-		/// Creates source provider manager
-		/// </summary>
-		/// <param name="contextContainer">Container containing necessary contexts</param>
-		/// <returns>Source provider manager</returns>
-		ISourceProviderManager CreateSourceProviderManager();
-
-		/// <summary>
 		/// Creates an error manager.
 		/// </summary>
 		/// <param name="contextContainer"></param>
@@ -88,7 +82,8 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="isStoppableJob">A boolean flag to indicate whether the job stop manager is on an unstoppable job.</param>
 		/// <param name="cancellationTokenSource">Cancellation token source passed to JobStopManager</param>
 		/// <returns></returns>
-		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, CancellationTokenSource cancellationTokenSource = null);
+		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob,
+			CancellationTokenSource cancellationTokenSource = null);
 
 		/// <summary>
 		/// Creates an audit manager.

@@ -27,7 +27,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportWorker : SyncWorker
 	{
-		#region Constructor
+		private readonly ExportProcessRunner _exportProcessRunner;
+		private readonly IDataTransferLocationService _dataTransferLocationService;
+		private readonly IProcessingSourceLocationService _processingSourceLocationService;
+		private readonly IAPILog _logger;
 
 		public ExportWorker(
 			ICaseServiceContext caseServiceContext,
@@ -64,39 +67,26 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				integrationPointRepository)
 		{
 			_exportProcessRunner = exportProcessRunner;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
 			_dataTransferLocationService = dataTransferLocationService;
 			_processingSourceLocationService = processingSourceLocationService;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
 		}
-
-		#endregion //Constructor
-
-		#region Fields
-
-		private readonly ExportProcessRunner _exportProcessRunner;
-		private readonly IAPILog _logger;
-		private readonly IDataTransferLocationService _dataTransferLocationService;
-		private readonly IProcessingSourceLocationService _processingSourceLocationService;
-
-		#endregion //Fields
-
-		#region Methods
-
+		
 		protected override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo,
 			string configuration, Job job)
 		{
 			var providerGuid = new Guid(destinationProviderRdo.Identifier);
-
-			var sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
+			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
 
-		protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration, string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
+		protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration, 
+			string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
 			LogExecuteImportStart(job);
 
-			var sourceSettings = DeserializeSourceSettings(configuration.Configuration, job);
-			var destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
+			ExportUsingSavedSearchSettings sourceSettings = DeserializeSourceSettings(configuration.Configuration, job);
+			ImportSettings destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
 
 			PrepareDestinationLocation(sourceSettings);
 
@@ -156,9 +146,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				   _processingSourceLocationService.IsProcessingSourceLocation(settings.Fileshare,
 					   CaseServiceContext.WorkspaceID);
 		}
-
-		#endregion //Methods
-
+		
 		#region Logging
 
 		private void LogDeserializationOfSourceSettingsError(Job job, Exception e)

@@ -54,9 +54,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
 		public const string RAW_TRIGGER_INPUT_ID = "type";
 		public const string RAW_TRIGGER_INPUT_VALUE = "rip";
-
-
-		public ImportServiceManager(IHelper helper,
+		
+		public ImportServiceManager(
+			IHelper helper,
 			IRetryHandlerFactory retryHandlerFactory,
 			ICaseServiceContext caseServiceContext,
 			ISynchronizerFactory synchronizerFactory,
@@ -73,7 +73,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository,
 			IJobStatusUpdater jobStatusUpdater)
-			: base(helper,
+			: base(
+				helper,
 				jobService,
 				serializer,
 				jobHistoryService,

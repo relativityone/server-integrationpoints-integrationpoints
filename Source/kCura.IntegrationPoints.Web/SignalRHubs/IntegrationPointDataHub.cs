@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			_logger = _helper.GetLoggerFactory().GetLogger();
 
-			_managerFactory = new ManagerFactory(_helper);
+			_managerFactory = new ManagerFactory(_helper, new EmptyRemovableAgent());
 			_queueManager = _managerFactory.CreateQueueManager();
 			_jobHistoryManager = _managerFactory.CreateJobHistoryManager();
 			_stateManager = _managerFactory.CreateStateManager();

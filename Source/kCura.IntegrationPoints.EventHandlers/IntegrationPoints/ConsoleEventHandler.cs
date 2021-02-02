@@ -1,4 +1,5 @@
 ﻿using kCura.EventHandler;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -69,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					_managerFactory = new ManagerFactory(Helper);
+					_managerFactory = new ManagerFactory(Helper, new EmptyRemovableAgent());
 				}
 				return _managerFactory;
 			}

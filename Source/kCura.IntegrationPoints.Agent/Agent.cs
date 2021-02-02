@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
@@ -10,6 +11,7 @@ using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -32,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
 	[System.ComponentModel.Description("An agent that manages Integration Point jobs.")]
-	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IDisposable
+	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IRemovableAgent, IDisposable
 	{
 		private ErrorService _errorService;
 		private IAgentHelper _helper;
@@ -272,6 +274,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			var container = new WindsorContainer();
 			container.Install(new AgentAggregatedInstaller(Helper, ScheduleRuleFactory));
+			container.Register(Component.For<IRemovableAgent>().Instance(this));
 			return container;
 		}
 

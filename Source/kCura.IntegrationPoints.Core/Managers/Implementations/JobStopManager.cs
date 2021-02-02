@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -15,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly Guid _jobBatchIdentifier;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly long _jobId;
+		private readonly IRemovableAgent _agent;
 		private readonly IJobService _jobService;
 		private readonly IAPILog _logger;
 		private readonly Timer _timerThread;
@@ -23,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public object SyncRoot { get; }
 
-		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId, CancellationTokenSource cancellationTokenSource)
+		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, CancellationTokenSource cancellationTokenSource)
 		{
 			SyncRoot = new object();
 
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_jobHistoryService = jobHistoryService;
 			_jobBatchIdentifier = jobHistoryInstanceId;
 			_jobId = jobId;
+			_agent = agent;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStopManager>();
 			
 			_cancellationTokenSource = cancellationTokenSource;

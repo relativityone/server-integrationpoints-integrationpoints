@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using kCura.Agent;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -22,18 +24,21 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRemovableAgent _agent;
 		private readonly IAPILog _logger;
 
-		public ManagerFactory(IHelper helper)
+		public ManagerFactory(IHelper helper, IRemovableAgent agent)
 			: this(
 				helper,
-				new RepositoryFactory(helper, helper.GetServicesManager()))
+				new RepositoryFactory(helper, helper.GetServicesManager()),
+				agent)
 		{ }
 
-		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory)
+		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory, IRemovableAgent agent)
 		{
 			_helper = helper;
 			_repositoryFactory = repositoryFactory;
+			_agent = agent;
 			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
@@ -67,23 +72,19 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new QueueManager(_repositoryFactory);
 		}
-
-		public ISourceProviderManager CreateSourceProviderManager()
-		{
-			return new SourceProviderManager(_repositoryFactory);
-		}
-
+		
 		public IErrorManager CreateErrorManager()
 		{
 			return new ErrorManager(_repositoryFactory);
 		}
 
-		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, CancellationTokenSource cancellationTokenSource = null)
+		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob,
+			CancellationTokenSource cancellationTokenSource = null)
 		{
 			IJobStopManager manager;
 			if (isStoppableJob)
 			{
-				manager = new JobStopManager(jobService, jobHistoryService, _helper, jobIdentifier, jobId, cancellationTokenSource ?? new CancellationTokenSource());
+				manager = new JobStopManager(jobService, jobHistoryService, _helper, jobIdentifier, jobId, _agent, cancellationTokenSource ?? new CancellationTokenSource());
 			}
 			else
 			{

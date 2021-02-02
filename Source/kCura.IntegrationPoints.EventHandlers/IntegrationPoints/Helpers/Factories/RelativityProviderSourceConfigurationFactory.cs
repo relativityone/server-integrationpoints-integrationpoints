@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
 
-			IManagerFactory managerFactory = new ManagerFactory(helper);
+			IManagerFactory managerFactory = new ManagerFactory(helper, new EmptyRemovableAgent());
 			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			Func<IProductionManager> productionManagerFactory = () => new ProductionManager(logger, repositoryFactory, serviceManagerProvider);
 

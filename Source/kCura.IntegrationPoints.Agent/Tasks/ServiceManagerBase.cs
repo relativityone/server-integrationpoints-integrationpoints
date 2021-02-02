@@ -51,7 +51,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected Guid Identifier { get; set; }
 		protected TaskResult Result { get; set; }
 
-		protected ServiceManagerBase(IHelper helper,
+		protected ServiceManagerBase(
+			IHelper helper,
 			IJobService jobService,
 			ISerializer serializer,
 			IJobHistoryService jobHistoryService,
