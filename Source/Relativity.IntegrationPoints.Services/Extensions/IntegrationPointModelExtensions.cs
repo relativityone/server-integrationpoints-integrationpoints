@@ -1,6 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Utils;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
+using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 
 namespace Relativity.IntegrationPoints.Services.Extensions
 {
@@ -14,6 +18,12 @@ namespace Relativity.IntegrationPoints.Services.Extensions
 			{
 				result.SecuredConfiguration = JsonConvert.SerializeObject(model.SecuredConfiguration);
 			}
+
+			if (model.ImportFileCopyMode != null)
+			{
+				SetImportFileCopyMode(result, model.ImportFileCopyMode);
+			}
+
 			return result;
 		}
 
@@ -33,6 +43,40 @@ namespace Relativity.IntegrationPoints.Services.Extensions
 			modelBase.NotificationEmails = model.EmailNotificationRecipients;
 			modelBase.Scheduler = Mapper.Map<Scheduler>(model.ScheduleRule);
 			modelBase.SelectedOverwrite = overwriteFieldsName;
+		}
+
+		private static void SetImportFileCopyMode(kCura.IntegrationPoints.Core.Models.IntegrationPointModel model, ImportFileCopyModeEnum? modelImportFileCopyMode)
+		{
+			switch (modelImportFileCopyMode)
+			{
+				case ImportFileCopyModeEnum.DoNotImportNativeFiles:
+				{
+					UpdateImportFileCopyModeConfiguration(model, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, false);
+					break;
+				}
+				case ImportFileCopyModeEnum.SetFileLinks:
+				{
+					UpdateImportFileCopyModeConfiguration(model, ImportNativeFileCopyModeEnum.SetFileLinks, true);
+					break;
+				}
+				case ImportFileCopyModeEnum.CopyFiles:
+				{
+					UpdateImportFileCopyModeConfiguration(model, ImportNativeFileCopyModeEnum.CopyFiles, true);
+					break;
+				}
+			}
+		}
+
+		private static void UpdateImportFileCopyModeConfiguration(
+			kCura.IntegrationPoints.Core.Models.IntegrationPointModel model,
+			ImportNativeFileCopyModeEnum fileCopyMode, bool importFile)
+		{
+			model.Destination = JsonUtils.AddOrUpdatePropertyValues(model.Destination,
+				new Dictionary<string, object>
+				{
+					{ nameof(ImportSettings.ImportNativeFileCopyMode), fileCopyMode.ToString() },
+					{ nameof(ImportSettings.ImportNativeFile), importFile }
+				});
 		}
 	}
 }

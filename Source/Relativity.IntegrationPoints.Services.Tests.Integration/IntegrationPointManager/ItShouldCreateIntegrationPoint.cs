@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
@@ -8,6 +9,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
+using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 using Relativity.IntegrationPoints.Services.Tests.Integration.Helpers;
 using Relativity.Testing.Identification;
 
@@ -241,6 +244,88 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 			IntegrationPointBaseHelper.AssertIntegrationPointModelBase(actualIntegrationPoint, 
 				expectedIntegrationPointModel,
 				new IntegrationPointFieldGuidsConstants());
+		}
+
+		[IdentifiedTestCase("1b2ac7a7-9642-41fc-a6c2-b2ea35a50ad5", ImportFileCopyModeEnum.CopyFiles, true, ImportNativeFileCopyModeEnum.CopyFiles)]
+		[IdentifiedTestCase("20c17c25-4fa2-45ce-9e4e-91a4830070c4", ImportFileCopyModeEnum.SetFileLinks, true, ImportNativeFileCopyModeEnum.SetFileLinks)]
+		[IdentifiedTestCase("1476723a-a87d-4535-a694-5a5de144660c", ImportFileCopyModeEnum.DoNotImportNativeFiles, false, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)]
+		public async Task CreateIntergationPointAsync_ShouldCreateRelativityIntegrationPointWithImportMode(
+			ImportFileCopyModeEnum fileCopyMode, bool expectedImporNativeFile, ImportNativeFileCopyModeEnum expectedImportNativeFileCopyMode)
+		{
+			// Arrange
+			IList<OverwriteFieldsModel> overwriteFieldsModels = await _client
+				.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID)
+				.ConfigureAwait(false);
+
+			OverwriteFieldsModel overwriteFieldsModel = overwriteFieldsModels
+				.First(x => x.Name == "Append Only");
+
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(
+				Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport, TargetWorkspaceArtifactID,
+				false, true, false, null, "Use Field Settings", overwriteFieldsModel, GetDefaultFieldMap().ToList()
+			);
+
+			createRequest.IntegrationPoint.ImportFileCopyMode = fileCopyMode;
+
+			// Act
+			IntegrationPointModel createdIntegrationPoint = await _client.CreateIntegrationPointAsync(createRequest)
+				.ConfigureAwait(false);
+
+			// Assert
+			IntegrationPoint integrationPoint = await IntegrationPointRepository
+				.ReadWithFieldMappingAsync(createdIntegrationPoint.ArtifactId)
+				.ConfigureAwait(false);
+
+			ImportSettings destinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+
+			destinationConfiguration.ImportNativeFile.Should().Be(expectedImporNativeFile);
+			destinationConfiguration.ImportNativeFileCopyMode.Should().Be(expectedImportNativeFileCopyMode);
+		}
+
+		[IdentifiedTestCase("8a627052-d7e6-466f-9fee-7bc85a738f67")]
+		public async Task UpdateIntergationPointAsync_ShouldUpdateImportFileConfigurationValues()
+		{
+			// Arrange
+			IList<OverwriteFieldsModel> overwriteFieldsModels = await _client
+				.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID)
+				.ConfigureAwait(false);
+
+			OverwriteFieldsModel overwriteFieldsModel = overwriteFieldsModels
+				.First(x => x.Name == "Append Only");
+
+			CreateIntegrationPointRequest createRequest = IntegrationPointBaseHelper.CreateCreateIntegrationPointRequest(
+				Helper, RepositoryFactory, SourceWorkspaceArtifactID, SavedSearchArtifactID, TypeOfExport, TargetWorkspaceArtifactID,
+				false, true, false, null, "Use Field Settings", overwriteFieldsModel, GetDefaultFieldMap().ToList()
+			);
+
+			IntegrationPointModel createdIntegrationPoint = await _client.CreateIntegrationPointAsync(createRequest)
+				.ConfigureAwait(false);
+
+			UpdateIntegrationPointRequest updateRequest = UpdateRequestFrom(createRequest);
+			updateRequest.IntegrationPoint.ArtifactId = createdIntegrationPoint.ArtifactId;
+			updateRequest.IntegrationPoint.ImportFileCopyMode = ImportFileCopyModeEnum.CopyFiles;
+
+			// Act
+			IntegrationPointModel updatedIntegrationPoint = await _client.UpdateIntegrationPointAsync(updateRequest).ConfigureAwait(false);
+
+			// Assert
+			IntegrationPoint integrationPoint = await IntegrationPointRepository
+				.ReadWithFieldMappingAsync(updatedIntegrationPoint.ArtifactId)
+				.ConfigureAwait(false);
+
+			ImportSettings destinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+
+			destinationConfiguration.ImportNativeFile.Should().Be(true);
+			destinationConfiguration.ImportNativeFileCopyMode.Should().Be(ImportNativeFileCopyModeEnum.CopyFiles);
+		}
+
+		private UpdateIntegrationPointRequest UpdateRequestFrom(CreateIntegrationPointRequest request)
+		{
+			return new UpdateIntegrationPointRequest
+			{
+				IntegrationPoint = request.IntegrationPoint,
+				WorkspaceArtifactId = request.WorkspaceArtifactId
+			};
 		}
 	}
 }
