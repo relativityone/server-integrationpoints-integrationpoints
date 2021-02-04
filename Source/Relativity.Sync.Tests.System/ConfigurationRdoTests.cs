@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.System
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid);
 			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
-			configuration.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid);
+			configuration.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryIdGuid);
 			configuration.GetFieldValue<bool>(SyncConfigurationRdo.MoveExistingDocumentsGuid);
 			configuration.GetFieldValue<string>(SyncConfigurationRdo.NativesBehaviorGuid);
 			configuration.GetFieldValue<int>(SyncConfigurationRdo.RdoArtifactTypeIdGuid);

@@ -12,7 +12,7 @@ namespace Relativity.Sync.Storage
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
-		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)?.ArtifactID;
+		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryIdGuid)?.ArtifactID;
 
 		public JobEndMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{

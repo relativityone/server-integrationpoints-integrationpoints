@@ -14,7 +14,7 @@ namespace Relativity.Sync.Storage
 			_cache = cache;
 		}
 
-		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)?.ArtifactID;
+		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryIdGuid)?.ArtifactID;
 
 		public bool IsImageJob => _cache.GetFieldValue<bool>(SyncConfigurationRdo.ImageImportGuid);
 

@@ -33,7 +33,7 @@ namespace Relativity.Sync.Storage
 		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid).GetEnumFromDescription<ImportImageFileCopyMode>();
 
 
-		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid)?.ArtifactID;
+		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryIdGuid)?.ArtifactID;
 
 		public ValidationConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters)
 		{

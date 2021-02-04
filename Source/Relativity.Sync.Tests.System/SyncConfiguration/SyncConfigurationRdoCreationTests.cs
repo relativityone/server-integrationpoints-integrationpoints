@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
@@ -17,166 +18,214 @@ using Relativity.Sync.RDOs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
-	[TestFixture]
-	internal class SyncConfigurationRdoCreationTests : SystemTest
-	{
-		public ISyncServiceManager SyncServicesMgr;
+    [TestFixture]
+    internal class SyncConfigurationRdoCreationTests : SystemTest
+    {
+        private readonly Guid _jobHistoryTypeGuid = Guid.Parse("1B405B4F-8C9E-4B07-8170-6A47D0C4E579");
 
-		protected override async Task ChildSuiteSetup()
-		{
-			await base.ChildSuiteSetup();
 
-			SyncServicesMgr = new ServicesManagerStub();
-		}
+        public ISyncServiceManager SyncServicesMgr = new ServicesManagerStub();
 
-		[Test]
-		public async Task Exists_ShouldReturnTrue_WhenSyncConfigurationRdoExistsInWorkspace()
-		{
-			// Arrange
-			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
-			// Act
-			bool exists = await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
+        [Test]
+        public async Task Exists_ShouldReturnTrue_AfterRdoIsCreated()
+        {
+            // Arrange
+            WorkspaceRef testWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 
-			// Assert
-			exists.Should().BeTrue();
-		}
+            (_,int parentObjectTypeId) = await Rdos.CreateBasicRdoTypeAsync(ServiceFactory, testWorkspace.ArtifactID,
+                $"{Guid.NewGuid()}",
+                new ObjectTypeIdentifier {ArtifactTypeID = (int) ArtifactType.Case}).ConfigureAwait(false);
 
-		[Test]
-		public async Task Exists_ShouldReturnFalse_WhenSyncConfigurationRdoDoesNotExistInWorkspace()
-		{
-			// Arrange
-			WorkspaceRef workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+            await SyncConfigurationRdo.EnsureTypeExists(testWorkspace.ArtifactID, parentObjectTypeId, SyncServicesMgr)
+                .ConfigureAwait(false);
 
-			// Act
-			bool exists = await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
+            (SyncConfigurationRdo.RdoStatus rdoStatus, Guid[] existingFieldsGuids, int? existingArtifactId) =
+                await SyncConfigurationRdo.ExistsAsync(testWorkspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
 
-			// Assert
-			exists.Should().BeFalse();
-		}
+            // Assert
+            rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.Exists);
+            existingArtifactId.Should().NotBeNull();
+            SyncConfigurationRdo.GuidNames.Keys.All(g => existingFieldsGuids.Contains(g)).Should().BeTrue();
+        }
 
-		[Test]
-		public async Task CreateType_ShouldHandleSyncConfigurationCreation()
-		{
-			// Arrange
-			WorkspaceRef refWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			int refWorkspaceId = refWorkspace.ArtifactID;
-			
-			var refSyncConfigurationTypeId =
-				await ReadRefSyncConfigurationTypeId(refWorkspace.ArtifactID, SyncConfigurationRdo.SyncConfigurationGuid).ConfigureAwait(false);
+        [Test]
+        public async Task Exists_ShouldReturn_OutOfDate_WhenSyncConfigurationRdoIsOutOfDateInWorkspace()
+        {
+            // Arrange
+            WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
-			WorkspaceRef testWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
-			int testWorkspaceId = testWorkspace.ArtifactID;
+            Guid newFieldGuid = Guid.Parse("58F380EE-6DC0-4506-A658-04E8E090BF2A");
+            SyncConfigurationRdo.GuidNames.Add(newFieldGuid, "Adler Sieben");
 
-			int parentObjectTypeId = await Rdos.CreateBasicRdoTypeAsync(ServiceFactory, testWorkspace.ArtifactID, $"{Guid.NewGuid()}",
-				new ObjectTypeIdentifier {ArtifactTypeID = (int)ArtifactType.Case}).ConfigureAwait(false);
 
-			RelativityObject parentObject = await Rdos
-				.CreateBasicRdoAsync(ServiceFactory, testWorkspace.ArtifactID, parentObjectTypeId).ConfigureAwait(false);
+            // Act
+            (SyncConfigurationRdo.RdoStatus rdoStatus, Guid[] existingFieldsGuids, int? existingArtifactId) =
+                await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
 
-			// Act
-			int createdConfigurationTypeId = await SyncConfigurationRdo.CreateTypeAsync(testWorkspace.ArtifactID, parentObject.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
+            // Assert
+            rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.OutOfDate);
+            existingArtifactId.Should().NotBeNull();
+            existingFieldsGuids.Contains(newFieldGuid).Should().BeFalse();
+        }
 
-			// Assert
-			await AssertConfigurationType(
-				refWorkspaceId, refSyncConfigurationTypeId,
-				testWorkspaceId, createdConfigurationTypeId, parentObjectTypeId).ConfigureAwait(false);
-		}
+        [Test]
+        public async Task Exists_ShouldReturn_Exists_WhenSyncConfigurationExistsInWorkspace()
+        {
+            // Arrange
+            WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
-		private async Task AssertConfigurationType(
-			int refWorkspaceId, int refConfigurationTypeId,
-			int testWorkspaceId, int createdConfigurationTypeId, int testParentObjectTypeId)
-		{
-			var expectedSyncConfigurationType =
-				await ReadSyncConfigurationType(refWorkspaceId, refConfigurationTypeId)
-					.ConfigureAwait(false);
+            // Act
+            (SyncConfigurationRdo.RdoStatus rdoStatus, Guid[] existingFieldsGuids, int? existingArtifactId) =
+                await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
 
-			var createdSyncConfigurationType =
-				await ReadSyncConfigurationType(testWorkspaceId, createdConfigurationTypeId)
-					.ConfigureAwait(false);
 
-			createdSyncConfigurationType.Should().BeEquivalentTo(expectedSyncConfigurationType,
-				config =>
-				{
-					config.Excluding(x => x.ArtifactID);
-					config.Excluding(x => x.ArtifactTypeID);
-					config.Excluding(x => x.CreatedBy);
-					config.Excluding(x => x.CreatedOn);
-					config.Excluding(x => x.FieldByteUsage);
-					config.Excluding(x => x.LastModifiedBy);
-					config.Excluding(x => x.LastModifiedOn);
-					config.Excluding(x => x.ParentObjectType);
-					config.Excluding(x => x.RelativityApplications);
+            // Assert
+            existingArtifactId.Should().NotBeNull();
+            SyncConfigurationRdo.GuidNames.Keys.All(g => existingFieldsGuids.Contains(g)).Should().BeTrue();
+            rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.Exists);
+        }
 
-					return config;
-				});
+        [Test]
+        public async Task CreateType_ShouldHandleSyncConfigurationCreation()
+        {
+            // Arrange
+            WorkspaceRef refWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
+            int refWorkspaceId = refWorkspace.ArtifactID;
 
-			createdSyncConfigurationType.ParentObjectType.Value.ArtifactID.Should().Be(testParentObjectTypeId);
+            var refSyncConfigurationTypeId =
+                await ReadRefSyncConfigurationTypeId(refWorkspace.ArtifactID,
+                    SyncConfigurationRdo.SyncConfigurationGuid).ConfigureAwait(false);
 
-			var expectedSyncConfigurationFieldTypes =
-				await ReadSyncConfigurationTypeFields(refWorkspaceId, expectedSyncConfigurationType.ArtifactTypeID).ConfigureAwait(false);
+            WorkspaceRef testWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+            int testWorkspaceId = testWorkspace.ArtifactID;
 
-			var createdSyncConfigurationFieldTypes =
-				await ReadSyncConfigurationTypeFields(testWorkspaceId, createdSyncConfigurationType.ArtifactTypeID).ConfigureAwait(false);
+            (_, int parentObjectTypeId) = await Rdos.CreateBasicRdoTypeAsync(ServiceFactory, testWorkspace.ArtifactID,
+                $"{Guid.NewGuid()}",
+                new ObjectTypeIdentifier {ArtifactTypeID = (int) ArtifactType.Case}).ConfigureAwait(false);
 
-			createdSyncConfigurationFieldTypes.Should().BeEquivalentTo(expectedSyncConfigurationFieldTypes,
-				config => config.Excluding(x => x.ArtifactID));
-		}
+            // Act
+            int createdConfigurationTypeId = await SyncConfigurationRdo.CreateTypeAsync(testWorkspace.ArtifactID,
+                parentObjectTypeId, SyncServicesMgr).ConfigureAwait(false);
 
-		private async Task<int> ReadRefSyncConfigurationTypeId(int workspaceId, Guid guid)
-		{
-			using (IObjectManager objectManager = SyncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
-			using (IObjectTypeManager objectTypeManager = SyncServicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
-			{
-				ReadRequest request = new ReadRequest()
-				{
-					Object = new RelativityObjectRef()
-					{
-						Guid = guid
-					}
-				};
-				ReadResult result = await objectManager.ReadAsync(workspaceId, request).ConfigureAwait(false);
+            // Assert
+            await AssertConfigurationType(
+                refWorkspaceId, refSyncConfigurationTypeId,
+                testWorkspaceId, createdConfigurationTypeId, parentObjectTypeId).ConfigureAwait(false);
+        }
 
-				var objectType = await objectTypeManager.ReadAsync(workspaceId, result.Object.ArtifactID)
-					.ConfigureAwait(false);
+        private async Task<int> GetJobHistoryTypeArtifactIdAsync(int workspaceId)
+        {
+            using (var guidManager = ServiceFactory.CreateProxy<IArtifactGuidManager>())
+            {
+                return await guidManager.ReadSingleArtifactIdAsync(workspaceId, _jobHistoryTypeGuid)
+                    .ConfigureAwait(false);
+            }
+        }
 
-				return objectType.ArtifactID;
-			}
-		}
+        private async Task AssertConfigurationType(
+            int refWorkspaceId, int refConfigurationTypeId,
+            int testWorkspaceId, int createdConfigurationTypeId, int testParentObjectTypeId)
+        {
+            var expectedSyncConfigurationType =
+                await ReadSyncConfigurationType(refWorkspaceId, refConfigurationTypeId)
+                    .ConfigureAwait(false);
 
-		private async Task<ObjectTypeResponse> ReadSyncConfigurationType(int workspaceId, int syncConfigurationTypeId)
-		{
-			using (IObjectTypeManager objectTypeManager = SyncServicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
-			{
-				return await objectTypeManager.ReadAsync(workspaceId, syncConfigurationTypeId)
-					.ConfigureAwait(false);
-			}
-		}
+            var createdSyncConfigurationType =
+                await ReadSyncConfigurationType(testWorkspaceId, createdConfigurationTypeId)
+                    .ConfigureAwait(false);
 
-		private async Task<List<RelativityObject>> ReadSyncConfigurationTypeFields(int workspaceId, int configurationTypeId)
-		{
-			using (IObjectManager objectManager = SyncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
-			{
-				QueryRequest request = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						ArtifactTypeID = (int) ArtifactType.Field
-					},
-					IncludeNameInQueryResult = true,
-					Condition = $"'FieldArtifactTypeID' == {configurationTypeId} " +
-					            $" AND 'DisplayName' IN [{string.Join(",", SyncConfigurationRdo.GetFieldsDefinition(0, 0).Values.Select(x => $"'{x.Name}'"))}]"
-				};
+            createdSyncConfigurationType.Should().BeEquivalentTo(expectedSyncConfigurationType,
+                config =>
+                {
+                    config.Excluding(x => x.ArtifactID);
+                    config.Excluding(x => x.ArtifactTypeID);
+                    config.Excluding(x => x.CreatedBy);
+                    config.Excluding(x => x.CreatedOn);
+                    config.Excluding(x => x.FieldByteUsage);
+                    config.Excluding(x => x.LastModifiedBy);
+                    config.Excluding(x => x.LastModifiedOn);
+                    config.Excluding(x => x.ParentObjectType);
+                    config.Excluding(x => x.RelativityApplications);
 
-				var result = await objectManager.QueryAsync(workspaceId, request, 1, 100).ConfigureAwait(false);
+                    return config;
+                });
 
-				result.Objects.ForEach(x => x.Name = x.Name.ToLower());
+            createdSyncConfigurationType.ParentObjectType.Value.ArtifactTypeID.Should().Be(testParentObjectTypeId);
 
-				return result.Objects;
-			}
-		}
-	}
+            var expectedSyncConfigurationFieldTypes =
+                await ReadSyncConfigurationTypeFields(refWorkspaceId, expectedSyncConfigurationType.ArtifactTypeID)
+                    .ConfigureAwait(false);
+
+            var createdSyncConfigurationFieldTypes =
+                await ReadSyncConfigurationTypeFields(testWorkspaceId, createdSyncConfigurationType.ArtifactTypeID)
+                    .ConfigureAwait(false);
+
+            createdSyncConfigurationFieldTypes.Should().BeEquivalentTo(expectedSyncConfigurationFieldTypes,
+                config => config.Excluding(x => x.ArtifactID));
+        }
+
+        private async Task<int> ReadRefSyncConfigurationTypeId(int workspaceId, Guid guid)
+        {
+            using (IObjectManager objectManager = SyncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            using (IObjectTypeManager objectTypeManager =
+                SyncServicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+            {
+                ReadRequest request = new ReadRequest()
+                {
+                    Object = new RelativityObjectRef()
+                    {
+                        Guid = guid
+                    }
+                };
+                ReadResult result = await objectManager.ReadAsync(workspaceId, request).ConfigureAwait(false);
+
+                var objectType = await objectTypeManager.ReadAsync(workspaceId, result.Object.ArtifactID)
+                    .ConfigureAwait(false);
+
+                return objectType.ArtifactID;
+            }
+        }
+
+        private async Task<ObjectTypeResponse> ReadSyncConfigurationType(int workspaceId, int syncConfigurationTypeId)
+        {
+            using (IObjectTypeManager objectTypeManager =
+                SyncServicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+            {
+                return await objectTypeManager.ReadAsync(workspaceId, syncConfigurationTypeId)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task<List<RelativityObject>> ReadSyncConfigurationTypeFields(int workspaceId,
+            int configurationTypeId)
+        {
+            using (IObjectManager objectManager = SyncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            {
+                var fieldsNames = SyncConfigurationRdo.GetFieldsDefinition(0)
+                    .Values.Select(x => $"'{x.Name}'");
+
+                QueryRequest request = new QueryRequest
+                {
+                    ObjectType = new ObjectTypeRef
+                    {
+                        ArtifactTypeID = (int) ArtifactType.Field
+                    },
+                    IncludeNameInQueryResult = true,
+                    Condition = $"'FieldArtifactTypeID' == {configurationTypeId} " +
+                                $" AND 'DisplayName' IN [{string.Join(",", fieldsNames)}]"
+                };
+
+                var result = await objectManager.QueryAsync(workspaceId, request, 1, 100).ConfigureAwait(false);
+
+                result.Objects.ForEach(x => x.Name = x.Name.ToLower());
+
+                return result.Objects;
+            }
+        }
+    }
 }

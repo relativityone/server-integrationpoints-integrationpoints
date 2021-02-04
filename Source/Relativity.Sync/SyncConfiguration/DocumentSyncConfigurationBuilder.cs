@@ -18,8 +18,9 @@ namespace Relativity.Sync.SyncConfiguration
 		private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
 		public DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
-				IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options) 
-			: base(syncContext, servicesMgr, serializer)
+			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
+			RdoOptions rdoOptions) 
+			: base(syncContext, servicesMgr, rdoOptions, serializer)
 		{
 			_fieldsMappingBuilder = fieldsMappingBuilder;
 

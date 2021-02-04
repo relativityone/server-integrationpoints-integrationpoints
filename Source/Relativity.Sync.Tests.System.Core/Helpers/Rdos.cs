@@ -476,7 +476,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateBasicRdoTypeAsync(ServiceFactory serviceFactory, 
+		public static async Task<(int artifactId, int artifactTypeId)> CreateBasicRdoTypeAsync(ServiceFactory serviceFactory, 
 			int workspaceId, string typeName, ObjectTypeIdentifier parentObjectType)
 		{
 			ObjectTypeRequest objectTypeRequest = new ObjectTypeRequest
@@ -488,12 +488,18 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			using (IObjectTypeManager objectTypeManager = serviceFactory.CreateProxy<IObjectTypeManager>())
 			using (IArtifactGuidManager guidManager = serviceFactory.CreateProxy<IArtifactGuidManager>())
 			{
-				int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
-
-				await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() { Guid.NewGuid() })
+				int artifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest)
 					.ConfigureAwait(false);
 
-				return objectTypeArtifactId;
+				var newGuid = Guid.NewGuid();
+				
+				await guidManager.CreateSingleAsync(workspaceId, artifactId, new List<Guid>() {newGuid})
+					.ConfigureAwait(false);
+
+				ObjectTypeResponse response = await objectTypeManager.ReadAsync(workspaceId, artifactId)
+					.ConfigureAwait(false);
+				
+				return (artifactId,response.ArtifactTypeID);
 			}
 		}
 
@@ -661,7 +667,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.JobHistoryToRetryGuid
+							Guid = SyncConfigurationRdo.JobHistoryToRetryIdGuid
 						},
 						Value = jobHistoryToRetry
 					},

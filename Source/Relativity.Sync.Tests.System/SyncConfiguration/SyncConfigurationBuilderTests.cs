@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -23,23 +24,35 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 	[TestFixture]
 	class SyncConfigurationBuilderTests : SystemTest
 	{
+
+		
+		private readonly Guid _jobHistoryGuid = Guid.Parse("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
+		private readonly Guid _jobHistoryCompletedItemsGuid = Guid.Parse("70680399-C8EA-4B12-B711-E9ECBC53CB1C");
+		private readonly Guid _jobHistoryGuidFailedItems = Guid.Parse("C224104F-C1CA-4CAA-9189-657E01D5504E");
+		private readonly Guid _jobHistoryGuidTotalItems = Guid.Parse("576189A9-0347-4B20-9369-B16D1AC89B4B");
+
+		private RdoOptions _rdoOptions;
+
+
 		public ISyncServiceManager SyncServicesMgr;
 
 		protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup();
-
+			
+			_rdoOptions = new RdoOptions(new JobHistoryOptions(_jobHistoryGuid, _jobHistoryCompletedItemsGuid, _jobHistoryGuidFailedItems, _jobHistoryGuidTotalItems));
 			SyncServicesMgr = new ServicesManagerStub();
 		}
 
 		[Test]
+		[Ignore("This test needs separate installation of JobHistory and Sync Configuration")]
 		public async Task SyncConfigurationBuilder_ShouldBuildConfigurationWithCorrectParentObject_WhenSyncConfigurationRdoDoesNotExist()
 		{
 			// Arrange
-			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			int sourceWorkspaceId = sourceWorkspace.ArtifactID;
 
-			int parentObjectTypeId = await Rdos.CreateBasicRdoTypeAsync(ServiceFactory, sourceWorkspace.ArtifactID, $"{Guid.NewGuid()}",
+			(int parentObjectTypeId, _) = await Rdos.CreateBasicRdoTypeAsync(ServiceFactory, sourceWorkspace.ArtifactID, $"{Guid.NewGuid()}",
 				new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Case }).ConfigureAwait(false);
 
 			RelativityObject parentObject = await Rdos
@@ -57,8 +70,13 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 
+			var guids = await GetGuids(sourceWorkspace.ArtifactID).ConfigureAwait(false);
+
+			var guidsString = string.Join(global::System.Environment.NewLine, guids.Select(x => $"[{x.Name}, {x.Guids.First()}]"));
+			
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRDO(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -69,13 +87,46 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		}
 
 		[Test]
+		public async Task SyncConfigurationBuilder_ShouldSaveConfiguration()
+		{
+			// Arrange
+			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
+			
+			Task<WorkspaceRef> destinationWorkspaceTask = Environment.CreateWorkspaceAsync();
+
+			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			
+			int savedSearchId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
+
+			WorkspaceRef destinationWorkspace = await destinationWorkspaceTask.ConfigureAwait(false);
+			
+			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			
+			ISyncContext syncContext =
+				new SyncContext(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID, jobHistoryId);
+
+			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
+			
+			// Act
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRDO(_rdoOptions)
+				.ConfigureDocumentSync(options)
+				.SaveAsync().ConfigureAwait(false);
+
+			// Assert
+			var createdSyncConfiguration = await ReadSyncConfiguration(sourceWorkspace.ArtifactID, createdConfigurationId).ConfigureAwait(false);
+
+			createdSyncConfiguration.ParentObject.ArtifactID.Should().Be(jobHistoryId);
+		}
+		
+		[Test]
 		public async Task SyncConfigurationBuilder_ShouldThrow_WhenSyncConfigurationRdoExistsAndParentObjectIsInvalid()
 		{
 			// Arrange
 			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			int sourceWorkspaceId = sourceWorkspace.ArtifactID;
 
-			int parentObjectTypeId = await Rdos.CreateBasicRdoTypeAsync(ServiceFactory, sourceWorkspace.ArtifactID, $"{Guid.NewGuid()}",
+			(int parentObjectTypeId, _) = await Rdos.CreateBasicRdoTypeAsync(ServiceFactory, sourceWorkspace.ArtifactID, $"{Guid.NewGuid()}",
 				new ObjectTypeIdentifier { ArtifactTypeID = (int)ArtifactType.Case }).ConfigureAwait(false);
 
 			RelativityObject parentObject = await Rdos
@@ -93,8 +144,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 
+			
 			// Act
 			Func<Task> action = async () => await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRDO(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -118,6 +171,40 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				var result = await objectManager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
 
 				return result.Objects.Single();
+			}
+		}
+		
+		private async Task<List<RelativityObject>> GetGuids(int workspaceId)
+		{
+			using (IObjectManager objectManager =
+				ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				// bool exists = await artifactGuidManager.ReadSingleGuidsAsync(workspaceId, SyncConfigurationGuid)
+				//     .ConfigureAwait(false);
+				// if (exists)
+				// {
+				var syncConfigurationObjectId = await objectManager
+					.QueryAsync(workspaceId, new QueryRequest
+					{
+						Condition = "'Name' == 'Job History'",
+						Fields = new[] {new FieldRef {Name = "Artifact Type ID"}},
+						ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.ObjectType},
+						IncludeNameInQueryResult = true
+					}, 0, 1).ConfigureAwait(false);
+
+				var response = await objectManager.QueryAsync(workspaceId, new QueryRequest()
+				{
+					Fields = new FieldRef[0],
+					Condition =
+						$"'FieldArtifactTypeID' == {syncConfigurationObjectId.Objects.First().FieldValues.First().Value}",
+					ObjectType = new ObjectTypeRef()
+					{
+						ArtifactTypeID = (int) ArtifactType.Field
+					},
+					IncludeNameInQueryResult = true,
+				}, 0, 100).ConfigureAwait(false);
+
+				return response.Objects;
 			}
 		}
 	}

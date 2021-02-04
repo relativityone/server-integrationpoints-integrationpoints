@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			_configurationFake = new Mock<IConfiguration>();
-			_configurationFake.Setup(x => x.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryGuid))
+			_configurationFake.Setup(x => x.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryIdGuid))
 				.Returns(new RelativityObjectValue() { ArtifactID = _JOB_HISTORY_TO_RETRY_ARTIFACT_ID });
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
