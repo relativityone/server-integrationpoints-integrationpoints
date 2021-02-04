@@ -37,7 +37,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IEnumerable<IBatchStatus> _batchStatus;
 		
 		private readonly IProviderTypeService _providerTypeService;
-		private readonly bool _isStoppable = true;
 		private readonly IAPILog _logger;
 		private readonly JobStatisticsService _statisticsService;
 
@@ -153,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
-				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, _isStoppable, supportsDrainStop: false);
+				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: false);
 				JobHistoryErrorService.JobStopManager = JobStopManager;
 
 				if (!IntegrationPoint.SourceProvider.HasValue)

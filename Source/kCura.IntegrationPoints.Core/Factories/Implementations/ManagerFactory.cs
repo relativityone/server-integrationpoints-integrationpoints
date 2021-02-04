@@ -76,26 +76,17 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new QueueManager(_repositoryFactory);
 		}
-		
+
 		public IErrorManager CreateErrorManager()
 		{
 			return new ErrorManager(_repositoryFactory);
 		}
 
-		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, bool supportsDrainStop,
+		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool supportsDrainStop,
 			CancellationTokenSource stopCancellationTokenSource = null, CancellationTokenSource drainStopCancellationTokenSource = null)
 		{
-			IJobStopManager manager;
-			if (isStoppableJob)
-			{
-				manager = new JobStopManager(jobService, jobHistoryService, _jobServiceDataProvider, _helper, jobIdentifier, jobId, _agent,
-					supportsDrainStop, stopCancellationTokenSource ?? new CancellationTokenSource(), drainStopCancellationTokenSource ?? new CancellationTokenSource());
-			}
-			else
-			{
-				manager = new NullableStopJobManager();
-			}
-			return manager;
+			return new JobStopManager(jobService, jobHistoryService, _jobServiceDataProvider, _helper, jobIdentifier, jobId, _agent,
+				supportsDrainStop, stopCancellationTokenSource ?? new CancellationTokenSource(), drainStopCancellationTokenSource ?? new CancellationTokenSource());
 		}
 
 		public IAuditManager CreateAuditManager(int workspaceArtifactId)
