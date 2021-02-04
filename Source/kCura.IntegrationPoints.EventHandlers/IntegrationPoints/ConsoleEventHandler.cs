@@ -1,4 +1,5 @@
-﻿using kCura.EventHandler;
+﻿using System;
+using kCura.EventHandler;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -18,6 +19,9 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using Console = kCura.EventHandler.Console;
 
@@ -70,7 +74,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					_managerFactory = new ManagerFactory(Helper, new EmptyRemovableAgent());
+					IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+					IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
+					_managerFactory = new ManagerFactory(Helper, new EmptyRemovableAgent(), jobServiceDataProvider);
 				}
 				return _managerFactory;
 			}

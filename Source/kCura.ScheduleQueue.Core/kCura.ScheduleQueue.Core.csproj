@@ -74,6 +74,7 @@
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
     <Compile Include="Data\Queries\InsertJobLogEntry.cs" />
+    <Compile Include="Data\Queries\UnlockJob.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
     <Compile Include="Data\Queries\DeleteJob.cs" />
     <Compile Include="Data\Queries\GetJob.cs" />
@@ -131,6 +132,7 @@
     <Content Include="Data\Resources\DeleteJob.sql" />
     <Content Include="Data\Resources\GetJobByID.sql" />
     <Content Include="Data\Resources\CreateScheduledJob.sql" />
+    <Content Include="Data\Resources\UnlockJob.sql" />
     <Content Include="Data\Resources\UpdateStopState.sql" />
     <Content Include="Data\Resources\UpdateScheduledJob.sql" />
     <Content Include="Data\Resources\GetAgentTypeInformation.sql" />

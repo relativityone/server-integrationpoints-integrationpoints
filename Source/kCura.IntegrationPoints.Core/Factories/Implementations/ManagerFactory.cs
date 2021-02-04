@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
@@ -25,20 +26,23 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IRemovableAgent _agent;
+		private readonly IJobServiceDataProvider _jobServiceDataProvider;
 		private readonly IAPILog _logger;
 
-		public ManagerFactory(IHelper helper, IRemovableAgent agent)
+		public ManagerFactory(IHelper helper, IRemovableAgent agent, IJobServiceDataProvider jobServiceDataProvider)
 			: this(
 				helper,
 				new RepositoryFactory(helper, helper.GetServicesManager()),
-				agent)
+				agent,
+				jobServiceDataProvider)
 		{ }
 
-		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory, IRemovableAgent agent)
+		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory, IRemovableAgent agent, IJobServiceDataProvider jobServiceDataProvider)
 		{
 			_helper = helper;
 			_repositoryFactory = repositoryFactory;
 			_agent = agent;
+			_jobServiceDataProvider = jobServiceDataProvider;
 			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
@@ -84,7 +88,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IJobStopManager manager;
 			if (isStoppableJob)
 			{
-				manager = new JobStopManager(jobService, jobHistoryService, _helper, jobIdentifier, jobId, _agent, cancellationTokenSource ?? new CancellationTokenSource());
+				manager = new JobStopManager(jobService, jobHistoryService, _jobServiceDataProvider, _helper, jobIdentifier, jobId, _agent,
+					cancellationTokenSource ?? new CancellationTokenSource());
 			}
 			else
 			{

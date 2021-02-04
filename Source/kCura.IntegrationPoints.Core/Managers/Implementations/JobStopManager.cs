@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -6,18 +7,23 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class JobStopManager : IJobStopManager
 	{
+		private const int _TIMER_INTERVAL_MS = 500;
+
 		private readonly CancellationTokenSource _cancellationTokenSource;
 		private readonly Guid _jobBatchIdentifier;
+		private readonly IJobService _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IJobServiceDataProvider _jobServiceDataProvider;
 		private readonly long _jobId;
 		private readonly IRemovableAgent _agent;
-		private readonly IJobService _jobService;
 		private readonly IAPILog _logger;
 		private readonly Timer _timerThread;
 		private readonly CancellationToken _token;
@@ -25,20 +31,22 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public object SyncRoot { get; }
 
-		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper, Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, CancellationTokenSource cancellationTokenSource)
+		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IJobServiceDataProvider jobServiceDataProvider, IHelper helper,
+			Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, CancellationTokenSource cancellationTokenSource)
 		{
 			SyncRoot = new object();
 
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
+			_jobServiceDataProvider = jobServiceDataProvider;
 			_jobBatchIdentifier = jobHistoryInstanceId;
 			_jobId = jobId;
 			_agent = agent;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStopManager>();
-			
+
 			_cancellationTokenSource = cancellationTokenSource;
 			_token = _cancellationTokenSource.Token;
-			_timerThread = new Timer(state => Execute(), null, 0, 500);
+			_timerThread = new Timer(state => Execute(), null, 0, _TIMER_INTERVAL_MS);
 		}
 
 		internal void Execute()
@@ -48,27 +56,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				try
 				{
 					Job job = _jobService.GetJob(_jobId);
+
 					if (job != null)
 					{
-						if (job.StopState.HasFlag(StopState.Stopping))
-						{
-							JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
-							if ((jobHistory != null) && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
-														 || jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
-							{
-								jobHistory.JobStatus = JobStatusChoices.JobHistoryStopping;
-								_jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
-							}
-
-							_cancellationTokenSource.Cancel();
-							_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-							LogStoppingJob();
-							RaiseStopRequestedEvent();
-						}
-						else if (job.StopState.HasFlag(StopState.Unstoppable))
-						{
-							_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-						}
+						ProcessJob(job);
 					}
 				}
 				catch (Exception e)
@@ -78,6 +69,63 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				}
 			}
 		}
+
+		private void ProcessJob(Job job)
+		{
+			if (_agent.ToBeRemoved && SupportsDrainStop(job))
+			{
+				JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
+
+				if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
+				{
+					// todo signal job to drain-stop
+					UpdateStopState(StopState.DrainStopping);
+					SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistorySuspending);
+				}
+				else if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended))
+				{
+					UpdateStopState(StopState.DrainStopped);
+					_jobServiceDataProvider.UnlockJob(job.JobId);
+				}
+			}
+			else if (job.StopState.HasFlag(StopState.Stopping))
+			{
+				JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
+
+				if ((jobHistory != null) && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
+											 || jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
+				{
+					SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryStopping);
+				}
+
+				_cancellationTokenSource.Cancel();
+				_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+				LogStoppingJob();
+				RaiseStopRequestedEvent();
+			}
+			else if (job.StopState.HasFlag(StopState.Unstoppable))
+			{
+				_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+			}
+		}
+
+		private bool SupportsDrainStop(Job job)
+		{
+			// todo
+			return false;
+		}
+
+		private void UpdateStopState(StopState stopState)
+		{
+			_jobService.UpdateStopState(new List<long>() { _jobId }, stopState);
+		}
+
+		private void SetJobHistoryStatus(JobHistory jobHistory, ChoiceRef status)
+		{
+			jobHistory.JobStatus = status;
+			_jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+		}
+
 		public bool IsStopRequested()
 		{
 			return _token.IsCancellationRequested;
