@@ -234,7 +234,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorService.JobHistory = JobHistory;
 			_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 			
-			JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, true);
+			JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, true, supportsDrainStop: false);
 			JobStopManager.ThrowIfStopRequested();
 
 			if (!JobHistory.StartTimeUTC.HasValue)

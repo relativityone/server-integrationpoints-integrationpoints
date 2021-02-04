@@ -82,14 +82,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new ErrorManager(_repositoryFactory);
 		}
 
-		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob,
-			CancellationTokenSource cancellationTokenSource = null)
+		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, bool supportsDrainStop,
+			CancellationTokenSource stopCancellationTokenSource = null, CancellationTokenSource drainStopCancellationTokenSource = null)
 		{
 			IJobStopManager manager;
 			if (isStoppableJob)
 			{
 				manager = new JobStopManager(jobService, jobHistoryService, _jobServiceDataProvider, _helper, jobIdentifier, jobId, _agent,
-					cancellationTokenSource ?? new CancellationTokenSource());
+					supportsDrainStop, stopCancellationTokenSource ?? new CancellationTokenSource(), drainStopCancellationTokenSource ?? new CancellationTokenSource());
 			}
 			else
 			{

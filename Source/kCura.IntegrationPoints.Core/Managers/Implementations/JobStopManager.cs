@@ -17,13 +17,15 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		private const int _TIMER_INTERVAL_MS = 500;
 
-		private readonly CancellationTokenSource _cancellationTokenSource;
+		private readonly CancellationTokenSource _stopCancellationTokenSource;
+		private readonly CancellationTokenSource _drainStopCancellationTokenSource;
 		private readonly Guid _jobBatchIdentifier;
 		private readonly IJobService _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobServiceDataProvider _jobServiceDataProvider;
 		private readonly long _jobId;
 		private readonly IRemovableAgent _agent;
+		private readonly bool _supportsDrainStop;
 		private readonly IAPILog _logger;
 		private readonly Timer _timerThread;
 		private readonly CancellationToken _token;
@@ -32,7 +34,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public object SyncRoot { get; }
 
 		public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IJobServiceDataProvider jobServiceDataProvider, IHelper helper,
-			Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, CancellationTokenSource cancellationTokenSource)
+			Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, bool supportsDrainStop,
+			CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource)
 		{
 			SyncRoot = new object();
 
@@ -42,10 +45,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_jobBatchIdentifier = jobHistoryInstanceId;
 			_jobId = jobId;
 			_agent = agent;
+			_supportsDrainStop = supportsDrainStop;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStopManager>();
 
-			_cancellationTokenSource = cancellationTokenSource;
-			_token = _cancellationTokenSource.Token;
+			_stopCancellationTokenSource = stopCancellationTokenSource;
+			_drainStopCancellationTokenSource = drainStopCancellationTokenSource;
+			_token = _stopCancellationTokenSource.Token;
 			_timerThread = new Timer(state => Execute(), null, 0, _TIMER_INTERVAL_MS);
 		}
 
@@ -72,13 +77,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		private void ProcessJob(Job job)
 		{
-			if (_agent.ToBeRemoved && SupportsDrainStop(job))
+			if (_supportsDrainStop && _agent.ToBeRemoved)
 			{
 				JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
 
 				if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
 				{
-					// todo signal job to drain-stop
+					_drainStopCancellationTokenSource.Cancel();
 					UpdateStopState(StopState.DrainStopping);
 					SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistorySuspending);
 				}
@@ -98,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryStopping);
 				}
 
-				_cancellationTokenSource.Cancel();
+				_stopCancellationTokenSource.Cancel();
 				_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 				LogStoppingJob();
 				RaiseStopRequestedEvent();
@@ -108,13 +113,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 			}
 		}
-
-		private bool SupportsDrainStop(Job job)
-		{
-			// todo
-			return false;
-		}
-
+		
 		private void UpdateStopState(StopState stopState)
 		{
 			_jobService.UpdateStopState(new List<long>() { _jobId }, stopState);
@@ -149,7 +148,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			if (disposing && !_disposed)
 			{
-				_cancellationTokenSource.Dispose();
+				_stopCancellationTokenSource.Dispose();
 				_timerThread.Dispose();
 				_disposed = true;
 			}

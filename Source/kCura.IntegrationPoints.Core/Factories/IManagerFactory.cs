@@ -80,10 +80,12 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="jobIdentifier">Guid of the job history</param>
 		/// <param name="jobId">Artifact id of the scheduled queue job</param>
 		/// <param name="isStoppableJob">A boolean flag to indicate whether the job stop manager is on an unstoppable job.</param>
-		/// <param name="cancellationTokenSource">Cancellation token source passed to JobStopManager</param>
+		/// <param name="supportsDrainStop">Indicates whether job supports drain stop.</param>
+		/// <param name="stopCancellationTokenSource">Cancellation token source used to perform regular job stop.</param>
+		/// <param name="drainStopCancellationTokenSource">Cancellation token source used to perform drain-stop job.</param>
 		/// <returns></returns>
-		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob,
-			CancellationTokenSource cancellationTokenSource = null);
+		IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, bool supportsDrainStop,
+			CancellationTokenSource stopCancellationTokenSource = null, CancellationTokenSource drainStopCancellationTokenSource = null);
 
 		/// <summary>
 		/// Creates an audit manager.

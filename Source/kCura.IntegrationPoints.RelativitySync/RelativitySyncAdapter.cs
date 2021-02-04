@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Castle.MicroKernel.Registration;
@@ -45,7 +44,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
 			try
 			{
-				CancellationToken cancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
+				CompositeCancellationToken cancellationTokens = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
 				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
 				using (IContainer container = InitializeSyncContainer(syncConfiguration))
 				{
@@ -55,9 +54,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 					ISyncJob syncJob = await CreateSyncJobAsync(container).ConfigureAwait(false);
 					Progress progress = new Progress();
 					progress.SyncProgress += (sender, syncProgress) => UpdateJobStatusAsync(syncProgress.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-					await syncJob.ExecuteAsync(progress, cancellationToken).ConfigureAwait(false);
+					await syncJob.ExecuteAsync(progress, cancellationTokens.StopCancellationToken).ConfigureAwait(false);
 
-					if (cancellationToken.IsCancellationRequested)
+					if (cancellationTokens.StopCancellationToken.IsCancellationRequested)
 					{
 						await MarkJobAsStoppedAsync().ConfigureAwait(false);
 					}
