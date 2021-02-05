@@ -28,7 +28,7 @@
 
 		public void Send(IMetric metric)
 		{
-			//TODO: Logika
+			_logger.LogInformation("Metric: {metric}, Properties: {@metricProperties}", metric.GetType(), metric);
 		}
 	}
 }

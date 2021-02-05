@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
@@ -37,7 +39,59 @@ namespace Relativity.Sync.Telemetry
 
 		public void Send(IMetric metric)
 		{
+			SendAsync(metric).GetAwaiter().GetResult();
+		}
 
+		private async Task SendAsync(IMetric metric)
+		{
+			using (IMetricsManager metricsManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
+			{
+				foreach (var sumMetric in await GetSumMetricsAsync(metric).ConfigureAwait(false))
+				{
+					try
+					{
+						await LogSumMetricAsync(metricsManager, sumMetric).ConfigureAwait(false);
+					}
+					catch (Exception e)
+					{
+						_logger.LogError(e, "Logging to SUM failed. The metric with bucket '{bucket}' and workflow ID '{workflowId}' had value '{value}'.",
+							sumMetric.Bucket, sumMetric.WorkflowId, sumMetric.Value);
+					}
+				}
+			}
+		}
+
+		private async Task<IEnumerable<SumMetric>> GetSumMetricsAsync(IMetric metric)
+		{
+			Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);
+
+			var sumMetrics = metric.ReadSumMetrics().ToList();
+
+			sumMetrics.ForEach(x => x.WorkspaceGuid = workspaceGuid);
+
+			return sumMetrics;
+		}
+
+		private Task LogSumMetricAsync(IMetricsManager metricsManager, SumMetric metric)
+		{
+			switch (metric.Type)
+			{
+				case MetricType.PointInTimeString:
+					return metricsManager.LogPointInTimeStringAsync(metric.Bucket, metric.WorkspaceGuid, metric.WorkflowId, metric.Value.ToString());
+				case MetricType.PointInTimeLong:
+					return metricsManager.LogPointInTimeLongAsync(metric.Bucket, metric.WorkspaceGuid, metric.WorkflowId, (long)metric.Value);
+				case MetricType.PointInTimeDouble:
+					return metricsManager.LogPointInTimeDoubleAsync(metric.Bucket, metric.WorkspaceGuid, metric.WorkflowId, (double)metric.Value);
+				case MetricType.TimedOperation:
+					return metricsManager.LogTimerAsDoubleAsync(metric.Bucket, metric.WorkspaceGuid, metric.WorkflowId, (double)metric.Value);
+				case MetricType.Counter:
+					return metricsManager.LogCountAsync(metric.Bucket, metric.WorkspaceGuid, metric.WorkflowId, 1);
+				case MetricType.GaugeOperation:
+					return metricsManager.LogGaugeAsync(metric.Bucket, metric.WorkspaceGuid, metric.WorkflowId, (long)metric.Value);
+				default:
+					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented.", metric.Type);
+					return Task.CompletedTask;
+			}
 		}
 
 		private async Task LogSumMetricAsync(IMetricsManager metricsManager, Metric metric)

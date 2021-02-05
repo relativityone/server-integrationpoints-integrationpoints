@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -28,15 +30,7 @@ namespace Relativity.Sync.Telemetry
 
 		public void Send(IMetric metric)
 		{
-			var customData = ReadCustomData(metric);
-
-			_apmClient.Log(metric.Application, customData);
-		}
-
-		private Dictionary<string, object> ReadCustomData(IMetric metric)
-		{
-			//TODO: Napisać logikę
-			return new Dictionary<string, object>();
+			_apmClient.Log(metric.Application, metric.ReadCustomData());
 		}
 	}
 }
