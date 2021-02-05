@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -6,8 +7,8 @@ namespace Relativity.Sync.Telemetry
 	{
 		string Application { get; set; }
 
-		Dictionary<string, object> ReadCustomData();
+		string WorkflowId { get; set; }
 
-		IEnumerable<SumMetric> ReadSumMetrics();
+		IEnumerable<PropertyInfo> GetMetricProperties();
 	}
 }

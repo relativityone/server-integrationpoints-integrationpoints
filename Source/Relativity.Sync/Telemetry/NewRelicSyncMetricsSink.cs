@@ -30,7 +30,12 @@ namespace Relativity.Sync.Telemetry
 
 		public void Send(IMetric metric)
 		{
-			_apmClient.Log(metric.Application, metric.ReadCustomData());
+			var customData = ReadCustomData(metric);
+
+			_apmClient.Log(metric.Application, customData);
 		}
+
+		private Dictionary<string, object> ReadCustomData(IMetric metric) =>
+			metric.GetMetricProperties().ToDictionary(p => p.Name, p => p.GetValue(metric));
 	}
 }

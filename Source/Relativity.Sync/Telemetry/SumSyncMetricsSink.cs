@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
@@ -65,11 +66,28 @@ namespace Relativity.Sync.Telemetry
 		{
 			Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);
 
-			var sumMetrics = metric.ReadSumMetrics().ToList();
+			var sumMetrics = ReadSumMetrics(metric);
 
 			sumMetrics.ForEach(x => x.WorkspaceGuid = workspaceGuid);
 
 			return sumMetrics;
+		}
+
+		public IList<SumMetric> ReadSumMetrics(IMetric metric)
+		{
+			return metric.GetMetricProperties().Select(p =>
+			{
+				var attr = p.GetCustomAttribute<MetricAttribute>();
+
+				return new SumMetric
+				{
+					Type = attr.Type,
+					Bucket = attr.Name,
+					Value = p.GetValue(this),
+					WorkspaceGuid = default,
+					WorkflowId = metric.WorkflowId
+				};
+			}).ToList();
 		}
 
 		private Task LogSumMetricAsync(IMetricsManager metricsManager, SumMetric metric)
