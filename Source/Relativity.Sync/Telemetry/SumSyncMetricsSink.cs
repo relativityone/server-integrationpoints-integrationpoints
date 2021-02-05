@@ -35,6 +35,11 @@ namespace Relativity.Sync.Telemetry
 			}
 		}
 
+		public void Send(IMetric metric)
+		{
+
+		}
+
 		private async Task LogSumMetricAsync(IMetricsManager metricsManager, Metric metric)
 		{
 			Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);

@@ -57,6 +57,15 @@
 			public static readonly string DATA_LONGTEXT_STREAM_LARGEST_TIME = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.LargestLongText.Time";
 
 			public static readonly string KEPLER_SERVICE_INTERCEPTOR_PREFIX = $"{_SYNC_METRIC_PREPEND}.KeplerServiceInterceptor";
+
+			public const string _JOB_END_STATUS = "Relativity.Sync.Job.End.Status";
+
+			public const string _DATA_RECORDS_TRANSFERRED = "Relativity.Sync.Data.Records.Transferred";
+			public const string _DATA_RECORDS_FAILED = "Relativity.Sync.Data.Records.Failed";
+			public const string _DATA_RECORDS_TOTAL_REQUESTED = "Relativity.Sync.Data.Records.TotalRequested";
+
+			public const string _DATA_BYTES_TOTAL_TRANSFERRED = "Relativity.Sync.Data.Bytes.TotalTransferred";
+			public const string _DATA_BYTES_NATIVES_REQUESTED = "Relativity.Sync.Data.Bytes.NativesRequested";
 		}
 	}
 }

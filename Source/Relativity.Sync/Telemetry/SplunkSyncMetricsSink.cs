@@ -25,5 +25,10 @@
 		{
 			_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.Name, metric);
 		}
+
+		public void Send(IMetric metric)
+		{
+			//TODO: Logika
+		}
 	}
 }

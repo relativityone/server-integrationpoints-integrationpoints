@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Telemetry
+﻿using System.Collections.Generic;
+
+namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
 	///     Logs <see cref="Metric"/>s to New Relic.
@@ -22,6 +24,19 @@
 		public void Log(Metric metric)
 		{
 			_apmClient.Log(_NEW_RELIC_INDEX_NAME, metric.ToDictionary());
+		}
+
+		public void Send(IMetric metric)
+		{
+			var customData = ReadCustomData(metric);
+
+			_apmClient.Log(metric.Application, customData);
+		}
+
+		private Dictionary<string, object> ReadCustomData(IMetric metric)
+		{
+			//TODO: Napisać logikę
+			return new Dictionary<string, object>();
 		}
 	}
 }

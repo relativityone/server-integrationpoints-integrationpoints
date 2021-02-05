@@ -8,6 +8,8 @@ namespace Relativity.Sync.Telemetry
 	/// </summary>
 	internal interface ISyncMetrics
 	{
+		void Send(Metric metric);
+
 		/// <summary>
 		/// Logs a single execution time along with execution status.
 		/// </summary>

@@ -10,5 +10,7 @@
 		/// </summary>
 		/// <param name="metric">Metric to log</param>
 		void Log(Metric metric);
+
+		void Send(IMetric metric);
 	}
 }
