@@ -10,6 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 
-			_sut = new DestinationWorkspaceTagLinker(_serviceFactory.Object, new EmptyLogger());
+			_sut = new DestinationWorkspaceTagLinker( new ConfigurationStub(), _serviceFactory.Object,new EmptyLogger());
 		}
 
 		[Test]

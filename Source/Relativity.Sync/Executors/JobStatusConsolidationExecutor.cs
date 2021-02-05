@@ -14,16 +14,14 @@ namespace Relativity.Sync.Executors
 {
 	internal class JobStatusConsolidationExecutor : IExecutor<IJobStatusConsolidationConfiguration>
 	{
+		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 
-		private static readonly Guid _COMPLETED_ITEMS_COUNT_GUID = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
-		private static readonly Guid _FAILED_ITEMS_COUNT_GUID = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
-		private static readonly Guid _TOTAL_ITEMS_COUNT_GUID = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
-
-		public JobStatusConsolidationExecutor(IBatchRepository batchRepository, IJobStatisticsContainer jobStatisticsContainer, ISourceServiceFactoryForAdmin serviceFactory)
+		public JobStatusConsolidationExecutor(IRdoGuidConfiguration rdoGuidConfiguration, IBatchRepository batchRepository, IJobStatisticsContainer jobStatisticsContainer, ISourceServiceFactoryForAdmin serviceFactory)
 		{
+			_rdoGuidConfiguration = rdoGuidConfiguration;
 			_batchRepository = batchRepository;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_serviceFactory = serviceFactory;
@@ -97,7 +95,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = _COMPLETED_ITEMS_COUNT_GUID
+								Guid = _rdoGuidConfiguration.JobHistory.CompletedItemsFieldGuid
 							},
 							Value = completedItemsCount
 						},
@@ -105,7 +103,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = _FAILED_ITEMS_COUNT_GUID
+								Guid = _rdoGuidConfiguration.JobHistory.FailedItemsFieldGuid
 							},
 							Value = failedItemsCount
 						},
@@ -113,7 +111,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = _TOTAL_ITEMS_COUNT_GUID
+								Guid = _rdoGuidConfiguration.JobHistory.TotalItemsFieldGuid
 							},
 							Value = totalItemsCount
 						}

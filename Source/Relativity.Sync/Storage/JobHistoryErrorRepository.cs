@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Utils;
 
@@ -14,34 +14,16 @@ namespace Relativity.Sync.Storage
 	internal sealed class JobHistoryErrorRepository : IJobHistoryErrorRepository
 	{
 		private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
-
-		private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
-
-		private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
-		private readonly Guid _errorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
-		private readonly Guid _errorTypeField = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
-		private readonly Guid _nameField = new Guid("84E757CC-9DA2-435D-B288-0C21EC589E66");
-		private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
-		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
-		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
-
-		private readonly Guid _errorStatusNew = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
-		private readonly Guid _errorStatusExpired = new Guid("AF01A8FA-B419-49B1-BD71-25296E221E57");
-		private readonly Guid _errorStatusInProgress = new Guid("E5EBD98C-C976-4FA2-936F-434E265EA0AA");
-		private readonly Guid _errorStatusRetried = new Guid("7D3D393D-384F-434E-9776-F9966550D29A");
-
-		private readonly Guid _errorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
-		private readonly Guid _errorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
-
-		private readonly Guid _jobHistoryRelationGuid = new Guid("8B747B91-0627-4130-8E53-2931FFC4135F");
-
+	
 		private readonly IDateTime _dateTime;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly IRdoGuidConfiguration _rdoConfiguration;
 		private readonly ISyncLog _logger;
 
-		public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory, IDateTime dateTime, ISyncLog logger)
+		public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory, IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_rdoConfiguration = rdoConfiguration;
 			_dateTime = dateTime;
 			_logger = logger;
 		}
@@ -127,16 +109,16 @@ namespace Relativity.Sync.Storage
 				{
 					Object = new RelativityObjectRef
 					{
-						Guid = _errorTypeJob
+						Guid = _rdoConfiguration.JobHistoryError.JobLevelErrorGuid
 					}
 				};
 				ReadResult jobErrorType = await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
 				var request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
-					Condition = $"'{_jobHistoryRelationGuid}' == OBJECT {jobHistoryArtifactId} AND '{_errorTypeField}' == CHOICE {jobErrorType.Object.ArtifactID}",
+					ObjectType = new ObjectTypeRef { Guid = _rdoConfiguration.JobHistoryError.TypeGuid },
+					Condition = $"'{_rdoConfiguration.JobHistoryError.JobHistoryRelationGuid}' == OBJECT {jobHistoryArtifactId} AND '{_rdoConfiguration.JobHistoryError.ErrorTypeGuid}' == CHOICE {jobErrorType.Object.ArtifactID}",
 					Fields = GetFields(),
-					Sorts = new[] { new Sort { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Guid = _timestampUtcField } } }
+					Sorts = new[] { new Sort { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid } } }
 				};
 				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
 				if (result.TotalCount > 0)
@@ -144,13 +126,13 @@ namespace Relativity.Sync.Storage
 					RelativityObject jobError = result.Objects.First();
 
 					int artifactId = jobError.ArtifactID;
-					string errorMessage = (string)jobError[_errorMessageField].Value;
-					ErrorStatus errorStatus = ((Choice)jobError[_errorStatusField].Value).Name.GetEnumFromDescription<ErrorStatus>();
-					ErrorType errorType = ((Choice)jobError[_errorTypeField].Value).Name.GetEnumFromDescription<ErrorType>();
-					string name = (string)jobError[_nameField].Value;
-					string sourceUniqueId = (string)jobError[_sourceUniqueIdField].Value;
-					string stackTrace = (string)jobError[_stackTraceField].Value;
-					DateTime timestampUtc = (DateTime)jobError[_timestampUtcField].Value;
+					string errorMessage = (string)jobError[_rdoConfiguration.JobHistoryError.ErrorMessagesGuid].Value;
+					ErrorStatus errorStatus = ((Choice)jobError[_rdoConfiguration.JobHistoryError.ErrorStatusGuid].Value).Name.GetEnumFromDescription<ErrorStatus>();
+					ErrorType errorType = ((Choice)jobError[_rdoConfiguration.JobHistoryError.ErrorTypeGuid].Value).Name.GetEnumFromDescription<ErrorType>();
+					string name = (string)jobError[_rdoConfiguration.JobHistoryError.NameGuid].Value;
+					string sourceUniqueId = (string)jobError[_rdoConfiguration.JobHistoryError.SourceUniqueIdGuid].Value;
+					string stackTrace = (string)jobError[_rdoConfiguration.JobHistoryError.StackTraceGuid].Value;
+					DateTime timestampUtc = (DateTime)jobError[_rdoConfiguration.JobHistoryError.TimeStampGuid].Value;
 
 					jobHistoryError = new JobHistoryError(artifactId, errorMessage, errorStatus, errorType, jobHistoryArtifactId, name, sourceUniqueId, stackTrace, timestampUtc);
 				}
@@ -160,7 +142,7 @@ namespace Relativity.Sync.Storage
 
 		private ObjectTypeRef GetObjectTypeRef()
 		{
-			return new ObjectTypeRef { Guid = _jobHistoryErrorObject };
+			return new ObjectTypeRef { Guid = _rdoConfiguration.JobHistoryError.TypeGuid };
 		}
 
 		private RelativityObjectRef GetParentObject(int jobHistoryArtifactId)
@@ -172,13 +154,13 @@ namespace Relativity.Sync.Storage
 		{
 			return new[]
 			{
-				new FieldRef { Guid = _errorMessageField },
-				new FieldRef { Guid = _errorStatusField },
-				new FieldRef { Guid = _errorTypeField },
-				new FieldRef { Guid = _nameField },
-				new FieldRef { Guid = _sourceUniqueIdField },
-				new FieldRef { Guid = _stackTraceField },
-				new FieldRef { Guid = _timestampUtcField }
+				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorMessagesGuid },
+				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorStatusGuid },
+				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorTypeGuid },
+				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.NameGuid },
+				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.SourceUniqueIdGuid },
+				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.StackTraceGuid },
+				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid}
 			};
 		}
 
@@ -188,16 +170,16 @@ namespace Relativity.Sync.Storage
 			switch (errorStatus)
 			{
 				case ErrorStatus.New:
-					errorStatusChoice.Guid = _errorStatusNew;
+					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.New;
 					break;
 				case ErrorStatus.InProgress:
-					errorStatusChoice.Guid = _errorStatusInProgress;
+					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.InProgress;
 					break;
 				case ErrorStatus.Expired:
-					errorStatusChoice.Guid = _errorStatusExpired;
+					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.Expired;
 					break;
 				case ErrorStatus.Retried:
-					errorStatusChoice.Guid = _errorStatusRetried;
+					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.Retried;
 					break;
 				default:
 					throw new ArgumentException($"Invalid Error Status {errorStatus}");
@@ -211,10 +193,10 @@ namespace Relativity.Sync.Storage
 			switch (errorType)
 			{
 				case ErrorType.Job:
-					errorTypeChoice.Guid = _errorTypeJob;
+					errorTypeChoice.Guid = _rdoConfiguration.JobHistoryError.JobLevelErrorGuid;
 					break;
 				case ErrorType.Item:
-					errorTypeChoice.Guid = _errorTypeItem;
+					errorTypeChoice.Guid = _rdoConfiguration.JobHistoryError.ItemLevelErrorGuid;
 					break;
 				default:
 					throw new ArgumentException($"Invalid Error Type {errorType}");

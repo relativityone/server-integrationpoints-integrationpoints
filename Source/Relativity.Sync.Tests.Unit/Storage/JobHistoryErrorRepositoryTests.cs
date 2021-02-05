@@ -12,6 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -62,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_dateTimeFake.SetupGet(x => x.UtcNow).Returns(_utcNow);
 			_objectManagerMock = new Mock<IObjectManager>();
 			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
-			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, _dateTimeFake.Object, new EmptyLogger());
+			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, new ConfigurationStub(), _dateTimeFake.Object, new EmptyLogger());
 		}
 
 		[Test]
