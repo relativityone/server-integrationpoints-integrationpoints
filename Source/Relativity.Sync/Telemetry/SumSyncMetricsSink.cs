@@ -51,7 +51,7 @@ namespace Relativity.Sync.Telemetry
 				{
 					try
 					{
-						await LogSumMetricAsync(metricsManager, sumMetric).ConfigureAwait(false);
+						await SendSumMetricAsync(metricsManager, sumMetric).ConfigureAwait(false);
 					}
 					catch (Exception e)
 					{
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Telemetry
 			}).ToList();
 		}
 
-		private Task LogSumMetricAsync(IMetricsManager metricsManager, SumMetric metric)
+		private Task SendSumMetricAsync(IMetricsManager metricsManager, SumMetric metric)
 		{
 			switch (metric.Type)
 			{

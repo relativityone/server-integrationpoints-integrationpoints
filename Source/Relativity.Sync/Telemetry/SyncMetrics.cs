@@ -22,14 +22,13 @@ namespace Relativity.Sync.Telemetry
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public void Send(Metric metric)
+		public void Send(IMetric metric)
 		{
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				sink.Log(metric);
+				sink.Send(metric);
 			}
 		}
-
 
 		/// <inheritdoc />
 		public void TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus)
