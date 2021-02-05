@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
 			_helper = Container.Resolve<IHelper>();
-			var managerFactory = new ManagerFactory(_helper, new EmptyRemovableAgent(), Container.Resolve<IJobServiceDataProvider>());
+			var managerFactory = new ManagerFactory(_helper, new FakeNonRemovableAgent(), Container.Resolve<IJobServiceDataProvider>());
 			_tagsCreator = managerFactory.CreateTagsCreator();
 			_tagSavedSearchManager = new TagSavedSearchManager(
 				new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper),

@@ -27,8 +27,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IRemovableAgent _agent;
 		private readonly bool _supportsDrainStop;
 		private readonly IAPILog _logger;
-		private readonly Timer _timerThread;
 		private readonly CancellationToken _token;
+
+		private Timer _timerThread;
 		private bool _disposed;
 
 		public object SyncRoot { get; }
@@ -51,7 +52,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_stopCancellationTokenSource = stopCancellationTokenSource;
 			_drainStopCancellationTokenSource = drainStopCancellationTokenSource;
 			_token = _stopCancellationTokenSource.Token;
-			_timerThread = new Timer(state => Execute(), null, 0, _TIMER_INTERVAL_MS);
+			_timerThread = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
+		}
+
+		internal void ActivateTimer()
+		{
+			_timerThread.Change(0, _TIMER_INTERVAL_MS);
 		}
 
 		internal void Execute()
@@ -75,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 		}
 
-		private void ProcessJob(Job job)
+		internal void ProcessJob(Job job)
 		{
 			if (_supportsDrainStop && _agent.ToBeRemoved)
 			{

@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 					.LifestylePerWebRequest(),
 				Component
 					.For<IRemovableAgent>()
-					.ImplementedBy<EmptyRemovableAgent>()
+					.ImplementedBy<FakeNonRemovableAgent>()
 					.LifestyleTransient()
 			);
 		}

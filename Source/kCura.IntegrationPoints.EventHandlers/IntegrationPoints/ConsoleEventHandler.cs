@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				{
 					IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 					IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
-					_managerFactory = new ManagerFactory(Helper, new EmptyRemovableAgent(), jobServiceDataProvider);
+					_managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 				}
 				return _managerFactory;
 			}

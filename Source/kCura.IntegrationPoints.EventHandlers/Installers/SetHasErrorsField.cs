@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				integrationPointSerializer
 				);
 
-			IManagerFactory managerFactory = new ManagerFactory(Helper, new EmptyRemovableAgent(), jobServiceDataProvider);
+			IManagerFactory managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);

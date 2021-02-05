@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, helper);
 
-			IManagerFactory managerFactory = new ManagerFactory(helper, new EmptyRemovableAgent(), jobServiceDataProvider);
+			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			Func<IProductionManager> productionManagerFactory = () => new ProductionManager(logger, repositoryFactory, serviceManagerProvider);
 
