@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
-using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared.Models;
@@ -22,7 +19,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
-    [TestFixture]
     internal class SyncConfigurationRdoCreationTests : SystemTest
     {
         private readonly Guid _jobHistoryTypeGuid = Guid.Parse("1B405B4F-8C9E-4B07-8170-6A47D0C4E579");
@@ -31,7 +27,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
         public ISyncServiceManager SyncServicesMgr = new ServicesManagerStub();
 
 
-        [Test]
+        [IdentifiedTest("B06A5312-4A3F-4F8F-8545-64401766AA6B")]
         public async Task Exists_ShouldReturnTrue_AfterRdoIsCreated()
         {
             // Arrange
@@ -50,10 +46,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             // Assert
             rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.Exists);
             existingArtifactId.Should().NotBeNull();
-            SyncConfigurationRdo.GuidNames.Keys.All(g => existingFieldsGuids.Contains(g)).Should().BeTrue();
+            SyncConfigurationRdo.GuidNames.Keys.Should().Contain(existingFieldsGuids);
         }
 
-        [Test]
+        [IdentifiedTest("B818A2E7-850D-4224-9765-9492742E8DFD")]
         public async Task Exists_ShouldReturn_OutOfDate_WhenSyncConfigurationRdoIsOutOfDateInWorkspace()
         {
             // Arrange
@@ -73,7 +69,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             existingFieldsGuids.Contains(newFieldGuid).Should().BeFalse();
         }
 
-        [Test]
+        [IdentifiedTest("BBEFF510-0381-4CCA-B978-10BA71721A71")]
         public async Task Exists_ShouldReturn_Exists_WhenSyncConfigurationExistsInWorkspace()
         {
             // Arrange
@@ -90,7 +86,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.Exists);
         }
 
-        [Test]
+        [IdentifiedTest("468C2533-1A42-4E8C-8F31-9B83F2CEE6AD")]
         public async Task CreateType_ShouldHandleSyncConfigurationCreation()
         {
             // Arrange

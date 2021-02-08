@@ -40,8 +40,12 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             _fieldManagerMock = new Mock<IFieldManager>();
 
 
-            _guidManagerMock.Setup(x => x.GuidExistsAsync(_sourceWorkspaceId, It.IsAny<Guid>()))
-                .ReturnsAsync(true);
+            _guidManagerMock.Setup(x => x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.IsAny<List<Guid>>()))
+                .ReturnsAsync((int _, List<Guid> guids) =>
+                {
+                    return guids.Select(g => new GuidArtifactIDPair() {Guid = g, ArtifactID = 5})
+                        .ToList();
+                });
 
             _objectManagerMock.Setup(x =>
                     x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
@@ -109,7 +113,6 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             // Arrange
             var rdoOptions = DefaultGuids.DefaultRdoOptions;
 
-
             // Act
             await _sut.ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(0, 0))
@@ -126,7 +129,9 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                 return (Guid) propertyPath.GetValue(rdo);
             }).ToArray();
 
-            expectedQueriedGuids.ForEach(g => _guidManagerMock.Verify(x => x.GuidExistsAsync(_sourceWorkspaceId, g)));
+
+            expectedQueriedGuids.ForEach(g => _guidManagerMock.Verify(x =>
+                x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.Is<List<Guid>>(l => l.Contains(g)))));
         }
 
         [Test]
@@ -137,11 +142,16 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
 
             object rdo = rdoPath.GetValue(rdoOptions);
-            Guid notExistingGuid = (Guid)propertyPath.GetValue(rdo);
-            
+            Guid notExistingGuid = (Guid) propertyPath.GetValue(rdo);
 
-            _guidManagerMock.Setup(x => x.GuidExistsAsync(_sourceWorkspaceId, notExistingGuid))
-                .ReturnsAsync(false);
+
+            _guidManagerMock.Setup(x => x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.IsAny<List<Guid>>()))
+                .ReturnsAsync((int _, List<Guid> guids) =>
+                {
+                    return guids.Except(new[] {notExistingGuid})
+                        .Select(g => new GuidArtifactIDPair() {Guid = g, ArtifactID = 5})
+                        .ToList();
+                });
 
             // Act && Assert
             Func<Task> action = async () =>
@@ -161,57 +171,57 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
         {
             // Arrange
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
-            
+
             // Act
             SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase) _sut.ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(0, 0));
-            
+
             // Assert
             builder.SyncConfiguration.JobHistoryCompletedItemsField.Should()
                 .Be(rdoOptions.JobHistory.CompletedItemsCountGuid);
-            
+
             builder.SyncConfiguration.JobHistoryDestinationWorkspaceInformationField.Should()
                 .Be(rdoOptions.JobHistory.DestinationWorkspaceInformationGuid);
-            
+
             builder.SyncConfiguration.JobHistoryGuidFailedField.Should()
                 .Be(rdoOptions.JobHistory.FailedItemsCountGuid);
-            
+
             builder.SyncConfiguration.JobHistoryType.Should()
                 .Be(rdoOptions.JobHistory.JobHistoryTypeGuid);
-            
+
             builder.SyncConfiguration.JobHistoryGuidTotalField.Should()
                 .Be(rdoOptions.JobHistory.TotalItemsCountGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorErrorMessages.Should()
                 .Be(rdoOptions.JobHistoryError.ErrorMessageGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorErrorStatus.Should()
                 .Be(rdoOptions.JobHistoryError.ErrorStatusGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorErrorType.Should()
                 .Be(rdoOptions.JobHistoryError.ErrorTypeGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorItemLevelError.Should()
                 .Be(rdoOptions.JobHistoryError.ItemLevelErrorChoiceGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorJobLevelError.Should()
                 .Be(rdoOptions.JobHistoryError.JobLevelErrorChoiceGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorName.Should()
                 .Be(rdoOptions.JobHistoryError.NameGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorSourceUniqueId.Should()
                 .Be(rdoOptions.JobHistoryError.SourceUniqueIdGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorStackTrace.Should()
                 .Be(rdoOptions.JobHistoryError.StackTraceGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorTimeStamp.Should()
                 .Be(rdoOptions.JobHistoryError.TimeStampGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorType.Should()
                 .Be(rdoOptions.JobHistoryError.TypeGuid);
-            
+
             builder.SyncConfiguration.JobHistoryErrorNewChoice.Should()
                 .Be(rdoOptions.JobHistoryError.NewStatusGuid);
 

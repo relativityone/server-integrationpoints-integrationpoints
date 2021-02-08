@@ -1025,7 +1025,7 @@ namespace Relativity.Sync.RDOs
         public static async Task EnsureTypeExists(int workspaceId, int parentObjectTypeId,
             ISyncServiceManager servicesManager)
         {
-            (var rdoStatus, var existingFields, int? syncConfigurationTypeArtifactId) =
+            (RdoStatus rdoStatus, HashSet<Guid> existingFields, int? syncConfigurationTypeArtifactId) =
                 await ExistsAsync(workspaceId, servicesManager).ConfigureAwait(false);
 
             switch (rdoStatus)

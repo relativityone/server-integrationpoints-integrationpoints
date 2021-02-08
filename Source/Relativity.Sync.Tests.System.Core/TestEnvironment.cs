@@ -15,8 +15,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
-using Relativity.Sync.RDOs;
-using Relativity.Sync.Tests.System.Core.Stubs;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace Relativity.Sync.Tests.System.Core

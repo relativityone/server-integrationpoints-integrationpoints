@@ -17,10 +17,10 @@ using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
-	[TestFixture]
 	class SyncConfigurationBuilderTests : SystemTest
 	{
 		private RdoOptions _rdoOptions;
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			_syncServicesMgr = new ServicesManagerStub();
 		}
 
-		[Test]
+		[IdentifiedTest("57181029-FF5D-414B-9B53-7AE60474C2DA")]
 		[Ignore("This test needs separate installation of JobHistory and Sync Configuration")]
 		public async Task SyncConfigurationBuilder_ShouldBuildConfigurationWithCorrectParentObject_WhenSyncConfigurationRdoDoesNotExist()
 		{
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			createdSyncConfiguration.ParentObject.ArtifactID.Should().Be(parentObject.ArtifactID);
 		}
 
-		[Test]
+		[IdentifiedTest("08889EA2-DFFB-4F21-8723-5D2C4F23646C")]
 		public async Task SyncConfigurationBuilder_ShouldSaveConfiguration()
 		{
 			// Arrange
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			createdSyncConfiguration.ParentObject.ArtifactID.Should().Be(jobHistoryId);
 		}
 		
-		[Test]
+		[IdentifiedTest("F2764E15-1958-4B3E-B109-94C2E5DA9FDA")]
 		public async Task SyncConfigurationBuilder_ShouldThrow_WhenSyncConfigurationRdoExistsAndParentObjectIsInvalid()
 		{
 			// Arrange
@@ -170,10 +170,6 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			using (IObjectManager objectManager =
 				ServiceFactory.CreateProxy<IObjectManager>())
 			{
-				// bool exists = await artifactGuidManager.ReadSingleGuidsAsync(workspaceId, SyncConfigurationGuid)
-				//     .ConfigureAwait(false);
-				// if (exists)
-				// {
 				var syncConfigurationObjectId = await objectManager
 					.QueryAsync(workspaceId, new QueryRequest
 					{

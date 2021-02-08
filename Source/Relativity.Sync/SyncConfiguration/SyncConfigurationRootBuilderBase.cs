@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Relativity.Sync.SyncConfiguration
             ServicesMgr = servicesMgr;
             RdoOptions = rdoOptions;
             Serializer = serializer;
-            
+
             SyncConfiguration = new SyncConfigurationRdo
             {
                 DestinationWorkspaceArtifactId = SyncContext.DestinationWorkspaceId,
@@ -91,11 +92,14 @@ namespace Relativity.Sync.SyncConfiguration
 
         public async Task<int> SaveAsync()
         {
-            await ValidateRdosAsync().ConfigureAwait(false);
+            await ValidateGuidsAsync(
+                GetAllValidationInfos()
+            ).ConfigureAwait(false);
             await ValidateAsync().ConfigureAwait(false);
 
-            int parentObjectTypeId = await GetParentObjectTypeAsync(SyncContext.SourceWorkspaceId, SyncContext.ParentObjectId); 
-            
+            int parentObjectTypeId =
+                await GetParentObjectTypeAsync(SyncContext.SourceWorkspaceId, SyncContext.ParentObjectId);
+
             await SyncConfigurationRdo
                 .EnsureTypeExists(SyncContext.SourceWorkspaceId, parentObjectTypeId, ServicesMgr)
                 .ConfigureAwait(false);
@@ -121,59 +125,69 @@ namespace Relativity.Sync.SyncConfiguration
                 return response.ObjectType.ArtifactTypeID;
             }
         }
+
+        private List<(Guid Guid, string PropertyPath)> GetAllValidationInfos()
+        {
+            return new List<(Guid Guid, string PropertyPath)>
+            {
+                // JobHistory
+                GetValidationInfo(RdoOptions.JobHistory, x => x.CompletedItemsCountGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.FailedItemsCountGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.TotalItemsCountGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.JobHistoryTypeGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.DestinationWorkspaceInformationGuid),
+                
+                // JobHistoryError
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.TypeGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.NameGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.SourceUniqueIdGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.ErrorMessageGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.TimeStampGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.ErrorTypeGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.StackTraceGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.ErrorStatusGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.JobHistoryRelationGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.ItemLevelErrorChoiceGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.JobLevelErrorChoiceGuid),
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.NewStatusGuid)
+            };
+        }
         
-        private async Task ValidateRdosAsync()
+        private (Guid Guid, string PropertyPath) GetValidationInfo<TRdo>(TRdo rdo,
+            Expression<Func<TRdo, Guid>> expression)
+        {
+            MemberExpression memberExpression = expression.Body as MemberExpression ??
+                                                throw new InvalidExpressionException(
+                                                    "Expression needs to be a member expression");
+
+            Guid guid = expression.Compile().Invoke(rdo);
+            string propertyPath = $"{typeof(TRdo).Name}.{memberExpression.Member.Name}";
+            return (guid, propertyPath);
+        }
+
+        private async Task ValidateGuidsAsync(List<(Guid Guid, string PropertyPath)> validationInfos)
         {
             using (var guidManager = ServicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
             {
-                await Task.WhenAll(
-                    ValidateJobHistoryAsync(guidManager),
-                    ValidateJobHistoryErrorAsync(guidManager)
-                    );
+                List<GuidArtifactIDPair> guidArtifactIdPairs = await guidManager
+                    .ReadMultipleArtifactIdsAsync(SyncContext.SourceWorkspaceId,
+                        validationInfos.Select(x => x.Guid).ToList())
+                    .ConfigureAwait(false);
+
+                HashSet<Guid> existingGuids = new HashSet<Guid>(guidArtifactIdPairs.Select(x => x.Guid));
+
+                string[] notExistingGuidErrors = validationInfos.Where(x => !existingGuids.Contains(x.Guid))
+                    .Select(x => $"Guid {x.Guid.ToString()} for {x.PropertyPath} does not exits")
+                    .ToArray();
+
+                if (notExistingGuidErrors.Any())
+                {
+                    throw new InvalidSyncConfigurationException(string.Join(Environment.NewLine,
+                        notExistingGuidErrors));
+                }
             }
         }
 
-        private Task ValidateJobHistoryAsync(IArtifactGuidManager artifactGuidManager)
-        {
-            return Task.WhenAll(
-                ValidatePropertyAsync(RdoOptions.JobHistory,artifactGuidManager, x => x.CompletedItemsCountGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistory,artifactGuidManager, x => x.FailedItemsCountGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistory,artifactGuidManager, x => x.TotalItemsCountGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistory,artifactGuidManager, x => x.JobHistoryTypeGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistory,artifactGuidManager, x => x.DestinationWorkspaceInformationGuid)
-            );
-        }
-        
-        private Task ValidateJobHistoryErrorAsync(IArtifactGuidManager artifactGuidManager)
-        {
-            return Task.WhenAll(
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.TypeGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.NameGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.SourceUniqueIdGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ErrorMessageGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.TimeStampGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ErrorTypeGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.StackTraceGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ErrorStatusGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.JobHistoryRelationGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ItemLevelErrorChoiceGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.JobLevelErrorChoiceGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.NewStatusGuid)
-            );
-        }
-        
-        private async Task ValidatePropertyAsync<TRdo>(TRdo rdo, IArtifactGuidManager guidManager, Expression<Func<TRdo, Guid>> expression)
-        {
-            MemberExpression memberExpression = expression.Body as MemberExpression ?? throw new InvalidExpressionException("Expression needs to be a member expression");
-
-            Guid guid = expression.Compile().Invoke(rdo);
-            if (!await guidManager.GuidExistsAsync(SyncContext.SourceWorkspaceId, guid))
-            {
-                throw new InvalidSyncConfigurationException(
-                    $"Guid {guid.ToString()} for {typeof(TRdo).Name}.{memberExpression.Member.Name} does not exits");
-            }
-        }
-        
         protected abstract Task ValidateAsync();
     }
 }

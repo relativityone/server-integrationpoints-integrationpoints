@@ -13,8 +13,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
-	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal class ImageSyncConfigurationSearchToFolderCreationTests : SyncConfigurationCreationTestsBase
 	{
 		private int _savedSearchId;
@@ -29,7 +27,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			_destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspaceId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("2889569E-95A8-4BDC-9177-5220B2C2740F")]
 		public async Task Create_DefaultImageSyncConfigurationSavedSearchToFolder()
 		{
 			// Arrange
@@ -51,7 +49,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("89DF5EE0-3C3A-429B-B449-900F71446EFE")]
 		public async Task Create_ImageSyncConfigurationWithCopyImage()
 		{
 			// Arrange
@@ -75,7 +73,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("9A0DBAF9-94F7-4D10-AFA3-939BDECEB8A3")]
 		public async Task Create_ImageSyncConfigurationWithRetry()
 		{
 			// Arrange
