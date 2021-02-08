@@ -63,6 +63,7 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryErrorStackTrace = RdoOptions.JobHistoryError.StackTraceGuid;
             SyncConfiguration.JobHistoryErrorTimeStamp = RdoOptions.JobHistoryError.TimeStampGuid;
             SyncConfiguration.JobHistoryErrorType = RdoOptions.JobHistoryError.TypeGuid;
+            SyncConfiguration.JobHistoryErrorJobHistoryRelation = RdoOptions.JobHistoryError.JobHistoryRelationGuid;
             SyncConfiguration.JobHistoryErrorNewChoice = RdoOptions.JobHistoryError.NewStatusGuid;
         }
 
@@ -154,6 +155,7 @@ namespace Relativity.Sync.SyncConfiguration
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ErrorTypeGuid),
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.StackTraceGuid),
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ErrorStatusGuid),
+                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.JobHistoryRelationGuid),
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ItemLevelErrorChoiceGuid),
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.JobLevelErrorChoiceGuid),
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.NewStatusGuid)

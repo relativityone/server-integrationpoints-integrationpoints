@@ -44,6 +44,7 @@ namespace Relativity.Sync.SyncConfiguration
             ValidateProperty(options, x => x.ErrorTypeGuid);
             ValidateProperty(options, x => x.StackTraceGuid);
             ValidateProperty(options, x => x.ErrorStatusGuid);
+            ValidateProperty(options, x => x.JobHistoryRelationGuid);
             ValidateProperty(options, x => x.ItemLevelErrorChoiceGuid);
             ValidateProperty(options, x => x.JobLevelErrorChoiceGuid);
             ValidateProperty(options, x => x.NewStatusGuid);

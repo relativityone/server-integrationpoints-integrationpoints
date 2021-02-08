@@ -214,7 +214,9 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             
             builder.SyncConfiguration.JobHistoryErrorNewChoice.Should()
                 .Be(rdoOptions.JobHistoryError.NewStatusGuid);
-            
+
+            builder.SyncConfiguration.JobHistoryErrorJobHistoryRelation.Should()
+                .Be(rdoOptions.JobHistoryError.JobHistoryRelationGuid);
         }
 
         static IEnumerable<TestCaseData> RdoOptionsMembers()

@@ -63,13 +63,18 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// </summary>
         public Guid NewStatusGuid { get; private set;}
 
+        /// <summary>
+        /// JobHistory relation (whole number, object artifactId)
+        /// </summary>
+        public Guid JobHistoryRelationGuid { get; private set; }
+
 
         /// <summary>
         /// Constructor. All parameters are mandatory
         /// </summary>
         public JobHistoryErrorOptions(Guid typeGuid, Guid nameGuid, Guid sourceUniqueIdGuid, Guid errorMessageGuid,
-            Guid timeStampGuid, Guid errorTypeGuid, Guid stackTraceGuid, Guid errorStatusGuid,
-            Guid itemLevelErrorChoiceGuid, Guid jobLevelErrorChoiceGuid, Guid newStatusGuid)
+            Guid timeStampGuid, Guid errorTypeGuid, Guid stackTraceGuid, Guid jobHistoryRelationGuid, 
+            Guid errorStatusGuid, Guid itemLevelErrorChoiceGuid, Guid jobLevelErrorChoiceGuid, Guid newStatusGuid)
         {
             TypeGuid = typeGuid;
             NameGuid = nameGuid;
@@ -79,6 +84,7 @@ namespace Relativity.Sync.SyncConfiguration.Options
             ErrorTypeGuid = errorTypeGuid;
             StackTraceGuid = stackTraceGuid;
             ErrorStatusGuid = errorStatusGuid;
+            JobHistoryRelationGuid = jobHistoryRelationGuid;
             ItemLevelErrorChoiceGuid = itemLevelErrorChoiceGuid;
             JobLevelErrorChoiceGuid = jobLevelErrorChoiceGuid;
             NewStatusGuid = newStatusGuid;

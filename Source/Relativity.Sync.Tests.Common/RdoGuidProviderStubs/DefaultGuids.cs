@@ -47,6 +47,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 JobHistoryError.TimeStampGuid,
                 JobHistoryError.ErrorTypeGuid,
                 JobHistoryError.StackTraceGuid,
+                JobHistoryError.JobHistoryRelationGuid,
                 JobHistoryError.ErrorStatusGuid,
                 JobHistoryError.ItemLevelErrorGuid,
                 JobHistoryError.JobLevelErrorGuid,
