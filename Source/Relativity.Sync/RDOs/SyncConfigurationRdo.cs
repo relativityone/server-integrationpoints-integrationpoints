@@ -530,51 +530,51 @@ namespace Relativity.Sync.RDOs
                 },
                 // Job History RDO fields
 
-                {JobHistoryTypeGuid, GetGuidFieldRequest(JobHistoryTypeGuid, objectTypeId)},
+                {JobHistoryTypeGuid, GetCreateGuidFieldRequest(JobHistoryTypeGuid, objectTypeId)},
                 {
                     JobHistoryCompletedItemsFieldGuid,
-                    GetGuidFieldRequest(JobHistoryCompletedItemsFieldGuid, objectTypeId)
+                    GetCreateGuidFieldRequest(JobHistoryCompletedItemsFieldGuid, objectTypeId)
                 },
-                {JobHistoryFailedItemsFieldGuid, GetGuidFieldRequest(JobHistoryFailedItemsFieldGuid, objectTypeId)},
-                {JobHistoryTotalItemsFieldGuid, GetGuidFieldRequest(JobHistoryTotalItemsFieldGuid, objectTypeId)},
+                {JobHistoryFailedItemsFieldGuid, GetCreateGuidFieldRequest(JobHistoryFailedItemsFieldGuid, objectTypeId)},
+                {JobHistoryTotalItemsFieldGuid, GetCreateGuidFieldRequest(JobHistoryTotalItemsFieldGuid, objectTypeId)},
                 {
                     JobHistoryDestinationWorkspaceInformationGuid,
-                    GetGuidFieldRequest(JobHistoryDestinationWorkspaceInformationGuid, objectTypeId)
+                    GetCreateGuidFieldRequest(JobHistoryDestinationWorkspaceInformationGuid, objectTypeId)
                 },
 
                 // JobHistoryErrors
 
-                {JobHistoryErrorTypeGuid, GetGuidFieldRequest(JobHistoryErrorTypeGuid, objectTypeId)},
-                {JobHistoryErrorErrorMessagesGuid, GetGuidFieldRequest(JobHistoryErrorErrorMessagesGuid, objectTypeId)},
-                {JobHistoryErrorErrorStatusGuid, GetGuidFieldRequest(JobHistoryErrorErrorStatusGuid, objectTypeId)},
-                {JobHistoryErrorErrorTypeGuid, GetGuidFieldRequest(JobHistoryErrorErrorTypeGuid, objectTypeId)},
-                {JobHistoryErrorNameGuid, GetGuidFieldRequest(JobHistoryErrorNameGuid, objectTypeId)},
+                {JobHistoryErrorTypeGuid, GetCreateGuidFieldRequest(JobHistoryErrorTypeGuid, objectTypeId)},
+                {JobHistoryErrorErrorMessagesGuid, GetCreateGuidFieldRequest(JobHistoryErrorErrorMessagesGuid, objectTypeId)},
+                {JobHistoryErrorErrorStatusGuid, GetCreateGuidFieldRequest(JobHistoryErrorErrorStatusGuid, objectTypeId)},
+                {JobHistoryErrorErrorTypeGuid, GetCreateGuidFieldRequest(JobHistoryErrorErrorTypeGuid, objectTypeId)},
+                {JobHistoryErrorNameGuid, GetCreateGuidFieldRequest(JobHistoryErrorNameGuid, objectTypeId)},
                 {
                     JobHistoryErrorSourceUniqueIdGuid,
-                    GetGuidFieldRequest(JobHistoryErrorSourceUniqueIdGuid, objectTypeId)
+                    GetCreateGuidFieldRequest(JobHistoryErrorSourceUniqueIdGuid, objectTypeId)
                 },
-                {JobHistoryErrorStackTraceGuid, GetGuidFieldRequest(JobHistoryErrorStackTraceGuid, objectTypeId)},
-                {JobHistoryErrorTimeStampGuid, GetGuidFieldRequest(JobHistoryErrorTimeStampGuid, objectTypeId)},
+                {JobHistoryErrorStackTraceGuid, GetCreateGuidFieldRequest(JobHistoryErrorStackTraceGuid, objectTypeId)},
+                {JobHistoryErrorTimeStampGuid, GetCreateGuidFieldRequest(JobHistoryErrorTimeStampGuid, objectTypeId)},
                 {
                     JobHistoryErrorItemLevelErrorGuid,
-                    GetGuidFieldRequest(JobHistoryErrorItemLevelErrorGuid, objectTypeId)
+                    GetCreateGuidFieldRequest(JobHistoryErrorItemLevelErrorGuid, objectTypeId)
                 },
-                {JobHistoryErrorJobLevelErrorGuid, GetGuidFieldRequest(JobHistoryErrorJobLevelErrorGuid, objectTypeId)},
+                {JobHistoryErrorJobLevelErrorGuid, GetCreateGuidFieldRequest(JobHistoryErrorJobLevelErrorGuid, objectTypeId)},
                 {
                     JobHistoryErrorJobHistoryRelationGuid,
-                    GetGuidFieldRequest(JobHistoryErrorJobHistoryRelationGuid, objectTypeId)
+                    GetCreateGuidFieldRequest(JobHistoryErrorJobHistoryRelationGuid, objectTypeId)
                 },
-                {JobHistoryErrorNewChoiceGuid, GetGuidFieldRequest(JobHistoryErrorNewChoiceGuid, objectTypeId)},
-                {JobHistoryErrorExpiredChoiceGuid, GetGuidFieldRequest(JobHistoryErrorExpiredChoiceGuid, objectTypeId)},
+                {JobHistoryErrorNewChoiceGuid, GetCreateGuidFieldRequest(JobHistoryErrorNewChoiceGuid, objectTypeId)},
+                {JobHistoryErrorExpiredChoiceGuid, GetCreateGuidFieldRequest(JobHistoryErrorExpiredChoiceGuid, objectTypeId)},
                 {
                     JobHistoryErrorInProgressChoiceGuid,
-                    GetGuidFieldRequest(JobHistoryErrorInProgressChoiceGuid, objectTypeId)
+                    GetCreateGuidFieldRequest(JobHistoryErrorInProgressChoiceGuid, objectTypeId)
                 },
-                {JobHistoryErrorRetriedChoiceGuid, GetGuidFieldRequest(JobHistoryErrorRetriedChoiceGuid, objectTypeId)},
+                {JobHistoryErrorRetriedChoiceGuid, GetCreateGuidFieldRequest(JobHistoryErrorRetriedChoiceGuid, objectTypeId)},
             };
 
 
-        private static FixedLengthFieldRequest GetGuidFieldRequest(Guid fieldGuid, int objectTypeId)
+        private static FixedLengthFieldRequest GetCreateGuidFieldRequest(Guid fieldGuid, int objectTypeId)
         {
             return new FixedLengthFieldRequest()
             {
@@ -1042,10 +1042,11 @@ namespace Relativity.Sync.RDOs
             }
         }
 
-        internal static async Task<(RdoStatus rdoStatus, Guid[] existingFieldsGuids, int?
-                syncConfigurationTypeArtifactId)
-            >
-            ExistsAsync(int workspaceId, ISyncServiceManager servicesMgr)
+        internal static async Task<(
+            RdoStatus, 
+            HashSet<Guid> existingFieldsGuids, 
+            int? syncConfigurationTypeArtifactId
+            )> ExistsAsync(int workspaceId, ISyncServiceManager servicesMgr)
         {
             using (IObjectManager objectManager =
                 servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
@@ -1059,7 +1060,7 @@ namespace Relativity.Sync.RDOs
                 if (!configurationQueryResults.Objects.Any() &&
                     !(configurationGuid.HasValue && configurationGuid.Value == SyncConfigurationGuid))
                 {
-                    return (RdoStatus.DoesNotExist, Array.Empty<Guid>(), null);
+                    return (RdoStatus.DoesNotExist, new HashSet<Guid>(), null);
                 }
 
                 int syncConfigurationTypeArtifactId = (int)
@@ -1069,7 +1070,7 @@ namespace Relativity.Sync.RDOs
                     await QuerySyncConfigurationFieldsAsync(workspaceId, objectManager, syncConfigurationTypeArtifactId)
                         .ConfigureAwait(false);
 
-                Guid[] existingFieldsGuids = response.Objects.SelectMany(x => x.Guids).ToArray();
+                HashSet<Guid> existingFieldsGuids = new HashSet<Guid>(response.Objects.SelectMany(x => x.Guids));
 
                 return (GuidNames.Keys.All(k => existingFieldsGuids.Contains(k)))
                     ? (RdoStatus.Exists, existingFieldsGuids, syncConfigurationTypeArtifactId)
@@ -1082,14 +1083,12 @@ namespace Relativity.Sync.RDOs
         {
             return objectManager.QueryAsync(workspaceId, new QueryRequest()
             {
-                Fields = new FieldRef[0],
                 Condition = $"'FieldArtifactTypeID' == {syncConfigurationTypeArtifactId}",
                 ObjectType = new ObjectTypeRef()
                 {
                     ArtifactTypeID = (int) ArtifactType.Field
-                },
-                IncludeNameInQueryResult = true,
-            }, 0, 100);
+                }
+            }, 0, int.MaxValue);
         }
 
         private static Task<QueryResult> QuerySyncConfigurationAsync(int workspaceId, IObjectManager objectManager)
@@ -1099,8 +1098,7 @@ namespace Relativity.Sync.RDOs
                 {
                     Condition = "'Name' == 'Sync Configuration'",
                     Fields = new[] {new FieldRef {Name = "Artifact Type ID"}},
-                    ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.ObjectType},
-                    IncludeNameInQueryResult = true
+                    ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.ObjectType}
                 }, 0, 1);
         }
 
@@ -1122,14 +1120,14 @@ namespace Relativity.Sync.RDOs
                     .ConfigureAwait(false);
 
                 await CreateFieldsAsync(workspaceId, servicesMgr, objectTypeArtifactId,
-                    Array.Empty<Guid>());
-
+                    new HashSet<Guid>());
+                
                 return objectTypeArtifactId;
             }
         }
 
         internal static async Task CreateFieldsAsync(int workspaceId, ISyncServiceManager servicesMgr,
-            int objectTypeArtifactId, Guid[] existingFields)
+            int objectTypeArtifactId, HashSet<Guid> existingFields)
         {
             using (IArtifactGuidManager guidManager =
                 servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))

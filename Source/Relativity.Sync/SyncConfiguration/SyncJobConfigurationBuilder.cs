@@ -11,7 +11,7 @@ namespace Relativity.Sync.SyncConfiguration
         private readonly RdoOptions _rdoOptions;
         private readonly ISerializer _serializer;
 
-        public SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer)
+        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;

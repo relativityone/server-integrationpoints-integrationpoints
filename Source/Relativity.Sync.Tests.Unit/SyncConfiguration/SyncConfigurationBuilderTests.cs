@@ -86,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 
         [Test]
         [TestCaseSource(nameof(RdoOptionsMembers))]
-        public void ConfigureRdo_ShouldCheckAllMemberForEmptyGuids(PropertyInfo rdoPath, PropertyInfo propertyPath)
+        public void ConfigureRdo_ShouldCheckAllMembersForEmptyGuids(PropertyInfo rdoPath, PropertyInfo propertyPath)
         {
             // Arrange
             var rdoOptions = DefaultGuids.DefaultRdoOptions;

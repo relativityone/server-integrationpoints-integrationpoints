@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             await SyncConfigurationRdo.EnsureTypeExists(testWorkspace.ArtifactID, parentObjectTypeId, SyncServicesMgr)
                 .ConfigureAwait(false);
 
-            (SyncConfigurationRdo.RdoStatus rdoStatus, Guid[] existingFieldsGuids, int? existingArtifactId) =
+            (SyncConfigurationRdo.RdoStatus rdoStatus, HashSet<Guid> existingFieldsGuids, int? existingArtifactId) =
                 await SyncConfigurationRdo.ExistsAsync(testWorkspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
 
             // Assert
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 
             // Act
-            (SyncConfigurationRdo.RdoStatus rdoStatus, Guid[] existingFieldsGuids, int? existingArtifactId) =
+            (SyncConfigurationRdo.RdoStatus rdoStatus, HashSet<Guid> existingFieldsGuids, int? existingArtifactId) =
                 await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
 
             // Assert
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
             // Act
-            (SyncConfigurationRdo.RdoStatus rdoStatus, Guid[] existingFieldsGuids, int? existingArtifactId) =
+            (SyncConfigurationRdo.RdoStatus rdoStatus, HashSet<Guid> existingFieldsGuids, int? existingArtifactId) =
                 await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
 
 
