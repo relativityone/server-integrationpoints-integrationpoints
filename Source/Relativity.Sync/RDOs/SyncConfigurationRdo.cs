@@ -56,25 +56,25 @@ namespace Relativity.Sync.RDOs
         public Guid JobHistoryGuidFailedField { get; set; }
         public Guid JobHistoryGuidTotalField { get; set; }
         public Guid JobHistoryDestinationWorkspaceInformationField { get; set; }
-        
+
         // JobHistoryError configuration
 
-        public Guid JobHistoryErrorType  { get; set; }
-        public Guid JobHistoryErrorErrorMessages  { get; set; }
-        public Guid JobHistoryErrorErrorStatus   { get; set; }
-        public Guid JobHistoryErrorErrorType  { get; set; }
-        public Guid JobHistoryErrorName  { get; set; }
-        public Guid JobHistoryErrorSourceUniqueId  { get; set; }
-        public Guid JobHistoryErrorStackTrace   { get; set; }
+        public Guid JobHistoryErrorType { get; set; }
+        public Guid JobHistoryErrorErrorMessages { get; set; }
+        public Guid JobHistoryErrorErrorStatus { get; set; }
+        public Guid JobHistoryErrorErrorType { get; set; }
+        public Guid JobHistoryErrorName { get; set; }
+        public Guid JobHistoryErrorSourceUniqueId { get; set; }
+        public Guid JobHistoryErrorStackTrace { get; set; }
         public Guid JobHistoryErrorTimeStamp { get; set; }
         public Guid JobHistoryErrorItemLevelError { get; set; }
-        public Guid JobHistoryErrorJobLevelError  { get; set; }
-        public Guid JobHistoryErrorJobHistoryRelation  { get; set; }
-        
-        public Guid JobHistoryErrorNewChoice  { get; set; }
-        public Guid JobHistoryErrorExpiredChoice  { get; set; }
-        public Guid JobHistoryErrorInProgressChoice  { get; set; }
-        public Guid JobHistoryErrorRetriedChoice  { get; set; }
+        public Guid JobHistoryErrorJobLevelError { get; set; }
+        public Guid JobHistoryErrorJobHistoryRelation { get; set; }
+
+        public Guid JobHistoryErrorNewChoice { get; set; }
+        public Guid JobHistoryErrorExpiredChoice { get; set; }
+        public Guid JobHistoryErrorInProgressChoice { get; set; }
+        public Guid JobHistoryErrorRetriedChoice { get; set; }
 
         #region GUIDs
 
@@ -120,7 +120,7 @@ namespace Relativity.Sync.RDOs
 
         public static readonly Guid DestinationWorkspaceTagArtifactIdGuid =
             new Guid("E2100C10-B53B-43FA-BB1B-51E43DCE8208");
-        
+
         // JobHistory GUIDs
         public static readonly Guid JobHistoryTypeGuid = Guid.Parse("52234DAA-2E06-4449-8456-8B0D2C219DF6");
 
@@ -129,29 +129,46 @@ namespace Relativity.Sync.RDOs
 
         public static readonly Guid JobHistoryFailedItemsFieldGuid = Guid.Parse("3E6CBCC4-ABD2-4C9F-99F6-AE2CFBF97E5C");
         public static readonly Guid JobHistoryTotalItemsFieldGuid = Guid.Parse("E145B019-4451-4339-8CED-96901F1264F9");
+
         public static readonly Guid JobHistoryDestinationWorkspaceInformationGuid =
             Guid.Parse("3407317A-FFB4-49A8-A9F0-86A473AA2054");
 
-       
-        
+
         // JobHistoryErrorsGuids
         public static readonly Guid JobHistoryErrorTypeGuid = Guid.Parse("1BD0DEDA-C86A-4E0C-BE16-857D5541783D");
-        public static readonly Guid JobHistoryErrorErrorMessagesGuid = Guid.Parse("27FECC80-AED2-41EB-8462-97BB6ACBF8B9");
+
+        public static readonly Guid JobHistoryErrorErrorMessagesGuid =
+            Guid.Parse("27FECC80-AED2-41EB-8462-97BB6ACBF8B9");
+
         public static readonly Guid JobHistoryErrorErrorStatusGuid = Guid.Parse("F99ECDA1-03B9-4C62-AEC4-22EB7374D740");
         public static readonly Guid JobHistoryErrorErrorTypeGuid = Guid.Parse("581F86D2-CA49-4EAE-A3DC-890114E3C4C1");
         public static readonly Guid JobHistoryErrorNameGuid = Guid.Parse("54031BBA-FC8C-40A2-9653-9B62202EF217");
-        public static readonly Guid JobHistoryErrorSourceUniqueIdGuid = Guid.Parse("00F8B391-92F3-4F1D-AA60-77E73BBBC2E7");
+
+        public static readonly Guid JobHistoryErrorSourceUniqueIdGuid =
+            Guid.Parse("00F8B391-92F3-4F1D-AA60-77E73BBBC2E7");
+
         public static readonly Guid JobHistoryErrorStackTraceGuid = Guid.Parse("8E0182F1-4A77-42BE-8F26-E13A358A4315");
         public static readonly Guid JobHistoryErrorTimeStampGuid = Guid.Parse("7605FD65-01C7-45DF-8A14-2640816BBC28");
-        public static readonly Guid JobHistoryErrorItemLevelErrorGuid = Guid.Parse("6C0BCC76-A3CC-418D-80E2-79EE6176FDF3");
-        public static readonly Guid JobHistoryErrorJobLevelErrorGuid = Guid.Parse("890066E8-25D9-4DF2-AADF-92D54B7F35DE");
-        public static readonly Guid JobHistoryErrorJobHistoryRelationGuid = Guid.Parse("497756D1-D57F-4781-B965-5974D80C3930");
-        
-        public static readonly Guid JobHistoryErrorNewChoiceGuid = Guid.Parse("2991A356-C621-4839-BF58-13292802EB7F");
-        public static readonly Guid JobHistoryErrorExpiredChoiceGuid = Guid.Parse("2BFE5764-51C4-42F4-AB63-CC6104BC20C1");
-        public static readonly Guid JobHistoryErrorInProgressChoiceGuid = Guid.Parse("A3CE4293-AB88-4A98-8415-0DE3F3127A76");
-        public static readonly Guid JobHistoryErrorRetriedChoiceGuid = Guid.Parse("0859833A-B8F4-4352-92CA-38AA8FD46388");
 
+        public static readonly Guid JobHistoryErrorItemLevelErrorGuid =
+            Guid.Parse("6C0BCC76-A3CC-418D-80E2-79EE6176FDF3");
+
+        public static readonly Guid JobHistoryErrorJobLevelErrorGuid =
+            Guid.Parse("890066E8-25D9-4DF2-AADF-92D54B7F35DE");
+
+        public static readonly Guid JobHistoryErrorJobHistoryRelationGuid =
+            Guid.Parse("497756D1-D57F-4781-B965-5974D80C3930");
+
+        public static readonly Guid JobHistoryErrorNewChoiceGuid = Guid.Parse("2991A356-C621-4839-BF58-13292802EB7F");
+
+        public static readonly Guid JobHistoryErrorExpiredChoiceGuid =
+            Guid.Parse("2BFE5764-51C4-42F4-AB63-CC6104BC20C1");
+
+        public static readonly Guid JobHistoryErrorInProgressChoiceGuid =
+            Guid.Parse("A3CE4293-AB88-4A98-8415-0DE3F3127A76");
+
+        public static readonly Guid JobHistoryErrorRetriedChoiceGuid =
+            Guid.Parse("0859833A-B8F4-4352-92CA-38AA8FD46388");
 
 
         public static readonly IDictionary<Guid, string> GuidNames = new Dictionary<Guid, string>
@@ -192,7 +209,7 @@ namespace Relativity.Sync.RDOs
             {JobHistoryFailedItemsFieldGuid, "JobHistory Failed Items Guid"},
             {JobHistoryTotalItemsFieldGuid, "JobHistory Total Items Guid"},
             {JobHistoryDestinationWorkspaceInformationGuid, "Destination Workspace Information Guid"},
-            
+
             // Job history error RDO fields
             {JobHistoryErrorTypeGuid, "JobHistoryError Type Guid"},
             {JobHistoryErrorErrorMessagesGuid, "JobHistoryError Error Messages Guid"},
@@ -512,36 +529,54 @@ namespace Relativity.Sync.RDOs
                     }
                 },
                 // Job History RDO fields
-                
+
                 {JobHistoryTypeGuid, GetGuidFieldRequest(JobHistoryTypeGuid, objectTypeId)},
-                {JobHistoryCompletedItemsFieldGuid, GetGuidFieldRequest(JobHistoryCompletedItemsFieldGuid, objectTypeId)},
+                {
+                    JobHistoryCompletedItemsFieldGuid,
+                    GetGuidFieldRequest(JobHistoryCompletedItemsFieldGuid, objectTypeId)
+                },
                 {JobHistoryFailedItemsFieldGuid, GetGuidFieldRequest(JobHistoryFailedItemsFieldGuid, objectTypeId)},
                 {JobHistoryTotalItemsFieldGuid, GetGuidFieldRequest(JobHistoryTotalItemsFieldGuid, objectTypeId)},
-                {JobHistoryDestinationWorkspaceInformationGuid, GetGuidFieldRequest(JobHistoryDestinationWorkspaceInformationGuid, objectTypeId)},
-                
+                {
+                    JobHistoryDestinationWorkspaceInformationGuid,
+                    GetGuidFieldRequest(JobHistoryDestinationWorkspaceInformationGuid, objectTypeId)
+                },
+
                 // JobHistoryErrors
-                
+
                 {JobHistoryErrorTypeGuid, GetGuidFieldRequest(JobHistoryErrorTypeGuid, objectTypeId)},
                 {JobHistoryErrorErrorMessagesGuid, GetGuidFieldRequest(JobHistoryErrorErrorMessagesGuid, objectTypeId)},
                 {JobHistoryErrorErrorStatusGuid, GetGuidFieldRequest(JobHistoryErrorErrorStatusGuid, objectTypeId)},
                 {JobHistoryErrorErrorTypeGuid, GetGuidFieldRequest(JobHistoryErrorErrorTypeGuid, objectTypeId)},
                 {JobHistoryErrorNameGuid, GetGuidFieldRequest(JobHistoryErrorNameGuid, objectTypeId)},
-                {JobHistoryErrorSourceUniqueIdGuid, GetGuidFieldRequest(JobHistoryErrorSourceUniqueIdGuid, objectTypeId)},
+                {
+                    JobHistoryErrorSourceUniqueIdGuid,
+                    GetGuidFieldRequest(JobHistoryErrorSourceUniqueIdGuid, objectTypeId)
+                },
                 {JobHistoryErrorStackTraceGuid, GetGuidFieldRequest(JobHistoryErrorStackTraceGuid, objectTypeId)},
                 {JobHistoryErrorTimeStampGuid, GetGuidFieldRequest(JobHistoryErrorTimeStampGuid, objectTypeId)},
-                {JobHistoryErrorItemLevelErrorGuid, GetGuidFieldRequest(JobHistoryErrorItemLevelErrorGuid, objectTypeId)},
+                {
+                    JobHistoryErrorItemLevelErrorGuid,
+                    GetGuidFieldRequest(JobHistoryErrorItemLevelErrorGuid, objectTypeId)
+                },
                 {JobHistoryErrorJobLevelErrorGuid, GetGuidFieldRequest(JobHistoryErrorJobLevelErrorGuid, objectTypeId)},
-                {JobHistoryErrorJobHistoryRelationGuid, GetGuidFieldRequest(JobHistoryErrorJobHistoryRelationGuid, objectTypeId)},
+                {
+                    JobHistoryErrorJobHistoryRelationGuid,
+                    GetGuidFieldRequest(JobHistoryErrorJobHistoryRelationGuid, objectTypeId)
+                },
                 {JobHistoryErrorNewChoiceGuid, GetGuidFieldRequest(JobHistoryErrorNewChoiceGuid, objectTypeId)},
                 {JobHistoryErrorExpiredChoiceGuid, GetGuidFieldRequest(JobHistoryErrorExpiredChoiceGuid, objectTypeId)},
-                {JobHistoryErrorInProgressChoiceGuid, GetGuidFieldRequest(JobHistoryErrorInProgressChoiceGuid, objectTypeId)},
+                {
+                    JobHistoryErrorInProgressChoiceGuid,
+                    GetGuidFieldRequest(JobHistoryErrorInProgressChoiceGuid, objectTypeId)
+                },
                 {JobHistoryErrorRetriedChoiceGuid, GetGuidFieldRequest(JobHistoryErrorRetriedChoiceGuid, objectTypeId)},
             };
 
 
         private static FixedLengthFieldRequest GetGuidFieldRequest(Guid fieldGuid, int objectTypeId)
         {
-            return  new FixedLengthFieldRequest()
+            return new FixedLengthFieldRequest()
             {
                 FilterType = FilterType.TextBox,
                 Length = 36,
@@ -549,6 +584,7 @@ namespace Relativity.Sync.RDOs
                 ObjectType = new ObjectTypeIdentifier {ArtifactID = objectTypeId}
             };
         }
+
         #endregion
 
         #region Sync Configuration RDO Methods
@@ -775,7 +811,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = SourceWorkspaceTagName
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -794,7 +830,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryType
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -803,7 +839,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryGuidTotalField
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -812,7 +848,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryGuidFailedField
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -821,7 +857,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryCompletedItemsField
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -832,7 +868,7 @@ namespace Relativity.Sync.RDOs
                 });
 
                 // JobHistoryError
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -841,7 +877,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorType
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -850,7 +886,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorErrorMessages
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -859,7 +895,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorErrorStatus
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -868,7 +904,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorErrorType
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -877,7 +913,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorName
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -886,7 +922,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorSourceUniqueId
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -895,7 +931,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorStackTrace
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -904,7 +940,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorTimeStamp
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -913,7 +949,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorItemLevelError
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -931,7 +967,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorJobHistoryRelation
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -940,7 +976,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorNewChoice
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -949,7 +985,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorExpiredChoice
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -958,7 +994,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorInProgressChoice
                 });
-                
+
                 fields.Add(new FieldRefValuePair
                 {
                     Field = new FieldRef
@@ -967,7 +1003,7 @@ namespace Relativity.Sync.RDOs
                     },
                     Value = JobHistoryErrorRetriedChoice
                 });
-                
+
                 var request = new CreateRequest
                 {
                     ObjectType = new ObjectTypeRef
@@ -1118,45 +1154,38 @@ namespace Relativity.Sync.RDOs
         private static async Task<int> CreateFieldInTypeAsync(int workspaceId,
             BaseFieldRequest fieldRequest, IFieldManager fieldManager)
         {
-            try
+            if (fieldRequest is YesNoFieldRequest yesNoFieldRequest)
             {
-                if (fieldRequest is YesNoFieldRequest yesNoFieldRequest)
-                {
-                    return await fieldManager.CreateYesNoFieldAsync(workspaceId, yesNoFieldRequest)
-                        .ConfigureAwait(false);
-                }
-                else if (fieldRequest is WholeNumberFieldRequest wholeNumberFieldRequest)
-                {
-                    return await fieldManager.CreateWholeNumberFieldAsync(workspaceId, wholeNumberFieldRequest)
-                        .ConfigureAwait(false);
-                }
-                else if (fieldRequest is FixedLengthFieldRequest fixedLengthFieldRequest)
-                {
-                    return await fieldManager.CreateFixedLengthFieldAsync(workspaceId, fixedLengthFieldRequest)
-                        .ConfigureAwait(false);
-                }
-                else if (fieldRequest is LongTextFieldRequest longTextFieldRequest)
-                {
-                    return await fieldManager.CreateLongTextFieldAsync(workspaceId, longTextFieldRequest)
-                        .ConfigureAwait(false);
-                }
-                else if (fieldRequest is SingleObjectFieldRequest singleObjectFieldRequest)
-                {
-                    return await fieldManager.CreateSingleObjectFieldAsync(workspaceId, singleObjectFieldRequest)
-                        .ConfigureAwait(false);
-                }
-                else
-                {
-                    string typeName = fieldRequest.GetType().ToString();
-                    throw new NotSupportedException($"Sync doesn't support creation of field type: {typeName}");
-                }
+                return await fieldManager.CreateYesNoFieldAsync(workspaceId, yesNoFieldRequest)
+                    .ConfigureAwait(false);
             }
-            catch (InvalidInputException e)
+            else if (fieldRequest is WholeNumberFieldRequest wholeNumberFieldRequest)
             {
-                throw;
+                return await fieldManager.CreateWholeNumberFieldAsync(workspaceId, wholeNumberFieldRequest)
+                    .ConfigureAwait(false);
+            }
+            else if (fieldRequest is FixedLengthFieldRequest fixedLengthFieldRequest)
+            {
+                return await fieldManager.CreateFixedLengthFieldAsync(workspaceId, fixedLengthFieldRequest)
+                    .ConfigureAwait(false);
+            }
+            else if (fieldRequest is LongTextFieldRequest longTextFieldRequest)
+            {
+                return await fieldManager.CreateLongTextFieldAsync(workspaceId, longTextFieldRequest)
+                    .ConfigureAwait(false);
+            }
+            else if (fieldRequest is SingleObjectFieldRequest singleObjectFieldRequest)
+            {
+                return await fieldManager.CreateSingleObjectFieldAsync(workspaceId, singleObjectFieldRequest)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                string typeName = fieldRequest.GetType().ToString();
+                throw new NotSupportedException($"Sync doesn't support creation of field type: {typeName}");
             }
         }
 
-       #endregion
+        #endregion
     }
 }
