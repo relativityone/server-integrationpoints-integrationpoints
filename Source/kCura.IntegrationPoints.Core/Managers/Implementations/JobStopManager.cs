@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 					if (job != null)
 					{
-						ProcessJob(job);
+						TerminateIfRequested(job);
 					}
 				}
 				catch (Exception e)
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 		}
 
-		internal void ProcessJob(Job job)
+		internal void TerminateIfRequested(Job job)
 		{
 			if (_supportsDrainStop && _agent.ToBeRemoved)
 			{

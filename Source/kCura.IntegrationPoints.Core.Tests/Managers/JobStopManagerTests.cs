@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ProcessJob_ShouldNotStopJob_WhenDrainStopOccurrs()
+		public void TerminateIfRequested_ShouldNotStopJob_WhenDrainStopOccurrs()
 		{
 			// Arrange
 			Job job = PrepareJob();
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			sut.StopRequestedEvent += (sender, args) => stopRequested = true;
 
 			// Act
-			sut.ProcessJob(job);
+			sut.TerminateIfRequested(job);
 
 			// Assert
 			stopToken.IsCancellationRequested.Should().BeFalse();
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ProcessJob_ShouldSignalDrainStopAndUpdateJobState_WhenAgentIsToBeRemoved()
+		public void TerminateIfRequested_ShouldSignalDrainStopAndUpdateJobState_WhenAgentIsToBeRemoved()
 		{
 			// Arrange
 			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			JobStopManager sut = PrepareSut(true, new CancellationTokenSource(), drainStopToken);
 
 			// Act
-			sut.ProcessJob(job);
+			sut.TerminateIfRequested(job);
 
 			// Assert
 			drainStopToken.IsCancellationRequested.Should().BeTrue();
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ProcessJob_ShouldNotDoAnything_WhenJobDrainStopIsInProgress()
+		public void TerminateIfRequested_ShouldNotDoAnything_WhenJobDrainStopIsInProgress()
 		{
 			// Arrange
 			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
@@ -113,9 +113,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			JobStopManager sut = PrepareSut(true);
 
 			// Act
-			sut.ProcessJob(job);
-			sut.ProcessJob(job);
-			sut.ProcessJob(job);
+			sut.TerminateIfRequested(job);
+			sut.TerminateIfRequested(job);
+			sut.TerminateIfRequested(job);
 
 			// Assert
 			_jobServiceMock.Verify(x => x.UpdateStopState(It.IsAny<IList<long>>(), It.IsAny<StopState>()), Times.Never);
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ProcessJob_ShouldUpdateStopStateAndUnlockJob_WhenJobIsDrainStopped()
+		public void TerminateIfRequested_ShouldUpdateStopStateAndUnlockJob_WhenJobIsDrainStopped()
 		{
 			// Arrange
 			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			JobStopManager sut = PrepareSut(true);
 
 			// Act
-			sut.ProcessJob(job);
+			sut.TerminateIfRequested(job);
 
 			// Assert
 			_jobServiceMock.Verify(x => x.UpdateStopState(
