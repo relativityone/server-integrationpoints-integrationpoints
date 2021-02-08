@@ -23,11 +23,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 	[TestFixture, Category("Unit")]
 	public class JobStopManagerTests : TestBase
 	{
-		private Mock<IJobService> _jobService;
-		private Mock<IJobHistoryService> _jobHistoryService;
-		private Mock<IJobServiceDataProvider> _jobServiceDataProvider;
-		private Mock<IRemovableAgent> _agent;
-		private Mock<IHelper> _helper;
+		private Mock<IJobService> _jobServiceMock;
+		private Mock<IJobHistoryService> _jobHistoryServiceMock;
+		private Mock<IJobServiceDataProvider> _jobServiceDataProviderMock;
+		private Mock<IRemovableAgent> _agentFake;
+		private Mock<IHelper> _helperFake;
 		private Guid _jobHistoryInstanceGuid;
 		private int _jobId;
 		private JobHistory _jobHistory;
@@ -36,28 +36,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public override void SetUp()
 		{
 			_jobHistory = new JobHistory();
-			_jobService = new Mock<IJobService>();
-			_jobHistoryService = new Mock<IJobHistoryService>();
-			_jobServiceDataProvider = new Mock<IJobServiceDataProvider>();
-			_agent = new Mock<IRemovableAgent>();
+			_jobServiceMock = new Mock<IJobService>();
+			_jobHistoryServiceMock = new Mock<IJobHistoryService>();
+			_jobServiceDataProviderMock = new Mock<IJobServiceDataProvider>();
+			_agentFake = new Mock<IRemovableAgent>();
 			_jobHistoryInstanceGuid = Guid.NewGuid();
 			_jobId = 123;
-			_helper = new Mock<IHelper>();
-			_helper.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<JobStopManager>()).Returns(Mock.Of<IAPILog>());
+			_helperFake = new Mock<IHelper>();
+			_helperFake.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<JobStopManager>()).Returns(Mock.Of<IAPILog>());
 		}
 
 		private JobStopManager PrepareSut(bool supportsDrainStop, CancellationTokenSource stopToken = null, CancellationTokenSource drainStopToken = null)
 		{
-			return new JobStopManager(_jobService.Object, _jobHistoryService.Object, _jobServiceDataProvider.Object,
-				_helper.Object, _jobHistoryInstanceGuid, _jobId, _agent.Object, supportsDrainStop,
+			return new JobStopManager(_jobServiceMock.Object, _jobHistoryServiceMock.Object, _jobServiceDataProviderMock.Object,
+				_helperFake.Object, _jobHistoryInstanceGuid, _jobId, _agentFake.Object, supportsDrainStop,
 				stopToken ?? new CancellationTokenSource(), drainStopToken ?? new CancellationTokenSource());
 		}
 
 		private Job PrepareJob(StopState stopState = StopState.None)
 		{
 			Job job = JobExtensions.CreateJob().CopyJobWithStopState(stopState).CopyJobWithJobId(_jobId);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
-			_jobHistoryService.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
 			return job;
 		}
 
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// Arrange
 			Job job = PrepareJob();
 			CancellationTokenSource stopToken = new CancellationTokenSource();
-			_agent.SetupGet(x => x.ToBeRemoved).Returns(true);
+			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
 
 			JobStopManager sut = PrepareSut(true, stopToken);
 
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public void ProcessJob_ShouldSignalDrainStopAndUpdateJobState_WhenAgentIsToBeRemoved()
 		{
 			// Arrange
-			_agent.SetupGet(x => x.ToBeRemoved).Returns(true);
+			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
 			Job job = PrepareJob();
 			CancellationTokenSource drainStopToken = new CancellationTokenSource();
 			JobStopManager sut = PrepareSut(true, new CancellationTokenSource(), drainStopToken);
@@ -96,10 +96,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			// Assert
 			drainStopToken.IsCancellationRequested.Should().BeTrue();
-			_jobService.Verify(x => x.UpdateStopState(
+			_jobServiceMock.Verify(x => x.UpdateStopState(
 				It.Is<IList<long>>(jobs=> jobs.Single() == _jobId),
 				It.Is<StopState>(stopState => stopState == StopState.DrainStopping)), Times.Once);
-			_jobHistoryService.Verify(x => x.UpdateRdoWithoutDocuments(It.Is<JobHistory>(jobHistory =>
+			_jobHistoryServiceMock.Verify(x => x.UpdateRdoWithoutDocuments(It.Is<JobHistory>(jobHistory =>
 				jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspending))), Times.Once);
 		}
 
@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public void ProcessJob_ShouldNotDoAnything_WhenJobDrainStopIsInProgress()
 		{
 			// Arrange
-			_agent.SetupGet(x => x.ToBeRemoved).Returns(true);
+			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
 			Job job = PrepareJob(StopState.DrainStopping);
 			_jobHistory.JobStatus = JobStatusChoices.JobHistorySuspending;
 			JobStopManager sut = PrepareSut(true);
@@ -118,15 +118,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			sut.ProcessJob(job);
 
 			// Assert
-			_jobService.Verify(x => x.UpdateStopState(It.IsAny<IList<long>>(), It.IsAny<StopState>()), Times.Never);
-			_jobHistoryService.Verify(x => x.UpdateRdoWithoutDocuments(It.IsAny<JobHistory>()), Times.Never);
+			_jobServiceMock.Verify(x => x.UpdateStopState(It.IsAny<IList<long>>(), It.IsAny<StopState>()), Times.Never);
+			_jobHistoryServiceMock.Verify(x => x.UpdateRdoWithoutDocuments(It.IsAny<JobHistory>()), Times.Never);
 		}
 
 		[Test]
 		public void ProcessJob_ShouldUpdateStopStateAndUnlockJob_WhenJobIsDrainStopped()
 		{
 			// Arrange
-			_agent.SetupGet(x => x.ToBeRemoved).Returns(true);
+			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
 			Job job = PrepareJob(StopState.DrainStopping);
 			_jobHistory.JobStatus = JobStatusChoices.JobHistorySuspended;
 			JobStopManager sut = PrepareSut(true);
@@ -135,10 +135,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			sut.ProcessJob(job);
 
 			// Assert
-			_jobService.Verify(x => x.UpdateStopState(
+			_jobServiceMock.Verify(x => x.UpdateStopState(
 				It.Is<IList<long>>(jobs => jobs.Single() == _jobId),
 				It.Is<StopState>(stopState => stopState == StopState.DrainStopped)));
-			_jobServiceDataProvider.Verify(x => x.UnlockJob(_jobId), Times.Once);
+			_jobServiceDataProviderMock.Verify(x => x.UnlockJob(_jobId), Times.Once);
 		}
 
 		[Test]
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			JobStopManager sut = PrepareSut(false);
 			Job job = JobExtensions.CreateJob();
 			job = job.CopyJobWithStopState(stopState);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
 
 			// act
 			sut.Execute();
@@ -179,17 +179,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// arrange
 			JobStopManager sut = PrepareSut(false);
 			_jobHistory.JobStatus = status;
-			Job job = JobExtensions.CreateJob();
-			job = job.CopyJobWithStopState(StopState.Stopping);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
-			_jobHistoryService.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+			Job job = PrepareJob(StopState.Stopping);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
 
 			// act
 			sut.Execute();
 			bool isStopRequested = sut.IsStopRequested();
 
 			// assert
-			_jobHistoryService.Verify(x => x.UpdateRdoWithoutDocuments(It.Is<JobHistory>(history => history.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))));
+			_jobHistoryServiceMock.Verify(x => x.UpdateRdoWithoutDocuments(It.Is<JobHistory>(history => history.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopping))));
 			Assert.IsTrue(isStopRequested);
 		}
 
@@ -198,7 +197,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// arrange
 			JobStopManager sut = PrepareSut(false);
-			_jobService.Setup(x => x.GetJob(_jobId)).Throws(new Exception("something"));
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Throws(new Exception("something"));
 
 			// act
 			sut.Execute();
@@ -213,10 +212,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// arrange
 			JobStopManager sut = PrepareSut(false);
-			Job job = JobExtensions.CreateJob();
-			job = job.CopyJobWithStopState (StopState.Stopping);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
-			_jobHistoryService.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Throws(new Exception("something"));
+			Job job = PrepareJob(StopState.Stopping);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Throws(new Exception("something"));
 
 			// act
 			sut.Execute();
@@ -232,10 +230,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// arrange
 			JobStopManager sut = PrepareSut(false);
 			_jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
-			Job job = JobExtensions.CreateJob();
-			job = job.CopyJobWithStopState(StopState.Stopping);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
-			_jobHistoryService.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+			Job job = PrepareJob(StopState.Stopping);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
 			sut.Execute();
 
 			// act & assert
@@ -250,10 +247,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			bool eventTriggered = false;
 			sut.StopRequestedEvent += (sender, args) => eventTriggered = true;
 			_jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
-			Job job = JobExtensions.CreateJob();
-			job = job.CopyJobWithStopState(StopState.Stopping);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
-			_jobHistoryService.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+			Job job = PrepareJob(StopState.Stopping);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
 			sut.Execute();
 
 			// act & assert
@@ -265,10 +261,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// arrange
 			JobStopManager sut = PrepareSut(false);
-			Job job = JobExtensions.CreateJob();
-			job = job.CopyJobWithStopState(StopState.None);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
-			_jobHistoryService.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+			Job job = PrepareJob(StopState.None);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
 			sut.Execute();
 
 			// act & assert
@@ -282,10 +277,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			JobStopManager sut = PrepareSut(false);
 			bool eventTriggered = false;
 			sut.StopRequestedEvent += (sender, args) => eventTriggered = true;
-			Job job = JobExtensions.CreateJob();
-			job = job.CopyJobWithStopState(StopState.None);
-			_jobService.Setup(x => x.GetJob(_jobId)).Returns(job);
-			_jobHistoryService.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+			Job job = PrepareJob(StopState.None);
+			_jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
+			_jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
 			sut.Execute();
 
 			// act & assert
