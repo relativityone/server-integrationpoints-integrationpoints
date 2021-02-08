@@ -34,14 +34,6 @@ namespace Relativity.Sync.Configuration
         
         Guid JobHistoryRelationGuid { get; }
         
-        IJobHistoryErrorStatusGuidProvider ErrorTypes { get; }
-    }
-
-    internal interface IJobHistoryErrorStatusGuidProvider
-    {
-        Guid New { get; }
-        Guid Expired { get; }
-        Guid InProgress { get; }
-        Guid Retried { get; }
+        Guid NewStatusGuid { get; }
     }
 }

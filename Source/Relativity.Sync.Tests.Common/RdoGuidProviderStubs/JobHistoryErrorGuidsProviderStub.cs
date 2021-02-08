@@ -16,6 +16,6 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
         public Guid ItemLevelErrorGuid { get; set; }
         public Guid JobLevelErrorGuid { get; set; }
         public Guid JobHistoryRelationGuid { get; set; }
-        public IJobHistoryErrorStatusGuidProvider ErrorTypes { get; set; }
+        public Guid NewStatusGuid { get; set; }
     }
 }

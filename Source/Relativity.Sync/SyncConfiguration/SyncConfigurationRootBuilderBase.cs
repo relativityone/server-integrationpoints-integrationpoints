@@ -63,12 +63,7 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryErrorStackTrace = RdoOptions.JobHistoryError.StackTraceGuid;
             SyncConfiguration.JobHistoryErrorTimeStamp = RdoOptions.JobHistoryError.TimeStampGuid;
             SyncConfiguration.JobHistoryErrorType = RdoOptions.JobHistoryError.TypeGuid;
-            
-            // JobHistoryErrorStatus
-            SyncConfiguration.JobHistoryErrorNewChoice = RdoOptions.JobHistoryErrorStatus.NewGuid;
-            SyncConfiguration.JobHistoryErrorExpiredChoice = RdoOptions.JobHistoryErrorStatus.ExpiredGuid;
-            SyncConfiguration.JobHistoryErrorInProgressChoice = RdoOptions.JobHistoryErrorStatus.InProgressGuid;
-            SyncConfiguration.JobHistoryErrorRetriedChoice = RdoOptions.JobHistoryErrorStatus.RetriedGuid;
+            SyncConfiguration.JobHistoryErrorNewChoice = RdoOptions.JobHistoryError.NewStatusGuid;
         }
 
         public void OverwriteMode(OverwriteOptions options)
@@ -125,23 +120,14 @@ namespace Relativity.Sync.SyncConfiguration
                 return response.ObjectType.ArtifactTypeID;
             }
         }
-
-        private async Task<int> GetJobHistoryArtifactIdAsync(int workspaceId, Guid jobHistoryGuid)
-        {
-            using (var guidManager = ServicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
-            {
-                return await guidManager.ReadSingleArtifactIdAsync(workspaceId, jobHistoryGuid).ConfigureAwait(false);
-            }
-        }
-
+        
         private async Task ValidateRdosAsync()
         {
             using (var guidManager = ServicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
             {
                 await Task.WhenAll(
                     ValidateJobHistoryAsync(guidManager),
-                    ValidateJobHistoryErrorAsync(guidManager),
-                    ValidateJobHistoryErrorStatusAsync(guidManager)
+                    ValidateJobHistoryErrorAsync(guidManager)
                     );
             }
         }
@@ -169,20 +155,11 @@ namespace Relativity.Sync.SyncConfiguration
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.StackTraceGuid),
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ErrorStatusGuid),
                 ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.ItemLevelErrorChoiceGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.JobLevelErrorChoiceGuid)
+                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.JobLevelErrorChoiceGuid),
+                ValidatePropertyAsync(RdoOptions.JobHistoryError,artifactGuidManager, x => x.NewStatusGuid)
             );
         }
         
-        private Task ValidateJobHistoryErrorStatusAsync(IArtifactGuidManager artifactGuidManager)
-        {
-            return Task.WhenAll(
-                ValidatePropertyAsync(RdoOptions.JobHistoryErrorStatus,artifactGuidManager, x => x.NewGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryErrorStatus,artifactGuidManager, x => x.ExpiredGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryErrorStatus,artifactGuidManager, x => x.InProgressGuid),
-                ValidatePropertyAsync(RdoOptions.JobHistoryErrorStatus,artifactGuidManager, x => x.RetriedGuid)
-            );
-        }
-
         private async Task ValidatePropertyAsync<TRdo>(TRdo rdo, IArtifactGuidManager guidManager, Expression<Func<TRdo, Guid>> expression)
         {
             MemberExpression memberExpression = expression.Body as MemberExpression ?? throw new InvalidExpressionException("Expression needs to be a member expression");

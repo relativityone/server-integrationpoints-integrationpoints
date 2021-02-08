@@ -43,8 +43,8 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public Guid StackTraceGuid { get; private set;}
         
         /// <summary>
-        /// Error status (New, InProgress, Expired, Retried)
-        /// <see cref="JobHistoryErrorStatusOptions"/>
+        /// Error status (New)
+        /// <see cref="NewStatusGuid"/>
         /// </summary>
         public Guid ErrorStatusGuid { get; private set;}
         
@@ -57,13 +57,19 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// Job Level Error value
         /// </summary>
         public Guid JobLevelErrorChoiceGuid { get; private set;}
+        
+        /// <summary>
+        /// New status value <see cref="ErrorStatusGuid"/>
+        /// </summary>
+        public Guid NewStatusGuid { get; private set;}
+
 
         /// <summary>
         /// Constructor. All parameters are mandatory
         /// </summary>
         public JobHistoryErrorOptions(Guid typeGuid, Guid nameGuid, Guid sourceUniqueIdGuid, Guid errorMessageGuid,
             Guid timeStampGuid, Guid errorTypeGuid, Guid stackTraceGuid, Guid errorStatusGuid,
-            Guid itemLevelErrorChoiceGuid, Guid jobLevelErrorChoiceGuid)
+            Guid itemLevelErrorChoiceGuid, Guid jobLevelErrorChoiceGuid, Guid newStatusGuid)
         {
             TypeGuid = typeGuid;
             NameGuid = nameGuid;
@@ -75,6 +81,7 @@ namespace Relativity.Sync.SyncConfiguration.Options
             ErrorStatusGuid = errorStatusGuid;
             ItemLevelErrorChoiceGuid = itemLevelErrorChoiceGuid;
             JobLevelErrorChoiceGuid = jobLevelErrorChoiceGuid;
+            NewStatusGuid = newStatusGuid;
         }
     }
 }

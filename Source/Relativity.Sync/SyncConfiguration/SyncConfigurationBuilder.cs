@@ -25,22 +25,13 @@ namespace Relativity.Sync.SyncConfiguration
         public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions)
         {
             ValidateInput(rdoOptions);
-            return new SyncJobJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer);
+            return new SyncJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer);
         }
 
         private void ValidateInput(RdoOptions rdoOptions)
         {
             ValidateJobHistoryGuids(rdoOptions.JobHistory);
             ValidateJobHistoryErrorGuids(rdoOptions.JobHistoryError);
-            ValidateJobHistoryErrorStatusGuids(rdoOptions.JobHistoryErrorStatus);
-        }
-
-        private void ValidateJobHistoryErrorStatusGuids(JobHistoryErrorStatusOptions options)
-        {
-            ValidateProperty(options, x => x.NewGuid);
-            ValidateProperty(options, x => x.ExpiredGuid);
-            ValidateProperty(options, x => x.RetriedGuid);
-            ValidateProperty(options, x => x.InProgressGuid);
         }
 
         private void ValidateJobHistoryErrorGuids(JobHistoryErrorOptions options)
@@ -55,6 +46,7 @@ namespace Relativity.Sync.SyncConfiguration
             ValidateProperty(options, x => x.ErrorStatusGuid);
             ValidateProperty(options, x => x.ItemLevelErrorChoiceGuid);
             ValidateProperty(options, x => x.JobLevelErrorChoiceGuid);
+            ValidateProperty(options, x => x.NewStatusGuid);
         }
 
         private void ValidateJobHistoryGuids(JobHistoryOptions options)

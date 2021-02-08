@@ -212,17 +212,9 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             builder.SyncConfiguration.JobHistoryErrorType.Should()
                 .Be(rdoOptions.JobHistoryError.TypeGuid);
             
-            builder.SyncConfiguration.JobHistoryErrorExpiredChoice.Should()
-                .Be(rdoOptions.JobHistoryErrorStatus.ExpiredGuid);
-            
             builder.SyncConfiguration.JobHistoryErrorNewChoice.Should()
-                .Be(rdoOptions.JobHistoryErrorStatus.NewGuid);
+                .Be(rdoOptions.JobHistoryError.NewStatusGuid);
             
-            builder.SyncConfiguration.JobHistoryErrorInProgressChoice.Should()
-                .Be(rdoOptions.JobHistoryErrorStatus.InProgressGuid);
-            
-            builder.SyncConfiguration.JobHistoryErrorRetriedChoice.Should()
-                .Be(rdoOptions.JobHistoryErrorStatus.RetriedGuid);
         }
 
         static IEnumerable<TestCaseData> RdoOptionsMembers()

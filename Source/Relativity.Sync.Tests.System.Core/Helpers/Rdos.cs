@@ -848,34 +848,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                    {
 	                        Guid = SyncConfigurationRdo.JobHistoryErrorNewChoiceGuid
 	                    },
-	                    Value = configuration.JobHistoryError.ErrorTypes.New
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorExpiredChoiceGuid
-	                    },
-	                    Value = configuration.JobHistoryError.ErrorTypes.Expired
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorInProgressChoiceGuid
-	                    },
-	                    Value = configuration.JobHistoryError.ErrorTypes.InProgress
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorRetriedChoiceGuid
-	                    },
-	                    Value = configuration.JobHistoryError.ErrorTypes.Retried
+	                    Value = configuration.JobHistoryError.NewStatusGuid
 	                },
 				}                
 			};

@@ -11,197 +11,220 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
-	internal sealed class JobHistoryErrorRepository : IJobHistoryErrorRepository
-	{
-		private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
-	
-		private readonly IDateTime _dateTime;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
-		private readonly IRdoGuidConfiguration _rdoConfiguration;
-		private readonly ISyncLog _logger;
+    internal sealed class JobHistoryErrorRepository : IJobHistoryErrorRepository
+    {
+        private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
 
-		public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory, IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger)
-		{
-			_serviceFactory = serviceFactory;
-			_rdoConfiguration = rdoConfiguration;
-			_dateTime = dateTime;
-			_logger = logger;
-		}
+        private readonly IDateTime _dateTime;
+        private readonly ISourceServiceFactoryForUser _serviceFactory;
+        private readonly IRdoGuidConfiguration _rdoConfiguration;
+        private readonly ISyncLog _logger;
 
-		public async Task<IEnumerable<int>> MassCreateAsync(int workspaceArtifactId, int jobHistoryArtifactId, IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
-		{
-			_logger.LogInformation("Mass creating item level errors count: {count}", createJobHistoryErrorDtos.Count);
+        public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory,
+            IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger)
+        {
+            _serviceFactory = serviceFactory;
+            _rdoConfiguration = rdoConfiguration;
+            _dateTime = dateTime;
+            _logger = logger;
+        }
 
-			IReadOnlyList<IReadOnlyList<object>> values = createJobHistoryErrorDtos.Select(x => new List<object>()
-			{
-				x.ErrorMessage,
-				GetErrorStatusChoice(ErrorStatus.New),
-				GetErrorTypeChoice(x.ErrorType),
-				Guid.NewGuid().ToString(),
-				x.SourceUniqueId,
-				x.StackTrace,
-				_dateTime.UtcNow
-			}).ToList();
+        public async Task<IEnumerable<int>> MassCreateAsync(int workspaceArtifactId, int jobHistoryArtifactId,
+            IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
+        {
+            _logger.LogInformation("Mass creating item level errors count: {count}", createJobHistoryErrorDtos.Count);
 
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				try
-				{
-					var request = new MassCreateRequest
-					{
-						ObjectType = GetObjectTypeRef(),
-						ParentObject = GetParentObject(jobHistoryArtifactId),
-						Fields = GetFields(),
-						ValueLists = values
-					};
+            IReadOnlyList<IReadOnlyList<object>> values = createJobHistoryErrorDtos.Select(x => new List<object>()
+            {
+                x.ErrorMessage,
+                GetErrorStatusChoice(ErrorStatus.New),
+                GetErrorTypeChoice(x.ErrorType),
+                Guid.NewGuid().ToString(),
+                x.SourceUniqueId,
+                x.StackTrace,
+                _dateTime.UtcNow
+            }).ToList();
 
-					MassCreateResult result = await objectManager.CreateAsync(workspaceArtifactId, request).ConfigureAwait(false);
-					if (!result.Success)
-					{
-						throw new SyncException($"Mass creation of item level errors was not successful. Message: {result.Message}");
-					}
+            using (IObjectManager objectManager =
+                await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            {
+                try
+                {
+                    var request = new MassCreateRequest
+                    {
+                        ObjectType = GetObjectTypeRef(),
+                        ParentObject = GetParentObject(jobHistoryArtifactId),
+                        Fields = GetFields(),
+                        ValueLists = values
+                    };
 
-					_logger.LogInformation("Successfully mass-created item level errors: {count}", createJobHistoryErrorDtos.Count);
-					return result.Objects.Select(x => x.ArtifactID);
-				}
-				catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
-				{
-					_logger.LogWarning(ex, "Job History Errors mass creation failed. Attempt to retry by creating errors in chunks");
-					return await MassCreateInBatchesAsync(workspaceArtifactId, jobHistoryArtifactId, createJobHistoryErrorDtos).ConfigureAwait(false);
-				}
-			}
-		}
+                    MassCreateResult result =
+                        await objectManager.CreateAsync(workspaceArtifactId, request).ConfigureAwait(false);
+                    if (!result.Success)
+                    {
+                        throw new SyncException(
+                            $"Mass creation of item level errors was not successful. Message: {result.Message}");
+                    }
 
-		private async Task<IEnumerable<int>> MassCreateInBatchesAsync(int workspaceArtifactId, int jobHistoryArtifactId, IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
-		{
-			List<int> result = new List<int>();
+                    _logger.LogInformation("Successfully mass-created item level errors: {count}",
+                        createJobHistoryErrorDtos.Count);
+                    return result.Objects.Select(x => x.ArtifactID);
+                }
+                catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
+                {
+                    _logger.LogWarning(ex,
+                        "Job History Errors mass creation failed. Attempt to retry by creating errors in chunks");
+                    return await MassCreateInBatchesAsync(workspaceArtifactId, jobHistoryArtifactId,
+                        createJobHistoryErrorDtos).ConfigureAwait(false);
+                }
+            }
+        }
 
-			const double numOfBatches = 2;
-			int batchSize = (int)Math.Ceiling(createJobHistoryErrorDtos.Count() / numOfBatches);
+        private async Task<IEnumerable<int>> MassCreateInBatchesAsync(int workspaceArtifactId, int jobHistoryArtifactId,
+            IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
+        {
+            List<int> result = new List<int>();
 
-			if(batchSize == createJobHistoryErrorDtos.Count())
-			{
-				throw new SyncException($"Mass creation of item level errors failed, because single item is still to large");
-			}
+            const double numOfBatches = 2;
+            int batchSize = (int) Math.Ceiling(createJobHistoryErrorDtos.Count() / numOfBatches);
 
-			foreach (var errorsBatchList in createJobHistoryErrorDtos.SplitList(batchSize))
-			{
-				IEnumerable<int> artifactIDs = await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, errorsBatchList).ConfigureAwait(false);
-				result.AddRange(artifactIDs);
-			}
+            if (batchSize == createJobHistoryErrorDtos.Count())
+            {
+                throw new SyncException(
+                    $"Mass creation of item level errors failed, because single item is still to large");
+            }
 
-			return result;
-		}
+            foreach (var errorsBatchList in createJobHistoryErrorDtos.SplitList(batchSize))
+            {
+                IEnumerable<int> artifactIDs =
+                    await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, errorsBatchList)
+                        .ConfigureAwait(false);
+                result.AddRange(artifactIDs);
+            }
 
-		public async Task<int> CreateAsync(int workspaceArtifactId, int jobHistoryArtifactId, CreateJobHistoryErrorDto createJobHistoryErrorDto)
-		{
-			IEnumerable<int> massCreateResult = await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, new List<CreateJobHistoryErrorDto> { createJobHistoryErrorDto }).ConfigureAwait(false);
-			return massCreateResult.First();
-		}
+            return result;
+        }
 
-		public async Task<IJobHistoryError> GetLastJobErrorAsync(int workspaceArtifactId, int jobHistoryArtifactId)
-		{
-			IJobHistoryError jobHistoryError = null;
+        public async Task<int> CreateAsync(int workspaceArtifactId, int jobHistoryArtifactId,
+            CreateJobHistoryErrorDto createJobHistoryErrorDto)
+        {
+            IEnumerable<int> massCreateResult = await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId,
+                new List<CreateJobHistoryErrorDto> {createJobHistoryErrorDto}).ConfigureAwait(false);
+            return massCreateResult.First();
+        }
 
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				var readRequest = new ReadRequest
-				{
-					Object = new RelativityObjectRef
-					{
-						Guid = _rdoConfiguration.JobHistoryError.JobLevelErrorGuid
-					}
-				};
-				ReadResult jobErrorType = await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
-				var request = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef { Guid = _rdoConfiguration.JobHistoryError.TypeGuid },
-					Condition = $"'{_rdoConfiguration.JobHistoryError.JobHistoryRelationGuid}' == OBJECT {jobHistoryArtifactId} AND '{_rdoConfiguration.JobHistoryError.ErrorTypeGuid}' == CHOICE {jobErrorType.Object.ArtifactID}",
-					Fields = GetFields(),
-					Sorts = new[] { new Sort { Direction = SortEnum.Descending, FieldIdentifier = new FieldRef { Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid } } }
-				};
-				QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
-				if (result.TotalCount > 0)
-				{
-					RelativityObject jobError = result.Objects.First();
+        public async Task<IJobHistoryError> GetLastJobErrorAsync(int workspaceArtifactId, int jobHistoryArtifactId)
+        {
+            IJobHistoryError jobHistoryError = null;
 
-					int artifactId = jobError.ArtifactID;
-					string errorMessage = (string)jobError[_rdoConfiguration.JobHistoryError.ErrorMessagesGuid].Value;
-					ErrorStatus errorStatus = ((Choice)jobError[_rdoConfiguration.JobHistoryError.ErrorStatusGuid].Value).Name.GetEnumFromDescription<ErrorStatus>();
-					ErrorType errorType = ((Choice)jobError[_rdoConfiguration.JobHistoryError.ErrorTypeGuid].Value).Name.GetEnumFromDescription<ErrorType>();
-					string name = (string)jobError[_rdoConfiguration.JobHistoryError.NameGuid].Value;
-					string sourceUniqueId = (string)jobError[_rdoConfiguration.JobHistoryError.SourceUniqueIdGuid].Value;
-					string stackTrace = (string)jobError[_rdoConfiguration.JobHistoryError.StackTraceGuid].Value;
-					DateTime timestampUtc = (DateTime)jobError[_rdoConfiguration.JobHistoryError.TimeStampGuid].Value;
+            using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            {
+                var readRequest = new ReadRequest
+                {
+                    Object = new RelativityObjectRef
+                    {
+                        Guid = _rdoConfiguration.JobHistoryError.JobLevelErrorGuid
+                    }
+                };
+                ReadResult jobErrorType =
+                    await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
+                var request = new QueryRequest
+                {
+                    ObjectType = new ObjectTypeRef {Guid = _rdoConfiguration.JobHistoryError.TypeGuid},
+                    Condition =
+                        $"'{_rdoConfiguration.JobHistoryError.JobHistoryRelationGuid}' == OBJECT {jobHistoryArtifactId} AND '{_rdoConfiguration.JobHistoryError.ErrorTypeGuid}' == CHOICE {jobErrorType.Object.ArtifactID}",
+                    Fields = GetFields(),
+                    Sorts = new[]
+                    {
+                        new Sort
+                        {
+                            Direction = SortEnum.Descending,
+                            FieldIdentifier = new FieldRef {Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid}
+                        }
+                    }
+                };
+                QueryResult result = await objectManager.QueryAsync(workspaceArtifactId, request, 0, 1)
+                    .ConfigureAwait(false);
+                if (result.TotalCount > 0)
+                {
+                    RelativityObject jobError = result.Objects.First();
 
-					jobHistoryError = new JobHistoryError(artifactId, errorMessage, errorStatus, errorType, jobHistoryArtifactId, name, sourceUniqueId, stackTrace, timestampUtc);
-				}
-			}
-			return jobHistoryError;
-		}
+                    int artifactId = jobError.ArtifactID;
+                    string errorMessage = (string) jobError[_rdoConfiguration.JobHistoryError.ErrorMessagesGuid].Value;
+                    ErrorStatus errorStatus =
+                        ((Choice) jobError[_rdoConfiguration.JobHistoryError.ErrorStatusGuid].Value).Name
+                        .GetEnumFromDescription<ErrorStatus>();
+                    ErrorType errorType = ((Choice) jobError[_rdoConfiguration.JobHistoryError.ErrorTypeGuid].Value)
+                        .Name.GetEnumFromDescription<ErrorType>();
+                    string name = (string) jobError[_rdoConfiguration.JobHistoryError.NameGuid].Value;
+                    string sourceUniqueId =
+                        (string) jobError[_rdoConfiguration.JobHistoryError.SourceUniqueIdGuid].Value;
+                    string stackTrace = (string) jobError[_rdoConfiguration.JobHistoryError.StackTraceGuid].Value;
+                    DateTime timestampUtc = (DateTime) jobError[_rdoConfiguration.JobHistoryError.TimeStampGuid].Value;
 
-		private ObjectTypeRef GetObjectTypeRef()
-		{
-			return new ObjectTypeRef { Guid = _rdoConfiguration.JobHistoryError.TypeGuid };
-		}
+                    jobHistoryError = new JobHistoryError(artifactId, errorMessage, errorStatus, errorType,
+                        jobHistoryArtifactId, name, sourceUniqueId, stackTrace, timestampUtc);
+                }
+            }
 
-		private RelativityObjectRef GetParentObject(int jobHistoryArtifactId)
-		{
-			return new RelativityObjectRef { ArtifactID = jobHistoryArtifactId };
-		}
+            return jobHistoryError;
+        }
 
-		private FieldRef[] GetFields()
-		{
-			return new[]
-			{
-				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorMessagesGuid },
-				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorStatusGuid },
-				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorTypeGuid },
-				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.NameGuid },
-				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.SourceUniqueIdGuid },
-				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.StackTraceGuid },
-				new FieldRef { Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid}
-			};
-		}
+        private ObjectTypeRef GetObjectTypeRef()
+        {
+            return new ObjectTypeRef {Guid = _rdoConfiguration.JobHistoryError.TypeGuid};
+        }
 
-		private ChoiceRef GetErrorStatusChoice(ErrorStatus errorStatus)
-		{
-			var errorStatusChoice = new ChoiceRef();
-			switch (errorStatus)
-			{
-				case ErrorStatus.New:
-					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.New;
-					break;
-				case ErrorStatus.InProgress:
-					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.InProgress;
-					break;
-				case ErrorStatus.Expired:
-					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.Expired;
-					break;
-				case ErrorStatus.Retried:
-					errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.ErrorTypes.Retried;
-					break;
-				default:
-					throw new ArgumentException($"Invalid Error Status {errorStatus}");
-			}
-			return errorStatusChoice;
-		}
+        private RelativityObjectRef GetParentObject(int jobHistoryArtifactId)
+        {
+            return new RelativityObjectRef {ArtifactID = jobHistoryArtifactId};
+        }
 
-		private ChoiceRef GetErrorTypeChoice(ErrorType errorType)
-		{
-			var errorTypeChoice = new ChoiceRef();
-			switch (errorType)
-			{
-				case ErrorType.Job:
-					errorTypeChoice.Guid = _rdoConfiguration.JobHistoryError.JobLevelErrorGuid;
-					break;
-				case ErrorType.Item:
-					errorTypeChoice.Guid = _rdoConfiguration.JobHistoryError.ItemLevelErrorGuid;
-					break;
-				default:
-					throw new ArgumentException($"Invalid Error Type {errorType}");
-			}
-			return errorTypeChoice;
-		}
-	}
+        private FieldRef[] GetFields()
+        {
+            return new[]
+            {
+                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.ErrorMessagesGuid},
+                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.ErrorStatusGuid},
+                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.ErrorTypeGuid},
+                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.NameGuid},
+                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.SourceUniqueIdGuid},
+                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.StackTraceGuid},
+                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid}
+            };
+        }
+
+        private ChoiceRef GetErrorStatusChoice(ErrorStatus errorStatus)
+        {
+            var errorStatusChoice = new ChoiceRef();
+            switch (errorStatus)
+            {
+                case ErrorStatus.New:
+                    errorStatusChoice.Guid = _rdoConfiguration.JobHistoryError.NewStatusGuid;
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid Error Status {errorStatus}");
+            }
+
+            return errorStatusChoice;
+        }
+
+        private ChoiceRef GetErrorTypeChoice(ErrorType errorType)
+        {
+            var errorTypeChoice = new ChoiceRef();
+            switch (errorType)
+            {
+                case ErrorType.Job:
+                    errorTypeChoice.Guid = _rdoConfiguration.JobHistoryError.JobLevelErrorGuid;
+                    break;
+                case ErrorType.Item:
+                    errorTypeChoice.Guid = _rdoConfiguration.JobHistoryError.ItemLevelErrorGuid;
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid Error Type {errorType}");
+            }
+
+            return errorTypeChoice;
+        }
+    }
 }

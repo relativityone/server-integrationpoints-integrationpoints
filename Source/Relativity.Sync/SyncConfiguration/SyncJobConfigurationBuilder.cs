@@ -4,14 +4,14 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
-    internal class SyncJobJobConfigurationBuilder : ISyncJobConfigurationBuilder
+    internal class SyncJobConfigurationBuilder : ISyncJobConfigurationBuilder
     {
         private readonly ISyncContext _syncContext;
         private readonly ISyncServiceManager _servicesMgr;
         private readonly RdoOptions _rdoOptions;
         private readonly ISerializer _serializer;
 
-        public SyncJobJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer)
+        public SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;

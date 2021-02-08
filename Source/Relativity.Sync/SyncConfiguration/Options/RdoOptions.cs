@@ -16,18 +16,12 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public JobHistoryErrorOptions JobHistoryError { get; }
         
         /// <summary>
-        /// Configures JobHistoryError status choice
-        /// </summary>
-        public JobHistoryErrorStatusOptions JobHistoryErrorStatus { get; }
-
-        /// <summary>
         /// Constructor. All parameters are mandatory
         /// </summary>
-        public RdoOptions(JobHistoryOptions jobHistory, JobHistoryErrorOptions jobHistoryError, JobHistoryErrorStatusOptions jobHistoryErrorStatus)
+        public RdoOptions(JobHistoryOptions jobHistory, JobHistoryErrorOptions jobHistoryError)
         {
             JobHistory = jobHistory;
             JobHistoryError = jobHistoryError;
-            JobHistoryErrorStatus = jobHistoryErrorStatus;
         }
     }
 }

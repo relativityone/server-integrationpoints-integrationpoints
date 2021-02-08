@@ -39,7 +39,7 @@ namespace Relativity.Sync.RDOs
         public string ProductionImagePrecedence { get; set; }
         public string ImageFileCopyMode { get; set; }
         public string EmailNotificationRecipients { get; set; }
-        public int JobHistoryToRetryId { get; set; }
+        public int? JobHistoryToRetryId { get; set; }
 
 
         public string SnapshotId { get; set; }

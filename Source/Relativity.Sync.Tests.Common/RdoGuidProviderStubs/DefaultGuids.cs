@@ -28,13 +28,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
             TimeStampGuid = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F"),
             ItemLevelErrorGuid = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B"),
             JobLevelErrorGuid = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B"),
-            ErrorTypes = new JobHistoryErrorStatusGuidProviderStub
-            {
-                Expired =  new Guid("AF01A8FA-B419-49B1-BD71-25296E221E57"),
-                New = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A"),
-                InProgress = new Guid("E5EBD98C-C976-4FA2-936F-434E265EA0AA"),
-                Retried = new Guid("7D3D393D-384F-434E-9776-F9966550D29A")
-            }
+            NewStatusGuid = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A")
         };
 
         public static RdoOptions DefaultRdoOptions => new RdoOptions(
@@ -55,13 +49,8 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 JobHistoryError.StackTraceGuid,
                 JobHistoryError.ErrorStatusGuid,
                 JobHistoryError.ItemLevelErrorGuid,
-                JobHistoryError.JobLevelErrorGuid
-                ),
-            new JobHistoryErrorStatusOptions(
-                JobHistoryError.ErrorTypes.New,
-                JobHistoryError.ErrorTypes.Expired,
-                JobHistoryError.ErrorTypes.InProgress,
-                JobHistoryError.ErrorTypes.Retried
+                JobHistoryError.JobLevelErrorGuid,
+                JobHistoryError.NewStatusGuid
                 )
             );
     }
