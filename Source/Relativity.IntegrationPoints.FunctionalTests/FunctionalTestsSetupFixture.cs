@@ -17,28 +17,22 @@ public class FunctionalTestsSetupFixture
 	[OneTimeSetUp]
 	public void InitializeFixture()
 	{
-		try
+		_testHelper = new TestHelper();
+
+		ImportIntegrationPointsToLibrary();
+
+		CreateIntegrationPointAgents();
+
+		ConfigureWebAPI();
+
+		ConfigureFileShareServices();
+
+		if (!FunctionalTemplateWorkspaceExists())
 		{
-			_testHelper = new TestHelper();
-
-			ImportIntegrationPointsToLibrary();
-
-			CreateIntegrationPointAgents();
-
-			ConfigureWebAPI();
-
-			ConfigureFileShareServices();
-
-			if (!FunctionalTemplateWorkspaceExists())
-			{
-				SetupTemplateWorkspace();
-			}
+			SetupTemplateWorkspace();
 		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Functional tests setup fixture failed with error: {ex.Message}");
-			IsInitialized = false;
-		}
+
+		IsInitialized = false;
 	}
 
 	private void SetupTemplateWorkspace()

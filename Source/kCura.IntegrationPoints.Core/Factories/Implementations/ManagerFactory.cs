@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using kCura.Agent;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;

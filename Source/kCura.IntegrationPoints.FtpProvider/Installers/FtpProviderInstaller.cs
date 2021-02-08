@@ -2,6 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.FtpProvider.Connection;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Installers
             container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleTransient());
 			container.Register(Component.For<IDataSourceProvider>().ImplementedBy<FtpProvider>().LifestyleTransient().Named(new Guid(Constants.Guids.FtpProviderEventHandler).ToString()));
 			container.Register(Component.For<IHostValidator>().ImplementedBy<HostValidator>().LifestyleTransient());
+			container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
         }
 	}
 }

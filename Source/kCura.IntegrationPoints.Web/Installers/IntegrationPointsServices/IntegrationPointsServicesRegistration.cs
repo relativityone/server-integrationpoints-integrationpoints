@@ -48,11 +48,7 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 				Component
 					.For<ITextSanitizer>()
 					.ImplementedBy<TextSanitizer>()
-					.LifestylePerWebRequest(),
-				Component
-					.For<IRemovableAgent>()
-					.ImplementedBy<FakeNonRemovableAgent>()
-					.LifestyleTransient()
+					.LifestylePerWebRequest()
 			);
 		}
 
