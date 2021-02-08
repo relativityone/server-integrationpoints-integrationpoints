@@ -1,7 +1,8 @@
 ﻿using System;
-using Relativity.Sync.Storage;
+using System.Data;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
+using System.Linq.Expressions;
 
 #pragma warning disable 1591
 
@@ -21,7 +22,7 @@ namespace Relativity.Sync.SyncConfiguration
             _serializer = new JSONSerializer();
         }
 
-        public ISyncJobConfigurationBuilder ConfigureRDO(RdoOptions rdoOptions)
+        public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions)
         {
             ValidateInput(rdoOptions);
             return new SyncJobJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer);
@@ -30,32 +31,52 @@ namespace Relativity.Sync.SyncConfiguration
         private void ValidateInput(RdoOptions rdoOptions)
         {
             ValidateJobHistoryGuids(rdoOptions.JobHistory);
+            ValidateJobHistoryErrorGuids(rdoOptions.JobHistoryError);
+            ValidateJobHistoryErrorStatusGuids(rdoOptions.JobHistoryErrorStatus);
         }
 
-        private void ValidateJobHistoryGuids(JobHistoryOptions jobHistoryOptions)
+        private void ValidateJobHistoryErrorStatusGuids(JobHistoryErrorStatusOptions options)
         {
-            if (!IsValidGuid(jobHistoryOptions.JobHistoryTypeGuid))
-            {
-                throw GetExceptionForInvalidInput(nameof(JobHistoryOptions.JobHistoryTypeGuid),
-                    nameof(JobHistoryOptions), jobHistoryOptions.JobHistoryTypeGuid.ToString());
-            }
+            ValidateProperty(options, x => x.NewGuid);
+            ValidateProperty(options, x => x.ExpiredGuid);
+            ValidateProperty(options, x => x.RetriedGuid);
+            ValidateProperty(options, x => x.InProgressGuid);
+        }
 
-            if (!IsValidGuid(jobHistoryOptions.CompletedItemsCountGuid))
+        private void ValidateJobHistoryErrorGuids(JobHistoryErrorOptions options)
+        {
+            ValidateProperty(options, x => x.TypeGuid);
+            ValidateProperty(options, x => x.NameGuid);
+            ValidateProperty(options, x => x.SourceUniqueIdGuid);
+            ValidateProperty(options, x => x.ErrorMessageGuid);
+            ValidateProperty(options, x => x.TimeStampGuid);
+            ValidateProperty(options, x => x.ErrorTypeGuid);
+            ValidateProperty(options, x => x.StackTraceGuid);
+            ValidateProperty(options, x => x.ErrorStatusGuid);
+            ValidateProperty(options, x => x.ItemLevelErrorChoiceGuid);
+            ValidateProperty(options, x => x.JobLevelErrorChoiceGuid);
+        }
+
+        private void ValidateJobHistoryGuids(JobHistoryOptions options)
+        {
+            ValidateProperty(options, x => x.CompletedItemsCountGuid);
+            ValidateProperty(options, x => x.TotalItemsCountGuid);
+            ValidateProperty(options, x => x.FailedItemsCountGuid);
+            ValidateProperty(options, x => x.DestinationWorkspaceInformationGuid);
+            ValidateProperty(options, x => x.JobHistoryTypeGuid);
+        }
+
+        private void ValidateProperty<TRdo>(TRdo rdo, Expression<Func<TRdo, Guid>> expression)
+        {
+            Guid guid = expression.Compile().Invoke(rdo);
+            if (!IsValidGuid(guid))
             {
-                throw GetExceptionForInvalidInput(nameof(JobHistoryOptions.CompletedItemsCountGuid),
-                    nameof(JobHistoryOptions), jobHistoryOptions.CompletedItemsCountGuid.ToString());
-            }
-            
-            if (!IsValidGuid(jobHistoryOptions.FailedItemsCountGuid))
-            {
-                throw GetExceptionForInvalidInput(nameof(JobHistoryOptions.FailedItemsCountGuid),
-                    nameof(JobHistoryOptions), jobHistoryOptions.FailedItemsCountGuid.ToString());
-            }
-            
-            if (!IsValidGuid(jobHistoryOptions.TotalItemsCountGuid))
-            {
-                throw GetExceptionForInvalidInput(nameof(JobHistoryOptions.TotalItemsCountGuid),
-                    nameof(JobHistoryOptions), jobHistoryOptions.TotalItemsCountGuid.ToString());
+                MemberExpression memberExpression = (expression.Body as MemberExpression) ??
+                                                    throw new InvalidExpressionException(
+                                                        "Expression must be a member expression");
+                
+                throw GetExceptionForInvalidInput(memberExpression.Member.Name,
+                    typeof(TRdo).Name, guid.ToString());
             }
         }
 

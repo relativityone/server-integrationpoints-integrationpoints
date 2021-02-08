@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -13,8 +15,9 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.RDOs;
+using Relativity.Sync.SyncConfiguration.Options;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 {
     [TestFixture]
     public class SyncConfigurationRdoTests
@@ -148,7 +151,37 @@ namespace Relativity.Sync.Tests.Unit
                 .ReturnsAsync(new CreateResult {Object = new RelativityObject {ArtifactID = createdConfigurationId}});
 
             // Act 
-            SyncConfigurationRdo syncConfigurationRdo = new SyncConfigurationRdo
+            SyncConfigurationRdo syncConfigurationRdo = GetSampleConfiguration();
+
+
+            _ = await syncConfigurationRdo
+                .SaveAsync(WORKSPACE_ID, parentObjectId, _syncServicesMgrMock.Object)
+                .ConfigureAwait(false);
+
+
+            // Assert
+            GetFieldValueSelectors().Select(x =>
+                    new
+                    {
+                        Name = SyncConfigurationRdo.GuidNames[x.Key],
+                        Value = createRequest.FieldValues.FirstOrDefault(f =>
+                            f.Field.Guid == x.Key)?.Value?.ToString(), // because in the end it's all serialized to json
+                        Expected = x.Value(syncConfigurationRdo)?.ToString()
+                    })
+                .Where(x => x.Value == null || x.Expected != x.Value)
+                .Should().BeEmpty();
+        }
+       
+        [Test]
+        public void GetFieldValueSelectors_ShouldContainAllFields()
+        {
+            GetFieldValueSelectors().Keys.Should()
+                .BeEquivalentTo(SyncConfigurationRdo.GetFieldsDefinition(OBJECT_TYPE_ID).Keys);
+        }
+
+        private static SyncConfigurationRdo GetSampleConfiguration()
+        {
+            return new SyncConfigurationRdo
             {
                 JobHistoryToRetryId = 1,
                 SnapshotRecordsCount = 2,
@@ -187,7 +220,7 @@ namespace Relativity.Sync.Tests.Unit
                 JobHistoryGuidFailedField = Guid.NewGuid(),
                 JobHistoryGuidTotalField = Guid.NewGuid(),
                 JobHistoryDestinationWorkspaceInformationField = Guid.NewGuid(),
-                
+
                 // JobHistoryError
                 JobHistoryErrorType = Guid.NewGuid(),
                 JobHistoryErrorErrorMessages = Guid.NewGuid(),
@@ -205,31 +238,6 @@ namespace Relativity.Sync.Tests.Unit
                 JobHistoryErrorInProgressChoice = Guid.NewGuid(),
                 JobHistoryErrorRetriedChoice = Guid.NewGuid(),
             };
-
-
-            _ = await syncConfigurationRdo
-                .SaveAsync(WORKSPACE_ID, parentObjectId, _syncServicesMgrMock.Object)
-                .ConfigureAwait(false);
-
-
-            // Assert
-            GetFieldValueSelectors().Select(x =>
-                    new
-                    {
-                        Name = SyncConfigurationRdo.GuidNames[x.Key],
-                        Value = createRequest.FieldValues.FirstOrDefault(f =>
-                            f.Field.Guid == x.Key)?.Value?.ToString(), // because in the end it's all serialized to json
-                        Expected = x.Value(syncConfigurationRdo)?.ToString()
-                    })
-                .Where(x => x.Value == null || x.Expected != x.Value)
-                .Should().BeEmpty();
-        }
-
-        [Test]
-        public void GetFieldValueSelectors_ShouldContainAllFields()
-        {
-            GetFieldValueSelectors().Keys.Should()
-                .BeEquivalentTo(SyncConfigurationRdo.GetFieldsDefinition(OBJECT_TYPE_ID).Keys);
         }
 
 

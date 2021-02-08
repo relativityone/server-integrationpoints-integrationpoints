@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Specialized;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Interfaces.Shared.Models;
@@ -14,34 +13,26 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Stubs;
-using Action = System.Action;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
 	[TestFixture]
 	class SyncConfigurationBuilderTests : SystemTest
 	{
-
-		
-		private readonly Guid _jobHistoryGuid = Guid.Parse("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
-		private readonly Guid _jobHistoryCompletedItemsGuid = Guid.Parse("70680399-C8EA-4B12-B711-E9ECBC53CB1C");
-		private readonly Guid _jobHistoryGuidFailedItems = Guid.Parse("C224104F-C1CA-4CAA-9189-657E01D5504E");
-		private readonly Guid _jobHistoryGuidTotalItems = Guid.Parse("576189A9-0347-4B20-9369-B16D1AC89B4B");
-
 		private RdoOptions _rdoOptions;
 
-
-		public ISyncServiceManager SyncServicesMgr;
+		private ISyncServiceManager _syncServicesMgr;
 
 		protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup();
 			
-			_rdoOptions = new RdoOptions(new JobHistoryOptions(_jobHistoryGuid, _jobHistoryCompletedItemsGuid, _jobHistoryGuidFailedItems, _jobHistoryGuidTotalItems));
-			SyncServicesMgr = new ServicesManagerStub();
+			_rdoOptions = DefaultGuids.DefaultRdoOptions;
+			_syncServicesMgr = new ServicesManagerStub();
 		}
 
 		[Test]
@@ -75,8 +66,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			var guidsString = string.Join(global::System.Environment.NewLine, guids.Select(x => $"[{x.Name}, {x.Guids.First()}]"));
 			
 			// Act
-			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
-				.ConfigureRDO(_rdoOptions)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, _syncServicesMgr)
+				.ConfigureRdos(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -108,8 +99,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 			
 			// Act
-			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
-				.ConfigureRDO(_rdoOptions)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, _syncServicesMgr)
+				.ConfigureRdos(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -146,8 +137,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			
 			// Act
-			Func<Task> action = async () => await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
-				.ConfigureRDO(_rdoOptions)
+			Func<Task> action = async () => await new SyncConfigurationBuilder(syncContext, _syncServicesMgr)
+				.ConfigureRdos(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -157,7 +148,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 		private async Task<RelativityObject> ReadSyncConfiguration(int workspaceId, int configurationId)
 		{
-			using (IObjectManager objectManager = SyncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			using (IObjectManager objectManager = _syncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				var request = new QueryRequest
 				{

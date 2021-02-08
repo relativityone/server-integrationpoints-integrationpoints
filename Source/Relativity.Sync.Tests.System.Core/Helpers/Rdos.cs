@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -521,16 +522,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static CreateRequest PrepareSyncConfigurationCreateRequestAsync(ConfigurationStub configuration, ISerializer serializer)
 		{
-			RelativityObject jobHistoryToRetry = null;
-
-			if (configuration.JobHistoryToRetryId.HasValue)
-			{
-				jobHistoryToRetry = new RelativityObject()
-				{
-					ArtifactID = configuration.JobHistoryToRetryId.Value
-				};
-			}
-
 			return new CreateRequest
 			{
 				ObjectType = new ObjectTypeRef
@@ -669,7 +660,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 						{
 							Guid = SyncConfigurationRdo.JobHistoryToRetryIdGuid
 						},
-						Value = jobHistoryToRetry
+						Value = configuration.JobHistoryToRetryId
 					},
 					new FieldRefValuePair
 					{
@@ -702,8 +693,191 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 							Guid = SyncConfigurationRdo.ProductionImagePrecedenceGuid
 						},
 						Value = configuration.ProductionImagePrecedence is null ? String.Empty : JsonConvert.SerializeObject(configuration.ProductionImagePrecedence)
-		}
-				}
+		            },
+					
+					 // JobHistory GUIDs
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryTypeGuid
+	                    },
+	                    Value = configuration.JobHistory.TypeGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryTotalItemsFieldGuid
+	                    },
+	                    Value = configuration.JobHistory.TotalItemsFieldGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryFailedItemsFieldGuid
+	                    },
+	                    Value = configuration.JobHistory.FailedItemsFieldGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryCompletedItemsFieldGuid
+	                    },
+	                    Value = configuration.JobHistory.CompletedItemsFieldGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryDestinationWorkspaceInformationGuid
+	                    },
+	                    Value = configuration.JobHistory.DestinationWorkspaceInformationGuid
+	                },
+
+	                // JobHistoryError
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorTypeGuid
+	                    },
+	                    Value = configuration.JobHistoryError.TypeGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorMessagesGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ErrorMessagesGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorStatusGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ErrorStatusGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorTypeGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ErrorTypeGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorNameGuid
+	                    },
+	                    Value = configuration.JobHistoryError.NameGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorSourceUniqueIdGuid
+	                    },
+	                    Value = configuration.JobHistoryError.SourceUniqueIdGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorStackTraceGuid
+	                    },
+	                    Value = configuration.JobHistoryError.StackTraceGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorTimeStampGuid
+	                    },
+	                    Value = configuration.JobHistoryError.TimeStampGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorItemLevelErrorGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ItemLevelErrorGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorJobLevelErrorGuid
+	                    },
+	                    Value = configuration.JobHistoryError.JobLevelErrorGuid
+	                },
+
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorJobHistoryRelationGuid
+	                    },
+	                    Value = configuration.JobHistoryError.JobHistoryRelationGuid
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorNewChoiceGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ErrorTypes.New
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorExpiredChoiceGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ErrorTypes.Expired
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorInProgressChoiceGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ErrorTypes.InProgress
+	                },
+	                
+	                new FieldRefValuePair
+	                {
+	                    Field = new FieldRef
+	                    {
+	                        Guid = SyncConfigurationRdo.JobHistoryErrorRetriedChoiceGuid
+	                    },
+	                    Value = configuration.JobHistoryError.ErrorTypes.Retried
+	                },
+				}                
 			};
 		}
 	}

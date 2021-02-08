@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 1;
 
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryIdGuid)).Returns(new RelativityObjectValue{ArtifactID = expectedValue});
+			_cache.Setup(x => x.GetFieldValue<int?>(SyncConfigurationRdo.JobHistoryToRetryIdGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.JobHistoryToRetryId.Should().Be(expectedValue);
