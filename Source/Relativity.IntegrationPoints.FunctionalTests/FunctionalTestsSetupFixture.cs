@@ -32,7 +32,7 @@ public class FunctionalTestsSetupFixture
 			SetupTemplateWorkspace();
 		}
 
-		IsInitialized = false;
+		IsInitialized = true;
 	}
 
 	private void SetupTemplateWorkspace()
