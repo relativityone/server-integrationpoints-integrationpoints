@@ -34,6 +34,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Agent;
 using Relativity.Services.Objects;
 using MassCreateResult = Relativity.Services.Objects.DataContracts.MassCreateResult;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -157,6 +158,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.LifestyleTransient()
 			);
 			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
+			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
 #pragma warning disable 618
 			var dependencies = new IWindsorInstaller[]
