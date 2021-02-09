@@ -4,6 +4,7 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Installers;
 using Relativity.API;
 
@@ -40,6 +41,10 @@ namespace Relativity.IntegrationPoints.Services.Installers
 				.For<ILazyComponentLoader>()
 				.ImplementedBy<LazyOfTComponentLoader>()
 			);
+			container.Register(Component
+				.For<IRemovableAgent>()
+				.ImplementedBy<FakeNonRemovableAgent>()
+				.LifestyleTransient());
 		}
 
 		protected abstract IList<IWindsorInstaller> Dependencies { get; }
