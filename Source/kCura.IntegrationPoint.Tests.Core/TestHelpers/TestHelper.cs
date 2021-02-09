@@ -84,7 +84,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
 		}
 		
-
 		private void RegisterProxyInServiceManagerMock<T>(ExecutionIdentity executionIdentity) where T : IDisposable
 		{
 			_serviceManager.CreateProxy<T>(executionIdentity).Returns(_ => CreateProxy<T>());
@@ -97,7 +96,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		
 		public T CreateProxy<T>(string username) where T : IDisposable
 		{
-			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(username, RelativityPassword);
+			var userCredential = new UsernamePasswordCredentials(username, RelativityPassword);
 			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RelativityRestUri, userCredential);
 			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();

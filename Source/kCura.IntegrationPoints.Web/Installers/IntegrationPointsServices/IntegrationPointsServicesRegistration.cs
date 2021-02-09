@@ -1,9 +1,7 @@
 ﻿using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Context;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;

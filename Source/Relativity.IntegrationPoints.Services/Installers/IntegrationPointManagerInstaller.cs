@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data.Installers;
 using Relativity.IntegrationPoints.Services.Installers.Context;
 using Relativity.API;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Common.Agent;
 using Relativity.IntegrationPoints.Services.Installers.Authentication;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories;
@@ -40,6 +41,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
             container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
             container.Register(Component.For<IBackwardCompatibility>().ImplementedBy<BackwardCompatibility>().LifestyleTransient());
             container.Register(Component.For<IIntegrationPointRuntimeServiceFactory>().ImplementedBy<IntegrationPointRuntimeServiceFactory>().LifestyleTransient());
+            container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
             container
                 .AddWorkspaceContext(workspaceID)
