@@ -56,17 +56,24 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
             Guid newFieldGuid = Guid.Parse("58F380EE-6DC0-4506-A658-04E8E090BF2A");
-            SyncConfigurationRdo.GuidNames.Add(newFieldGuid, "Adler Sieben");
+            try
+            {
+                SyncConfigurationRdo.GuidNames.Add(newFieldGuid, "Adler Sieben");
 
 
-            // Act
-            (SyncConfigurationRdo.RdoStatus rdoStatus, HashSet<Guid> existingFieldsGuids, int? existingArtifactId) =
-                await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
+                // Act
+                (SyncConfigurationRdo.RdoStatus rdoStatus, HashSet<Guid> existingFieldsGuids, int? existingArtifactId) =
+                    await SyncConfigurationRdo.ExistsAsync(workspace.ArtifactID, SyncServicesMgr).ConfigureAwait(false);
 
-            // Assert
-            rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.OutOfDate);
-            existingArtifactId.Should().NotBeNull();
-            existingFieldsGuids.Contains(newFieldGuid).Should().BeFalse();
+                // Assert
+                rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.OutOfDate);
+                existingArtifactId.Should().NotBeNull();
+                existingFieldsGuids.Contains(newFieldGuid).Should().BeFalse();
+            }
+            finally
+            {
+                SyncConfigurationRdo.GuidNames.Remove(newFieldGuid);
+            }
         }
 
         [IdentifiedTest("BBEFF510-0381-4CCA-B978-10BA71721A71")]
