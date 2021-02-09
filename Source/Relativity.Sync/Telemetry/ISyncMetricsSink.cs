@@ -11,6 +11,10 @@
 		/// <param name="metric">Metric to log</param>
 		void Log(Metric metric);
 
+		/// <summary>
+		///     Send metric for given Sink
+		/// </summary>
+		/// <param name="metric">Metric to send</param>
 		void Send(IMetric metric);
 	}
 }

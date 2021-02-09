@@ -31,8 +31,10 @@ namespace Relativity.Sync.Telemetry
 		public void Send(IMetric metric)
 		{
 			var customData = ReadCustomData(metric);
-
-			_apmClient.Log(metric.Application, customData);
+			if (customData.Count > 0)
+			{
+				_apmClient.Log(_NEW_RELIC_INDEX_NAME, customData);
+			}
 		}
 
 		private Dictionary<string, object> ReadCustomData(IMetric metric) =>

@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Common;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Telemetry.Services.Metrics;
@@ -22,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		private Mock<ISyncLog> _syncLogMock;
 		private SyncJobParameters _syncJobParamters;
 
-		private ISyncMetricsSink _sut;
+		private SumSyncMetricsSink _sut;
 
 		private const int _WORKSPACE_ID = 111;
 		private readonly Guid _workspaceGuid = Guid.NewGuid();
@@ -83,10 +77,24 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		}
 
 		[Test]
+		public void Send_ShouldNotSendAnyMetrics_WhenMetricIsEmpty()
+		{
+			// Arrange
+			TestMetric metric = new TestMetric();
+
+			// Act
+			_sut.Send(metric);
+
+			// Assert
+			_metricsManagerMock.Verify(x => x.Dispose());
+			_metricsManagerMock.VerifyNoOtherCalls();
+		}
+
+		[Test]
 		public void Send_ShouldNotThrowAndSendAnyMetrics_WhenNoAttributesWasFound()
 		{
 			// Arrange
-			NonAttributeMetric metric = new NonAttributeMetric();
+			NonAttributeMetric metric = new NonAttributeMetric() { SomeValue = "value" };
 
 			// Act
 			Action action = () => _sut.Send(metric);
@@ -112,7 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 
 		internal class NonAttributeMetric : MetricBase
 		{
-
+			public string SomeValue { get; set; }
 		}
 	}
 }

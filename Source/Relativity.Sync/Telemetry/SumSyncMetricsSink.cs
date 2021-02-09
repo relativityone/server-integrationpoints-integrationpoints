@@ -86,7 +86,6 @@ namespace Relativity.Sync.Telemetry
 						Type = attr.Type,
 						Bucket = attr.Name,
 						Value = p.GetValue(metric),
-						WorkspaceGuid = default,
 						WorkflowId = metric.WorkflowId
 					};
 				}).ToList();

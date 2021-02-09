@@ -6,8 +6,6 @@ namespace Relativity.Sync.Telemetry.Metrics
 {
 	internal class MetricBase : IMetric
 	{
-		public string Application { get; set; }
-
 		public string WorkflowId { get; set; }
 		
 		public IEnumerable<PropertyInfo> GetMetricProperties()
