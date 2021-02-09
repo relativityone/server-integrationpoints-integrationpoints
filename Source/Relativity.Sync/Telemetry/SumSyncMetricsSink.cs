@@ -75,19 +75,21 @@ namespace Relativity.Sync.Telemetry
 
 		public IList<SumMetric> ReadSumMetrics(IMetric metric)
 		{
-			return metric.GetMetricProperties().Select(p =>
-			{
-				var attr = p.GetCustomAttribute<MetricAttribute>();
-
-				return new SumMetric
+			return metric.GetMetricProperties()
+				.Where(p => p.GetCustomAttribute<MetricAttribute>() != null)
+				.Select(p =>
 				{
-					Type = attr.Type,
-					Bucket = attr.Name,
-					Value = p.GetValue(this),
-					WorkspaceGuid = default,
-					WorkflowId = metric.WorkflowId
-				};
-			}).ToList();
+					var attr = p.GetCustomAttribute<MetricAttribute>();
+
+					return new SumMetric
+					{
+						Type = attr.Type,
+						Bucket = attr.Name,
+						Value = p.GetValue(metric),
+						WorkspaceGuid = default,
+						WorkflowId = metric.WorkflowId
+					};
+				}).ToList();
 		}
 
 		private Task SendSumMetricAsync(IMetricsManager metricsManager, SumMetric metric)
