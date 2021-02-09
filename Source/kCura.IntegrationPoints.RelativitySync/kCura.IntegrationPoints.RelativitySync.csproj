@@ -72,6 +72,7 @@
     <Compile Include="OldBatchesCleanup\OldBatchesCleanupServiceFactory.cs" />
     <Compile Include="OldBatchesCleanup\ServiceFactoryForAdmin.cs" />
     <Compile Include="Progress.cs" />
+    <Compile Include="RdoConfiguration.cs" />
     <Compile Include="RelativitySyncAdapter.cs" />
     <Compile Include="RipOverride\EmptyAgentValidator.cs" />
     <Compile Include="RipOverride\EmptyTagSavedSearchManager.cs" />

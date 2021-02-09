@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId);
 
-			ISyncConfigurationBuilder builder = new SyncConfigurationBuilder(syncContext, servicesMgr);
+			SyncConfigurationBuilder builder = new SyncConfigurationBuilder(syncContext, servicesMgr);
 
 			if (importSettings.ImageImport)
 			{
@@ -65,10 +65,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task<int> CreateImageSyncConfiguration(ISyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateImageSyncConfiguration(SyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
 			var syncConfigurationRoot = builder
+				.ConfigureRdos(RdoConfiguration.GetRdoOptions())
 				.ConfigureImageSync(
 					new ImageSyncOptions(
 						DataSourceType.SavedSearch, sourceConfiguration.SavedSearchArtifactId,
@@ -97,16 +98,17 @@ namespace kCura.IntegrationPoints.RelativitySync
 				var jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
 					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 
-				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry));
+				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
 			}
 
 			return await syncConfigurationRoot.SaveAsync();
 		}
 
-		private async Task<int> CreateDocumentSyncConfiguration(ISyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateDocumentSyncConfiguration(SyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
 		{
 			var syncConfigurationRoot = builder
+				.ConfigureRdos(RdoConfiguration.GetRdoOptions())
 				.ConfigureDocumentSync(
 					new DocumentSyncOptions(
 						sourceConfiguration.SavedSearchArtifactId,
@@ -135,7 +137,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				var jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
 					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 
-				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry));
+				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
 			}
 
 			return await syncConfigurationRoot.SaveAsync();
