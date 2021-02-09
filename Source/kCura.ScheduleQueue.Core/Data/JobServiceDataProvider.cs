@@ -41,6 +41,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			new UnlockScheduledJob(_context).Execute(agentId);
 		}
 
+		public void UnlockJob(long jobID)
+		{
+			new UnlockJob(_context).Execute(jobID);
+		}
+
 		public void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)

@@ -452,6 +452,10 @@ namespace kCura.IntegrationPoints.Data
 		public static ChoiceRef JobHistoryStopping = new ChoiceRef() {Name=@"Stopping", Guids = new List<Guid>() { JobHistoryStoppingGuid } };
 		public static Guid JobHistoryStoppedGuid = Guid.Parse("a29c5bcb-d3a6-4f81-877a-2a6556c996c3");
 		public static ChoiceRef JobHistoryStopped = new ChoiceRef() {Name=@"Stopped", Guids = new List<Guid>() { JobHistoryStoppedGuid } };
+		public static Guid JobHistorySuspendingGuid = Guid.Parse("c65658c3-79ea-4762-b78e-85d9f38785b6");
+		public static ChoiceRef JobHistorySuspending = new ChoiceRef() {Name = "Suspending", Guids = new List<Guid>() {JobHistorySuspendingGuid}};
+		public static Guid JobHistorySuspendedGuid = Guid.Parse("f219e060-d7e1-4666-964d-f229a1a13baa");
+		public static ChoiceRef JobHistorySuspended = new ChoiceRef() {Name = "Suspended", Guids = new List<Guid>() {JobHistorySuspendedGuid}};
 	}
 
 	public partial class JobTypeChoices

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -112,7 +113,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				integrationPointSerializer
 				);
 
-			IManagerFactory managerFactory = new ManagerFactory(Helper);
+			IManagerFactory managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 
 			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
 			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);

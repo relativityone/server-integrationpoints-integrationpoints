@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -14,6 +15,7 @@ using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
@@ -22,18 +24,24 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRemovableAgent _agent;
+		private readonly IJobServiceDataProvider _jobServiceDataProvider;
 		private readonly IAPILog _logger;
 
-		public ManagerFactory(IHelper helper)
+		public ManagerFactory(IHelper helper, IRemovableAgent agent, IJobServiceDataProvider jobServiceDataProvider)
 			: this(
 				helper,
-				new RepositoryFactory(helper, helper.GetServicesManager()))
+				new RepositoryFactory(helper, helper.GetServicesManager()),
+				agent,
+				jobServiceDataProvider)
 		{ }
 
-		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory)
+		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory, IRemovableAgent agent, IJobServiceDataProvider jobServiceDataProvider)
 		{
 			_helper = helper;
 			_repositoryFactory = repositoryFactory;
+			_agent = agent;
+			_jobServiceDataProvider = jobServiceDataProvider;
 			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
@@ -68,28 +76,18 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new QueueManager(_repositoryFactory);
 		}
 
-		public ISourceProviderManager CreateSourceProviderManager()
-		{
-			return new SourceProviderManager(_repositoryFactory);
-		}
-
 		public IErrorManager CreateErrorManager()
 		{
 			return new ErrorManager(_repositoryFactory);
 		}
 
-		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool isStoppableJob, CancellationTokenSource cancellationTokenSource = null)
+		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool supportsDrainStop,
+			CancellationTokenSource stopCancellationTokenSource = null, CancellationTokenSource drainStopCancellationTokenSource = null)
 		{
-			IJobStopManager manager;
-			if (isStoppableJob)
-			{
-				manager = new JobStopManager(jobService, jobHistoryService, _helper, jobIdentifier, jobId, cancellationTokenSource ?? new CancellationTokenSource());
-			}
-			else
-			{
-				manager = new NullableStopJobManager();
-			}
-			return manager;
+			JobStopManager jobStopManager = new JobStopManager(jobService, jobHistoryService, _jobServiceDataProvider, _helper, jobIdentifier, jobId, _agent,
+				supportsDrainStop, stopCancellationTokenSource ?? new CancellationTokenSource(), drainStopCancellationTokenSource ?? new CancellationTokenSource());
+			jobStopManager.ActivateTimer();
+			return jobStopManager;
 		}
 
 		public IAuditManager CreateAuditManager(int workspaceArtifactId)

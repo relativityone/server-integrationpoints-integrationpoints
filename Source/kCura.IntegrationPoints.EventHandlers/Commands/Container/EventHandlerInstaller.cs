@@ -2,6 +2,7 @@ using System.Linq;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Installers;
@@ -111,9 +112,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IOldBatchesCleanupServiceFactory>().ImplementedBy<OldBatchesCleanupServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IOldBatchesCleanupService>().UsingFactoryMethod(c => c.Resolve<IOldBatchesCleanupServiceFactory>().Create()).LifestyleTransient());
 			container.Register(Component.For<RemoveBatchesFromOldJobsCommand>().ImplementedBy<RemoveBatchesFromOldJobsCommand>().LifestyleTransient());
-			
-			container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
+			container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
+			container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
+			
 			container.AddSecretStoreMigrator();
 		}
 	}

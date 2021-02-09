@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -23,6 +24,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
@@ -65,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_serializer = Container.Resolve<ISerializer>();
 			_helper = Container.Resolve<IHelper>();
-			var managerFactory = new ManagerFactory(_helper);
+			var managerFactory = new ManagerFactory(_helper, new FakeNonRemovableAgent(), Container.Resolve<IJobServiceDataProvider>());
 			_tagsCreator = managerFactory.CreateTagsCreator();
 			_tagSavedSearchManager = new TagSavedSearchManager(
 				new TagSavedSearch(_repositoryFactory, new MultiObjectSavedSearchCondition(), _helper),

@@ -133,7 +133,6 @@
     <Compile Include="Keywords\KeywordConverterTests.cs" />
     <Compile Include="Managers\JobHistoryErrorManagerTests.cs" />
     <Compile Include="Managers\JobHistoryManagerTests.cs" />
-    <Compile Include="Managers\NullableStopJobManagerTests.cs" />
     <Compile Include="Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Managers\QueueManagerTests.cs" />
     <Compile Include="Managers\SourceJobManagerTests.cs" />
