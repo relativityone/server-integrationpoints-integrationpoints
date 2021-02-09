@@ -3,7 +3,7 @@
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	public interface ISyncConfigurationBuilder
+	public interface ISyncJobConfigurationBuilder
 	{
 		IDocumentSyncConfigurationBuilder ConfigureDocumentSync(DocumentSyncOptions options);
 

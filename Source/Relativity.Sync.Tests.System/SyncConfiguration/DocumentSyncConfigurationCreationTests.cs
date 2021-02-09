@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -11,14 +10,13 @@ using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
-	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal class DocumentSyncConfigurationCreationTests : SyncConfigurationCreationTestsBase
 	{
 		private int _savedSearchId;
@@ -33,7 +31,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			_destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspaceId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("8252CA9A-DC74-450C-890B-F096CD5068FC")]
 		public async Task Create_DefaultDocumentSyncConfiguration()
 		{
 			// Arrange
@@ -46,6 +44,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -53,7 +52,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("FDE3DCBD-0999-4159-A08F-184EFE383263")]
 		public async Task Create_DocumentSyncConfigurationWithMapping()
 		{
 			// Arrange
@@ -73,6 +72,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(
 					new DocumentSyncOptions(_savedSearchId, _destinationFolderId))
 				.WithFieldsMapping(builder => 
@@ -85,21 +85,22 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("0CC1F916-B359-4C12-8A2D-532935C0FB5C")]
 		public async Task Create_DocumentSyncConfigurationWithRetry()
 		{
 			// Arrange
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
-			expectedSyncConfiguration.JobHistoryToRetry = GetBasicRelativityObject(JobHistory.ArtifactID);
+			expectedSyncConfiguration.JobHistoryToRetryId = JobHistory.ArtifactID;
 
 			ISyncContext syncContext =
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
 			DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
-			RetryOptions retryOptions = new RetryOptions(JobHistory);
+			RetryOptions retryOptions = new RetryOptions(JobHistory.ArtifactID);
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(options)
 				.IsRetry(retryOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -119,6 +120,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		};
 
 		[TestCaseSource(nameof(OverwriteModeDataSource))]
+		[IdentifiedTest("26F1771E-3BCC-41C3-8BC2-BB3C2947A82A")]
 		public async Task Create_DocumentSyncConfigurationWithOverwriteAppendOnly(
 			OverwriteOptions overwriteOptions, string expectedOverwriteMode, string expectedFieldsOverlay)
 		{
@@ -134,6 +136,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(options)
 				.OverwriteMode(overwriteOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -142,7 +145,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("9C2B5ACA-10EC-4FEB-99FC-987C91F546DB")]
 		public async Task Create_DocumentSyncConfigurationWithRetainFolderStructureFromWorkspaceAndMoveExistingDocuments()
 		{
 			// Arrange
@@ -160,6 +163,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(options)
 				.DestinationFolderStructure(folderOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -168,7 +172,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("A289BCE8-D6FF-4C8A-91B2-128E216E1340")]
 		public async Task Create_DocumentSyncConfigurationWithFolderStructureFromFieldAndMoveExistingDocuments()
 		{
 			// Arrange
@@ -191,6 +195,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(options)
 				.DestinationFolderStructure(folderOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -199,7 +204,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("77DE9D01-7F32-4250-A425-4C6BFD9FD6B4")]
 		public async Task Create_DocumentSyncConfigurationWithEmailNotifications()
 		{
 			// Arrange
@@ -218,6 +223,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(options)
 				.EmailNotifications(emailOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -226,7 +232,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("C37D734D-33A2-413F-9EE7-842A408483E0")]
 		public async Task Create_DocumentSyncConfigurationWithCreateSavedSearchInDestination()
 		{
 			// Arrange
@@ -240,6 +246,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureDocumentSync(options)
 				.CreateSavedSearch(
 					new CreateSavedSearchOptions(true))

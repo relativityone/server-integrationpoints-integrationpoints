@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using Autofac;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage.RdoGuidsProviders;
 
 namespace Relativity.Sync.Storage
 {
@@ -32,6 +33,9 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<JobEndMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<NotificationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<JobStatusConsolidationConfiguration>().AsImplementedInterfaces();
+			
+			builder.RegisterType<RdoGuidConfiguration>().AsImplementedInterfaces();
+			
 			builder.RegisterType<FieldMappings>().As<IFieldMappings>();
 			builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
 			builder.RegisterType<JobProgressUpdaterFactory>().As<IJobProgressUpdaterFactory>();

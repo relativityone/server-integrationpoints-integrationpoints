@@ -21,6 +21,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.DataExchange;
 using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Extensions;
 using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
 
