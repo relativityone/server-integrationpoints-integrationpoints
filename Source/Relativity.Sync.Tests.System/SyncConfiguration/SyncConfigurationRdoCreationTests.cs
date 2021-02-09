@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             // Assert
             rdoStatus.Should().Be(SyncConfigurationRdo.RdoStatus.Exists);
             existingArtifactId.Should().NotBeNull();
-            SyncConfigurationRdo.GuidNames.Keys.Should().Contain(existingFieldsGuids);
+            SyncConfigurationRdo.GuidNames.All(x => existingFieldsGuids.Contains(x.Key)).Should().BeTrue();
         }
 
         [IdentifiedTest("B818A2E7-850D-4224-9765-9492742E8DFD")]
