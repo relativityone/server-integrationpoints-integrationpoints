@@ -429,9 +429,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				configuration = result.Objects.Single();
 			}
 
-			RelativityObjectValue jobHistoryToRetryValue =
-				ReadSyncConfigurationValue<RelativityObjectValue>(configuration,
-					SyncConfigurationRDO.JobHistoryToRetryGuid);
+			int? jobHistoryToRetryId =
+				ReadSyncConfigurationValue<int?>(configuration,
+					SyncConfigurationRDO.JobHistoryToRetryIdGuid);
 
 			return new SyncConfigurationRDO
 			{
@@ -450,7 +450,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				MoveExistingDocuments = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRDO.MoveExistingDocumentsGuid),
 				NativesBehavior = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRDO.NativesBehaviorGuid),
 				RDOArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, SyncConfigurationRDO.RdoArtifactTypeIdGuid),
-				JobHistoryToRetry = jobHistoryToRetryValue == null ? null : GetBasicRelativityObject(jobHistoryToRetryValue.ArtifactID),
+				JobHistoryToRetry = jobHistoryToRetryId == null ? null : GetBasicRelativityObject(jobHistoryToRetryId.Value),
 				ImageImport = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRDO.ImageImportGuid),
 				IncludeOriginalImages = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRDO.IncludeOriginalImagesGuid),
 				ProductionImagePrecedence = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRDO.ProductionImagePrecedenceGuid),
@@ -572,7 +572,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			public static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
 			public static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
 
-			public static readonly Guid JobHistoryToRetryGuid = new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
+			public static readonly Guid JobHistoryToRetryIdGuid = new Guid("DFCEC105-F6E1-44BE-B614-3876FE002FF6");
 
 			public static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
 			public static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
