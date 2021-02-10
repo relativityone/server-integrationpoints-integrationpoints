@@ -21,11 +21,6 @@
 		}
 
 		/// <inheritdoc />
-		public void Log(Metric metric)
-		{
-			_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.Name, metric);
-		}
-
 		public void Send(IMetric metric)
 		{
 			_logger.LogInformation("Metric: {metric}, Properties: {@metricProperties}", metric.GetType(), metric);

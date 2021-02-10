@@ -14,10 +14,6 @@
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED)]
 		public long? BytesNativesTransferred { get; set; }
 
-		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED)]
-		public long? BytesTransferred { get; set; }
-
-
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED)]
 		public long? TotalMappedFields { get; set; }
 	}

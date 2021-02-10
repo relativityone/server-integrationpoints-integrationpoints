@@ -45,8 +45,8 @@
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Between1And10MB";
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Between1And10MB";
 
-			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWWEEN10AND20MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Between10And20MB";
-			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWWEEN10AND20MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Between10And20MB";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN10AND20MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Between10And20MB";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN10AND20MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Between10And20MB";
 
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Over20MB";
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Over20MB";
@@ -61,6 +61,8 @@
 
 			public const string TAG_DOCUMENTS_DESTINATION_UPDATE_TIME = "Relativity.Sync.TagDocuments.DestinationUpdate.Time";
 			public const string TAG_DOCUMENTS_DESTINATION_UPDATE_COUNT = "Relativity.Sync.TagDocuments.DestinationUpdate.Count";
+
+			public const string LONG_TEXT_STREAM_RETRY_COUNT = "Relativity.Sync.LongTextStreamBuilder.Retry.Count";
 		}
 	}
 }

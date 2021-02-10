@@ -23,11 +23,6 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <inheritdoc />
-		public void Log(Metric metric)
-		{
-			_apmClient.Log(_NEW_RELIC_INDEX_NAME, metric.ToDictionary());
-		}
-
 		public void Send(IMetric metric)
 		{
 			var customData = ReadCustomData(metric);

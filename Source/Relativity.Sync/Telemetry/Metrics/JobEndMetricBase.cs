@@ -18,5 +18,8 @@
 
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED)]
 		public long? TotalRecordsRequested { get; set; }
+
+		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED)]
+		public long? BytesTransferred { get; set; }
 	}
 }

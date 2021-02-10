@@ -10,5 +10,7 @@ namespace Relativity.Sync.Telemetry
 		string WorkflowId { get; set; }
 
 		IEnumerable<PropertyInfo> GetMetricProperties();
+
+		IEnumerable<SumMetric> GetSumMetrics();
 	}
 }

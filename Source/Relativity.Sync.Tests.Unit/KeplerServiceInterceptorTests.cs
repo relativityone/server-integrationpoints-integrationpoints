@@ -14,6 +14,7 @@ using Relativity.Services.Exceptions;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Utils;
 
@@ -31,11 +32,6 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IRandom> _randomFake;
 
 		private const int _MAX_NUMBER_OF_HTTP_RETRIES = 4;
-
-		private readonly string _durationMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Duration";
-		private readonly string _successMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Success";
-		private readonly string _failedMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.Failed";
-		private readonly string _authRefreshMetricName = $"Relativity.Sync.KeplerServiceInterceptor.{nameof(IStubForInterception)}.AuthRefresh";
 
 		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
 
@@ -83,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
-			_syncMetricsMock.Verify(x => x.TimedOperation(_durationMetricName, _executionTime, ExecutionStatus.Completed), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.Duration == _executionTime.TotalMilliseconds)), Times.Once);
 		}
 
 		[Test]
@@ -97,7 +93,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(x => x.TimedOperation(_durationMetricName, _executionTime, ExecutionStatus.Failed), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForFailed != null)), Times.Once);
 		}
 
 		[Test]
@@ -108,7 +104,8 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_successMetricName, 0), Times.Once);
+			
+			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForSuccess != null)), Times.Once);
 		}
 
 		[Test]
@@ -122,14 +119,14 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_failedMetricName, 0), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForFailed == 0)), Times.Once);
 		}
 
 		[Test]
 		public void Execute_ShouldNotFail_WhenMetricsFails()
 		{
 			// ARRANGE
-			_syncMetricsMock.Setup(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>(), It.IsAny<Dictionary<string, object>>())).Throws<Exception>();
+			_syncMetricsMock.Setup(x => x.Send(It.IsAny<KeplerMetric>())).Throws<Exception>();
 
 			// ACT
 			Func<Task> action = () => _sut.ExecuteAsync();
@@ -146,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterceptionMock.Verify(x => x.Dispose(), Times.Once);
-			_syncMetricsMock.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>(), It.IsAny<Dictionary<string, object>>()), Times.Never);
+			_syncMetricsMock.Verify(x => x.Send(It.IsAny<KeplerMetric>()), Times.Never);
 		}
 
 		[Test]
@@ -240,7 +237,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<SyncMaxKeplerRetriesException>();
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_failedMetricName, _MAX_NUMBER_OF_HTTP_RETRIES), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForFailed == _MAX_NUMBER_OF_HTTP_RETRIES)), Times.Once);
 		}
 
 		[Test]
@@ -256,7 +253,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _sut.ExecuteAsync().ConfigureAwait(false);
 
 			// ASSERT
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_authRefreshMetricName, expectedRefreshes), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.AuthTokenExpirationCount == expectedRefreshes)), Times.Once);
 		}
 
 		[Test]
@@ -272,7 +269,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _sut.ExecuteAsync().ConfigureAwait(false);
 
 			// ASSERT
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(_successMetricName, expectedRetries), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForSuccess == expectedRetries)), Times.Once);
 		}
 
 		[Test]

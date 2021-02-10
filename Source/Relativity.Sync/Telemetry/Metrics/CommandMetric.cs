@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class CommandMetric : MetricBase
+	internal class CommandMetric : NamedMetricBase
 	{
 		public ExecutionStatus? ExecutionStatus { get; set; }
 
@@ -10,7 +10,5 @@
 		public CommandMetric(string commandName) : base(commandName)
 		{
 		}
-
-
 	}
 }

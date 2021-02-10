@@ -10,8 +10,6 @@ namespace Relativity.Sync.Telemetry
 
 		public object Value { get; set; }
 
-		public Guid WorkspaceGuid { get; set; }
-
 		public string WorkflowId { get; set; }
 	}
 }
