@@ -73,10 +73,10 @@ namespace Relativity.Sync.Telemetry
 			return sumMetrics;
 		}
 
-		public IList<SumMetric> ReadSumMetrics(IMetric metric)
+		private IList<SumMetric> ReadSumMetrics(IMetric metric)
 		{
 			return metric.GetMetricProperties()
-				.Where(p => p.GetCustomAttribute<MetricAttribute>() != null)
+				.Where(p => p.GetCustomAttribute<MetricAttribute>() != null && p.GetValue(this) != null)
 				.Select(p =>
 				{
 					var attr = p.GetCustomAttribute<MetricAttribute>();
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Telemetry
 					return new SumMetric
 					{
 						Type = attr.Type,
-						Bucket = attr.Name,
+						Bucket = attr.Name ?? metric.Name,
 						Value = p.GetValue(metric),
 						WorkflowId = metric.WorkflowId
 					};

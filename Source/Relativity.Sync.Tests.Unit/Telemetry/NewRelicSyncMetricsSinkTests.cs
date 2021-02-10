@@ -27,31 +27,28 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		public void Send_ShouldSendMetric_WhenValuesHasBeenFound()
 		{
 			// Arrange
-			IMetric metric = new TestMetric {Value = 1};
-
-			Dictionary<string, object> expectedCustomData = new Dictionary<string, object>
-			{
-				{"Value", 1}
-			};
+			TestMetric metric = new TestMetric {Value = 1};
 
 			// Act
 			_sut.Send(metric);
 
 			// Assert
-			_apmClientMock.Verify(x => x.Log(_APPLICATION_NAME, expectedCustomData));
+			_apmClientMock.Verify(x => x.Log(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(
+				d => d["Value"].Equals(1))));
 		}
 
 		[Test]
-		public void Send_ShouldNotSendMetric_WhenMetricIsEmpty()
+		public void Send_ShouldSendMetric_WhenPropertyInMetricIsNull()
 		{
 			// Arrange
-			IMetric metric = new TestMetric();
+			TestMetric metric = new TestMetric();
 
 			// Act
 			_sut.Send(metric);
 
 			// Assert
-			_apmClientMock.VerifyNoOtherCalls();
+			_apmClientMock.Verify(x => x.Log(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(
+				d => d["Value"] == null)));
 		}
 
 		internal class TestMetric : MetricBase

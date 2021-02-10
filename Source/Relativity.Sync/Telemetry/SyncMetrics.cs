@@ -6,7 +6,7 @@ namespace Relativity.Sync.Telemetry
 	/// <summary>
 	///     Entry point for logging metrics. Dispatches metrics to registered <see cref="ISyncMetricsSink" />s for processing.
 	/// </summary>
-	internal sealed class SyncMetrics : ISyncMetrics
+	internal class SyncMetrics : ISyncMetrics
 	{
 		private readonly IEnumerable<ISyncMetricsSink> _sinks;
 		private readonly SyncJobParameters _syncJobParameters;
@@ -24,6 +24,8 @@ namespace Relativity.Sync.Telemetry
 
 		public void Send(IMetric metric)
 		{
+			metric.WorkflowId = _syncJobParameters.WorkflowId.Value;
+
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
 				sink.Send(metric);

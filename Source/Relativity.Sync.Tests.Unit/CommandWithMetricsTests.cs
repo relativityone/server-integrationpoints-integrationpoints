@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
@@ -58,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(expectedName, It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>()), Times.Once);
+			VerifySentMetric(m => m.Name == expectedName);
 		}
 
 		[Test]
@@ -68,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Completed));
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Completed);
 		}
 
 		[Test]
@@ -81,7 +83,8 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Failed));
+
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Failed);
 		}
 
 		[Test]
@@ -96,7 +99,8 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<OperationCanceledException>();
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Canceled));
+			
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Canceled);
 		}
 
 
@@ -110,37 +114,44 @@ namespace Relativity.Sync.Tests.Unit
 			await _command.ExecuteAsync(tokenSource.Token).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Canceled));
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Canceled);
 		}
 
 		[Test]
 		public async Task ItShouldMeasureExecuteTimeProperly()
 		{
-			const double milliseconds = 10;
-			TimeSpan executionTime = TimeSpan.FromMilliseconds(milliseconds);
+			const double expectedMilliseconds = 10;
+			TimeSpan executionTime = TimeSpan.FromMilliseconds(expectedMilliseconds);
 			_stopwatch.Setup(x => x.Elapsed).Returns(executionTime);
 
 			// ACT
 			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<TimeSpan>(actualTimespan => 
-				actualTimespan.Equals(executionTime)), ExecutionStatus.Completed));
+			VerifySentMetric(m =>
+				m.Duration == expectedMilliseconds &&
+				m.ExecutionStatus == ExecutionStatus.Completed);
 		}
 
 		[Test]
 		public async Task ItShouldMeasureCanExecuteTimeProperly()
 		{
-			const double milliseconds = 10;
-			TimeSpan executionTime = TimeSpan.FromMilliseconds(milliseconds);
+			const double expectedMilliseconds = 10;
+			TimeSpan executionTime = TimeSpan.FromMilliseconds(expectedMilliseconds);
 			_stopwatch.Setup(x => x.Elapsed).Returns(executionTime);
 
 			// ACT
 			await _command.CanExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<TimeSpan>(actualTimespan =>
-				actualTimespan.Equals(executionTime)), ExecutionStatus.Completed));
+			VerifySentMetric(m => 
+				m.Duration == expectedMilliseconds &&
+				m.ExecutionStatus == ExecutionStatus.Completed);
+		}
+
+		private void VerifySentMetric(Expression<Func<CommandMetric, bool>> validationFunc)
+		{
+			_metrics.Verify(x => x.Send(It.Is(validationFunc)));
 		}
 	}
 }

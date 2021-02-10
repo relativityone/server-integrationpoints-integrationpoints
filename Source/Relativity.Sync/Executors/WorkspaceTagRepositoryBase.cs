@@ -14,6 +14,8 @@ namespace Relativity.Sync.Executors
 
 		private readonly ISyncLog _logger;
 
+		protected const string _UNIT_OF_MEASURE = "document(s)";
+
 		protected WorkspaceTagRepositoryBase(ISyncLog logger)
 		{
 			_logger = logger;

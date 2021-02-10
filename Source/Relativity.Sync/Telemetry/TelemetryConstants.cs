@@ -55,6 +55,12 @@
 			public const string DATA_LONGTEXT_STREAM_LARGEST_TIME = "Relativity.Sync.Data.LongTextStream.LargestLongText.Time";
 
 			public const string KEPLER_SERVICE_INTERCEPTOR_PREFIX = "Relativity.Sync.KeplerServiceInterceptor";
+
+			public const string TAG_DOCUMENTS_SOURCE_UPDATE_TIME = "Relativity.Sync.TagDocuments.SourceUpdate.Time";
+			public const string TAG_DOCUMENTS_SOURCE_UPDATE_COUNT = "Relativity.Sync.TagDocuments.SourceUpdate.Count";
+
+			public const string TAG_DOCUMENTS_DESTINATION_UPDATE_TIME = "Relativity.Sync.TagDocuments.DestinationUpdate.Time";
+			public const string TAG_DOCUMENTS_DESTINATION_UPDATE_COUNT = "Relativity.Sync.TagDocuments.DestinationUpdate.Count";
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync
@@ -54,7 +55,11 @@ namespace Relativity.Sync
 			finally
 			{
 				_stopwatch.Stop();
-				_metrics.TimedOperation(typeof(T).Name, _stopwatch.Elapsed, status);
+				_metrics.Send(new CommandMetric(typeof(T).Name)
+				{
+					ExecutionStatus = status,
+					Duration = _stopwatch.Elapsed.TotalMilliseconds
+				});
 			}
 		}
 	}

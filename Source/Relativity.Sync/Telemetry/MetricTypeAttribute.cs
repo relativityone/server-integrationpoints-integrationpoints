@@ -14,5 +14,10 @@ namespace Relativity.Sync.Telemetry
 			Type = type;
 			Name = name;
 		}
+
+		public MetricAttribute(MetricType type)
+		{
+			Type = type;
+		}
 	}
 }

@@ -12,6 +12,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
@@ -56,7 +57,8 @@ namespace Relativity.Sync.Tests.System
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
 				new EmptyLogger(),
-				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, jobHistoryId)));
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, jobHistoryId)),
+				() => new StopwatchWrapper());
 
 			IList<TagDocumentsResult<int>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
 
