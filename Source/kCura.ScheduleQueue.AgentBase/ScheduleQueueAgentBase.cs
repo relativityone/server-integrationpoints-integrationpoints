@@ -145,8 +145,18 @@ namespace kCura.ScheduleQueue.AgentBase
 					}
 
 					TaskResult jobResult = ProcessJob(nextJob);
-					FinalizeJobExecution(nextJob, jobResult);
-					nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+					
+					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
+					// Also do not finalize the job (i.e. do not remove it from the queue).
+					if (jobResult.Status == TaskStatusEnum.DrainStopped)
+					{
+						nextJob = null;
+					}
+					else
+					{
+						FinalizeJobExecution(nextJob, jobResult);
+						nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+					}
 				}
 
 				if (ToBeRemoved)
@@ -201,6 +211,12 @@ namespace kCura.ScheduleQueue.AgentBase
 			if (!Enabled)
 			{
 				NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
+				return null;
+			}
+
+			if (ToBeRemoved)
+			{
+				NotifyAgentTab(LogCategory.Info, "Agent is going to be removed. Cannot process any more jobs.");
 				return null;
 			}
 

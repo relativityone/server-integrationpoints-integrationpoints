@@ -59,17 +59,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 					if (cancellationTokens.StopCancellationToken.IsCancellationRequested)
 					{
 						await MarkJobAsStoppedAsync().ConfigureAwait(false);
+						taskResult = new TaskResult { Status = TaskStatusEnum.Success };
 					}
 					else if (cancellationTokens.DrainStopCancellationToken.IsCancellationRequested)
 					{
 						await MarkJobAsDrainStoppedAsync().ConfigureAwait(false);
+						taskResult = new TaskResult { Status = TaskStatusEnum.DrainStopped };
 					}
 					else
 					{
 						await MarkJobAsCompletedAsync().ConfigureAwait(false);
+						taskResult = new TaskResult { Status = TaskStatusEnum.Success };
 					}
-
-					taskResult = new TaskResult { Status = TaskStatusEnum.Success };
 				}
 			}
 			catch (OperationCanceledException)

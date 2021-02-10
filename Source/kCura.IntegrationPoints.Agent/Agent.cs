@@ -1,6 +1,6 @@
-﻿using System;
+using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
-using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
@@ -26,14 +26,16 @@ using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
+using kCura.WinEDDS.Service;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
 {
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
-	[System.ComponentModel.Description("An agent that manages Integration Point jobs.")]
+	[Description("An agent that manages Integration Point jobs.")]
 	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IRemovableAgent, IDisposable
 	{
 		private ErrorService _errorService;
@@ -88,14 +90,14 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					try
 					{
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IWindsorContainer>().Instance(ripContainerForSync));
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IMetricsFactory>().ImplementedBy<MetricsFactory>().LifestyleTransient());
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<ISyncJobMetric>().ImplementedBy<SyncJobMetric>().LifestyleTransient());
-						ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<IJobHistorySyncService>().ImplementedBy<JobHistorySyncService>().LifestyleTransient());
+						ripContainerForSync.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
+						ripContainerForSync.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
+						ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
+						ripContainerForSync.Register(Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
+						ripContainerForSync.Register(Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
+						ripContainerForSync.Register(Component.For<IMetricsFactory>().ImplementedBy<MetricsFactory>().LifestyleTransient());
+						ripContainerForSync.Register(Component.For<ISyncJobMetric>().ImplementedBy<SyncJobMetric>().LifestyleTransient());
+						ripContainerForSync.Register(Component.For<IJobHistorySyncService>().ImplementedBy<JobHistorySyncService>().LifestyleTransient());
 
 						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
 						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
@@ -188,7 +190,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			try
 			{
-				ripContainerForSync.Register(Castle.MicroKernel.Registration.Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
+				ripContainerForSync.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 				RelativitySyncConstrainsChecker constrainsChecker = ripContainerForSync.Resolve<RelativitySyncConstrainsChecker>();
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
