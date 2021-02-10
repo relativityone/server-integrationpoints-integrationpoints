@@ -38,11 +38,6 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			JobHistory = await Rdos.CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory, SourceWorkspaceId).ConfigureAwait(false);
 		}
 
-		protected static RelativityObject GetBasicRelativityObject(int artifactId)
-		{
-			return new RelativityObject() { ArtifactID = artifactId };
-		}
-
 		protected async Task AssertCreatedConfigurationAsync(int createdConfigurationId, SyncConfigurationRdo expectedConfiguration)
 		{
 			var createdSyncConfiguration = await ReadSyncConfigurationAsync(createdConfigurationId).ConfigureAwait(false);
@@ -80,9 +75,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				configuration = result.Objects.Single();
 			}
 
-			RelativityObjectValue jobHistoryToRetryValue =
-				ReadSyncConfigurationValue<RelativityObjectValue>(configuration,
-					SyncConfigurationRdo.JobHistoryToRetryGuid);
+			int? jobHistoryToRetryValue =
+				ReadSyncConfigurationValue<int?>(configuration,
+					SyncConfigurationRdo.JobHistoryToRetryIdGuid);
 
 			return new SyncConfigurationRdo
 			{
@@ -101,7 +96,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				MoveExistingDocuments = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRdo.MoveExistingDocumentsGuid),
 				NativesBehavior = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.NativesBehaviorGuid),
 				RdoArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, SyncConfigurationRdo.RdoArtifactTypeIdGuid),
-				JobHistoryToRetry = jobHistoryToRetryValue == null ? null : GetBasicRelativityObject(jobHistoryToRetryValue.ArtifactID),
+				JobHistoryToRetryId = jobHistoryToRetryValue,
 				ImageImport = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRdo.ImageImportGuid),
 				IncludeOriginalImages = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRdo.IncludeOriginalImagesGuid),
 				ProductionImagePrecedence = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.ProductionImagePrecedenceGuid),

@@ -6,14 +6,13 @@ using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
-	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal class ImageSyncConfigurationSearchToFolderCreationTests : SyncConfigurationCreationTestsBase
 	{
 		private int _savedSearchId;
@@ -28,7 +27,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			_destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspaceId).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("2889569E-95A8-4BDC-9177-5220B2C2740F")]
 		public async Task Create_DefaultImageSyncConfigurationSavedSearchToFolder()
 		{
 			// Arrange
@@ -42,6 +41,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureImageSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("89DF5EE0-3C3A-429B-B449-900F71446EFE")]
 		public async Task Create_ImageSyncConfigurationWithCopyImage()
 		{
 			// Arrange
@@ -65,6 +65,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureImageSync(options)
 				.SaveAsync().ConfigureAwait(false);
 
@@ -72,22 +73,23 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("9A0DBAF9-94F7-4D10-AFA3-939BDECEB8A3")]
 		public async Task Create_ImageSyncConfigurationWithRetry()
 		{
 			// Arrange
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
-			expectedSyncConfiguration.JobHistoryToRetry = GetBasicRelativityObject(JobHistory.ArtifactID);
+			expectedSyncConfiguration.JobHistoryToRetryId = JobHistory.ArtifactID;
 
 			ISyncContext syncContext =
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
 			ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
 				_savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
-			RetryOptions retryOptions = new RetryOptions(JobHistory);
+			RetryOptions retryOptions = new RetryOptions(JobHistory.ArtifactID);
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureImageSync(options)
 				.IsRetry(retryOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -123,6 +125,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureImageSync(options)
 				.OverwriteMode(overwriteOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -150,6 +153,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureImageSync(options)
 				.ProductionImagePrecedence(productionOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -178,6 +182,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureImageSync(options)
 				.EmailNotifications(emailOptions)
 				.SaveAsync().ConfigureAwait(false);
@@ -201,6 +206,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureImageSync(options)
 				.CreateSavedSearch(
 					new CreateSavedSearchOptions(true))

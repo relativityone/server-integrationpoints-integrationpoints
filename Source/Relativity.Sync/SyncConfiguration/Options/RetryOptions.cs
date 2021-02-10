@@ -5,9 +5,9 @@ namespace Relativity.Sync.SyncConfiguration.Options
 {
 	public class RetryOptions
 	{
-		public RelativityObject JobToRetry { get; }
+		public int JobToRetry { get; }
 
-		public RetryOptions(RelativityObject jobToRetry)
+		public RetryOptions(int jobToRetry)
 		{
 			JobToRetry = jobToRetry;
 		}

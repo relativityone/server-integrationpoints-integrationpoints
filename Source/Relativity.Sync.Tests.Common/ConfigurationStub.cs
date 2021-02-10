@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 
 namespace Relativity.Sync.Tests.Common
 {
@@ -14,7 +15,7 @@ namespace Relativity.Sync.Tests.Common
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentDataSourceSnapshotConfiguration, IDocumentRetryDataSourceSnapshotConfiguration, IImageDataSourceSnapshotConfiguration, IImageRetryDataSourceSnapshotConfiguration,
-		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration
+		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -202,5 +203,9 @@ namespace Relativity.Sync.Tests.Common
 		public bool IsImageJob { get; set; }
 
 		public string IdentifierColumn { get; set; }
+
+		public IJobHistoryRdoGuidsProvider JobHistory { get; } = DefaultGuids.JobHistory;
+
+		public IJobHistoryErrorGuidsProvider JobHistoryError { get; } = DefaultGuids.JobHistoryError;
 	}
 }

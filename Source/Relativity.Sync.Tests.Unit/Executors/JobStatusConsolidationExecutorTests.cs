@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			SetUpUpdateCall(success: true);
 
-			_sut = new JobStatusConsolidationExecutor(_batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryStub.Object);
+			_sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryStub.Object);
 		}
 
 		[Test]
