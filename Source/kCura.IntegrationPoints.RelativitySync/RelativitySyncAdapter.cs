@@ -60,6 +60,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 					{
 						await MarkJobAsStoppedAsync().ConfigureAwait(false);
 					}
+					else if (cancellationTokens.DrainStopCancellationToken.IsCancellationRequested)
+					{
+						await MarkJobAsDrainStoppedAsync().ConfigureAwait(false);
+					}
 					else
 					{
 						await MarkJobAsCompletedAsync().ConfigureAwait(false);
@@ -163,6 +167,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Failed to mark job as stopped.");
+			}
+		}
+
+		private async Task MarkJobAsDrainStoppedAsync()
+		{
+			try
+			{
+				await _jobHistorySyncService.MarkJobAsDrainStoppedAsync(_job).ConfigureAwait(false);
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Failed to mark job as drain-stopped.");
 			}
 		}
 
