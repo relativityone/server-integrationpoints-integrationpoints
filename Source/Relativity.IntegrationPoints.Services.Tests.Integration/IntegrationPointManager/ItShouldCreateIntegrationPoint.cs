@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 using Relativity.IntegrationPoints.Services.Tests.Integration.Helpers;
 using Relativity.Testing.Identification;
@@ -20,11 +19,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 	[Feature.DataTransfer.IntegrationPoints]
 	public class ItShouldCreateIntegrationPoint : RelativityProviderTemplate
 	{
+		private IIntegrationPointManager _client;
+
 		public ItShouldCreateIntegrationPoint() : base($"create_s_{Utils.FormattedDateTimeNow}", $"create_d_{Utils.FormattedDateTimeNow}")
 		{
 		}
-
-		private IIntegrationPointManager _client;
 
 		public override void SuiteSetup()
 		{
@@ -43,10 +42,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 			public string Username { get; set; }
 			public string Password { get; set; }
 		}
+
 		[IdentifiedTest("3a9a3545-a6d3-4cff-82b6-7cc9694f5884")]
 		public void ItShouldCreateExportToLoadFileIntegrationPoint()
 		{
-			var overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).Result.First(x => x.Name == "Append/Overlay");
+			OverwriteFieldsModel overwriteFieldsModel = _client.GetOverwriteFieldsChoicesAsync(SourceWorkspaceArtifactID).GetAwaiter().GetResult().First(x => x.Name == "Append/Overlay");
 
 			var sourceConfiguration = new RelativityProviderSourceConfiguration
 			{
@@ -111,7 +111,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 				IntegrationPoint = integrationPointModel
 			};
 
-			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).Result;
+			IntegrationPointModel createdIntegrationPoint = _client.CreateIntegrationPointAsync(createRequest).GetAwaiter().GetResult();
 
 			IntegrationPoint actualIntegrationPoint =
 				IntegrationPointRepository.ReadWithFieldMappingAsync(createdIntegrationPoint.ArtifactId).GetAwaiter().GetResult();
@@ -133,7 +133,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 				CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly, "profile_name", "Append Only"));
 
 			IntegrationPointModel integrationPointModel = _client
-				.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactID, profile.ArtifactID, integrationPointName).Result;
+				.CreateIntegrationPointFromProfileAsync(SourceWorkspaceArtifactID, profile.ArtifactID, integrationPointName).GetAwaiter().GetResult();
 
 			IntegrationPoint actualIntegrationPoint =
 				IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointModel.ArtifactId).GetAwaiter().GetResult();

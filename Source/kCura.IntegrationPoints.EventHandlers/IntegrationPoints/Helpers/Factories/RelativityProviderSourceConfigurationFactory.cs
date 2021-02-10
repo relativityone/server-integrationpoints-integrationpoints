@@ -1,14 +1,19 @@
 ﻿using System;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
@@ -22,8 +27,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IWebApiLoginService credentialProvider = WebApiLoginServiceFactoryDeprecated.Create(logger);
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
+			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, helper);
 
-			IManagerFactory managerFactory = new ManagerFactory(helper);
+			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			Func<IProductionManager> productionManagerFactory = () => new ProductionManager(logger, repositoryFactory, serviceManagerProvider);
 

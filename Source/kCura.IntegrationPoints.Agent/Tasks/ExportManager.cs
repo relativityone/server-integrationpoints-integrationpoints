@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -22,15 +23,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportManager : SyncManager
 	{
-		#region Fields
-
 		private readonly IExportInitProcessService _exportInitProcessService;
 		private readonly IAPILog _logger;
-
-		#endregion //Private Fields
-
-		#region Properties
-
+		
 		public override int BatchSize
 		{
 			get
@@ -40,11 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				return int.MaxValue;
 			}
 		}
-
-		#endregion //Properties
-
-		#region Constructors
-
+		
 		public ExportManager(
 			ICaseServiceContext caseServiceContext,
 			IDataProviderFactory providerFactory,
@@ -67,15 +58,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_exportInitProcessService = exportInitProcessService;
 			_logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();
 		}
-
-		#endregion //Constructors
-
-		#region Methods
-
+		
 		protected override TaskType GetTaskType()
 		{
 			return TaskType.ExportWorker;
 		}
+
 		/// <summary>
 		///     This method returns record (batch) ids that should be processed by ExportWorker class
 		/// </summary>
@@ -92,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         public override long BatchTask(Job job, IEnumerable<string> batchIDs)
 		{
 		    LogBatchTaskStart(job, batchIDs);
-            var integrationPoint = IntegrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            IntegrationPoint integrationPoint = IntegrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
 
 			if (integrationPoint == null)
 			{
@@ -129,7 +117,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw;
 			}
 		}
-	    #endregion //Methods
 
 		#region Logging
 

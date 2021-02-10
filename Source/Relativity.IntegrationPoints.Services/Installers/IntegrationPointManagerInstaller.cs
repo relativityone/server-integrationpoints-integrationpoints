@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data.Installers;
 using Relativity.IntegrationPoints.Services.Installers.Context;
 using Relativity.API;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Common.Agent;
 using Relativity.IntegrationPoints.Services.Installers.Authentication;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories;

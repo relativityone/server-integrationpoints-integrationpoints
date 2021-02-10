@@ -48,6 +48,7 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="CancellationAdapter.cs" />
+    <Compile Include="CompositeCancellationToken.cs" />
     <Compile Include="ExtendedJob.cs" />
     <Compile Include="FieldMapHelper.cs" />
     <Compile Include="GlobalSuppressions.cs" />

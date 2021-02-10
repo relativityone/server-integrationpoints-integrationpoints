@@ -76,7 +76,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 		public async Task EventHandler_ShouldDeleteAndUpdateExistingProfiles()
 		{
 			// Act
-			WorkspaceRef createdWorkspace = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultName(SystemTestsSetupFixture.SourceWorkspace.Name)
+			WorkspaceRef createdWorkspace = await SystemTestsSetupFixture.CreateManagedWorkspaceWithDefaultNameAsync(SystemTestsSetupFixture.SourceWorkspace.Name)
 				.ConfigureAwait(false);
 
 			// Assert

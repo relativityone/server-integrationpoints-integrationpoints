@@ -20,15 +20,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private static ITestHelper Helper => new TestHelper();
 
-		public static async Task<WorkspaceRef> GetWorkspaceAsync(int workspaceId)
-			=> await GetWorkspaceAsync(x => x.ArtifactID == workspaceId).ConfigureAwait(false);
+		public static Task<WorkspaceRef> GetWorkspaceAsync(int workspaceId) => GetWorkspaceAsync(x => x.ArtifactID == workspaceId);
 
-		public static async Task<WorkspaceRef> GetWorkspaceAsync(string workspaceName)
-			=> await GetWorkspaceAsync(x => x.Name == workspaceName).ConfigureAwait(false);
+		public static Task<WorkspaceRef> GetWorkspaceAsync(string workspaceName) => GetWorkspaceAsync(x => x.Name == workspaceName);
 
-		public static async Task<WorkspaceRef> CreateWorkspaceAsync(string name)
+		public static Task<WorkspaceRef> CreateWorkspaceAsync(string name)
 		{
-			return await CreateWorkspaceAsync(name, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
+			return CreateWorkspaceAsync(name, WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME);
 		}
 
 		public static async Task<WorkspaceRef> CreateWorkspaceAsync(string name, string templateWorkspaceName)

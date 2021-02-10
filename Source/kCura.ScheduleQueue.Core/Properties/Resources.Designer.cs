@@ -19,7 +19,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -371,6 +371,22 @@ namespace kCura.ScheduleQueue.Core.Properties {
         internal static string InsertJobLogEntry {
             get {
                 return ResourceManager.GetString("InsertJobLogEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE 
+        ///				[eddsdbo].[{0}]
+        ///SET
+        ///				[LockedByAgentID] = NULL
+        ///FROM 
+        ///				[eddsdbo].[{0}] WITH (UPDLOCK, ROWLOCK)
+        ///WHERE
+        ///				[LockedByAgentID] = @AgentID.
+        /// </summary>
+        internal static string UnlockJob {
+            get {
+                return ResourceManager.GetString("UnlockJob", resourceCulture);
             }
         }
         

@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
 			jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance, 
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
-			managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, true)
+			managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, Arg.Any<bool>())
 				.Returns(_jobStopManager);
 			serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
 			dataProviderFactory.GetDataProvider(new Guid(sourceProvider.ApplicationIdentifier),

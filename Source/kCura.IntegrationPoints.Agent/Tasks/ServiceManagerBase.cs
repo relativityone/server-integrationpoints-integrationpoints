@@ -51,7 +51,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected Guid Identifier { get; set; }
 		protected TaskResult Result { get; set; }
 
-		protected ServiceManagerBase(IHelper helper,
+		protected ServiceManagerBase(
+			IHelper helper,
 			IJobService jobService,
 			ISerializer serializer,
 			IJobHistoryService jobHistoryService,
@@ -326,7 +327,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ConfigureJobStopManager(Job job)
 		{
-			JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, true);
+			JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop: false);
 			JobHistoryErrorService.JobStopManager = JobStopManager;
 		}
 

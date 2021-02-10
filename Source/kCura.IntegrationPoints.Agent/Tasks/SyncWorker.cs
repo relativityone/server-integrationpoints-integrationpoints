@@ -35,9 +35,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SyncWorker : IntegrationPointTaskBase, ITaskWithJobHistory
 	{
 		private IEnumerable<IBatchStatus> _batchStatus;
-
+		
 		private readonly IProviderTypeService _providerTypeService;
-		private readonly bool _isStoppable;
 		private readonly IAPILog _logger;
 		private readonly JobStatisticsService _statisticsService;
 
@@ -56,39 +55,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobService jobService,
 			IProviderTypeService providerTypeService,
 			IIntegrationPointRepository integrationPointRepository) :
-			this(caseServiceContext,
-				helper,
-				dataProviderFactory,
-				serializer,
-				appDomainRdoSynchronizerFactory,
-				jobHistoryService,
-				jobHistoryErrorService,
-				jobManager,
-				statuses,
-				statisticsService,
-				managerFactory,
-				jobService,
-				integrationPointRepository,
-				isStoppable: true)
-		{
-			_providerTypeService = providerTypeService;
-		}
-
-		protected SyncWorker(
-			ICaseServiceContext caseServiceContext,
-			IHelper helper,
-			IDataProviderFactory dataProviderFactory,
-			ISerializer serializer,
-			ISynchronizerFactory appDomainRdoSynchronizerFactory,
-			IJobHistoryService jobHistoryService,
-			IJobHistoryErrorService jobHistoryErrorService,
-			IJobManager jobManager,
-			IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService,
-			IManagerFactory managerFactory,
-			IJobService jobService,
-			IIntegrationPointRepository integrationPointRepository,
-			bool isStoppable) :
 			base(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -102,11 +68,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				integrationPointRepository)
 		{
 			BatchStatus = statuses;
+			_providerTypeService = providerTypeService;
 			_statisticsService = statisticsService;
-			_isStoppable = isStoppable;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncWorker>();
 		}
-
+		
 		public IEnumerable<IBatchStatus> BatchStatus
 		{
 			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
@@ -186,8 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
-				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId,
-					_isStoppable);
+				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: false);
 				JobHistoryErrorService.JobStopManager = JobStopManager;
 
 				if (!IntegrationPoint.SourceProvider.HasValue)

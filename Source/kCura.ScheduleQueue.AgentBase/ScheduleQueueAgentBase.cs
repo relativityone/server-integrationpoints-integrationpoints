@@ -64,6 +64,12 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
+			if (ToBeRemoved)
+			{
+				Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
+				return;
+			}
+
 			bool isPreExecuteSuccessful = PreExecute();
 			NotifyAgentTab(LogCategory.Debug, "Started.");
 

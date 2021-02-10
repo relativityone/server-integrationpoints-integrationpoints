@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				x => x.Configuration.Equals(_integrationPoint.SourceConfiguration) && x.SecuredConfiguration.Equals(_integrationPoint.SecuredConfiguration))).Returns(_dataReader);
 			_dataReader.Read().Returns(true, false);
 			_dataReader.GetString(0).Returns(_data);
-			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, true)
+			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, Arg.Any<bool>())
 				.Returns(_jobStopManager);
 			_jobService.GetJobNextUtcRunDateTime(_job, scheduleRuleFactory, Arg.Any<TaskResult>()).Returns(DateTime.Now);
 			_managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
@@ -328,7 +328,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// We expect to update Start Time and State of JobHistory object
 			_jobHistoryService.Received(2).UpdateRdo(_jobHistory);
-			_managerFactory.Received(1).CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, true);
+			_managerFactory.Received(1).CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, Arg.Any<bool>());
 		}
 
 		[Test]
@@ -501,7 +501,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			PreJobExecutionGoldFlowSetup();
 			_dataReader.Read().Returns(true);
 			_dataReader.GetString(0).Returns("1", "2", "3");
-
+			
 			_syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
 			IEnumerable<string> ids = _syncManagerEventHelper.GetUnbatchedIDs(_job);
 			_jobStopManager.When(obj => obj.ThrowIfStopRequested())

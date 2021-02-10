@@ -30,8 +30,6 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
-using Relativity.Telemetry.MetricsCollection;
-using APMClient = Relativity.Telemetry.APM.Client;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity;

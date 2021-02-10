@@ -50,6 +50,8 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Agent\IRemovableAgent.cs" />
+    <Compile Include="Agent\FakeNonRemovableAgent.cs" />
     <Compile Include="Constants\ExternalServiceTypes.cs" />
     <Compile Include="Handlers\IRetryHandler.cs" />
     <Compile Include="Handlers\IRetryHandlerFactory.cs" />
