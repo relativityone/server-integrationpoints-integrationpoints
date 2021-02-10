@@ -97,6 +97,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					UpdateStopState(StopState.DrainStopped);
 					_jobServiceDataProvider.UnlockJob(job.JobId);
+					_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 				}
 			}
 			else if (job.StopState.HasFlag(StopState.Stopping))
