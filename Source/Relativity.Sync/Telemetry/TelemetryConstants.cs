@@ -19,8 +19,8 @@
 
 			public const string JOB_START_TYPE = "Relativity.Sync.Job.Start.Type";
 
-			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.{FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA}";
-			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.{FLOW_TYPE_SAVED_SEARCH_IMAGES}";
+			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearched.NativesAndMetadata";
+			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearched.Images";
 
 			public const string RETRY_JOB_START_TYPE = "Relativity.Sync.Retry.Job.Start.Type";
 			public const string RETRY_JOB_END_STATUS = "Relativity.Sync.Retry.Job.End.Status";

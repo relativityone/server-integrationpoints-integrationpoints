@@ -18,9 +18,9 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		public long? AuthTokenExpirationCount { get; set; }
 
-		public KeplerMetric(string invocation)
+		public KeplerMetric(string invocationKepler)
 		{
-			Name = invocation;
+			Name = $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}";
 		}
 
 		public Dictionary<string, object> GetCustomData() =>
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 			{
 				sumMetrics.Add(new SumMetric
 				{
-					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX,
+					Bucket = BucketWithNamePrefix(TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX),
 					Type = MetricType.TimedOperation,
 					Value = Duration,
 					WorkflowId = WorkflowId
@@ -53,7 +53,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 			{
 				sumMetrics.Add(new SumMetric
 				{
-					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX,
+					Bucket = BucketWithNamePrefix(TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX),
 					Type = MetricType.PointInTimeLong,
 					Value = NumberOfHttpRetriesForSuccess,
 					WorkflowId = WorkflowId
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 			{
 				sumMetrics.Add(new SumMetric
 				{
-					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX,
+					Bucket = BucketWithNamePrefix(TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX),
 					Type = MetricType.PointInTimeLong,
 					Value = NumberOfHttpRetriesForFailed,
 					WorkflowId = WorkflowId
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 			{
 				sumMetrics.Add(new SumMetric
 				{
-					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX,
+					Bucket = BucketWithNamePrefix(TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX),
 					Type = MetricType.PointInTimeLong,
 					Value = AuthTokenExpirationCount,
 					WorkflowId = WorkflowId
@@ -81,6 +81,11 @@ namespace Relativity.Sync.Telemetry.Metrics
 			}
 
 			return sumMetrics;
+		}
+
+		private string BucketWithNamePrefix(string bucket)
+		{
+			return $"{Name}.{bucket}";
 		}
 	}
 }
