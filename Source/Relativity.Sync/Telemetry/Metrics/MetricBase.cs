@@ -6,13 +6,18 @@ namespace Relativity.Sync.Telemetry.Metrics
 {
 	internal abstract class MetricBase : IMetric
 	{
-		public string Name { get; set; }
+		public string Name { get; }
 
 		public string WorkflowId { get; set; }
 
 		protected MetricBase()
 		{
 			Name = this.GetType().Name;
+		}
+
+		protected MetricBase(string metricName)
+		{
+			Name = metricName;
 		}
 		
 		public virtual Dictionary<string, object> GetCustomData() => 
@@ -29,14 +34,12 @@ namespace Relativity.Sync.Telemetry.Metrics
 					return new SumMetric
 					{
 						Type = attr.Type,
-						Bucket = BucketFunc(attr),
+						Bucket = attr.Name ?? Name,
 						Value = p.GetValue(this),
 						WorkflowId = WorkflowId
 					};
 				}).ToList();
 		}
-
-		protected virtual string BucketFunc(MetricAttribute attr) => attr.Name;
 
 		private IEnumerable<PropertyInfo> GetMetricProperties()
 		{

@@ -26,7 +26,6 @@ namespace Relativity.Sync.Tests.System
 		{
 			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-
 		}
 
 		[IdentifiedTest("2db7474f-3032-49cb-92f3-3047c7604fd9")]
