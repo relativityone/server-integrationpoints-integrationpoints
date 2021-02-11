@@ -20,7 +20,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		public KeplerMetric(string invocationKepler)
 		{
-			Name = $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}";
+			Name = invocationKepler;
 		}
 
 		public Dictionary<string, object> GetCustomData() =>
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		private string BucketWithNamePrefix(string bucket)
 		{
-			return $"{Name}.{bucket}";
+			return $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{Name}.{bucket}";
 		}
 	}
 }

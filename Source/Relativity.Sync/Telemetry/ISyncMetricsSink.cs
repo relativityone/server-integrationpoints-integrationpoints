@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Sink for sending <see cref="Metric"/>s to a specific collector
+	///     Sink for sending <see cref="IMetric"/>s to a specific collector
 	/// </summary>
 	internal interface ISyncMetricsSink
 	{

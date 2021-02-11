@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Logs <see cref="Metric"/>s to New Relic.
+	///     Logs <see cref="IMetric"/>s to New Relic.
 	/// </summary>
 	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink
 	{

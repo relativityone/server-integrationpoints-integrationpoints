@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.TotalRecordsRequested.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED,
 				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.BytesTransferred.Value));
-			metricsManagerMock.Verify(x => x.LogPointInTimeStringAsync(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA,
+			metricsManagerMock.Verify(x => x.LogPointInTimeStringAsync(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES,
 				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.JobEndStatus));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_REQUESTED,
 				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.BytesImagesRequested.Value));

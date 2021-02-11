@@ -2,7 +2,7 @@
 {
 	internal class ImageJobEndMetric : JobEndMetricBase
 	{
-		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA)]
+		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES)]
 		public override string JobEndStatus { get; set; }
 
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_REQUESTED)]
