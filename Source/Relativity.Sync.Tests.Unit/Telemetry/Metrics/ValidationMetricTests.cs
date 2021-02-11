@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-	internal class ValidationMetricTests : MetricsTestsBase<ValidationMetric>
+	internal class ValidationMetricTests : MetricTestsBase<ValidationMetric>
 	{
 		private const string _VALIDATION_NAME = "TestValidation";
 

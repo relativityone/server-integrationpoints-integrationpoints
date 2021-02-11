@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-	internal class CommandMetricTests : MetricsTestsBase<CommandMetric>
+	internal class CommandMetricTests : MetricTestsBase<CommandMetric>
 	{
 		private const string _COMMAND_NAME = "TestCommand";
 

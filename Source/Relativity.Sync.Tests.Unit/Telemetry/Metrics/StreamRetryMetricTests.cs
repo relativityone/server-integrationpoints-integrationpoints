@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-	internal class StreamRetryMetricTests : MetricsTestsBase<StreamRetryMetric>
+	internal class StreamRetryMetricTests : MetricTestsBase<StreamRetryMetric>
 	{
 		private StreamRetryMetric _sut = new StreamRetryMetric
 		{

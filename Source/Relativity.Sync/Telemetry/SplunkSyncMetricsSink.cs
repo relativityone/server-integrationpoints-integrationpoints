@@ -23,7 +23,7 @@
 		/// <inheritdoc />
 		public void Send(IMetric metric)
 		{
-			_logger.LogInformation("Metric: {metric}, Properties: {@metricProperties}", metric.GetType(), metric);
+			_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.GetType(), metric);
 		}
 	}
 }

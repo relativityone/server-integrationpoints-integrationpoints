@@ -8,7 +8,7 @@ using Relativity.Telemetry.Services.Metrics;
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
 	[TestFixture]
-	internal abstract class MetricsTestsBase<T> where T: IMetric
+	internal abstract class MetricTestsBase<T> where T: IMetric
 	{
 		private ISyncMetrics _syncMetrics;
 

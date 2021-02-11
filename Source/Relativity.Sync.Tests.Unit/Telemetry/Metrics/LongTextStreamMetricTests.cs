@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-	internal class LongTextStreamMetricTests : MetricsTestsBase<LongTextStreamMetric>
+	internal class LongTextStreamMetricTests : MetricTestsBase<LongTextStreamMetric>
 	{
 		private LongTextStreamMetric _sut = new LongTextStreamMetric
 		{

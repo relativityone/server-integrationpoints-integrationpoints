@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-	internal class KeplerMetricTests : MetricsTestsBase<KeplerMetric>
+	internal class KeplerMetricTests : MetricTestsBase<KeplerMetric>
 	{
 		private const string _KEPLER_NAME = "ObjectManager";
 
