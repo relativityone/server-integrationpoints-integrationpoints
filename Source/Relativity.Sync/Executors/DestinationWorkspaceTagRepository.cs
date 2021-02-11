@@ -183,7 +183,7 @@ namespace Relativity.Sync.Executors
 				BatchSize = batch.Count,
 				SourceUpdateTime = stopwatch.Elapsed.TotalMilliseconds,
 				SourceUpdateCount = result.TotalObjectsUpdated,
-				UnitOfMeasure = "document(s)"
+				UnitOfMeasure = _UNIT_OF_MEASURE
 			});
 
 			return result;

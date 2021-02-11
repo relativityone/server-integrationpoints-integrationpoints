@@ -14,13 +14,9 @@ namespace Relativity.Sync.Telemetry.Metrics
 		{
 			Name = this.GetType().Name;
 		}
-
-		public IEnumerable<PropertyInfo> GetMetricProperties()
-		{
-			return this.GetType()
-				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-				.Where(p => p.GetMethod != null);
-		}
+		
+		public virtual Dictionary<string, object> GetCustomData() => 
+			this.GetMetricProperties().ToDictionary(p => p.Name, p => p.GetValue(this));
 
 		public virtual IEnumerable<SumMetric> GetSumMetrics()
 		{
@@ -42,5 +38,11 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		protected virtual string BucketFunc(MetricAttribute attr) => attr.Name;
 
+		private IEnumerable<PropertyInfo> GetMetricProperties()
+		{
+			return this.GetType()
+				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+				.Where(p => p.GetMethod != null);
+		}
 	}
 }

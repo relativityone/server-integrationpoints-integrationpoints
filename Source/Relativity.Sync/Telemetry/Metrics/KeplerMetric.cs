@@ -1,23 +1,86 @@
-﻿namespace Relativity.Sync.Telemetry.Metrics
+﻿using System.Collections.Generic;
+
+namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class KeplerMetric : PrefixedMetricBase
+	internal class KeplerMetric : IMetric
 	{
+		public string Name { get; }
+
+		public string WorkflowId { get; set; }
+
 		public ExecutionStatus? ExecutionStatus { get; set; }
 
-		[Metric(MetricType.TimedOperation, TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX)]
 		public double? Duration { get; set; }
 
-		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX)]
 		public long? NumberOfHttpRetriesForSuccess { get; set; }
 
-		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX)]
 		public long? NumberOfHttpRetriesForFailed { get; set; }
 
-		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX)]
 		public long? AuthTokenExpirationCount { get; set; }
 
-		public KeplerMetric(string prefix) : base(prefix)
+		public KeplerMetric(string invocation)
 		{
+			Name = invocation;
+		}
+
+		public Dictionary<string, object> GetCustomData() =>
+			new Dictionary<string, object>
+			{
+				{nameof(Name), Name},
+				{nameof(WorkflowId), WorkflowId},
+				{nameof(ExecutionStatus), ExecutionStatus},
+				{nameof(Duration), Duration},
+				{nameof(NumberOfHttpRetriesForSuccess), NumberOfHttpRetriesForSuccess},
+				{nameof(NumberOfHttpRetriesForFailed), NumberOfHttpRetriesForFailed},
+				{nameof(AuthTokenExpirationCount), AuthTokenExpirationCount},
+			};
+
+		public IEnumerable<SumMetric> GetSumMetrics()
+		{
+			var sumMetrics = new List<SumMetric>();
+
+			if (Duration != null)
+			{
+				sumMetrics.Add(new SumMetric
+				{
+					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX,
+					Type = MetricType.TimedOperation,
+					Value = Duration,
+					WorkflowId = WorkflowId
+				});
+			}
+			if (NumberOfHttpRetriesForSuccess != null)
+			{
+				sumMetrics.Add(new SumMetric
+				{
+					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX,
+					Type = MetricType.PointInTimeLong,
+					Value = NumberOfHttpRetriesForSuccess,
+					WorkflowId = WorkflowId
+				});
+			}
+			if (NumberOfHttpRetriesForFailed != null)
+			{
+				sumMetrics.Add(new SumMetric
+				{
+					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX,
+					Type = MetricType.PointInTimeLong,
+					Value = NumberOfHttpRetriesForFailed,
+					WorkflowId = WorkflowId
+				});
+			}
+			if (AuthTokenExpirationCount != null)
+			{
+				sumMetrics.Add(new SumMetric
+				{
+					Bucket = TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX,
+					Type = MetricType.PointInTimeLong,
+					Value = AuthTokenExpirationCount,
+					WorkflowId = WorkflowId
+				});
+			}
+
+			return sumMetrics;
 		}
 	}
 }

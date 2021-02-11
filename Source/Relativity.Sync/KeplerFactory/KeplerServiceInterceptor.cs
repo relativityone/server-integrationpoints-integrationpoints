@@ -228,8 +228,7 @@ namespace Relativity.Sync.KeplerFactory
 
 		private void ReportMetrics(string invocationKepler, ExecutionStatus status, TimeSpan duration, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
-			KeplerMetric metric = new KeplerMetric(
-				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}")
+			KeplerMetric metric = new KeplerMetric(invocationKepler)
 			{
 				ExecutionStatus = status,
 				Duration = duration.TotalMilliseconds
