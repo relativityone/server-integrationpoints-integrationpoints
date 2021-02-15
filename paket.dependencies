@@ -84,6 +84,14 @@ nuget Serilog 1.5.14
 nuget Serilog.Sinks.Seq 1.5.36
 nuget ARMTestServices 1.1.1
 
+group Tests
+	framework: auto-detect
+	strategy: min
+	source https://proget.kcura.corp/nuget/NuGet
+	nuget NUnit 3.11 redirects: force
+	nuget Relativity.Testing.Framework ~> 0.22
+	nuget Relativity.Testing.Framework.Api ~> 0.22
+	nuget Relativity.Testing.Framework.Web ~> 0.22
 
 group Sync
 	framework: auto-detect
