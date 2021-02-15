@@ -156,7 +156,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		// NOTE: If the condition or result parsing logic changes, this method will need to be updated.
 		private static QueryResultSlim SelectFieldResults(string condition, IReadOnlyDictionary<string, RelativityDataType> fieldNameToDataType)
 		{
-			System.Text.RegularExpressions.Match match = Regex.Match(condition, @"^'Name' IN \[([^]]+)\]", RegexOptions.IgnoreCase);
+			global::System.Text.RegularExpressions.Match match = Regex.Match(condition, @"^'Name' IN \[([^]]+)\]", RegexOptions.IgnoreCase);
 			if (match == null)
 			{
 				throw new ArgumentException($"Could not find field name pattern in field name query's condition: {condition}", nameof(condition));

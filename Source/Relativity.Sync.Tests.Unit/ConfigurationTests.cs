@@ -137,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit
 			var concreteStreamList = new List<Stream>();
 			testKeplerStream.Setup(x => x.GetStreamAsync()).ReturnsAsync(() =>
 			{
-				byte[] text = System.Text.Encoding.Unicode.GetBytes(expectedLongText);
+				byte[] text = global::System.Text.Encoding.Unicode.GetBytes(expectedLongText);
 				var memoryStream = new MemoryStream(text);
 				concreteStreamList.Add(memoryStream);
 				return memoryStream;

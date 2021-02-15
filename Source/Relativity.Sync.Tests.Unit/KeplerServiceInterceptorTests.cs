@@ -432,7 +432,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void InvocationObject_ShouldHaveRequiredField()
 		{
 			// act
-			System.Reflection.FieldInfo field = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+			global::System.Reflection.FieldInfo field = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);
 
 			// assert
 			field.Should().NotBeNull();
@@ -440,11 +440,11 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static void SetMillisecondsDelayBetweenHttpRetriesBase(IStubForInterception stub, int delayBaseMs)
 		{
-			System.Reflection.FieldInfo interceptorsField = stub.GetType().GetAllFields().Single(x => x.Name == "__interceptors");
+			global::System.Reflection.FieldInfo interceptorsField = stub.GetType().GetAllFields().Single(x => x.Name == "__interceptors");
 			IInterceptor[] interceptors = (IInterceptor[])interceptorsField.GetValue(stub);
 			IInterceptor interceptor = interceptors.Single();
 			const string fieldName = "_secondsBetweenHttpRetriesBase";
-			System.Reflection.FieldInfo millisecondsBetweenHttpRetriesBaseField = interceptor.GetType().GetAllFields().SingleOrDefault(x => x.Name == fieldName);
+			global::System.Reflection.FieldInfo millisecondsBetweenHttpRetriesBaseField = interceptor.GetType().GetAllFields().SingleOrDefault(x => x.Name == fieldName);
 			if (millisecondsBetweenHttpRetriesBaseField == null)
 			{
 				Assert.Fail($"Cannot find field '{fieldName}' in type '{interceptor.GetType()}'");
