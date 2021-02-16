@@ -59,13 +59,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 					if (cancellationTokens.StopCancellationToken.IsCancellationRequested)
 					{
 						await MarkJobAsStoppedAsync().ConfigureAwait(false);
+						taskResult = new TaskResult { Status = TaskStatusEnum.Success };
+					}
+					else if (cancellationTokens.DrainStopCancellationToken.IsCancellationRequested)
+					{
+						await MarkJobAsDrainStoppedAsync().ConfigureAwait(false);
+						taskResult = new TaskResult { Status = TaskStatusEnum.DrainStopped };
 					}
 					else
 					{
 						await MarkJobAsCompletedAsync().ConfigureAwait(false);
+						taskResult = new TaskResult { Status = TaskStatusEnum.Success };
 					}
-
-					taskResult = new TaskResult { Status = TaskStatusEnum.Success };
 				}
 			}
 			catch (OperationCanceledException)
@@ -163,6 +168,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Failed to mark job as stopped.");
+			}
+		}
+
+		private async Task MarkJobAsDrainStoppedAsync()
+		{
+			try
+			{
+				await _jobHistorySyncService.MarkJobAsDrainStoppedAsync(_job).ConfigureAwait(false);
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Failed to mark job as drain-stopped.");
 			}
 		}
 

@@ -4,6 +4,7 @@
 	{
 		None = 0,
 		Success = 1,
-		Fail = 2
+		Fail = 2,
+		DrainStopped = 3
 	}
 }

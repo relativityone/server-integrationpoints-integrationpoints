@@ -98,7 +98,39 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			sut.ProcessedJobs.Count.Should().Be(0);
 		}
 
-		private TestAgent GetSut()
+		[Test]
+		public void Execute_ShouldNotFinalizeJob_WhenDrainStopped()
+		{
+			// Arrange
+			Job job = new JobBuilder().WithJobId(1).Build();
+			TestAgent sut = GetSut(TaskStatusEnum.DrainStopped);
+			SetupJobQueue(job);
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			_jobServiceMock.Verify(x => x.FinalizeJob(It.IsAny<Job>(), It.IsAny<IScheduleRuleFactory>(), It.IsAny<TaskResult>()),
+				Times.Never);
+		}
+
+		[Test]
+		public void Execute_ShouldNotTakeNextJob_WhenDrainStopped()
+		{
+			// Arrange
+			Job job = new JobBuilder().WithJobId(1).Build();
+			TestAgent sut = GetSut(TaskStatusEnum.DrainStopped);
+			SetupJobQueue(job);
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			_jobServiceMock.Verify(x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>()),
+				Times.Once);
+		}
+
+		private TestAgent GetSut(TaskStatusEnum jobStatus = TaskStatusEnum.Success)
 		{
 			var agentService = new Mock<IAgentService>();
 			var scheduleRuleFactory = new Mock<IScheduleRuleFactory>();
@@ -114,7 +146,10 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 				.ReturnsAsync(ValidationResult.Success);
 
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
-				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, emptyLog.Object);
+				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, emptyLog.Object)
+			{
+				JobResult = jobStatus
+			};
 		}
 
 		private void SetupJobQueue(params Job[] jobs)
@@ -145,13 +180,18 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 					.SetValue(this, true);
 			}
 
+			public TaskStatusEnum JobResult { get; set; } = TaskStatusEnum.Success;
+
 			public override string Name { get; } = "Test";
 			
 			protected override TaskResult ProcessJob(Job job)
 			{
 				ProcessedJobs.Add(job);
 
-				return new TaskResult {Status = TaskStatusEnum.Success, };
+				return new TaskResult
+				{
+					Status = JobResult
+				};
 			}
 
 			protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
