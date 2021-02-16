@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class TopLongTextStreamMetric : MetricBase
+	internal class TopLongTextStreamMetric : MetricBase<TopLongTextStreamMetric>
 	{
 		[Metric(MetricType.PointInTimeDouble, TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_SIZE)]
 		public double? LongTextStreamSize { get; set; }

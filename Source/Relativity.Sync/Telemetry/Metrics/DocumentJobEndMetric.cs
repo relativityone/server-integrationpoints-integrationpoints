@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class DocumentJobEndMetric : JobEndMetricBase
+	internal class DocumentJobEndMetric : JobEndMetricBase<DocumentJobEndMetric>
 	{
 		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA)]
 		public override string JobEndStatus { get; set; }

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry.Metrics;
 
@@ -18,7 +17,8 @@ namespace Relativity.Sync.Executors.SumReporting
 			_configuration = configuration;
 		}
 
-		protected async Task WriteRecordsStatisticsAsync(JobEndMetricBase jobEndMetric)
+		protected async Task WriteRecordsStatisticsAsync<T>(JobEndMetricBase<T> jobEndMetric)
+			where T: JobEndMetricBase<T>
 		{
 			jobEndMetric.TotalRecordsTransferred = 0;
 			jobEndMetric.TotalRecordsTagged = 0;

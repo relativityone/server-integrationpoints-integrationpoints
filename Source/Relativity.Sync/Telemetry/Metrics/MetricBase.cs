@@ -4,9 +4,10 @@ using System.Reflection;
 
 namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal abstract class MetricBase : IMetric
+	internal abstract class MetricBase<T> : IMetric 
+		where T: IMetric
 	{
-		private static Dictionary<PropertyInfo, MetricAttribute> _metricProperties;
+		private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
 
 		public string Name { get; }
 
@@ -14,7 +15,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		protected MetricBase()
 		{
-			Name = this.GetType().Name;
+			Name = typeof(T).Name;
 		}
 
 		protected MetricBase(string metricName)
@@ -31,13 +32,16 @@ namespace Relativity.Sync.Telemetry.Metrics
 				.Select(p => new SumMetric
 				{
 					Type = p.Value.Type,
-					Bucket = p.Value.Name ?? Name,
+					Bucket = BucketNameFunc(p.Value),
 					Value = p.Key.GetValue(this),
 					WorkflowId = WorkflowId
-				});
+				})
+				.Where(m => m.Value != null);
 
-		private Dictionary<PropertyInfo, MetricAttribute> GetMetricProperties() => _metricProperties ??
-			(_metricProperties = this.GetType()
+		protected virtual string BucketNameFunc(MetricAttribute attr) => attr.Name ?? Name;
+
+		private Dictionary<PropertyInfo, MetricAttribute> GetMetricProperties() => _metricCacheProperties ??
+			(_metricCacheProperties = typeof(T)
 				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(p => p.GetMethod != null)
 				.ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));

@@ -91,6 +91,23 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		}
 
 		[Test]
+		public void Send_ShouldNotSendMetric_WhenPropertyIsNull()
+		{
+			// Arrange
+			TestMetric metric = new TestMetric()
+			{
+				Test = 1000
+			};
+
+			// Act
+			_sut.Send(metric);
+
+			// Assert
+			_metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync("TimedTestName", It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<double>()), 
+				Times.Never);
+		}
+
+		[Test]
 		public void Send_ShouldNotThrowAndSendAnyMetrics_WhenNoAttributesWasFound()
 		{
 			// Arrange
@@ -106,19 +123,22 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_metricsManagerMock.VerifyNoOtherCalls();
 		}
 
-		internal class TestMetric : MetricBase
+		internal class TestMetric : MetricBase<TestMetric>
 		{
 			[Metric(MetricType.PointInTimeLong, "TestName")]
 			public long? Test { get; set; }
+
+			[Metric(MetricType.TimedOperation, "TimedTestName")]
+			public long? TimedTest { get; set; }
 		}
 
-		internal class NotMatchingValueMetric : MetricBase
+		internal class NotMatchingValueMetric : MetricBase<NotMatchingValueMetric>
 		{
 			[Metric(MetricType.PointInTimeDouble, "InvalidType")]
 			public string InvalidValue { get; set; }
 		}
 
-		internal class NonAttributeMetric : MetricBase
+		internal class NonAttributeMetric : MetricBase<NonAttributeMetric>
 		{
 			public string SomeValue { get; set; }
 		}

@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 				d => d["Value"] == null)));
 		}
 
-		internal class TestMetric : MetricBase
+		internal class TestMetric : MetricBase<TestMetric>
 		{
 			public int? Value { get; set; }
 		}

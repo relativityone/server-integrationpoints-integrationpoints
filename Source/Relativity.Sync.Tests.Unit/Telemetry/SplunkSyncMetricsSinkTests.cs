@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_syncLogMock.Verify(x => x.LogInformation(It.Is<string>(s => s.Contains("@")), typeof(TestMetric), metric));
 		}
 
-		internal class TestMetric : MetricBase
+		internal class TestMetric : MetricBase<TestMetric>
 		{
 			public int? TestValue { get; set; }
 		}

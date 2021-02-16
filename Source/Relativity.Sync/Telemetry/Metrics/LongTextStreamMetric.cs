@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class LongTextStreamMetric : MetricBase
+	internal class LongTextStreamMetric : MetricBase<LongTextStreamMetric>
 	{
 		[Metric(MetricType.PointInTimeDouble, TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB)]
 		public double? AvgSizeLessThan1MB { get; set; }
