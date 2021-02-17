@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Logs <see cref="Metric"/>s to New Relic.
+	///     Logs <see cref="IMetric"/>s to New Relic.
 	/// </summary>
 	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink
 	{
@@ -19,9 +19,13 @@
 		}
 
 		/// <inheritdoc />
-		public void Log(Metric metric)
+		public void Send(IMetric metric)
 		{
-			_apmClient.Log(_NEW_RELIC_INDEX_NAME, metric.ToDictionary());
+			var customData = metric.GetCustomData();
+			if (customData.Count > 0)
+			{
+				_apmClient.Log(_NEW_RELIC_INDEX_NAME, customData);
+			}
 		}
 	}
 }

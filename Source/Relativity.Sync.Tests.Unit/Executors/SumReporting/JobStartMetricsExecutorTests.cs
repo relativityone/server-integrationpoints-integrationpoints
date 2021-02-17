@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Collections;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
@@ -14,9 +13,9 @@ using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
-using Relativity.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 {
@@ -103,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.Type == TelemetryConstants.PROVIDER_NAME)));
 		}
 
 		[Test]
@@ -116,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE, TelemetryConstants.PROVIDER_NAME), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.RetryType == TelemetryConstants.PROVIDER_NAME)));
 		}
 
 		[TestCaseSource(nameof(LogFlowTypeTestCases))]
@@ -129,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, flowType), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.FlowType == flowType)));
 		}
 
 		[Test]

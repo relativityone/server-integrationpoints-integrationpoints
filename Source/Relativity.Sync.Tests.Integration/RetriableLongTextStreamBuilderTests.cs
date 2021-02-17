@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
@@ -11,6 +10,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer.StreamWrappers;
@@ -23,9 +23,7 @@ namespace Relativity.Sync.Tests.Integration
 		private IRetriableStreamBuilder _instance;
 		private Mock<IKeplerStream> _keplerStream;
 		private Mock<ISyncMetrics> _syncMetrics;
-		private const string _EXPECTED_METRIC_BUCKET_NAME = "Relativity.Sync.LongTextStreamBuilder.Retry.Count";
 		private const double _EXPECTED_WAIT_INTERVAL_BETWEEN_CALLS = 1.0;
-		private const ExecutionStatus _EXPECTED_METRIC_STATUS = ExecutionStatus.Failed;
 
 		[SetUp]
 		public void SetUp()
@@ -67,7 +65,7 @@ namespace Relativity.Sync.Tests.Integration
 			// Assert
 			result.Should().Be(streamToReturn);
 			streamToReturn.IsDisposed.Should().BeFalse();
-			_syncMetrics.Verify(m => m.CountOperation(It.IsAny<string>(), It.IsAny<ExecutionStatus>()), Times.Never);
+			_syncMetrics.Verify(m => m.Send(It.IsAny<StreamRetryMetric>()), Times.Never);
 
 		}
 
@@ -94,7 +92,8 @@ namespace Relativity.Sync.Tests.Integration
 			stopwatch.Elapsed.TotalSeconds.Should().BeGreaterOrEqualTo(_EXPECTED_WAIT_INTERVAL_BETWEEN_CALLS);
 			readableStream.IsDisposed.Should().BeFalse();
 			unreadableStream.IsDisposed.Should().BeTrue();
-			_syncMetrics.Verify(m => m.CountOperation(_EXPECTED_METRIC_BUCKET_NAME, _EXPECTED_METRIC_STATUS), Times.Once);
+			
+			_syncMetrics.Verify(m => m.Send(It.Is<StreamRetryMetric>(x => x.RetryCounter != null)), Times.Once);
 		}
 
 		[Test]
@@ -114,7 +113,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Assert
 			result.Should().Be(unreadableStream);
-			_syncMetrics.Verify(m => m.CountOperation(_EXPECTED_METRIC_BUCKET_NAME, _EXPECTED_METRIC_STATUS), Times.Exactly(expectedRetryCount));
+			_syncMetrics.Verify(m => m.Send(It.Is<StreamRetryMetric>(x => x.RetryCounter != null)), Times.Exactly(expectedRetryCount));
 			_keplerStream.Verify(s => s.GetStreamAsync(), Times.Exactly(expectedGetStreamCallCount));
 		}
 	}

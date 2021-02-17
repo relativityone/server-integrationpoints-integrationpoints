@@ -20,80 +20,52 @@ namespace Relativity.Sync.Telemetry
 			_servicesManager = servicesManager;
 		}
 
-		public void Log(Metric metric)
+		public void Send(IMetric metric)
 		{
-			try
+			SendAsync(metric).GetAwaiter().GetResult();
+		}
+
+		private async Task SendAsync(IMetric metric)
+		{
+			using (IMetricsManager metricsManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
 			{
-				using (IMetricsManager metricsManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
+				Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);
+
+				foreach (var sumMetric in metric.GetSumMetrics())
 				{
-					LogSumMetricAsync(metricsManager, metric).GetAwaiter().GetResult();
+					try
+					{
+						await SendSumMetricAsync(metricsManager, sumMetric, workspaceGuid).ConfigureAwait(false);
+					}
+					catch (Exception e)
+					{
+						_logger.LogError(e, "Logging to SUM failed. The metric with bucket '{bucket}' and workflow ID '{workflowId}' had value '{value}'.",
+							sumMetric.Bucket, sumMetric.WorkflowId, sumMetric.Value);
+					}
 				}
 			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Logging to SUM failed. The metric with bucket '{bucket}' and workflow ID '{workflowId}' had value '{value}'.", metric.Name, metric.WorkflowId, metric.Value);
-			}
 		}
 
-		private async Task LogSumMetricAsync(IMetricsManager metricsManager, Metric metric)
+		private Task SendSumMetricAsync(IMetricsManager metricsManager, SumMetric metric, Guid workspaceGuid)
 		{
-			Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);
-
-			MetricType metricType = metric.Type;
-			switch (metricType)
+			switch (metric.Type)
 			{
 				case MetricType.PointInTimeString:
-					await LogPointInTimeStringAsync(metricsManager, metric, workspaceGuid).ConfigureAwait(false);
-					break;
+					return metricsManager.LogPointInTimeStringAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, metric.Value.ToString());
 				case MetricType.PointInTimeLong:
-					await LogPointInTimeLongAsync(metricsManager, metric, workspaceGuid).ConfigureAwait(false);
-					break;
+					return metricsManager.LogPointInTimeLongAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (long)metric.Value);
 				case MetricType.PointInTimeDouble:
-					await LogPointInTimeDoubleAsync(metricsManager, metric, workspaceGuid).ConfigureAwait(false);
-					break;
+					return metricsManager.LogPointInTimeDoubleAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (double)metric.Value);
 				case MetricType.TimedOperation:
-					await LogTimedOperationAsync(metricsManager, metric, workspaceGuid).ConfigureAwait(false);
-					break;
+					return metricsManager.LogTimerAsDoubleAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (double)metric.Value);
 				case MetricType.Counter:
-					await LogCounterOperationAsync(metricsManager, metric, workspaceGuid).ConfigureAwait(false);
-					break;
+					return metricsManager.LogCountAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, 1);
 				case MetricType.GaugeOperation:
-					await LogGaugeOperationAsync(metricsManager, metric, workspaceGuid).ConfigureAwait(false);
-					break;
+					return metricsManager.LogGaugeAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (long)metric.Value);
 				default:
-					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented.", metricType);
-					break;
+					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented.", metric.Type);
+					return Task.CompletedTask;
 			}
-		}
-
-		private static Task LogPointInTimeStringAsync(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
-		{
-			return metricsManager.LogPointInTimeStringAsync(metric.Name, workspaceGuid, metric.WorkflowId, metric.Value.ToString());
-		}
-
-		private static Task LogPointInTimeLongAsync(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
-		{
-			return metricsManager.LogPointInTimeLongAsync(metric.Name, workspaceGuid, metric.WorkflowId, (long)metric.Value);
-		}
-
-		private static Task LogPointInTimeDoubleAsync(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
-		{
-			return metricsManager.LogPointInTimeDoubleAsync(metric.Name, workspaceGuid, metric.WorkflowId, (double)metric.Value);
-		}
-
-		private static Task LogGaugeOperationAsync(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
-		{
-			return metricsManager.LogGaugeAsync(metric.Name, workspaceGuid, metric.WorkflowId, (long)metric.Value);
-		}
-
-		private static Task LogCounterOperationAsync(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
-		{
-			return metricsManager.LogCountAsync(metric.Name, workspaceGuid, metric.WorkflowId, 1);
-		}
-
-		private static Task LogTimedOperationAsync(IMetricsManager metricsManager, Metric metric, Guid workspaceGuid)
-		{
-			return metricsManager.LogTimerAsDoubleAsync(metric.Name, workspaceGuid, metric.WorkflowId, (double)metric.Value);
 		}
 	}
 }

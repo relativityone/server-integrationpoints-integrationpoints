@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -11,6 +12,7 @@ using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
@@ -26,19 +28,15 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		private Mock<ISyncMetrics> _syncMetricsMock;
 		private Mock<IJobStatisticsContainer> _jobStatisticsContainerFake;
 
-		private static readonly string[] MetricsNotToSendWhenJobFailed =
-		{
-			TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED,
-			TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED,
-			TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED
-		};
-
 		[SetUp]
 		public void SetUp()
 		{
 			_batchRepositoryFake = new Mock<IBatchRepository>();
 			_jobEndMetricsConfigurationFake = new Mock<IJobEndMetricsConfiguration>(MockBehavior.Loose);
 			_fieldManagerFake = new Mock<IFieldManager>();
+			_fieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(new List<FieldInfoDto>().AsReadOnly());
+
 			_syncMetricsMock = new Mock<ISyncMetrics>();
 			_jobStatisticsContainerFake = new Mock<IJobStatisticsContainer>();
 			_jobStatisticsContainerFake
@@ -94,31 +92,31 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, completedItemsPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, failedItemsPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TAGGED, taggedItemsPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA, expectedStatusDescription), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, testNumberOfFields), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, metadataSize), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED, nativesSize), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, nativesSize), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
+				m.TotalRecordsTransferred == completedItemsPerBatch * testBatches.Count &&
+				m.TotalRecordsFailed == failedItemsPerBatch * testBatches.Count &&
+				m.TotalRecordsRequested == totalItemsCountPerBatch * testBatches.Count &&
+				m.TotalRecordsTagged == taggedItemsPerBatch * testBatches.Count &&
+				m.JobEndStatus == expectedStatusDescription &&
+				m.TotalMappedFields == testNumberOfFields &&
+				m.BytesMetadataTransferred == metadataSize &&
+				m.BytesNativesTransferred == nativesSize &&
+				m.BytesTransferred == jobSize &&
+				m.BytesNativesRequested == nativesSize)), Times.Once);
 
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB, 1), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB, 2), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<LongTextStreamMetric>(m =>
+				m.AvgSizeLessThan1MB == 1 &&
+				m.AvgTimeLessThan1MB == 2 &&
+				m.AvgSizeLessBetween1and10MB == 1 &&
+				m.AvgTimeLessBetween1and10MB == 2 &&
+				m.AvgSizeLessBetween10and20MB == 1 &&
+				m.AvgTimeLessBetween10and20MB == 2 &&
+				m.AvgSizeOver20MB == 1 &&
+				m.AvgTimeOver20MB == 2)), Times.Once);
 
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB, 1), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB, 2), Times.Once);
-
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWWEEN10AND20MB, 1), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWWEEN10AND20MB, 2), Times.Once);
-
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB, 1), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB, 2), Times.Once);
-
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_SIZE, It.IsAny<double>()), Times.Exactly(10));
-			_syncMetricsMock.Verify(x => x.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_TIME, It.IsAny<double>()), Times.Exactly(10));
+			_syncMetricsMock.Verify(x => x.Send(It.Is<TopLongTextStreamMetric>(m =>
+				m.LongTextStreamSize != null &&
+				m.LongTextStreamTime != null)), Times.Exactly(10));
 		}
 
 		[Test]
@@ -134,8 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS, expectedStatusDescription),
-				Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.RetryJobEndStatus == expectedStatusDescription)), Times.Once);
 		}
 
 		[Test]
@@ -147,11 +144,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, It.IsAny<long>()), Times.Never);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.BytesNativesTransferred == null)));
 		}
 
-		[TestCaseSource(nameof(MetricsNotToSendWhenJobFailed))]
-		public async Task ExecuteAsync_ShouldNotReportMetric_WhenJobFailed(string metric)
+		[Test]
+		public async Task ExecuteAsync_ShouldNotReportMetric_WhenJobFailed()
 		{
 			// Arrange
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
@@ -160,7 +157,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(metric, It.IsAny<long>()), Times.Never);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
+				m.BytesMetadataTransferred == null &&
+				m.BytesNativesTransferred == null &&
+				m.BytesTransferred == null)));
 		}
 
 		[Test]
@@ -194,7 +194,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA, expectedStatusDescription), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
 		}
 	}
 }

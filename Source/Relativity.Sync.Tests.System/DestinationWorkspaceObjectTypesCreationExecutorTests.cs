@@ -18,6 +18,7 @@ namespace Relativity.Sync.Tests.System
 	internal sealed class DestinationWorkspaceObjectTypesCreationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
+		private WorkspaceRef _sourceWorkspace;
 		private readonly List<Guid> _guids = new List<Guid>()
 		{
 			new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC"),
@@ -34,6 +35,7 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
+			_sourceWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
@@ -45,6 +47,7 @@ namespace Relativity.Sync.Tests.System
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
+				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
 

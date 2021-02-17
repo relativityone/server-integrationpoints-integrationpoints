@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
@@ -13,16 +14,20 @@ namespace Relativity.Sync.Executors.SumReporting
 {
 	internal class DocumentJobEndMetricsService : JobEndMetricsServiceBase, IJobEndMetricsService
 	{
+		private readonly IJobEndMetricsConfiguration _configuration;
 		private readonly IFieldManager _fieldManager;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
+		private readonly ISyncMetrics _syncMetrics;
 		private readonly ISyncLog _logger;
 
 		public DocumentJobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, 
 			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, ISyncLog logger)
-			: base(batchRepository, configuration, syncMetrics)
+			: base(batchRepository, configuration)
 		{
+			_configuration = configuration;
 			_fieldManager = fieldManager;
 			_jobStatisticsContainer = jobStatisticsContainer;
+			_syncMetrics = syncMetrics;
 			_logger = logger;
 		}
 
@@ -30,22 +35,24 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
 			try
 			{
-				long? allNativesSize = _jobStatisticsContainer.NativesBytesRequested is null
-					? (long?)null
-					: await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
-
-				await ReportRecordsStatisticsAsync().ConfigureAwait(false);
-
-				ReportJobEndStatus(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA, jobExecutionStatus);
-
-				await ReportFieldsStatisticsAsync().ConfigureAwait(false);
-
-				ReportBytesStatistics();
-
-				if (allNativesSize.HasValue)
+				DocumentJobEndMetric metric = new DocumentJobEndMetric
 				{
-					_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED, allNativesSize.Value);
+					JobEndStatus = jobExecutionStatus.GetDescription()
+				};
+				
+
+				if (_configuration.JobHistoryToRetryId != null)
+				{
+					metric.RetryJobEndStatus = jobExecutionStatus.GetDescription();
 				}
+				
+				await WriteRecordsStatisticsAsync(metric).ConfigureAwait(false);
+
+				await WriteFieldsStatisticsAsync(metric).ConfigureAwait(false);
+
+				await WriteBytesStatistics(metric).ConfigureAwait(false);
+
+				_syncMetrics.Send(metric);
 
 				ReportLongTextsStatistics();
 			}
@@ -57,28 +64,34 @@ namespace Relativity.Sync.Executors.SumReporting
 			return ExecutionResult.Success();
 		}
 
-		private async Task ReportFieldsStatisticsAsync()
+		private async Task WriteFieldsStatisticsAsync(DocumentJobEndMetric metric)
 		{
 			IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
-			_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED, fields.Count);
+			metric.TotalMappedFields = fields.Count;
 		}
 
-		private void ReportBytesStatistics()
+		private async Task WriteBytesStatistics(DocumentJobEndMetric metric)
 		{
+			long? allNativesSize = _jobStatisticsContainer.NativesBytesRequested is null
+				? (long?)null
+				: await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
+
+			metric.BytesNativesRequested = allNativesSize;
+
 			// If IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.
 			if (_jobStatisticsContainer.MetadataBytesTransferred != 0)
 			{
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED, _jobStatisticsContainer.MetadataBytesTransferred);
+				metric.BytesMetadataTransferred = _jobStatisticsContainer.MetadataBytesTransferred;
 			}
 
 			if (_jobStatisticsContainer.FilesBytesTransferred != 0)
 			{
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED, _jobStatisticsContainer.FilesBytesTransferred);
+				metric.BytesNativesTransferred = _jobStatisticsContainer.FilesBytesTransferred;
 			}
 
 			if (_jobStatisticsContainer.TotalBytesTransferred != 0)
 			{
-				_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, _jobStatisticsContainer.TotalBytesTransferred);
+				metric.BytesTransferred = _jobStatisticsContainer.TotalBytesTransferred;
 			}
 		}
 
@@ -106,17 +119,19 @@ namespace Relativity.Sync.Executors.SumReporting
 			Tuple<double, double> avgBetween10And20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(10) && streamSize < UnitsConverter.MegabyteToBytes(20));
 			Tuple<double, double> avgOver20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(20));
 
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB, avgForLessThan1MB.Item1);
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB, avgForLessThan1MB.Item2);
+			LongTextStreamMetric avgLongTextMetric = new LongTextStreamMetric
+			{
+				AvgSizeLessThan1MB = avgForLessThan1MB.Item1,
+				AvgTimeLessThan1MB = avgForLessThan1MB.Item2,
+				AvgSizeLessBetween1and10MB = avgBetween1And10MB.Item1,
+				AvgTimeLessBetween1and10MB = avgBetween1And10MB.Item2,
+				AvgSizeLessBetween10and20MB = avgBetween10And20MB.Item1,
+				AvgTimeLessBetween10and20MB = avgBetween10And20MB.Item2,
+				AvgSizeOver20MB = avgOver20MB.Item1,
+				AvgTimeOver20MB = avgOver20MB.Item2
+			};
 
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB, avgBetween1And10MB.Item1);
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB, avgBetween1And10MB.Item2);
-
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWWEEN10AND20MB, avgBetween10And20MB.Item1);
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWWEEN10AND20MB, avgBetween10And20MB.Item2);
-
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB, avgOver20MB.Item1);
-			_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB, avgOver20MB.Item2);
+			_syncMetrics.Send(avgLongTextMetric);
 
 			List<LongTextStreamStatistics> top10LongTexts = _jobStatisticsContainer
 				.LongTextStatistics
@@ -126,8 +141,11 @@ namespace Relativity.Sync.Executors.SumReporting
 
 			foreach (LongTextStreamStatistics stats in top10LongTexts)
 			{
-				_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_SIZE, UnitsConverter.BytesToMegabytes(stats.TotalBytesRead));
-				_syncMetrics.LogPointInTimeDouble(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_LARGEST_TIME, Math.Round(stats.TotalReadTime.TotalSeconds, 3));
+				_syncMetrics.Send(new TopLongTextStreamMetric
+				{
+					LongTextStreamSize = UnitsConverter.BytesToMegabytes(stats.TotalBytesRead),
+					LongTextStreamTime = Math.Round(stats.TotalReadTime.TotalSeconds, 3)
+				});
 			}
 		}
 	}

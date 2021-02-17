@@ -18,11 +18,13 @@ namespace Relativity.Sync.Tests.System
 	internal class DestinationWorkspaceSavedSearchCreationStepTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
+		private WorkspaceRef _sourceWorkspace;
 		private const string _LOCAL_INSTANCE_NAME = "This Instance";
 
 		[SetUp]
 		public async Task SetUp()
 		{
+			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 		}
 
@@ -30,21 +32,20 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItShouldCreateSavedSearch()
 		{
 			// ARRANGE
-			const int sourceWorkspaceArtifactId = 123;
 			const int jobHistoryArtifactId = 456;
 			string jobHistoryName = "Job History Tag Name";
 			string sourceWorkspaceName = "Source Workspace";
 			string sourceWorkspaceTagName = "Source Workspace Tag Name";
 			string sourceJobTagName = "Source Job Tag Name";
 
-			int sourceCaseTagArtifactId = await CreateRelativitySourceCaseTag(sourceWorkspaceTagName, sourceWorkspaceArtifactId, sourceWorkspaceName).ConfigureAwait(false);
+			int sourceCaseTagArtifactId = await CreateRelativitySourceCaseTag(sourceWorkspaceTagName, _sourceWorkspace.ArtifactID, sourceWorkspaceName).ConfigureAwait(false);
 			int sourceJobTagArtifactId = await CreateSourceJobTag(jobHistoryArtifactId, jobHistoryName, sourceCaseTagArtifactId, sourceJobTagName).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				CreateSavedSearchForTags = true,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
-				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
+				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				SourceJobTagArtifactId = sourceJobTagArtifactId
 			};
 			configuration.SetSourceJobTagName(sourceJobTagName);
