@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
 
@@ -12,7 +13,7 @@ namespace Relativity.Sync.Tests.System.Core
         [RdoField("F6E1CD6F-70D9-4E98-A79C-F980BD107BC7", RdoFieldType.WholeNumber)]
         public int SomeField { get; set; }
         
-        [RdoField("95367659-43EE-49E9-AC76-89D2DF4B453C",RdoFieldType.FixedLengthText, fixedTextLength: 64)]
+        [RdoField("95367659-43EE-49E9-AC76-89D2DF4B453C",RdoFieldType.FixedLengthText, fixedTextLength: 64, required: true)]
         public string OptionalTextField { get; set; }
         
         public int ArtifactId { get; set; }
@@ -30,7 +31,8 @@ namespace Relativity.Sync.Tests.System.Core
                     Guid = new Guid("F6E1CD6F-70D9-4E98-A79C-F980BD107BC7"),
                     Type = RdoFieldType.WholeNumber,
                     IsRequired = false,
-                    TextLenght = 255
+                    TextLenght = 255,
+                    PropertyInfo = typeof(SampleRdo).GetProperties().First(x => x.Name == nameof(SomeField))
                 }},
                 {new Guid("95367659-43EE-49E9-AC76-89D2DF4B453C"), new RdoFieldInfo
                 {
@@ -38,7 +40,8 @@ namespace Relativity.Sync.Tests.System.Core
                     Guid = new Guid("95367659-43EE-49E9-AC76-89D2DF4B453C"),
                     Type = RdoFieldType.FixedLengthText,
                     IsRequired = true,
-                    TextLenght = 64
+                    TextLenght = 64,
+                    PropertyInfo = typeof(SampleRdo).GetProperties().First(x => x.Name == nameof(OptionalTextField))
                 }}
             }
         };

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Interfaces.Field;
@@ -14,15 +15,21 @@ using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.RDOs.Framework.Attributes;
 
 namespace Relativity.Sync.RDOs.Framework
 {
     internal interface IRdoManager
     {
         Task EnsureTypeExistsAsync<TRdo>(int workspaceId) where TRdo : IRdoType;
-        Task Get<TRdo>(int artifactId, params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType;
-        Task Create<TRdo>(TRdo rdo) where TRdo : IRdoType;
-        Task SetValues<TRdo>(int artifactId, params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType;
+
+        Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId, params Expression<Func<TRdo, object>>[] fields)
+            where TRdo : IRdoType, new();
+
+        Task CreateAsync<TRdo>(int workspaceId, TRdo rdo, int? parentObjectId = null) where TRdo : IRdoType;
+
+        Task SetValuesAsync<TRdo>(int workspaceId, TRdo rdo, params Expression<Func<TRdo, object>>[] fields)
+            where TRdo : IRdoType;
     }
 
     internal class RdoManager : IRdoManager
@@ -48,27 +55,127 @@ namespace Relativity.Sync.RDOs.Framework
             await CreateMissingFieldsAsync(typeInfo, workspaceId, existingFields, rdoArtifactId).ConfigureAwait(false);
         }
 
-        public Task Get<TRdo>(int artifactId, params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType
+        public async Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId,
+            params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType, new()
         {
-            var typeInfo = _rdoGuidProvider.GetValue<TRdo>();
-            
-            // typeInfo.Fields.Select ( => fieldRef)
-            
-            // if(fields.Any()){ filter requests to only contain fields from argument)
-            // check if expression is member expression
-            
-            // get values, use memberInfo from typeInfo to set the values in a loop
+            RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
+
+            var explicitlyRequestedFieldsGuids = GetFieldsGuidsFromExpressions(fields);
+
+            var fieldsToQuery = (explicitlyRequestedFieldsGuids.Any()
+                    ? explicitlyRequestedFieldsGuids.Select(g => typeInfo.Fields[g])
+                    : typeInfo.Fields.Values)
+                .ToArray();
+
+            var request = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    Guid = typeInfo.TypeGuid
+                },
+                Fields = fieldsToQuery.Select(x => new FieldRef
+                {
+                    Guid = x.Guid
+                }),
+                Condition = $"'ArtifactId' == {artifactId}"
+            };
+
+            using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            {
+                QueryResultSlim queryResult =
+                    await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+
+                var resultObject = queryResult.Objects.FirstOrDefault();
+
+                var result = new TRdo();
+
+                if (resultObject != null)
+                {
+                    result.ArtifactId = resultObject.ArtifactID;
+
+                    foreach (var (fieldInfo, i) in fieldsToQuery.Select((x, i) => (x, i)))
+                    {
+                        fieldInfo.PropertyInfo.SetValue(result, resultObject.Values[i]);
+                    }
+                }
+
+                return result;
+            }
         }
 
-        public Task Create<TRdo>(TRdo rdo) where TRdo : IRdoType
+        private static HashSet<Guid> GetFieldsGuidsFromExpressions<TRdo>(Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType
         {
-            // create RDO
-            // SetValues(rdo);
+            return new HashSet<Guid>(fields.Select(x =>
+                    ((x.Body as UnaryExpression)?.Operand as MemberExpression)
+                    ?? throw new InvalidExpressionException($"Expression must be a unary member expression: {x}"))
+                .Select(x => (x.Member.GetCustomAttribute<RdoFieldAttribute>().FieldGuid)));
         }
 
-        public Task SetValues<TRdo>(int artifactId, params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType
+        public async Task CreateAsync<TRdo>(int workspaceId, TRdo rdo, int? parentObjectId = null) where TRdo : IRdoType
         {
-            // similarly to Get, get memberInfo, Select to fieldRef, filter fields to change to allow update of single field
+            RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
+
+            CreateRequest request = new CreateRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    Guid = typeInfo.TypeGuid
+                },
+                FieldValues = GetFieldRefValuePairsForSettingValues(rdo, typeInfo.Fields.Values.ToArray())
+            };
+
+            if (parentObjectId != null)
+            {
+                request.ParentObject = new RelativityObjectRef {ArtifactID = parentObjectId.Value};
+            }
+
+            using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            {
+                CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
+
+                rdo.ArtifactId = result.Object.ArtifactID;
+            }
+        }
+
+        public async Task SetValuesAsync<TRdo>(int workspaceId, TRdo rdo, params Expression<Func<TRdo, object>>[] fields)
+            where TRdo : IRdoType
+        {
+            RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
+
+            var explicitlyRequestedFieldsGuids = GetFieldsGuidsFromExpressions(fields);
+
+            var fieldsToUpdate = (explicitlyRequestedFieldsGuids.Any()
+                    ? explicitlyRequestedFieldsGuids.Select(g => typeInfo.Fields[g])
+                    : typeInfo.Fields.Values)
+                .ToArray();
+            
+            UpdateRequest request = new UpdateRequest()
+            {
+                Object = new RelativityObjectRef()
+                {
+                    ArtifactID = rdo.ArtifactId
+                },
+                FieldValues = GetFieldRefValuePairsForSettingValues(rdo, fieldsToUpdate)
+            };
+
+            using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            {
+                await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
+            }
+        }
+
+
+        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValues<TRdo>(TRdo rdo, RdoFieldInfo[] fields)
+            where TRdo : IRdoType
+        {
+           return fields.Select(fieldInfo => new FieldRefValuePair
+            {
+                Field = new FieldRef
+                {
+                    Guid = fieldInfo.Guid
+                },
+                Value = fieldInfo.PropertyInfo.GetValue(rdo)
+            });
         }
 
         private async Task CreateMissingFieldsAsync(RdoTypeInfo typeInfo, int workspaceId, HashSet<Guid> existingFields,
@@ -131,7 +238,7 @@ namespace Relativity.Sync.RDOs.Framework
                     return fieldManager.CreateYesNoFieldAsync(workspaceId,
                         new YesNoFieldRequest
                         {
-                            FilterType = FilterType.TextBox,
+                            FilterType = FilterType.List,
                             Name = fieldInfo.Name,
                             ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
                             IsRequired = fieldInfo.IsRequired

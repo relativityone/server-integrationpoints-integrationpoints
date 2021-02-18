@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Relativity.Sync.RDOs.Framework
 {
@@ -18,6 +19,7 @@ namespace Relativity.Sync.RDOs.Framework
         public RdoFieldType Type { get; set; }
         public bool IsRequired { get; set; }
         public int TextLenght { get; set; }
+        public PropertyInfo PropertyInfo { get; set; }
     }
 
     internal enum RdoFieldType

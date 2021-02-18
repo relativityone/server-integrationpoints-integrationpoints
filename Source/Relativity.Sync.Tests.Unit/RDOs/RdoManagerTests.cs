@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             const int createdTypeArtifactId = 3;
 
             _objectManagerMock.Setup(x => x.QueryAsync(WORKSPACE_ID,
-                    It.Is<QueryRequest>(q => q.Condition == $"'Guid' == '{SampleRdo.ExpectedRdoInfo.TypeGuid}'"), 0, 1))
+                    It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{SampleRdo.ExpectedRdoInfo.Name}'"), 0, 1))
                 .ReturnsAsync(new QueryResult() {Objects = new List<RelativityObject>()});
 
             _objectTypeManagerMock
@@ -122,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             // Assert
             _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WORKSPACE_ID, createdTypeArtifactId,
                 It.Is<List<Guid>>(l => l.Contains(SampleRdo.ExpectedRdoInfo.TypeGuid))));
-            
+
             foreach (RdoFieldInfo fieldInfo in SampleRdo.ExpectedRdoInfo.Fields.Values)
             {
                 _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WORKSPACE_ID, CREATED_FIELD_ID,
@@ -165,7 +165,8 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         public async Task EnsureTypeExists_ShouldNotCreateAnything_WhenTypeAlreadyExists()
         {
             // Arrange
-            _objectManagerMock.Setup(x => x.QueryAsync(WORKSPACE_ID, It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Field), 0, int.MaxValue))
+            _objectManagerMock.Setup(x => x.QueryAsync(WORKSPACE_ID,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Field), 0, int.MaxValue))
                 .ReturnsAsync(new QueryResult
                 {
                     Objects = new List<RelativityObject>
@@ -176,14 +177,14 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                         }
                     }
                 });
-            
+
             // Act
             await _sut.EnsureTypeExistsAsync<SampleRdo>(WORKSPACE_ID);
 
             // Assert
             _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WORKSPACE_ID, It.IsAny<int>(),
                 It.IsAny<List<Guid>>()), Times.Never);
-            
+
             _objectTypeManagerMock.Verify(x => x.CreateAsync(WORKSPACE_ID, It.IsAny<ObjectTypeRequest>()), Times.Never);
         }
     }
