@@ -65,6 +65,29 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 });
         }
 
+        [Test]
+        public void AllRdosGuidProperties_ShouldBeOfTypeFixedLengthText_WithAtLeast36Characters()
+        {
+            Type[] allRdoTypes = GetRdoTypesFromAssembly(typeof(IRdoType).Assembly);
+
+            const int guidTextLength = 36;
+            
+            allRdoTypes
+                .ForEach(t =>
+                {
+                    t.GetProperties()
+                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) &&
+                                    (p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?)))
+                        .ForEach(x =>
+                        {
+                            var fieldAttribute = x.GetCustomAttribute<RdoFieldAttribute>();
+
+                            fieldAttribute.FieldType.Should().Be(RdoFieldType.LongText);
+                            fieldAttribute.FixedTextLength.Should().BeGreaterOrEqualTo(guidTextLength);
+                        });
+                });
+        }
+
         private static Type[] GetRdoTypesFromAssembly(Assembly assembly)
         {
             Type iRdoType = typeof(IRdoType);

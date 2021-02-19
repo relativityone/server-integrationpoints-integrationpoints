@@ -13,6 +13,8 @@ namespace Relativity.Sync.RDOs.Framework.Attributes
         /// Attribute defining RDO field
         /// </summary>
         /// <param name="fieldGuid">GUID for the field</param>
+        /// <param name="fieldType">Type of the field in database</param>
+        /// <param name="fixedTextLength">Length of fixed-length text field</param>
         /// <param name="required">Whether the field is optional. Translates to nullable column in database</param>
         public RdoFieldAttribute(string fieldGuid, RdoFieldType fieldType, int fixedTextLength = 255, bool required = false)
         {

@@ -82,11 +82,14 @@ namespace Relativity.Sync.Tests.System.RDOs
             // Assert
             using (var guidManager = ServiceFactory.CreateProxy<IArtifactGuidManager>())
             {
-                var newFieldExists = await guidManager
-                    .GuidExistsAsync(workspace.ArtifactID, new Guid("E44D02A2-9BD1-4BB1-A5D9-281F25666359"))
-                    .ConfigureAwait(false);
+                foreach (var fieldInfo in ExtendedSampleRdo.ExpectedRdoInfo.Fields.Values)
+                {
+                    var newFieldExists = await guidManager
+                        .GuidExistsAsync(workspace.ArtifactID, fieldInfo.Guid)
+                        .ConfigureAwait(false);
 
-                newFieldExists.Should().BeTrue();
+                    newFieldExists.Should().BeTrue($"Field {fieldInfo.Name} with GUID: {fieldInfo.Guid} should be created");
+                }
             }
         }
 
