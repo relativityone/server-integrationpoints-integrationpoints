@@ -7,8 +7,8 @@ using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.Services.Exceptions;
-using Relativity.Services.Interfaces.Workspace;
-using Relativity.Services.Interfaces.Workspace.Models;
+using Relativity.Services.ResourceServer;
+using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -89,9 +89,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				using (IWorkspaceManager workspaceManager = _helper.GetServicesManager().CreateProxy<IWorkspaceManager>(ExecutionIdentity.System))
 				{
-					WorkspaceResponse workspaceResponse = workspaceManager.ReadAsync(workspaceArtifactId).GetAwaiter().GetResult();
-					string defaultFileLocation = workspaceResponse.DefaultFileRepository.Value.Name;
-					return Path.Combine(defaultFileLocation, string.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
+					WorkspaceRef workspace = new WorkspaceRef {ArtifactID = workspaceArtifactId};
+
+					FileShareResourceServer fileShare = workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).GetAwaiter().GetResult();
+					return Path.Combine(fileShare.UNCPath, string.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
 				}
 			}
 			catch (NotFoundException ex)
