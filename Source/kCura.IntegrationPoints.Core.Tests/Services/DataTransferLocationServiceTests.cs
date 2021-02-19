@@ -15,6 +15,9 @@ using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Interfaces.Workspace.Models;
+using Relativity.Services.ResourceServer;
+using Relativity.Services.Workspace;
+
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -25,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 		private IHelper _helperMock;
 		private IServicesMgr _servicesMgr;
-		private global::Relativity.Services.Interfaces.Workspace.IWorkspaceManager _workspaceManager;
+		private IWorkspaceManager _workspaceManager;
 		private IIntegrationPointTypeService _integrationPointTypeServiceMock;
 		private IDirectory _directoryMock;
 		private ICryptographyHelper _cryptographyHelperMock;
@@ -44,16 +47,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_helperMock = Substitute.For<IHelper>();
 			_servicesMgr = Substitute.For<IServicesMgr>();
 			_helperMock.GetServicesManager().Returns(_servicesMgr);
-			_workspaceManager = Substitute.For<global::Relativity.Services.Interfaces.Workspace.IWorkspaceManager>();
-			_workspaceManager.ReadAsync(_WKSP_ID).Returns(new WorkspaceResponse()
+			_workspaceManager = Substitute.For<IWorkspaceManager>();
+			_workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(Arg.Is<WorkspaceRef>(r => r.ArtifactID == _WKSP_ID))
+				.Returns(new FileShareResourceServer
 			{
-				ArtifactID = _WKSP_ID,
-				DefaultFileRepository = new Securable<DisplayableObjectIdentifier>(new DisplayableObjectIdentifier()
-				{
-					Name = _RESOURCE_POOL_FILESHARE
-				})
+				UNCPath = _RESOURCE_POOL_FILESHARE
 			});
-			_servicesMgr.CreateProxy<global::Relativity.Services.Interfaces.Workspace.IWorkspaceManager>(Arg.Any<ExecutionIdentity>()).Returns(_workspaceManager);
+			_servicesMgr.CreateProxy<IWorkspaceManager>(Arg.Any<ExecutionIdentity>()).Returns(_workspaceManager);
 			_integrationPointTypeServiceMock = Substitute.For<IIntegrationPointTypeService>();
 			_directoryMock = Substitute.For<IDirectory>();
 			_cryptographyHelperMock = Substitute.For<ICryptographyHelper>();
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ItShouldThrowNotFoundExceptionIfWorkspaceDoesntExist()
 		{
 			// Arrange
-			_workspaceManager.ReadAsync(_WKSP_ID).Throws(new NotFoundException());
+			_workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(Arg.Is<WorkspaceRef>(r => r.ArtifactID == _WKSP_ID)).Throws(new NotFoundException());
 
 			// Act & Assert
 			Assert.Throws<NotFoundException>(() => _sut.GetWorkspaceFileLocationRootPath(_WKSP_ID));
