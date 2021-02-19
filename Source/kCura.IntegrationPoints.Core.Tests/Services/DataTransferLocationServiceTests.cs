@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 		private IHelper _helperMock;
 		private IServicesMgr _servicesMgr;
-		private Relativity.Services.Workspace.IWorkspaceManager _workspaceManager;
+		private IWorkspaceManager _workspaceManager;
 		private IIntegrationPointTypeService _integrationPointTypeServiceMock;
 		private IDirectory _directoryMock;
 		private ICryptographyHelper _cryptographyHelperMock;
@@ -47,12 +47,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_helperMock = Substitute.For<IHelper>();
 			_servicesMgr = Substitute.For<IServicesMgr>();
 			_helperMock.GetServicesManager().Returns(_servicesMgr);
-			_workspaceManager = Substitute.For<Relativity.Services.Workspace.IWorkspaceManager>();
-			_workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(_WKSP_ID).Returns(new FileShareResourceServer
+			_workspaceManager = Substitute.For<IWorkspaceManager>();
+			_workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(Arg.Is<WorkspaceRef>(r => r.ArtifactID == _WKSP_ID))
+				.Returns(new FileShareResourceServer
 			{
 				UNCPath = _RESOURCE_POOL_FILESHARE
 			});
-			_servicesMgr.CreateProxy<Relativity.Services.Workspace.IWorkspaceManager>(Arg.Any<ExecutionIdentity>()).Returns(_workspaceManager);
+			_servicesMgr.CreateProxy<IWorkspaceManager>(Arg.Any<ExecutionIdentity>()).Returns(_workspaceManager);
 			_integrationPointTypeServiceMock = Substitute.For<IIntegrationPointTypeService>();
 			_directoryMock = Substitute.For<IDirectory>();
 			_cryptographyHelperMock = Substitute.For<ICryptographyHelper>();
@@ -182,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void ItShouldThrowNotFoundExceptionIfWorkspaceDoesntExist()
 		{
 			// Arrange
-			_workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(new WorkspaceRef { ArtifactID = _WKSP_ID }).Throws(new NotFoundException());
+			_workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(Arg.Is<WorkspaceRef>(r => r.ArtifactID == _WKSP_ID)).Throws(new NotFoundException());
 
 			// Act & Assert
 			Assert.Throws<NotFoundException>(() => _sut.GetWorkspaceFileLocationRootPath(_WKSP_ID));
