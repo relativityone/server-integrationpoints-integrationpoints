@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Telemetry.Metrics
+﻿using Relativity.Sync.Configuration;
+
+namespace Relativity.Sync.Telemetry.Metrics
 {
 	internal abstract class JobEndMetricBase<T> : MetricBase<T>
 		where T: JobEndMetricBase<T>
@@ -22,5 +24,11 @@
 
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED)]
 		public long? BytesTransferred { get; set; }
+
+		public DataSourceType? SourceType { get; set; }
+
+		public DestinationLocationType? DestinationType { get; set; }
+
+		public ImportOverwriteMode? OverwriteMode { get; set; }
 	}
 }

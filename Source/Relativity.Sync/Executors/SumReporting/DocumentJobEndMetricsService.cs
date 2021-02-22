@@ -37,15 +37,11 @@ namespace Relativity.Sync.Executors.SumReporting
 			{
 				DocumentJobEndMetric metric = new DocumentJobEndMetric
 				{
-					JobEndStatus = jobExecutionStatus.GetDescription()
+					NativeFileCopyMode = _configuration.ImportNativeFileCopyMode
 				};
-				
 
-				if (_configuration.JobHistoryToRetryId != null)
-				{
-					metric.RetryJobEndStatus = jobExecutionStatus.GetDescription();
-				}
-				
+				WriteJobDetails(metric, jobExecutionStatus);
+
 				await WriteRecordsStatisticsAsync(metric).ConfigureAwait(false);
 
 				await WriteFieldsStatisticsAsync(metric).ConfigureAwait(false);

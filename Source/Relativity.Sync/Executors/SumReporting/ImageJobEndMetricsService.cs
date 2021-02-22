@@ -30,13 +30,10 @@ namespace Relativity.Sync.Executors.SumReporting
 			{
 				ImageJobEndMetric metric = new ImageJobEndMetric
 				{
-					JobEndStatus = jobExecutionStatus.GetDescription()
+					ImageFileCopyMode = _configuration.ImportImageFileCopyMode
 				};
 
-				if (_configuration.JobHistoryToRetryId != null)
-				{
-					metric.RetryJobEndStatus = jobExecutionStatus.GetDescription();
-				}
+				WriteJobDetails(metric, jobExecutionStatus);
 
 				await WriteRecordsStatisticsAsync(metric).ConfigureAwait(false);
 
