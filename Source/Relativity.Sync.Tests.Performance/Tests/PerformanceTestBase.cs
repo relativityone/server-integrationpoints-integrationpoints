@@ -357,6 +357,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 			IEnumerable<IPreCondition> preConditions = new List<IPreCondition>()
 			{
+				new MassImportToggleOnPreCondition(),
 				new IndexEnabledPreCondition(SourceWorkspace.ArtifactID),
 				new IndexEnabledPreCondition(DestinationWorkspace.ArtifactID),
 				new DataGridEnabledPreCondition(ServiceFactory, SourceWorkspace.ArtifactID),
