@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		protected override void VerifyApmSink(Mock<IAPMClient> apmMock)
 		{
 			apmMock.Verify(x => x.Log(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(d =>
-				d["RetryCounter"].Equals(_sut.RetryCounter))));
+				d["RetryCounter"].Equals(_sut.RetryCounter.ToString()))));
 		}
 	}
 }

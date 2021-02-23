@@ -17,6 +17,21 @@ namespace Relativity.Sync.Executors.SumReporting
 			_configuration = configuration;
 		}
 
+		protected void WriteJobDetails<T>(JobEndMetricBase<T> jobEndMetric, ExecutionStatus executionStatus)
+			where T : JobEndMetricBase<T>
+		{
+			jobEndMetric.JobEndStatus = executionStatus.GetDescription();
+
+			if (_configuration.JobHistoryToRetryId != null)
+			{
+				jobEndMetric.RetryJobEndStatus = executionStatus.GetDescription();
+			}
+
+			jobEndMetric.SourceType = _configuration.DataSourceType;
+			jobEndMetric.DestinationType = _configuration.DestinationType;
+			jobEndMetric.OverwriteMode = _configuration.ImportOverwriteMode;
+		}
+
 		protected async Task WriteRecordsStatisticsAsync<T>(JobEndMetricBase<T> jobEndMetric)
 			where T: JobEndMetricBase<T>
 		{

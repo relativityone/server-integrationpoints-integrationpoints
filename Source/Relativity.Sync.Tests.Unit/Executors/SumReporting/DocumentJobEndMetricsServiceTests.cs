@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -76,7 +77,18 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			const int testNumberOfFields = 10;
 			IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.NativeFileFilenameField(), testNumberOfFields);
 			_fieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(fields.ToList);
-			
+
+			const ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly;
+			const DataSourceType sourceType = DataSourceType.SavedSearch;
+			const DestinationLocationType destinationType = DestinationLocationType.Folder;
+			const ImportNativeFileCopyMode nativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles;
+
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportOverwriteMode).Returns(overwriteMode);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(sourceType);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.DestinationType).Returns(destinationType);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(nativeFileCopyMode);
+
+
 			const long jobSize = 12345;
 			const long metadataSize = 6667;
 			const long nativesSize = 5678;
