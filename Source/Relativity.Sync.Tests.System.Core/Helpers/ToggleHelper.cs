@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	{
 		private static Func<SqlConnection> SqlConnectionFunc => SqlHelper.CreateEddsConnectionFromAppConfig;
 
-		public static async Task<bool?> GetToggleValue(string toggleName)
+		public static async Task<bool?> GetToggleValueAsync(string toggleName)
 		{
 			using (SqlConnection connection = SqlConnectionFunc())
 			{
@@ -29,13 +29,13 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 				SqlCommand toggleExistsCommand = new SqlCommand(@"SELECT Count(*) FROM [EDDS].[eddsdbo].[Toggle] WHERE Name = @toggleName", connection);
 				toggleExistsCommand.Parameters.AddWithValue("toggleName", toggleName);
-				if ((int)await toggleExistsCommand.ExecuteScalarAsync() > 0)
+				if ((int)await toggleExistsCommand.ExecuteScalarAsync().ConfigureAwait(false) > 0)
 				{
 					SqlCommand toggleUpdateCommand = new SqlCommand(@"UPDATE [EDDS].[eddsdbo].[Toggle] SET IsEnabled = @toggleValue WHERE Name = @toggleName", connection);
 					toggleUpdateCommand.Parameters.AddWithValue("toggleValue", toggleValue);
 					toggleUpdateCommand.Parameters.AddWithValue("toggleName", toggleName);
 
-					await toggleUpdateCommand.ExecuteNonQueryAsync();
+					await toggleUpdateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 				}
 				else
 				{
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					toggleInsertCommand.Parameters.AddWithValue("toggleName", toggleName);
 					toggleInsertCommand.Parameters.AddWithValue("toggleValue", toggleValue);
 
-					await toggleInsertCommand.ExecuteNonQueryAsync();
+					await toggleInsertCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 				}
 			}
 		}
