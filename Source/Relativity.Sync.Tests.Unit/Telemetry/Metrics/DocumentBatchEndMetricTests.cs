@@ -6,9 +6,9 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-	internal class LongTextStreamMetricTests : MetricTestsBase<LongTextStreamMetric>
+	internal class DocumentBatchEndMetricTests : MetricTestsBase<DocumentBatchEndMetric>
 	{
-		private LongTextStreamMetric _sut = new LongTextStreamMetric
+		private readonly DocumentBatchEndMetric _sut = new DocumentBatchEndMetric
 		{
 			AvgSizeLessThan1MB = 1.1,
 			AvgTimeLessThan1MB = 2.2,
@@ -17,7 +17,13 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			AvgSizeLessBetween10and20MB = 5.5,
 			AvgTimeLessBetween10and20MB = 6.6,
 			AvgSizeOver20MB = 7.7,
-			AvgTimeOver20MB = 8.8
+			AvgTimeOver20MB = 8.8,
+			TotalRecordsRequested = 101,
+			TotalRecordsTransferred = 102,
+			BytesMetadataTransferred = 103,
+			BytesNativesTransferred = 104,
+			BatchTotalTime = 105,
+			BatchImportAPITime = 106
 		};
 
 		protected override IMetric ArrangeTestMetric()
@@ -27,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 		protected override IMetric EmptyTestMetric()
 		{
-			return new LongTextStreamMetric();
+			return new DocumentBatchEndMetric();
 		}
 
 		protected override void VerifySumSink(Mock<IMetricsManager> metricsManagerMock)
@@ -63,7 +69,14 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				d["AvgSizeLessBetween10and20MB"].Equals(_sut.AvgSizeLessBetween10and20MB) &&
 				d["AvgTimeLessBetween10and20MB"].Equals(_sut.AvgTimeLessBetween10and20MB) &&
 				d["AvgSizeOver20MB"].Equals(_sut.AvgSizeOver20MB) &&
-				d["AvgTimeOver20MB"].Equals(_sut.AvgTimeOver20MB))));
+				d["AvgTimeOver20MB"].Equals(_sut.AvgTimeOver20MB) &&
+				d["TotalRecordsRequested"].Equals(_sut.TotalRecordsRequested) &&
+				d["TotalRecordsTransferred"].Equals(_sut.TotalRecordsTransferred) &&
+				d["BytesMetadataTransferred"].Equals(_sut.BytesMetadataTransferred) &&
+				d["BytesNativesTransferred"].Equals(_sut.BytesNativesTransferred) &&
+				d["BatchTotalTime"].Equals(_sut.BatchTotalTime) &&
+				d["BatchImportAPITime"].Equals(_sut.BatchImportAPITime)
+				)));
 		}
 	}
 }

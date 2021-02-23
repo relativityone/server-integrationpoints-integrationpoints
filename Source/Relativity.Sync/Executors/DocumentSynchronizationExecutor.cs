@@ -47,8 +47,6 @@ namespace Relativity.Sync.Executors
 
 		protected override void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
 		{
-			base.ReportBatchMetrics(batchId, batchProcessResult, batchTime, importApiTimer);
-
 			int longTextStreamsCount = _jobStatisticsContainer.LongTextStreamsCount;
 			long longTextStreamsTotalSizeInBytes = _jobStatisticsContainer.LongTextStreamsTotalSizeInBytes;
 			LongTextStreamStatistics largestLongTextStreamStatistics = _jobStatisticsContainer.LargestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
@@ -73,8 +71,15 @@ namespace Relativity.Sync.Executors
 			Tuple<double, double> avgBetween10And20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(10) && streamSize < UnitsConverter.MegabyteToBytes(20));
 			Tuple<double, double> avgOver20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(20));
 
-			LongTextStreamMetric avgLongTextMetric = new LongTextStreamMetric
+			DocumentBatchEndMetric documentBatchEndMetric = new DocumentBatchEndMetric
 			{
+				TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
+				TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
+				BytesNativesTransferred = batchProcessResult.FilesBytesTransferred,
+				BytesMetadataTransferred = batchProcessResult.MetadataBytesTransferred,
+				BatchImportAPITime = importApiTimer.TotalMilliseconds,
+				BatchTotalTime = batchTime.TotalMilliseconds,
+
 				AvgSizeLessThan1MB = avgForLessThan1MB.Item1,
 				AvgTimeLessThan1MB = avgForLessThan1MB.Item2,
 				AvgSizeLessBetween1and10MB = avgBetween1And10MB.Item1,
@@ -85,7 +90,7 @@ namespace Relativity.Sync.Executors
 				AvgTimeOver20MB = avgOver20MB.Item2
 			};
 
-			_syncMetrics.Send(avgLongTextMetric);
+			_syncMetrics.Send(documentBatchEndMetric);
 
 			List<LongTextStreamStatistics> top10LongTexts = _jobStatisticsContainer
 				.LongTextStatistics

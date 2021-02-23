@@ -281,7 +281,7 @@ namespace Relativity.Sync.Executors
 				BatchTotalTime = batchTime.TotalMilliseconds
 			});
 		}
-
+		
 		protected string GetSpecialFieldColumnName(IList<FieldInfoDto> specialFields, SpecialFieldType specialFieldType)
 		{
 			FieldInfoDto specialField = specialFields.FirstOrDefault(x => x.SpecialFieldType == specialFieldType);

@@ -32,8 +32,10 @@ namespace Relativity.Sync.Telemetry.Metrics
 			return this.GetMetricProperties().Keys.ToDictionary(p => p.Name, GetValue);
 		}
 
-		public virtual IEnumerable<SumMetric> GetSumMetrics() =>
-			this.GetMetricProperties()
+		public virtual IEnumerable<SumMetric> GetSumMetrics()
+		{
+			Dictionary<PropertyInfo, MetricAttribute> metricProperties = GetMetricProperties();
+			return metricProperties
 				.Where(p => p.Value != null)
 				.Select(p => new SumMetric
 				{
@@ -43,11 +45,12 @@ namespace Relativity.Sync.Telemetry.Metrics
 					WorkflowId = WorkflowId
 				})
 				.Where(m => m.Value != null);
+		}
 
 		protected virtual string BucketNameFunc(MetricAttribute attr) => attr.Name ?? Name;
 
 		private Dictionary<PropertyInfo, MetricAttribute> GetMetricProperties() => _metricCacheProperties ??
-			(_metricCacheProperties = typeof(T)
+			(_metricCacheProperties = GetType()
 				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(p => p.GetMethod != null)
 				.ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));

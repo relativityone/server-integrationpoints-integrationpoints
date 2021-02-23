@@ -176,7 +176,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			_syncMetricsMock.Verify(x => x.Send(It.Is<LongTextStreamMetric>(m =>
+			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentBatchEndMetric>(m =>
 				m.AvgSizeLessThan1MB == 1 &&
 				m.AvgTimeLessThan1MB == 2 &&
 				m.AvgSizeLessBetween1and10MB == 1 &&
@@ -184,20 +184,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				m.AvgSizeLessBetween10and20MB == 1 &&
 				m.AvgTimeLessBetween10and20MB == 2 &&
 				m.AvgSizeOver20MB == 1 &&
-				m.AvgTimeOver20MB == 2)), Times.Once);
-
-			_syncMetricsMock.Verify(x => x.Send(It.Is<TopLongTextStreamMetric>(m =>
-				m.LongTextStreamSize != null &&
-				m.LongTextStreamTime != null)), Times.Exactly(10));
-
-			_syncMetricsMock.Verify(x => x.Send(It.Is<BatchEndMetric>(m =>
+				m.AvgTimeOver20MB == 2 &&
 				m.TotalRecordsTransferred == totalRecordsTransferred &&
 				m.TotalRecordsRequested == totalRecordsRequested &&
 				m.BytesMetadataTransferred == _METADATA_SIZE &&
 				m.BytesNativesTransferred == _FILES_SIZE &&
 				m.BatchTotalTime == batchTime &&
-				m.BatchImportAPITime == iapiTime
-				)), Times.Once);
+				m.BatchImportAPITime == iapiTime)), Times.Once);
+
+			_syncMetricsMock.Verify(x => x.Send(It.Is<TopLongTextStreamMetric>(m =>
+				m.LongTextStreamSize != null &&
+				m.LongTextStreamTime != null)), Times.Exactly(10));
 		}
 
 		[Test]
