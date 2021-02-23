@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Telemetry.Metrics
+﻿using Relativity.Sync.Configuration;
+
+namespace Relativity.Sync.Telemetry.Metrics
 {
 	internal class DocumentJobEndMetric : JobEndMetricBase<DocumentJobEndMetric>
 	{
@@ -16,5 +18,7 @@
 
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED)]
 		public long? TotalMappedFields { get; set; }
+
+		public ImportNativeFileCopyMode? NativeFileCopyMode { get; set; }
 	}
 }

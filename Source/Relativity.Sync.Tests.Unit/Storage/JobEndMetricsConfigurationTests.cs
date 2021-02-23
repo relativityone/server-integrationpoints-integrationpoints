@@ -4,7 +4,9 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
 using System;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
+using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -57,6 +59,83 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			jobHistoryToRetryId.Should().Be(_JOB_HISTORY_TO_RETRY_ARTIFACT_ID);
+		}
+
+		[TestCase("AppendOnly", ImportOverwriteMode.AppendOnly)]
+		[TestCase("OverlayOnly", ImportOverwriteMode.OverlayOnly)]
+		[TestCase("AppendOverlay", ImportOverwriteMode.AppendOverlay)]
+		public void ImportOverwriteMode_ShouldReturnProperValue(string valueInConfiguration, ImportOverwriteMode expectedValue)
+		{
+			// Arrange
+			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid))
+				.Returns(valueInConfiguration);
+
+			// Act
+			var importOverwriteMode = _sut.ImportOverwriteMode;
+
+			// Assert
+			importOverwriteMode.Should().Be(expectedValue);
+		}
+
+		[TestCase("Production", DataSourceType.Production)]
+		[TestCase("SavedSearch", DataSourceType.SavedSearch)]
+		public void DataSourceType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
+		{
+			// Arrange
+			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DataSourceTypeGuid))
+				.Returns(valueInConfiguration);
+
+			// Act
+			var dataSourceType = _sut.DataSourceType;
+
+			// Assert
+			dataSourceType.Should().Be(expectedValue);
+		}
+
+		[TestCase("Folder", DestinationLocationType.Folder)]
+		[TestCase("ProductionSet", DestinationLocationType.ProductionSet)]
+		public void DestinationType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
+		{
+			// Arrange
+			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DataDestinationTypeGuid))
+				.Returns(valueInConfiguration);
+
+			// Act
+			var destinationType = _sut.DestinationType;
+
+			// Assert
+			destinationType.Should().Be(expectedValue);
+		}
+
+		[TestCase("Copy", ImportNativeFileCopyMode.CopyFiles)]
+		[TestCase("Link", ImportNativeFileCopyMode.SetFileLinks)]
+		[TestCase("None", ImportNativeFileCopyMode.DoNotImportNativeFiles)]
+		public void ImportNativeFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportNativeFileCopyMode expectedValue)
+		{
+			// Arrange
+			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.NativesBehaviorGuid))
+				.Returns(valueInConfiguration);
+
+			// Act
+			var nativeFileCopyMode = _sut.ImportNativeFileCopyMode;
+
+			// Assert
+			nativeFileCopyMode.Should().Be(expectedValue);
+		}
+
+		[TestCase("Copy", ImportImageFileCopyMode.CopyFiles)]
+		[TestCase("Link", ImportImageFileCopyMode.SetFileLinks)]
+		public void ImportImageFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportImageFileCopyMode expectedValue)
+		{
+			// Arrange
+			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid))
+				.Returns(valueInConfiguration);
+
+			// Act
+			var imageFileCopyMode = _sut.ImportImageFileCopyMode;
+
+			// Assert
+			imageFileCopyMode.Should().Be(expectedValue);
 		}
 	}
 }

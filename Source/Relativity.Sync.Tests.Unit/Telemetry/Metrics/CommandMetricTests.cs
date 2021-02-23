@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		{
 			apmMock.Verify(x => x.Log(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(d =>
 				d["Duration"].Equals(_sut.Duration) &&
-				d["ExecutionStatus"].Equals(_sut.ExecutionStatus))));
+				d["ExecutionStatus"].Equals(_sut.ExecutionStatus.ToString()))));
 		}
 	}
 }

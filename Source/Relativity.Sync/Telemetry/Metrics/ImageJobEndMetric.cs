@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Telemetry.Metrics
+﻿using Relativity.Sync.Configuration;
+
+namespace Relativity.Sync.Telemetry.Metrics
 {
 	internal class ImageJobEndMetric : JobEndMetricBase<ImageJobEndMetric>
 	{
@@ -10,5 +12,7 @@
 
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_TRANSFERRED)]
 		public long? BytesImagesTransferred { get; set; }
+
+		public ImportImageFileCopyMode? ImageFileCopyMode { get; set; }
 	}
 }

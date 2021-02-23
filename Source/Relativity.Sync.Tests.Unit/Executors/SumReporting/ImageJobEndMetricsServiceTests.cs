@@ -56,6 +56,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			var testBatches = new List<IBatch> { batch.Object, batch.Object };
 			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(testBatches);
 
+			const ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly;
+			const DataSourceType sourceType = DataSourceType.SavedSearch;
+			const DestinationLocationType destinationType = DestinationLocationType.Folder;
+			const ImportImageFileCopyMode imageFileCopyMode = ImportImageFileCopyMode.CopyFiles;
+
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportOverwriteMode).Returns(overwriteMode);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(sourceType);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.DestinationType).Returns(destinationType);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportImageFileCopyMode).Returns(imageFileCopyMode);
+
 			const long jobSize = 12345;
 			const long imagesSize = 12345;
 			_jobStatisticsContainerFake.SetupGet(x => x.FilesBytesTransferred).Returns(imagesSize);
@@ -77,7 +87,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				m.JobEndStatus == expectedStatusDescription &&
 				m.BytesImagesTransferred == imagesSize &&
 				m.BytesTransferred == jobSize &&
-				m.BytesImagesRequested == imagesSize)), Times.Once);
+				m.BytesImagesRequested == imagesSize &&
+				m.OverwriteMode == overwriteMode &&
+				m.SourceType == sourceType &&
+				m.DestinationType == destinationType &&
+				m.ImageFileCopyMode == imageFileCopyMode)), Times.Once);
 		}
 
 		[Test]

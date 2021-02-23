@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -22,9 +23,14 @@ namespace Relativity.Sync.Telemetry.Metrics
 		{
 			Name = metricName;
 		}
-		
-		public virtual Dictionary<string, object> GetCustomData() => 
-			this.GetMetricProperties().Keys.ToDictionary(p => p.Name, p => p.GetValue(this));
+
+		public virtual Dictionary<string, object> GetCustomData()
+		{
+			object GetValue(PropertyInfo p) =>
+				Nullable.GetUnderlyingType(p.PropertyType)?.IsEnum == true ?  p.GetValue(this)?.ToString() : p.GetValue(this);
+
+			return this.GetMetricProperties().Keys.ToDictionary(p => p.Name, GetValue);
+		}
 
 		public virtual IEnumerable<SumMetric> GetSumMetrics() =>
 			this.GetMetricProperties()
