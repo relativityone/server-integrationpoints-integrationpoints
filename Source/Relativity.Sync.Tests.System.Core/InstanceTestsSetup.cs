@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using System.Security;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
@@ -81,38 +79,6 @@ namespace Relativity.Sync.Tests.System.Core
 						Value = value
 					};
 					await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
-				}
-			}
-		}
-
-		private static async Task SetToggleAsync(string toggleName, bool toggleValue)
-		{
-			SecureString password = new NetworkCredential("", AppSettings.SqlPassword).SecurePassword;
-			password.MakeReadOnly();
-
-			SqlCredential credential = new SqlCredential(AppSettings.SqlUsername, password);
-
-			using (SqlConnection connection = new SqlConnection($"Data Source={AppSettings.SqlServer};Initial Catalog=EDDS", credential))
-			{
-				connection.Open();
-
-				SqlCommand toggleExistsCommand = new SqlCommand(@"SELECT Count(*) FROM [EDDS].[eddsdbo].[Toggle] WHERE Name = @toggleName", connection);
-				toggleExistsCommand.Parameters.AddWithValue("toggleName", toggleName);
-				if ((int) await toggleExistsCommand.ExecuteScalarAsync() > 0)
-				{
-					SqlCommand toggleUpdateCommand = new SqlCommand(@"UPDATE [EDDS].[eddsdbo].[Toggle] SET IsEnabled = @toggleValue WHERE Name = @toggleName", connection);
-					toggleUpdateCommand.Parameters.AddWithValue("toggleValue", toggleValue);
-					toggleUpdateCommand.Parameters.AddWithValue("toggleName", toggleName);
-
-					await toggleUpdateCommand.ExecuteNonQueryAsync();
-				}
-				else
-				{
-					SqlCommand toggleInsertCommand = new SqlCommand(@"INSERT INTO [EDDS].[eddsdbo].[Toggle] (Name, IsEnabled) VALUES (@toggleName, @toggleValue)", connection);
-					toggleInsertCommand.Parameters.AddWithValue("toggleName", toggleName);
-					toggleInsertCommand.Parameters.AddWithValue("toggleValue", toggleValue);
-
-					await toggleInsertCommand.ExecuteNonQueryAsync();
 				}
 			}
 		}
