@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
 		
 		public bool Check()
 		{
-			var toggleValue = ToggleHelper.GetToggleValue(_MASS_IMPORT_IMPROVEMENTS_TOGGLE).GetAwaiter().GetResult();
+			var toggleValue = ToggleHelper.GetToggleAsync(_MASS_IMPORT_IMPROVEMENTS_TOGGLE).GetAwaiter().GetResult();
 
 			if (toggleValue == null)
 				return false;

@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	{
 		private static Func<SqlConnection> SqlConnectionFunc => SqlHelper.CreateEddsConnectionFromAppConfig;
 
-		public static async Task<bool?> GetToggleValueAsync(string toggleName)
+		public static async Task<bool?> GetToggleAsync(string toggleName)
 		{
 			using (SqlConnection connection = SqlConnectionFunc())
 			{
