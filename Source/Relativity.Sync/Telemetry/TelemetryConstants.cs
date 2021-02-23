@@ -38,7 +38,7 @@
 			public const string DATA_RECORDS_FAILED = "Relativity.Sync.Data.Records.Failed";
 			public const string DATA_RECORDS_TOTAL_REQUESTED = "Relativity.Sync.Data.Records.TotalRequested";
 			public const string DATA_FIELDS_MAPPED = "Relativity.Sync.Data.Fields.Mapped";
-
+			
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageSize.LessThan1MB";
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageTime.LessThan1MB";
 

@@ -103,20 +103,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				m.BytesNativesTransferred == nativesSize &&
 				m.BytesTransferred == jobSize &&
 				m.BytesNativesRequested == nativesSize)), Times.Once);
-
-			_syncMetricsMock.Verify(x => x.Send(It.Is<LongTextStreamMetric>(m =>
-				m.AvgSizeLessThan1MB == 1 &&
-				m.AvgTimeLessThan1MB == 2 &&
-				m.AvgSizeLessBetween1and10MB == 1 &&
-				m.AvgTimeLessBetween1and10MB == 2 &&
-				m.AvgSizeLessBetween10and20MB == 1 &&
-				m.AvgTimeLessBetween10and20MB == 2 &&
-				m.AvgSizeOver20MB == 1 &&
-				m.AvgTimeOver20MB == 2)), Times.Once);
-
-			_syncMetricsMock.Verify(x => x.Send(It.Is<TopLongTextStreamMetric>(m =>
-				m.LongTextStreamSize != null &&
-				m.LongTextStreamTime != null)), Times.Exactly(10));
 		}
 
 		[Test]

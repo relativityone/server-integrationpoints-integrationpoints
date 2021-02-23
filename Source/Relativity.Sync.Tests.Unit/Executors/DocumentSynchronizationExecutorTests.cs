@@ -12,7 +12,9 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -31,6 +33,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressHandler> _jobProgressHandlerFake;
 		private Mock<IJobProgressUpdater> _jobProgressUpdaterFake;
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _automatedWorkflowTriggerConfigurationFake;
+		private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
+		private Mock<IStopwatch> _stopwatchFake;
+		private Mock<ISyncMetrics> _syncMetricsMock;
 
 		private Mock<Sync.Executors.IImportJob> _importJobFake;
 		private Mock<IDocumentSynchronizationConfiguration> _configFake;
@@ -88,6 +93,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
 			_automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			_jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
+			_stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
+			_stopwatchFake = new Mock<IStopwatch>();
+			_stopwatchFactoryFake.Setup(x => x.Invoke()).Returns(_stopwatchFake.Object);
+			_syncMetricsMock = new Mock<ISyncMetrics>();
+			_jobStatisticsContainerFake.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
+				.Returns(new Tuple<double, double>(0, 0));
+			_jobStatisticsContainerFake.SetupGet(x => x.LongTextStatistics).Returns(new List<LongTextStreamStatistics>());
 
 			_jobProgressHandlerFake = new Mock<IJobProgressHandler>();
 			_jobProgressUpdaterFake = new Mock<IJobProgressUpdater>();
@@ -116,7 +128,76 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sut = new DocumentSynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
 				_jobProgressHandlerFactoryStub.Object,
 				_documentTagRepositoryFake.Object, _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
-				_jobCleanupConfigurationMock.Object,_automatedWorkflowTriggerConfigurationFake.Object, new EmptyLogger());
+				_jobCleanupConfigurationMock.Object,_automatedWorkflowTriggerConfigurationFake.Object,
+				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, new EmptyLogger());
+		}
+
+		[Test]
+		public async Task Execute_ShouldSendBatchMetrics()
+		{
+			// arrange 
+			const int totalRecordsTransferred = 111;
+			const int totalRecordsRequested = 222;
+			const int batchTime = 333;
+			const int iapiTime = 444;
+
+			Mock<IStopwatch> batchTimer = CreateFakeStopwatch(batchTime);
+			Mock<IStopwatch> iapiTimer = CreateFakeStopwatch(iapiTime);
+			_stopwatchFactoryFake.SetupSequence(x => x.Invoke())
+				.Returns(batchTimer.Object)
+				.Returns(iapiTimer.Object);
+
+			_jobProgressHandlerFake.Setup(x => x.GetBatchItemsProcessedCount(It.IsAny<int>())).Returns(totalRecordsTransferred);
+
+			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), _METADATA_SIZE, _FILES_SIZE, _JOB_SIZE);
+			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
+
+			IEnumerable<int> batches = new []{1};
+			_batchRepositoryMock.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			Mock<IBatch> batchFake = new Mock<IBatch>();
+			batchFake.SetupGet(x => x.TotalItemsCount).Returns(totalRecordsRequested);
+			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchFake.Object);
+			
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
+			SetUpDocumentsTagRepository(executionResult);
+			
+			_jobStatisticsContainerFake
+				.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
+				.Returns(new Tuple<double, double>(1, 2));
+			_jobStatisticsContainerFake
+				.SetupGet(x => x.LongTextStatistics)
+				.Returns(Enumerable.Range(1, 20).Select(x => new LongTextStreamStatistics()
+				{
+					TotalBytesRead = x * 1024 * 1024,
+					TotalReadTime = TimeSpan.FromSeconds(x)
+				}).ToList());
+
+			// act
+			await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			_syncMetricsMock.Verify(x => x.Send(It.Is<LongTextStreamMetric>(m =>
+				m.AvgSizeLessThan1MB == 1 &&
+				m.AvgTimeLessThan1MB == 2 &&
+				m.AvgSizeLessBetween1and10MB == 1 &&
+				m.AvgTimeLessBetween1and10MB == 2 &&
+				m.AvgSizeLessBetween10and20MB == 1 &&
+				m.AvgTimeLessBetween10and20MB == 2 &&
+				m.AvgSizeOver20MB == 1 &&
+				m.AvgTimeOver20MB == 2)), Times.Once);
+
+			_syncMetricsMock.Verify(x => x.Send(It.Is<TopLongTextStreamMetric>(m =>
+				m.LongTextStreamSize != null &&
+				m.LongTextStreamTime != null)), Times.Exactly(10));
+
+			_syncMetricsMock.Verify(x => x.Send(It.Is<BatchEndMetric>(m =>
+				m.TotalRecordsTransferred == totalRecordsTransferred &&
+				m.TotalRecordsRequested == totalRecordsRequested &&
+				m.BytesMetadataTransferred == _METADATA_SIZE &&
+				m.BytesNativesTransferred == _FILES_SIZE &&
+				m.BatchTotalTime == batchTime &&
+				m.BatchImportAPITime == iapiTime
+				)), Times.Once);
 		}
 
 		[Test]
@@ -567,6 +648,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await Task.CompletedTask.ConfigureAwait(false);
 			return new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
 		}
+
 		private static async Task<TaggingExecutionResult> ReturnTaggingCompletedResultAsync(CancellationToken cancellationToken)
 		{
 			await Task.CompletedTask.ConfigureAwait(false);
@@ -591,6 +673,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null)
 		{
 			return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), 1, 0, 1);
+		}
+		
+		private static Mock<IStopwatch> CreateFakeStopwatch(int elapsedMs)
+		{
+			Mock<IStopwatch> batchTimer = new Mock<IStopwatch>();
+			batchTimer.SetupGet(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(elapsedMs));
+			return batchTimer;
 		}
 	}
 }

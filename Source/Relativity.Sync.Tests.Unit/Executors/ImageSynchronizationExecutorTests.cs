@@ -13,6 +13,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
+using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -31,6 +32,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressHandler> _jobProgressHandlerFake;
 		private Mock<IJobProgressUpdater> _jobProgressUpdaterFake;
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _automatedWorkflowTriggerConfigurationFake;
+		private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
+		private Mock<IStopwatch> _stopwatchFake;
+		private Mock<ISyncMetrics> _syncMetricsMock;
 
 		private Mock<Sync.Executors.IImportJob> _importJobFake;
 		private Mock<IImageSynchronizationConfiguration> _configFake;
@@ -81,6 +85,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
 			_automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			_jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
+			_stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
+			_stopwatchFake = new Mock<IStopwatch>();
+			_stopwatchFactoryFake.Setup(x => x.Invoke()).Returns(_stopwatchFake.Object);
+			_syncMetricsMock = new Mock<ISyncMetrics>();
 
 			_jobProgressHandlerFake = new Mock<IJobProgressHandler>();
 			_jobProgressUpdaterFake = new Mock<IJobProgressUpdater>();
@@ -109,7 +117,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sut = new ImageSynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
 				_jobProgressHandlerFactoryStub.Object,
 				_documentTagRepositoryFake.Object, _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
-				_jobCleanupConfigurationMock.Object,_automatedWorkflowTriggerConfigurationFake.Object, new EmptyLogger());
+				_jobCleanupConfigurationMock.Object,_automatedWorkflowTriggerConfigurationFake.Object,
+				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, new EmptyLogger());
 		}
 
 		[Test]
