@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 658932;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DataSourceArtifactIdGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.DataSourceArtifactId.Should().Be(expectedValue);
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(snapshot);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid)).Returns(snapshot);
 
 			// Act & Assert
 			_instance.IsSnapshotCreated.Should().Be(expectedValue);
@@ -76,8 +76,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, snapshotId.ToString()));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SnapshotIdGuid, snapshotId.ToString()));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SnapshotRecordsCountGuid, totalRecordsCount));
 		}
 
 		[Test]
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var expectedValue = new [] {1, 2, 3};
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
 
 			// Act & Assert
 			_instance.ProductionImagePrecedence.Should().BeEquivalentTo(expectedValue);
@@ -96,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void IncludeOriginalImageIfNotFoundInProductions_ShouldBeRetrieved(bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<bool>(SyncRdoGuids.IncludeOriginalImagesGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.IncludeOriginalImageIfNotFoundInProductions.Should().Be(expectedValue);

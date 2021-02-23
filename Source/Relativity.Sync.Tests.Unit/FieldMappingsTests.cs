@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration = new Mock<IConfiguration>();
 			_serializer = new Mock<ISerializer>();
 
-			_configuration.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid)).Returns(_FIELD_MAP);
+			_configuration.Setup(x => x.GetFieldValue(r => r.FieldsMapping)).Returns(_FIELD_MAP);
 
 			_instance = new FieldMappings(_configuration.Object, _serializer.Object, new EmptyLogger());
 		}
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance.GetFieldMappings();
 
 			// ASSERT
-			_configuration.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid), Times.Once);
+			_configuration.Verify(x => x.GetFieldValue<string>(SyncRdoGuids.FieldMappingsGuid), Times.Once);
 			_serializer.Verify(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP), Times.Once);
 		}
 

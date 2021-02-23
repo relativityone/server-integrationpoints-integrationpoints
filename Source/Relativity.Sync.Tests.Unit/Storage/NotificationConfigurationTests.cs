@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", TestEmailRecipients);
-			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualResult.Should().BeTrue();
-			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", string.Empty);
-			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualResult.Should().BeFalse();
-			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", TestEmailRecipients);
-			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualEmailRecipients.Should().NotBeNullOrEmpty();
-			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
 			string emailRecipients = string.Join(";", TestEmailRecipients);
-			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
+			cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid)).Returns(emailRecipients);
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);
@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			int expectedNumberOfRecipients = TestEmailRecipients.Length - 1;    // removing one empty entry
 			actualEmailRecipients.Should().NotBeNullOrEmpty();
 			actualEmailRecipients.Should().HaveCount(expectedNumberOfRecipients);
-			cache.Verify(x => x.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid), Times.Once);
+			cache.Verify(x => x.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid), Times.Once);
 		}
 
 		[Test]
@@ -116,9 +116,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			var cache = new Mock<Sync.Storage.IConfiguration>();
 
-			cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(expectedDestinationWorkspaceArtifactId).Verifiable();
+			cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)).Returns(expectedDestinationWorkspaceArtifactId).Verifiable();
 			cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue { ArtifactID = expectedJobHistoryArtifactId, Name = expectedJobName }).Verifiable();
-			cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SourceWorkspaceTagNameGuid)).Returns(expectedSourceWorkspaceTag).Verifiable();
+			cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SourceWorkspaceTagNameGuid)).Returns(expectedSourceWorkspaceTag).Verifiable();
 
 			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
 			var instance = new NotificationConfiguration(cache.Object, syncJobParameters);

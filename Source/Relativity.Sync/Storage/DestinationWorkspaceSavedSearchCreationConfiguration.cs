@@ -14,21 +14,21 @@ namespace Relativity.Sync.Storage
 			_cache = cache;
 		}
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 
-		public int SourceJobTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.SourceJobTagArtifactIdGuid);
+		public int SourceJobTagArtifactId => _cache.GetFieldValue(x => x.SourceJobTagArtifactId);
 
-		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid);
+		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue(x => x.SourceWorkspaceTagArtifactId);
 
-		public bool CreateSavedSearchForTags => _cache.GetFieldValue<bool>(SyncConfigurationRdo.CreateSavedSearchInDestinationGuid);
+		public bool CreateSavedSearchForTags => _cache.GetFieldValue(x => x.CreateSavedSearchInDestination);
 
-		public bool IsSavedSearchArtifactIdSet => _cache.GetFieldValue<int>(SyncConfigurationRdo.SavedSearchInDestinationArtifactIdGuid) != 0;
+		public bool IsSavedSearchArtifactIdSet => _cache.GetFieldValue(x => x.SavedSearchInDestinationArtifactId) != 0;
 
-		public string GetSourceJobTagName() => _cache.GetFieldValue<string>(SyncConfigurationRdo.SourceJobTagNameGuid);
+		public string GetSourceJobTagName() => _cache.GetFieldValue(x => x.SourceJobTagName);
 
 		public async Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId)
 		{
-			await _cache.UpdateFieldValueAsync(SyncConfigurationRdo.SavedSearchInDestinationArtifactIdGuid, artifactId).ConfigureAwait(false);
+			await _cache.UpdateFieldValueAsync(x => x.SavedSearchInDestinationArtifactId, artifactId).ConfigureAwait(false);
 		}
 	}
 }

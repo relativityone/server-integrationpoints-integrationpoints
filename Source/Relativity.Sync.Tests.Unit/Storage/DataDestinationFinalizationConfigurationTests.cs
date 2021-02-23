@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int expectedValue = 123;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DataDestinationArtifactIdGuid)).Returns(expectedValue);
 
 			_instance.DataDestinationArtifactId.Should().Be(expectedValue);
 		}

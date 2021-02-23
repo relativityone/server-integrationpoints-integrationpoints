@@ -30,13 +30,13 @@ namespace Relativity.Sync.Storage
 
 		public int SourceWorkspaceArtifactId { get; }
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 
-		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid);
+		public int DestinationFolderArtifactId => _cache.GetFieldValue(x => x.DataDestinationArtifactId);
 
 		public int SourceProviderArtifactId => _sourceArtifactId.Value;
 
-		public bool CreateSavedSearchForTags => _cache.GetFieldValue<bool>(SyncConfigurationRdo.CreateSavedSearchInDestinationGuid);
+		public bool CreateSavedSearchForTags => _cache.GetFieldValue(x => x.CreateSavedSearchInDestination);
 
 		private async Task<int> GetSourceProviderArtifactIdAsync()
 		{

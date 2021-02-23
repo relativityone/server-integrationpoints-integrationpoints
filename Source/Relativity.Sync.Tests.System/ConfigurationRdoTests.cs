@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.System
 				},
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = SyncConfigurationRdo.SyncConfigurationGuid
+					Guid = SyncRdoGuids.SyncConfigurationGuid
 				},
 				FieldValues = PrepareFields().ToList()
 			};
@@ -71,36 +71,36 @@ namespace Relativity.Sync.Tests.System
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
-			configuration.GetFieldValue<bool>(SyncConfigurationRdo.CreateSavedSearchInDestinationGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.DataDestinationTypeGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.DataSourceTypeGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldOverlayBehaviorGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid);
+			configuration.GetFieldValue<bool>(SyncRdoGuids.CreateSavedSearchInDestinationGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.DataDestinationArtifactIdGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.DataDestinationTypeGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.DataSourceArtifactIdGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.DataSourceTypeGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.DestinationFolderStructureBehaviorGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.EmailNotificationRecipientsGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.FieldMappingsGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.FieldOverlayBehaviorGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.FolderPathSourceFieldNameGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.ImportOverwriteModeGuid);
 			configuration.GetFieldValue<RelativityObjectValue>(JobHistoryGuid);
-			configuration.GetFieldValue<RelativityObjectValue>(SyncConfigurationRdo.JobHistoryToRetryIdGuid);
-			configuration.GetFieldValue<bool>(SyncConfigurationRdo.MoveExistingDocumentsGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.NativesBehaviorGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.RdoArtifactTypeIdGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.SavedSearchInDestinationArtifactIdGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.SnapshotRecordsCountGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.SourceJobTagArtifactIdGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.SourceJobTagNameGuid);
-			configuration.GetFieldValue<int>(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.SourceWorkspaceTagNameGuid);
+			configuration.GetFieldValue<RelativityObjectValue>(SyncRdoGuids.JobHistoryToRetryIdGuid);
+			configuration.GetFieldValue<bool>(SyncRdoGuids.MoveExistingDocumentsGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.NativesBehaviorGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.RdoArtifactTypeIdGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.SavedSearchInDestinationArtifactIdGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.SnapshotRecordsCountGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.SourceJobTagArtifactIdGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.SourceJobTagNameGuid);
+			configuration.GetFieldValue<int>(SyncRdoGuids.SourceWorkspaceTagArtifactIdGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.SourceWorkspaceTagNameGuid);
 
-			configuration.GetFieldValue<bool>(SyncConfigurationRdo.ImageImportGuid);
-			configuration.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid);
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.ProductionImagePrecedenceGuid);
+			configuration.GetFieldValue<bool>(SyncRdoGuids.ImageImportGuid);
+			configuration.GetFieldValue<bool>(SyncRdoGuids.IncludeOriginalImagesGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.ImageFileCopyModeGuid);
+			configuration.GetFieldValue<string>(SyncRdoGuids.ProductionImagePrecedenceGuid);
 		}
 
 		[IdentifiedTest("3a5a8647-86e5-4a01-9cac-90bdd84e7a62")]
@@ -115,12 +115,12 @@ namespace Relativity.Sync.Tests.System
 				},
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = SyncConfigurationRdo.SyncConfigurationGuid
+					Guid = SyncRdoGuids.SyncConfigurationGuid
 				},
 				FieldValues = PrepareFields().ToList()
 			};
 
-			request.FieldValues.First(x => x.Field.Guid == SyncConfigurationRdo.FieldMappingsGuid).Value = fieldMapping;
+			request.FieldValues.First(x => x.Field.Guid == SyncRdoGuids.FieldMappingsGuid).Value = fieldMapping;
 
 			int syncConfigurationArtifactId;
 			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
@@ -134,7 +134,7 @@ namespace Relativity.Sync.Tests.System
 				.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false);
 
 			// ASSERT
-			configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid).Should().Be(fieldMapping);
+			configuration.GetFieldValue<string>(SyncRdoGuids.FieldMappingsGuid).Should().Be(fieldMapping);
 		}
 
 		[IdentifiedTest("108661af-82bf-41ca-8799-4c83cc0ef976")]
@@ -148,7 +148,7 @@ namespace Relativity.Sync.Tests.System
 				},
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = SyncConfigurationRdo.SyncConfigurationGuid
+					Guid = SyncRdoGuids.SyncConfigurationGuid
 				},
 				FieldValues = PrepareFields().ToList()
 			};
@@ -166,7 +166,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.CreateSavedSearchInDestinationGuid
+					Guid = SyncRdoGuids.CreateSavedSearchInDestinationGuid
 				},
 				Value = true
 			};
@@ -174,7 +174,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.DataDestinationArtifactIdGuid
+					Guid = SyncRdoGuids.DataDestinationArtifactIdGuid
 				},
 				Value = 789456
 			};
@@ -182,7 +182,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.DataDestinationTypeGuid
+					Guid = SyncRdoGuids.DataDestinationTypeGuid
 				},
 				Value = "some type"
 			};
@@ -190,7 +190,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.DataSourceArtifactIdGuid
+					Guid = SyncRdoGuids.DataSourceArtifactIdGuid
 				},
 				Value = 589632
 			};
@@ -198,7 +198,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.DataSourceTypeGuid
+					Guid = SyncRdoGuids.DataSourceTypeGuid
 				},
 				Value = "source type"
 			};
@@ -206,7 +206,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid
+					Guid = SyncRdoGuids.DestinationFolderStructureBehaviorGuid
 				},
 				Value = "behavior"
 			};
@@ -214,7 +214,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid
+					Guid = SyncRdoGuids.DestinationWorkspaceArtifactIdGuid
 				},
 				Value = 784512
 			};
@@ -222,7 +222,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid
+					Guid = SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid
 				},
 				Value = 968574
 			};
@@ -230,7 +230,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.EmailNotificationRecipientsGuid
+					Guid = SyncRdoGuids.EmailNotificationRecipientsGuid
 				},
 				Value = "emails"
 			};
@@ -238,7 +238,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.FieldMappingsGuid
+					Guid = SyncRdoGuids.FieldMappingsGuid
 				},
 				Value = "fields"
 			};
@@ -246,7 +246,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.FieldOverlayBehaviorGuid
+					Guid = SyncRdoGuids.FieldOverlayBehaviorGuid
 				},
 				Value = "overlay behavior"
 			};
@@ -254,7 +254,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.FolderPathSourceFieldNameGuid
+					Guid = SyncRdoGuids.FolderPathSourceFieldNameGuid
 				},
 				Value = "folder path"
 			};
@@ -262,7 +262,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.ImportOverwriteModeGuid
+					Guid = SyncRdoGuids.ImportOverwriteModeGuid
 				},
 				Value = "overwrite mode"
 			};
@@ -270,7 +270,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.MoveExistingDocumentsGuid
+					Guid = SyncRdoGuids.MoveExistingDocumentsGuid
 				},
 				Value = true
 			};
@@ -278,7 +278,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.NativesBehaviorGuid
+					Guid = SyncRdoGuids.NativesBehaviorGuid
 				},
 				Value = "natives behavior"
 			};
@@ -286,7 +286,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.RdoArtifactTypeIdGuid
+					Guid = SyncRdoGuids.RdoArtifactTypeIdGuid
 				},
 				Value = 784512
 			};
@@ -294,7 +294,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.SavedSearchInDestinationArtifactIdGuid
+					Guid = SyncRdoGuids.SavedSearchInDestinationArtifactIdGuid
 				},
 				Value = 789632
 			};
@@ -302,7 +302,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.SnapshotIdGuid
+					Guid = SyncRdoGuids.SnapshotIdGuid
 				},
 				Value = "snapshot id"
 			};
@@ -310,7 +310,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.SnapshotRecordsCountGuid
+					Guid = SyncRdoGuids.SnapshotRecordsCountGuid
 				},
 				Value = 813794
 			};
@@ -318,7 +318,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.SourceJobTagArtifactIdGuid
+					Guid = SyncRdoGuids.SourceJobTagArtifactIdGuid
 				},
 				Value = 951357
 			};
@@ -326,7 +326,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.SourceJobTagNameGuid
+					Guid = SyncRdoGuids.SourceJobTagNameGuid
 				},
 				Value = "source tag name"
 			};
@@ -334,7 +334,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid
+					Guid = SyncRdoGuids.SourceWorkspaceTagArtifactIdGuid
 				},
 				Value = 659823
 			};
@@ -342,7 +342,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef
 				{
-					Guid = SyncConfigurationRdo.SourceWorkspaceTagNameGuid
+					Guid = SyncRdoGuids.SourceWorkspaceTagNameGuid
 				},
 				Value = "workspace tag name"
 			};
@@ -350,7 +350,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef()
 				{
-					Guid = SyncConfigurationRdo.ImageImportGuid
+					Guid = SyncRdoGuids.ImageImportGuid
 				},
 				Value = true
 			};
@@ -358,7 +358,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef()
 				{
-					Guid = SyncConfigurationRdo.IncludeOriginalImagesGuid
+					Guid = SyncRdoGuids.IncludeOriginalImagesGuid
 				},
 				Value = true
 			};
@@ -366,7 +366,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef()
 				{
-					Guid = SyncConfigurationRdo.ImageFileCopyModeGuid
+					Guid = SyncRdoGuids.ImageFileCopyModeGuid
 				},
 				Value = "Links"
 			};
@@ -374,7 +374,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				Field = new FieldRef()
 				{
-					Guid = SyncConfigurationRdo.ProductionImagePrecedenceGuid
+					Guid = SyncRdoGuids.ProductionImagePrecedenceGuid
 				},
 				Value = "[2564218,254634]"
 			};

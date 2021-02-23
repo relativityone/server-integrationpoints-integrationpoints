@@ -22,10 +22,10 @@ namespace Relativity.Sync.Storage
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 
 
-		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
+		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistory).ArtifactID;
 
 		public bool SendEmails => GetEmailRecipients().Any();
 
@@ -33,11 +33,11 @@ namespace Relativity.Sync.Storage
 
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 
-		public IEnumerable<string> GetEmailRecipients() => _emailRecipients ?? (_emailRecipients = (_cache.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid) ?? string.Empty)
+		public IEnumerable<string> GetEmailRecipients() => _emailRecipients ?? (_emailRecipients = (_cache.GetFieldValue<string>(x => x.EmailNotificationRecipients) ?? string.Empty)
 			                                              .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()));
 
-		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).Name;
+		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistory).Name;
 
-		public string GetSourceWorkspaceTag() => _cache.GetFieldValue<string>(SyncConfigurationRdo.SourceWorkspaceTagNameGuid);
+		public string GetSourceWorkspaceTag() => _cache.GetFieldValue<string>(x => x.SourceWorkspaceTagName);
 	}
 }

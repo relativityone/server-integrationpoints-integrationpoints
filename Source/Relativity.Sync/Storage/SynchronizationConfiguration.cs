@@ -28,14 +28,14 @@ namespace Relativity.Sync.Storage
 
 		public char MultiValueDelimiter => (char) _ASCII_RECORD_SEPARATOR;
 		public char NestedValueDelimiter => (char) _ASCII_GROUP_SEPARATOR;
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
-		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid);
-		public int DestinationWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+		public int DestinationFolderArtifactId => _cache.GetFieldValue(x => x.DataDestinationArtifactId);
+		public int DestinationWorkspaceTagArtifactId => _cache.GetFieldValue<int>(x => x.DestinationWorkspaceTagArtifactId);
 		public Guid ExportRunId
 		{
 			get
 			{
-				string runId = _cache.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid);
+				string runId = _cache.GetFieldValue(x => x.SnapshotId);
 				Guid guid;
 				if (Guid.TryParse(runId, out guid))
 				{
@@ -48,21 +48,21 @@ namespace Relativity.Sync.Storage
 		}
 
 		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
-		public int SourceJobTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.SourceJobTagArtifactIdGuid);
+		public int SourceJobTagArtifactId => _cache.GetFieldValue(x => x.SourceJobTagArtifactId);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
-		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid);
+		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue(x => x.SourceWorkspaceTagArtifactId);
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
-		public bool MoveExistingDocuments => _cache.GetFieldValue<bool>(SyncConfigurationRdo.MoveExistingDocumentsGuid);
-		public int RdoArtifactTypeId => _cache.GetFieldValue<int>(SyncConfigurationRdo.RdoArtifactTypeIdGuid);
+		public bool MoveExistingDocuments => _cache.GetFieldValue(x => x.MoveExistingDocuments);
+		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid)));
-		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid)));
-		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue<string>(SyncConfigurationRdo.FieldOverlayBehaviorGuid).GetEnumFromDescription<FieldOverlayBehavior>();
-		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue<string>(SyncConfigurationRdo.NativesBehaviorGuid).GetEnumFromDescription<ImportNativeFileCopyMode>();
+			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(x => x.DestinationFolderStructureBehaviorGuid)));
+		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(x => x.ImportOverwriteModeGuid)));
+		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior).GetEnumFromDescription<FieldOverlayBehavior>();
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
 
-		public bool ImageImport => _cache.GetFieldValue<bool>(SyncConfigurationRdo.ImageImportGuid);
-		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid).GetEnumFromDescription<ImportImageFileCopyMode>();
+		public bool ImageImport => _cache.GetFieldValue(x => x.ImageImport);
+		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode).GetEnumFromDescription<ImportImageFileCopyMode>();
 
 		// Below settings are set in SynchronizationExecutor.
 

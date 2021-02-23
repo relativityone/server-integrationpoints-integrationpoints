@@ -432,7 +432,7 @@ namespace Relativity.Sync.Storage
 				{
 					ObjectType = new ObjectTypeRef()
 					{
-						Guid = SyncConfigurationRdo.SyncConfigurationGuid
+						Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid)
 					},
 					Fields = new[]
 					{

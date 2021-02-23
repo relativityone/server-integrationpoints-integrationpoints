@@ -8,7 +8,7 @@ namespace Relativity.Sync.Storage
 		private readonly IConfiguration _cache;
 
 		public int DestinationWorkspaceArtifactId =>
-			_cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+			_cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 
 		public PreValidationConfiguration(IConfiguration cache)
 		{

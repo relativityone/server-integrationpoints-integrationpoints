@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldReturnDestinationWorkspaceArtifactId()
 		{
 			const int destinationWorkspaceArtifactId = 3;
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
 
 			// act
 			int actualDestinationWorkspaceTagArtifactId = _config.DestinationWorkspaceArtifactId;
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetDestinationWorkspaceTagArtifactIdAsync(artifactId).ConfigureAwait(false);
 
 			// assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid, artifactId));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid, artifactId));
 			_config.IsDestinationWorkspaceTagArtifactIdSet.Should().BeTrue();
 		}
 

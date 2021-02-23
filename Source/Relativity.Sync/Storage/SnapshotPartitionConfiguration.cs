@@ -19,7 +19,7 @@ namespace Relativity.Sync.Storage
 			BatchSize = configuration.BatchSize;
 		}
 
-		public int TotalRecordsCount => _cache.GetFieldValue<int>(SyncConfigurationRdo.SnapshotRecordsCountGuid);
+		public int TotalRecordsCount => _cache.GetFieldValue(x => x.SnapshotRecordsCount);
 
 		public int BatchSize { get; }
 
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Storage
 		{
 			get
 			{
-				string runId = _cache.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid);
+				string runId = _cache.GetFieldValue(x => x.SnapshotId);
 				Guid guid;
 				if (Guid.TryParse(runId, out guid))
 				{

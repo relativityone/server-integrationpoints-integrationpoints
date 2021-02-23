@@ -13,6 +13,6 @@ namespace Relativity.Sync.Storage
 			_cache = cache;
 		}
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 	}
 }

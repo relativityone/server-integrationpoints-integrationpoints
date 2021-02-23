@@ -20,13 +20,13 @@ namespace Relativity.Sync.Storage
 		}
 
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; private set; }
 
 		public async Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId)
 		{
-			await _cache.UpdateFieldValueAsync(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid, artifactId).ConfigureAwait(false);
+			await _cache.UpdateFieldValueAsync(x => x.DestinationWorkspaceTagArtifactId, artifactId).ConfigureAwait(false);
 			IsDestinationWorkspaceTagArtifactIdSet = true;
 		}
 	}

@@ -113,7 +113,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = SyncConfigurationRdo.SyncConfigurationGuid
+						Guid = SyncRdoGuids.SyncConfigurationGuid
 					},
 					ParentObject = new RelativityObjectRef
 					{
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						new FieldRefValuePair
 						{
-							Field = new FieldRef {Guid = SyncConfigurationRdo.FieldMappingsGuid},
+							Field = new FieldRef {Guid = SyncRdoGuids.FieldMappingsGuid},
 							Value = new JSONSerializer().Serialize(fieldMappings)
 						}
 					}
@@ -526,7 +526,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			{
 				ObjectType = new ObjectTypeRef
 				{
-					Guid = SyncConfigurationRdo.SyncConfigurationGuid
+					Guid = SyncRdoGuids.SyncConfigurationGuid
 				},
 				ParentObject = new RelativityObjectRef
 				{
@@ -538,7 +538,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.CreateSavedSearchInDestinationGuid
+							Guid = SyncRdoGuids.CreateSavedSearchInDestinationGuid
 						},
 						Value = configuration.CreateSavedSearchForTags
 					},
@@ -546,7 +546,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.DataDestinationArtifactIdGuid
+							Guid = SyncRdoGuids.DataDestinationArtifactIdGuid
 						},
 						Value = configuration.DestinationFolderArtifactId
 					},
@@ -554,7 +554,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.DataDestinationTypeGuid
+							Guid = SyncRdoGuids.DataDestinationTypeGuid
 						},
 						Value = "Folder"
 					},
@@ -562,7 +562,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.DataSourceArtifactIdGuid
+							Guid = SyncRdoGuids.DataSourceArtifactIdGuid
 						},
 						Value = configuration.SavedSearchArtifactId
 					},
@@ -570,7 +570,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.DataSourceTypeGuid
+							Guid = SyncRdoGuids.DataSourceTypeGuid
 						},
 						Value = "SavedSearch"
 					},
@@ -578,7 +578,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid
+							Guid = SyncRdoGuids.DestinationFolderStructureBehaviorGuid
 						},
 						Value = configuration.DestinationFolderStructureBehavior.ToString()
 					},
@@ -586,7 +586,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.FolderPathSourceFieldNameGuid
+							Guid = SyncRdoGuids.FolderPathSourceFieldNameGuid
 						},
 						Value = configuration.FolderPathSourceFieldName
 					},
@@ -594,7 +594,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid
+							Guid = SyncRdoGuids.DestinationWorkspaceArtifactIdGuid
 						},
 						Value = configuration.DestinationWorkspaceArtifactId
 					},
@@ -602,7 +602,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.EmailNotificationRecipientsGuid
+							Guid = SyncRdoGuids.EmailNotificationRecipientsGuid
 						},
 						Value = configuration.GetNotificationEmails()
 					},
@@ -610,7 +610,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.FieldMappingsGuid
+							Guid = SyncRdoGuids.FieldMappingsGuid
 						},
 						Value = serializer.Serialize(configuration.GetFieldMappings())
 					},
@@ -618,7 +618,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.FieldOverlayBehaviorGuid
+							Guid = SyncRdoGuids.FieldOverlayBehaviorGuid
 						},
 						Value = configuration.FieldOverlayBehavior.GetDescription()
 					},
@@ -626,7 +626,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.ImportOverwriteModeGuid
+							Guid = SyncRdoGuids.ImportOverwriteModeGuid
 						},
 						Value = configuration.ImportOverwriteMode.ToString()
 					},
@@ -634,7 +634,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.MoveExistingDocumentsGuid
+							Guid = SyncRdoGuids.MoveExistingDocumentsGuid
 						},
 						Value = configuration.MoveExistingDocuments
 					},
@@ -642,7 +642,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.NativesBehaviorGuid
+							Guid = SyncRdoGuids.NativesBehaviorGuid
 						},
 						Value = configuration.ImportNativeFileCopyMode.GetDescription()
 					},
@@ -650,7 +650,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.RdoArtifactTypeIdGuid
+							Guid = SyncRdoGuids.RdoArtifactTypeIdGuid
 						},
 						Value = (int) ArtifactType.Document
 					},
@@ -658,7 +658,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.JobHistoryToRetryIdGuid
+							Guid = SyncRdoGuids.JobHistoryToRetryIdGuid
 						},
 						Value = configuration.JobHistoryToRetryId
 					},
@@ -666,7 +666,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.ImageImportGuid
+							Guid = SyncRdoGuids.ImageImportGuid
 						},
 						Value = configuration.ImageImport
 					},
@@ -674,7 +674,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.IncludeOriginalImagesGuid
+							Guid = SyncRdoGuids.IncludeOriginalImagesGuid
 						},
 						Value = configuration.ProductionImagePrecedence is null || configuration.IncludeOriginalImageIfNotFoundInProductions
 					},
@@ -682,7 +682,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.ImageFileCopyModeGuid
+							Guid = SyncRdoGuids.ImageFileCopyModeGuid
 						},
 						Value = configuration.ImportImageFileCopyMode.GetDescription()
 					},
@@ -690,7 +690,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					{
 						Field = new FieldRef
 						{
-							Guid = SyncConfigurationRdo.ProductionImagePrecedenceGuid
+							Guid = SyncRdoGuids.ProductionImagePrecedenceGuid
 						},
 						Value = configuration.ProductionImagePrecedence is null ? String.Empty : JsonConvert.SerializeObject(configuration.ProductionImagePrecedence)
 		            },
@@ -700,7 +700,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryTypeGuid
+	                        Guid = SyncRdoGuids.JobHistoryTypeGuid
 	                    },
 	                    Value = configuration.JobHistory.TypeGuid
 	                },
@@ -709,7 +709,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryTotalItemsFieldGuid
+	                        Guid = SyncRdoGuids.JobHistoryTotalItemsFieldGuid
 	                    },
 	                    Value = configuration.JobHistory.TotalItemsFieldGuid
 	                },
@@ -718,7 +718,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryFailedItemsFieldGuid
+	                        Guid = SyncRdoGuids.JobHistoryFailedItemsFieldGuid
 	                    },
 	                    Value = configuration.JobHistory.FailedItemsFieldGuid
 	                },
@@ -727,7 +727,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryCompletedItemsFieldGuid
+	                        Guid = SyncRdoGuids.JobHistoryCompletedItemsFieldGuid
 	                    },
 	                    Value = configuration.JobHistory.CompletedItemsFieldGuid
 	                },
@@ -736,7 +736,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryDestinationWorkspaceInformationGuid
+	                        Guid = SyncRdoGuids.JobHistoryDestinationWorkspaceInformationGuid
 	                    },
 	                    Value = configuration.JobHistory.DestinationWorkspaceInformationGuid
 	                },
@@ -747,7 +747,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorTypeGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorTypeGuid
 	                    },
 	                    Value = configuration.JobHistoryError.TypeGuid
 	                },
@@ -756,7 +756,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorMessagesGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorErrorMessagesGuid
 	                    },
 	                    Value = configuration.JobHistoryError.ErrorMessagesGuid
 	                },
@@ -765,7 +765,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorStatusGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorErrorStatusGuid
 	                    },
 	                    Value = configuration.JobHistoryError.ErrorStatusGuid
 	                },
@@ -774,7 +774,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorTypeGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorErrorTypeGuid
 	                    },
 	                    Value = configuration.JobHistoryError.ErrorTypeGuid
 	                },
@@ -783,7 +783,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorNameGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorNameGuid
 	                    },
 	                    Value = configuration.JobHistoryError.NameGuid
 	                },
@@ -792,7 +792,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorSourceUniqueIdGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorSourceUniqueIdGuid
 	                    },
 	                    Value = configuration.JobHistoryError.SourceUniqueIdGuid
 	                },
@@ -801,7 +801,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorStackTraceGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorStackTraceGuid
 	                    },
 	                    Value = configuration.JobHistoryError.StackTraceGuid
 	                },
@@ -810,7 +810,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorTimeStampGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorTimeStampGuid
 	                    },
 	                    Value = configuration.JobHistoryError.TimeStampGuid
 	                },
@@ -819,7 +819,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorItemLevelErrorGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorItemLevelErrorGuid
 	                    },
 	                    Value = configuration.JobHistoryError.ItemLevelErrorGuid
 	                },
@@ -828,7 +828,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorJobLevelErrorGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorJobLevelErrorGuid
 	                    },
 	                    Value = configuration.JobHistoryError.JobLevelErrorGuid
 	                },
@@ -837,7 +837,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorJobHistoryRelationGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorJobHistoryRelationGuid
 	                    },
 	                    Value = configuration.JobHistoryError.JobHistoryRelationGuid
 	                },
@@ -846,7 +846,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	                {
 	                    Field = new FieldRef
 	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorNewChoiceGuid
+	                        Guid = SyncRdoGuids.JobHistoryErrorNewChoiceGuid
 	                    },
 	                    Value = configuration.JobHistoryError.NewStatusGuid
 	                },

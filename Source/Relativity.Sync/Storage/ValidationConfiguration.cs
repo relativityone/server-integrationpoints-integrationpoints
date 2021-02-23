@@ -15,24 +15,24 @@ namespace Relativity.Sync.Storage
 		
 		public int SourceWorkspaceArtifactId { get; }
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 
-		public int SavedSearchArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid);
+		public int SavedSearchArtifactId => _cache.GetFieldValue(x => x.DataSourceArtifactId);
 
-		public int DestinationFolderArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataDestinationArtifactIdGuid);
+		public int DestinationFolderArtifactId => _cache.GetFieldValue(x => x.DataDestinationArtifactId);
 
-		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid));
+		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue(x => x.ImportOverwriteMode));
 
-		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue<string>(SyncConfigurationRdo.FieldOverlayBehaviorGuid).GetEnumFromDescription<FieldOverlayBehavior>();
+		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior).GetEnumFromDescription<FieldOverlayBehavior>();
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-			(DestinationFolderStructureBehavior)Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid));
+			(DestinationFolderStructureBehavior)Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior));
 
-		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue<string>(SyncConfigurationRdo.NativesBehaviorGuid).GetEnumFromDescription<ImportNativeFileCopyMode>();
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
 
-		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid).GetEnumFromDescription<ImportImageFileCopyMode>();
+		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode).GetEnumFromDescription<ImportImageFileCopyMode>();
 
-		public int? JobHistoryToRetryId => _cache.GetFieldValue<int?>(SyncConfigurationRdo.JobHistoryToRetryIdGuid);
+		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 
 		public ValidationConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters)
 		{
@@ -43,10 +43,10 @@ namespace Relativity.Sync.Storage
 
 		public string GetJobName() => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).Name;
 
-		public string GetNotificationEmails() => _cache.GetFieldValue<string>(SyncConfigurationRdo.EmailNotificationRecipientsGuid);
+		public string GetNotificationEmails() => _cache.GetFieldValue(x => x.EmailNotificationRecipients);
 
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 
-		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid);
+		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);
 	}
 }

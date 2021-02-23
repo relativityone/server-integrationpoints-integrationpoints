@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int totalRecordsCount = 874596;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SnapshotRecordsCountGuid)).Returns(totalRecordsCount);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.SnapshotRecordsCountGuid)).Returns(totalRecordsCount);
 
 			// ACT & ASSERT
 			_instance.TotalRecordsCount.Should().Be(totalRecordsCount);
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
 
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Guid actualRunId = _instance.ExportRunId;
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
 		public void ItShouldReturnEmptyGuidForInvalidString(string runId)
 		{
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Action action = () =>

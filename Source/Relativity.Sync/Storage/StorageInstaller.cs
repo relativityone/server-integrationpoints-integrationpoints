@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using Autofac;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage.RdoGuidsProviders;
 
 namespace Relativity.Sync.Storage
@@ -49,7 +50,10 @@ namespace Relativity.Sync.Storage
 			ISourceServiceFactoryForAdmin serviceFactory = componentContext.Resolve<ISourceServiceFactoryForAdmin>();
 			SyncJobParameters syncJobParameters = componentContext.Resolve<SyncJobParameters>();
 			ISyncLog logger = componentContext.Resolve<ISyncLog>();
-			return Configuration.GetAsync(serviceFactory, syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false).GetAwaiter().GetResult();
+			IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
+			IRdoGuidProvider rdoGuidProvider = componentContext.Resolve<IRdoGuidProvider>();
+			
+			return Configuration.GetAsync(serviceFactory, syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoGuidProvider, rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }

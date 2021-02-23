@@ -13,7 +13,7 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId { get; }
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-			(DestinationFolderStructureBehavior)Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid));
+			(DestinationFolderStructureBehavior)Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior));
 
 
 		public FieldConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters)
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Storage
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 		}
 
-		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue<string>(SyncConfigurationRdo.FolderPathSourceFieldNameGuid);
+		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);
 
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 	}

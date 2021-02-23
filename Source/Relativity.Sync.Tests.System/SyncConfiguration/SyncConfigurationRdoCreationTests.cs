@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
             var refSyncConfigurationTypeId =
                 await ReadRefSyncConfigurationTypeId(refWorkspace.ArtifactID,
-                    SyncConfigurationRdo.SyncConfigurationGuid).ConfigureAwait(false);
+                    SyncRdoGuids.SyncConfigurationGuid).ConfigureAwait(false);
 
             WorkspaceRef testWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
             int testWorkspaceId = testWorkspace.ArtifactID;

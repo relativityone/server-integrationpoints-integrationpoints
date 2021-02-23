@@ -131,7 +131,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager.Setup(x => x.StreamLongTextAsync(
 					_TEST_WORKSPACE_ID,
-					It.Is<RelativityObjectRef>(y => y.Guid == SyncConfigurationRdo.SyncConfigurationGuid && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
+					It.Is<RelativityObjectRef>(y => y.Guid == new Guid(SyncRdoGuids.SyncConfigurationGuid) && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
 					It.Is<FieldRef>(y => y.Guid == _testFieldGuid))).ReturnsAsync(testKeplerStream.Object).Verifiable();
 
 			var concreteStreamList = new List<Stream>();
@@ -184,7 +184,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_objectManager.Setup(x => x.StreamLongTextAsync(
 				_TEST_WORKSPACE_ID,
-				It.Is<RelativityObjectRef>(y => y.Guid == SyncConfigurationRdo.SyncConfigurationGuid && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
+				It.Is<RelativityObjectRef>(y => (y.Guid == new Guid(SyncRdoGuids.SyncConfigurationGuid)) && y.ArtifactID == _TEST_CONFIG_ARTIFACT_ID),
 				It.Is<FieldRef>(y => y.Guid == _testFieldGuid))).ReturnsAsync(testKeplerStream.Object).Verifiable();
 
 			testKeplerStream.Setup(x => x.GetStreamAsync()).Throws<IOException>();
@@ -230,7 +230,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private bool AssertQueryRequest(QueryRequest request)
 		{
-			request.ObjectType.Guid.Should().Be(SyncConfigurationRdo.SyncConfigurationGuid);
+			request.ObjectType.Guid.Should().Be(SyncRdoGuids.SyncConfigurationGuid);
 			request.Condition.Should().Be($"(('Artifact ID' == {_TEST_CONFIG_ARTIFACT_ID}))");
 			request.Fields.First().Name.Should().Be("*");
 			return true;

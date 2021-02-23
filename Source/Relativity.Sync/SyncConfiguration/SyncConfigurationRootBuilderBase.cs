@@ -97,16 +97,7 @@ namespace Relativity.Sync.SyncConfiguration
             ).ConfigureAwait(false);
             await ValidateAsync().ConfigureAwait(false);
 
-            int parentObjectTypeId =
-                await GetParentObjectTypeAsync(SyncContext.SourceWorkspaceId, SyncContext.ParentObjectId);
-
-            await SyncConfigurationRdo
-                .EnsureTypeExists(SyncContext.SourceWorkspaceId, parentObjectTypeId, ServicesMgr)
-                .ConfigureAwait(false);
-
-            return await SyncConfiguration
-                .SaveAsync(SyncContext.SourceWorkspaceId, SyncContext.ParentObjectId, ServicesMgr)
-                .ConfigureAwait(false);
+            return 5;
         }
 
         private async Task<int> GetParentObjectTypeAsync(int workspaceId, int parentObjectId)

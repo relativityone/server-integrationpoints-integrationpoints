@@ -13,10 +13,10 @@ namespace Relativity.Sync.Storage.RdoGuidsProviders
             _valueGetter = valueGetter;
         }
 
-        public Guid TypeGuid => _valueGetter(SyncConfigurationRdo.JobHistoryTypeGuid);
-        public Guid CompletedItemsFieldGuid => _valueGetter(SyncConfigurationRdo.JobHistoryCompletedItemsFieldGuid);
-        public Guid FailedItemsFieldGuid => _valueGetter(SyncConfigurationRdo.JobHistoryFailedItemsFieldGuid);
-        public Guid TotalItemsFieldGuid => _valueGetter(SyncConfigurationRdo.JobHistoryTotalItemsFieldGuid);
-        public Guid DestinationWorkspaceInformationGuid =>  _valueGetter(SyncConfigurationRdo.JobHistoryDestinationWorkspaceInformationGuid);
+        public Guid TypeGuid => _valueGetter(SyncRdoGuids.JobHistoryTypeGuid);
+        public Guid CompletedItemsFieldGuid => _valueGetter(SyncRdoGuids.JobHistoryCompletedItemsFieldGuid);
+        public Guid FailedItemsFieldGuid => _valueGetter(SyncRdoGuids.JobHistoryFailedItemsFieldGuid);
+        public Guid TotalItemsFieldGuid => _valueGetter(SyncRdoGuids.JobHistoryTotalItemsFieldGuid);
+        public Guid DestinationWorkspaceInformationGuid =>  _valueGetter(SyncRdoGuids.JobHistoryDestinationWorkspaceInformationGuid);
     }
 }

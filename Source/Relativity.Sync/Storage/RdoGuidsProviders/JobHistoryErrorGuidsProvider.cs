@@ -13,17 +13,17 @@ namespace Relativity.Sync.Storage.RdoGuidsProviders
             _valueGetter = valueGetter;
         }
 
-        public Guid TypeGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorTypeGuid);
-        public Guid ErrorMessagesGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorErrorMessagesGuid);
-        public Guid ErrorStatusGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorErrorStatusGuid);
-        public Guid ErrorTypeGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorErrorTypeGuid);
-        public Guid NameGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorNameGuid);
-        public Guid SourceUniqueIdGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorSourceUniqueIdGuid);
-        public Guid StackTraceGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorStackTraceGuid);
-        public Guid TimeStampGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorTimeStampGuid);
-        public Guid ItemLevelErrorGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorItemLevelErrorGuid);
-        public Guid JobLevelErrorGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorJobLevelErrorGuid);
-        public Guid JobHistoryRelationGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorJobHistoryRelationGuid);
-        public Guid NewStatusGuid => _valueGetter(SyncConfigurationRdo.JobHistoryErrorNewChoiceGuid);
+        public Guid TypeGuid => _valueGetter(x => x.JobHistoryErrorType);
+        public Guid ErrorMessagesGuid => _valueGetter(x => x.JobHistoryErrorErrorMessages);
+        public Guid ErrorStatusGuid => _valueGetter(x => x.JobHistoryErrorErrorStatus);
+        public Guid ErrorTypeGuid => _valueGetter(x => x.JobHistoryErrorErrorType);
+        public Guid NameGuid => _valueGetter(x => x.JobHistoryErrorName);
+        public Guid SourceUniqueIdGuid => _valueGetter(x => x.JobHistoryErrorSourceUniqueId);
+        public Guid StackTraceGuid => _valueGetter(x => x.JobHistoryErrorStackTrace);
+        public Guid TimeStampGuid => _valueGetter(x => x.JobHistoryErrorTimeStamp);
+        public Guid ItemLevelErrorGuid => _valueGetter(x => x.JobHistoryErrorItemLevelError);
+        public Guid JobLevelErrorGuid => _valueGetter(x => x.JobHistoryErrorJobLevelError);
+        public Guid JobHistoryRelationGuid => _valueGetter(x => x.JobHistoryErrorJobHistoryRelation);
+        public Guid NewStatusGuid => _valueGetter(x => x.JobHistoryErrorNewChoice);
     }
 }

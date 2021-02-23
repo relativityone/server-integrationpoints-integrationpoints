@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationWorkspaceArtifactId_ShouldReturnDestinationWorkspaceArtifactId()
 		{
 			const int destinationWorkspaceArtifactId = 1040589;
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
 
 			// act
 			int actualDestinationWorkspaceArtifactId = _syncConfig.DestinationWorkspaceArtifactId;
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationWorkspaceTagArtifactId_ShouldReturnDestinationWorkspaceTagArtifactId()
 		{
 			const int destinationWorkspaceTagArtifactId = 3;
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid)).Returns(destinationWorkspaceTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid)).Returns(destinationWorkspaceTagArtifactId);
 
 			// act
 			int actualDestinationWorkspaceTagArtifactId = _syncConfig.DestinationWorkspaceTagArtifactId;
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SourceJobTagArtifactId_ShouldReturnSourceJobTagName()
 		{
 			const int sourceJobTagArtifactId = 105649;
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.SourceJobTagArtifactIdGuid)).Returns(sourceJobTagArtifactId);
 
 			// act
 			int actualSourceJobTagName = _syncConfig.SourceJobTagArtifactId;
@@ -96,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SourceWorkspaceTagArtifactId_ShouldReturnSourceWorkspaceTagName()
 		{
 			const int sourceWorkspaceTagArtifactId = 105656;
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.SourceWorkspaceTagArtifactIdGuid)).Returns(sourceWorkspaceTagArtifactId);
 
 			// act
 			int actualSourceJobTagName = _syncConfig.SourceWorkspaceTagArtifactId;
@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationFolderStructureBehavior_ShouldReturnDestinationFolderStructureBehavior()
 		{
 			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid)).Returns(expected.ToString());
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.DestinationFolderStructureBehaviorGuid)).Returns(expected.ToString());
 
 			// act
 			DestinationFolderStructureBehavior actual = _syncConfig.DestinationFolderStructureBehavior;
@@ -134,7 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// ARRANGE
 			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
 
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Guid actualRunId = _syncConfig.ExportRunId;
@@ -148,7 +148,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// ARRANGE
 			const bool imageImport = true;
-			_cache.Setup(x => x.GetFieldValue<bool>(SyncConfigurationRdo.ImageImportGuid)).Returns(imageImport);
+			_cache.Setup(x => x.GetFieldValue<bool>(SyncRdoGuids.ImageImportGuid)).Returns(imageImport);
 
 			// ACT
 			bool actualImageImport = _syncConfig.ImageImport;
@@ -162,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// ARRANGE
 			ImportImageFileCopyMode imageCopyMode = ImportImageFileCopyMode.CopyFiles;
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid)).Returns(imageCopyMode.ToString());
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.ImageFileCopyModeGuid)).Returns(imageCopyMode.ToString());
 
 			// ACT
 			ImportImageFileCopyMode actualImportImageFileCopyMode = _syncConfig.ImportImageFileCopyMode;
@@ -177,7 +177,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
 		public void ExportRunId_ShouldReturnEmptyGuidForInvalidString(string runId)
 		{
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid)).Returns(runId);
 
 			// ACT
 			Action action = () =>

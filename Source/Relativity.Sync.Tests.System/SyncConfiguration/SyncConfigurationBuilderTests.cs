@@ -154,7 +154,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = SyncConfigurationRdo.SyncConfigurationGuid
+						Guid = SyncRdoGuids.SyncConfigurationGuid
 					},
 					Condition = $"'ArtifactID' == {configurationId}",
 				};

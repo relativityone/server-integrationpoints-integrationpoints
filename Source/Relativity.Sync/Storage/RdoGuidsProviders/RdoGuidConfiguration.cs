@@ -1,5 +1,8 @@
 using System;
+using System.Linq.Expressions;
+using System.Windows.Forms;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage.RdoGuidsProviders
 {
@@ -21,10 +24,10 @@ namespace Relativity.Sync.Storage.RdoGuidsProviders
         public IJobHistoryErrorGuidsProvider JobHistoryError { get; }
 
 
-        private Guid ParseGuid(Guid fieldGuid)
+        private Guid ParseGuid(Expression<Func<SyncConfigurationRdo, Guid>> fieldExpression)
         {
             Guid guid;
-            string guidString = _cache.GetFieldValue<string>(fieldGuid);
+            string guidString = _cache.GetFieldValue<string>(fieldExpression);
             
             if (Guid.TryParse(guidString, out guid))
             {

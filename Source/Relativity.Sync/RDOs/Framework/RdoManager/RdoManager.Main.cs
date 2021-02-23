@@ -246,15 +246,11 @@ namespace Relativity.Sync.RDOs.Framework
                 Value = fieldInfo.PropertyInfo.GetValue(rdo)
             });
         }
-
-        private static HashSet<Guid> GetFieldsGuidsFromExpressions<TRdo>(Expression<Func<TRdo, object>>[] fields)
+        
+        private HashSet<Guid> GetFieldsGuidsFromExpressions<TRdo>(Expression<Func<TRdo, object>>[] fields)
             where TRdo : IRdoType
         {
-            return new HashSet<Guid>(fields.Select(x =>
-                    ((x.Body as UnaryExpression)?.Operand as MemberExpression)
-                    ?? (x.Body as MemberExpression)
-                    ?? throw new InvalidExpressionException($"Expression must be a unary member expression or property expression: {x}"))
-                .Select(x => (x.Member.GetCustomAttribute<RdoFieldAttribute>().FieldGuid)));
+            return new HashSet<Guid>(fields.Select(f => _rdoGuidProvider.GetGuidFromFieldExpression(f)));
         }
     }
 }

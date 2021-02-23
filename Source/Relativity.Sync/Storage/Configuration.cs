@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Polly;
@@ -9,12 +10,15 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 
 namespace Relativity.Sync.Storage
 {
 	internal sealed class Configuration : IConfiguration
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly IRdoGuidProvider _rdoGuidProvider;
+		private readonly IRdoManager _rdoManager;
 		private readonly int _workspaceArtifactId;
 		private readonly int _syncConfigurationArtifactId;
 		private readonly ISyncLog _logger;
@@ -23,19 +27,24 @@ namespace Relativity.Sync.Storage
 
 		private readonly Dictionary<Guid, object> _cache = new Dictionary<Guid, object>();
 
-		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
+		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, IRdoGuidProvider rdoGuidProvider, IRdoManager rdoManager, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
 		{
 			_serviceFactory = serviceFactory;
+			_rdoGuidProvider = rdoGuidProvider;
+			_rdoManager = rdoManager;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
 			_syncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
 			_logger = logger;
 			_semaphoreSlim = semaphoreSlim;
 		}
 
-		public T GetFieldValue<T>(Guid guid)
+		public T GetFieldValue<T>(Expression<Func<SyncConfigurationRdo, T>> memberExpression)
 		{
 			_semaphoreSlim.Wait();
 			object value = null;
+
+			Guid guid = _rdoGuidProvider.GetGuidFromFieldExpression(memberExpression);
+			
 			try
 			{
 				if (!_cache.ContainsKey(guid))
@@ -63,9 +72,11 @@ namespace Relativity.Sync.Storage
 				_semaphoreSlim.Release();
 			}
 		}
-
-		public async Task UpdateFieldValueAsync<T>(Guid guid, T value)
+		
+		public async Task UpdateFieldValueAsync<T>(Expression<Func<SyncConfigurationRdo, T>> memberExpression, T value)
 		{
+			Guid guid = _rdoGuidProvider.GetGuidFromFieldExpression(memberExpression);
+
 			if (!_cache.ContainsKey(guid))
 			{
 				_logger.LogError("Updating unknown field with GUID {guid}.", guid);
@@ -115,7 +126,7 @@ namespace Relativity.Sync.Storage
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = SyncConfigurationRdo.SyncConfigurationGuid
+						Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid)
 					},
 					Condition = $"(('Artifact ID' == {_syncConfigurationArtifactId}))",
 					Fields = new[]
@@ -171,7 +182,7 @@ namespace Relativity.Sync.Storage
 		{
 			var exportObject = new RelativityObjectRef
 			{
-				Guid = SyncConfigurationRdo.SyncConfigurationGuid,
+				Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid),
 				ArtifactID = _syncConfigurationArtifactId
 			};
 			var fieldRef = new FieldRef
@@ -187,10 +198,11 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public static async Task<IConfiguration> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, ISyncLog logger,
-			ISemaphoreSlim semaphoreSlim)
+		public static async Task<IConfiguration> GetAsync(ISourceServiceFactoryForAdmin serviceFactory,
+			SyncJobParameters syncJobParameters, ISyncLog logger,
+			ISemaphoreSlim semaphoreSlim, IRdoGuidProvider rdoGuidProvider, IRdoManager rdoManager)
 		{
-			Configuration configuration = new Configuration(serviceFactory, syncJobParameters, logger, semaphoreSlim);
+			Configuration configuration = new Configuration(serviceFactory, syncJobParameters,rdoGuidProvider, rdoManager, logger, semaphoreSlim);
 			await configuration.ReadAsync().ConfigureAwait(false);
 			return configuration;
 		}

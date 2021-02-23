@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.RDOs.Framework.Attributes;
 using Relativity.Sync.Tests.System.Core;
 
 namespace Relativity.Sync.Tests.Unit.RDOs
@@ -80,6 +82,13 @@ namespace Relativity.Sync.Tests.Unit.RDOs
 
             _rdoGuidProviderMock.Setup(x => x.GetValue<SampleRdo>()).Returns(SampleRdo.ExpectedRdoInfo);
             _rdoGuidProviderMock.Setup(x => x.GetValue<ExtendedSampleRdo>()).Returns(ExtendedSampleRdo.ExpectedRdoInfo);
+            _rdoGuidProviderMock.Setup(x => x.GetValue<RdoWithParent>()).Returns(new RdoTypeInfo
+            {
+                Fields = new ReadOnlyDictionary<Guid, RdoFieldInfo>(new Dictionary<Guid, RdoFieldInfo>()),
+                Name = nameof(RdoWithParent),
+                TypeGuid = new Guid("37C93366-5D07-42D0-8EA8-2400B4323F36"),
+                ParentTypeGuid = new Guid("22C0EE5E-4CA6-49D3-86F8-63DF2382083D")
+            });
 
             SetupFieldManager(_fieldManagerMock);
 
@@ -131,6 +140,22 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, CreatedFieldId,
                     It.Is<List<Guid>>(l => l.Contains(fieldInfo.Guid))));
             }
+        }
+        
+        [Test]
+        public async Task EnsureTypeExists_ShouldRespectObjectGuid()
+        {
+            // Arrange
+            _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
+                    It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{nameof(RdoWithParent)}'"), 0, 1))
+                .ReturnsAsync(new QueryResult() {Objects = new List<RelativityObject>()});
+            
+            // Act
+            await _sut.EnsureTypeExistsAsync<RdoWithParent>(WorkspaceId).ConfigureAwait(false);
+
+            // Assert
+            Guid expectedParentGuid = new Guid("22C0EE5E-4CA6-49D3-86F8-63DF2382083D");
+            _objectTypeManagerMock.Verify(x => x.CreateAsync(WorkspaceId, It.Is<ObjectTypeRequest>(r => r.ParentObjectType.Value.Guids.Contains(expectedParentGuid))));
         }
 
         [Test]
@@ -366,6 +391,14 @@ namespace Relativity.Sync.Tests.Unit.RDOs
 
             // Assert
             result.LongTextField.Should().Be(textToStream);
+        }
+
+       
+
+        [Rdo("37C93366-5D07-42D0-8EA8-2400B4323F36", nameof(RdoWithParent), "22C0EE5E-4CA6-49D3-86F8-63DF2382083D")]
+        class RdoWithParent : IRdoType
+        {
+            public int ArtifactId { get; set; }
         }
 
         private void SetupKeplerStreaming(string textToStream)

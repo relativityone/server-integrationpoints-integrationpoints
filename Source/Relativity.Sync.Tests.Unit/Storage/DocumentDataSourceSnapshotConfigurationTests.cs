@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 658932;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid)).Returns(expectedValue);
+			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DataSourceArtifactIdGuid)).Returns(expectedValue);
 
 			// Act & Assert
 			_instance.DataSourceArtifactId.Should().Be(expectedValue);
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(snapshot);
+			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid)).Returns(snapshot);
 
 			// Act & Assert
 			_instance.IsSnapshotCreated.Should().Be(expectedValue);
@@ -85,8 +85,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, snapshotId.ToString()));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SnapshotIdGuid, snapshotId.ToString()));
+			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SnapshotRecordsCountGuid, totalRecordsCount));
 		}
 	}
 }
