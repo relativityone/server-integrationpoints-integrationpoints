@@ -12,6 +12,10 @@ using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using kCura.IntegrationPoints.Core.Helpers;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.Workspace.Models;
+using Relativity.Services.ResourceServer;
+using Relativity.Services.Workspace;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -97,15 +101,21 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public string GetWorkspaceFileLocationRootPath(int workspaceArtifactId)
 		{
-			Workspace workspace = GetWorkspace(workspaceArtifactId);
-
-			if (workspace == null)
+			try
 			{
-				LogMissingWorkspaceError(workspaceArtifactId);
-				throw new Exception(nameof(CreateForAllTypes));
+				using (IWorkspaceManager workspaceManager = _helper.GetServicesManager().CreateProxy<IWorkspaceManager>(ExecutionIdentity.System))
+				{
+					WorkspaceRef workspace = new WorkspaceRef {ArtifactID = workspaceArtifactId};
+
+					FileShareResourceServer fileShare = workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).GetAwaiter().GetResult();
+					return Path.Combine(fileShare.UNCPath, string.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
+				}
 			}
-			return Path.Combine(workspace.DefaultFileLocation.Name,
-				String.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
+			catch (NotFoundException ex)
+			{
+				LogMissingWorkspaceError(ex, workspaceArtifactId);
+				throw;
+			}
 		}
 
 		protected virtual Workspace GetWorkspace(int workspaceId)
@@ -137,9 +147,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		#region Logging
 
-		private void LogMissingWorkspaceError(int workspaceId)
+		private void LogMissingWorkspaceError(Exception ex, int workspaceId)
 		{
-			_logger.LogError("Cannot find workspace with artifact id: {WorkspaceId}.", workspaceId);
+			_logger.LogError(ex,"Cannot find workspace with artifact id: {WorkspaceId}.", workspaceId);
 		}
 
 		private void LogMissingDirectoryCreation(string path)
