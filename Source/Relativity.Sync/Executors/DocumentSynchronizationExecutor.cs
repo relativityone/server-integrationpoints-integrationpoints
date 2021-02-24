@@ -71,6 +71,12 @@ namespace Relativity.Sync.Executors
 			Tuple<double, double> avgBetween10And20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(10) && streamSize < UnitsConverter.MegabyteToBytes(20));
 			Tuple<double, double> avgOver20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(20));
 
+			List<LongTextStreamStatistics> top10LongTexts = _jobStatisticsContainer
+				.LongTextStatistics
+				.OrderByDescending(x => x.TotalBytesRead)
+				.Take(10)
+				.ToList();
+
 			DocumentBatchEndMetric documentBatchEndMetric = new DocumentBatchEndMetric
 			{
 				TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
@@ -87,28 +93,14 @@ namespace Relativity.Sync.Executors
 				AvgSizeLessBetween10and20MB = avgBetween10And20MB.Item1,
 				AvgTimeLessBetween10and20MB = avgBetween10And20MB.Item2,
 				AvgSizeOver20MB = avgOver20MB.Item1,
-				AvgTimeOver20MB = avgOver20MB.Item2
+				AvgTimeOver20MB = avgOver20MB.Item2,
+
+				TopLongTexts = top10LongTexts
 			};
 
 			_syncMetrics.Send(documentBatchEndMetric);
-
-			List<LongTextStreamStatistics> top10LongTexts = _jobStatisticsContainer
-				.LongTextStatistics
-				.OrderByDescending(x => x.TotalBytesRead)
-				.Take(10)
-				.ToList();
-
-			foreach (LongTextStreamStatistics stats in top10LongTexts)
-			{
-				_syncMetrics.Send(new TopLongTextStreamMetric
-				{
-					LongTextStreamSize = UnitsConverter.BytesToMegabytes(stats.TotalBytesRead),
-					LongTextStreamTime = Math.Round(stats.TotalReadTime.TotalSeconds, 3)
-				});
-			}
-
+			
 			_jobStatisticsContainer.LongTextStatistics.Clear();
-
 		}
 	}
 }

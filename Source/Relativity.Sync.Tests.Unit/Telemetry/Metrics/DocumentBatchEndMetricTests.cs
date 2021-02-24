@@ -75,7 +75,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				d["BytesMetadataTransferred"].Equals(_sut.BytesMetadataTransferred) &&
 				d["BytesNativesTransferred"].Equals(_sut.BytesNativesTransferred) &&
 				d["BatchTotalTime"].Equals(_sut.BatchTotalTime) &&
-				d["BatchImportAPITime"].Equals(_sut.BatchImportAPITime)
+				d["BatchImportAPITime"].Equals(_sut.BatchImportAPITime) &&
+				d.ContainsKey("LongTextStreamStatistics") == false
 				)));
 		}
 	}

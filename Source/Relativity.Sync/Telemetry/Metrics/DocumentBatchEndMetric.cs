@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Telemetry.Metrics
+﻿using System.Collections.Generic;
+
+namespace Relativity.Sync.Telemetry.Metrics
 {
 	internal class DocumentBatchEndMetric : BatchEndMetric
 	{
@@ -25,5 +27,8 @@
 
 		[Metric(MetricType.PointInTimeDouble, TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB)]
 		public double? AvgTimeOver20MB { get; set; }
+
+		[APMIgnoreMetric]
+		public List<LongTextStreamStatistics> TopLongTexts { get; set; } = new List<LongTextStreamStatistics>();
 	}
 }

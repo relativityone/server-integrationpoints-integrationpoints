@@ -16,7 +16,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		protected MetricBase()
 		{
-			Name = typeof(T).Name;
+			Name = GetType().Name;
 		}
 
 		protected MetricBase(string metricName)
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 			object GetValue(PropertyInfo p) =>
 				Nullable.GetUnderlyingType(p.PropertyType)?.IsEnum == true ?  p.GetValue(this)?.ToString() : p.GetValue(this);
 
-			return this.GetMetricProperties().Keys.ToDictionary(p => p.Name, GetValue);
+			return GetMetricProperties().Keys.ToDictionary(p => p.Name, GetValue);
 		}
 
 		public virtual IEnumerable<SumMetric> GetSumMetrics()
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 		private Dictionary<PropertyInfo, MetricAttribute> GetMetricProperties() => _metricCacheProperties ??
 			(_metricCacheProperties = GetType()
 				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-				.Where(p => p.GetMethod != null)
+				.Where(p => p.GetMethod != null && p.GetCustomAttribute<APMIgnoreMetricAttribute>() == null)
 				.ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));
 	}
 }

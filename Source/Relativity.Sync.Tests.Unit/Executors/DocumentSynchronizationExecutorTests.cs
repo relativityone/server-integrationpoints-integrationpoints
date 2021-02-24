@@ -190,11 +190,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				m.BytesMetadataTransferred == _METADATA_SIZE &&
 				m.BytesNativesTransferred == _FILES_SIZE &&
 				m.BatchTotalTime == batchTime &&
-				m.BatchImportAPITime == iapiTime)), Times.Once);
-
-			_syncMetricsMock.Verify(x => x.Send(It.Is<TopLongTextStreamMetric>(m =>
-				m.LongTextStreamSize != null &&
-				m.LongTextStreamTime != null)), Times.Exactly(10));
+				m.BatchImportAPITime == iapiTime &&
+				m.TopLongTexts.Count == 10)), Times.Once);
 		}
 
 		[Test]
