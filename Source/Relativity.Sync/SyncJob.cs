@@ -78,21 +78,5 @@ namespace Relativity.Sync
 				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(failingExceptions), _syncJobParameters.WorkflowId.Value);
 			}
 		}
-
-		public Task RetryAsync(CancellationToken token)
-		{
-			return RetryAsync(token, _syncProgress);
-		}
-
-		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
-		{
-			IProgress<SyncJobState> safeProgress = new SafeProgressWrapper<SyncJobState>(progress, _logger);
-			return RetryAsync(token, _syncProgress, safeProgress);
-		}
-
-		private Task RetryAsync(CancellationToken token, params IProgress<SyncJobState>[] progressReporters)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

@@ -42,25 +42,7 @@ namespace Relativity.Sync
 				await syncJob.ExecuteAsync(progress, token).ConfigureAwait(false);
 			}
 		}
-
-		public async Task RetryAsync(CancellationToken token)
-		{
-			using (ILifetimeScope scope = BeginLifetimeScope())
-			{
-				ISyncJob syncJob = CreateSyncJob(scope);
-				await syncJob.RetryAsync(token).ConfigureAwait(false);
-			}
-		}
-
-		public async Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
-		{
-			using (ILifetimeScope scope = BeginLifetimeScope())
-			{
-				ISyncJob syncJob = CreateSyncJob(scope);
-				await syncJob.RetryAsync(progress, token).ConfigureAwait(false);
-			}
-		}
-
+		
 		private ILifetimeScope BeginLifetimeScope()
 		{
 			return _container.BeginLifetimeScope(builder => _containerFactory.RegisterSyncDependencies(builder, _syncJobParameters, _relativityServices, _configuration, _logger));

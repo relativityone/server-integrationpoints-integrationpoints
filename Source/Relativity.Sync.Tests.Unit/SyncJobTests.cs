@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit
 			_pipeline.ResultStatus = NodeResultStatus.Failed;
 
 			// ACT
-			Func<Task> action = async () => await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _instance.ExecuteAsync(CancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
-			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => instance.ExecuteAsync(CancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<OperationCanceledException>();
@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
-			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => instance.ExecuteAsync(CancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
@@ -100,23 +100,12 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
-			Func<Task> action = async () => await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => instance.ExecuteAsync(CancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
 		}
-
-		[Test]
-		public void ItShouldRetryJob()
-		{
-			Func<Task> actionWithoutProgress = async () => await _instance.RetryAsync(CancellationToken.None).ConfigureAwait(false);
-			Func<Task> actionWithProgress = async () => await _instance.RetryAsync(Mock.Of<IProgress<SyncJobState>>(), CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			actionWithoutProgress.Should().Throw<NotImplementedException>();
-			actionWithProgress.Should().Throw<NotImplementedException>();
-		}
-
+		
 		[Test]
 		public async Task ItShouldInvokeSyncProgress()
 		{

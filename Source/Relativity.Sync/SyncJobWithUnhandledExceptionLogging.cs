@@ -27,17 +27,7 @@ namespace Relativity.Sync
 		{
 			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.ExecuteAsync, progress, token);
 		}
-
-		public Task RetryAsync(CancellationToken token)
-		{
-			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.RetryAsync, token);
-		}
-
-		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
-		{
-			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.RetryAsync, progress, token);
-		}
-
+		
 		private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<CancellationToken, Task> action, CancellationToken token)
 		{
 			_appDomain.UnhandledException += OnUnhandledException;
