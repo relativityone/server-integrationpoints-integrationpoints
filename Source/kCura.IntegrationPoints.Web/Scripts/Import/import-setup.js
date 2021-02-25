@@ -17,6 +17,8 @@
 	var MODAL_OVERLAY = 'ui-widget-overlay';
 	var MODAL_GRPHIC = 'import-load';
 
+    var URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded; charset=UTF-8";
+
 	var workspaceId = ("/" + windowObj.RelativityImport.WorkspaceId);
 	var windowPar = windowObj.parent;
 	var baseUrlCache = root.utils.getBaseURL();
@@ -39,6 +41,7 @@
 				url: baseUrlCache + workspaceId + "/api/ImportProviderDocument/LoadFileHeaders",
 				type: 'POST',
 				data: { '': JSON.stringify(windowObj.parent.RelativityImport.GetCurrentUiModel()) },
+				contentType: URL_ENCODED_CONTENT_TYPE,
 				success: function (data) {
 					windowObj.RelativityImport.koModel.setPopulateFileColumnHeaders(data);
 				},
@@ -283,7 +286,7 @@
 	windowObj.RelativityImport.loadRootDataTransferLocation = function (integrationPointTypeIdentifier) {
 		root.data.ajax({
 			type: "post",
-			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+			contentType: URL_ENCODED_CONTENT_TYPE,
 			url: root.utils.generateWebAPIURL("DataTransferLocation/GetRoot", integrationPointTypeIdentifier)
 		}).then(function (result) {
 			self.rootDataTransferLocation = result;
@@ -301,7 +304,7 @@
 			}
 			IP.data.ajax({
 				type: "post",
-				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				contentType: URL_ENCODED_CONTENT_TYPE,
 				url: root.utils.generateWebAPIURL("DataTransferLocation/GetStructure", integrationPointTypeIdentifier) + '?isRoot=' + isRoot + '&includeFiles=true',
 				data: { '': path }
 			}).then(function (result) {
