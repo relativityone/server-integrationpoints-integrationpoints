@@ -12,6 +12,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
@@ -119,6 +120,54 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				_documentTagRepositoryFake.Object, _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
 				_jobCleanupConfigurationMock.Object,_automatedWorkflowTriggerConfigurationFake.Object,
 				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, new EmptyLogger());
+		}
+
+		[Test]
+		public async Task Execute_ShouldSendBatchMetrics()
+		{
+			// arrange 
+			const int totalRecordsTransferred = 111;
+			const int totalRecordsRequested = 222;
+			const int totalRecordsFailed = 333;
+			const int totalRecordsTagged = 444;
+			const int batchTime = 555;
+			const int iapiTime = 666;
+
+			Mock<IStopwatch> batchTimer = CreateFakeStopwatch(batchTime);
+			Mock<IStopwatch> iapiTimer = CreateFakeStopwatch(iapiTime);
+			_stopwatchFactoryFake.SetupSequence(x => x.Invoke())
+				.Returns(batchTimer.Object)
+				.Returns(iapiTimer.Object);
+
+			_jobProgressHandlerFake.Setup(x => x.GetBatchItemsProcessedCount(It.IsAny<int>())).Returns(totalRecordsTransferred);
+			_jobProgressHandlerFake.Setup(x => x.GetBatchItemsFailedCount(It.IsAny<int>())).Returns(totalRecordsFailed);
+
+			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), _METADATA_SIZE, _FILES_SIZE, _JOB_SIZE);
+			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
+
+			IEnumerable<int> batches = new[] { 1 };
+			_batchRepositoryMock.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			Mock<IBatch> batchFake = new Mock<IBatch>();
+			batchFake.SetupGet(x => x.TotalItemsCount).Returns(totalRecordsRequested);
+			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchFake.Object);
+
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync(totalRecordsTagged);
+			SetUpDocumentsTagRepository(executionResult);
+			
+			// act
+			await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// assert
+			_syncMetricsMock.Verify(x => x.Send(It.Is<ImageBatchEndMetric>(m =>
+				m.TotalRecordsTransferred == totalRecordsTransferred &&
+				m.TotalRecordsRequested == totalRecordsRequested &&
+				m.TotalRecordsFailed == totalRecordsFailed &&
+				m.TotalRecordsTagged == totalRecordsTagged &&
+				m.BytesMetadataTransferred == _METADATA_SIZE &&
+				m.BytesNativesTransferred == _FILES_SIZE &&
+				m.BytesTransferred == _FILES_SIZE + _METADATA_SIZE &&
+				m.BatchTotalTime == batchTime &&
+				m.BatchImportAPITime == iapiTime)), Times.Once);
 		}
 
 		[Test]
@@ -531,22 +580,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					It.IsAny<CancellationToken>())).Returns(executionResult);
 		}
 
-		private static async Task<TaggingExecutionResult> ReturnTaggingCompletedResultAsync()
+		private static Task<TaggingExecutionResult> ReturnTaggingCompletedResultAsync(int taggedCount = 0)
 		{
-			await Task.CompletedTask.ConfigureAwait(false);
-			return new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
+			return Task.FromResult(new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception())
+			{
+				TaggedDocumentsCount = taggedCount
+			});
 		}
+
 		private static async Task<TaggingExecutionResult> ReturnTaggingCompletedResultAsync(CancellationToken cancellationToken)
 		{
-			await Task.CompletedTask.ConfigureAwait(false);
+			await Task.CompletedTask;
 			cancellationToken.ThrowIfCancellationRequested();
 			return new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
 		}
 
-		private static async Task<TaggingExecutionResult> ReturnTaggingFailedResultAsync()
+		private static Task<TaggingExecutionResult> ReturnTaggingFailedResultAsync()
 		{
-			await Task.CompletedTask.ConfigureAwait(false);
-			return new TaggingExecutionResult(ExecutionStatus.Failed, "Failed", new Exception());
+			return Task.FromResult(new TaggingExecutionResult(ExecutionStatus.Failed, "Failed", new Exception()));
 		}
 
 		private static TaggingExecutionResult CastToTaggingResult(ExecutionResult result)
@@ -560,6 +611,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null)
 		{
 			return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), 1, 0, 1);
+		}
+		
+		private static Mock<IStopwatch> CreateFakeStopwatch(int elapsedMs)
+		{
+			Mock<IStopwatch> batchTimer = new Mock<IStopwatch>();
+			batchTimer.SetupGet(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(elapsedMs));
+			return batchTimer;
 		}
 	}
 }

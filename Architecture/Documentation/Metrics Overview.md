@@ -108,6 +108,32 @@ APM and Splunk metrics are complementary
 }
 ```
 
+### Document Batch End Metric
+
+```{json}
+{
+    WorkflowId: <Workflow_Id>
+    Name: "DocumentBatchEndMetric"
+    TotalRecordsRequested
+    TotalRecordsTransferred
+    TotalRecordsFailed
+    TotalRecordsTagged
+    BytesMetadataTransferred
+    BytesNativesTransferred
+    BytesTransferred
+    BatchTotalTime
+    BatchImportAPITime
+    AvgSizeLessThan1MB
+    AvgTimeLessThan1MB
+    AvgSizeLessBetween1and10MB
+    AvgTimeLessBetween1and10MB
+    AvgSizeLessBetween10and20MB
+    AvgTimeLessBetween10and20MB
+    AvgSizeOver20MB
+    AvgTimeOver20MB
+}
+```
+
 ### Document Job End Metric
 
 ```{json}
@@ -125,6 +151,32 @@ APM and Splunk metrics are complementary
     BytesMetadataTransferred
     BytesNativesTransferred
     TotalMappedFields
+}
+```
+
+Additionally in Splunk, to above metric is included list of top 10 long-text streams:
+```{json}
+{
+    TotalBytesRead
+    TotalReadTime
+}
+```
+
+### Image Batch End Metric
+
+```{json}
+{
+    WorkflowId: <Workflow_Id>
+    Name: "DocumentJobEndMetric"
+    TotalRecordsRequested
+    TotalRecordsTransferred
+    TotalRecordsFailed
+    TotalRecordsTagged
+    BytesMetadataTransferred
+    BytesNativesTransferred
+    BytesTransferred
+    BatchTotalTime
+    BatchImportAPITime
 }
 ```
 
@@ -161,23 +213,6 @@ APM and Splunk metrics are complementary
 }
 ```
 
-### Long Text Stream Metric
-
-```{json}
-{
-    WorkflowId: <Workflow_Id>
-    Name: LongTextStreamMetric
-    AvgSizeLessThan1MB
-    AvgTimeLessThan1MB
-    AvgSizeLessBetween1and10MB
-    AvgTimeLessBetween1and10MB
-    AvgSizeLessBetween10and20MB
-    AvgTimeLessBetween10and20MB
-    AvgSizeOver20MB
-    AvgTimeOver20MB
-}
-```
-
 ### Source Workspace Tag Metric
 
 ```{json}
@@ -198,17 +233,6 @@ APM and Splunk metrics are complementary
     WorkflowId: <Workflow_Id>
     Name: StreamRetryMetric
     RetryCounter: 1
-}
-```
-
-### Top Long Text Stream Metric
-
-```{json}
-{
-    WorkflowId: <Workflow_Id>
-    Name: SourceWorkspaceTagMetric
-    LongTextStreamSize
-    LongTextStreamTime
 }
 ```
 

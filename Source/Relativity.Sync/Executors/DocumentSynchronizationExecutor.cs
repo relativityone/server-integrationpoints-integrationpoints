@@ -81,8 +81,11 @@ namespace Relativity.Sync.Executors
 			{
 				TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
 				TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
+				TotalRecordsFailed = batchProcessResult.TotalRecordsFailed,
+				TotalRecordsTagged = batchProcessResult.TotalRecordsTagged,
 				BytesNativesTransferred = batchProcessResult.FilesBytesTransferred,
 				BytesMetadataTransferred = batchProcessResult.MetadataBytesTransferred,
+				BytesTransferred = batchProcessResult.BytesTransferred,
 				BatchImportAPITime = importApiTimer.TotalMilliseconds,
 				BatchTotalTime = batchTime.TotalMilliseconds,
 

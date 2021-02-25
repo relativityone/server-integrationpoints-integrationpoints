@@ -60,6 +60,8 @@ namespace Relativity.Sync.Executors
 
 		protected abstract void UpdateImportSettings(TConfiguration configuration);
 
+		protected abstract void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
+
 		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CancellationToken token)
 		{
 			_logger.LogInformation("Creating settings for ImportAPI.");
@@ -113,6 +115,7 @@ namespace Relativity.Sync.Executors
 
 								int documentsTaggedCount = Math.Min(sourceTaggingResult.TaggedDocumentsCount, destinationTaggingResult.TaggedDocumentsCount);
 								await batch.SetTaggedItemsCountAsync(documentsTaggedCount).ConfigureAwait(false);
+								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
 
 								if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
 								{
@@ -180,7 +183,7 @@ namespace Relativity.Sync.Executors
 
 		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
 		{
-			BatchProcessResult processBatchProcessResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
+			BatchProcessResult batchProcessResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
 
 			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
 			await batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
@@ -188,10 +191,11 @@ namespace Relativity.Sync.Executors
 			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
 			await batch.SetTransferredItemsCountAsync(processedItemsCount).ConfigureAwait(false);
 
-			processBatchProcessResult.TotalRecordsRequested = batch.TotalItemsCount;
-			processBatchProcessResult.TotalRecordsTransferred = processedItemsCount;
+			batchProcessResult.TotalRecordsRequested = batch.TotalItemsCount;
+			batchProcessResult.TotalRecordsTransferred = processedItemsCount;
+			batchProcessResult.TotalRecordsFailed = failedItemsCount;
 
-			return processBatchProcessResult;
+			return batchProcessResult;
 		}
 
 		private async Task<BatchProcessResult> RunImportJobAsync(IImportJob importJob, CancellationToken token)
@@ -206,7 +210,8 @@ namespace Relativity.Sync.Executors
 			{
 				ExecutionResult = importJobResult.ExecutionResult,
 				FilesBytesTransferred = importJobResult.FilesSizeInBytes,
-				MetadataBytesTransferred = importJobResult.MetadataSizeInBytes
+				MetadataBytesTransferred = importJobResult.MetadataSizeInBytes,
+				BytesTransferred = importJobResult.JobSizeInBytes
 			};
 		}
 
@@ -269,19 +274,6 @@ namespace Relativity.Sync.Executors
 			return destinationIdentityField.DestinationField.FieldIdentifier;
 		}
 
-		protected virtual void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
-		{
-			_syncMetrics.Send(new BatchEndMetric()
-			{
-				TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
-				TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
-				BytesNativesTransferred = batchProcessResult.FilesBytesTransferred,
-				BytesMetadataTransferred = batchProcessResult.MetadataBytesTransferred,
-				BatchImportAPITime = importApiTimer.TotalMilliseconds,
-				BatchTotalTime = batchTime.TotalMilliseconds
-			});
-		}
-		
 		protected string GetSpecialFieldColumnName(IList<FieldInfoDto> specialFields, SpecialFieldType specialFieldType)
 		{
 			FieldInfoDto specialField = specialFields.FirstOrDefault(x => x.SpecialFieldType == specialFieldType);
@@ -308,8 +300,11 @@ namespace Relativity.Sync.Executors
 			public ExecutionResult ExecutionResult { get; set; }
 			public int TotalRecordsRequested { get; set; }
 			public int TotalRecordsTransferred { get; set; }
+			public int TotalRecordsFailed { get; set; }
+			public int TotalRecordsTagged { get; set; }
 			public long MetadataBytesTransferred { get; set; }
 			public long FilesBytesTransferred { get; set; }
+			public long BytesTransferred { get; set; }
 		}
 	}
 }

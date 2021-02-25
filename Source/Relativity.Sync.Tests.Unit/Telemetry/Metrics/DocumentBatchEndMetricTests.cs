@@ -20,10 +20,13 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			AvgTimeOver20MB = 8.8,
 			TotalRecordsRequested = 101,
 			TotalRecordsTransferred = 102,
-			BytesMetadataTransferred = 103,
-			BytesNativesTransferred = 104,
-			BatchTotalTime = 105,
-			BatchImportAPITime = 106
+			TotalRecordsFailed = 103,
+			TotalRecordsTagged = 104,
+			BytesMetadataTransferred = 105,
+			BytesNativesTransferred = 106,
+			BytesTransferred = 107,
+			BatchTotalTime = 108,
+			BatchImportAPITime = 109
 		};
 
 		protected override IMetric ArrangeTestMetric()
@@ -72,8 +75,11 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				d["AvgTimeOver20MB"].Equals(_sut.AvgTimeOver20MB) &&
 				d["TotalRecordsRequested"].Equals(_sut.TotalRecordsRequested) &&
 				d["TotalRecordsTransferred"].Equals(_sut.TotalRecordsTransferred) &&
+				d["TotalRecordsFailed"].Equals(_sut.TotalRecordsFailed) &&
+				d["TotalRecordsTagged"].Equals(_sut.TotalRecordsTagged) &&
 				d["BytesMetadataTransferred"].Equals(_sut.BytesMetadataTransferred) &&
 				d["BytesNativesTransferred"].Equals(_sut.BytesNativesTransferred) &&
+				d["BytesTransferred"].Equals(_sut.BytesTransferred) &&
 				d["BatchTotalTime"].Equals(_sut.BatchTotalTime) &&
 				d["BatchImportAPITime"].Equals(_sut.BatchImportAPITime) &&
 				d.ContainsKey("LongTextStreamStatistics") == false
