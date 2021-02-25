@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
@@ -16,14 +18,16 @@ namespace Relativity.Sync.Executors
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IFieldMappings _fieldMappings;
-		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IDocumentTagRepository _documentsTagRepository;
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
 		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
-		private readonly ISyncLog _logger;
+		private readonly Func<IStopwatch> _stopwatchFactory;
 
+		protected readonly ISyncMetrics _syncMetrics;
+		protected readonly IJobStatisticsContainer _jobStatisticsContainer;
 		protected readonly IImportJobFactory _importJobFactory;
 		protected readonly IFieldManager _fieldManager;
+		protected readonly ISyncLog _logger;
 
 		protected SynchronizationExecutorBase(IImportJobFactory importJobFactory,
 			IBatchRepository batchRepository,
@@ -34,6 +38,8 @@ namespace Relativity.Sync.Executors
 			IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+			Func<IStopwatch> stopwatchFactory,
+			ISyncMetrics syncMetrics, 
 			ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
@@ -45,12 +51,16 @@ namespace Relativity.Sync.Executors
 			_documentsTagRepository = documentsTagRepository;
 			_jobCleanupConfiguration = jobCleanupConfiguration;
 			_automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
+			_stopwatchFactory = stopwatchFactory;
+			_syncMetrics = syncMetrics;
 			_logger = logger;
 		}
 
 		protected abstract Task<IImportJob> CreateImportJobAsync(TConfiguration configuration, IBatch batch, CancellationToken token);
 
 		protected abstract void UpdateImportSettings(TConfiguration configuration);
+
+		protected abstract void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
 
 		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CancellationToken token)
 		{
@@ -87,36 +97,43 @@ namespace Relativity.Sync.Executors
 						}
 
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
+						IStopwatch batchTimer = GetStartedTimer();
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
 							{
-								ExecutionResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+								IStopwatch importApiTimer = GetStartedTimer();
+								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+								importApiTimer.Stop();
 
 								Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token);
 								Task<TaggingExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token);
-
+								
 								TaggingExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
 								TaggingExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
 
 								int documentsTaggedCount = Math.Min(sourceTaggingResult.TaggedDocumentsCount, destinationTaggingResult.TaggedDocumentsCount);
 								await batch.SetTaggedItemsCountAsync(documentsTaggedCount).ConfigureAwait(false);
+								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
 
-								if (batchProcessingResult.Status == ExecutionStatus.CompletedWithErrors)
+								if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
 								{
-									batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult;
+									batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult.ExecutionResult;
 								}
+								
+								batchTimer.Stop();
+								ReportBatchMetrics(batchId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
 
 								ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
-									batchProcessingResult, sourceTaggingResult, destinationTaggingResult);
+									batchProcessingResult.ExecutionResult, sourceTaggingResult, destinationTaggingResult);
 								if (failureResult != null)
 								{
 									return failureResult;
 								}
 							}
 						}
-
+						
 						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batch.ArtifactId);
 					}
 
@@ -164,9 +181,9 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		private async Task<ExecutionResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
+		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
 		{
-			ExecutionResult processBatchResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
+			BatchProcessResult batchProcessResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
 
 			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
 			await batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
@@ -174,10 +191,14 @@ namespace Relativity.Sync.Executors
 			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
 			await batch.SetTransferredItemsCountAsync(processedItemsCount).ConfigureAwait(false);
 
-			return processBatchResult;
+			batchProcessResult.TotalRecordsRequested = batch.TotalItemsCount;
+			batchProcessResult.TotalRecordsTransferred = processedItemsCount;
+			batchProcessResult.TotalRecordsFailed = failedItemsCount;
+
+			return batchProcessResult;
 		}
 
-		private async Task<ExecutionResult> RunImportJobAsync(IImportJob importJob, CancellationToken token)
+		private async Task<BatchProcessResult> RunImportJobAsync(IImportJob importJob, CancellationToken token)
 		{
 			ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
@@ -185,7 +206,13 @@ namespace Relativity.Sync.Executors
 			_jobStatisticsContainer.FilesBytesTransferred += importJobResult.FilesSizeInBytes;
 			_jobStatisticsContainer.TotalBytesTransferred += importJobResult.JobSizeInBytes;
 
-			return importJobResult.ExecutionResult;
+			return new BatchProcessResult()
+			{
+				ExecutionResult = importJobResult.ExecutionResult,
+				FilesBytesTransferred = importJobResult.FilesSizeInBytes,
+				MetadataBytesTransferred = importJobResult.MetadataSizeInBytes,
+				BytesTransferred = importJobResult.JobSizeInBytes
+			};
 		}
 
 		private async Task<TaggingExecutionResult> TagDestinationDocumentsAsync(IImportJob importJob,
@@ -259,6 +286,25 @@ namespace Relativity.Sync.Executors
 			}
 
 			return specialField.DestinationFieldName;
+		}
+
+		private IStopwatch GetStartedTimer()
+		{
+			IStopwatch timer = _stopwatchFactory();
+			timer.Start();
+			return timer;
+		}
+
+		protected class BatchProcessResult
+		{
+			public ExecutionResult ExecutionResult { get; set; }
+			public int TotalRecordsRequested { get; set; }
+			public int TotalRecordsTransferred { get; set; }
+			public int TotalRecordsFailed { get; set; }
+			public int TotalRecordsTagged { get; set; }
+			public long MetadataBytesTransferred { get; set; }
+			public long FilesBytesTransferred { get; set; }
+			public long BytesTransferred { get; set; }
 		}
 	}
 }
