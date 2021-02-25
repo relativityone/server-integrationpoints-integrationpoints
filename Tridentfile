@@ -2,4 +2,5 @@
 rapCD {
     slackChannel = "cd_trident_rip"
     sutTemplate = "aio-ninebark-latest"
+    relativityBranch = "release-12.1-osier-ea"
 }
