@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -24,6 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IFieldMappings> _fieldMappings;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISyncMetrics> _syncMetrics;
+		private Mock<IStopwatch> _stopwatch;
 
 		private ISyncLog _syncLog;
 		private CancellationToken _token;
@@ -58,13 +62,18 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>{ destinationIdentifier });
 
-			_instance = new SourceWorkspaceTagRepository(serviceFactory.Object, _syncLog, _syncMetrics.Object, _fieldMappings.Object);
+			_stopwatch = new Mock<IStopwatch>();
+
+			_instance = new SourceWorkspaceTagRepository(serviceFactory.Object, _syncLog, _syncMetrics.Object, _fieldMappings.Object, () => _stopwatch.Object);
 		}
 
 		[Test]
 		public async Task ItShouldReportFailureWhenExceptionThrownTryingToTagDocuments()
 		{
 			// Arrange
+			double expectedElapsedTime = 1000;
+			_stopwatch.Setup(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(expectedElapsedTime));
+
 			const int expectedTotalObjectsUpdated = 0;
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			string[] testIdentifiers = { "CONTROL_NUMBER_1" };
@@ -81,15 +90,18 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.AreEqual(testIdentifiers, actualResult[0].FailedDocuments);
 
-			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == expectedTotalObjectsUpdated), It.IsAny<string>(),
-				It.IsAny<Dictionary<string, object>>()));
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Once);
+			VerifySentMetric(m =>
+				m.DestinationUpdateCount == expectedTotalObjectsUpdated &&
+				m.DestinationUpdateTime == expectedElapsedTime);
 		}
 
 		[Test]
 		public async Task ItShouldReportFailureWhenSomeDocumentsAreTagged()
 		{
 			// Arrange
+			double expectedElapsedTime = 1000;
+			_stopwatch.Setup(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(expectedElapsedTime));
+
 			const int expectedTotalObjectsUpdated = 1;
 			var synchronizationConfiguration = new Mock<ISynchronizationConfiguration>(MockBehavior.Loose);
 			string[] testIdentifiers = { "CONTROL_NUMBER_1", "CONTROL_NUMBER_2" };
@@ -112,9 +124,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.AreEqual(new[] { "CONTROL_NUMBER_2" }, actualResult[0].FailedDocuments);
 
-			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == expectedTotalObjectsUpdated), It.IsAny<string>(),
-				It.IsAny<Dictionary<string, object>>()));
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Once);
+			VerifySentMetric(m =>
+				m.DestinationUpdateCount == expectedTotalObjectsUpdated &&
+				m.DestinationUpdateTime == expectedElapsedTime);
 		}
 
 		[Test]
@@ -134,9 +146,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual("A call to the Mass Update API was not made as there are no objects to update.", actualResult[0].Message);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocuments);
 
-			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<int>(), It.IsAny<string>(),
-				It.IsAny<Dictionary<string, object>>()), Times.Never);
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Never);
+			_syncMetrics.Verify(x => x.Send(It.IsAny<IMetric>()), Times.Never);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.IsAny<int>(),
@@ -150,6 +160,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldCreateTwoBatchesAndTagDocuments()
 		{
 			// Arrange
+			double expectedElapsedTime1 = 1000;
+			double expectedElapsedTime2 = 2000;
+			_stopwatch.SetupSequence(x => x.Elapsed)
+				.Returns(TimeSpan.FromMilliseconds(expectedElapsedTime1))
+				.Returns(TimeSpan.FromMilliseconds(expectedElapsedTime2));
 
 			const int maxBatchSize = 10000;
 			const int expectedNumberOfBatches = 2;
@@ -183,27 +198,29 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(firstBatchSize, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocuments);
 
-			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == firstBatchSize), It.IsAny<string>(),
-				It.IsAny<Dictionary<string, object>>()));
-
 			Assert.IsTrue(actualResult[1].Success);
 			Assert.AreEqual(secondBatchSize, actualResult[1].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[1].FailedDocuments);
 
-			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == secondBatchSize), It.IsAny<string>(),
-				It.IsAny<Dictionary<string, object>>()));
-
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()),
-				Times.Exactly(expectedNumberOfBatches));
-
 			_objectManager.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByCriteriaRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
 				Times.Exactly(expectedNumberOfBatches));
+
+			VerifySentMetric(m =>
+				m.DestinationUpdateCount == firstBatchSize &&
+				m.DestinationUpdateTime == expectedElapsedTime1);
+
+			VerifySentMetric(m =>
+				m.DestinationUpdateCount == secondBatchSize &&
+				m.DestinationUpdateTime == expectedElapsedTime2);
 		}
 
 		[Test]
 		public async Task ItShouldTagDocumentsWithCorrectFields()
 		{
 			// Arrange
+			double expectedElapsedTime = 1000;
+			_stopwatch.Setup(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(expectedElapsedTime));
+
 			const int testSourceWorkspaceTagArtifactId = 102678;
 			const int testSourceJobHistoryTagArtifactId = 101789;
 			const int testDestinationWorkspaceArtifactId = 101456;
@@ -235,9 +252,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.AreEqual(testIdentifiers.Length, actualResult[0].TotalObjectsUpdated);
 			CollectionAssert.IsEmpty(actualResult[0].FailedDocuments);
 
-			_syncMetrics.Verify(x => x.GaugeOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.Is<long>(y => y == testIdentifiers.Length), It.IsAny<string>(),
-				It.IsAny<Dictionary<string, object>>()));
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<ExecutionStatus>(y => y == ExecutionStatus.None), It.IsAny<Dictionary<string, object>>()), Times.Once);
+			VerifySentMetric(m =>
+				m.DestinationUpdateCount == testIdentifiers.Length &&
+				m.DestinationUpdateTime == expectedElapsedTime);
 
 			_objectManager.Verify(x => x.UpdateAsync(
 				It.Is<int>(w => w == testDestinationWorkspaceArtifactId),
@@ -280,6 +297,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Assert.IsInstanceOf<IEnumerable<RelativityObjectRef>>(value);
 			List<int> valueList = ((IEnumerable<RelativityObjectRef>)value).Select(x => x.ArtifactID).ToList();
 			Assert.Contains(expectedId, valueList);
+		}
+
+		private void VerifySentMetric(Expression<Func<SourceWorkspaceTagMetric, bool>> validationFunc)
+		{
+			_syncMetrics.Verify(x => x.Send(It.Is(validationFunc)));
 		}
 	}
 }

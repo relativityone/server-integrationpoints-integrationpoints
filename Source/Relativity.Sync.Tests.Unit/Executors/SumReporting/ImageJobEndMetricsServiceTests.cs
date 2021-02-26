@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using FluentAssertions;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 {
@@ -55,6 +56,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			var testBatches = new List<IBatch> { batch.Object, batch.Object };
 			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(testBatches);
 
+			const ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly;
+			const DataSourceType sourceType = DataSourceType.SavedSearch;
+			const DestinationLocationType destinationType = DestinationLocationType.Folder;
+			const ImportImageFileCopyMode imageFileCopyMode = ImportImageFileCopyMode.CopyFiles;
+
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportOverwriteMode).Returns(overwriteMode);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(sourceType);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.DestinationType).Returns(destinationType);
+			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportImageFileCopyMode).Returns(imageFileCopyMode);
+
 			const long jobSize = 12345;
 			const long imagesSize = 12345;
 			_jobStatisticsContainerFake.SetupGet(x => x.FilesBytesTransferred).Returns(imagesSize);
@@ -68,14 +79,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, completedItemsPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, failedItemsPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalItemsCountPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TAGGED, taggedItemsPerBatch * testBatches.Count), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES, expectedStatusDescription), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_TRANSFERRED, imagesSize), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, jobSize), Times.Once);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_REQUESTED, imagesSize), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m =>
+				m.TotalRecordsTransferred == completedItemsPerBatch * testBatches.Count &&
+				m.TotalRecordsFailed == failedItemsPerBatch * testBatches.Count &&
+				m.TotalRecordsRequested == totalItemsCountPerBatch * testBatches.Count &&
+				m.TotalRecordsTagged == taggedItemsPerBatch * testBatches.Count &&
+				m.JobEndStatus == expectedStatusDescription &&
+				m.BytesImagesTransferred == imagesSize &&
+				m.BytesTransferred == jobSize &&
+				m.BytesImagesRequested == imagesSize &&
+				m.OverwriteMode == overwriteMode &&
+				m.SourceType == sourceType &&
+				m.DestinationType == destinationType &&
+				m.ImageFileCopyMode == imageFileCopyMode)), Times.Once);
 		}
 
 		[Test]
@@ -91,8 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS, expectedStatusDescription),
-				Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m => m.RetryJobEndStatus == expectedStatusDescription)));
 		}
 
 		[Test]
@@ -122,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_IMAGES_TRANSFERRED, It.IsAny<long>()), Times.Never);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m => m.BytesImagesTransferred == null)));
 		}
 
 		[Test]
@@ -136,7 +151,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED, It.IsAny<long>()), Times.Never);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m => m.BytesTransferred == null)));
 		}
 
 		[Test]
@@ -154,7 +169,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
-			_syncMetricsMock.Verify(x => x.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES, expectedStatusDescription), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
 		}
 	}
 }

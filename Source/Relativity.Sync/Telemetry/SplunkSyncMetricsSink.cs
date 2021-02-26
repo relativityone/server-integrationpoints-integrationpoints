@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Logs <see cref="Metric"/>s to Splunk. Uses the Relativity <see cref="ISyncLog"/>
+	///     Logs <see cref="IMetric"/>s to Splunk. Uses the Relativity <see cref="ISyncLog"/>
 	///     system to perform the logging. The Relativity instance on which this is
 	///     running should:
 	///         1) have logs for this application sent to the Splunk sink;
@@ -21,9 +21,9 @@
 		}
 
 		/// <inheritdoc />
-		public void Log(Metric metric)
+		public void Send(IMetric metric)
 		{
-			_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.Name, metric);
+			_logger.LogInformation("Sending metric {MetricName} with properties: {@MetricProperties}", metric.GetType(), metric);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Configuration;
+﻿using System;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
@@ -6,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
@@ -15,9 +18,9 @@ namespace Relativity.Sync.Executors
 			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration, IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			ISyncLog logger)
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger)
 			: base(importJobFactory, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
-			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, logger)
+			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, logger)
 		{
 		}
 
@@ -34,6 +37,22 @@ namespace Relativity.Sync.Executors
 			configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
 			configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
 			configuration.IdentifierColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageIdentifier);
+		}
+
+		protected override void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
+		{
+			_syncMetrics.Send(new ImageBatchEndMetric()
+			{
+				TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
+				TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
+				TotalRecordsFailed = batchProcessResult.TotalRecordsFailed,
+				TotalRecordsTagged = batchProcessResult.TotalRecordsTagged,
+				BytesNativesTransferred = batchProcessResult.FilesBytesTransferred,
+				BytesMetadataTransferred = batchProcessResult.MetadataBytesTransferred,
+				BytesTransferred = batchProcessResult.BytesTransferred,
+				BatchImportAPITime = importApiTimer.TotalMilliseconds,
+				BatchTotalTime = batchTime.TotalMilliseconds,
+			});
 		}
 	}
 }

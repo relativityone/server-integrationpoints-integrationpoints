@@ -11,6 +11,7 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.SumReporting
@@ -39,16 +40,19 @@ namespace Relativity.Sync.Executors.SumReporting
 		public async Task<ExecutionResult> ExecuteAsync(ISumReporterConfiguration configuration,
 			CancellationToken token)
 		{
-			_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.JOB_START_TYPE,
-				TelemetryConstants.PROVIDER_NAME);
+			JobStartMetric metric = new JobStartMetric
+			{
+				Type = TelemetryConstants.PROVIDER_NAME
+			};
 
 			if (configuration.JobHistoryToRetryId != null)
 			{
-				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE,
-					TelemetryConstants.PROVIDER_NAME);
+				metric.RetryType = TelemetryConstants.PROVIDER_NAME;
 			}
 
-			LogFlowType();
+			WriteFlowType(metric);
+
+			_syncMetrics.Send(metric);
 
 			try
 			{
@@ -62,16 +66,16 @@ namespace Relativity.Sync.Executors.SumReporting
 			return ExecutionResult.Success();
 		}
 
-		private void LogFlowType()
+		private void WriteFlowType(JobStartMetric metric)
 		{
 			ISyncPipeline syncPipeline = _pipelineSelector.GetPipeline();
 			if (syncPipeline.IsDocumentPipeline())
 			{
-				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA);
+				metric.FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA;
 			}
 			else if (syncPipeline.IsImagePipeline())
 			{
-				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.FLOW_TYPE, TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES);
+				metric.FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES;
 			}
 		}
 

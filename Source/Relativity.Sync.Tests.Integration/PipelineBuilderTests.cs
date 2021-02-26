@@ -14,6 +14,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 
@@ -110,7 +111,7 @@ namespace Relativity.Sync.Tests.Integration
 			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>()));
+			syncMetrics.Verify(x => x.Send(It.Is<CommandMetric>(m => m.Duration != null)));
 		}
 
 		[TestCaseSource(nameof(PipelineTypes))]
