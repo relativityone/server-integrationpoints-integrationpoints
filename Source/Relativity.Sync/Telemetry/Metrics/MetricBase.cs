@@ -5,8 +5,8 @@ using System.Reflection;
 
 namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal abstract class MetricBase<T> : IMetric 
-		where T: IMetric, new()
+	internal abstract class MetricBase<T> : IMetric
+		where T : IMetric, new()
 	{
 		private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
 
@@ -52,24 +52,16 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		private object GetValue(PropertyInfo p)
 		{
-			try
-			{
-				return Nullable.GetUnderlyingType(p.PropertyType)?.IsEnum == true ? p.GetValue(this)?.ToString() : p.GetValue(this);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				throw;
-			}
+			return Nullable.GetUnderlyingType(p.PropertyType)?.IsEnum == true ? p.GetValue(this)?.ToString() : p.GetValue(this);
 		}
 
 		private Dictionary<PropertyInfo, MetricAttribute> GetMetricProperties()
 		{
 			return _metricCacheProperties ??
-			       (_metricCacheProperties = GetType()
-				       .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-				       .Where(p => p.GetMethod != null)
-				       .ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));
+				   (_metricCacheProperties = GetType()
+					   .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+					   .Where(p => p.GetMethod != null)
+					   .ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));
 		}
 	}
 }
