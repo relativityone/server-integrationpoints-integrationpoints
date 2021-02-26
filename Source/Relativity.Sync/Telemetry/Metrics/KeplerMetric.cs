@@ -16,11 +16,15 @@
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX)]
 		public long? AuthTokenExpirationCount { get; set; }
 
+		public KeplerMetric()
+		{
+		}
+
 		public KeplerMetric(string invocationKepler) : base(invocationKepler)
 		{
 		}
 
-		protected override string BucketNameFunc(MetricAttribute attr)
+		protected override string GetBucketName(MetricAttribute attr)
 		{
 			return $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{Name}.{attr.Name}";
 		}

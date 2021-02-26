@@ -7,6 +7,10 @@
 		[Metric(MetricType.TimedOperation)]
 		public double? Duration { get; set; }
 
+		public CommandMetric()
+		{
+		}
+
 		public CommandMetric(string commandName) : base(commandName)
 		{
 		}
