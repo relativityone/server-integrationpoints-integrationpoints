@@ -6,14 +6,14 @@ namespace Relativity.Sync.SyncConfiguration
 		public int SourceWorkspaceId { get; }
 
 		public int DestinationWorkspaceId { get; }
-
-		public int ParentObjectId { get; }
-
-		public SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int parentObjectId)
+		
+		public int JobHistoryId { get; }
+		
+		public SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId)
 		{
 			SourceWorkspaceId = sourceWorkspaceId;
 			DestinationWorkspaceId = destinationWorkspaceId;
-			ParentObjectId = parentObjectId;
+			JobHistoryId = jobHistoryId;
 		}
 	}
 }

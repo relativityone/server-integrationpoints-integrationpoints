@@ -53,20 +53,21 @@ namespace Relativity.Sync.Tests.System
 		{
 			// Arrange
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 
 			var configuration = new ConfigurationStub
 			{
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId
 			};
+
+			configuration.SyncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationRdoAsync(_sourceWorkspace.ArtifactID, configuration).ConfigureAwait(false);
 
 			const int batchCount = 3;
 			const int transferredItemsCountPerBatch = 10000;
 			const int failedItemsCountPerBatch = 500;
-			await CreateBatchesAsync(_sourceWorkspace.ArtifactID, syncConfigurationArtifactId, batchCount, transferredItemsCountPerBatch, failedItemsCountPerBatch).ConfigureAwait(false);
+			await CreateBatchesAsync(_sourceWorkspace.ArtifactID, configuration.SyncConfigurationArtifactId, batchCount, transferredItemsCountPerBatch, failedItemsCountPerBatch).ConfigureAwait(false);
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IJobStatusConsolidationConfiguration>(configuration);
 			

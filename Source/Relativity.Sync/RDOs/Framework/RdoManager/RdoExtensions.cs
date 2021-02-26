@@ -21,7 +21,7 @@ namespace Relativity.Sync.RDOs.Framework
                 {
                     Guid = objectTypeGuid
                 },
-                Condition = $"'ArtifactId' == `{artifactId}`",
+                Condition = $"'ArtifactId' == {artifactId}",
                 IncludeNameInQueryResult = true
             };
 

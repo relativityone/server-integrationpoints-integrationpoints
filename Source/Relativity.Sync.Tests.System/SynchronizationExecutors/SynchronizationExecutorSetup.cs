@@ -16,6 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Relativity.Sync.SyncConfiguration;
+using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutors
@@ -120,8 +123,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
 			Configuration.BatchSize = batchSize == 0 ? TotalDataCount : batchSize;
-			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID,
-				jobHistoryArtifactId, fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID)).GetAwaiter().GetResult();
 			Configuration.ImportOverwriteMode = overwriteMode;
 			Configuration.FieldOverlayBehavior = overlayBehavior;
 			
@@ -155,8 +156,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
 			Configuration.BatchSize = batchSize == 0 ? TotalDataCount : batchSize;
-			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationInstance(ServiceFactory, SourceWorkspace.ArtifactID,
-				jobHistoryArtifactId, fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID)).GetAwaiter().GetResult();
 			Configuration.ImportOverwriteMode = overwriteMode;
 			Configuration.FieldOverlayBehavior = overlayBehavior;
 			
@@ -171,6 +170,9 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 		public SynchronizationExecutorSetup SetupContainer()
 		{
+			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(SourceWorkspace.ArtifactID,
+				Configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
+			
 			Container = ContainerHelper.Create(Configuration, containerBuilder =>
 			{
 				containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>();

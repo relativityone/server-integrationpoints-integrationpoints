@@ -12,7 +12,7 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.RdoArtifactTypeIdGuid, RdoFieldType.WholeNumber)]
         public int RdoArtifactTypeId { get; set; }
 
-        [RdoField(SyncRdoGuids.DataSourceTypeGuid, RdoFieldType.WholeNumber)]
+        [RdoField(SyncRdoGuids.DataSourceTypeGuid, RdoFieldType.FixedLengthText)]
         public string DataSourceType { get; set; }
 
         [RdoField(SyncRdoGuids.DataSourceArtifactIdGuid, RdoFieldType.WholeNumber)]

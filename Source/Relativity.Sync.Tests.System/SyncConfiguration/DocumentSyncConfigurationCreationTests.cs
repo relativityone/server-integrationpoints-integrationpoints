@@ -126,6 +126,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			// Arrange
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
+
 			expectedSyncConfiguration.ImportOverwriteMode = expectedOverwriteMode;
 			expectedSyncConfiguration.FieldOverlayBehavior = expectedFieldsOverlay;
 
@@ -272,6 +273,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				ImportOverwriteMode = "AppendOnly",
 				FieldOverlayBehavior = "Use Field Settings",
 				NativesBehavior = "None",
+				JobHistoryId = JobHistory.ArtifactID,
 
 				FieldsMapping = new JSONSerializer().Serialize(fieldsMappingToSerialize)
 			};

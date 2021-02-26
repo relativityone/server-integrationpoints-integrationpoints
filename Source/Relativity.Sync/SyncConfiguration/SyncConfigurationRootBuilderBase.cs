@@ -12,6 +12,8 @@ using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
 using System.Linq.Expressions;
+using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs.Framework;
 
 #pragma warning disable 1591
 
@@ -21,22 +23,25 @@ namespace Relativity.Sync.SyncConfiguration
     {
         protected readonly ISyncServiceManager ServicesMgr;
         protected readonly RdoOptions RdoOptions;
+        private readonly IRdoManager _rdoManager;
         protected readonly ISerializer Serializer;
         protected readonly ISyncContext SyncContext;
 
         public readonly SyncConfigurationRdo SyncConfiguration;
 
         protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, ISyncServiceManager servicesMgr,
-            RdoOptions rdoOptions, ISerializer serializer)
+            RdoOptions rdoOptions, IRdoManager rdoManager,  ISerializer serializer)
         {
             SyncContext = syncContext;
             ServicesMgr = servicesMgr;
             RdoOptions = rdoOptions;
+            _rdoManager = rdoManager;
             Serializer = serializer;
 
             SyncConfiguration = new SyncConfigurationRdo
             {
                 DestinationWorkspaceArtifactId = SyncContext.DestinationWorkspaceId,
+                JobHistoryId =  syncContext.JobHistoryId,
                 ImportOverwriteMode = ImportOverwriteMode.AppendOnly.GetDescription(),
                 FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings.GetDescription()
             };
@@ -97,7 +102,12 @@ namespace Relativity.Sync.SyncConfiguration
             ).ConfigureAwait(false);
             await ValidateAsync().ConfigureAwait(false);
 
-            return 5;
+            await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId)
+                .ConfigureAwait(false);
+
+            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration).ConfigureAwait(false);
+
+            return SyncConfiguration.ArtifactId;
         }
 
         private async Task<int> GetParentObjectTypeAsync(int workspaceId, int parentObjectId)

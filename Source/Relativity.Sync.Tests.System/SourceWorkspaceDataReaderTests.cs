@@ -80,21 +80,21 @@ namespace Relativity.Sync.Tests.System
 			int jobHistoryArtifactId = await Rdos
 				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
 				.ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos
-				.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId,
-					fieldMap).ConfigureAwait(false);
 
 			// Create configuration
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
 				FolderPathSourceFieldName = folderInfoFieldName
 			};
 			configuration.SetFieldMappings(fieldMap);
+
+			configuration.SyncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationRdoAsync(sourceWorkspaceArtifactId, configuration)
+				.ConfigureAwait(false);
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
@@ -208,22 +208,21 @@ namespace Relativity.Sync.Tests.System
 			int jobHistoryArtifactId = await Rdos
 				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
 				.ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos
-				.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId,
-					fieldMap).ConfigureAwait(false);
-
+			
 			// Create configuration
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
 				FolderPathSourceFieldName = folderInfoFieldName,
 				IsImageJob = true
 			};
 			configuration.SetFieldMappings(fieldMap);
+
+			configuration.SyncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationRdoAsync(sourceWorkspaceArtifactId, configuration).ConfigureAwait(false);
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);

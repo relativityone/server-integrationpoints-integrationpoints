@@ -9,6 +9,7 @@ using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
@@ -54,6 +55,9 @@ namespace Relativity.Sync
 
 			containerBuilder.RegisterType<PipelineSelectorConfiguration>().As<IPipelineSelectorConfiguration>();
 			containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces().SingleInstance();
+
+			containerBuilder.RegisterType<RdoGuidProvider>().AsImplementedInterfaces();
+			containerBuilder.RegisterType<RdoManager>().AsImplementedInterfaces();
 
 			IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.Utils;
@@ -19,8 +20,8 @@ namespace Relativity.Sync.SyncConfiguration
 
 		internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
 			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
-			RdoOptions rdoOptions) 
-			: base(syncContext, servicesMgr, rdoOptions, serializer)
+			RdoOptions rdoOptions, IRdoManager rdoManager) 
+			: base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
 		{
 			_fieldsMappingBuilder = fieldsMappingBuilder;
 

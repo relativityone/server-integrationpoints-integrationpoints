@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.Options;
 #pragma warning disable 1591
 
