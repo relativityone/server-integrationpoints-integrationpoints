@@ -69,6 +69,9 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.EmailNotificationRecipientsGuid, RdoFieldType.LongText)]
         public string EmailNotificationRecipients { get; set; }
 
+        [RdoField(SyncRdoGuids.JobHistoryIdGuid, RdoFieldType.WholeNumber, required: false)]
+        public int JobHistoryId { get; set; }
+        
         [RdoField(SyncRdoGuids.JobHistoryToRetryIdGuid, RdoFieldType.WholeNumber, required: false)]
         public int? JobHistoryToRetryId { get; set; }
 

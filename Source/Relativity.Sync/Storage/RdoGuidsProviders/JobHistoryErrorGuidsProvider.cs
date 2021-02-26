@@ -6,24 +6,24 @@ namespace Relativity.Sync.Storage.RdoGuidsProviders
 {
     internal class JobHistoryErrorGuidsProvider : IJobHistoryErrorGuidsProvider
     {
-        private readonly Func<Guid, Guid> _valueGetter;
+        private IConfiguration _cache;
 
-        public JobHistoryErrorGuidsProvider(Func<Guid, Guid> valueGetter)
+        public JobHistoryErrorGuidsProvider(IConfiguration cache)
         {
-            _valueGetter = valueGetter;
+            _cache = cache;
         }
 
-        public Guid TypeGuid => _valueGetter(x => x.JobHistoryErrorType);
-        public Guid ErrorMessagesGuid => _valueGetter(x => x.JobHistoryErrorErrorMessages);
-        public Guid ErrorStatusGuid => _valueGetter(x => x.JobHistoryErrorErrorStatus);
-        public Guid ErrorTypeGuid => _valueGetter(x => x.JobHistoryErrorErrorType);
-        public Guid NameGuid => _valueGetter(x => x.JobHistoryErrorName);
-        public Guid SourceUniqueIdGuid => _valueGetter(x => x.JobHistoryErrorSourceUniqueId);
-        public Guid StackTraceGuid => _valueGetter(x => x.JobHistoryErrorStackTrace);
-        public Guid TimeStampGuid => _valueGetter(x => x.JobHistoryErrorTimeStamp);
-        public Guid ItemLevelErrorGuid => _valueGetter(x => x.JobHistoryErrorItemLevelError);
-        public Guid JobLevelErrorGuid => _valueGetter(x => x.JobHistoryErrorJobLevelError);
-        public Guid JobHistoryRelationGuid => _valueGetter(x => x.JobHistoryErrorJobHistoryRelation);
-        public Guid NewStatusGuid => _valueGetter(x => x.JobHistoryErrorNewChoice);
+        public Guid TypeGuid => _cache.GetFieldValue(x => x.JobHistoryErrorType);
+        public Guid ErrorMessagesGuid => _cache.GetFieldValue(x => x.JobHistoryErrorErrorMessages);
+        public Guid ErrorStatusGuid => _cache.GetFieldValue(x => x.JobHistoryErrorErrorStatus);
+        public Guid ErrorTypeGuid => _cache.GetFieldValue(x => x.JobHistoryErrorErrorType);
+        public Guid NameGuid => _cache.GetFieldValue(x => x.JobHistoryErrorName);
+        public Guid SourceUniqueIdGuid => _cache.GetFieldValue(x => x.JobHistoryErrorSourceUniqueId);
+        public Guid StackTraceGuid => _cache.GetFieldValue(x => x.JobHistoryErrorStackTrace);
+        public Guid TimeStampGuid => _cache.GetFieldValue(x => x.JobHistoryErrorTimeStamp);
+        public Guid ItemLevelErrorGuid => _cache.GetFieldValue(x => x.JobHistoryErrorItemLevelError);
+        public Guid JobLevelErrorGuid => _cache.GetFieldValue(x => x.JobHistoryErrorJobLevelError);
+        public Guid JobHistoryRelationGuid => _cache.GetFieldValue(x => x.JobHistoryErrorJobHistoryRelation);
+        public Guid NewStatusGuid => _cache.GetFieldValue(x => x.JobHistoryErrorNewChoice);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -8,19 +9,17 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	public sealed class DestinationWorkspaceSavedSearchCreationConfigurationTests
+	using RdoExpression = Expression<Func<SyncConfigurationRdo, object>>;
+
+	
+	internal sealed class DestinationWorkspaceSavedSearchCreationConfigurationTests : ConfigurationTestBase
 	{
 		private DestinationWorkspaceSavedSearchCreationConfiguration _instance;
-
-		private Mock<IConfiguration> _cache;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
-
-			_instance = new DestinationWorkspaceSavedSearchCreationConfiguration(_cache.Object);
+			_instance = new DestinationWorkspaceSavedSearchCreationConfiguration(_configuration.Object);
 		}
 
 		[Test]
@@ -28,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int expectedValue = 852147;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)).Returns(expectedValue);
+			_configurationRdo.DestinationWorkspaceArtifactId = expectedValue;
 
 			_instance.DestinationWorkspaceArtifactId.Should().Be(expectedValue);
 		}
@@ -38,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const string expectedValue = "tag name";
 
-			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SourceJobTagNameGuid)).Returns(expectedValue);
+			_configurationRdo.SourceJobTagName = expectedValue;
 
 			_instance.GetSourceJobTagName().Should().Be(expectedValue);
 		}
@@ -48,8 +47,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int expectedValue = 789456;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.SourceJobTagArtifactIdGuid)).Returns(expectedValue);
-
+			_configurationRdo.SourceJobTagArtifactId = expectedValue;
+			
 			_instance.SourceJobTagArtifactId.Should().Be(expectedValue);
 		}
 
@@ -58,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int expectedValue = 258963;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.SourceWorkspaceTagArtifactIdGuid)).Returns(expectedValue);
+			_configurationRdo.SourceWorkspaceTagArtifactId = expectedValue;
 
 			_instance.SourceWorkspaceTagArtifactId.Should().Be(expectedValue);
 		}
@@ -68,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const bool expectedValue = true;
 
-			_cache.Setup(x => x.GetFieldValue<bool>(SyncRdoGuids.CreateSavedSearchInDestinationGuid)).Returns(expectedValue);
+			_configurationRdo.CreateSavedSearchInDestination = expectedValue;
 
 			_instance.CreateSavedSearchForTags.Should().Be(expectedValue);
 		}
@@ -78,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[TestCase(789123, true)]
 		public void ItShouldRetrieveIsSavedSearchArtifactId(int artifactId, bool expectedValue)
 		{
-			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.SavedSearchInDestinationArtifactIdGuid)).Returns(artifactId);
+			_configurationRdo.SavedSearchInDestinationArtifactId = artifactId;
 
 			_instance.IsSavedSearchArtifactIdSet.Should().Be(expectedValue);
 		}
@@ -90,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			await _instance.SetSavedSearchInDestinationArtifactIdAsync(artifactId).ConfigureAwait(false);
 
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SavedSearchInDestinationArtifactIdGuid, artifactId), Times.Once);
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SavedSearchInDestinationArtifactId))), artifactId), Times.Once);
 		}
 	}
 }

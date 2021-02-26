@@ -9,19 +9,14 @@ using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	public sealed class DestinationWorkspaceObjectTypesCreationConfigurationTests
+	internal sealed class DestinationWorkspaceObjectTypesCreationConfigurationTests : ConfigurationTestBase
 	{
 		private DestinationWorkspaceObjectTypesCreationConfiguration _instance;
-
-		private Mock<IConfiguration> _cache;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
-
-			_instance = new DestinationWorkspaceObjectTypesCreationConfiguration(_cache.Object);
+			_instance = new DestinationWorkspaceObjectTypesCreationConfiguration(_configuration.Object);
 		}
 
 		[Test]
@@ -29,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int expectedValue = 123;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)).Returns(expectedValue);
+			_configurationRdo.DestinationWorkspaceArtifactId = expectedValue;
 
 			_instance.DestinationWorkspaceArtifactId.Should().Be(expectedValue);
 		}

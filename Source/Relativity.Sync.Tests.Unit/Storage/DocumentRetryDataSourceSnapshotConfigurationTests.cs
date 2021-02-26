@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -11,13 +12,14 @@ using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-
+	using RdoExpression = Expression<Func<SyncConfigurationRdo, object>>;
+ 
+	
 	[TestFixture]
-	public sealed class DocumentRetryDataSourceSnapshotConfigurationTests
+	internal sealed class DocumentRetryDataSourceSnapshotConfigurationTests : ConfigurationTestBase
 	{
 		private DocumentRetryDataSourceSnapshotConfiguration _instance;
 
-		private Mock<IConfiguration> _cache;
 		private Mock<IFieldMappings> _fieldMappings;
 
 		private const int _WORKSPACE_ID = 589632;
@@ -25,10 +27,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
 			_fieldMappings = new Mock<IFieldMappings>();
 
-			_instance = new DocumentRetryDataSourceSnapshotConfiguration(_cache.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
+			_instance = new DocumentRetryDataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
 		}
 
 		[Test]
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 658932;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DataSourceArtifactIdGuid)).Returns(expectedValue);
+			_configurationRdo.DataSourceArtifactId = expectedValue;
 
 			// Act & Assert
 			_instance.DataSourceArtifactId.Should().Be(expectedValue);
@@ -68,7 +69,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.SnapshotIdGuid)).Returns(snapshot);
+			_configurationRdo.SnapshotId = snapshot;
 
 			// Act & Assert
 			_instance.IsSnapshotCreated.Should().Be(expectedValue);
@@ -85,8 +86,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SnapshotIdGuid, snapshotId.ToString()));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SnapshotRecordsCountGuid, totalRecordsCount));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))), snapshotId.ToString()));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotRecordsCount))), totalRecordsCount));
 		}
 
 		[Test]
@@ -95,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 1;
 
-			_cache.Setup(x => x.GetFieldValue<int?>(SyncRdoGuids.JobHistoryToRetryIdGuid)).Returns(expectedValue);
+			_configurationRdo.JobHistoryToRetryId = expectedValue;
 
 			// Act & Assert
 			_instance.JobHistoryToRetryId.Should().Be(expectedValue);
@@ -105,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveJobHistoryToRetryID_WhenNull()
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<int?>(SyncRdoGuids.JobHistoryToRetryIdGuid)).Returns((int?)null);
+			_configurationRdo.JobHistoryToRetryId = null;
 
 			// Act & Assert
 			_instance.JobHistoryToRetryId.Should().Be(null);

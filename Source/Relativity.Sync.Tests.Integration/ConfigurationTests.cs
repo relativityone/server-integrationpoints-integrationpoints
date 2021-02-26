@@ -10,6 +10,8 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
@@ -49,11 +51,17 @@ namespace Relativity.Sync.Tests.Integration
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
 			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, 1);
-			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
+			var rdoGuidProvider = new RdoGuidProvider();
+			var rdoManagerMock = new Mock<IRdoManager>();
+
+			rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new SyncConfigurationRdo());
+			
+			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), _semaphoreSlim, rdoGuidProvider, rdoManagerMock.Object).ConfigureAwait(false);
 
 			// ACT
-			Task updateTask = cache.UpdateFieldValueAsync(guid, newValue);
-			int actualValue = cache.GetFieldValue<int>(guid);
+			Task updateTask = cache.UpdateFieldValueAsync(x => x.JobHistoryId, newValue);
+			int actualValue = cache.GetFieldValue(x => x.JobHistoryId);
 
 			await updateTask.ConfigureAwait(false);
 

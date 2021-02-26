@@ -16,7 +16,6 @@ namespace Relativity.Sync.Storage
 		private readonly ISerializer _serializer;
 		private readonly ISyncLog _syncLog;
 
-		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 
 		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISerializer serializer, ISyncLog syncLog)
 		{
@@ -47,7 +46,7 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
+		public int JobHistoryArtifactId => _cache.GetFieldValue(x => x.JobHistoryId);
 		public int SourceJobTagArtifactId => _cache.GetFieldValue(x => x.SourceJobTagArtifactId);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue(x => x.SourceWorkspaceTagArtifactId);
@@ -56,8 +55,8 @@ namespace Relativity.Sync.Storage
 		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue<string>(x => x.DestinationFolderStructureBehaviorGuid)));
-		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(x => x.ImportOverwriteModeGuid)));
+			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior)));
+		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue(x => x.ImportOverwriteMode)));
 		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior).GetEnumFromDescription<FieldOverlayBehavior>();
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
 

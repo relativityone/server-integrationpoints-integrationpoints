@@ -64,5 +64,6 @@ namespace Relativity.Sync.RDOs
         public const string JobHistoryErrorExpiredChoiceGuid = "2BFE5764-51C4-42F4-AB63-CC6104BC20C1";
         public const string JobHistoryErrorInProgressChoiceGuid = "A3CE4293-AB88-4A98-8415-0DE3F3127A76";
         public const string JobHistoryErrorRetriedChoiceGuid = "0859833A-B8F4-4352-92CA-38AA8FD46388";
+        public const string JobHistoryIdGuid = "FF793525-29AB-40B2-A8AE-88E574EAD0DE";
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -9,24 +10,22 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	internal sealed class DestinationWorkspaceTagsCreationConfigurationTests
-	{
-		private Mock<Relativity.Sync.Storage.IConfiguration> _cache;
+	using RdoExpression = Expression<Func<SyncConfigurationRdo, object>>;
 
+	
+	[TestFixture]
+	internal sealed class DestinationWorkspaceTagsCreationConfigurationTests : ConfigurationTestBase
+	{
 		private DestinationWorkspaceTagsCreationConfiguration _config;
 
 		private const int _JOB_ID = 1;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 2;
 
-		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<Relativity.Sync.Storage.IConfiguration>();
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
-			_config = new DestinationWorkspaceTagsCreationConfiguration(_cache.Object, syncJobParameters);
+			_config = new DestinationWorkspaceTagsCreationConfiguration(_configuration.Object, syncJobParameters);
 		}
 
 		[Test]
@@ -43,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldReturnDestinationWorkspaceArtifactId()
 		{
 			const int destinationWorkspaceArtifactId = 3;
-			_cache.Setup(x => x.GetFieldValue<int>(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)).Returns(destinationWorkspaceArtifactId);
+			_configurationRdo.DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId;
 
 			// act
 			int actualDestinationWorkspaceTagArtifactId = _config.DestinationWorkspaceArtifactId;
@@ -56,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldReturnJobHistoryArtifactId()
 		{
 			const int jobHistoryArtifactId = 4;
-			_cache.Setup(x => x.GetFieldValue<RelativityObjectValue>(JobHistoryGuid)).Returns(new RelativityObjectValue() { ArtifactID = jobHistoryArtifactId });
+			_configurationRdo.JobHistoryId = jobHistoryArtifactId;
 
 			// act
 			int actualJobHistoryArtifactId = _config.JobHistoryArtifactId;
@@ -75,8 +74,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetSourceJobTagAsync(artifactId, name).ConfigureAwait(false);
 
 			// assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SourceJobTagArtifactIdGuid, artifactId));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SourceJobTagNameGuid, name));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceJobTagArtifactId))), artifactId));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceJobTagName))), name));
 		}
 
 		[Test]
@@ -89,8 +88,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetSourceWorkspaceTagAsync(artifactId, name).ConfigureAwait(false);
 
 			// assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SourceWorkspaceTagArtifactIdGuid, artifactId));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncRdoGuids.SourceWorkspaceTagNameGuid, name));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceWorkspaceTagArtifactId))), artifactId));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceWorkspaceTagName))), name));
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Integration
 		    }]";
 
 			Mock<IConfiguration> configuration = new Mock<IConfiguration>();
-			configuration.Setup(x => x.GetFieldValue<string>(SyncRdoGuids.FieldMappingsGuid)).Returns(fieldsMap);
+			configuration.Setup(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>())).Returns(fieldsMap);
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			containerBuilder.RegisterInstance(configuration.Object).As<IConfiguration>();

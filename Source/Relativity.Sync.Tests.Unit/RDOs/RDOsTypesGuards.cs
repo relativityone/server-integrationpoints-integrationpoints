@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                         {
                             var fieldAttribute = x.GetCustomAttribute<RdoFieldAttribute>();
 
-                            fieldAttribute.FieldType.Should().Be(RdoFieldType.LongText);
+                            fieldAttribute.FieldType.Should().Be(RdoFieldType.FixedLengthText);
                             fieldAttribute.FixedTextLength.Should().BeGreaterOrEqualTo(guidTextLength);
                         });
                 });

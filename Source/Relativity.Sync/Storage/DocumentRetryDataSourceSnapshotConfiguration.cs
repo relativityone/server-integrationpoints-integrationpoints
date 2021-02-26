@@ -32,7 +32,7 @@ namespace Relativity.Sync.Storage
 			await _cache.UpdateFieldValueAsync(x => x.SnapshotRecordsCount, totalRecordsCount).ConfigureAwait(false);
 		}
 
-		public int? JobHistoryToRetryId => _cache.GetFieldValue<int?>(x => x.JobHistoryToRetryId);
+		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 
 		public ImportOverwriteMode ImportOverwriteMode
 		{

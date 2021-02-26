@@ -8,10 +8,8 @@ using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	public class JobEndMetricsConfigurationTests
+	internal class JobEndMetricsConfigurationTests : ConfigurationTestBase
 	{
-		private Mock<IConfiguration> _configurationFake;
 		private JobEndMetricsConfiguration _sut;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 102779;
@@ -21,12 +19,10 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_configurationFake = new Mock<IConfiguration>();
-			_configurationFake.Setup(x => x.GetFieldValue<int?>(SyncRdoGuids.JobHistoryToRetryIdGuid))
-				.Returns(_JOB_HISTORY_TO_RETRY_ARTIFACT_ID);
+			_configurationRdo.JobHistoryToRetryId = _JOB_HISTORY_TO_RETRY_ARTIFACT_ID;
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
-			_sut = new JobEndMetricsConfiguration(_configurationFake.Object, syncJobParameters);
+			_sut = new JobEndMetricsConfiguration(_configuration.Object, syncJobParameters);
 		}
 
 		[Test]
