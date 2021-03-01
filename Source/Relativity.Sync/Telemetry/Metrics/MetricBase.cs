@@ -5,8 +5,8 @@ using System.Reflection;
 
 namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal abstract class MetricBase<T> : IMetric 
-		where T: IMetric
+	internal abstract class MetricBase<T> : IMetric
+		where T : IMetric, new()
 	{
 		private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
 
@@ -24,12 +24,13 @@ namespace Relativity.Sync.Telemetry.Metrics
 			Name = metricName;
 		}
 
-		public virtual Dictionary<string, object> GetCustomData()
+		public virtual Dictionary<string, object> GetApmMetrics()
 		{
-			object GetValue(PropertyInfo p) =>
-				Nullable.GetUnderlyingType(p.PropertyType)?.IsEnum == true ?  p.GetValue(this)?.ToString() : p.GetValue(this);
-
-			return GetMetricProperties().Keys.ToDictionary(p => p.Name, GetValue);
+			Dictionary<PropertyInfo, MetricAttribute> metricProperties = GetMetricProperties();
+			Dictionary<string, object> apmMetrics = metricProperties
+				.Where(item => item.Key.GetCustomAttribute<APMIgnoreMetricAttribute>() == null)
+				.ToDictionary(keyValuePair => keyValuePair.Key.Name, keyValuePair => GetValue(keyValuePair.Key));
+			return apmMetrics;
 		}
 
 		public virtual IEnumerable<SumMetric> GetSumMetrics()
@@ -40,19 +41,27 @@ namespace Relativity.Sync.Telemetry.Metrics
 				.Select(p => new SumMetric
 				{
 					Type = p.Value.Type,
-					Bucket = BucketNameFunc(p.Value),
+					Bucket = GetBucketName(p.Value),
 					Value = p.Key.GetValue(this),
 					WorkflowId = WorkflowId
 				})
 				.Where(m => m.Value != null);
 		}
 
-		protected virtual string BucketNameFunc(MetricAttribute attr) => attr.Name ?? Name;
+		protected virtual string GetBucketName(MetricAttribute attr) => attr.Name ?? Name;
 
-		private Dictionary<PropertyInfo, MetricAttribute> GetMetricProperties() => _metricCacheProperties ??
-			(_metricCacheProperties = GetType()
-				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-				.Where(p => p.GetMethod != null && p.GetCustomAttribute<APMIgnoreMetricAttribute>() == null)
-				.ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));
+		private object GetValue(PropertyInfo p)
+		{
+			return Nullable.GetUnderlyingType(p.PropertyType)?.IsEnum == true ? p.GetValue(this)?.ToString() : p.GetValue(this);
+		}
+
+		private Dictionary<PropertyInfo, MetricAttribute> GetMetricProperties()
+		{
+			return _metricCacheProperties ??
+				   (_metricCacheProperties = GetType()
+					   .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+					   .Where(p => p.GetMethod != null)
+					   .ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));
+		}
 	}
 }

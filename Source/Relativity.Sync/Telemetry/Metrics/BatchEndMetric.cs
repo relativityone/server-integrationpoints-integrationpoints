@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class BatchEndMetric : MetricBase<BatchEndMetric>
+	internal class BatchEndMetric<T> : MetricBase<T> where T : IMetric, new()
 	{
 		public long? TotalRecordsRequested { get; set; }
 		
