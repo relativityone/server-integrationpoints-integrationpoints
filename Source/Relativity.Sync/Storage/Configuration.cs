@@ -83,36 +83,17 @@ namespace Relativity.Sync.Storage
 			_logger.LogVerbose("Reading Sync Configuration {artifactId}.", _syncConfigurationArtifactId);
 			_configurationTypeInfo = _rdoGuidProvider.GetValue<SyncConfigurationRdo>();
 
-			
+
 			_configuration = await _rdoManager
 				.GetAsync<SyncConfigurationRdo>(_workspaceArtifactId, _syncConfigurationArtifactId)
 				.ConfigureAwait(false);
 
 			if (_configuration == null)
 			{
-				_logger.LogError("Configuration with Id {artifactId} does not exist in workspace {workspaceId}", _syncConfigurationArtifactId, _workspaceArtifactId);
+				_logger.LogError("Configuration with Id {artifactId} does not exist in workspace {workspaceId}",
+					_syncConfigurationArtifactId, _workspaceArtifactId);
 				throw new SyncException(
 					$"Configuration with Id {_syncConfigurationArtifactId} does not exist in workspace {_workspaceArtifactId}");
-			}
-		}
-
-		private async Task<string> ReadLongTextFieldAsync(IObjectManager objectManager, Guid longTextFieldGuid)
-		{
-			var exportObject = new RelativityObjectRef
-			{
-				Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid),
-				ArtifactID = _syncConfigurationArtifactId
-			};
-			var fieldRef = new FieldRef
-			{
-				Guid = longTextFieldGuid
-			};
-			using (IKeplerStream longTextResult = await objectManager.StreamLongTextAsync(_workspaceArtifactId, exportObject, fieldRef).ConfigureAwait(false))
-			using (Stream longTextStream = await longTextResult.GetStreamAsync().ConfigureAwait(false))
-			using (var streamReader = new StreamReader(longTextStream, Encoding.Unicode))
-			{
-				string longTextField = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-				return longTextField;
 			}
 		}
 
