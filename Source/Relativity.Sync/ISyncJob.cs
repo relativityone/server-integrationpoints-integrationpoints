@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync
@@ -10,16 +9,16 @@ namespace Relativity.Sync
 	public interface ISyncJob
 	{
 		/// <summary>
-		///     Executes job
+		/// Executes job
 		/// </summary>
 		/// <param name="token">Cancellation token</param>
-		Task ExecuteAsync(CancellationToken token);
+		Task ExecuteAsync(CompositeCancellationToken token);
 
 		/// <summary>
-		///     Executes job
+		/// Executes job
 		/// </summary>
 		/// <param name="progress">The progress object</param>
 		/// <param name="token">Cancellation token</param>
-		Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token);
+		Task ExecuteAsync(IProgress<SyncJobState> progress, CompositeCancellationToken token);
 	}
 }

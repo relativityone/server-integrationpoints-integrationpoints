@@ -25,7 +25,7 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public async Task ExecuteAsync(CancellationToken token)
+		public async Task ExecuteAsync(CompositeCancellationToken token)
 		{
 			using (ILifetimeScope scope = BeginLifetimeScope())
 			{
@@ -34,7 +34,7 @@ namespace Relativity.Sync
 			}
 		}
 
-		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
+		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CompositeCancellationToken token)
 		{
 			using (ILifetimeScope scope = BeginLifetimeScope())
 			{

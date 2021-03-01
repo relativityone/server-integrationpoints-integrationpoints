@@ -26,9 +26,9 @@ namespace Relativity.Sync
 			return MeasureExecutionTimeAsync(() => _innerCommand.CanExecuteAsync(token), token);
 		}
 
-		public Task<ExecutionResult> ExecuteAsync(CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(CompositeCancellationToken token)
 		{
-			return MeasureExecutionTimeAsync(() => _innerCommand.ExecuteAsync(token), token);
+			return MeasureExecutionTimeAsync(() => _innerCommand.ExecuteAsync(token), token.StopCancellationToken);
 		}
 
 		private async Task<TResult> MeasureExecutionTimeAsync<TResult>(Func<Task<TResult>> action, CancellationToken token)

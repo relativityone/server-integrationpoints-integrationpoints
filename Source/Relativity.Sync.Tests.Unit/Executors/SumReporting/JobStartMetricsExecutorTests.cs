@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public async Task ExecuteAsyncReportsMetricAndCompletesSuccessfullyTest()
 		{
 			// Act
-			ExecutionResult actualResult = await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult actualResult = await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_sumReporterConfigurationFake.Setup(x => x.JobHistoryToRetryId).Returns(It.IsAny<int>());
 
 			// Act
-			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.RetryType == TelemetryConstants.PROVIDER_NAME)));
@@ -125,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
 
 			// Act
-			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.FlowType == flowType)));
@@ -135,7 +135,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
 		{
 			// Act
-			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			_syncLoggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()));
@@ -151,7 +151,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				.ThrowsAsync(new Exception());
 
 			// Act
-			Func<Task> action = () => _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None);
+			Func<Task> action = () => _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None);
 
 			// Assert
 			action.Should().NotThrow();
@@ -161,7 +161,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public async Task ExecuteAsync_Should_NotCallObjectManager_IfThereIsNoLongTextField()
 		{
 			// Act
-			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			_objectManagerMock.Invocations.Count.Should().Be(0);
@@ -175,7 +175,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				.ThrowsAsync(new Exception());
 
 			// Act
-			Func<Task> action = () => _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None);
+			Func<Task> action = () => _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None);
 
 			// Assert
 			action.Should().NotThrow();
@@ -188,7 +188,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			SetupFieldMapping(mapping);
 
 			// Act
-			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_sumReporterConfigurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Func<Dictionary<string, object>, bool> verify = actual =>

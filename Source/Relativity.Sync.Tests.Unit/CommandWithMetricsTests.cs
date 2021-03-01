@@ -45,10 +45,10 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldCallExecuteInnerCommand()
 		{
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _command.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_innerCommand.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Once);
+			_innerCommand.Verify(x => x.ExecuteAsync(CompositeCancellationToken.None), Times.Once);
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit
 			const string expectedName = nameof(IConfiguration);
 
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _command.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			VerifySentMetric(m => m.Name == expectedName);
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldReportCompletedStatus()
 		{
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _command.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Completed);
@@ -76,10 +76,10 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldReportFailedStatus()
 		{
-			_innerCommand.Setup(x => x.ExecuteAsync(CancellationToken.None)).Throws<Exception>();
+			_innerCommand.Setup(x => x.ExecuteAsync(CompositeCancellationToken.None)).Throws<Exception>();
 
 			// ACT
-			Func<Task> action = async () => await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _command.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<Exception>();
@@ -91,11 +91,12 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldReportCanceledStatusWhenExecutionCanceledByThrowingException()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			_innerCommand.Setup(x => x.ExecuteAsync(tokenSource.Token)).Throws<OperationCanceledException>();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			_innerCommand.Setup(x => x.ExecuteAsync(compositeCancellationToken)).Throws<OperationCanceledException>();
 
 			// ACT
 			tokenSource.Cancel();
-			Func<Task> action = async () => await _command.ExecuteAsync(tokenSource.Token).ConfigureAwait(false);
+			Func<Task> action = () => _command.ExecuteAsync(compositeCancellationToken);
 
 			// ASSERT
 			action.Should().Throw<OperationCanceledException>();
@@ -108,10 +109,11 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldReportCanceledStatusWhenExecutionCanceledGracefuly()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
 
 			// ACT
 			tokenSource.Cancel();
-			await _command.ExecuteAsync(tokenSource.Token).ConfigureAwait(false);
+			await _command.ExecuteAsync(compositeCancellationToken).ConfigureAwait(false);
 
 			// ASSERT
 			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Canceled);
@@ -125,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit
 			_stopwatch.Setup(x => x.Elapsed).Returns(executionTime);
 
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _command.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			VerifySentMetric(m =>

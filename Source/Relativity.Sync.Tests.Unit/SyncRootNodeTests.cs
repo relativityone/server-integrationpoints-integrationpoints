@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncRootNode _sut;
 
 		private SyncExecutionContext _syncExecutionContext;
-		private CancellationToken _token;
+		private CompositeCancellationToken _token;
 		
 		private Mock<ICommand<IJobStatusConsolidationConfiguration>> _jobStatusConsolidationCommandFake;
 		private Mock<ICommand<INotificationConfiguration>> _notificationCommandFake;
@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_token = CancellationToken.None;
+			_token = CompositeCancellationToken.None;
 		}
 
 		[SetUp]
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit
 			int commandExecutionOrder = 0;
 			_childNodeFake.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Callback(() => nodeExecutionOrder = index++);
 
-			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
+			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token.StopCancellationToken)).ReturnsAsync(true);
 			_notificationCommandFake.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success()).Callback(() => commandExecutionOrder = index++);
 
 			// ACT
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ExecuteAsync_ShouldSendNotifications_WhenExecutionFailed()
 		{
 			// ARRANGE
-			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
+			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token.StopCancellationToken)).ReturnsAsync(true);
 			_notificationCommandFake.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success());
 			_childNodeFake.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Throws<InvalidOperationException>();
 
@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ExecuteAsync_ShouldNotSendNotifications_WhenNotificationIsDisabled()
 		{
 			// ARRANGE
-			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(false);
+			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token.StopCancellationToken)).ReturnsAsync(false);
 
 			// ACT
 			await _sut.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);

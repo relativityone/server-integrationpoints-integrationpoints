@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			// Act
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			long nativesSize = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
 
 			// Assert
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_nativeFileRepository.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<ICollection<int>>())).ReturnsAsync(Enumerable.Empty<INativeFile>());
 
 			// ACT
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -132,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).Throws<InvalidOperationException>();
 
 			// ACT
-			ExecutionResult executionResult = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);
@@ -154,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			// ACT
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertNotIncludingFolderPathSourceField(qr, folderPathSourceFieldName)), 1));
@@ -190,7 +190,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
 
 			// ACT
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertFieldMapping(qr, field1Id, field2Id)), 1));
@@ -205,7 +205,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration.SetupProperty(x => x.ImportOverwriteMode, previousOverrideMode);
 
 			// Act
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			_configuration.Object.ImportOverwriteMode.Should().Be(ImportOverwriteMode.AppendOverlay);

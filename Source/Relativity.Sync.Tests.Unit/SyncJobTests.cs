@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit
 			_pipeline.ResultStatus = nonErrorStatus;
 
 			// ACT
-			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.Pass();
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit
 			_pipeline.ResultStatus = NodeResultStatus.Failed;
 
 			// ACT
-			Func<Task> action = () => _instance.ExecuteAsync(CancellationToken.None);
+			Func<Task> action = () => _instance.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
-			Func<Task> action = () => instance.ExecuteAsync(CancellationToken.None);
+			Func<Task> action = () => instance.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<OperationCanceledException>();
@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
-			Func<Task> action = () => instance.ExecuteAsync(CancellationToken.None);
+			Func<Task> action = () => instance.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
-			Func<Task> action = () => instance.ExecuteAsync(CancellationToken.None);
+			Func<Task> action = () => instance.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
@@ -114,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, syncProgressMock.Object, new EmptyLogger());
 
 			// ACT
-			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			syncProgressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, syncProgressMock.Object, new EmptyLogger());
 
 			// ACT
-			await _instance.ExecuteAsync(customProgressMock.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(customProgressMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			syncProgressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Tests.Unit
 			_instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 
 			// ACT
-			await _instance.ExecuteAsync(progressMock.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(progressMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			progressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));

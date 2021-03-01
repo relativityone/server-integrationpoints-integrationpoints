@@ -21,11 +21,11 @@ namespace Relativity.Sync.Executors.Validation
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IValidationConfiguration configuration, CompositeCancellationToken token)
 		{
 			try
 			{
-				ValidationResult validationResult = await ValidateAllAsync(configuration, token).ConfigureAwait(false);
+				ValidationResult validationResult = await ValidateAllAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 				LogValidationErrors(validationResult);
 
 				if (!validationResult.IsValid)

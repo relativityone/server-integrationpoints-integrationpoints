@@ -8,6 +8,6 @@ namespace Relativity.Sync
 	{
 		Task<bool> CanExecuteAsync(CancellationToken token);
 
-		Task<ExecutionResult> ExecuteAsync(CancellationToken token);
+		Task<ExecutionResult> ExecuteAsync(CompositeCancellationToken token);
 	}
 }

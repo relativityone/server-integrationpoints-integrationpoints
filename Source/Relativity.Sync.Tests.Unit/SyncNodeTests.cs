@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_syncJobProgress = new SyncJobProgressStub();
-			_executionContext = new SyncExecutionContext(_syncJobProgress, CancellationToken.None);
+			_executionContext = new SyncExecutionContext(_syncJobProgress, CompositeCancellationToken.None);
 
 			_command = new Mock<ICommand<IConfiguration>>();
 
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
 
 			// ASSERT
-			_command.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Once);
+			_command.Verify(x => x.ExecuteAsync(CompositeCancellationToken.None), Times.Once);
 		}
 
 		[Test]
@@ -55,14 +55,14 @@ namespace Relativity.Sync.Tests.Unit
 			await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
 
 			// ASSERT
-			_command.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Never);
+			_command.Verify(x => x.ExecuteAsync(CompositeCancellationToken.None), Times.Never);
 		}
 
 		[Test]
 		public async Task ItShouldReturnFailedResultOnException()
 		{
 			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
-			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).Throws<InvalidOperationException>();
+			_command.Setup(x => x.ExecuteAsync(CompositeCancellationToken.None)).Throws<InvalidOperationException>();
 
 			// ACT
 			NodeResult result = await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
@@ -102,7 +102,8 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldCancelPipeline()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			SyncExecutionContext context = new SyncExecutionContext(_syncJobProgress, tokenSource.Token);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			SyncExecutionContext context = new SyncExecutionContext(_syncJobProgress, compositeCancellationToken);
 			tokenSource.Cancel();
 			
 			// ACT
@@ -110,7 +111,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_command.Verify(x => x.CanExecuteAsync(It.IsAny<CancellationToken>()), Times.Never);
-			_command.Verify(x => x.ExecuteAsync(It.IsAny<CancellationToken>()), Times.Never);
+			_command.Verify(x => x.ExecuteAsync(It.IsAny<CompositeCancellationToken>()), Times.Never);
 		}
 
 		[TestCase(ExecutionStatus.Canceled, NodeResultStatus.Succeeded)]
@@ -121,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldConvertExecutionResult(ExecutionStatus resultStatus, NodeResultStatus expectedStatus)
 		{
 			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).ReturnsAsync(true);
-			_command.Setup(x => x.ExecuteAsync(CancellationToken.None)).ReturnsAsync(new ExecutionResult(resultStatus, null, null));
+			_command.Setup(x => x.ExecuteAsync(CompositeCancellationToken.None)).ReturnsAsync(new ExecutionResult(resultStatus, null, null));
 
 			// ACT
 			NodeResult result = await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
@@ -136,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit
 			_command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).Throws<InvalidOperationException>();
 			
 			// ACT
-			Func<Task> action = async () => await _instance.ExecuteAsync(_executionContext).ConfigureAwait(false);
+			Func<Task> action = () => _instance.ExecuteAsync(_executionContext);
 
 			// ASSERT
 			action.Should().Throw<InvalidOperationException>();

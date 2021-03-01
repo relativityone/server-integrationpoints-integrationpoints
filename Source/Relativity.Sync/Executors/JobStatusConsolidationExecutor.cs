@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CompositeCancellationToken token)
 		{
 			UpdateResult updateResult;
 			try

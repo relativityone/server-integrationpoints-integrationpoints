@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				request.Name == _SOURCE_WORKSPACE_OBJECT_TYPE_NAME))).ReturnsAsync(sourceCaseObjectTypeArtifactId);
 			
 			// act
-			ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CancellationToken.None)
+			ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// assert
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldCreateFields()
 		{           
 			// act
-			ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CancellationToken.None)
+			ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// assert

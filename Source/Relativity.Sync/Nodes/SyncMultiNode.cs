@@ -18,7 +18,7 @@ namespace Relativity.Sync.Nodes
 
 		protected override Task<NodeResultStatus> ExecuteChildrenAsync(IExecutionContext<SyncExecutionContext> context)
 		{
-			_childrenExecutionContext = _contextFactory.Create(context.Subject.Progress, context.Subject.CancellationToken);
+			_childrenExecutionContext = _contextFactory.Create(context.Subject.Progress, context.Subject.CompositeCancellationToken);
 			return base.ExecuteChildrenAsync(_childrenExecutionContext);
 		}
 
