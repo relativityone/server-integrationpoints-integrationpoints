@@ -14,7 +14,7 @@ namespace Relativity.Sync.Storage
     {
         private readonly IConfiguration _cache;
         private readonly IFieldMappings _fieldMappings;
-
+        private readonly Lazy<string> _jobNameLazy;
 
         public int SourceWorkspaceArtifactId { get; }
 
@@ -60,8 +60,6 @@ namespace Relativity.Sync.Storage
                 }
             });
         }
-
-        private readonly Lazy<string> _jobNameLazy;
 
         public string GetJobName() => _jobNameLazy.Value;
 

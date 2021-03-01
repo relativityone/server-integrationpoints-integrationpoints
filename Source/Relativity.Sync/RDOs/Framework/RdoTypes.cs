@@ -18,7 +18,7 @@ namespace Relativity.Sync.RDOs.Framework
         public Guid Guid { get; set; }
         public RdoFieldType Type { get; set; }
         public bool IsRequired { get; set; }
-        public int TextLenght { get; set; }
+        public int TextLength { get; set; }
         public PropertyInfo PropertyInfo { get; set; }
     }
 
