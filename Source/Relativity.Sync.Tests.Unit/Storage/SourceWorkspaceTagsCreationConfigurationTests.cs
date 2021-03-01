@@ -10,7 +10,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	using RdoExpression = Expression<Func<SyncConfigurationRdo, object>>;
+	using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
 
 	[TestFixture]
 	internal sealed class SourceWorkspaceTagsCreationConfigurationTests : ConfigurationTestBase
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetDestinationWorkspaceTagArtifactIdAsync(artifactId).ConfigureAwait(false);
 
 			// assert
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.DestinationWorkspaceTagArtifactId))), artifactId));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.DestinationWorkspaceTagArtifactId))), artifactId));
 			_config.IsDestinationWorkspaceTagArtifactIdSet.Should().BeTrue();
 		}
 

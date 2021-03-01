@@ -13,7 +13,8 @@ using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	using RdoExpression = Expression<Func<SyncConfigurationRdo, object>>;
+	using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
+	using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
 
 	internal sealed class ImageDataSourceSnapshotConfigurationTests : ConfigurationTestBase
 	{
@@ -74,8 +75,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))), snapshotId.ToString()));
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotRecordsCount))), totalRecordsCount));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionString>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))), snapshotId.ToString()));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotRecordsCount))), totalRecordsCount));
 		}
 
 		[Test]

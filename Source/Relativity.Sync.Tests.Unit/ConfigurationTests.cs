@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -50,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncConfigurationRdo = new SyncConfigurationRdo();
 			_rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(_syncConfigurationRdo);
-			
+		
 			_sut = await Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoGuidProvider, _rdoManagerMock.Object).ConfigureAwait(false);
 		}
 
@@ -91,6 +92,14 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			// ARRANGE
 			const int newValue = 200;
+			
+			_rdoManagerMock.Setup(x => x.SetValueAsync(_TEST_WORKSPACE_ID, _syncConfigurationRdo,
+					It.IsAny<Expression<Func<SyncConfigurationRdo, int>>>(), It.IsAny<int>()))
+				.Callback((int ws, SyncConfigurationRdo rdo, Expression<Func<SyncConfigurationRdo, int>> expression,
+					int value) =>
+				{
+					rdo.JobHistoryId = value;
+				});
 
 			// ACT
 			await _sut.UpdateFieldValueAsync(x => x.JobHistoryId, newValue).ConfigureAwait(false);
@@ -98,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			_syncConfigurationRdo.JobHistoryId.Should().Be(newValue);
 			
-			_rdoManagerMock.Verify(x=> x.SetValuesAsync(_TEST_WORKSPACE_ID, It.Is<SyncConfigurationRdo>(r => r.JobHistoryId == newValue), r => r.JobHistoryId));
+			_rdoManagerMock.Verify(x=> x.SetValueAsync(_TEST_WORKSPACE_ID, It.IsAny<SyncConfigurationRdo>(), r => r.JobHistoryId, newValue));
 		}
 
 		[Test]
@@ -107,8 +116,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ARRANGE
 			const int newValue = 200;
 
-			_rdoManagerMock.Setup(x => x.SetValuesAsync(_TEST_WORKSPACE_ID,
-					It.Is<SyncConfigurationRdo>(c => c.JobHistoryId == newValue), r => r.JobHistoryId))
+			_rdoManagerMock.Setup(x => x.SetValueAsync(_TEST_WORKSPACE_ID, It.IsAny<SyncConfigurationRdo>(), r => r.JobHistoryId, newValue))
 				.ThrowsAsync(new InvalidOperationException());
 		
 			// ACT

@@ -52,25 +52,13 @@ namespace Relativity.Sync.Storage
 			}
 		}
 		
-		public async Task UpdateFieldValueAsync<T>(Expression<Func<SyncConfigurationRdo, object>> memberExpression, T value)
+		public async Task UpdateFieldValueAsync<T>(Expression<Func<SyncConfigurationRdo, T>> memberExpression, T value)
 		{
-			Guid guid = _rdoGuidProvider.GetGuidFromFieldExpression(memberExpression);
-
 			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
 			try
 			{
-				var requestRdo = new SyncConfigurationRdo
-				{
-					ArtifactId = _syncConfigurationArtifactId
-				};
-
-				PropertyInfo propertyInfo = _configurationTypeInfo.Fields[guid].PropertyInfo;
-				propertyInfo.SetValue(requestRdo, value);
-
-				await _rdoManager.SetValuesAsync(_workspaceArtifactId, requestRdo, memberExpression)
+				await _rdoManager.SetValueAsync(_workspaceArtifactId, _configuration, memberExpression, value)
 					.ConfigureAwait(false);
-				
-				propertyInfo.SetValue(_configuration, value);
 			}
 			finally
 			{

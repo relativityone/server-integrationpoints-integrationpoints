@@ -13,7 +13,10 @@ namespace Relativity.Sync.RDOs.Framework
 
         Task CreateAsync<TRdo>(int workspaceId, TRdo rdo, int? parentObjectId = null) where TRdo : IRdoType;
 
-        Task SetValuesAsync<TRdo>(int workspaceId, TRdo rdo, params Expression<Func<TRdo, object>>[] fields)
+        Task SetValuesAsync<TRdo>(int workspaceId, TRdo rdo)
             where TRdo : IRdoType;
+
+        Task SetValueAsync<TRdo, TValue>(int workspaceId, TRdo rdo, Expression<Func<TRdo, TValue>> expression,
+            TValue value) where TRdo : IRdoType;
     }
 }

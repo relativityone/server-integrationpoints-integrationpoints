@@ -229,7 +229,7 @@ namespace Relativity.Sync.Tests.System.RDOs
         }
         
         [IdentifiedTest("FEE486E9-C37C-437F-811D-DC9D81CF300C")]
-        public async Task SetValuesAsync_ShouldUpdateOnlySpecifiedValues()
+        public async Task SetValuesAsync_ShouldUpdateOnlySpecifiedValue()
         {
             // Arrange
             var workspace = await Environment.CreateWorkspaceAsync();
@@ -244,12 +244,12 @@ namespace Relativity.Sync.Tests.System.RDOs
             };
             var artifactId = await CreateSampleRdoObject(workspace.ArtifactID, sampleRdo).ConfigureAwait(false);
 
-            sampleRdo.SomeField = 1;
+            const int someFieldNewValue = 1;
             sampleRdo.OptionalTextField = "Adler Sieben";
             sampleRdo.ArtifactId = artifactId;
 
             // Act
-            await _sut.SetValuesAsync(workspace.ArtifactID, sampleRdo, x => x.SomeField).ConfigureAwait(false);
+            await _sut.SetValueAsync(workspace.ArtifactID, sampleRdo, x => x.SomeField, someFieldNewValue).ConfigureAwait(false);
 
             using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
             {
@@ -266,11 +266,12 @@ namespace Relativity.Sync.Tests.System.RDOs
                     }
                 }, 0, 1);
 
-                var createdObject = result.Objects.First();
+                var queriedObject = result.Objects.First();
 
-                createdObject.ArtifactID.Should().Be(sampleRdo.ArtifactId);
-                createdObject.Values[0].Should().Be(sampleRdo.SomeField);
-                createdObject.Values[1].Should().Be(originalText);
+                sampleRdo.SomeField.Should().Be(someFieldNewValue);
+                queriedObject.ArtifactID.Should().Be(sampleRdo.ArtifactId);
+                queriedObject.Values[0].Should().Be(someFieldNewValue);
+                queriedObject.Values[1].Should().Be(originalText);
             }
         }
 

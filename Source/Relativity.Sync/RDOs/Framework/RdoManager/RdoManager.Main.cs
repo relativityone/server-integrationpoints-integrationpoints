@@ -63,18 +63,10 @@ namespace Relativity.Sync.RDOs.Framework
                 typeInfo.TypeGuid, rdo.ArtifactId, workspaceId);
         }
 
-        public async Task SetValuesAsync<TRdo>(int workspaceId, TRdo rdo,
-            params Expression<Func<TRdo, object>>[] fields)
+        public async Task SetValuesAsync<TRdo>(int workspaceId, TRdo rdo)
             where TRdo : IRdoType
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
-
-            HashSet<Guid> explicitlyRequestedFieldsGuids = GetFieldsGuidsFromExpressions(fields);
-
-            RdoFieldInfo[] fieldsToUpdate = (explicitlyRequestedFieldsGuids.Any()
-                    ? explicitlyRequestedFieldsGuids.Select(g => typeInfo.Fields[g])
-                    : typeInfo.Fields.Values)
-                .ToArray();
 
             UpdateRequest request = new UpdateRequest()
             {
@@ -82,18 +74,43 @@ namespace Relativity.Sync.RDOs.Framework
                 {
                     ArtifactID = rdo.ArtifactId
                 },
-                FieldValues = GetFieldRefValuePairsForSettingValues(rdo, fieldsToUpdate)
+                FieldValues = GetFieldRefValuePairsForSettingValues(rdo, typeInfo.Fields.Values.ToArray())
             };
 
             using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
             {
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
                 _logger.LogDebug("Set {valuesCount} fields on object {artifactId} in workspace {workspaceId}",
-                    fieldsToUpdate.Length, rdo.ArtifactId, workspaceId);
+                    typeInfo.Fields.Count, rdo.ArtifactId, workspaceId);
             }
         }
 
-        public async Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId,
+        public async Task SetValueAsync<TRdo, TValue>(int workspaceId, TRdo rdo, Expression<Func<TRdo, TValue>> expression, TValue value) where TRdo : IRdoType
+        {
+            RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
+            Guid fieldGuid = _rdoGuidProvider.GetGuidFromFieldExpression(expression);
+            RdoFieldInfo fieldInfo = typeInfo.Fields[fieldGuid];
+
+            UpdateRequest request = new UpdateRequest()
+            {
+                Object = new RelativityObjectRef()
+                {
+                    ArtifactID = rdo.ArtifactId
+                },
+                FieldValues = GetFieldRefValuePairsForSettingValue(fieldGuid, value)
+            };
+            
+            using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            {
+                await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
+                fieldInfo.PropertyInfo.SetValue(rdo, value);
+                
+                _logger.LogDebug("Set field {field} on object {artifactId} in workspace {workspaceId}",
+                    fieldGuid, rdo.ArtifactId, workspaceId);
+            }
+        }
+
+       public async Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId,
             params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType, new()
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
@@ -232,6 +249,20 @@ namespace Relativity.Sync.RDOs.Framework
                    text.EndsWith(longTextTruncateMark, StringComparison.InvariantCulture);
         }
 
+        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValue(Guid fieldGuid, object value)
+        {
+            return new[]
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef
+                    {
+                        Guid = fieldGuid
+                    },
+                    Value = value
+                }
+            };
+        }
 
         private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValues<TRdo>(TRdo rdo,
             RdoFieldInfo[] fields)

@@ -296,8 +296,8 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             await _sut.SetValuesAsync(WorkspaceId, rdo).ConfigureAwait(false);
 
             // Assert
-            VerifyFieldWasUpdated(nameof(SampleRdo.SomeField), rdo.SomeField);
-            VerifyFieldWasUpdated(nameof(SampleRdo.OptionalTextField), rdo.OptionalTextField);
+            VerifyFieldWasUpdated(rdo, nameof(SampleRdo.SomeField), rdo.SomeField);
+            VerifyFieldWasUpdated(rdo, nameof(SampleRdo.OptionalTextField), rdo.OptionalTextField);
         }
 
         [Test]
@@ -312,10 +312,11 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             };
 
             // Act
-            await _sut.SetValuesAsync(WorkspaceId, rdo, x => x.SomeField).ConfigureAwait(false);
+            const int newValue = 5;
+            await _sut.SetValueAsync(WorkspaceId, rdo, x => x.SomeField, newValue).ConfigureAwait(false);
 
             // Assert
-            VerifyFieldWasUpdated(nameof(SampleRdo.SomeField), rdo.SomeField);
+            VerifyFieldWasUpdated(rdo, nameof(SampleRdo.SomeField), newValue);
             VerifyFieldWasNotUpdated(nameof(SampleRdo.OptionalTextField));
         }
 
@@ -453,7 +454,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 It.Is<QueryRequest>(q => q.Fields.Any(f => f.Guid == fieldInfo.Guid)), 0, 1), times);
         }
 
-        private void VerifyFieldWasUpdated(string fieldName, object value)
+        private void VerifyFieldWasUpdated(SampleRdo rdo, string fieldName, object value)
         {
             var fieldInfo = SampleRdo.ExpectedRdoInfo.Fields.Values.First(x => x.Name == fieldName);
 
@@ -461,6 +462,8 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                     It.Is<UpdateRequest>(
                         q => q.FieldValues.Any(f => f.Field.Guid == fieldInfo.Guid && f.Value.Equals(value)))),
                 Times.Once);
+
+            fieldInfo.PropertyInfo.GetValue(rdo).Should().Be(value);
         }
 
         private void VerifyFieldWasNotUpdated(string fieldName)

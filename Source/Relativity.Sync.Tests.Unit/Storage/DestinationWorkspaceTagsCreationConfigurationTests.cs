@@ -10,7 +10,8 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	using RdoExpression = Expression<Func<SyncConfigurationRdo, object>>;
+	using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
+	using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
 
 	
 	[TestFixture]
@@ -74,8 +75,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetSourceJobTagAsync(artifactId, name).ConfigureAwait(false);
 
 			// assert
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceJobTagArtifactId))), artifactId));
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceJobTagName))), name));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceJobTagArtifactId))), artifactId));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionString>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceJobTagName))), name));
 		}
 
 		[Test]
@@ -88,8 +89,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetSourceWorkspaceTagAsync(artifactId, name).ConfigureAwait(false);
 
 			// assert
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceWorkspaceTagArtifactId))), artifactId));
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpression>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceWorkspaceTagName))), name));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceWorkspaceTagArtifactId))), artifactId));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionString>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SourceWorkspaceTagName))), name));
 		}
 	}
 }
