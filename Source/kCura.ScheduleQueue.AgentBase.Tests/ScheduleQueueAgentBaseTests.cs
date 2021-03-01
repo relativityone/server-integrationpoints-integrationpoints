@@ -5,6 +5,7 @@ using System.Reflection;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
@@ -18,6 +19,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 	{
 		private Mock<IJobService> _jobServiceMock;
 		private Mock<IQueueJobValidator> _queueJobValidatorFake;
+		private Mock<IQueryManager> _queryManager;
 
 		[Test]
 		public void Execute_ShouldProcessJobInQueue()
@@ -145,8 +147,10 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			_queueJobValidatorFake.Setup(x => x.ValidateAsync(It.IsAny<Job>()))
 				.ReturnsAsync(ValidationResult.Success);
 
+			_queryManager = new Mock<IQueryManager>();
+
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
-				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, emptyLog.Object)
+				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, emptyLog.Object)
 			{
 				JobResult = jobStatus
 			};
@@ -172,8 +176,9 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private class TestAgent : ScheduleQueueAgentBase
 		{
 			public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
-				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, IAPILog log = null) 
-				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, log)
+				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
+				IQueryManager queryManager = null, IAPILog log = null) 
+				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, log)
 			{
 				//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
 				typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)

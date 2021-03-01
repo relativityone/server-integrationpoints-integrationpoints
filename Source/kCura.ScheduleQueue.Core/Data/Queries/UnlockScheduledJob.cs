@@ -1,25 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using kCura.ScheduleQueue.Core.Data.Interfaces;
 using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class UnlockScheduledJob
+	public class UnlockScheduledJob : ICommand
 	{
-		private readonly IQueueDBContext qDBContext = null;
-		public UnlockScheduledJob(IQueueDBContext qDBContext)
+		private readonly IQueueDBContext _dbContext;
+
+		private readonly int _agentId;
+
+		public UnlockScheduledJob(IQueueDBContext dbContext, int agentId)
 		{
-			this.qDBContext = qDBContext;
+			_dbContext = dbContext;
+
+			_agentId = agentId;
 		}
 
-		public void Execute(int agentID)
+		public void Execute()
 		{
-			string sql = string.Format(Resources.UnlockScheduledJob, qDBContext.TableName);
+			string sql = string.Format(Resources.UnlockScheduledJob, _dbContext.TableName);
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
-			sqlParams.Add(new SqlParameter("@AgentID", agentID));
+			sqlParams.Add(new SqlParameter("@AgentID", _agentId));
 
-			qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
+			_dbContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
 		}
 	}
 }

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using kCura.ScheduleQueue.Core.Data.Interfaces;
 using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class CleanupJobQueueTable
+	public class CleanupJobQueueTable : ICommand
 	{
 		private const string _RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 

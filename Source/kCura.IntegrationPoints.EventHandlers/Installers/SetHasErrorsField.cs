@@ -92,7 +92,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IChoiceQuery choiceQuery = new ChoiceQuery(Helper.GetServicesManager());
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, Helper);
+			IQueryManager queryManager = new QueryManager(Helper, agentService);
+			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 			IJobService jobService = new JobService(agentService, jobServiceDataProvider, Helper);
 			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);

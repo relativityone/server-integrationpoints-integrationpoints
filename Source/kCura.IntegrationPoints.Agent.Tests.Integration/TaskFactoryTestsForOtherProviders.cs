@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				CreateJobHistoryOnIntegrationPoint(model.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
-				using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+				using (DataTable dataTable = new CreateScheduledJob(_queueContext,
 					workspaceID: WorkspaceArtifactId,
 					relatedObjectArtifactID: model.ArtifactID,
 					taskType: "SyncManager",
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					jobFlags: 0,
 					SubmittedBy: 777,
 					rootJobID: 1,
-					parentJobID: 1))
+					parentJobID: 1).Execute())
 				{
 					job1 = new Job(dataTable.Rows[0]);
 				}
@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				Guid batchInstance = Guid.NewGuid();
 				string jobDetails = $@"{{""BatchInstance"":""{batchInstance}"",""BatchParameters"":null}}";
 				CreateJobHistoryOnIntegrationPoint(model.ArtifactID, batchInstance, JobTypeChoices.JobHistoryRun);
-				using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+				using (DataTable dataTable = new CreateScheduledJob(_queueContext,
 					workspaceID: WorkspaceArtifactId,
 					relatedObjectArtifactID: model.ArtifactID,
 					taskType: "SyncManager",
@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					jobFlags: 0,
 					SubmittedBy: 777,
 					rootJobID: 1,
-					parentJobID: 1))
+					parentJobID: 1).Execute())
 				{
 					job1 = new Job(dataTable.Rows[0]);
 				}

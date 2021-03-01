@@ -34,7 +34,9 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			Context baseContext = new Context(SharedVariables.EddsConnectionString);
 			IDBContext dBContext = DBContextMockBuilder.Build(baseContext);
 			_helper.GetDBContext(-1).Returns(dBContext);
-			_jobServiceDataProvider = new JobServiceDataProvider(_agentService, _helper);
+
+			var queryManager = new QueryManager(_helper, _agentService);
+			_jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 			_instance = new JobService(_agentService, _jobServiceDataProvider, _helper);
 		}
 
