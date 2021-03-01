@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -53,6 +54,14 @@ namespace Relativity.Sync.Tests.Integration
 
 			rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new SyncConfigurationRdo());
+			
+			rdoManagerMock.Setup(x => x.SetValueAsync(It.IsAny<int>(), It.IsAny<SyncConfigurationRdo>(),
+					It.IsAny<Expression<Func<SyncConfigurationRdo, int>>>(), It.IsAny<int>()))
+				.Callback((int ws, SyncConfigurationRdo rdo, Expression<Func<SyncConfigurationRdo, int>> expression,
+					int value) =>
+				{
+					rdo.JobHistoryId = value;
+				});
 			
 			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoGuidProvider, rdoManagerMock.Object).ConfigureAwait(false);
 
