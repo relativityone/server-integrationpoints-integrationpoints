@@ -63,8 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ImportOverwriteMode_ShouldReturnProperValue(string valueInConfiguration, ImportOverwriteMode expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.ImportOverwriteMode = valueInConfiguration;
 
 			// Act
 			var importOverwriteMode = _sut.ImportOverwriteMode;
@@ -78,8 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DataSourceType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DataSourceTypeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.DataSourceType = valueInConfiguration;
 
 			// Act
 			var dataSourceType = _sut.DataSourceType;
@@ -93,8 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DataDestinationTypeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.DataDestinationType = valueInConfiguration;
 
 			// Act
 			var destinationType = _sut.DestinationType;
@@ -109,8 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ImportNativeFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportNativeFileCopyMode expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.NativesBehaviorGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.NativesBehavior = valueInConfiguration;
 
 			// Act
 			var nativeFileCopyMode = _sut.ImportNativeFileCopyMode;
@@ -124,8 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ImportImageFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportImageFileCopyMode expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.ImageFileCopyMode = valueInConfiguration;
 
 			// Act
 			var imageFileCopyMode = _sut.ImportImageFileCopyMode;

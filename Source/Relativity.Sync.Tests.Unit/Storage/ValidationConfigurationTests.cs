@@ -125,7 +125,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_syncServiceManagerMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
 				.Returns(objectManagerMock.Object);
 			
-			
 			SetupJobName(objectManagerMock, jobName);
 			
 			_sut.GetJobName().Should().Be(jobName);

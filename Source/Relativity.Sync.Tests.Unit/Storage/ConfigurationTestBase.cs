@@ -7,6 +7,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -22,6 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         protected void BaseSetup()
         {
             _configurationRdo = new SyncConfigurationRdo();
+            _configurationRdo.JobHistoryType = DefaultGuids.JobHistory.TypeGuid;
 
             _configuration = new Mock<IConfiguration>();
 
@@ -57,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                 It.Is<QueryRequest>(q =>
                     q.IncludeNameInQueryResult == true &&
-                    q.Condition == $"'ArtifactId' == `{_configurationRdo.JobHistoryId}`"), 0, 1)).ReturnsAsync(
+                    q.Condition == $"'ArtifactId' == {_configurationRdo.JobHistoryId}"), 0, 1)).ReturnsAsync(
                 new QueryResult
                 {
                     Objects = new List<RelativityObject>
