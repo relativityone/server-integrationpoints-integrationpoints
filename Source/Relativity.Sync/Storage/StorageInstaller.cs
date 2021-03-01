@@ -47,13 +47,12 @@ namespace Relativity.Sync.Storage
 
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)
 		{
-			ISourceServiceFactoryForAdmin serviceFactory = componentContext.Resolve<ISourceServiceFactoryForAdmin>();
 			SyncJobParameters syncJobParameters = componentContext.Resolve<SyncJobParameters>();
 			ISyncLog logger = componentContext.Resolve<ISyncLog>();
 			IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
 			IRdoGuidProvider rdoGuidProvider = componentContext.Resolve<IRdoGuidProvider>();
 			
-			return Configuration.GetAsync(serviceFactory, syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoGuidProvider, rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();
+			return Configuration.GetAsync(syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoGuidProvider, rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }

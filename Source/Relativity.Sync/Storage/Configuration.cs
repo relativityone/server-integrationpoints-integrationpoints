@@ -17,7 +17,6 @@ namespace Relativity.Sync.Storage
 {
 	internal sealed class Configuration : IConfiguration
 	{
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		private readonly IRdoGuidProvider _rdoGuidProvider;
 		private readonly IRdoManager _rdoManager;
 		private readonly int _workspaceArtifactId;
@@ -26,13 +25,11 @@ namespace Relativity.Sync.Storage
 
 		private readonly ISemaphoreSlim _semaphoreSlim;
 
-		private readonly Dictionary<Guid, object> _cache = new Dictionary<Guid, object>();
 		private SyncConfigurationRdo _configuration;
 		private RdoTypeInfo _configurationTypeInfo;
 
-		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, IRdoGuidProvider rdoGuidProvider, IRdoManager rdoManager, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
+		private Configuration(SyncJobParameters syncJobParameters, IRdoGuidProvider rdoGuidProvider, IRdoManager rdoManager, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
 		{
-			_serviceFactory = serviceFactory;
 			_rdoGuidProvider = rdoGuidProvider;
 			_rdoManager = rdoManager;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
@@ -119,11 +116,10 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public static async Task<IConfiguration> GetAsync(ISourceServiceFactoryForAdmin serviceFactory,
-			SyncJobParameters syncJobParameters, ISyncLog logger,
+		public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, ISyncLog logger,
 			ISemaphoreSlim semaphoreSlim, IRdoGuidProvider rdoGuidProvider, IRdoManager rdoManager)
 		{
-			Configuration configuration = new Configuration(serviceFactory, syncJobParameters,rdoGuidProvider, rdoManager, logger, semaphoreSlim);
+			Configuration configuration = new Configuration(syncJobParameters,rdoGuidProvider, rdoManager, logger, semaphoreSlim);
 			await configuration.ReadAsync().ConfigureAwait(false);
 			return configuration;
 		}

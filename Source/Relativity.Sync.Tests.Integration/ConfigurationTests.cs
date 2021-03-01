@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public sealed class ConfigurationTests : IDisposable
 	{
-		private ISourceServiceFactoryForAdmin _serviceFactory;
 		private Mock<IObjectManager> _objectManager;
 		private SemaphoreSlimStub _semaphoreSlim;
 
@@ -33,8 +32,6 @@ namespace Relativity.Sync.Tests.Integration
 
 			Mock<ISourceServiceFactoryForAdmin> serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
 			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-
-			_serviceFactory = serviceFactoryMock.Object;
 		}
 
 		[Test]
@@ -57,7 +54,7 @@ namespace Relativity.Sync.Tests.Integration
 			rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new SyncConfigurationRdo());
 			
-			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), _semaphoreSlim, rdoGuidProvider, rdoManagerMock.Object).ConfigureAwait(false);
+			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoGuidProvider, rdoManagerMock.Object).ConfigureAwait(false);
 
 			// ACT
 			Task updateTask = cache.UpdateFieldValueAsync(x => x.JobHistoryId, newValue);

@@ -14,9 +14,7 @@ namespace Relativity.Sync.Storage
     {
         private readonly IConfiguration _cache;
         private readonly IFieldMappings _fieldMappings;
-        private readonly ISyncServiceManager _serviceFactory;
 
-        private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
 
         public int SourceWorkspaceArtifactId { get; }
 
@@ -49,7 +47,6 @@ namespace Relativity.Sync.Storage
         {
             _cache = cache;
             _fieldMappings = fieldMappings;
-            _serviceFactory = servicesManager;
             SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 
             _jobNameLazy = new Lazy<string>(() =>
@@ -64,7 +61,7 @@ namespace Relativity.Sync.Storage
             });
         }
 
-        private Lazy<string> _jobNameLazy;
+        private readonly Lazy<string> _jobNameLazy;
 
         public string GetJobName() => _jobNameLazy.Value;
 

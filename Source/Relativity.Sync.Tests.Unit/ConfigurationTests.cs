@@ -22,9 +22,7 @@ namespace Relativity.Sync.Tests.Unit
 	public sealed class ConfigurationTests
 	{
 		private ISyncLog _syncLog;
-		private Mock<IObjectManager> _objectManager;
 		private Mock<ISemaphoreSlim> _semaphoreSlim;
-		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdmin;
 		private SyncJobParameters _syncJobParameters;
 		private RdoGuidProvider _rdoGuidProvider;
 		private Mock<IRdoManager> _rdoManagerMock;
@@ -45,10 +43,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task SetUp()
 		{
 			_semaphoreSlim = new Mock<ISemaphoreSlim>();
-			_objectManager = new Mock<IObjectManager>();
-			_sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-			_sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			
+	
 			_rdoGuidProvider = new RdoGuidProvider();
 			_rdoManagerMock = new Mock<IRdoManager>();
 
@@ -56,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit
 			_rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(_syncConfigurationRdo);
 			
-			_sut = await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoGuidProvider, _rdoManagerMock.Object).ConfigureAwait(false);
+			_sut = await Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoGuidProvider, _rdoManagerMock.Object).ConfigureAwait(false);
 		}
 
 		[Test]
@@ -84,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit
 
 
 			// ACT
-			Func<Task> action = async () => await Sync.Storage.Configuration.GetAsync(_sourceServiceFactoryForAdmin.Object, _syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoGuidProvider, _rdoManagerMock.Object).ConfigureAwait(false);
+			Func<Task> action = async () => await Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoGuidProvider, _rdoManagerMock.Object).ConfigureAwait(false);
 
 			// ASSERT
 			action.Should().Throw<SyncException>();

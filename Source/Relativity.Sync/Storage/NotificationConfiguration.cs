@@ -16,7 +16,7 @@ namespace Relativity.Sync.Storage
 
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
-		private Lazy<string> _jobNameLazy;
+		private readonly Lazy<string> _jobNameLazy;
 
 		public NotificationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISyncServiceManager servicesManager)
 		{
