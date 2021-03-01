@@ -183,7 +183,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
 
             _fieldManagerMock.Verify(x => x.CreateFixedLengthFieldAsync(WorkspaceId, It.Is<FixedLengthFieldRequest>(
                 r => r.Name == missingFieldInfo.Name && r.IsRequired == missingFieldInfo.IsRequired &&
-                     r.Length == missingFieldInfo.TextLenght)));
+                     r.Length == missingFieldInfo.TextLength)));
 
             _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, CreatedFieldId,
                 It.Is<List<Guid>>(l => l.Contains(missingFieldInfo.Guid))));

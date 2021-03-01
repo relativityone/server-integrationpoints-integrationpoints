@@ -38,7 +38,7 @@ namespace Relativity.Sync.RDOs.Framework
                                 Guid = fieldAttribute.FieldGuid,
                                 Type = fieldAttribute.FieldType,
                                 IsRequired = fieldAttribute.Required,
-                                TextLenght = fieldAttribute.FixedTextLength,
+                                TextLength = fieldAttribute.FixedTextLength,
                                 PropertyInfo = x
                             };
                         })

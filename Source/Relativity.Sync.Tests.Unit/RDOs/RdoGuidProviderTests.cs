@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 fieldInfoKeyValue.Value.Name.Should().Be(expectedField.Name);
                 fieldInfoKeyValue.Value.Type.Should().Be(expectedField.Type);
                 fieldInfoKeyValue.Value.IsRequired.Should().Be(expectedField.IsRequired);
-                fieldInfoKeyValue.Value.TextLenght.Should().Be(expectedField.TextLenght);
+                fieldInfoKeyValue.Value.TextLength.Should().Be(expectedField.TextLength);
                 fieldInfoKeyValue.Value.PropertyInfo.Should().BeSameAs(expectedField.PropertyInfo);
             }
         }

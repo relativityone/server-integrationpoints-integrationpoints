@@ -348,7 +348,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
                             ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
-                            Length = fieldInfo.TextLenght,
+                            Length = fieldInfo.TextLength,
                             IsRequired = fieldInfo.IsRequired
                         });
                 case RdoFieldType.WholeNumber:
