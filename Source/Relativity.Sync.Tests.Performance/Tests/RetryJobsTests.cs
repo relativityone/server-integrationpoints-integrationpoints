@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			await UseArmWorkspace(
+			await UseArmWorkspaceAsync(
 					_sourceWorkspaceArmFile,
 					null)
 				.ConfigureAwait(false);
@@ -120,7 +120,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(Configuration);
 
 			Stopwatch stopwatch = Stopwatch.StartNew();
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 			stopwatch.Stop();
 			TimeSpan elapsedTime = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
 			TestTimes.Add(testCase.TestCaseName, elapsedTime);

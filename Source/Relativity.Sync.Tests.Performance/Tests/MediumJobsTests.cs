@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			await UseArmWorkspace(
+			await UseArmWorkspaceAsync(
 					"Medium_jobs_tests.zip",
 					"Medium_jobs_tests_-_Destination.zip")
 				.ConfigureAwait(false);

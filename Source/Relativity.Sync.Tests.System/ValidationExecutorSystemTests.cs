@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
 
 			// assert
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("E070BD2B-BEAB-4304-A175-434D8EBA7348")]
@@ -135,7 +135,7 @@ namespace Relativity.Sync.Tests.System
 
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
-			Func<Task> executeJob = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> executeJob = () => syncJob.ExecuteAsync(CompositeCancellationToken.None);
 
 			// assert
 			executeJob.Should().Throw<ValidationException>();

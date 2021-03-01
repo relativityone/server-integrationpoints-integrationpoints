@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			};
 		}
 
-		public async Task UseArmWorkspace(string sourceWorkspaceArmFile, string destinationWorkspaceArmFile)
+		public async Task UseArmWorkspaceAsync(string sourceWorkspaceArmFile, string destinationWorkspaceArmFile)
 		{
 			_workspaceType = WorkspaceType.ARM;
 			
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			}
 		}
 
-		public async Task UseExistingWorkspace(string sourceWorkspaceName, string destinationWorkspaceName)
+		public async Task UseExistingWorkspaceAsync(string sourceWorkspaceName, string destinationWorkspaceName)
 		{
 			_workspaceType = WorkspaceType.Relativity;
 
@@ -101,7 +101,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				int workspaceArtifactId =
 					await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
 
-				await Environment.CreateFieldsInWorkspaceAsync(workspaceArtifactId);
+				await Environment.CreateFieldsInWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
 
 				return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
 			}
@@ -212,7 +212,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 				{
 					aggregatedJobHistoryErrors =
-						await objectManager.AggregateJobHistoryErrorMessagesAsync(SourceWorkspace.ArtifactID, jobHistory.ArtifactID);
+						await objectManager.AggregateJobHistoryErrorMessagesAsync(SourceWorkspace.ArtifactID, jobHistory.ArtifactID).ConfigureAwait(false);
 
 					aggregatedJobHistoryErrors.Should().BeNullOrEmpty("There should be no item level errors");
 				}

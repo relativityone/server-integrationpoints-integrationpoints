@@ -242,7 +242,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			IExecutor<IDestinationWorkspaceTagsCreationConfiguration> destinationWorkspaceTagsCreationExecutor =
 				Container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 
-			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = destinationWorkspaceTagsCreationExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+			ExecutionResult sourceWorkspaceTagsCreationExecutorResult = destinationWorkspaceTagsCreationExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
 				.GetAwaiter().GetResult();
 
 			Assert.AreEqual(ExecutionStatus.Completed, sourceWorkspaceTagsCreationExecutorResult.Status);
@@ -254,7 +254,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			IExecutor<IDocumentDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
 
-			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
 				.GetAwaiter().GetResult();
 
 			Assert.AreEqual(ExecutionStatus.Completed, dataSourceSnapshotExecutorResult.Status);
@@ -266,7 +266,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			IExecutor<IImageDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
 
-			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
 				.GetAwaiter().GetResult();
 
 			Assert.AreEqual(ExecutionStatus.Completed, dataSourceSnapshotExecutorResult.Status);
@@ -278,7 +278,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			IExecutor<ISnapshotPartitionConfiguration> snapshotPartitionExecutor = Container.Resolve<IExecutor<ISnapshotPartitionConfiguration>>();
 
-			ExecutionResult snapshotPartitionExecutorResult = snapshotPartitionExecutor.ExecuteAsync(Configuration, CancellationToken.None)
+			ExecutionResult snapshotPartitionExecutorResult = snapshotPartitionExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
 				.GetAwaiter().GetResult();
 
 			Assert.AreEqual(ExecutionStatus.Completed, snapshotPartitionExecutorResult.Status);
