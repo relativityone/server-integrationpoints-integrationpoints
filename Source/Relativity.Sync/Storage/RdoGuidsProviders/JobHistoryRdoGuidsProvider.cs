@@ -6,17 +6,17 @@ namespace Relativity.Sync.Storage.RdoGuidsProviders
 {
     internal class JobHistoryRdoGuidsProvider : IJobHistoryRdoGuidsProvider
     {
-        private readonly Func<Guid, Guid> _valueGetter;
+        private readonly IConfiguration _cache;
 
-        public JobHistoryRdoGuidsProvider(Func<Guid, Guid> valueGetter)
+        public JobHistoryRdoGuidsProvider(IConfiguration cache)
         {
-            _valueGetter = valueGetter;
+            _cache = cache;
         }
 
-        public Guid TypeGuid => _valueGetter(SyncConfigurationRdo.JobHistoryTypeGuid);
-        public Guid CompletedItemsFieldGuid => _valueGetter(SyncConfigurationRdo.JobHistoryCompletedItemsFieldGuid);
-        public Guid FailedItemsFieldGuid => _valueGetter(SyncConfigurationRdo.JobHistoryFailedItemsFieldGuid);
-        public Guid TotalItemsFieldGuid => _valueGetter(SyncConfigurationRdo.JobHistoryTotalItemsFieldGuid);
-        public Guid DestinationWorkspaceInformationGuid =>  _valueGetter(SyncConfigurationRdo.JobHistoryDestinationWorkspaceInformationGuid);
+        public Guid TypeGuid => _cache.GetFieldValue(x => x.JobHistoryType);
+        public Guid CompletedItemsFieldGuid => _cache.GetFieldValue(x => x.JobHistoryCompletedItemsField);
+        public Guid FailedItemsFieldGuid => _cache.GetFieldValue(x => x.JobHistoryGuidFailedField);
+        public Guid TotalItemsFieldGuid => _cache.GetFieldValue(x => x.JobHistoryGuidTotalField);
+        public Guid DestinationWorkspaceInformationGuid =>  _cache.GetFieldValue(x => x.JobHistoryDestinationWorkspaceInformationField);
     }
 }

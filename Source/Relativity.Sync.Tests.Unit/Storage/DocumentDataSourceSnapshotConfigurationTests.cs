@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -11,82 +12,88 @@ using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
+    using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
+    using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
 
-	[TestFixture]
-	public sealed class DocumentDataSourceSnapshotConfigurationTests
-	{
-		private DocumentDataSourceSnapshotConfiguration _instance;
+    internal sealed class DocumentDataSourceSnapshotConfigurationTests : ConfigurationTestBase
+    {
+        private DocumentDataSourceSnapshotConfiguration _instance;
 
-		private Mock<IConfiguration> _cache;
-		private Mock<IFieldMappings> _fieldMappings;
+        private Mock<IFieldMappings> _fieldMappings;
 
-		private const int _WORKSPACE_ID = 589632;
+        private const int _WORKSPACE_ID = 589632;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_cache = new Mock<IConfiguration>();
-			_fieldMappings = new Mock<IFieldMappings>();
+        [SetUp]
+        public void SetUp()
+        {
+            _fieldMappings = new Mock<IFieldMappings>();
 
-			_instance = new DocumentDataSourceSnapshotConfiguration(_cache.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
-		}
+            _instance = new DocumentDataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object,
+                new SyncJobParameters(1, _WORKSPACE_ID, 1));
+        }
 
-		[Test]
-		public void ItShouldRetrieveSourceWorkspaceArtifactId()
-		{
-			// Act & Assert
-			_instance.SourceWorkspaceArtifactId.Should().Be(_WORKSPACE_ID);
-		}
+        [Test]
+        public void ItShouldRetrieveSourceWorkspaceArtifactId()
+        {
+            // Act & Assert
+            _instance.SourceWorkspaceArtifactId.Should().Be(_WORKSPACE_ID);
+        }
 
-		[Test]
-		public void ItShouldRetrieveDataSourceArtifactId()
-		{
-			// Arrange
-			const int expectedValue = 658932;
+        [Test]
+        public void ItShouldRetrieveDataSourceArtifactId()
+        {
+            // Arrange
+            const int expectedValue = 658932;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid)).Returns(expectedValue);
+            _configurationRdo.DataSourceArtifactId = expectedValue;
 
-			// Act & Assert
-			_instance.DataSourceArtifactId.Should().Be(expectedValue);
-		}
+            // Act & Assert
+            _instance.DataSourceArtifactId.Should().Be(expectedValue);
+        }
 
-		[Test]
-		public void ItShouldRetrieveFieldMappings()
-		{
-			// Arrange
-			List<FieldMap> fieldMappings = new List<FieldMap>();
-			_fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMappings);
+        [Test]
+        public void ItShouldRetrieveFieldMappings()
+        {
+            // Arrange
+            List<FieldMap> fieldMappings = new List<FieldMap>();
+            _fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMappings);
 
-			// Act & Assert
-			_instance.GetFieldMappings().Should().BeSameAs(fieldMappings);
-		}
+            // Act & Assert
+            _instance.GetFieldMappings().Should().BeSameAs(fieldMappings);
+        }
 
-		[Test]
-		[TestCase("", false)]
-		[TestCase(null, false)]
-		[TestCase("guid", true)]
-		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
-		{
-			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(snapshot);
+        [Test]
+        [TestCase("", false)]
+        [TestCase(null, false)]
+        [TestCase("guid", true)]
+        public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
+        {
+            // Arrange
+            _configurationRdo.SnapshotId = snapshot;
 
-			// Act & Assert
-			_instance.IsSnapshotCreated.Should().Be(expectedValue);
-		}
+            // Act & Assert
+            _instance.IsSnapshotCreated.Should().Be(expectedValue);
+        }
 
-		[Test]
-		public async Task ItShouldUpdateSnapshotData()
-		{
-			// Arrange
-			Guid snapshotId = Guid.NewGuid();
-			const int totalRecordsCount = 789654;
+        [Test]
+        public async Task ItShouldUpdateSnapshotData()
+        {
+            // Arrange
+            Guid snapshotId = Guid.NewGuid();
+            const int totalRecordsCount = 789654;
 
-			// Act
-			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
+            // Act
+            await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
-			// Assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, snapshotId.ToString()));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount));
-		}
-	}
+            // Assert
+            _configuration.Verify(x =>
+                x.UpdateFieldValueAsync(
+                    It.Is<RdoExpressionString>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))),
+                    snapshotId.ToString()));
+            _configuration.Verify(x =>
+                x.UpdateFieldValueAsync(
+                    It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotRecordsCount))),
+                    totalRecordsCount));
+        }
+    }
 }

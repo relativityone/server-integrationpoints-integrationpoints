@@ -230,7 +230,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				DataDestinationType = "Folder",
 				ImportOverwriteMode = "AppendOnly",
 				FieldOverlayBehavior = "Use Field Settings",
-
+				JobHistoryId = JobHistory.ArtifactID,
 				ImageImport = true,
 				ImageFileCopyMode = "Link",
 				IncludeOriginalImages = true,

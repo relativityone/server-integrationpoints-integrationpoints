@@ -14,7 +14,7 @@ namespace Relativity.Sync.Storage
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 		public string TriggerName => _syncJobParameters.TriggerName;
 		public ExecutionResult SynchronizationExecutionResult { get; set; } = new ExecutionResult(ExecutionStatus.None, string.Empty, null);
 		public string TriggerId => _syncJobParameters.TriggerId;

@@ -11,11 +11,9 @@ using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	public class PermissionCheckConfigurationTests
+	internal class PermissionCheckConfigurationTests : ConfigurationTestBase
 	{
 		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactory;
-		private Mock<IConfiguration> _cache;
 		private Mock<IObjectManager> _objectManager;
 		private PermissionsCheckConfiguration _instance;
 		private SyncJobParameters _sycJobParameters;
@@ -30,10 +28,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			const int jobId = 50;
 
 			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_cache = new Mock<IConfiguration>();
 			_objectManager = new Mock<IObjectManager>();
 			_sycJobParameters = new SyncJobParameters(jobId, _WORKSPACE_ARTIFACT_ID, 1);
-			_instance = new PermissionsCheckConfiguration(_cache.Object, _sycJobParameters,_sourceServiceFactory.Object);
+			_instance = new PermissionsCheckConfiguration(_configuration.Object, _sycJobParameters,_sourceServiceFactory.Object);
 		}
 
 		[Test]

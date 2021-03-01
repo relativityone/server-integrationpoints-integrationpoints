@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = SyncConfigurationRdo.SyncConfigurationGuid
+						Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid)
 					},
 					Fields = new List<FieldRef>()
 					{
@@ -75,32 +75,29 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				configuration = result.Objects.Single();
 			}
 
-			int? jobHistoryToRetryValue =
-				ReadSyncConfigurationValue<int?>(configuration,
-					SyncConfigurationRdo.JobHistoryToRetryIdGuid);
-
 			return new SyncConfigurationRdo
 			{
-				CreateSavedSearchInDestination = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRdo.CreateSavedSearchInDestinationGuid),
-				DataDestinationArtifactId = ReadSyncConfigurationValue<int>(configuration, SyncConfigurationRdo.DataDestinationArtifactIdGuid),
-				DataDestinationType = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.DataDestinationTypeGuid),
-				DataSourceArtifactId = ReadSyncConfigurationValue<int>(configuration, SyncConfigurationRdo.DataSourceArtifactIdGuid),
-				DataSourceType = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.DataSourceTypeGuid),
-				DestinationFolderStructureBehavior = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid),
-				DestinationWorkspaceArtifactId = ReadSyncConfigurationValue<int>(configuration, SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid),
-				EmailNotificationRecipients = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.EmailNotificationRecipientsGuid),
-				FieldsMapping = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.FieldMappingsGuid),
-				FieldOverlayBehavior = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.FieldOverlayBehaviorGuid),
-				FolderPathSourceFieldName = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.FolderPathSourceFieldNameGuid),
-				ImportOverwriteMode = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.ImportOverwriteModeGuid),
-				MoveExistingDocuments = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRdo.MoveExistingDocumentsGuid),
-				NativesBehavior = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.NativesBehaviorGuid),
-				RdoArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, SyncConfigurationRdo.RdoArtifactTypeIdGuid),
-				JobHistoryToRetryId = jobHistoryToRetryValue,
-				ImageImport = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRdo.ImageImportGuid),
-				IncludeOriginalImages = ReadSyncConfigurationValue<bool>(configuration, SyncConfigurationRdo.IncludeOriginalImagesGuid),
-				ProductionImagePrecedence = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.ProductionImagePrecedenceGuid),
-				ImageFileCopyMode = ReadSyncConfigurationValue<string>(configuration, SyncConfigurationRdo.ImageFileCopyModeGuid)
+				CreateSavedSearchInDestination = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.CreateSavedSearchInDestinationGuid)),
+				DataDestinationArtifactId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.DataDestinationArtifactIdGuid)),
+				DataDestinationType = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DataDestinationTypeGuid)),
+				DataSourceArtifactId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.DataSourceArtifactIdGuid)),
+				DataSourceType = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DataSourceTypeGuid)),
+				DestinationFolderStructureBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DestinationFolderStructureBehaviorGuid)),
+				DestinationWorkspaceArtifactId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)),
+				EmailNotificationRecipients = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.EmailNotificationRecipientsGuid)),
+				FieldsMapping = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.FieldMappingsGuid)),
+				FieldOverlayBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.FieldOverlayBehaviorGuid)),
+				FolderPathSourceFieldName = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.FolderPathSourceFieldNameGuid)),
+				ImportOverwriteMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImportOverwriteModeGuid)),
+				MoveExistingDocuments = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.MoveExistingDocumentsGuid)),
+				NativesBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.NativesBehaviorGuid)),
+				RdoArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.RdoArtifactTypeIdGuid)),
+				JobHistoryToRetryId = ReadSyncConfigurationValue<int?>(configuration, new Guid(SyncRdoGuids.JobHistoryToRetryIdGuid)),
+				JobHistoryId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.JobHistoryIdGuid)),
+				ImageImport = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.ImageImportGuid)),
+				IncludeOriginalImages = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.IncludeOriginalImagesGuid)),
+				ProductionImagePrecedence = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ProductionImagePrecedenceGuid)),
+				ImageFileCopyMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImageFileCopyModeGuid))
 			};
 		}
 	}

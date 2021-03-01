@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -12,13 +13,12 @@ using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
+	using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
+	using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
 
-	[TestFixture]
-	public sealed class ImageDataSourceSnapshotConfigurationTests
+	internal sealed class ImageDataSourceSnapshotConfigurationTests : ConfigurationTestBase
 	{
 		private ImageDataSourceSnapshotConfiguration _instance;
-
-		private Mock<IConfiguration> _cache;
 
 		private const int _WORKSPACE_ID = 589632;
 
@@ -27,10 +27,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
 			_serializer = new JSONSerializer();
 
-			_instance = new ImageDataSourceSnapshotConfiguration(_cache.Object, _serializer, new SyncJobParameters(1, _WORKSPACE_ID, 1));
+			_instance = new ImageDataSourceSnapshotConfiguration(_configuration.Object, _serializer, new SyncJobParameters(1, _WORKSPACE_ID, 1));
 		}
 
 		[Test]
@@ -46,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedValue = 658932;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid)).Returns(expectedValue);
+			_configurationRdo.DataSourceArtifactId = expectedValue;
 
 			// Act & Assert
 			_instance.DataSourceArtifactId.Should().Be(expectedValue);
@@ -59,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(snapshot);
+			_configurationRdo.SnapshotId = snapshot;
 
 			// Act & Assert
 			_instance.IsSnapshotCreated.Should().Be(expectedValue);
@@ -76,8 +75,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, snapshotId.ToString()));
-			_cache.Verify(x => x.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionString>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))), snapshotId.ToString()));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotRecordsCount))), totalRecordsCount));
 		}
 
 		[Test]
@@ -85,7 +84,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var expectedValue = new [] {1, 2, 3};
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ProductionImagePrecedenceGuid)).Returns(_serializer.Serialize(expectedValue));
+			_configurationRdo.ProductionImagePrecedence = _serializer.Serialize(expectedValue);
 
 			// Act & Assert
 			_instance.ProductionImagePrecedence.Should().BeEquivalentTo(expectedValue);
@@ -96,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void IncludeOriginalImageIfNotFoundInProductions_ShouldBeRetrieved(bool expectedValue)
 		{
 			// Arrange
-			_cache.Setup(x => x.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid)).Returns(expectedValue);
+			_configurationRdo.IncludeOriginalImages = expectedValue;
 
 			// Act & Assert
 			_instance.IncludeOriginalImageIfNotFoundInProductions.Should().Be(expectedValue);

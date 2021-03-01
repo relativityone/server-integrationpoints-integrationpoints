@@ -27,7 +27,7 @@ namespace Relativity.Sync.Storage
 				return _fieldMappings;
 			}
 
-			string fieldMap = _configuration.GetFieldValue<string>(SyncConfigurationRdo.FieldMappingsGuid);
+			string fieldMap = _configuration.GetFieldValue(x => x.FieldsMapping);
 
 			try
 			{

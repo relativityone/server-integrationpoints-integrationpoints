@@ -162,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(SyncConfigurationRdo.SyncConfigurationGuid)))))
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(new Guid(SyncRdoGuids.SyncConfigurationGuid))))))
 				.Throws<SyncException>();
 
 			// Act

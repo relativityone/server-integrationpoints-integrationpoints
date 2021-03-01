@@ -731,7 +731,7 @@ namespace Relativity.Sync.Tests.Unit
 					CreateObject(newConfigurationArtifactId, newBatchCreationDate)
 				}
 			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request => request.ObjectType.Guid == SyncConfigurationRdo.SyncConfigurationGuid &&
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request => request.ObjectType.Guid == new Guid(SyncRdoGuids.SyncConfigurationGuid) &&
 				request.Fields.Single().Name == "System Created On"),
 				It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 

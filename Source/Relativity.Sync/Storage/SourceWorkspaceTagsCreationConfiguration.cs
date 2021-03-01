@@ -11,8 +11,6 @@ namespace Relativity.Sync.Storage
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-
 		public SourceWorkspaceTagsCreationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
@@ -20,13 +18,13 @@ namespace Relativity.Sync.Storage
 		}
 
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid);
-		public int JobHistoryArtifactId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryGuid).ArtifactID;
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+		public int JobHistoryArtifactId => _cache.GetFieldValue(x => x.JobHistoryId);
 		public bool IsDestinationWorkspaceTagArtifactIdSet { get; private set; }
 
 		public async Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId)
 		{
-			await _cache.UpdateFieldValueAsync(SyncConfigurationRdo.DestinationWorkspaceTagArtifactIdGuid, artifactId).ConfigureAwait(false);
+			await _cache.UpdateFieldValueAsync(x => x.DestinationWorkspaceTagArtifactId, artifactId).ConfigureAwait(false);
 			IsDestinationWorkspaceTagArtifactIdSet = true;
 		}
 	}

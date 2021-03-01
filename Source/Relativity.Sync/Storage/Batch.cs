@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -434,7 +432,7 @@ namespace Relativity.Sync.Storage
 				{
 					ObjectType = new ObjectTypeRef()
 					{
-						Guid = SyncConfigurationRdo.SyncConfigurationGuid
+						Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid)
 					},
 					Fields = new[]
 					{

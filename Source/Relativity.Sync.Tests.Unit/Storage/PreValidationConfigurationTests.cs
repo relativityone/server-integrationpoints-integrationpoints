@@ -7,19 +7,14 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	public class PreValidationConfigurationTests
+	internal class PreValidationConfigurationTests : ConfigurationTestBase
 	{
 		private PreValidationConfiguration _sut;
-
-		private Mock<IConfiguration> _cache;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<IConfiguration>();
-
-			_sut = new PreValidationConfiguration(_cache.Object);
+			_sut = new PreValidationConfiguration(_configuration.Object);
 		}
 
 		[Test]
@@ -28,8 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Arrange
 			const int expectedWorkspaceId = 100000;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid))
-				.Returns(expectedWorkspaceId);
+			_configurationRdo.DestinationWorkspaceArtifactId = expectedWorkspaceId;
 			
 			// Act & Assert
 			_sut.DestinationWorkspaceArtifactId.Should().Be(expectedWorkspaceId);

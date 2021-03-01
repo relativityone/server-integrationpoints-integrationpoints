@@ -379,7 +379,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private static IEnumerable<int> ParseArtifactIdsFromQueryCondition(string condition)
 		{
-			System.Text.RegularExpressions.Match match = Regex.Match(condition, @" IN \[(.*)\]");
+			global::System.Text.RegularExpressions.Match match = Regex.Match(condition, @" IN \[(.*)\]");
 			if (match.Success)
 			{
 				return match.Groups[1]

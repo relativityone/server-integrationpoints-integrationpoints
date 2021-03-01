@@ -6674,7 +6674,7 @@
       <Notes />
       <ObjectRules />
       <MassOperations />
-      <ParentArtifactTypeId>1000053</ParentArtifactTypeId>
+      <ParentArtifactTypeId>8</ParentArtifactTypeId>
       <EnableShapshotAuditing>true</EnableShapshotAuditing>
       <SamplingEnabled>false</SamplingEnabled>
       <PersistentListsEnabled>false</PersistentListsEnabled>

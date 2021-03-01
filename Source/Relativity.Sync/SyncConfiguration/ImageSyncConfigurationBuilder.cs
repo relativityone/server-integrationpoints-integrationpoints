@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
@@ -11,8 +12,8 @@ namespace Relativity.Sync.SyncConfiguration
 
 		internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
 			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
-			RdoOptions rdoOptions) 
-			: base(syncContext, servicesMgr, rdoOptions, serializer)
+			RdoOptions rdoOptions, IRdoManager rdoManager) 
+			: base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
 		{
 			_fieldsMappingBuilder = fieldsMappingBuilder;
 

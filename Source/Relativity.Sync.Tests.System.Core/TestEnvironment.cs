@@ -15,6 +15,10 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Tests.System.Core.Stubs;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace Relativity.Sync.Tests.System.Core
@@ -188,6 +192,8 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public async Task CreateFieldsInWorkspaceAsync(int workspaceArtifactId)
 		{
+			await EnsureRdosExistsAsync(workspaceArtifactId);
+			
 			await InstallHelperAppIfNeededAsync().ConfigureAwait(false);
 			using (var applicationInstallManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
 			{
@@ -206,6 +212,13 @@ namespace Relativity.Sync.Tests.System.Core
 				}
 				while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
 			}
+		}
+
+		private static async Task EnsureRdosExistsAsync(int workspaceArtifactId)
+		{
+			var rdoManager =
+				new RdoManager(TestLogHelper.GetLogger(), new ServicesManagerStub(), new RdoGuidProvider());
+			await rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(workspaceArtifactId);
 		}
 
 		private async Task InstallHelperAppIfNeededAsync()

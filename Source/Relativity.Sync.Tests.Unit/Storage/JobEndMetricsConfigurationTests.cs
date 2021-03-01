@@ -10,10 +10,8 @@ using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	public class JobEndMetricsConfigurationTests
+	internal class JobEndMetricsConfigurationTests : ConfigurationTestBase
 	{
-		private Mock<IConfiguration> _configurationFake;
 		private JobEndMetricsConfiguration _sut;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 102779;
@@ -23,12 +21,10 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_configurationFake = new Mock<IConfiguration>();
-			_configurationFake.Setup(x => x.GetFieldValue<int?>(SyncConfigurationRdo.JobHistoryToRetryIdGuid))
-				.Returns(_JOB_HISTORY_TO_RETRY_ARTIFACT_ID);
+			_configurationRdo.JobHistoryToRetryId = _JOB_HISTORY_TO_RETRY_ARTIFACT_ID;
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
-			_sut = new JobEndMetricsConfiguration(_configurationFake.Object, syncJobParameters);
+			_sut = new JobEndMetricsConfiguration(_configuration.Object, syncJobParameters);
 		}
 
 		[Test]
@@ -67,8 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ImportOverwriteMode_ShouldReturnProperValue(string valueInConfiguration, ImportOverwriteMode expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.ImportOverwriteMode = valueInConfiguration;
 
 			// Act
 			var importOverwriteMode = _sut.ImportOverwriteMode;
@@ -82,8 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DataSourceType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DataSourceTypeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.DataSourceType = valueInConfiguration;
 
 			// Act
 			var dataSourceType = _sut.DataSourceType;
@@ -97,8 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.DataDestinationTypeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.DataDestinationType = valueInConfiguration;
 
 			// Act
 			var destinationType = _sut.DestinationType;
@@ -113,8 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ImportNativeFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportNativeFileCopyMode expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.NativesBehaviorGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.NativesBehavior = valueInConfiguration;
 
 			// Act
 			var nativeFileCopyMode = _sut.ImportNativeFileCopyMode;
@@ -128,8 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ImportImageFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportImageFileCopyMode expectedValue)
 		{
 			// Arrange
-			_configurationFake.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.ImageFileCopyModeGuid))
-				.Returns(valueInConfiguration);
+			_configurationRdo.ImageFileCopyMode = valueInConfiguration;
 
 			// Act
 			var imageFileCopyMode = _sut.ImportImageFileCopyMode;

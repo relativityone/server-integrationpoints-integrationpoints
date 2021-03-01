@@ -20,29 +20,29 @@ namespace Relativity.Sync.Storage
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue<string>(SyncConfigurationRdo.ProductionImagePrecedenceGuid));
+		public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue(x => x.ProductionImagePrecedence));
 
 		public bool IncludeOriginalImageIfNotFoundInProductions =>
-			_cache.GetFieldValue<bool>(SyncConfigurationRdo.IncludeOriginalImagesGuid);
+			_cache.GetFieldValue(x => x.IncludeOriginalImages);
 
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 
-		public int DataSourceArtifactId => _cache.GetFieldValue<int>(SyncConfigurationRdo.DataSourceArtifactIdGuid);
+		public int DataSourceArtifactId => _cache.GetFieldValue(x => x.DataSourceArtifactId);
 
-		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid));
+		public bool IsSnapshotCreated => !string.IsNullOrWhiteSpace(_cache.GetFieldValue(x => x.SnapshotId));
 
 		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{
-			await _cache.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotIdGuid, runId.ToString()).ConfigureAwait(false);
-			await _cache.UpdateFieldValueAsync(SyncConfigurationRdo.SnapshotRecordsCountGuid, totalRecordsCount).ConfigureAwait(false);
+			await _cache.UpdateFieldValueAsync(x => x.SnapshotId, runId.ToString()).ConfigureAwait(false);
+			await _cache.UpdateFieldValueAsync(x => x.SnapshotRecordsCount, totalRecordsCount).ConfigureAwait(false);
 		}
 
-		public int? JobHistoryToRetryId => _cache.GetFieldValue<int?>(SyncConfigurationRdo.JobHistoryToRetryIdGuid);
+		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 
 		public ImportOverwriteMode ImportOverwriteMode
 		{
-			get => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue<string>(SyncConfigurationRdo.ImportOverwriteModeGuid)));
-			set => _cache.UpdateFieldValueAsync(SyncConfigurationRdo.ImportOverwriteModeGuid, value.ToString());
+			get => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue(x => x.ImportOverwriteMode)));
+			set => _cache.UpdateFieldValueAsync(x => x.ImportOverwriteMode, value.ToString());
 		}
 	}
 }

@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.System
 			_workspaceId = workspace.ArtifactID;
 
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
-			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryArtifactId).ConfigureAwait(false);
+			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationRdoAsync(_workspaceId, jobHistoryArtifactId).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("d15a4f9e-a56c-4991-bb0f-017cd0e34ecd")]

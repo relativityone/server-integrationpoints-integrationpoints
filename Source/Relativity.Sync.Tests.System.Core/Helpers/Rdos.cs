@@ -21,7 +21,12 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.SyncConfiguration;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
+using Relativity.Sync.Tests.System.Core.Stubs;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
@@ -101,35 +106,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				};
 				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
 				return result.Object;
-			}
-		}
-
-		public static async Task<int> CreateSyncConfigurationInstance(ServiceFactory serviceFactory, int workspaceId,
-			int jobHistoryId, List<FieldMap> fieldMappings = null)
-		{
-			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
-			{
-				CreateRequest request = new CreateRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = SyncConfigurationRdo.SyncConfigurationGuid
-					},
-					ParentObject = new RelativityObjectRef
-					{
-						ArtifactID = jobHistoryId
-					},
-					FieldValues = new List<FieldRefValuePair>
-					{
-						new FieldRefValuePair
-						{
-							Field = new FieldRef {Guid = SyncConfigurationRdo.FieldMappingsGuid},
-							Value = new JSONSerializer().Serialize(fieldMappings)
-						}
-					}
-				};
-				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
 			}
 		}
 
@@ -402,17 +378,66 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			};
 		}
 
-		public static async Task<int> CreateSyncConfigurationRdoAsync(ServiceFactory serviceFactory, int workspaceId,
-			ConfigurationStub configuration, ISerializer serializer = null)
+		public static async Task<int> CreateSyncConfigurationRdoAsync( int workspaceId,
+			ConfigurationStub configurationStub, ISyncLog logger = null,ISerializer serializer = null)
 		{
-			CreateRequest request =
-				PrepareSyncConfigurationCreateRequestAsync(configuration, serializer ?? new JSONSerializer());
-			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
-			{
-				CreateResult createResult = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
+			serializer = serializer ?? new JSONSerializer();
+			logger = logger ?? TestLogHelper.GetLogger();
+			var rdoManager = new RdoManager(logger, new ServicesManagerStub(), new RdoGuidProvider());
+			SyncConfigurationRdo configuration = GetConfiguration(configurationStub, serializer);
 
-				return createResult.Object.ArtifactID;
-			}
+			await rdoManager.CreateAsync(workspaceId, configuration).ConfigureAwait(false);
+
+			return configuration.ArtifactId;
+		}
+
+		private static SyncConfigurationRdo GetConfiguration(ConfigurationStub configurationStub, ISerializer serializer)
+		{
+			return new SyncConfigurationRdo
+			{
+				CreateSavedSearchInDestination =  configurationStub.CreateSavedSearchForTags,
+				DataDestinationArtifactId = configurationStub.DestinationFolderArtifactId,
+				DataDestinationType = "Folder",
+				DataSourceArtifactId =  configurationStub.SavedSearchArtifactId,
+				DataSourceType =  "SavedSearch",
+				DestinationFolderStructureBehavior = configurationStub.DestinationFolderStructureBehavior.ToString(),
+				FolderPathSourceFieldName = configurationStub.FolderPathSourceFieldName,
+				DestinationWorkspaceArtifactId = configurationStub.DestinationWorkspaceArtifactId,
+				EmailNotificationRecipients = configurationStub.GetNotificationEmails(),
+				FieldsMapping = serializer.Serialize(configurationStub.GetFieldMappings()),
+				FieldOverlayBehavior = configurationStub.FieldOverlayBehavior.GetDescription(),
+				ImportOverwriteMode = configurationStub.ImportOverwriteMode.GetDescription(),
+				MoveExistingDocuments = configurationStub.MoveExistingDocuments,
+				NativesBehavior = configurationStub.ImportNativeFileCopyMode.GetDescription(),
+				RdoArtifactTypeId = (int)ArtifactType.Document,
+				JobHistoryId = configurationStub.JobHistoryArtifactId,
+				JobHistoryToRetryId = configurationStub.JobHistoryToRetryId,
+				ImageImport = configurationStub.ImageImport,
+				IncludeOriginalImages = configurationStub.ProductionImagePrecedence is null || configurationStub.IncludeOriginalImageIfNotFoundInProductions,
+				ImageFileCopyMode = configurationStub.ImportImageFileCopyMode.GetDescription(),
+				ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
+				
+				// JobHistoryGuids
+				JobHistoryType = DefaultGuids.JobHistory.TypeGuid,
+				JobHistoryGuidTotalField = DefaultGuids.JobHistory.TotalItemsFieldGuid,
+				JobHistoryGuidFailedField = DefaultGuids.JobHistory.FailedItemsFieldGuid,
+				JobHistoryCompletedItemsField = DefaultGuids.JobHistory.CompletedItemsFieldGuid,
+				JobHistoryDestinationWorkspaceInformationField = DefaultGuids.JobHistory.DestinationWorkspaceInformationGuid,
+				
+				// JobHistoryErrorGuids
+				JobHistoryErrorType = DefaultGuids.JobHistoryError.TypeGuid,
+				JobHistoryErrorErrorMessages = DefaultGuids.JobHistoryError.ErrorMessagesGuid,
+				JobHistoryErrorErrorStatus = DefaultGuids.JobHistoryError.ErrorStatusGuid,
+				JobHistoryErrorErrorType = DefaultGuids.JobHistoryError.ErrorTypeGuid,
+				JobHistoryErrorName = DefaultGuids.JobHistoryError.NameGuid,
+				JobHistoryErrorSourceUniqueId = DefaultGuids.JobHistoryError.SourceUniqueIdGuid,
+				JobHistoryErrorStackTrace = DefaultGuids.JobHistoryError.StackTraceGuid,
+				JobHistoryErrorTimeStamp = DefaultGuids.JobHistoryError.TimeStampGuid,
+				JobHistoryErrorItemLevelError = DefaultGuids.JobHistoryError.ItemLevelErrorGuid,
+				JobHistoryErrorJobLevelError = DefaultGuids.JobHistoryError.JobLevelErrorGuid,
+				JobHistoryErrorJobHistoryRelation = DefaultGuids.JobHistoryError.JobHistoryRelationGuid,
+				JobHistoryErrorNewChoice = DefaultGuids.JobHistoryError.NewStatusGuid,
+			};
 		}
 
 		public static async Task<IList<RelativityObject>> QueryDocumentsAsync(ServiceFactory serviceFactory,
@@ -520,338 +545,10 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		private static CreateRequest PrepareSyncConfigurationCreateRequestAsync(ConfigurationStub configuration, ISerializer serializer)
+		public static Task<int> CreateSyncConfigurationRdoAsync(int workspaceId, int jobHistoryId)
 		{
-			return new CreateRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					Guid = SyncConfigurationRdo.SyncConfigurationGuid
-				},
-				ParentObject = new RelativityObjectRef
-				{
-					ArtifactID = configuration.JobHistoryArtifactId
-				},
-				FieldValues = new[]
-				{
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.CreateSavedSearchInDestinationGuid
-						},
-						Value = configuration.CreateSavedSearchForTags
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.DataDestinationArtifactIdGuid
-						},
-						Value = configuration.DestinationFolderArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.DataDestinationTypeGuid
-						},
-						Value = "Folder"
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.DataSourceArtifactIdGuid
-						},
-						Value = configuration.SavedSearchArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.DataSourceTypeGuid
-						},
-						Value = "SavedSearch"
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.DestinationFolderStructureBehaviorGuid
-						},
-						Value = configuration.DestinationFolderStructureBehavior.ToString()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.FolderPathSourceFieldNameGuid
-						},
-						Value = configuration.FolderPathSourceFieldName
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.DestinationWorkspaceArtifactIdGuid
-						},
-						Value = configuration.DestinationWorkspaceArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.EmailNotificationRecipientsGuid
-						},
-						Value = configuration.GetNotificationEmails()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.FieldMappingsGuid
-						},
-						Value = serializer.Serialize(configuration.GetFieldMappings())
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.FieldOverlayBehaviorGuid
-						},
-						Value = configuration.FieldOverlayBehavior.GetDescription()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.ImportOverwriteModeGuid
-						},
-						Value = configuration.ImportOverwriteMode.ToString()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.MoveExistingDocumentsGuid
-						},
-						Value = configuration.MoveExistingDocuments
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.NativesBehaviorGuid
-						},
-						Value = configuration.ImportNativeFileCopyMode.GetDescription()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.RdoArtifactTypeIdGuid
-						},
-						Value = (int) ArtifactType.Document
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.JobHistoryToRetryIdGuid
-						},
-						Value = configuration.JobHistoryToRetryId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.ImageImportGuid
-						},
-						Value = configuration.ImageImport
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.IncludeOriginalImagesGuid
-						},
-						Value = configuration.ProductionImagePrecedence is null || configuration.IncludeOriginalImageIfNotFoundInProductions
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.ImageFileCopyModeGuid
-						},
-						Value = configuration.ImportImageFileCopyMode.GetDescription()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = SyncConfigurationRdo.ProductionImagePrecedenceGuid
-						},
-						Value = configuration.ProductionImagePrecedence is null ? String.Empty : JsonConvert.SerializeObject(configuration.ProductionImagePrecedence)
-		            },
-					
-					 // JobHistory GUIDs
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryTypeGuid
-	                    },
-	                    Value = configuration.JobHistory.TypeGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryTotalItemsFieldGuid
-	                    },
-	                    Value = configuration.JobHistory.TotalItemsFieldGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryFailedItemsFieldGuid
-	                    },
-	                    Value = configuration.JobHistory.FailedItemsFieldGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryCompletedItemsFieldGuid
-	                    },
-	                    Value = configuration.JobHistory.CompletedItemsFieldGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryDestinationWorkspaceInformationGuid
-	                    },
-	                    Value = configuration.JobHistory.DestinationWorkspaceInformationGuid
-	                },
-
-	                // JobHistoryError
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorTypeGuid
-	                    },
-	                    Value = configuration.JobHistoryError.TypeGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorMessagesGuid
-	                    },
-	                    Value = configuration.JobHistoryError.ErrorMessagesGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorStatusGuid
-	                    },
-	                    Value = configuration.JobHistoryError.ErrorStatusGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorErrorTypeGuid
-	                    },
-	                    Value = configuration.JobHistoryError.ErrorTypeGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorNameGuid
-	                    },
-	                    Value = configuration.JobHistoryError.NameGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorSourceUniqueIdGuid
-	                    },
-	                    Value = configuration.JobHistoryError.SourceUniqueIdGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorStackTraceGuid
-	                    },
-	                    Value = configuration.JobHistoryError.StackTraceGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorTimeStampGuid
-	                    },
-	                    Value = configuration.JobHistoryError.TimeStampGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorItemLevelErrorGuid
-	                    },
-	                    Value = configuration.JobHistoryError.ItemLevelErrorGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorJobLevelErrorGuid
-	                    },
-	                    Value = configuration.JobHistoryError.JobLevelErrorGuid
-	                },
-
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorJobHistoryRelationGuid
-	                    },
-	                    Value = configuration.JobHistoryError.JobHistoryRelationGuid
-	                },
-	                
-	                new FieldRefValuePair
-	                {
-	                    Field = new FieldRef
-	                    {
-	                        Guid = SyncConfigurationRdo.JobHistoryErrorNewChoiceGuid
-	                    },
-	                    Value = configuration.JobHistoryError.NewStatusGuid
-	                },
-				}                
-			};
+			return CreateSyncConfigurationRdoAsync(workspaceId,
+				new ConfigurationStub {JobHistoryArtifactId = jobHistoryId});
 		}
 	}
 }

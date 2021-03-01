@@ -8,12 +8,9 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	internal sealed class SnapshotPartitionConfigurationTests
+	internal sealed class SnapshotPartitionConfigurationTests : ConfigurationTestBase
 	{
 		private SnapshotPartitionConfiguration _instance;
-
-		private Mock<Sync.Storage.IConfiguration> _cache;
 
 		private const int _WORKSPACE_ID = 987432;
 		private const int _JOB_ID = 9687413;
@@ -23,14 +20,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<Sync.Storage.IConfiguration>();
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, 1);
 			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration
 			{
 				BatchSize = _BATCH_SIZE
 			};
 
-			_instance = new SnapshotPartitionConfiguration(_cache.Object, syncJobParameters, configuration, new EmptyLogger());
+			_instance = new SnapshotPartitionConfiguration(_configuration.Object, syncJobParameters, configuration, new EmptyLogger());
 		}
 
 		[Test]
@@ -56,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int totalRecordsCount = 874596;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SyncConfigurationRdo.SnapshotRecordsCountGuid)).Returns(totalRecordsCount);
+			_configurationRdo.SnapshotRecordsCount = totalRecordsCount;
 
 			// ACT & ASSERT
 			_instance.TotalRecordsCount.Should().Be(totalRecordsCount);
@@ -67,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
 
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
+			_configurationRdo.SnapshotId = runId;
 
 			// ACT
 			Guid actualRunId = _instance.ExportRunId;
@@ -82,7 +78,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
 		public void ItShouldReturnEmptyGuidForInvalidString(string runId)
 		{
-			_cache.Setup(x => x.GetFieldValue<string>(SyncConfigurationRdo.SnapshotIdGuid)).Returns(runId);
+			_configurationRdo.SnapshotId = runId;
 
 			// ACT
 			Action action = () =>
