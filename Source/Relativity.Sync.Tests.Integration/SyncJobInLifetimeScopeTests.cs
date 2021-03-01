@@ -42,9 +42,9 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _container, _syncJobParameters, _relativityServices, _configuration, _logger);
 
-			await instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await instance.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
-			_syncJob.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Once);
+			_syncJob.Verify(x => x.ExecuteAsync(CompositeCancellationToken.None), Times.Once);
 		}
 
 		[Test]
@@ -53,9 +53,9 @@ namespace Relativity.Sync.Tests.Integration
 			IProgress<SyncJobState> progress = Mock.Of<IProgress<SyncJobState>>();
 			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _container, _syncJobParameters, _relativityServices, _configuration, _logger);
 
-			await instance.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
+			await instance.ExecuteAsync(progress, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			_syncJob.Verify(x => x.ExecuteAsync(progress, CancellationToken.None), Times.Once);
+			_syncJob.Verify(x => x.ExecuteAsync(progress, CompositeCancellationToken.None), Times.Once);
 		}
 		
 		[Test]
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Integration
 			IContainer containerWithoutSyncJob = containerBuilder.Build();
 			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, containerWithoutSyncJob, _syncJobParameters, _relativityServices, _configuration, _logger);
 
-			Func<Task> func = () => instance.ExecuteAsync(CancellationToken.None);
+			Func<Task> func = () => instance.ExecuteAsync(CompositeCancellationToken.None);
 
 			await func.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
 		}

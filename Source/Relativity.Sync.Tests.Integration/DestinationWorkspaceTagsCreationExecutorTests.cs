@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.Integration
 			)).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
 
 			// Act
-			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
 			_objectManagerMock.Verify();
@@ -237,7 +237,7 @@ namespace Relativity.Sync.Tests.Integration
 			)).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
 
 			// Act
-			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
 			_objectManagerMock.Verify(
@@ -351,7 +351,7 @@ namespace Relativity.Sync.Tests.Integration
 			)).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = sourceJobTagArtifactId } }));
 
 			// Act
-			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
 			_objectManagerMock.Verify(
@@ -394,7 +394,7 @@ namespace Relativity.Sync.Tests.Integration
 			).Throws<ServiceException>();
 
 			// ACT
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -439,7 +439,7 @@ namespace Relativity.Sync.Tests.Integration
 			).Throws<ServiceException>();
 
 			// ACT
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -491,7 +491,7 @@ namespace Relativity.Sync.Tests.Integration
 			).Throws<ServiceException>();
 
 			// ACT
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -554,7 +554,7 @@ namespace Relativity.Sync.Tests.Integration
 			)).Throws<ServiceException>();
 
 			// ACT
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -621,7 +621,7 @@ namespace Relativity.Sync.Tests.Integration
 			)).Throws<ServiceException>();
 
 			// ACT
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -655,7 +655,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// ACT
 			ExecutionResult result =
-				await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+				await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -687,7 +687,7 @@ namespace Relativity.Sync.Tests.Integration
 					.Returns(Task.FromResult(new QueryResult()));
 
 			// ACT
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
