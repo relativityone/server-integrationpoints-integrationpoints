@@ -21,7 +21,7 @@
 		/// <inheritdoc />
 		public void Send(IMetric metric)
 		{
-			var customData = metric.GetCustomData();
+			var customData = metric.GetApmMetrics();
 			if (customData.Count > 0)
 			{
 				_apmClient.Log(_NEW_RELIC_INDEX_NAME, customData);

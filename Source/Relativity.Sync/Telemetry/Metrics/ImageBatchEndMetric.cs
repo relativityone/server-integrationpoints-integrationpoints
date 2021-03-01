@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class ImageBatchEndMetric : BatchEndMetric
+	internal class ImageBatchEndMetric : BatchEndMetric<ImageBatchEndMetric>
 	{
 		
 	}

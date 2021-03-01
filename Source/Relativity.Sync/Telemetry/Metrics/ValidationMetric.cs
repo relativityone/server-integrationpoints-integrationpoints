@@ -10,6 +10,10 @@
 		[Metric(MetricType.Counter)]
 		public Counter? FailedCounter { get; set; }
 
+		public ValidationMetric()
+		{
+		}
+
 		public ValidationMetric(string validatorName) : base(validatorName)
 		{
 		}
