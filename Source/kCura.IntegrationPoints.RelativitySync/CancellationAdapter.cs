@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.ScheduleQueue.Core;
+using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
