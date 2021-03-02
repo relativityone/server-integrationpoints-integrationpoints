@@ -27,8 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IWebApiLoginService credentialProvider = WebApiLoginServiceFactoryDeprecated.Create(logger);
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
-			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			IQueryManager queryManager = new QueryManager(helper, agentService);
+			IQueryManager queryManager = new QueryManager(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 
 			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent(), jobServiceDataProvider);

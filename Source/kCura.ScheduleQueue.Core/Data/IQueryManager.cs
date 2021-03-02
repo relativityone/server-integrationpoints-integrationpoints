@@ -11,7 +11,13 @@ namespace kCura.ScheduleQueue.Core.Data
 	{
 		IDBContext EddsDbContext { get; }
 
-		string TableName { get; }
+		string QueueTable { get; }
+
+		ICommand CreateScheduleQueueTable();
+
+		ICommand AddStopStateColumnToQueueTable();
+
+		IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid);
 
 		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
 

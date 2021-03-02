@@ -60,11 +60,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			{
 				dbContext.BeginTransaction();
 
-				DeleteJob(oldScheduledJobId, _queryManager.TableName, dbContext);
+				DeleteJob(oldScheduledJobId, _queryManager.QueueTable, dbContext);
 
 				CreateScheduledJob(workspaceID, relatedObjectArtifactID, taskType,
 					nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
-					jobDetails, jobFlags, submittedBy, rootJobID, parentJobID, _queryManager.TableName, dbContext);
+					jobDetails, jobFlags, submittedBy, rootJobID, parentJobID, _queryManager.QueueTable, dbContext);
 
 				dbContext.CommitTransaction();
 			}

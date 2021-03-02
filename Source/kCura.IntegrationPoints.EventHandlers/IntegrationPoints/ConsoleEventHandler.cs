@@ -29,6 +29,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public class ConsoleEventHandler : EventHandler.ConsoleEventHandler
 	{
+		private readonly Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+
 		private IButtonStateBuilder _buttonStateBuilder;
 		private IManagerFactory _managerFactory;
 		private IOnClickEventConstructor _onClickEventConstructor;
@@ -74,8 +76,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-					IQueryManager queryManager = new QueryManager(Helper, agentService);
+					IQueryManager queryManager = new QueryManager(Helper, _agentGuid);
 					IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 					_managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 				}

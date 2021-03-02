@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
+
+namespace Relativity.IntegrationPoints.Tests.Integration
+{
+	public static class Const
+	{
+		public static class Agent
+		{
+			public static readonly Guid _RELATIVITY_INTEGRATION_POINTS_AGENT_GUID =
+				new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+
+			public const int _INTEGRATION_POINTS_AGENT_TYPE_ID = 1;
+		}
+	}
+}

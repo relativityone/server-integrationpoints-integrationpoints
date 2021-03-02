@@ -19,6 +19,8 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 	[Feature.DataTransfer.IntegrationPoints]
 	public class JobServiceTests
 	{
+		private readonly Guid _agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+
 		private IAgentService _agentService;
 		private IHelper _helper;
 		private JobService _instance;
@@ -30,12 +32,14 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			kCura.Data.RowDataGateway.Config.SetConnectionString(SharedVariables.EddsConnectionString);
 			
 			_helper = Substitute.For<IHelper>();
-			_agentService = new AgentService(_helper, Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+
+			var queryManager = new QueryManager(_helper, _agentGuid);
+
+			_agentService = new AgentService(_helper, queryManager, _agentGuid);
 			Context baseContext = new Context(SharedVariables.EddsConnectionString);
 			IDBContext dBContext = DBContextMockBuilder.Build(baseContext);
 			_helper.GetDBContext(-1).Returns(dBContext);
 
-			var queryManager = new QueryManager(_helper, _agentService);
 			_jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 			_instance = new JobService(_agentService, _jobServiceDataProvider, _helper);
 		}

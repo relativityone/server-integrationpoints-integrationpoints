@@ -28,6 +28,8 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected IAPILog Logger => _loggerLazy.Value;
 
+		protected new virtual IAgentHelper Helper => base.Helper;
+
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
 			IQueryManager queryManager = null, IAPILog logger = null)
@@ -36,6 +38,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			_agentService = agentService;
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
+			_queryManager = queryManager;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_loggerLazy = logger != null
@@ -48,14 +51,15 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
 
-			if (_agentService == null)
-			{
-				_agentService = new AgentService(Helper, _agentGuid);
-			}
 
 			if (_queryManager == null)
 			{
-				_queryManager = new QueryManager(Helper, _agentService);
+				_queryManager = new QueryManager(Helper, _agentGuid);
+			}
+
+			if (_agentService == null)
+			{
+				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
 			}
 
 			if (_jobService == null)

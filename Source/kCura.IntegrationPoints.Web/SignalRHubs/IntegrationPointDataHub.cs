@@ -60,8 +60,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			_logger = _helper.GetLoggerFactory().GetLogger();
 
-			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			IQueryManager queryManager = new QueryManager(helper, agentService);
+			IQueryManager queryManager = new QueryManager(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 			_managerFactory = new ManagerFactory(_helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 			_queueManager = _managerFactory.CreateQueueManager();

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
+//using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -91,7 +91,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				{
 					BatchInstance = Guid.NewGuid()
 				};
-				string jobDeatils = new JSONSerializer().Serialize(taskParameters);
+				string jobDeatils = JsonConvert.SerializeObject(taskParameters);
 				CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRuleFactory.Deserialize(job),
 					jobDeatils, job.SubmittedBy, job.RootJobId,
 					job.ParentJobId);

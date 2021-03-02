@@ -14,11 +14,28 @@ namespace kCura.ScheduleQueue.Core.Data
 
 		public IDBContext EddsDbContext => _queueDbContext.EddsDBContext;
 
-		public string TableName => _queueDbContext.TableName;
+		public string QueueTable { get; }
 
-		public QueryManager(IHelper helper, IAgentService agentService)
+		public QueryManager(IHelper helper, Guid agentGuid)
 		{
-			_queueDbContext = new QueueDBContext(helper, agentService.QueueTable);
+			QueueTable = $"ScheduleAgentQueue_{agentGuid.ToString().ToUpperInvariant()}";
+
+			_queueDbContext = new QueueDBContext(helper, QueueTable);
+		}
+
+		public ICommand CreateScheduleQueueTable()
+		{
+			return new CreateScheduleQueueTable(_queueDbContext);
+		}
+
+		public ICommand AddStopStateColumnToQueueTable()
+		{
+			return new AddStopStateColumnToQueueTable(_queueDbContext);
+		}
+
+		public IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid)
+		{
+			return new GetAgentTypeInformation(_queueDbContext.EddsDBContext, agentGuid);
 		}
 
 		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId)

@@ -13,6 +13,7 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Agent, Version=13.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\kCura.Agent\lib\net462\kCura.Agent.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,14 +53,45 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Integration\Artifact.cs" />
+    <Compile Include="Integration\Const.cs" />
+    <Compile Include="Integration\DatabaseSchema.cs" />
+    <Compile Include="Integration\Feature\ScheduleQueue\SimpleScheduleAgentTests.cs" />
+    <Compile Include="Integration\Feature\ScheduleQueue\ScheduleQueueInitializationTests.cs" />
+    <Compile Include="Integration\Helpers\AgentHelper.cs" />
+    <Compile Include="Integration\Helpers\HelperBase.cs" />
+    <Compile Include="Integration\Helpers\HelperManager.cs" />
+    <Compile Include="Integration\Helpers\IntegrationPointHelper.cs" />
+    <Compile Include="Integration\Helpers\JobHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelper.cs" />
+    <Compile Include="Integration\InMemoryDatabase.cs" />
+    <Compile Include="Integration\JobId.cs" />
+    <Compile Include="Integration\Mocks\EmptyLogger.cs" />
+    <Compile Include="Integration\Mocks\Kepler\IKeplerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\KeplerStubBase.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Workspace.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\WorkspaceManagerStub.cs" />
+    <Compile Include="Integration\Mocks\ProxyMock.cs" />
+    <Compile Include="Integration\Mocks\QueryManagerMock.cs" />
+    <Compile Include="Integration\Mocks\ScheduleQueueMock.cs" />
+    <Compile Include="Integration\Mocks\ScheduleTestAgent.cs" />
+    <Compile Include="Integration\Mocks\TestHelper.cs" />
+    <Compile Include="Integration\Models\Agent.cs" />
+    <Compile Include="Integration\Models\IntegrationPoint.cs" />
+    <Compile Include="Integration\Models\Job.cs" />
+    <Compile Include="Integration\Models\Workspace.cs" />
+    <Compile Include="Integration\TestContext.cs" />
+    <Compile Include="Integration\TestsBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Functional\" />
-    <Folder Include="Integration\" />
     <Folder Include="Unit\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPoint.cs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +253,26 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Microsoft.VisualBasic">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Services">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity">
+          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Testing.Identification">
           <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
           <Private>True</Private>
@@ -267,9 +323,6 @@
         <Reference Include="System.Runtime.Remoting">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="System.Web">
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="Castle.Windsor">
           <HintPath>..\..\packages\tests\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
           <Private>True</Private>
@@ -313,9 +366,6 @@
           <Paket>True</Paket>
         </Reference>
         <Reference Include="System.ServiceModel">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Web.Services">
           <Paket>True</Paket>
         </Reference>
         <Reference Include="kCura.Relativity.Client">
