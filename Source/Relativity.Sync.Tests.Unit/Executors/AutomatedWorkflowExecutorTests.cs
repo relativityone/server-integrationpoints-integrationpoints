@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ExecuteAsync_ShouldMakeCallToRawTriggerService()
 		{
-			await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			_triggerProcessorService.Verify(
 				m => m.SendTriggerAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<SendTriggerBody>()), Times.Once);
 		}
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ExecuteAsync_ShouldReturnCompleted_WhenTriggerServiceExecutesWithoutExceptions()
 		{
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_triggerProcessorService
 				.Setup(m => m.SendTriggerAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<SendTriggerBody>()))
 				.Throws<Exception>();
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ExecuteAsync_ShouldReturnSuccess_WhenSynchronizationResultIsNull()
 		{
 			_configuration.Setup(m => m.SynchronizationExecutionResult).Returns((ExecutionResult)null);
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ExecuteAsync_ShouldReturnSuccess_WhenKeplerCanNotReturnAutomatedWorkflowsService()
 		{
 			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>()).Throws<Exception>();
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None)
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ExecuteAsync_ShouldReturnSuccess_WhenKeplerReturnsNullAutomatedWorkflowsService()
 		{
 			_serviceFactory.Setup(m => m.CreateProxyAsync<IAutomatedWorkflowsService>()).Returns(Task.FromResult((IAutomatedWorkflowsService)null));
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 		}
 	}

@@ -176,7 +176,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				}).ToList());
 
 			// act
-			await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentBatchEndMetric>(m =>
@@ -212,7 +212,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_configFake.VerifySet(x => x.FolderPathSourceFieldName = _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, Times.Once);
@@ -239,7 +239,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Message.Should()
@@ -261,7 +261,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Message.Should()
@@ -284,7 +284,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_configFake.VerifySet(x => x.FolderPathSourceFieldName = It.IsAny<string>(), Times.Never);
@@ -303,7 +303,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fakeFieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 
 			// act
-			Func<Task> action = async () => await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None);
 			// assert
 			string errorMessage = "Cannot find destination identifier field in field mappings.";
 			action.Should().Throw<SyncException>().Which.Message.Should().Be(errorMessage);
@@ -316,7 +316,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SpecialFieldType missingSpecialField = SpecialFieldType.NativeFileSize;
 			List<FieldInfoDto> specialFields = _specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
 			_fieldManagerFake.Setup(x => x.GetNativeSpecialFields()).Returns(specialFields);
-			Func<Task> action = async () => await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None);
 
 			// act
 			action();
@@ -342,7 +342,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_batchRepositoryMock.Verify(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(numberOfBatches));
@@ -358,10 +358,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(numberOfBatches);
 
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
 			tokenSource.Cancel();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, tokenSource.Token).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, compositeCancellationToken).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Canceled);
@@ -379,7 +380,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_importJobFake.Verify(x => x.Dispose(), Times.Exactly(numberOfBatches));
@@ -428,7 +429,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			brakingActionSetup(this, expectedExecutionResult);
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().BeEquivalentTo(expectedExecutionResult.Status);
@@ -459,7 +460,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(new ImportJobResult(expectedExecutionResult, 1, 0, 1));
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().BeEquivalentTo(expectedExecutionResult.Status);
@@ -484,7 +485,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<ImportFailedException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			// assert
 			result.Message.Should().Be("Fatal exception occurred while executing import job.");
 			result.Exception.Should().BeOfType<ImportFailedException>();
@@ -500,7 +501,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
@@ -520,7 +521,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
 		}
@@ -534,7 +535,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
@@ -551,7 +552,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(CreateSuccessfulResult());
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_jobCleanupConfigurationMock.VerifySet(x => x.SynchronizationExecutionResult = result);
@@ -569,7 +570,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(executionResult);
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_jobCleanupConfigurationMock.VerifySet(x => x.SynchronizationExecutionResult = result);
@@ -591,7 +592,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configFake.Object, CancellationToken.None)
+				.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// assert
@@ -607,6 +608,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
 
 			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(cancellationTokenSource.Token, CancellationToken.None);
 
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(CreateSuccessfulResult)
@@ -614,7 +616,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configFake.Object, cancellationTokenSource.Token)
+				.ExecuteAsync(_configFake.Object, compositeCancellationToken)
 				.ConfigureAwait(false);
 
 			// assert

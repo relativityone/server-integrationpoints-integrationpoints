@@ -29,7 +29,7 @@ namespace Relativity.Sync.Nodes
 			bool canExecute;
 			try
 			{
-				canExecute = await _command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+				canExecute = await _command.CanExecuteAsync(context.Subject.CompositeCancellationToken.StopCancellationToken).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Nodes
 			ExecutionResult result;
 			try
 			{
-				result = await _command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+				result = await _command.ExecuteAsync(context.Subject.CompositeCancellationToken).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			if (context.Subject.CancellationToken.IsCancellationRequested)
+			if (context.Subject.CompositeCancellationToken.StopCancellationToken.IsCancellationRequested)
 			{
 				context.CancelProcessing = true;
 			}

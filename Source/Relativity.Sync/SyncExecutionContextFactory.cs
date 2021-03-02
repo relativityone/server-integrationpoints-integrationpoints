@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Banzai;
 
 namespace Relativity.Sync
@@ -13,7 +12,7 @@ namespace Relativity.Sync
 			_configuration = configuration;
 		}
 
-		public IExecutionContext<SyncExecutionContext> Create(IProgress<SyncJobState> progress, CancellationToken token)
+		public IExecutionContext<SyncExecutionContext> Create(IProgress<SyncJobState> progress, CompositeCancellationToken token)
 		{
 			SyncExecutionContext subject = new SyncExecutionContext(progress, token);
 			ExecutionOptions globalOptions = new ExecutionOptions
@@ -24,7 +23,7 @@ namespace Relativity.Sync
 			};
 			IExecutionContext<SyncExecutionContext> context = new ExecutionContext<SyncExecutionContext>(subject, globalOptions);
 
-			token.Register(() => context.CancelProcessing = true);
+			token.StopCancellationToken.Register(() => context.CancelProcessing = true);
 
 			return context;
 		}

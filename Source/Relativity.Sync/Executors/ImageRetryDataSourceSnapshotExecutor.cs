@@ -26,7 +26,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IImageRetryDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IImageRetryDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode, ImportOverwriteMode.AppendOverlay);
 			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Executors
 			_logger.LogInformation("Initializing image export in workspace {workspaceId} with saved search {savedSearchId}.",
 				configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
 			
-			QueryRequest queryRequest = await CreateQueryRequestAsync(configuration, token).ConfigureAwait(false);
+			QueryRequest queryRequest = await CreateQueryRequestAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 
 			ExportInitializationResults results;
 			try
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Executors
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					_logger.LogInformation("Retrieved {documentCount} documents from saved search which have images", results.RecordCount);
 
-					_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token, queryRequest);
+					_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token.StopCancellationToken, queryRequest);
 				}
 			}
 			catch (Exception e)

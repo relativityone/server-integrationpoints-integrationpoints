@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			var configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 
 			// act
-			ExecutionResult executionResult = await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			executionResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 
 			// act
-			ExecutionResult executionResult = await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			executionResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sourceCaseTagService.Setup(x => x.CreateOrUpdateSourceCaseTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult executionResult = await _sut.ExecuteAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _sut.ExecuteAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);

@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Common
 			_types = types;
 		}
 
-		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(T configuration, CompositeCancellationToken token)
 		{
 			_types.Add(typeof(T));
 			return Task.FromResult(ExecutionResult.Success());

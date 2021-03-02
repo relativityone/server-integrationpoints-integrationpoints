@@ -24,9 +24,8 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	internal sealed class SourceWorkspaceTagsCreationExecutorTests
 	{
-		private CancellationToken _token;
+		private CompositeCancellationToken _token;
 		private ISyncLog _logger;
-		private string _correlationId;
 
 		private IExecutor<ISourceWorkspaceTagsCreationConfiguration> _executor;
 		private Mock<IObjectManager> _destinationObjectManagerMock;
@@ -57,8 +56,7 @@ namespace Relativity.Sync.Tests.Integration
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_token = CancellationToken.None;
-			_correlationId = Guid.NewGuid().ToString();
+			_token = CompositeCancellationToken.None;
 			_logger = new EmptyLogger();
 		}
 
@@ -99,7 +97,7 @@ namespace Relativity.Sync.Tests.Integration
 					It.Is<QueryRequest>(y => y.Condition.Contains(_TEST_DEST_CASE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
 					It.IsAny<int>(),
 					It.IsAny<int>(),
-					_token,
+					_token.StopCancellationToken,
 					It.IsAny<IProgress<ProgressReport>>()))
 					.ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject { Name = _TEST_DEST_CASE_NAME } } });
 
@@ -114,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration
 					It.Is<QueryRequest>(request => request.Condition == expectedInstanceCondition),
 					It.IsAny<int>(),
 					It.IsAny<int>(),
-					_token,
+					_token.StopCancellationToken,
 					It.IsAny<IProgress<ProgressReport>>())
 				).ReturnsAsync(new QueryResult())
 				.Verifiable();
@@ -135,7 +133,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(_TEST_DEST_CASE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject { Name = _TEST_DEST_CASE_NAME } } });
 
@@ -144,7 +142,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>())
 				).ReturnsAsync(new QueryResult());
 
@@ -179,7 +177,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(_TEST_DEST_CASE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject { Name = expectedDestinationWorkspaceName } } });
 
@@ -188,7 +186,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>())
 			).ReturnsAsync(new QueryResult
 			{
@@ -232,7 +230,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(_TEST_DEST_CASE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject { Name = _TEST_INSTANCE_NAME } } });
 
@@ -241,7 +239,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>())
 				).ReturnsAsync(new QueryResult
 			{
@@ -286,7 +284,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(_TEST_DEST_CASE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.ReturnsAsync(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = _TEST_DEST_CASE_NAME } } });
 
@@ -295,7 +293,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>())
 			).ReturnsAsync(new QueryResult
 			{
@@ -334,7 +332,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<QueryRequest>(y => y.Condition.Contains(_TEST_DEST_CASE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>()))
 				.ReturnsAsync(new QueryResult());
 
@@ -358,7 +356,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>())
 				).ReturnsAsync(new QueryResult());
 
@@ -389,7 +387,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>())
 			).ReturnsAsync(new QueryResult
 			{
@@ -428,7 +426,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>())
 				).ReturnsAsync(new QueryResult());
 
@@ -462,7 +460,7 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<QueryRequest>(),
 				It.IsAny<int>(),
 				It.IsAny<int>(),
-				_token,
+				_token.StopCancellationToken,
 				It.IsAny<IProgress<ProgressReport>>()
 			)).Throws<Exception>();
 
@@ -483,7 +481,7 @@ namespace Relativity.Sync.Tests.Integration
 					It.IsAny<QueryRequest>(),
 					It.IsAny<int>(),
 					It.IsAny<int>(),
-					_token,
+					_token.StopCancellationToken,
 					It.IsAny<IProgress<ProgressReport>>()))
 					.ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject { Name = _TEST_DEST_CASE_NAME } } });
 		}

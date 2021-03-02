@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IJobStatusConsolidationConfiguration>(configuration);
 			
 			// Act
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			const int expectedTransferredItemsCount = transferredItemsCountPerBatch * batchCount;

@@ -21,7 +21,6 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.DataExchange;
 using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Extensions;
 using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
 
@@ -143,7 +142,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				using (var objectManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<IObjectManager>())
 				{
 					string aggregatedJobHistoryErrors =
-						await objectManager.AggregateJobHistoryErrorMessagesAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, jobHistory.ArtifactID);
+						await objectManager.AggregateJobHistoryErrorMessagesAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, jobHistory.ArtifactID).ConfigureAwait(false);
 
 					aggregatedJobHistoryErrors.Should().BeNullOrEmpty("There should be no item level errors");
 				}

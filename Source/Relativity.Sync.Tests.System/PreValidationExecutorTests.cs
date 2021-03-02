@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[IdentifiedTest("BAA6FBA3-B03A-4627-9217-873D00ACDA59")]
-		public async Task ValdiateAsync_ShouldSuccessfullyValidateJob()
+		public Task ValdiateAsync_ShouldSuccessfullyValidateJob()
 		{
 			// Arrange
 			ConfigurationStub configuration = new ConfigurationStub
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPreValidationConfiguration>(configuration);
 			
 			// Act & Assert
-			await syncJob.ExecuteAsync(CancellationToken.None);
+			return syncJob.ExecuteAsync(CompositeCancellationToken.None);
 		}
 
 		[IdentifiedTest("56039045-E4C8-4C04-8A05-C0E911CCC107")]
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPreValidationConfiguration>(configuration);
 
 			// Act
-			Func<Task> executeJobFunc = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> executeJobFunc = () => syncJob.ExecuteAsync(CompositeCancellationToken.None);
 
 			// Assert
 			executeJobFunc.Should().Throw<ValidationException>();

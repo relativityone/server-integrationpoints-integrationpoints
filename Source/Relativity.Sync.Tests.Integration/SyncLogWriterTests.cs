@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task BanzaiShouldWriteToSyncLog()
 		{
-			await _syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			// this is one of the invocations happening in Banzai

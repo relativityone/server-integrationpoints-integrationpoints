@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.System
 			IExecutor<IDocumentDataSourceSnapshotConfiguration> executor =
 				container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
 			ExecutionResult result =
-				await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+				await executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
 			// Create batch and SourceWorkspaceDataReader
@@ -235,7 +235,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Create snapshot
 			IExecutor<IImageDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
-			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
 			// Create batch and SourceWorkspaceDataReader

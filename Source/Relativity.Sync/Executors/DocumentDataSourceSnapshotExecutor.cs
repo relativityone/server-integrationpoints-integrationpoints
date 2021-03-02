@@ -38,14 +38,14 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IDocumentDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDocumentDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {fields}.", configuration.SourceWorkspaceArtifactId,
 				configuration.DataSourceArtifactId, configuration.GetFieldMappings());
 
 			_logger.LogVerbose("Including following system fields to export {supportedByViewer}, {nativeType}.", _SUPPORTED_BY_VIEWER_FIELD_NAME, _RELATIVITY_NATIVE_TYPE_FIELD_NAME);
 
-			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
+			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentTypeFieldsAsync(token.StopCancellationToken).ConfigureAwait(false);
 			IEnumerable<FieldRef> documentFieldRefs = documentFields.Select(f => new FieldRef {Name = f.SourceFieldName});
 
 			QueryRequest queryRequest = new QueryRequest
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Executors
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					_logger.LogInformation("Retrieved {documentsCount} documents from saved search.", results.RecordCount);
 
-					Task<long> calculateNativesTotalSizeTask = Task.Run(() => _nativeFileRepository.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest), token);
+					Task<long> calculateNativesTotalSizeTask = Task.Run(() => _nativeFileRepository.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, queryRequest), token.StopCancellationToken);
 					_jobStatisticsContainer.NativesBytesRequested = calculateNativesTotalSizeTask;
 				}
 			}

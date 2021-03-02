@@ -123,10 +123,10 @@ namespace Relativity.Sync.Nodes
 		{
 			try
 			{
-				bool canExecute = await command.CanExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false);
+				bool canExecute = await command.CanExecuteAsync(context.Subject.CompositeCancellationToken.StopCancellationToken).ConfigureAwait(false);
 
 				ExecutionResult executionResult = canExecute
-					? await command.ExecuteAsync(context.Subject.CancellationToken).ConfigureAwait(false)
+					? await command.ExecuteAsync(context.Subject.CompositeCancellationToken).ConfigureAwait(false)
 					: ExecutionResult.Skipped();
 
 				return executionResult;

@@ -29,10 +29,10 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldCallInnerExecuteAsync()
 		{
 			// ACT
-			await _sut.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_syncJob.Verify(x => x.ExecuteAsync(CancellationToken.None));
+			_syncJob.Verify(x => x.ExecuteAsync(CompositeCancellationToken.None));
 		}
 
 		[Test]
@@ -41,55 +41,16 @@ namespace Relativity.Sync.Tests.Unit
 			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
-			await _sut.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(progress, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_syncJob.Verify(x => x.ExecuteAsync(progress, CancellationToken.None));
-		}
-
-		[Test]
-		public async Task ItShouldCallInnerRetryAsync()
-		{
-			// ACT
-			await _sut.RetryAsync(CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			_syncJob.Verify(x => x.RetryAsync(CancellationToken.None));
-		}
-
-		[Test]
-		public async Task ItShouldCallInnerRetryWithProgressAsync()
-		{
-			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
-
-			// ACT
-			await _sut.RetryAsync(progress, CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			_syncJob.Verify(x => x.RetryAsync(progress, CancellationToken.None));
-		}
-
-		[Test]
-		public async Task ItShouldLogUnhandledExceptionWhenExecuted()
-		{
-			_syncJob.Setup(x => x.ExecuteAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CancellationToken>())).Returns(() =>
-			{
-				_appDomain.FireUnhandledException();
-				return Task.CompletedTask;
-			});
-			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
-
-			// ACT
-			await _sut.ExecuteAsync(progress, CancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			_syncLog.Verify(x => x.LogFatal(It.IsAny<Exception>(), It.IsAny<string>()));
+			_syncJob.Verify(x => x.ExecuteAsync(progress, CompositeCancellationToken.None));
 		}
 		
 		[Test]
-		public async Task ItShouldLogUnhandledExceptionWhenRetried()
+		public async Task ItShouldLogUnhandledExceptionWhenExecuted()
 		{
-			_syncJob.Setup(x => x.RetryAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CancellationToken>())).Returns(() =>
+			_syncJob.Setup(x => x.ExecuteAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CompositeCancellationToken>())).Returns(() =>
 			{
 				_appDomain.FireUnhandledException();
 				return Task.CompletedTask;
@@ -97,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit
 			IProgress<SyncJobState> progress = new Progress<SyncJobState>();
 
 			// ACT
-			await _sut.RetryAsync(progress, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(progress, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			_syncLog.Verify(x => x.LogFatal(It.IsAny<Exception>(), It.IsAny<string>()));

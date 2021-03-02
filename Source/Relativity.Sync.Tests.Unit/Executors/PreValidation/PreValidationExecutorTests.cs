@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PreValidation
 		public async Task ExecuteAsync_ShouldReportSuccessfullyExecutionResult()
 		{
 			// Act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<IPreValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<IPreValidationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PreValidation
 				.ReturnsAsync(ValidationResult.Invalid);
 
 			// Act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<IPreValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<IPreValidationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PreValidation
 				.Throws<InvalidOperationException>();
 
 			// Act
-			Func<Task> action = async () => await _sut.ExecuteAsync(Mock.Of<IPreValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.ExecuteAsync(Mock.Of<IPreValidationConfiguration>(), CompositeCancellationToken.None);
 
 			// Assert
 			action.Should().Throw<ValidationException>();

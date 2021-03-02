@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupExportInitialization();
 
 			// Act
-			await _instance.ExecuteAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			ImagesStatistics imagesStatistics = await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false);
 
 			// Assert
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupExportInitialization(expectedRunId, expectedTotalRecords);
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -114,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupExportInitialization();
 
 			// Act
-			await _instance.ExecuteAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID,
@@ -128,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).Throws<InvalidOperationException>();
 
 			// Act
-			ExecutionResult executionResult = await _instance.ExecuteAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);

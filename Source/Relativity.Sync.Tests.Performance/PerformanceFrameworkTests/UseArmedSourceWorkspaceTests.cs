@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Performance.PerformanceFrameworkTests
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			await UseArmWorkspace(
+			await UseArmWorkspaceAsync(
 					"SmallSaltPepperWorkspace.zip",
 					null)
 				.ConfigureAwait(false);

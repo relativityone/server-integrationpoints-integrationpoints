@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			await UseExistingWorkspace(
+			await UseExistingWorkspaceAsync(
 					"Large Job Tests [DO NOT DELETE]",
 					null)
 				.ConfigureAwait(false);

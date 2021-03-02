@@ -26,13 +26,13 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IImageDataSourceSnapshotConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IImageDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation(
 				"Initializing image export in workspace {workspaceId} with saved search {savedSearchId}.",
 				configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
 			
-			QueryRequest queryRequest = await CreateQueryRequestAsync(configuration, token).ConfigureAwait(false);
+			QueryRequest queryRequest = await CreateQueryRequestAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 
 			ExportInitializationResults results;
 			try
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Executors
 						.ConfigureAwait(false);
 					_logger.LogInformation("Retrieved {documentCount} documents from saved search which have images", results.RecordCount);
 
-					_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token, queryRequest);
+					_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token.StopCancellationToken, queryRequest);
 				}
 			}
 			catch (Exception e)
