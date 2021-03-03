@@ -15,6 +15,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
 			public const int _INTEGRATION_POINTS_AGENT_TYPE_ID = 1;
+
+			public static readonly List<int> _RESOURCE_GROUP_IDS = new List<int>
+				{Artifact.NextId(), Artifact.NextId(), Artifact.NextId()};
 		}
 	}
 }

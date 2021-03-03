@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.ScheduleQueue.Core.Core;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
@@ -27,6 +23,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public DateTime SubmittedDate { get; set; }
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
+
+		public Job()
+		{
+			JobId = Integration.JobId.Next;
+			AgentTypeID = Const.Agent._INTEGRATION_POINTS_AGENT_TYPE_ID;
+		}
 
 		public DataRow AsRow()
 		{

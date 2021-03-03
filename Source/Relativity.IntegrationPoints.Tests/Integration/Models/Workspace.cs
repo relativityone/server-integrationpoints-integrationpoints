@@ -7,7 +7,7 @@
 
 		public Workspace()
 		{
-			ArtifactId = Artifact.Next();
+			ArtifactId = Artifact.NextId();
 		}
 	}
 }

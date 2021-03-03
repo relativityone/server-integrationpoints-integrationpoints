@@ -6,7 +6,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class IntegrationPointHelper : HelperBase
 	{
-		public IntegrationPointHelper(InMemoryDatabase database, ProxyMock proxyMock) : base(database, proxyMock)
+		public IntegrationPointHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock) : base(manager, database, proxyMock)
 		{
 		}
 
@@ -14,20 +14,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		{
 			var integrationPoint = new IntegrationPoint
 			{
+				ArtifactId = Artifact.NextId(),
 				WorkspaceId = workspace.ArtifactId
 			};
 
 			Database.IntegrationPoints.Add(integrationPoint);
 
+			ProxyMock.ObjectManager.SetupIntegrationPoint(workspace, integrationPoint);
+
 			return integrationPoint;
+		}
+
+		public void RemoveIntegrationPoint(int integrationPointId)
+		{
+			Database.IntegrationPoints.RemoveAll(x => x.ArtifactId == integrationPointId);
 		}
 
 		public Job ScheduleIntegrationPointJob(IntegrationPoint integrationPoint)
 		{
 			Job job = new Job
 			{
-				JobId = JobId.Next,
-				AgentTypeID = Const.Agent._INTEGRATION_POINTS_AGENT_TYPE_ID,
 				NextRunTime = DateTime.Now,
 				RelatedObjectArtifactID = integrationPoint.ArtifactId,
 				WorkspaceID = integrationPoint.WorkspaceId

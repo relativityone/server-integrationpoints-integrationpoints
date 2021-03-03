@@ -54,6 +54,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			Database.Clear();
 			Proxy.Clear();
+
+			Context.SetDateTime(null);
 		}
 	}
 }

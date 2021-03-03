@@ -26,12 +26,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			_proxy = proxy;
 		}
 
-		public WorkspaceHelper WorkspaceHelper => _workspaceHelper ?? (_workspaceHelper = new WorkspaceHelper(_db, _proxy));
+		public WorkspaceHelper WorkspaceHelper => _workspaceHelper ?? (_workspaceHelper = new WorkspaceHelper(this, _db, _proxy));
 
-		public AgentHelper AgentHelper => _agentHelper ?? (_agentHelper = new AgentHelper(_db, _proxy));
+		public AgentHelper AgentHelper => _agentHelper ?? (_agentHelper = new AgentHelper(this, _db, _proxy));
 
-		public JobHelper JobHelper => _jobHelper ?? (_jobHelper = new JobHelper(_db, _proxy));
+		public JobHelper JobHelper => _jobHelper ?? (_jobHelper = new JobHelper(this, _db, _proxy));
 
-		public IntegrationPointHelper IntegrationPointHelper => _integrationPointHelper ?? (_integrationPointHelper = new IntegrationPointHelper(_db, _proxy));
+		public IntegrationPointHelper IntegrationPointHelper => _integrationPointHelper ?? (_integrationPointHelper = new IntegrationPointHelper(this, _db, _proxy));
 	}
 }

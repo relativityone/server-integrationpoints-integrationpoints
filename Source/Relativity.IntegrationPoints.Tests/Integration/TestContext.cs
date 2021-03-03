@@ -1,13 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
 	public class TestContext
 	{
-		public DateTime CurrentDateTime { get; set; } = DateTime.UtcNow;
+		private DateTime? _currentDateTime;
+
+		public DateTime CurrentDateTime => _currentDateTime ?? DateTime.Now;
+
+		public void SetDateTime(DateTime? dateTime)
+		{
+			_currentDateTime = dateTime;
+		}
 	}
 }

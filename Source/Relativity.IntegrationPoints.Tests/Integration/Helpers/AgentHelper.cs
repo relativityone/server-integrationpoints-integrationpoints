@@ -5,13 +5,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class AgentHelper : HelperBase
 	{
-		public AgentHelper(InMemoryDatabase database, ProxyMock proxyMock) : base(database, proxyMock)
+		public AgentHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock) : base(manager, database, proxyMock)
 		{
 		}
 
 		public Agent CreateIntegrationPointAgent()
 		{
-			int artifactId = Artifact.Next();
+			int artifactId = Artifact.NextId();
 
 			var agent = new Agent
 			{

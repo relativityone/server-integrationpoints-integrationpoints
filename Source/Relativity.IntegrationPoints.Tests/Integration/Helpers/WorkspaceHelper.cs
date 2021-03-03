@@ -5,16 +5,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class WorkspaceHelper : HelperBase
 	{
-		public WorkspaceHelper(InMemoryDatabase database, ProxyMock proxy) : base(database, proxy)
+		public WorkspaceHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxy) : base(manager, database, proxy)
 		{ }
 
-		public Workspace CreateWorkspace(string name)
+		public Workspace CreateWorkspace()
 		{
-			Workspace workspace = new Workspace
-			{
-				ArtifactId = Artifact.Next(),
-				Name = name
-			};
+			Workspace workspace = new Workspace();
 
 			Database.Workspaces.Add(workspace);
 

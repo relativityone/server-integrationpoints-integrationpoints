@@ -56,7 +56,8 @@
     <Compile Include="Integration\Artifact.cs" />
     <Compile Include="Integration\Const.cs" />
     <Compile Include="Integration\DatabaseSchema.cs" />
-    <Compile Include="Integration\Feature\ScheduleQueue\SimpleScheduleAgentTests.cs" />
+    <Compile Include="Integration\Feature\ScheduleQueue\DrainStoppedJobsInScheduleQueueTests.cs" />
+    <Compile Include="Integration\Feature\ScheduleQueue\ScheduleAgentTests.cs" />
     <Compile Include="Integration\Feature\ScheduleQueue\ScheduleQueueInitializationTests.cs" />
     <Compile Include="Integration\Helpers\AgentHelper.cs" />
     <Compile Include="Integration\Helpers\HelperBase.cs" />
@@ -74,7 +75,6 @@
     <Compile Include="Integration\Mocks\Kepler\WorkspaceManagerStub.cs" />
     <Compile Include="Integration\Mocks\ProxyMock.cs" />
     <Compile Include="Integration\Mocks\QueryManagerMock.cs" />
-    <Compile Include="Integration\Mocks\ScheduleQueueMock.cs" />
     <Compile Include="Integration\Mocks\ScheduleTestAgent.cs" />
     <Compile Include="Integration\Mocks\TestHelper.cs" />
     <Compile Include="Integration\Models\Agent.cs" />

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
@@ -10,22 +8,44 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class JobHelper : HelperBase
 	{
-		public JobHelper(InMemoryDatabase database, ProxyMock proxyMock) : base(database, proxyMock)
+		public JobHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock) : base(manager, database, proxyMock)
 		{
 		}
 
-		public Job ScheduleEmptyJob(Agent agent, DateTime nextRunTime)
+		public Job ScheduleJob(Job job)
 		{
-			Job job = new Job
-			{
-				JobId = JobId.Next,
-				AgentTypeID = agent.AgentTypeId,
-				NextRunTime = nextRunTime,
-			};
-
 			Database.JobsInQueue.Add(job);
 
 			return job;
 		}
+
+		public Job ScheduleValidJob()
+		{
+			Workspace workspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+
+			IntegrationPoint integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
+
+			return HelperManager.IntegrationPointHelper.ScheduleIntegrationPointJob(integrationPoint);
+		}
+
+		#region Verification
+
+		public void VerifyJobsWithIdsAreInQueue(IEnumerable<long> jobs)
+		{
+			Database.JobsInQueue.Select(x => x.JobId).Should().Contain(jobs);
+		}
+
+		public void VerifyJobsWithIdsWereRemovedFromQueue(IEnumerable<long> jobs)
+		{
+			Database.JobsInQueue.Select(x => x.JobId).Should().NotContain(jobs);
+		}
+
+		public void VerifyJobsAreNotLockedByAgent(Agent agent, IEnumerable<long> jobs)
+		{
+			Database.JobsInQueue.Where(x => jobs.Contains(x.JobId))
+				.All(x => x.LockedByAgentID != agent.ArtifactId).Should().BeTrue();
+		}
+
+		#endregion
 	}
 }

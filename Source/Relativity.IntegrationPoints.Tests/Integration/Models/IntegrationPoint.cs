@@ -8,7 +8,7 @@
 
 		public IntegrationPoint()
 		{
-			ArtifactId = Artifact.Next();
+			ArtifactId = Artifact.NextId();
 		}
 	}
 }

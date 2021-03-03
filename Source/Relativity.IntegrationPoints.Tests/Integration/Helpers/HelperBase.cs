@@ -8,8 +8,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		protected readonly ProxyMock ProxyMock;
 
-		protected HelperBase(InMemoryDatabase database, ProxyMock proxyMock)
+		protected readonly HelperManager HelperManager;
+
+		protected HelperBase(HelperManager helperManager, InMemoryDatabase database, ProxyMock proxyMock)
 		{
+			HelperManager = helperManager;
 			Database = database;
 			ProxyMock = proxyMock;
 		}

@@ -3,16 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data.Interfaces;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
 	public interface IQueryManager
 	{
-		IDBContext EddsDbContext { get; }
-
-		string QueueTable { get; }
-
 		ICommand CreateScheduleQueueTable();
 
 		ICommand AddStopStateColumnToQueueTable();
@@ -27,17 +22,13 @@ namespace kCura.ScheduleQueue.Core.Data
 
 		ICommand UnlockJob(long jobId);
 
-		ICommand DeleteJob(IDBContext dbContext, string tableName, long jobId);
-
 		ICommand DeleteJob(long jobId);
 
-		IQuery<DataTable> CreateScheduledJob(IDBContext dbContext, string tableName, int workspaceID,
-			int relatedObjectArtifactID,
+		IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID,
 			string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
-			string serializedScheduleRule,
-			string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
+			string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
-		IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+		ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 

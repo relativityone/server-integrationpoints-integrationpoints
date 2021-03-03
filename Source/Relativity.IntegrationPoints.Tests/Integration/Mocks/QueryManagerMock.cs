@@ -7,8 +7,6 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Interfaces;
 using kCura.Vendor.Castle.Core.Internal;
-using Moq;
-using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
@@ -17,20 +15,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 	{
 		private readonly InMemoryDatabase _db;
 		private readonly TestContext _context;
-		private readonly IHelper _helper;
 
 		private int _scheduleQueueCreateRequestCount;
 
-		public QueryManagerMock(InMemoryDatabase database, TestContext context, IHelper helper)
+		public QueryManagerMock(InMemoryDatabase database, TestContext context)
 		{
 			_db = database;
 			_context = context;
-			_helper = helper;
 		}
-
-		public IDBContext EddsDbContext => _helper.GetDBContext(-1);
-
-		public string QueueTable => "ScheduleAgentQueue";
 
 		public ICommand CreateScheduleQueueTable()
 		{
@@ -109,35 +101,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			});
 		}
 
-		public ICommand DeleteJob(IDBContext dbContext, string tableName, long jobId)
-		{
-			return new ActionCommand(() =>
-			{
-				_db.JobsInQueue.RemoveAll(x => x.JobId == jobId);
-			});
-		}
-
 		public ICommand DeleteJob(long jobId)
 		{
 			return new ActionCommand(() =>
 			{
 				_db.JobsInQueue.RemoveAll(x => x.JobId == jobId);
 			});
-		}
-
-		public IQuery<DataTable> CreateScheduledJob(IDBContext dbContext, string tableName, int workspaceId, int relatedObjectArtifactId,
-			string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
-			string jobDetails, int jobFlags, int submittedBy, long? rootJobId, long? parentJobId = null)
-		{
-			long newJobId = Artifact.Next();
-			
-			var newJob = CreateJob(newJobId, workspaceId, relatedObjectArtifactId, taskType,
-				nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
-				jobDetails, jobFlags, submittedBy, rootJobId, parentJobId);
-
-			_db.JobsInQueue.Add(newJob);
-
-			return new ValueReturnQuery<DataTable>(newJob.AsTable());
 		}
 
 		public IQuery<DataTable> CreateScheduledJob(int workspaceId, int relatedObjectArtifactId, string taskType, DateTime nextRunTime,
@@ -153,6 +122,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			_db.JobsInQueue.Add(newJob);
 
 			return new ValueReturnQuery<DataTable>(newJob.AsTable());
+		}
+
+		public ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
+			string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
+			string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
+		{
+			return new ActionCommand(() =>
+			{
+				_db.JobsInQueue.RemoveAll(x => x.JobId == oldScheduledJobId);
+
+				long newJobId = JobId.Next;
+
+				var newJob = CreateJob(newJobId, workspaceID, relatedObjectArtifactID, taskType,
+					nextRunTime, AgentTypeID, scheduleRuleType, serializedScheduleRule,
+					jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
+
+				_db.JobsInQueue.Add(newJob);
+			});
 		}
 
 		public ICommand CleanupJobQueueTable()

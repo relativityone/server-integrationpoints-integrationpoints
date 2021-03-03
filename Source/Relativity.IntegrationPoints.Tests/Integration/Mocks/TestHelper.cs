@@ -33,8 +33,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public IServicesMgr GetServicesManager()
 		{
-			throw new NotImplementedException();
+			return _serviceManager.Object;
 		}
+
+		#region Not Implemented
 
 		public void Dispose()
 		{
@@ -90,5 +92,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 }

@@ -12,15 +12,11 @@ namespace kCura.ScheduleQueue.Core.Data
 	{
 		private readonly IQueueDBContext _queueDbContext;
 
-		public IDBContext EddsDbContext => _queueDbContext.EddsDBContext;
-
-		public string QueueTable { get; }
-
 		public QueryManager(IHelper helper, Guid agentGuid)
 		{
-			QueueTable = $"ScheduleAgentQueue_{agentGuid.ToString().ToUpperInvariant()}";
+			string queueTable = $"ScheduleAgentQueue_{agentGuid.ToString().ToUpperInvariant()}";
 
-			_queueDbContext = new QueueDBContext(helper, QueueTable);
+			_queueDbContext = new QueueDBContext(helper, queueTable);
 		}
 
 		public ICommand CreateScheduleQueueTable()
@@ -58,30 +54,24 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new UnlockJob(_queueDbContext, jobId);
 		}
 
-		public ICommand DeleteJob(IDBContext dbContext, string tableName, long jobId)
-		{
-			return new DeleteJob(dbContext, tableName, jobId);
-		}
-
 		public ICommand DeleteJob(long jobId)
 		{
 			return new DeleteJob(_queueDbContext, jobId);
 		}
 
-		public IQuery<DataTable> CreateScheduledJob(IDBContext dbContext, string tableName, int workspaceID, int relatedObjectArtifactID,
-			string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
-			string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
+		public IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+			DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule, string jobDetails,
+			int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
 		{
-			return new CreateScheduledJob(dbContext, tableName, workspaceID, relatedObjectArtifactID,
-				taskType, nextRunTime, AgentTypeID, scheduleRuleType, serializedScheduleRule,
-				jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
+			return new CreateScheduledJob(_queueDbContext, workspaceID, relatedObjectArtifactID, taskType, nextRunTime, 
+				AgentTypeID, scheduleRuleType, serializedScheduleRule,  jobDetails,jobFlags,  SubmittedBy, rootJobID, parentJobID);
 		}
 
-		public IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType, DateTime nextRunTime,
+		public ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType, DateTime nextRunTime,
 			int AgentTypeID, string scheduleRuleType, string serializedScheduleRule, string jobDetails, int jobFlags,
 			int SubmittedBy, long? rootJobID, long? parentJobID = null)
 		{
-			return new CreateScheduledJob(_queueDbContext, workspaceID, relatedObjectArtifactID,
+			return new CreateNewAndDeleteOldScheduledJob(_queueDbContext, oldScheduledJobId, workspaceID, relatedObjectArtifactID,
 				taskType, nextRunTime, AgentTypeID, scheduleRuleType, serializedScheduleRule,
 				jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
 		}

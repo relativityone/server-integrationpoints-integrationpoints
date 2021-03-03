@@ -72,6 +72,7 @@
     <Compile Include="Data\JobServiceDataProvider.cs" />
     <Compile Include="Data\Queries\AddStopStateColumnToQueueTable.cs" />
     <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
+    <Compile Include="Data\Queries\CreateScheduledJob.cs" />
     <Compile Include="Data\Queries\GetAllJobs.cs" />
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
@@ -79,7 +80,7 @@
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
     <Compile Include="Data\Queries\DeleteJob.cs" />
     <Compile Include="Data\Queries\GetJob.cs" />
-    <Compile Include="Data\Queries\CreateScheduledJob.cs" />
+    <Compile Include="Data\Queries\CreateNewAndDeleteOldScheduledJob.cs" />
     <Compile Include="Data\Queries\UpdateScheduledJob.cs" />
     <Compile Include="Data\Queries\GetAgentTypeInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />

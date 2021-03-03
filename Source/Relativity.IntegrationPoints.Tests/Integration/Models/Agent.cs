@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Reflection;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -11,6 +10,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public string Name { get; set; }
 		public string FullNamespace { get; set; }
 		public Guid AgentGuid { get; set; }
+
+		public Agent()
+		{
+			ArtifactId = Artifact.NextId();
+		}
 
 		public DataRow AsRow()
 		{

@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data.Interfaces;
-using kCura.ScheduleQueue.Core.Data.Queries;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
@@ -55,44 +52,20 @@ namespace kCura.ScheduleQueue.Core.Data
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
 		{
-			IDBContext dbContext = _queryManager.EddsDbContext;
-			try
-			{
-				dbContext.BeginTransaction();
-
-				DeleteJob(oldScheduledJobId, _queryManager.QueueTable, dbContext);
-
-				CreateScheduledJob(workspaceID, relatedObjectArtifactID, taskType,
-					nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
-					jobDetails, jobFlags, submittedBy, rootJobID, parentJobID, _queryManager.QueueTable, dbContext);
-
-				dbContext.CommitTransaction();
-			}
-			catch (Exception )
-			{
-				dbContext.RollbackTransaction();
-				throw;
-			}
-			
+			_queryManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID, 
+					taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails, 
+					jobFlags, submittedBy, rootJobID, parentJobID)
+				.Execute();
 		}
 
 		public DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
 		{
-			using (DataTable dataTable = _queryManager.CreateScheduledJob(
-				workspaceID,
-				relatedObjectArtifactID,
-				taskType,
-				nextRunTime,
-				agentTypeId,
-				scheduleRuleType,
-				serializedScheduleRule,
-				jobDetails,
-				jobFlags,
-				submittedBy,
-				rootJobID,
-				parentJobID).Execute())
+			using (DataTable dataTable = _queryManager.CreateScheduledJob(workspaceID, relatedObjectArtifactID,
+					taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails, 
+					jobFlags, submittedBy, rootJobID, parentJobID)
+				.Execute())
 			{
 				return GetFirstRowOrDefault(dataTable);
 			}
@@ -109,13 +82,6 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			_queryManager
 				.DeleteJob(jobId)
-				.Execute();
-		}
-
-		public void DeleteJob(long jobId, string tableName, IDBContext context)
-		{
-			_queryManager
-				.DeleteJob(context, tableName, jobId)
 				.Execute();
 		}
 
@@ -158,29 +124,6 @@ namespace kCura.ScheduleQueue.Core.Data
 			_queryManager
 				.CleanupJobQueueTable()
 				.Execute();
-		}
-
-		private DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
-			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
-			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID, 
-			string tableName, IDBContext dbContext)
-		{
-			using (DataTable dataTable = _queryManager.CreateScheduledJob(dbContext, tableName,
-				workspaceID,
-				relatedObjectArtifactID,
-				taskType,
-				nextRunTime,
-				agentTypeId,
-				scheduleRuleType,
-				serializedScheduleRule,
-				jobDetails,
-				jobFlags,
-				submittedBy,
-				rootJobID,
-				parentJobID).Execute())
-			{
-				return GetFirstRowOrDefault(dataTable);
-			}
 		}
 	}
 }

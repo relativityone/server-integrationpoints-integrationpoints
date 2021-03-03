@@ -4,14 +4,12 @@ using System.Data;
 using System.Data.SqlClient;
 using kCura.ScheduleQueue.Core.Data.Interfaces;
 using kCura.ScheduleQueue.Core.Properties;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
 	public class CreateScheduledJob : IQuery<DataTable>
 	{
-		private readonly IDBContext _dbContext;
-		private readonly string _tableName;
+		private readonly IQueueDBContext _dbContext;
 
 		private readonly int _workspaceId;
 		private readonly int _relatedObjectArtifactId;
@@ -40,40 +38,8 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			long? rootJobID,
 			long? parentJobID = null)
 		{
-			_dbContext = dbContext.EddsDBContext;
-			_tableName = dbContext.TableName;
-
-			_workspaceId = workspaceID;
-			_relatedObjectArtifactId = relatedObjectArtifactID;
-			_taskType = taskType;
-			_nextRunTime = nextRunTime;
-			_agentTypeId = AgentTypeID;
-			_scheduleRuleType = scheduleRuleType;
-			_serializedScheduleRule = serializedScheduleRule;
-			_jobDetails = jobDetails;
-			_jobFlags = jobFlags;
-			_submittedBy = SubmittedBy;
-			_rootJobId = rootJobID;
-			_parentJobId = parentJobID;
-		}
-
-		public CreateScheduledJob(IDBContext dbContext,
-			string tableName,
-			int workspaceID,
-			int relatedObjectArtifactID,
-			string taskType,
-			DateTime nextRunTime,
-			int AgentTypeID,
-			string scheduleRuleType,
-			string serializedScheduleRule,
-			string jobDetails,
-			int jobFlags,
-			int SubmittedBy,
-			long? rootJobID,
-			long? parentJobID = null)
-		{
 			_dbContext = dbContext;
-			_tableName = tableName;
+
 			_workspaceId = workspaceID;
 			_relatedObjectArtifactId = relatedObjectArtifactID;
 			_taskType = taskType;
@@ -90,7 +56,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 		public DataTable Execute()
 		{
-			string sql = string.Format(Resources.CreateScheduledJob, _tableName);
+			string sql = string.Format(Resources.CreateScheduledJob, _dbContext.TableName);
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@WorkspaceID", _workspaceId));
@@ -116,7 +82,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 				? new SqlParameter("@ParentJobID", DBNull.Value)
 				: new SqlParameter("@ParentJobID", _parentJobId.Value));
 			
-			return _dbContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
+			return _dbContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 		}
 	}
 }
