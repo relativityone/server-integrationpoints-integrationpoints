@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -106,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -128,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -162,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert

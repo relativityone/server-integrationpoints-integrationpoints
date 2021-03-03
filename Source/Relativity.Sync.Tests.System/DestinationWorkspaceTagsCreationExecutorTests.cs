@@ -64,10 +64,10 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ASSERT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
-			RelativityObject sourceCaseTag = await QueryForCreatedSourceCaseTag(configuration.SourceWorkspaceTagArtifactId).ConfigureAwait(false);
-			RelativityObject sourceJobTag = await QueryForCreatedSourceJobTag(configuration.SourceJobTagArtifactId).ConfigureAwait(false);
+			RelativityObject sourceCaseTag = await QueryForCreatedSourceCaseTagAsync(configuration.SourceWorkspaceTagArtifactId).ConfigureAwait(false);
+			RelativityObject sourceJobTag = await QueryForCreatedSourceJobTagAsync(configuration.SourceJobTagArtifactId).ConfigureAwait(false);
 
 			Assert.AreEqual(expectedSourceWorkspaceArtifactId, sourceCaseTag.FieldValues.First(x => x.Field.Guids.Contains(_RELATIVITY_SOURCE_CASE_ID_FIELD_GUID)).Value);
 			Assert.AreEqual(expectedSourceWorkspaceName, sourceCaseTag.FieldValues.First(x => x.Field.Guids.Contains(_RELATIVITY_SOURCE_CASE_NAME_FIELD_GUID)).Value);
@@ -113,11 +113,11 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 			
 			// ASSERT
-			RelativityObject sourceCaseTag = await QueryForCreatedSourceCaseTag(configuration.SourceWorkspaceTagArtifactId).ConfigureAwait(false);
-			RelativityObject sourceJobTag = await QueryForCreatedSourceJobTag(configuration.SourceJobTagArtifactId).ConfigureAwait(false);
+			RelativityObject sourceCaseTag = await QueryForCreatedSourceCaseTagAsync(configuration.SourceWorkspaceTagArtifactId).ConfigureAwait(false);
+			RelativityObject sourceJobTag = await QueryForCreatedSourceJobTagAsync(configuration.SourceJobTagArtifactId).ConfigureAwait(false);
 
 			Assert.AreEqual(expectedSourceCaseTagArtifactId, sourceCaseTag.ArtifactID);
 			Assert.AreEqual(expectedSourceWorkspaceArtifactId, sourceCaseTag.FieldValues.First(x => x.Field.Guids.Contains(_RELATIVITY_SOURCE_CASE_ID_FIELD_GUID)).Value);
@@ -131,7 +131,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(sourceCaseTag.ArtifactID, sourceJobTag.ParentObject.ArtifactID);
 		}
 
-		private async Task<RelativityObject> QueryForCreatedSourceCaseTag(int sourceWorkspaceTagArtifactId)
+		private async Task<RelativityObject> QueryForCreatedSourceCaseTagAsync(int sourceWorkspaceTagArtifactId)
 		{
 			RelativityObject tag;
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
@@ -169,7 +169,7 @@ namespace Relativity.Sync.Tests.System
 			return tag;
 		}
 
-		private async Task<RelativityObject> QueryForCreatedSourceJobTag(int sourceJobTagArtifactId)
+		private async Task<RelativityObject> QueryForCreatedSourceJobTagAsync(int sourceJobTagArtifactId)
 		{
 			RelativityObject tag;
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())

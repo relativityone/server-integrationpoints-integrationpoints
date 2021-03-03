@@ -2,6 +2,8 @@ namespace Relativity.Sync.RDOs
 {
     internal static class SyncRdoGuids
     {
+        public const string ParentType_JobHistoryGuid = "08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9";
+        
         public const string SyncConfigurationGuid = "3BE3DE56-839F-4F0E-8446-E1691ED5FD57";
 
         public const string CreateSavedSearchInDestinationGuid =
@@ -65,5 +67,6 @@ namespace Relativity.Sync.RDOs
         public const string JobHistoryErrorInProgressChoiceGuid = "A3CE4293-AB88-4A98-8415-0DE3F3127A76";
         public const string JobHistoryErrorRetriedChoiceGuid = "0859833A-B8F4-4352-92CA-38AA8FD46388";
         public const string JobHistoryIdGuid = "FF793525-29AB-40B2-A8AE-88E574EAD0DE";
+        public const string ResumingGuid = "A5B0959D-96CE-4CA0-9E4A-576132F29165";
     }
 }

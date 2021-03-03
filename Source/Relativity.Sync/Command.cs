@@ -26,7 +26,7 @@ namespace Relativity.Sync
 			return _executionConstrains.CanExecuteAsync(_configuration, token);
 		}
 
-		public Task<ExecutionResult> ExecuteAsync(CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(CompositeCancellationToken token)
 		{
 			return _executor.ExecuteAsync(_configuration, token);
 		}

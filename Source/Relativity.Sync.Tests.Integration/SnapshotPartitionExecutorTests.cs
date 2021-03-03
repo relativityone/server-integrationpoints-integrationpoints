@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public class SnapshotPartitionExecutorTests
 	{
-		private CancellationToken _token;
+		private CompositeCancellationToken _token;
 
 		private Mock<ISyncLog> _syncLog;
 		private Mock<IObjectManager> _objectManager;
@@ -39,9 +39,7 @@ namespace Relativity.Sync.Tests.Integration
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			string correlationGuid = Guid.NewGuid().ToString();
-
-			_token = CancellationToken.None;
+			_token = CompositeCancellationToken.None;
 		}
 
 		[SetUp]

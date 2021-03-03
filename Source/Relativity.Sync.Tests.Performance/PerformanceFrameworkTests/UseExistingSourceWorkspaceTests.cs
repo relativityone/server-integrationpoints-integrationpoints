@@ -23,9 +23,9 @@ namespace Relativity.Sync.Tests.Performance.PerformanceFrameworkTests
 
 			var sampleWorkspace = await Environment.GetWorkspaceAsync(_WORKSPACE_NAME).ConfigureAwait(false);
 
-			await Environment.CreateFieldsInWorkspaceAsync(sampleWorkspace.ArtifactID);
+			await Environment.CreateFieldsInWorkspaceAsync(sampleWorkspace.ArtifactID).ConfigureAwait(false);
 
-			await UseExistingWorkspace(
+			await UseExistingWorkspaceAsync(
 					_WORKSPACE_NAME,
 					null)
 				.ConfigureAwait(false);

@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Search;
@@ -38,8 +37,8 @@ namespace Relativity.Sync.Tests.System
 			string sourceWorkspaceTagName = "Source Workspace Tag Name";
 			string sourceJobTagName = "Source Job Tag Name";
 
-			int sourceCaseTagArtifactId = await CreateRelativitySourceCaseTag(sourceWorkspaceTagName, _sourceWorkspace.ArtifactID, sourceWorkspaceName).ConfigureAwait(false);
-			int sourceJobTagArtifactId = await CreateSourceJobTag(jobHistoryArtifactId, jobHistoryName, sourceCaseTagArtifactId, sourceJobTagName).ConfigureAwait(false);
+			int sourceCaseTagArtifactId = await CreateRelativitySourceCaseTagAsync(sourceWorkspaceTagName, _sourceWorkspace.ArtifactID, sourceWorkspaceName).ConfigureAwait(false);
+			int sourceJobTagArtifactId = await CreateSourceJobTagAsync(jobHistoryArtifactId, jobHistoryName, sourceCaseTagArtifactId, sourceJobTagName).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
@@ -53,15 +52,15 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
 			
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			bool savedSearchExists = await DoesSavedSearchExist(sourceJobTagName).ConfigureAwait(false);
+			bool savedSearchExists = await DoesSavedSearchExistAsync(sourceJobTagName).ConfigureAwait(false);
 
 			savedSearchExists.Should().BeTrue();
 		}
 
-		private async Task<int> CreateRelativitySourceCaseTag(string sourceWorkspaceTagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName)
+		private async Task<int> CreateRelativitySourceCaseTagAsync(string sourceWorkspaceTagName, int sourceWorkspaceArtifactId, string sourceWorkspaceName)
 		{
 			RelativitySourceCaseTag sourceCaseTag = new RelativitySourceCaseTag
 			{
@@ -75,7 +74,7 @@ namespace Relativity.Sync.Tests.System
 			return sourceCaseTagArtifactId;
 		}
 
-		private async Task<int> CreateSourceJobTag(int jobHistoryArtifactId, string jobHistoryName, int sourceCaseTagArtifactId, string sourceJobTagName)
+		private async Task<int> CreateSourceJobTagAsync(int jobHistoryArtifactId, string jobHistoryName, int sourceCaseTagArtifactId, string sourceJobTagName)
 		{
 			RelativitySourceJobTag sourceJobTag = new RelativitySourceJobTag
 			{
@@ -89,7 +88,7 @@ namespace Relativity.Sync.Tests.System
 			return sourceJobTagArtifactId;
 		}
 
-		private async Task<bool> DoesSavedSearchExist(string sourceJobTagName)
+		private async Task<bool> DoesSavedSearchExistAsync(string sourceJobTagName)
 		{
 			using (var savedSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>())
 			{

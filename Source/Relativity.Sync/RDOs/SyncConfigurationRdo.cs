@@ -4,7 +4,7 @@ using Relativity.Sync.RDOs.Framework.Attributes;
 
 namespace Relativity.Sync.RDOs
 {
-    [Rdo(SyncRdoGuids.SyncConfigurationGuid, "Sync Configuration")]
+    [Rdo(SyncRdoGuids.SyncConfigurationGuid, "Sync Configuration", SyncRdoGuids.ParentType_JobHistoryGuid)]
     internal sealed class SyncConfigurationRdo : IRdoType
     {
         public int ArtifactId { get; set; }
@@ -95,6 +95,9 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int DestinationWorkspaceTagArtifactId { get; set; }
+        
+        [RdoField(SyncRdoGuids.ResumingGuid, RdoFieldType.YesNo)]
+        public bool Resuming { get; set; }
 
         // JobHistory configuration
         [RdoField(SyncRdoGuids.JobHistoryTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]

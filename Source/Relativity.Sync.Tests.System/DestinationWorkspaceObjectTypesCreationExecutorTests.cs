@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.Services.ArtifactGuid;
@@ -43,7 +42,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItShouldCreateObjectTypesAndFields()
 		{
 			// Verify that object types and fields are not existing in a workspace before we run the test
-			await VerifyObjectTypesAndFieldsExist(false).ConfigureAwait(false);
+			await VerifyObjectTypesAndFieldsExistAsync(false).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
@@ -53,13 +52,13 @@ namespace Relativity.Sync.Tests.System
 
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceObjectTypesCreationConfiguration>(configuration);
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			await VerifyObjectTypesAndFieldsExist(true).ConfigureAwait(false);
+			await VerifyObjectTypesAndFieldsExistAsync(true).ConfigureAwait(false);
 		}
 
-		private async Task VerifyObjectTypesAndFieldsExist(bool expectExisting)
+		private async Task VerifyObjectTypesAndFieldsExistAsync(bool expectExisting)
 		{
 			using (IArtifactGuidManager guidManager = ServiceFactory.CreateProxy<IArtifactGuidManager>())
 			{

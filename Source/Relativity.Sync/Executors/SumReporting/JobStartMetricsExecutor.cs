@@ -38,7 +38,7 @@ namespace Relativity.Sync.Executors.SumReporting
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(ISumReporterConfiguration configuration,
-			CancellationToken token)
+			CompositeCancellationToken token)
 		{
 			JobStartMetric metric = new JobStartMetric
 			{
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 			try
 			{
-				await LogFieldsMappingDetailsAsync(configuration, token).ConfigureAwait(false);
+				await LogFieldsMappingDetailsAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 			}
 			catch (Exception exception)
 			{

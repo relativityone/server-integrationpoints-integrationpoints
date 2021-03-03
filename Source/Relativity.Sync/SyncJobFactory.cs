@@ -1,7 +1,6 @@
 ﻿using System;
 using Autofac;
 using Banzai.Logging;
-using Relativity.API;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 

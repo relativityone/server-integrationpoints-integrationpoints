@@ -17,7 +17,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(ISnapshotPartitionConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(ISnapshotPartitionConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Creating snapshot partitions for source workspace (workspace artifact id: {sourceWorkspaceArtifactId})", configuration.SourceWorkspaceArtifactId);
 

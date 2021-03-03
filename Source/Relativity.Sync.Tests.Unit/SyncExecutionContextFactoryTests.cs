@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit
 			_configuration.NumberOfStepsRunInParallel = stepsInParallel;
 
 			// ACT
-			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress<SyncJobState>(), CancellationToken.None);
+			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress<SyncJobState>(), CompositeCancellationToken.None);
 
 			// ASSERT
 			context.GlobalOptions.ThrowOnError.Should().BeFalse();
@@ -41,22 +41,23 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldCreateSyncExecutionContext()
 		{
 			IProgress<SyncJobState> progress = new EmptyProgress<SyncJobState>();
-			CancellationToken token = new CancellationToken();
+			CompositeCancellationToken token = new CompositeCancellationToken(CancellationToken.None, CancellationToken.None);
 
 			// ACT
 			IExecutionContext<SyncExecutionContext> context = _instance.Create(progress, token);
 
 			// ASSERT
 			context.Subject.Progress.Should().Be(progress);
-			context.Subject.CancellationToken.Should().Be(token);
+			context.Subject.CompositeCancellationToken.Should().Be(token);
 		}
 
 		[Test]
 		public void ItShouldBindExecutionContextWithCancellationToken()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			CompositeCancellationToken token = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
 
-			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress<SyncJobState>(), tokenSource.Token);
+			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress<SyncJobState>(), token);
 			context.CancelProcessing.Should().BeFalse();
 
 			// ACT

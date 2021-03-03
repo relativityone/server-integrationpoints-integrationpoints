@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
-using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
@@ -62,7 +61,7 @@ namespace Relativity.Sync.Executors
 
 		protected abstract void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
 
-		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Creating settings for ImportAPI.");
 			UpdateImportSettings(configuration);
@@ -74,8 +73,7 @@ namespace Relativity.Sync.Executors
 			return importAndTagResult;
 		}
 
-		private async Task<ExecutionResult> ExecuteSynchronizationAsync(TConfiguration configuration,
-			CancellationToken token)
+		private async Task<ExecutionResult> ExecuteSynchronizationAsync(TConfiguration configuration, CompositeCancellationToken token)
 		{
 			ExecutionResult importAndTagResult;
 			try
@@ -90,7 +88,7 @@ namespace Relativity.Sync.Executors
 				{
 					foreach (int batchId in batchesIds)
 					{
-						if (token.IsCancellationRequested)
+						if (token.StopCancellationToken.IsCancellationRequested)
 						{
 							_logger.LogInformation("Import job has been canceled.");
 							return ExecutionResult.Canceled();
@@ -99,16 +97,16 @@ namespace Relativity.Sync.Executors
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 						IStopwatch batchTimer = GetStartedTimer();
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token).ConfigureAwait(false))
+						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.StopCancellationToken).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
 							{
 								IStopwatch importApiTimer = GetStartedTimer();
-								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token.StopCancellationToken).ConfigureAwait(false);
 								importApiTimer.Stop();
 
-								Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token);
-								Task<TaggingExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token);
+								Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
+								Task<TaggingExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token.StopCancellationToken);
 								
 								TaggingExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
 								TaggingExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);

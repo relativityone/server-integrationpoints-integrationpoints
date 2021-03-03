@@ -167,7 +167,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Create object types in destination (DestinationWorkspaceObjectTypesCreationExecutor is always executed in admin context)
 			IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration> executor = container.Resolve<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
-			ExecutionResult result = await executor.ExecuteAsync(_configurationStub, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await executor.ExecuteAsync(_configurationStub, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
 			// Setup permissions for created user
@@ -177,7 +177,7 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
 
 			// Act-Assert
-			Assert.DoesNotThrowAsync(() => syncJob.ExecuteAsync(CancellationToken.None));
+			Assert.DoesNotThrowAsync(() => syncJob.ExecuteAsync(CompositeCancellationToken.None));
 		}
 
 		[TearDown]

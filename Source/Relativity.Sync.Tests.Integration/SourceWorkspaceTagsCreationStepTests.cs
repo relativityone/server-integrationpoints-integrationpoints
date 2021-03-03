@@ -130,7 +130,7 @@ namespace Relativity.Sync.Tests.Integration
 				).Verifiable();
 
 			// Act
-			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
 			_sourceObjectManagerMock.Verify();
@@ -204,7 +204,7 @@ namespace Relativity.Sync.Tests.Integration
 				).Verifiable();
 
 			// Act
-			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
 			_sourceObjectManagerMock.Verify();
@@ -299,7 +299,7 @@ namespace Relativity.Sync.Tests.Integration
 				).Verifiable();
 
 			// Act
-			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
 			_sourceObjectManagerMock.Verify();
@@ -387,7 +387,7 @@ namespace Relativity.Sync.Tests.Integration
 				).Verifiable();
 
 			// Act
-			_executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// Assert
 			_destinationObjectManagerMock.Verify();
@@ -419,7 +419,7 @@ namespace Relativity.Sync.Tests.Integration
 				.Returns(Task.FromResult(new QueryResult()));
 
 			// Act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -466,7 +466,7 @@ namespace Relativity.Sync.Tests.Integration
 				).Throws<Exception>();
 
 			// Act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -554,7 +554,7 @@ namespace Relativity.Sync.Tests.Integration
 			).Throws<Exception>();
 
 			// Act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -609,7 +609,7 @@ namespace Relativity.Sync.Tests.Integration
 			).Throws<Exception>();
 
 			// Act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -653,7 +653,7 @@ namespace Relativity.Sync.Tests.Integration
 			)).Throws<Exception>();
 
 			// Act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);

@@ -22,7 +22,7 @@ namespace Relativity.Sync.Executors
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CompositeCancellationToken token)
 		{
 			try
 			{

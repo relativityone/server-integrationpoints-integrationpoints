@@ -18,14 +18,14 @@ namespace Relativity.Sync.Executors.PreValidation
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IPreValidationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IPreValidationConfiguration configuration, CompositeCancellationToken token)
 		{
 			try
 			{
 				ValidationResult validationResult = new ValidationResult();
 				foreach (var validator in _validators)
 				{
-					validationResult.Add(await validator.ValidateAsync(configuration, token).ConfigureAwait(false));
+					validationResult.Add(await validator.ValidateAsync(configuration, token.StopCancellationToken).ConfigureAwait(false));
 				}
 
 				if (!validationResult.IsValid)

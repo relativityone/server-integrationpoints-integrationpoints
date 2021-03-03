@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -84,7 +82,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -120,7 +118,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -157,7 +155,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);

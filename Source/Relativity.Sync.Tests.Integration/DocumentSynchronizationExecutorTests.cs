@@ -150,7 +150,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupTaggingOfDocuments(totalItemsCount);
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -220,7 +220,7 @@ namespace Relativity.Sync.Tests.Integration
 					.Verifiable();
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
@@ -261,7 +261,7 @@ namespace Relativity.Sync.Tests.Integration
 					.Verifiable();
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
@@ -277,10 +277,11 @@ namespace Relativity.Sync.Tests.Integration
 
 			SetupNewBatch(newBatchArtifactId, totalItemsCount);
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
 
 			// act
 			tokenSource.Cancel();
-			ExecutionResult result = await _executor.ExecuteAsync(_config, tokenSource.Token).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, compositeCancellationToken).ConfigureAwait(false);
 
 			// assert
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Never);

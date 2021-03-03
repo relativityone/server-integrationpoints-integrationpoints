@@ -27,12 +27,12 @@ namespace Relativity.Sync.Executors
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(ISourceWorkspaceTagsCreationConfiguration configuration, CompositeCancellationToken token)
 		{
 			ExecutionResult result = ExecutionResult.Success();
 			try
 			{
-				int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token).ConfigureAwait(false);
+				int destinationWorkspaceTagArtifactId = await CreateOrUpdateDestinationWorkspaceTagAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 				await configuration.SetDestinationWorkspaceTagArtifactIdAsync(destinationWorkspaceTagArtifactId).ConfigureAwait(false);
 			}
 			catch (Exception ex)

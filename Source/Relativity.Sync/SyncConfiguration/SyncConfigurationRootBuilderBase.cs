@@ -105,7 +105,7 @@ namespace Relativity.Sync.SyncConfiguration
             await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId)
                 .ConfigureAwait(false);
 
-            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration).ConfigureAwait(false);
+            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration, SyncContext.JobHistoryId).ConfigureAwait(false);
 
             return SyncConfiguration.ArtifactId;
         }

@@ -131,7 +131,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
 		{
 			IExecutor<IDocumentSynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<IDocumentSynchronizationConfiguration>>();
-			return syncExecutor.ExecuteAsync(configuration, CancellationToken.None);
+			return syncExecutor.ExecuteAsync(configuration, CompositeCancellationToken.None);
 		}
 
 		private List<FieldMap> UserFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)

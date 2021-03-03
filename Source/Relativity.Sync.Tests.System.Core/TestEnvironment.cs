@@ -192,8 +192,6 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public async Task CreateFieldsInWorkspaceAsync(int workspaceArtifactId)
 		{
-			await EnsureRdosExistsAsync(workspaceArtifactId);
-			
 			await InstallHelperAppIfNeededAsync().ConfigureAwait(false);
 			using (var applicationInstallManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
 			{
@@ -212,6 +210,8 @@ namespace Relativity.Sync.Tests.System.Core
 				}
 				while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
 			}
+			
+			await EnsureRdosExistsAsync(workspaceArtifactId);
 		}
 
 		private static async Task EnsureRdosExistsAsync(int workspaceArtifactId)

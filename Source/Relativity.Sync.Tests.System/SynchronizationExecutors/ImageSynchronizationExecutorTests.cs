@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
 		{
 			IExecutor<IImageSynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<IImageSynchronizationConfiguration>>();
-			return syncExecutor.ExecuteAsync(configuration, CancellationToken.None);
+			return syncExecutor.ExecuteAsync(configuration, CompositeCancellationToken.None);
 		}
 	}
 }

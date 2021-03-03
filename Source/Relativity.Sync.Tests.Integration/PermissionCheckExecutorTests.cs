@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration
 			IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
 			
 			// Act
-			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			//Assert
 			validationResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Integration
 			IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
 
 			// Act
-			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			//Assert
 			validationResult.Status.Should().Be(ExecutionStatus.Failed);
