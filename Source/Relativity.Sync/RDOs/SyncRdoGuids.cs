@@ -2,6 +2,8 @@ namespace Relativity.Sync.RDOs
 {
     internal static class SyncRdoGuids
     {
+        public const string ParentType_JobHistoryGuid = "08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9";
+        
         public const string SyncConfigurationGuid = "3BE3DE56-839F-4F0E-8446-E1691ED5FD57";
 
         public const string CreateSavedSearchInDestinationGuid =
