@@ -70,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 		}
 
 		[Test]
-		public void Agent_ShouldNotProcessAndDelete_WhenJobIsInvalid()
+		public void Agent_ShouldNotProcessAndDelete_WhenJobRelatedIntegrationPointNotExist()
 		{
 			// Arrange
 			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
@@ -78,6 +78,29 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			Job job = HelperManager.JobHelper.ScheduleValidJob();
 
 			HelperManager.IntegrationPointHelper.RemoveIntegrationPoint(job.RelatedObjectArtifactID);
+
+			var jobsInQueue = new[] { job.JobId };
+
+			var sut = PrepareSutWithMockedQueryManager(agent);
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			sut.VerifyJobsWereNotProcessed(jobsInQueue);
+
+			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
+		}
+
+		[Test]
+		public void Agent_ShouldNotProcessAndDelete_WhenJobRelatedWorkspaceNotExist()
+		{
+			// Arrange
+			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+
+			Job job = HelperManager.JobHelper.ScheduleValidJob();
+
+			HelperManager.WorkspaceHelper.RemoveWorkspace(job.WorkspaceID);
 
 			var jobsInQueue = new[] { job.JobId };
 

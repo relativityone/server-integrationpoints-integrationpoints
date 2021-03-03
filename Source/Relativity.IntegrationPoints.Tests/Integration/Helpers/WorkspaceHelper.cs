@@ -18,5 +18,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 			return workspace;
 		}
+
+		public void RemoveWorkspace(int workspaceId)
+		{
+			Database.Workspaces.RemoveAll(x => x.ArtifactId == workspaceId);
+		}
 	}
 }
