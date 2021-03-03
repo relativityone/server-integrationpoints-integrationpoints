@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
+﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class JobBuilder
 	{
-		private Job _job;
+		private readonly Job _job;
 
 		public JobBuilder()
 		{
 			_job = new Job();
+		}
+
+		public Job Build()
+		{
+			return _job;
 		}
 
 		public JobBuilder WithIntegrationPoint(IntegrationPoint integrationPoint)

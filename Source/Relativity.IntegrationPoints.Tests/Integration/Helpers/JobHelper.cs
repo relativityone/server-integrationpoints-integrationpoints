@@ -21,29 +21,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		public Job ScheduleBasicJob()
 		{
-			Job job = CreateJobWithWorkspaceAndIntegrationPoint();
+			var job = CreateBasicJob()
+				.Build();
 
 			return ScheduleJob(job);
 		}
 
 		public Job ScheduleJobWithSchedule(ScheduleRule rule)
 		{
-			Job job = CreateJobWithWorkspaceAndIntegrationPoint();
+			Job job = CreateBasicJob()
+				.WithScheduleRule(rule)
+				.Build();
 
-			job.SerializedScheduleRule = rule.Serialize();
+			return ScheduleJob(job);
 		}
 
-		private Job CreateJobWithWorkspaceAndIntegrationPoint()
+		private JobBuilder CreateBasicJob()
 		{
 			Workspace workspace = HelperManager.WorkspaceHelper.CreateWorkspace();
 
 			IntegrationPoint integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
 
-			return new Job
-			{
-				WorkspaceID = workspace.ArtifactId,
-				RelatedObjectArtifactID = integrationPoint.ArtifactId
-			};
+			return new JobBuilder()
+				.WithWorkspace(workspace)
+				.WithIntegrationPoint(integrationPoint);
 		}
 
 		#region Verification
