@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			Agent agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job = HelperManager.JobHelper.ScheduleValidJob();
+			Job job = HelperManager.JobHelper.ScheduleBasicJob();
 
 			var jobsInQueue = new[] {job.JobId};
 
@@ -41,8 +41,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			Agent agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job1 = HelperManager.JobHelper.ScheduleValidJob();
-			Job job2 = HelperManager.JobHelper.ScheduleValidJob();
+			Job job1 = HelperManager.JobHelper.ScheduleBasicJob();
+			Job job2 = HelperManager.JobHelper.ScheduleBasicJob();
 
 			var jobsInQueue = new[] {job1.JobId, job2.JobId};
 
@@ -69,7 +69,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			Agent agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job1 = HelperManager.JobHelper.ScheduleValidJob();
+			Job job1 = HelperManager.JobHelper.ScheduleBasicJob();
 			Job job2 = HelperManager.JobHelper.ScheduleJob(new Job()
 			{
 				WorkspaceID = job1.WorkspaceID,

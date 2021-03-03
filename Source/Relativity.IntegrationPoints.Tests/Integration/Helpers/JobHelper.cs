@@ -19,13 +19,31 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return job;
 		}
 
-		public Job ScheduleValidJob()
+		public Job ScheduleBasicJob()
+		{
+			Job job = CreateJobWithWorkspaceAndIntegrationPoint();
+
+			return ScheduleJob(job);
+		}
+
+		public Job ScheduleJobWithSchedule(ScheduleRule rule)
+		{
+			Job job = CreateJobWithWorkspaceAndIntegrationPoint();
+
+			job.SerializedScheduleRule = rule.Serialize();
+		}
+
+		private Job CreateJobWithWorkspaceAndIntegrationPoint()
 		{
 			Workspace workspace = HelperManager.WorkspaceHelper.CreateWorkspace();
 
 			IntegrationPoint integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
 
-			return HelperManager.IntegrationPointHelper.ScheduleIntegrationPointJob(integrationPoint);
+			return new Job
+			{
+				WorkspaceID = workspace.ArtifactId,
+				RelatedObjectArtifactID = integrationPoint.ArtifactId
+			};
 		}
 
 		#region Verification

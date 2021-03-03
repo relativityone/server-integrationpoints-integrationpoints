@@ -61,6 +61,7 @@
     <Compile Include="AgentNotFoundException.cs" />
     <Compile Include="BatchProcess\BatchManagerBase.cs" />
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
+    <Compile Include="Const.cs" />
     <Compile Include="Core\AgentTypeInformation.cs" />
     <Compile Include="Core\StopState.cs" />
     <Compile Include="Core\TaskParameters.cs" />

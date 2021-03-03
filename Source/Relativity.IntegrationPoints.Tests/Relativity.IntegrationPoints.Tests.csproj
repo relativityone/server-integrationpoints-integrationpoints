@@ -37,6 +37,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\kCura.Agent\lib\net462\kCura.Agent.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.9.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Agent\bin\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -59,10 +63,12 @@
     <Compile Include="Integration\Feature\ScheduleQueue\DrainStoppedJobsInScheduleQueueTests.cs" />
     <Compile Include="Integration\Feature\ScheduleQueue\ScheduleAgentTests.cs" />
     <Compile Include="Integration\Feature\ScheduleQueue\ScheduleQueueInitializationTests.cs" />
+    <Compile Include="Integration\Feature\ScheduleQueue\ScheduleQueueTestsForScheduledJobs.cs" />
     <Compile Include="Integration\Helpers\AgentHelper.cs" />
     <Compile Include="Integration\Helpers\HelperBase.cs" />
     <Compile Include="Integration\Helpers\HelperManager.cs" />
     <Compile Include="Integration\Helpers\IntegrationPointHelper.cs" />
+    <Compile Include="Integration\Helpers\JobBuilder.cs" />
     <Compile Include="Integration\Helpers\JobHelper.cs" />
     <Compile Include="Integration\Helpers\WorkspaceHelper.cs" />
     <Compile Include="Integration\InMemoryDatabase.cs" />
@@ -80,6 +86,7 @@
     <Compile Include="Integration\Models\Agent.cs" />
     <Compile Include="Integration\Models\IntegrationPoint.cs" />
     <Compile Include="Integration\Models\Job.cs" />
+    <Compile Include="Integration\Models\ScheduleRule.cs" />
     <Compile Include="Integration\Models\Workspace.cs" />
     <Compile Include="Integration\TestContext.cs" />
     <Compile Include="Integration\TestsBase.cs" />

@@ -19,8 +19,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 			ISerializer defaultSerializer = new XMLSerializerFactory();
 
 			//Periodic Schedule Rule
-			if (scheduleRuleType.StartsWith("kCura.ScheduleQueue.Core.ScheduleRules.PeriodicScheduleRule,",
-				StringComparison.InvariantCultureIgnoreCase))
+			if (scheduleRuleType.StartsWith(Const._PERIODIC_SCHEDULE_RULE, StringComparison.InvariantCultureIgnoreCase))
 			{
 				rule = Deserialize<PeriodicScheduleRule>(serializedString, defaultSerializer);
 				if (rule != null)
