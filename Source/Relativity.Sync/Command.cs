@@ -31,7 +31,7 @@ namespace Relativity.Sync
 			return canExecute;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Executing step '{StepName}'", _stepName);
 			ExecutionResult executionResult = await _executor.ExecuteAsync(_configuration, token).ConfigureAwait(false);
