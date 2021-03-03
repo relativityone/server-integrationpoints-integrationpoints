@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using Relativity.API;
+using Relativity.Services.Interfaces.Workspace;
 using Relativity.Services.Objects;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
@@ -14,6 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			_serviceManager = new Mock<IServicesMgr>();
 
 			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
+			RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
 		}
 
 		private void RegisterProxyInServiceManagerMock<T>(T proxy) 

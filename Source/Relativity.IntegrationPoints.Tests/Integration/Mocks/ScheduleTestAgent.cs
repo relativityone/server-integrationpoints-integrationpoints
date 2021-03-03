@@ -65,7 +65,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			ToBeRemoved = true;
 		}
 
-
 		#region Verification
 
 		public void VerifyJobsWereProcessed(IEnumerable<long> jobs)
