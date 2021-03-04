@@ -21,9 +21,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
-
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
-using SyncFieldEntry = Relativity.Sync.Storage.FieldEntry;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -55,17 +53,17 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (importSettings.ImageImport)
 			{
-				return await CreateImageSyncConfiguration(builder,
+				return await CreateImageSyncConfigurationAsync(builder,
 					job, sourceConfiguration, importSettings).ConfigureAwait(false);
 			}
 			else
 			{
-				return await CreateDocumentSyncConfiguration(builder,
+				return await CreateDocumentSyncConfigurationAsync(builder,
 					job, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
 			}
 		}
 
-		private async Task<int> CreateImageSyncConfiguration(SyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateImageSyncConfigurationAsync(SyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
 			var syncConfigurationRoot = builder
@@ -101,10 +99,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
 			}
 
-			return await syncConfigurationRoot.SaveAsync();
+			return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
 		}
 
-		private async Task<int> CreateDocumentSyncConfiguration(SyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateDocumentSyncConfigurationAsync(SyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
 		{
 			var syncConfigurationRoot = builder
@@ -140,7 +138,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
 			}
 
-			return await syncConfigurationRoot.SaveAsync();
+			return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
 		}
 
 		private void PrepareFieldsMappingAction(string integrationPointsFieldsMapping, IFieldsMappingBuilder mappingBuilder)
