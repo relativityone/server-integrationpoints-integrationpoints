@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
 			try
 			{
-				CompositeCancellationToken cancellationTokens = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
+				CompositeCancellationToken compositeCancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
 				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
 				using (IContainer container = InitializeSyncContainer(syncConfiguration))
 				{
@@ -54,14 +54,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 					ISyncJob syncJob = await CreateSyncJobAsync(container).ConfigureAwait(false);
 					Progress progress = new Progress();
 					progress.SyncProgress += (sender, syncProgress) => UpdateJobStatusAsync(syncProgress.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-					await syncJob.ExecuteAsync(progress, cancellationTokens.StopCancellationToken).ConfigureAwait(false);
+					await syncJob.ExecuteAsync(progress, compositeCancellationToken).ConfigureAwait(false);
 
-					if (cancellationTokens.StopCancellationToken.IsCancellationRequested)
+					if (compositeCancellationToken.StopCancellationToken.IsCancellationRequested)
 					{
 						await MarkJobAsStoppedAsync().ConfigureAwait(false);
 						taskResult = new TaskResult { Status = TaskStatusEnum.Success };
 					}
-					else if (cancellationTokens.DrainStopCancellationToken.IsCancellationRequested)
+					else if (compositeCancellationToken.DrainStopCancellationToken.IsCancellationRequested)
 					{
 						await MarkJobAsDrainStoppedAsync().ConfigureAwait(false);
 						taskResult = new TaskResult { Status = TaskStatusEnum.DrainStopped };
