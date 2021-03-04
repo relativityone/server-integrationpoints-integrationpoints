@@ -17,19 +17,19 @@ namespace Relativity.Sync.Storage
 
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 
-		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+		private static readonly Guid BatchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
 
-		private static readonly Guid NameGuid = new Guid("3AB49704-F843-4E09-AFF2-5380B1BF7A35");
-		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
-		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
-		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
-		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
-		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
-		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
+		private static readonly Guid NameGuid = new Guid(SyncBatchGuids.NameGuid);
+		private static readonly Guid TotalItemsCountGuid = new Guid(SyncBatchGuids.TotalItemsCountGuid);
+		private static readonly Guid StartingIndexGuid = new Guid(SyncBatchGuids.StartingIndexGuid);
+		private static readonly Guid StatusGuid = new Guid(SyncBatchGuids.StatusGuid);
+		private static readonly Guid FailedItemsCountGuid = new Guid(SyncBatchGuids.FailedItemsCountGuid);
+		private static readonly Guid TransferredItemsCountGuid = new Guid(SyncBatchGuids.TransferredItemsCountGuid);
+		private static readonly Guid TaggedItemsCountGuid = new Guid(SyncBatchGuids.TaggedItemsCountGuid);
+		private static readonly Guid ProgressGuid = new Guid(SyncBatchGuids.ProgressGuid);
 
-		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
-		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
+		private static readonly Guid LockedByGuid = new Guid(SyncBatchGuids.LockedByGuid);
+		private static readonly Guid SyncConfigurationRelationGuid = new Guid(SyncBatchGuids.SyncConfigurationRelationGuid);
 
 		private Batch(ISourceServiceFactoryForAdmin serviceFactory)
 		{

@@ -13,7 +13,7 @@ namespace Relativity.Sync.Extensions
         /// <summary>
         /// Prepares SyncConfiguration for resuming paused job 
         /// </summary>
-        public static Task PrepareSyncConfigurationForResume(this ISyncServiceManager serviceManager, int workspaceId,
+        public static Task PrepareSyncConfigurationForResumeAsync(this ISyncServiceManager serviceManager, int workspaceId,
             int syncConfigurationId)
         {
             var rdo = new SyncConfigurationRdo

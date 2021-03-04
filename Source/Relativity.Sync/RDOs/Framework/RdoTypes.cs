@@ -25,6 +25,7 @@ namespace Relativity.Sync.RDOs.Framework
     internal enum RdoFieldType
     {
         WholeNumber,
+        Decimal,
         FixedLengthText,
         LongText,
         YesNo

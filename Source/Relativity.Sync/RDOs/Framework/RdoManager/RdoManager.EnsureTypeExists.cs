@@ -99,6 +99,7 @@ namespace Relativity.Sync.RDOs.Framework
                             ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
                             IsRequired = fieldInfo.IsRequired
                         });
+
                 case RdoFieldType.FixedLengthText:
                     return fieldManager.CreateFixedLengthFieldAsync(workspaceId,
                         new FixedLengthFieldRequest
@@ -109,15 +110,26 @@ namespace Relativity.Sync.RDOs.Framework
                             Length = fieldInfo.TextLength,
                             IsRequired = fieldInfo.IsRequired
                         });
+
                 case RdoFieldType.WholeNumber:
-                    return fieldManager.CreateWholeNumberFieldAsync(workspaceId,
-                        new WholeNumberFieldRequest
-                        {
-                            FilterType = FilterType.TextBox,
-                            Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
-                            IsRequired = fieldInfo.IsRequired
-                        });
+	                return fieldManager.CreateWholeNumberFieldAsync(workspaceId,
+		                new WholeNumberFieldRequest
+		                {
+			                FilterType = FilterType.TextBox,
+			                Name = fieldInfo.Name,
+			                ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
+			                IsRequired = fieldInfo.IsRequired
+		                });
+
+                case RdoFieldType.Decimal:
+	                return fieldManager.CreateDecimalFieldAsync(workspaceId,
+		                new DecimalFieldRequest
+		                {
+			                FilterType = FilterType.TextBox,
+			                Name = fieldInfo.Name,
+			                ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
+			                IsRequired = fieldInfo.IsRequired
+		                });
 
                 case RdoFieldType.YesNo:
                     return fieldManager.CreateYesNoFieldAsync(workspaceId,

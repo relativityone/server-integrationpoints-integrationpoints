@@ -2,6 +2,6 @@
 {
 	internal interface ISourceWorkspaceObjectTypesCreationConfiguration : IConfiguration
 	{
-		
+		int SourceWorkspaceArtifactId { get; }
 	}
 }

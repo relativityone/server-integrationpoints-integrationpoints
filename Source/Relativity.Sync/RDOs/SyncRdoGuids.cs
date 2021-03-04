@@ -6,22 +6,18 @@ namespace Relativity.Sync.RDOs
         
         public const string SyncConfigurationGuid = "3BE3DE56-839F-4F0E-8446-E1691ED5FD57";
 
-        public const string CreateSavedSearchInDestinationGuid =
-            "BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D";
+        public const string CreateSavedSearchInDestinationGuid = "BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D";
 
-        public const string SavedSearchInDestinationArtifactIdGuid =
-            "83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31";
+        public const string SavedSearchInDestinationArtifactIdGuid = "83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31";
 
         public const string DataDestinationArtifactIdGuid = "0E9D7B8E-4643-41CC-9B07-3A66C98248A1";
         public const string DataDestinationTypeGuid = "86D9A34A-B394-41CF-BFF4-BD4FF49A932D";
         public const string DataSourceArtifactIdGuid = "6D8631F9-0EA1-4EB9-B7B2-C552F43959D0";
         public const string DataSourceTypeGuid = "A00E6BC1-CA1C-48D9-9712-629A63061F0D";
 
-        public const string DestinationFolderStructureBehaviorGuid =
-            "A1593105-BD99-4A15-A51A-3AA8D4195908";
+        public const string DestinationFolderStructureBehaviorGuid = "A1593105-BD99-4A15-A51A-3AA8D4195908";
 
-        public const string DestinationWorkspaceArtifactIdGuid =
-            "15B88438-6CF7-47AB-B630-424633159C69";
+        public const string DestinationWorkspaceArtifactIdGuid = "15B88438-6CF7-47AB-B630-424633159C69";
 
         public const string EmailNotificationRecipientsGuid = "4F03914D-9E86-4B72-B75C-EE48FEEBB583";
         public const string FieldMappingsGuid = "E3CB5C64-C726-47F8-9CB0-1391C5911628";
@@ -43,8 +39,7 @@ namespace Relativity.Sync.RDOs
         public const string SourceWorkspaceTagArtifactIdGuid = "FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6";
         public const string SourceWorkspaceTagNameGuid = "D828B69E-AAAE-4639-91E2-416E35C163B1";
 
-        public const string DestinationWorkspaceTagArtifactIdGuid =
-            "E2100C10-B53B-43FA-BB1B-51E43DCE8208";
+        public const string DestinationWorkspaceTagArtifactIdGuid = "E2100C10-B53B-43FA-BB1B-51E43DCE8208";
 
         public const string JobHistoryTypeGuid = "52234DAA-2E06-4449-8456-8B0D2C219DF6";
         public const string JobHistoryCompletedItemsFieldGuid = "E150C95E-50D1-4719-B163-942E8C0DABF1";
