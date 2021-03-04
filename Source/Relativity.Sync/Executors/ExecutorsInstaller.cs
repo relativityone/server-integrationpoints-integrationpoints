@@ -39,6 +39,8 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<JobStartMetricsExecutorConstrains>().As<IExecutionConstrains<ISumReporterConfiguration>>();
 			builder.RegisterType<JobStartMetricsExecutor>().As<IExecutor<ISumReporterConfiguration>>();
+			builder.RegisterType<SourceWorkspaceObjectTypesCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceObjectTypesCreationConfiguration>>();
+			builder.RegisterType<SourceWorkspaceObjectTypesCreationExecutor>().As<IExecutor<ISourceWorkspaceObjectTypesCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();

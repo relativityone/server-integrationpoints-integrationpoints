@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using Autofac;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage.RdoGuidsProviders;
 
@@ -28,6 +27,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<DataDestinationFinalizationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SynchronizationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<SourceWorkspaceObjectTypesCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SourceWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<JobCleanupConfiguration>().AsImplementedInterfaces().SingleInstance();
 			builder.RegisterType<AutomatedWorkflowTriggerConfiguration>().AsImplementedInterfaces().SingleInstance();

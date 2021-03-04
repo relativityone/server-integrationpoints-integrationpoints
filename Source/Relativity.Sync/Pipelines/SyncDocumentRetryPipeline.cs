@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Banzai.Factories;
+﻿using Banzai.Factories;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Nodes.SumReporting;
 
@@ -18,6 +13,7 @@ namespace Relativity.Sync.Pipelines
 				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()
+				.AddChild<SourceWorkspaceObjectTypesCreationNode>()
 				.AddChild<DocumentRetryDataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()
 				.ForLastChild()
