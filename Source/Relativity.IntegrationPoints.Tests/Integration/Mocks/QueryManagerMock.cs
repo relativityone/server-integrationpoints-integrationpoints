@@ -251,11 +251,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			}
 		}
 
-		private Job CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, string taskType,
+		private JobTest CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobId, long? parentJobId)
 		{
-			return new Job
+			return new JobTest
 			{
 				JobId = jobId,
 				RootJobId = rootJobId,

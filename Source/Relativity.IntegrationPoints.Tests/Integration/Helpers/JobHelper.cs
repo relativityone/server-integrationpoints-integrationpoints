@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
@@ -12,24 +13,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		{
 		}
 
-		public Job ScheduleJob(Job job)
+		public JobTest ScheduleJob(JobTest job)
 		{
 			Database.JobsInQueue.Add(job);
 
 			return job;
 		}
 
-		public Job ScheduleBasicJob()
+		public JobTest ScheduleBasicJob(DateTime? nextRunTime = null)
 		{
 			var job = CreateBasicJob()
 				.Build();
 
+			job.NextRunTime = nextRunTime ?? DateTime.UtcNow;
+
 			return ScheduleJob(job);
 		}
 
-		public Job ScheduleJobWithSchedule(ScheduleRule rule)
+		public JobTest ScheduleJobWithScheduleRule(ScheduleRuleTest rule)
 		{
-			Job job = CreateBasicJob()
+			JobTest job = CreateBasicJob()
 				.WithScheduleRule(rule)
 				.Build();
 
@@ -38,9 +41,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		private JobBuilder CreateBasicJob()
 		{
-			Workspace workspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+			WorkspaceTest workspace = HelperManager.WorkspaceHelper.CreateWorkspace();
 
-			IntegrationPoint integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
+			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
 
 			return new JobBuilder()
 				.WithWorkspace(workspace)
@@ -59,10 +62,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			Database.JobsInQueue.Select(x => x.JobId).Should().NotContain(jobs);
 		}
 
-		public void VerifyJobsAreNotLockedByAgent(Agent agent, IEnumerable<long> jobs)
+		public void VerifyJobsAreNotLockedByAgent(AgentTest agent, IEnumerable<long> jobs)
 		{
 			Database.JobsInQueue.Where(x => jobs.Contains(x.JobId))
 				.All(x => x.LockedByAgentID != agent.ArtifactId).Should().BeTrue();
+		}
+
+		public void VerifyScheduledJobWasReScheduled(JobTest job, DateTime expectedNextRunTime)
+		{
+			Database.JobsInQueue.Should().Contain(x =>
+				x.RelatedObjectArtifactID == job.RelatedObjectArtifactID &&
+				x.WorkspaceID == job.WorkspaceID &&
+				x.NextRunTime.Date == expectedNextRunTime.Date);
 		}
 
 		#endregion

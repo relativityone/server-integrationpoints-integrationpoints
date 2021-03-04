@@ -10,9 +10,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		{
 		}
 
-		public IntegrationPoint CreateEmptyIntegrationPoint(Workspace workspace)
+		public IntegrationPointTest CreateEmptyIntegrationPoint(WorkspaceTest workspace)
 		{
-			var integrationPoint = new IntegrationPoint
+			var integrationPoint = new IntegrationPointTest
 			{
 				ArtifactId = Artifact.NextId(),
 				WorkspaceId = workspace.ArtifactId
@@ -28,20 +28,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
 			Database.IntegrationPoints.RemoveAll(x => x.ArtifactId == integrationPointId);
-		}
-
-		public Job ScheduleIntegrationPointJob(IntegrationPoint integrationPoint)
-		{
-			Job job = new Job
-			{
-				NextRunTime = DateTime.Now,
-				RelatedObjectArtifactID = integrationPoint.ArtifactId,
-				WorkspaceID = integrationPoint.WorkspaceId
-			};
-
-			Database.JobsInQueue.Add(job);
-
-			return job;
 		}
 	}
 }

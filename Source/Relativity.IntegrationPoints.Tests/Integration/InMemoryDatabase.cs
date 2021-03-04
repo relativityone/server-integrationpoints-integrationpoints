@@ -10,13 +10,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 {
 	public class InMemoryDatabase
 	{
-		public List<Agent> Agents { get; set; } = new List<Agent>();
+		public List<AgentTest> Agents { get; set; } = new List<AgentTest>();
 
-		public List<Job> JobsInQueue { get; set; } = new List<Job>();
+		public List<JobTest> JobsInQueue { get; set; } = new List<JobTest>();
 
-		public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
+		public List<WorkspaceTest> Workspaces { get; set; } = new List<WorkspaceTest>();
 
-		public List<IntegrationPoint> IntegrationPoints { get; set; } = new List<IntegrationPoint>();
+		public List<IntegrationPointTest> IntegrationPoints { get; set; } = new List<IntegrationPointTest>();
 
 		public void Clear()
 		{

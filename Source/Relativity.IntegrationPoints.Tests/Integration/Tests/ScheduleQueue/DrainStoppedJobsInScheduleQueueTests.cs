@@ -5,9 +5,8 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Job = Relativity.IntegrationPoints.Tests.Integration.Models.Job;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
+namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
 	[TestFixture]
 	public class DrainStoppedJobsInScheduleQueueTests : TestsBase
@@ -16,9 +15,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 		public void Agent_ShouldNotPickUpTheJob_WhenHasBeenMarkedToBeRemoved()
 		{
 			// Arrange
-			Agent agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job = HelperManager.JobHelper.ScheduleBasicJob();
 
 			var jobsInQueue = new[] {job.JobId};
 
@@ -39,10 +38,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 		public void Agent_ShouldNotPickupNextJob_WhenActuallyJobWasDrainStopped()
 		{
 			// Arrange
-			Agent agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job1 = HelperManager.JobHelper.ScheduleBasicJob();
-			Job job2 = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job1 = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job2 = HelperManager.JobHelper.ScheduleBasicJob();
 
 			var jobsInQueue = new[] {job1.JobId, job2.JobId};
 
@@ -67,10 +66,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 		public void Agent_ShouldPickUpDrainStoppedJobAtFirst()
 		{
 			// Arrange
-			Agent agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job1 = HelperManager.JobHelper.ScheduleBasicJob();
-			Job job2 = HelperManager.JobHelper.ScheduleJob(new Job()
+			JobTest job1 = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job2 = HelperManager.JobHelper.ScheduleJob(new JobTest()
 			{
 				WorkspaceID = job1.WorkspaceID,
 				RelatedObjectArtifactID = job1.RelatedObjectArtifactID,
@@ -86,7 +85,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			sut.VerifyJobWasProcessedAtFirst(job2.JobId);
 		}
 
-		private ScheduleTestAgent PrepareSutWithMockedQueryManager(Agent agent)
+		private ScheduleTestAgent PrepareSutWithMockedQueryManager(AgentTest agent)
 		{
 			return new ScheduleTestAgent(agent,
 				Container.Resolve<IAgentHelper>(),

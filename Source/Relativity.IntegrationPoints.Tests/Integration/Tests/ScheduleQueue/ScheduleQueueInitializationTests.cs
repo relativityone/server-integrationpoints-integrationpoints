@@ -4,7 +4,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
+namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
 	[TestFixture]
 	public class ScheduleQueueInitializationTests : TestsBase
@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job jobWithoutWorkspace = HelperManager.JobHelper.ScheduleJob(new Job()
+			JobTest jobWithoutWorkspace = HelperManager.JobHelper.ScheduleJob(new JobTest()
 			{
 				WorkspaceID = Artifact.NextId()
 			});
@@ -53,7 +53,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new []{jobWithoutWorkspace.JobId});
 		}
 
-		private ScheduleTestAgent PrepareSutWithMockedQueryManager(Agent agent)
+		private ScheduleTestAgent PrepareSutWithMockedQueryManager(AgentTest agent)
 		{
 			return new ScheduleTestAgent(agent,
 				Container.Resolve<IAgentHelper>(),

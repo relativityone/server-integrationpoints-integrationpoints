@@ -4,7 +4,7 @@ using kCura.ScheduleQueue.Core.Core;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public class Job
+	public class JobTest
 	{
 		public long JobId { get; set; }
 		public long? RootJobId { get; set; }
@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
 
-		public Job()
+		public JobTest()
 		{
 			JobId = Integration.JobId.Next;
 			AgentTypeID = Const.Agent._INTEGRATION_POINTS_AGENT_TYPE_ID;

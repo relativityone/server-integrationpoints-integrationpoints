@@ -3,7 +3,7 @@ using System.Data;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public class Agent
+	public class AgentTest
 	{
 		public int ArtifactId { get; set; }
 		public int AgentTypeId { get; set; }
@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public string FullNamespace { get; set; }
 		public Guid AgentGuid { get; set; }
 
-		public Agent()
+		public AgentTest()
 		{
 			ArtifactId = Artifact.NextId();
 		}

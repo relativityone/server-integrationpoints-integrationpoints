@@ -1,11 +1,12 @@
 ﻿namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public class Workspace
+	public class IntegrationPointTest
 	{
 		public int ArtifactId { get; set; }
-		public string Name { get; set; }
 
-		public Workspace()
+		public int WorkspaceId { get; set; }
+
+		public IntegrationPointTest()
 		{
 			ArtifactId = Artifact.NextId();
 		}

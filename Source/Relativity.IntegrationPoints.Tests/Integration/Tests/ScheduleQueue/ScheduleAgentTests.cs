@@ -6,7 +6,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
+namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
 	[TestFixture]
 	public class ScheduleAgentTests : TestsBase
@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job = HelperManager.JobHelper.ScheduleBasicJob();
 
 			var jobsInQueue = new[] {job.JobId};
 
@@ -53,8 +53,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job1 = HelperManager.JobHelper.ScheduleBasicJob();
-			Job job2 = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job1 = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job2 = HelperManager.JobHelper.ScheduleBasicJob();
 
 			var jobsInQueue = new[] {job1.JobId, job2.JobId};
 
@@ -75,7 +75,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job = HelperManager.JobHelper.ScheduleBasicJob();
 
 			HelperManager.IntegrationPointHelper.RemoveIntegrationPoint(job.RelatedObjectArtifactID);
 
@@ -98,7 +98,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			// Arrange
 			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
-			Job job = HelperManager.JobHelper.ScheduleBasicJob();
+			JobTest job = HelperManager.JobHelper.ScheduleBasicJob();
 
 			HelperManager.WorkspaceHelper.RemoveWorkspace(job.WorkspaceID);
 
@@ -115,7 +115,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Feature.ScheduleQueue
 			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
-		private ScheduleTestAgent PrepareSutWithMockedQueryManager(Agent agent)
+		private ScheduleTestAgent PrepareSutWithMockedQueryManager(AgentTest agent)
 		{
 			return new ScheduleTestAgent(agent,
 				Container.Resolve<IAgentHelper>(),

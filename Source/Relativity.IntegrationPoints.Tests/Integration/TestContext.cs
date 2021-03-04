@@ -6,7 +6,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 	{
 		private DateTime? _currentDateTime;
 
-		public DateTime CurrentDateTime => _currentDateTime ?? DateTime.Now;
+		public DateTime CurrentDateTime => _currentDateTime ?? DateTime.UtcNow;
 
 		public void SetDateTime(DateTime? dateTime)
 		{
