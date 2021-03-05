@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(queryResult);
 
 			// act
-			string actualJobName = await _sut.GetJobNameAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
+			string actualJobName = await _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(jobName, actualJobName);
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Throws<InvalidOperationException>();
 
 			// act
-			Func<Task> action = async () => await _sut.GetJobNameAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None);
 
 			// assert
 			action.Should().Throw<InvalidOperationException>();
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(queryResult);
 
 			// act
-			Func<Task> action = async () => await _sut.GetJobNameAsync(0, 0, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None);
 
 			// assert
 			action.Should().Throw<SyncException>();
