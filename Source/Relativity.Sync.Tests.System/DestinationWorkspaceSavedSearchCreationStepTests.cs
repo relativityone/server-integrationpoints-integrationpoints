@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.System
 				SourceInstanceName = _LOCAL_INSTANCE_NAME
 			};
 
-			int sourceCaseTagArtifactId = await Rdos.CreateRelativitySourceCaseInstance(ServiceFactory, _destinationWorkspace.ArtifactID, sourceCaseTag).ConfigureAwait(false);
+			int sourceCaseTagArtifactId = await Rdos.CreateRelativitySourceCaseInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID, sourceCaseTag).ConfigureAwait(false);
 			return sourceCaseTagArtifactId;
 		}
 
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Tests.System
 				Name = sourceJobTagName
 			};
 
-			int sourceJobTagArtifactId = await Rdos.CreateRelativitySourceJobInstance(ServiceFactory, _destinationWorkspace.ArtifactID, sourceJobTag).ConfigureAwait(false);
+			int sourceJobTagArtifactId = await Rdos.CreateRelativitySourceJobInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID, sourceJobTag).ConfigureAwait(false);
 			return sourceJobTagArtifactId;
 		}
 

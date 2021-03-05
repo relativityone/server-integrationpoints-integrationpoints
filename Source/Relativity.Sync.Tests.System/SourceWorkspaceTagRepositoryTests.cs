@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceName = testSourceCaseName,
 				Name = $"{testSourceInstanceName} - {testSourceCaseName} - {testSourceCaseArtifactId}"
 			};
-			int sourceCaseTagId = await Rdos.CreateRelativitySourceCaseInstance(ServiceFactory, _destinationWorkspaceArtifactId, sourceCaseTag).ConfigureAwait(false);
+			int sourceCaseTagId = await Rdos.CreateRelativitySourceCaseInstanceAsync(ServiceFactory, _destinationWorkspaceArtifactId, sourceCaseTag).ConfigureAwait(false);
 
 			const int testJobHistoryArtifactId = 18880999;
 			const string testJobHistoryName = "My originating job history 1";
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.System
 				Name = $"{testJobHistoryName} - {testJobHistoryArtifactId}",
 				SourceCaseTagArtifactId = sourceCaseTagId
 			};
-			int sourceJobTagId = await Rdos.CreateRelativitySourceJobInstance(ServiceFactory, _destinationWorkspaceArtifactId, sourceJobTag).ConfigureAwait(false);
+			int sourceJobTagId = await Rdos.CreateRelativitySourceJobInstanceAsync(ServiceFactory, _destinationWorkspaceArtifactId, sourceJobTag).ConfigureAwait(false);
 
 			const string identifierFieldName = "Control Number";
 			var fieldMap = new List<FieldMap>
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.System
 
 		private async Task<IList<string>> UploadDocumentsAsync(int numDocuments)
 		{
-			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, _destinationWorkspaceArtifactId).ConfigureAwait(false);
 			ImportDataTableWrapper importDataTableWrapper = DataTableFactory.GenerateDocumentsWithExtractedText(numDocuments);
 
 			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(_destinationWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);

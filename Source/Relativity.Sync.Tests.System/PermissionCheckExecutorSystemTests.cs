@@ -137,7 +137,7 @@ namespace Relativity.Sync.Tests.System
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
 			_sourceWorkspace = sourceWorkspaceCreationTask.GetAwaiter().GetResult();
 			_destinationWorkspace = destinationWorkspaceCreationTask.GetAwaiter().GetResult();
-			_destinationFolderArtifactId = await Rdos.CreateFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID, _DESTINATION_FOLDER_NAME).ConfigureAwait(false);
+			_destinationFolderArtifactId = await Rdos.CreateFolderInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID, _DESTINATION_FOLDER_NAME).ConfigureAwait(false);
 
 			_groupService = RelativityFacade.Instance.Resolve<IGroupService>();
 			string groupName = Guid.NewGuid().ToString();

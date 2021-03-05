@@ -43,9 +43,9 @@ namespace Relativity.Sync.Tests.System
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
-			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
-			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int savedSearchArtifactId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderArtifactId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldNameAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 
 			const string fieldsMap =
 				"[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true," +
@@ -80,9 +80,9 @@ namespace Relativity.Sync.Tests.System
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
-			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
-			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int savedSearchArtifactId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderArtifactId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldNameAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 
 			const string fieldsMap =
 				@"[

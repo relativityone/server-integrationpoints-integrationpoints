@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.System
 				SourceInstanceName = _LOCAL_INSTANCE_NAME
 			};
 
-			int expectedSourceCaseTagArtifactId = await Rdos.CreateRelativitySourceCaseInstance(ServiceFactory, _destinationWorkspace.ArtifactID, wrongSourceCaseTag).ConfigureAwait(false);
+			int expectedSourceCaseTagArtifactId = await Rdos.CreateRelativitySourceCaseInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID, wrongSourceCaseTag).ConfigureAwait(false);
 			string expectedSourceJobTagName = $"{_JOB_HISTORY_NAME} - {expectedJobHistoryArtifactId}";
 
 			ConfigurationStub configuration = new ConfigurationStub
