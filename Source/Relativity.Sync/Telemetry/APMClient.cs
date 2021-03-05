@@ -20,9 +20,16 @@ namespace Relativity.Sync.Telemetry
 		}
 
 		/// <inheritdoc />
-		public void Log(string name, Dictionary<string, object> customData)
+		public void Count(string name, Dictionary<string, object> customData)
 		{
 			_apm.CountOperation(name, customData: customData).Write();
+		}
+
+		/// <inheritdoc/>
+		public void Gauge(string name, string correlationId, Dictionary<string, object> customData)
+		{
+			var jobDetails = _apm.GaugeOperation(name, operation: () => 1, correlationID: correlationId, customData: customData);
+			jobDetails.Write();
 		}
 	}
 }

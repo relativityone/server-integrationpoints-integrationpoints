@@ -17,10 +17,12 @@ namespace Relativity.Sync.Executors
 		public ImageSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
-			IJobCleanupConfiguration jobCleanupConfiguration, IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger)
-			: base(importJobFactory, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
-			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, logger)
+			IJobCleanupConfiguration jobCleanupConfiguration,
+			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger,
+			IUserContextConfiguration userContextConfiguration)
+			: base(importJobFactory, BatchRecordType.Images, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
+			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
 		{
 		}
 
@@ -39,7 +41,7 @@ namespace Relativity.Sync.Executors
 			configuration.IdentifierColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageIdentifier);
 		}
 
-		protected override void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
+		protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
 		{
 			_syncMetrics.Send(new ImageBatchEndMetric()
 			{

@@ -52,6 +52,8 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceTagArtifactId => _cache.GetFieldValue(x => x.SourceWorkspaceTagArtifactId);
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 		public bool MoveExistingDocuments => _cache.GetFieldValue(x => x.MoveExistingDocuments);
+
+		public int DataSourceArtifactId => _cache.GetFieldValue(x => x.DataSourceArtifactId);
 		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>

@@ -17,9 +17,11 @@ namespace Relativity.Sync.Executors
 		public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
-			IJobCleanupConfiguration jobCleanupConfiguration, IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger) : base(importJobFactory, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
-			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, logger)
+			IJobCleanupConfiguration jobCleanupConfiguration,
+			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger,
+			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
+			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger)
 		{
 		}
 
@@ -45,7 +47,7 @@ namespace Relativity.Sync.Executors
 			configuration.SupportedByViewerColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.SupportedByViewer);
 		}
 
-		protected override void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
+		protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
 		{
 			int longTextStreamsCount = _jobStatisticsContainer.LongTextStreamsCount;
 			long longTextStreamsTotalSizeInBytes = _jobStatisticsContainer.LongTextStreamsTotalSizeInBytes;

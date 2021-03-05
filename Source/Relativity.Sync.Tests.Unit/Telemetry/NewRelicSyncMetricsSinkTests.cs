@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_sut.Send(metric);
 
 			// Assert
-			_apmClientMock.Verify(x => x.Log(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(
+			_apmClientMock.Verify(x => x.Count(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(
 				d => d["Value"].Equals(1))));
 		}
 
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_sut.Send(metric);
 
 			// Assert
-			_apmClientMock.Verify(x => x.Log(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(
+			_apmClientMock.Verify(x => x.Count(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(
 				d => d["Value"] == null)));
 		}
 

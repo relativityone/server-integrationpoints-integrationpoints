@@ -63,6 +63,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			FieldInfoDto.SupportedByViewerField()
 		};
 
+		private Mock<IUserContextConfiguration> _userContextConfigurationStub;
+
 		public static (object[] BatchResults, object ExpectedResult)[] AggregationTestCaseSource { get; } =
 		{
 			(new object[]{ ExecutionStatus.Completed,ExecutionStatus.Completed, ExecutionStatus.Completed},
@@ -124,12 +126,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFactoryFake.Setup(x => x.CreateNativeImportJobAsync(It.IsAny<IDocumentSynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
 
 			_fieldManagerFake.Setup(x => x.GetNativeSpecialFields()).Returns(_specialFields);
+			_userContextConfigurationStub = new Mock<IUserContextConfiguration>();
+
+			
 
 			_sut = new DocumentSynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
 				_jobProgressHandlerFactoryStub.Object,
 				_documentTagRepositoryFake.Object, _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
 				_jobCleanupConfigurationMock.Object, _automatedWorkflowTriggerConfigurationFake.Object,
-				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, new EmptyLogger());
+				_stopwatchFactoryFake.Object, _syncMetricsMock.Object,new EmptyLogger(), _userContextConfigurationStub.Object);
 		}
 
 		[Test]

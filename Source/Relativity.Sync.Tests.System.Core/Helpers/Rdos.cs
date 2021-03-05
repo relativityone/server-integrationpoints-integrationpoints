@@ -386,7 +386,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			var rdoManager = new RdoManager(logger, new ServicesManagerStub(), new RdoGuidProvider());
 			SyncConfigurationRdo configuration = GetConfiguration(configurationStub, serializer);
 
-			await rdoManager.CreateAsync(workspaceId, configuration).ConfigureAwait(false);
+			await rdoManager.CreateAsync(workspaceId, configuration, configuration.JobHistoryId).ConfigureAwait(false);
 
 			return configuration.ArtifactId;
 		}

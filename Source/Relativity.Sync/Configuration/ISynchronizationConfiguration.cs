@@ -37,6 +37,9 @@ namespace Relativity.Sync.Configuration
 		string FolderPathSourceFieldName { get; set; }
 
 		bool MoveExistingDocuments { get; }
+		
+		// used for metrics only
+		int DataSourceArtifactId { get; }
 
 	}
 }

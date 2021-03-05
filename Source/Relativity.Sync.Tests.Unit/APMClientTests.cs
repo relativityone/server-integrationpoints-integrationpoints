@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// Act
 			var client = new APMClient(apmMock.Object);
-			client.Log(metricName, metricData);
+			client.Count(metricName, metricData);
 
 			// Assert
 			apmMock.Verify();
