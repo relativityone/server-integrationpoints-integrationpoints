@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Configuration
 {
@@ -7,6 +8,8 @@ namespace Relativity.Sync.Configuration
 		int SourceWorkspaceArtifactId { get; }
 
 		int DestinationWorkspaceArtifactId { get; }
+
+		Guid JobHistoryObjectTypeGuid { get; }
 
 		int JobHistoryArtifactId { get; }
 

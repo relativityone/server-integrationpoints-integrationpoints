@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Configuration
@@ -12,6 +13,8 @@ namespace Relativity.Sync.Configuration
 		int SavedSearchArtifactId { get; }
 
 		int DestinationFolderArtifactId { get; }
+
+		Guid JobHistoryObjectTypeGuid { get; }
 
 		ImportOverwriteMode ImportOverwriteMode { get; }
 
