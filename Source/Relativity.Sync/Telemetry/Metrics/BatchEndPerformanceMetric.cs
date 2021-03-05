@@ -15,7 +15,7 @@ namespace Relativity.Sync.Telemetry.Metrics
         public int? JobID { get; set; }
         public int? WorkspaceID { get; set; }
 
-        public ExecutionStatus JobStatus { get; set; }
+        public ExecutionStatus? JobStatus { get; set; }
         public int? RecordNumber { get; set; }
         public BatchRecordType? RecordType { get; set; }
         

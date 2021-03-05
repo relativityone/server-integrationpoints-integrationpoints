@@ -57,6 +57,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		};
 
 		private Mock<IUserContextConfiguration> _userContextConfigurationStub;
+		private const int _DATA_SOURCE_ID = 8;
+		private const int _USER_ID = 68;
+		private const int _SOURCE_WORKSPACE_ID = 70;
+		private const string _WORKFLOW_ID = "WORKFLOW_ID";
 
 		public static (object[] BatchResults, object ExpectedResult)[] AggregationTestCaseSource { get; } =
 		{
@@ -174,6 +178,84 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				m.BatchImportAPITime == iapiTime)), Times.Once);
 		}
 
+			[Test]
+		public async Task Execute_ShouldSendPerformanceMetrics()
+		{
+			// arrange 
+			const int totalRecordsTransferred = 111;
+			const int totalRecordsRequested = 222;
+			const int totalRecordsFailed = 333;
+			const int totalRecordsTagged = 444;
+			const int batchTime = 555;
+			const int iapiTime = 2666;
+
+			Mock<IStopwatch> batchTimer = CreateFakeStopwatch(batchTime);
+			Mock<IStopwatch> iapiTimer = CreateFakeStopwatch(iapiTime);
+			_stopwatchFactoryFake.SetupSequence(x => x.Invoke())
+				.Returns(batchTimer.Object)
+				.Returns(iapiTimer.Object);
+
+			_jobProgressHandlerFake.Setup(x => x.GetBatchItemsProcessedCount(It.IsAny<int>())).Returns(totalRecordsTransferred);
+			_jobProgressHandlerFake.Setup(x => x.GetBatchItemsFailedCount(It.IsAny<int>())).Returns(totalRecordsFailed);
+
+			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), _METADATA_SIZE, _FILES_SIZE, _JOB_SIZE);
+			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
+
+			IEnumerable<int> batches = new[] { 1 };
+			_batchRepositoryMock.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			Mock<IBatch> batchFake = new Mock<IBatch>();
+			batchFake.SetupGet(x => x.TotalItemsCount).Returns(totalRecordsRequested);
+
+
+
+			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchFake.Object);
+
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync(totalRecordsTagged);
+			SetUpDocumentsTagRepository(executionResult);
+
+			_jobStatisticsContainerFake
+				.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
+				.Returns(new Tuple<double, double>(1, 2));
+			_jobStatisticsContainerFake
+				.SetupGet(x => x.LongTextStatistics)
+				.Returns(Enumerable.Range(1, 20).Select(x => new LongTextStreamStatistics()
+				{
+					TotalBytesRead = x * 1024 * 1024,
+					TotalReadTime = TimeSpan.FromSeconds(x)
+				}).ToList());
+			
+			_syncMetricsMock.Setup(x => x.Send(It.IsAny<IMetric>())).Callback((IMetric m) => m.WorkflowId = _WORKFLOW_ID);
+
+			_jobCleanupConfigurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
+
+			_userContextConfigurationStub.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
+			_configFake.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
+
+			// act
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+			double bytesInGigabyte = 1024.0 * 1024 * 1024;
+
+			// assert
+			_syncMetricsMock.Verify(x => x.Send(It.Is<BatchEndPerformanceMetric>(m =>
+				m.WorkflowName == "Relativity.Sync"
+				&& m.StageName == "Transfer"
+				&& m.Elapsed == iapiTime / 1000
+				&& m.APMCategory == "PerformanceBatchJob"
+				&& m.CorrelationID == _WORKFLOW_ID
+				&& m.JobID == 1
+				&& m.WorkspaceID == _SOURCE_WORKSPACE_ID
+				&& m.JobStatus == ExecutionStatus.Completed
+				&& m.RecordNumber == totalRecordsTransferred
+				&& m.RecordType == BatchRecordType.Images
+				&& m.JobSizeGB == _JOB_SIZE / bytesInGigabyte
+				&& m.JobSizeGB_Metadata == _METADATA_SIZE / bytesInGigabyte
+				&& m.JobSizeGB_Files == _FILES_SIZE / bytesInGigabyte
+				&& m.UserID == _USER_ID
+				&& m.SavedSearchID == _DATA_SOURCE_ID
+			)));
+		}
+		
 		[Test]
 		public async Task Execute_ShouldSetImportApiSettings()
 		{

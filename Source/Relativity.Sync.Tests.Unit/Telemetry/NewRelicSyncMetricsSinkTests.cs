@@ -51,6 +51,23 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 				d => d["Value"] == null)));
 		}
 
+		[Test]
+		public void Send_ShouldGauge_BatchEndPerformanceMetric()
+		{
+			// Arrange
+			const string workflowId = "Test";
+			var metric = new BatchEndPerformanceMetric
+			{
+				WorkflowId = workflowId
+			};
+
+			// Act
+			_sut.Send(metric);
+			
+			// Assert
+			_apmClientMock.Verify(x => x.Gauge(_APPLICATION_NAME, workflowId, It.IsAny<Dictionary<string, object>>()));
+		}
+
 		internal class TestMetric : MetricBase<TestMetric>
 		{
 			public int? Value { get; set; }
