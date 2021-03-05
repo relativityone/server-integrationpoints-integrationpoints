@@ -21,10 +21,11 @@ namespace Relativity.Sync.Storage
 
 		private static readonly Guid OrderGuid = new Guid(SyncProgressGuids.OrderGuid);
 		private static readonly Guid StatusGuid = new Guid(SyncProgressGuids.StatusGuid);
-		private static readonly Guid NameGuid = new Guid(SyncProgressGuids.NameGuid);
 		private static readonly Guid ExceptionGuid = new Guid(SyncProgressGuids.ExceptionGuid);
 		private static readonly Guid MessageGuid = new Guid(SyncProgressGuids.MessageGuid);
-		private static readonly Guid ParentArtifactGuid = new Guid(SyncProgressGuids.ParentArtifactGuid);
+
+		private const string _NAME_FIELD_NAME = "Name";
+		private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
 
 		private Progress(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, int workspaceArtifactId, int syncConfigurationArtifactId, string name,
 			int artifactId, int order, SyncJobStatus status)
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Storage
 		public async Task SetStatusAsync(SyncJobStatus status)
 		{
 			string description = status.GetDescription();
-			await UpdateFieldValue(StatusGuid, description).ConfigureAwait(false);
+			await UpdateFieldValueAsync(StatusGuid, description).ConfigureAwait(false);
 			Status = status;
 		}
 
@@ -70,7 +71,7 @@ namespace Relativity.Sync.Storage
 		public async Task SetExceptionAsync(Exception exception)
 		{
 			string exceptionString = exception?.ToString();
-			await UpdateFieldValue(ExceptionGuid, exceptionString).ConfigureAwait(false);
+			await UpdateFieldValueAsync(ExceptionGuid, exceptionString).ConfigureAwait(false);
 			Exception = exceptionString;
 		}
 
@@ -78,7 +79,7 @@ namespace Relativity.Sync.Storage
 
 		public async Task SetMessageAsync(string message)
 		{
-			await UpdateFieldValue(MessageGuid, message).ConfigureAwait(false);
+			await UpdateFieldValueAsync(MessageGuid, message).ConfigureAwait(false);
 			Message = message;
 		}
 
@@ -102,7 +103,7 @@ namespace Relativity.Sync.Storage
 						{
 							Field = new FieldRef
 							{
-								Guid = NameGuid
+								Name = _NAME_FIELD_NAME
 							},
 							Value = Name
 						},
@@ -143,7 +144,8 @@ namespace Relativity.Sync.Storage
 						Guid = ProgressObjectTypeGuid
 					},
 					Fields = GetFieldRefsForQuery(),
-					Condition = $"'ArtifactID' == {ArtifactId}"
+					Condition = $"'ArtifactID' == {ArtifactId}",
+					IncludeNameInQueryResult = true
 				};
 				QueryResult queryResult = await objectManager.QueryAsync(_workspaceArtifactId, request, start: 0, length: 1).ConfigureAwait(false);
 				if (!queryResult.Objects.Any())
@@ -162,8 +164,9 @@ namespace Relativity.Sync.Storage
 				{
 					Guid = ProgressObjectTypeGuid
 				},
-				Condition = $"'{NameGuid}' == '{Name}' AND '{ParentArtifactGuid}' == {_syncConfigurationArtifactId}",
-				Fields = GetFieldRefsForQuery()
+				Condition = $"'{_NAME_FIELD_NAME}' == '{Name}' AND '{_PARENT_OBJECT_FIELD_NAME}' == {_syncConfigurationArtifactId}",
+				Fields = GetFieldRefsForQuery(),
+				IncludeNameInQueryResult = true
 			};
 
 			bool objectExists = false;
@@ -187,7 +190,7 @@ namespace Relativity.Sync.Storage
 				{
 					Guid = ProgressObjectTypeGuid
 				},
-				Condition = $"'{ParentArtifactGuid}' == OBJECT {_syncConfigurationArtifactId}",
+				Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {_syncConfigurationArtifactId}",
 				IncludeNameInQueryResult = true
 			};
 			try
@@ -222,7 +225,7 @@ namespace Relativity.Sync.Storage
 			{
 				new FieldRef
 				{
-					Guid = NameGuid
+					Name = _NAME_FIELD_NAME
 				},
 				new FieldRef
 				{
@@ -247,14 +250,14 @@ namespace Relativity.Sync.Storage
 		private void PopulateProgressProperties(RelativityObject relativityObject)
 		{
 			ArtifactId = relativityObject.ArtifactID;
-			Name = (string)relativityObject[NameGuid].Value;
+			Name = relativityObject.Name;
 			Order = (int)relativityObject[OrderGuid].Value;
 			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<SyncJobStatus>();
 			Exception = (string)relativityObject[ExceptionGuid].Value;
 			Message = (string)relativityObject[MessageGuid].Value;
 		}
 
-		private async Task UpdateFieldValue<T>(Guid fieldGuid, T value)
+		private async Task UpdateFieldValueAsync<T>(Guid fieldGuid, T value)
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{

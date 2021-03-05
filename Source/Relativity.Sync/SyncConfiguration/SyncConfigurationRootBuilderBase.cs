@@ -94,15 +94,15 @@ namespace Relativity.Sync.SyncConfiguration
 
         public async Task<int> SaveAsync()
         {
-            await ValidateGuidsAsync(
-                GetAllValidationInfos()
-            ).ConfigureAwait(false);
+	        List<(Guid Guid, string PropertyPath)> allValidationInfos = GetAllValidationInfos();
+	        await ValidateGuidsAsync(allValidationInfos).ConfigureAwait(false);
             await ValidateAsync().ConfigureAwait(false);
 
-            await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId)
-                .ConfigureAwait(false);
+            await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
+            await _rdoManager.EnsureTypeExistsAsync<SyncProgressRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
+            await _rdoManager.EnsureTypeExistsAsync<SyncBatchRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
 
-            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration, SyncContext.JobHistoryId).ConfigureAwait(false);
+            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration).ConfigureAwait(false);
 
             return SyncConfiguration.ArtifactId;
         }

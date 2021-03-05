@@ -7,7 +7,7 @@ namespace Relativity.Sync.RDOs
 	internal sealed class SyncBatchRdo : IRdoType
 	{
 		public int ArtifactId { get; set; }
-
+		
 		[RdoField(SyncBatchGuids.FailedItemsCountGuid, RdoFieldType.WholeNumber)]
 		public int FailedItemsCount { get; set; }
 

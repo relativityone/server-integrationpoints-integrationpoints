@@ -27,7 +27,6 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<DataDestinationFinalizationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SynchronizationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<SourceWorkspaceObjectTypesCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SourceWorkspaceTagsCreationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<JobCleanupConfiguration>().AsImplementedInterfaces().SingleInstance();
 			builder.RegisterType<AutomatedWorkflowTriggerConfiguration>().AsImplementedInterfaces().SingleInstance();

@@ -3,9 +3,7 @@
 	internal static class SyncBatchGuids
 	{
 		public const string SyncBatchObjectTypeGuid = "18C766EB-EB71-49E4-983E-FFDE29B1A44E";
-		public const string SyncConfigurationRelationGuid = "F673E67F-E606-4155-8E15-CA1C83931E16";
-
-		public const string NameGuid = "3AB49704-F843-4E09-AFF2-5380B1BF7A35";
+		
 		public const string TotalItemsCountGuid = "F84589FE-A583-4EB3-BA8A-4A2EEE085C81";
 		public const string StartingIndexGuid = "B56F4F70-CEB3-49B8-BC2B-662D481DDC8A";
 		public const string StatusGuid = "D16FAF24-BC87-486C-A0AB-6354F36AF38E";

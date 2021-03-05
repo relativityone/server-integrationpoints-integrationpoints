@@ -18,8 +18,7 @@ namespace Relativity.Sync.Storage
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
-
-		private static readonly Guid NameGuid = new Guid(SyncBatchGuids.NameGuid);
+		
 		private static readonly Guid TotalItemsCountGuid = new Guid(SyncBatchGuids.TotalItemsCountGuid);
 		private static readonly Guid StartingIndexGuid = new Guid(SyncBatchGuids.StartingIndexGuid);
 		private static readonly Guid StatusGuid = new Guid(SyncBatchGuids.StatusGuid);
@@ -27,9 +26,9 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid TransferredItemsCountGuid = new Guid(SyncBatchGuids.TransferredItemsCountGuid);
 		private static readonly Guid TaggedItemsCountGuid = new Guid(SyncBatchGuids.TaggedItemsCountGuid);
 		private static readonly Guid ProgressGuid = new Guid(SyncBatchGuids.ProgressGuid);
-
 		private static readonly Guid LockedByGuid = new Guid(SyncBatchGuids.LockedByGuid);
-		private static readonly Guid SyncConfigurationRelationGuid = new Guid(SyncBatchGuids.SyncConfigurationRelationGuid);
+
+		private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
 
 		private Batch(ISourceServiceFactoryForAdmin serviceFactory)
 		{
@@ -115,7 +114,7 @@ namespace Relativity.Sync.Storage
 						{
 							Field = new FieldRef
 							{
-								Guid = NameGuid
+								Name = "Name"
 							},
 							Value = Guid.NewGuid()
 						},
@@ -165,7 +164,8 @@ namespace Relativity.Sync.Storage
 						Guid = BatchObjectTypeGuid
 					},
 					Fields = GetFieldsToRead(),
-					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}",
+					Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}",
+					IncludeNameInQueryResult = true,
 					Sorts = new[]
 					{
 						new Sort
@@ -205,7 +205,8 @@ namespace Relativity.Sync.Storage
 						Guid = BatchObjectTypeGuid
 					},
 					Fields = GetFieldsToRead(),
-					Condition = $"('{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}) AND ('{StartingIndexGuid}' > {startingIndex})",
+					Condition = $"('{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}) AND ('{StartingIndexGuid}' > {startingIndex})",
+					IncludeNameInQueryResult = true,
 					Sorts = new[]
 					{
 						new Sort
@@ -246,6 +247,7 @@ namespace Relativity.Sync.Storage
 						Guid = BatchObjectTypeGuid
 					},
 					Fields = GetFieldsToRead(),
+					IncludeNameInQueryResult = true,
 					Condition = $"'ArtifactID' == {artifactId}"
 				};
 				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, start: 0, length: 1).ConfigureAwait(false);
@@ -270,7 +272,8 @@ namespace Relativity.Sync.Storage
 					{
 						Guid = BatchObjectTypeGuid
 					},
-					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{BatchStatus.New.GetDescription()}'"
+					Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{BatchStatus.New.GetDescription()}'",
+					IncludeNameInQueryResult = true
 				};
 
 				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, queryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
@@ -295,7 +298,8 @@ namespace Relativity.Sync.Storage
 					{
 						Guid = BatchObjectTypeGuid
 					},
-					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
+					Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}",
+					IncludeNameInQueryResult = true
 				};
 
 				QueryResultSlim result = await objectManager.QuerySlimAsync(_workspaceArtifactId, queryRequest, start: 1, length: int.MaxValue).ConfigureAwait(false);
@@ -407,7 +411,7 @@ namespace Relativity.Sync.Storage
 						{
 							Guid = BatchObjectTypeGuid
 						},
-						Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}"
+						Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}"
 					}
 				};
 				await objectManager.DeleteAsync(workspaceArtifactId, request).ConfigureAwait(false);
@@ -440,7 +444,8 @@ namespace Relativity.Sync.Storage
 						{
 							Name = "System Created On"
 						}
-					}
+					},
+					IncludeNameInQueryResult = true
 				};
 
 				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
