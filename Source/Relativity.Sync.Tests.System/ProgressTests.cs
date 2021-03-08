@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid StatusGuid = new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B");
 		private static readonly Guid ExceptionGuid = new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939");
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
-		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
 		[SetUp]
 		public async Task SetUp()
@@ -76,7 +75,7 @@ namespace Relativity.Sync.Tests.System
 					{
 						Guid = ProgressObjectTypeGuid
 					},
-					Condition = $"'{ParentArtifactGuid}' == {syncConfigurationId}",
+					Condition = $"'SyncConfiguration' == {syncConfigurationId}",
 					Fields = new[]
 					{
 						new FieldRef
