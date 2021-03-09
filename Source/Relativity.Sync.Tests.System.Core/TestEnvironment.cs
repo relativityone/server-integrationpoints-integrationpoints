@@ -211,14 +211,16 @@ namespace Relativity.Sync.Tests.System.Core
 				while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
 			}
 			
-			await EnsureRdosExistsAsync(workspaceArtifactId);
+			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
 		}
 
 		private static async Task EnsureRdosExistsAsync(int workspaceArtifactId)
 		{
-			var rdoManager =
-				new RdoManager(TestLogHelper.GetLogger(), new ServicesManagerStub(), new RdoGuidProvider());
-			await rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(workspaceArtifactId);
+			var rdoManager = new RdoManager(TestLogHelper.GetLogger(), new ServicesManagerStub(), new RdoGuidProvider());
+			await rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(workspaceArtifactId).ConfigureAwait(false);
+			await rdoManager.EnsureTypeExistsAsync<SyncProgressRdo>(workspaceArtifactId).ConfigureAwait(false);
+			await rdoManager.EnsureTypeExistsAsync<SyncBatchRdo>(workspaceArtifactId).ConfigureAwait(false);
+
 		}
 
 		private async Task InstallHelperAppIfNeededAsync()

@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 		private readonly Guid BatchObject = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private readonly Guid TransferredItemsCountField = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-		private readonly Guid SyncConfigurationRelation = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
 		public SynchronizationExecutorValidator(ConfigurationStub configuration, ServiceFactory serviceFactory)
 		{
@@ -84,7 +83,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 					{
 						Guid = BatchObject
 					},
-					Condition = $"'{SyncConfigurationRelation}' == OBJECT {Configuration.SyncConfigurationArtifactId}"
+					Condition = $"'SyncConfiguration' == OBJECT {Configuration.SyncConfigurationArtifactId}"
 				};
 
 				QueryResultSlim batchesArtifactsIdsQueryResult = await objectManager

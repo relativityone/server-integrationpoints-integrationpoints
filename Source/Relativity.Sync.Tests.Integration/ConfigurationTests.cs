@@ -8,7 +8,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
@@ -49,7 +48,6 @@ namespace Relativity.Sync.Tests.Integration
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
 			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, 1);
-			var rdoGuidProvider = new RdoGuidProvider();
 			var rdoManagerMock = new Mock<IRdoManager>();
 
 			rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
@@ -63,7 +61,7 @@ namespace Relativity.Sync.Tests.Integration
 					rdo.JobHistoryId = value;
 				});
 			
-			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoGuidProvider, rdoManagerMock.Object).ConfigureAwait(false);
+			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoManagerMock.Object).ConfigureAwait(false);
 
 			// ACT
 			Task updateTask = cache.UpdateFieldValueAsync(x => x.JobHistoryId, newValue);

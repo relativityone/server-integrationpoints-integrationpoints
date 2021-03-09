@@ -32,6 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private const int _TEST_JOB_HISTORY_TO_RETRY_ID = 101345;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 101202;
 		private const string _EXPECTED_QUERY_FIELD_TYPE = "Owner";
+		private const string _JOB_HISTORY_GUID = "08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9";
 
 		[SetUp]
 		public void SetUp()
@@ -43,6 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_objectManager = new Mock<IObjectManager>();
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 
+			_validationConfiguration.SetupGet(x => x.JobHistoryObjectTypeGuid).Returns(new Guid(_JOB_HISTORY_GUID));
 			_validationConfiguration.SetupGet(x => x.JobHistoryToRetryId).Returns(_TEST_JOB_HISTORY_TO_RETRY_ID);
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 
@@ -195,7 +197,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private void VerifyObjectManagerQueryRequest()
 		{
-			Guid searchArtifactTypeId = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
+			Guid searchArtifactTypeId = new Guid(_JOB_HISTORY_GUID);
 
 			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
 				It.Is<QueryRequest>(y => y.ObjectType.Guid == searchArtifactTypeId && y.Condition == $"'ArtifactId' == {_TEST_JOB_HISTORY_TO_RETRY_ID}"),

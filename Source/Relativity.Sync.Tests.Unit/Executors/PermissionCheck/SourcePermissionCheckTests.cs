@@ -311,6 +311,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		{
 			Mock<IPermissionsCheckConfiguration> configuration = new Mock<IPermissionsCheckConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
+			configuration.SetupGet(x => x.JobHistoryObjectTypeGuid).Returns(_jobHistory);
 
 			return configuration;
 		}

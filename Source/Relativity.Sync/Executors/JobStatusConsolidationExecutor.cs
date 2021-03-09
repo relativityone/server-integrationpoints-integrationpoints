@@ -36,16 +36,11 @@ namespace Relativity.Sync.Executors
 					.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId)
 					.ConfigureAwait(false)).ToList();
 
-				int completedItemsCount = batches
-					.Sum(batch => batch.TransferredItemsCount);
-
+				int completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
 				int totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
+				int failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
 
-				int failedItemsCount = batches
-					.Sum(batch => batch.FailedItemsCount);
-
-				updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount)
-					.ConfigureAwait(false);
+				updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{

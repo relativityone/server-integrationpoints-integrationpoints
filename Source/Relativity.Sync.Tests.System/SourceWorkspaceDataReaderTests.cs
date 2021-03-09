@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.System
 			// Prepare environment
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
 			int allDocumentsSavedSearchArtifactId =
-				await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
+				await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 			int jobHistoryArtifactId = await Rdos
 				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
 				.ConfigureAwait(false);
@@ -204,7 +204,7 @@ namespace Relativity.Sync.Tests.System
 			// Prepare environment
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
 			int allDocumentsSavedSearchArtifactId =
-				await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
+				await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 			int jobHistoryArtifactId = await Rdos
 				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
 				.ConfigureAwait(false);

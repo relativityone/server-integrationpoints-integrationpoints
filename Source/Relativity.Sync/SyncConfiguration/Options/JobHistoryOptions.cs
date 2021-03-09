@@ -15,22 +15,22 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// <summary>
         /// Completed items count (whole number)
         /// </summary>
-        public Guid CompletedItemsCountGuid { get; private set;}
-       
+        public Guid CompletedItemsCountGuid { get; private set; }
+
         /// <summary>
         /// Failed items count (whole number)
         /// </summary>
-        public Guid FailedItemsCountGuid { get; private set;}
-       
+        public Guid FailedItemsCountGuid { get; private set; }
+
         /// <summary>
         /// Total items count (whole number)
         /// </summary>
-        public Guid TotalItemsCountGuid { get; private set;}
-       
+        public Guid TotalItemsCountGuid { get; private set; }
+
         /// <summary>
         /// Destination workspace information (text)
         /// </summary>
-        public Guid DestinationWorkspaceInformationGuid { get; private set;}
+        public Guid DestinationWorkspaceInformationGuid { get; private set; }
 
         /// <summary>
         /// Constructor. All parameters are mandatory

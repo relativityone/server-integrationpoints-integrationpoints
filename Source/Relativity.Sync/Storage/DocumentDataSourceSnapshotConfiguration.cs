@@ -2,8 +2,6 @@
 using Relativity.Sync.Configuration;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Caching;
-using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {

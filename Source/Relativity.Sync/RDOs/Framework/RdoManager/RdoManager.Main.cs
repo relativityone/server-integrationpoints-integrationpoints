@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Polly;
@@ -12,7 +10,6 @@ using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.RDOs.Framework.Attributes;
 
 // ReSharper disable once CheckNamespace
 namespace Relativity.Sync.RDOs.Framework

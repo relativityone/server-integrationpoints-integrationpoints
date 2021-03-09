@@ -166,6 +166,8 @@ namespace Relativity.Sync.Tests.Common
 
 		public int DestinationWorkspaceTagArtifactId { get; set; }
 
+		public Guid JobHistoryObjectTypeGuid { get; } = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
+
 		public int JobHistoryArtifactId { get; set; }
 
 		public bool IsSourceJobTagSet { get; set; }

@@ -22,9 +22,9 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			await base.ChildSuiteSetup();
 
-			_savedSearchId = await Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspaceId).ConfigureAwait(false);
+			_savedSearchId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, SourceWorkspaceId).ConfigureAwait(false);
 
-			_destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspaceId).ConfigureAwait(false);
+			_destinationFolderId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, DestinationWorkspaceId).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("2889569E-95A8-4BDC-9177-5220B2C2740F")]

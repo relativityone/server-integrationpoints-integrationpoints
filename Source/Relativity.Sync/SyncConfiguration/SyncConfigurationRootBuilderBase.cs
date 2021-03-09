@@ -5,14 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
 using System.Linq.Expressions;
-using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs.Framework;
 
 #pragma warning disable 1591
@@ -97,36 +94,19 @@ namespace Relativity.Sync.SyncConfiguration
 
         public async Task<int> SaveAsync()
         {
-            await ValidateGuidsAsync(
-                GetAllValidationInfos()
-            ).ConfigureAwait(false);
+	        List<(Guid Guid, string PropertyPath)> allValidationInfos = GetAllValidationInfos();
+	        await ValidateGuidsAsync(allValidationInfos).ConfigureAwait(false);
             await ValidateAsync().ConfigureAwait(false);
 
-            await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId)
-                .ConfigureAwait(false);
+            await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
+            await _rdoManager.EnsureTypeExistsAsync<SyncProgressRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
+            await _rdoManager.EnsureTypeExistsAsync<SyncBatchRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
 
-            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration, SyncContext.JobHistoryId).ConfigureAwait(false);
+            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration).ConfigureAwait(false);
 
             return SyncConfiguration.ArtifactId;
         }
-
-        private async Task<int> GetParentObjectTypeAsync(int workspaceId, int parentObjectId)
-        {
-            using (IObjectManager objectManager = ServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
-            {
-                ReadRequest request = new ReadRequest()
-                {
-                    Object = new RelativityObjectRef()
-                    {
-                        ArtifactID = parentObjectId
-                    }
-                };
-
-                ReadResult response = await objectManager.ReadAsync(workspaceId, request).ConfigureAwait(false);
-                return response.ObjectType.ArtifactTypeID;
-            }
-        }
-
+        
         private List<(Guid Guid, string PropertyPath)> GetAllValidationInfos()
         {
             return new List<(Guid Guid, string PropertyPath)>

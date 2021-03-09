@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Kepler.Transport;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
@@ -25,7 +17,6 @@ namespace Relativity.Sync.Tests.Unit
 		private ISyncLog _syncLog;
 		private Mock<ISemaphoreSlim> _semaphoreSlim;
 		private SyncJobParameters _syncJobParameters;
-		private RdoGuidProvider _rdoGuidProvider;
 		private Mock<IRdoManager> _rdoManagerMock;
 		private SyncConfigurationRdo _syncConfigurationRdo;
 		private IConfiguration _sut;
@@ -45,14 +36,13 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_semaphoreSlim = new Mock<ISemaphoreSlim>();
 	
-			_rdoGuidProvider = new RdoGuidProvider();
 			_rdoManagerMock = new Mock<IRdoManager>();
 
 			_syncConfigurationRdo = new SyncConfigurationRdo();
 			_rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(_syncConfigurationRdo);
 		
-			_sut = await Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoGuidProvider, _rdoManagerMock.Object).ConfigureAwait(false);
+			_sut = await Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoManagerMock.Object).ConfigureAwait(false);
 		}
 
 		[Test]
@@ -80,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit
 
 
 			// ACT
-			Func<Task> action = async () => await Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoGuidProvider, _rdoManagerMock.Object).ConfigureAwait(false);
+			Func<Task> action = () => Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoManagerMock.Object);
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
@@ -120,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit
 				.ThrowsAsync(new InvalidOperationException());
 		
 			// ACT
-			Func<Task> action = async () => await _sut.UpdateFieldValueAsync(x => x.JobHistoryId, newValue).ConfigureAwait(false);
+			Func<Task> action = () => _sut.UpdateFieldValueAsync(x => x.JobHistoryId, newValue);
 
 			// ASSERT
 			action.Should().Throw<InvalidOperationException>();
