@@ -98,6 +98,7 @@
     <Compile Include="Commands\SourceConfigurationTypeOfExportUpdater.cs" />
     <Compile Include="Commands\SplitJsonObjectService.cs" />
     <Compile Include="Commands\SplittedJsonObject.cs" />
+    <Compile Include="Commands\SyncRdoDeleteCommand.cs" />
     <Compile Include="Commands\UpdateDestinationWorkspaceEntriesCommand.cs" />
     <Compile Include="Commands\UpdateEncryptedConfigurationCommand.cs" />
     <Compile Include="Commands\UpdateFtpConfigurationCommand.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="IntegrationPoints\IntegrationPointProfilePreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\IntegrationPointTypesMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\InternalSourceProviderInstaller.cs" />
+    <Compile Include="IntegrationPoints\SyncRdoDeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\Validators\IPreCascadeDeleteEventHandlerValidator.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RegisterFtpProvider.cs" />
