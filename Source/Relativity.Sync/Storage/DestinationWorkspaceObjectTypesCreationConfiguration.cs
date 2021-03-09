@@ -1,14 +1,12 @@
-﻿using System;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
+﻿using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
 	internal sealed class DestinationWorkspaceObjectTypesCreationConfiguration : IDestinationWorkspaceObjectTypesCreationConfiguration
 	{
-		private readonly Storage.IConfiguration _cache;
+		private readonly IConfiguration _cache;
 
-		public DestinationWorkspaceObjectTypesCreationConfiguration(Storage.IConfiguration cache)
+		public DestinationWorkspaceObjectTypesCreationConfiguration(IConfiguration cache)
 		{
 			_cache = cache;
 		}

@@ -24,10 +24,11 @@ namespace Relativity.Sync.Tests.Unit
 
 		private const int _WORKSPACE_ID = 433;
 		private const int _ARTIFACT_ID = 416;
+		private const string _NAME_FIELD_NAME = "Name";
+		private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-
-		private static readonly Guid NameGuid = new Guid("3AB49704-F843-4E09-AFF2-5380B1BF7A35");
+		
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
@@ -35,9 +36,7 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
-
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
-		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
 
 		[SetUp]
 		public void SetUp()
@@ -84,8 +83,8 @@ namespace Relativity.Sync.Tests.Unit
 			createRequest.ParentObject.ArtifactID.Should().Be(syncConfigurationArtifactId);
 			const int expectedNumberOfFields = 4;
 			createRequest.FieldValues.Count().Should().Be(expectedNumberOfFields);
-			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == NameGuid);
-			createRequest.FieldValues.First(x => x.Field.Guid == NameGuid).Value.ToString().Should().NotBeNullOrWhiteSpace();
+			createRequest.FieldValues.Should().Contain(x => x.Field.Name == _NAME_FIELD_NAME);
+			createRequest.FieldValues.First(x => x.Field.Name == _NAME_FIELD_NAME).Value.ToString().Should().NotBeNullOrWhiteSpace();
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == TotalItemsCountGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == TotalItemsCountGuid).Value.Should().Be(totalItemsCount);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StartingIndexGuid);
@@ -594,7 +593,7 @@ namespace Relativity.Sync.Tests.Unit
 		private bool AssertQueryRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
 		{
 			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}");
+			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}");
 			IList<FieldRef> fields = queryRequest.Fields.ToList();
 			AssertReadFields(fields);
 			return true;
@@ -603,7 +602,7 @@ namespace Relativity.Sync.Tests.Unit
 		private bool AssertQueryRequestSlim(QueryRequest queryRequest, int syncConfigurationArtifactId)
 		{
 			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}");
+			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}");
 			return true;
 		}
 
@@ -752,13 +751,13 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			return
 				request.ObjectIdentificationCriteria.ObjectType.Guid == BatchObjectTypeGuid &&
-				request.ObjectIdentificationCriteria.Condition == $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationArtifactId}";
+				request.ObjectIdentificationCriteria.Condition == $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}";
 		}
 
 		private bool AssertQueryAllNewRequest(QueryRequest queryRequest)
 		{
 			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{SyncConfigurationRelationGuid}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == 'New'");
+			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == 'New'");
 			return true;
 		}
 	}

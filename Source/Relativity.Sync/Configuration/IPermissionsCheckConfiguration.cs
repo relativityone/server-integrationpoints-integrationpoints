@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface IPermissionsCheckConfiguration : IConfiguration
 	{
@@ -11,5 +13,7 @@
 		int SourceProviderArtifactId { get; }
 
 		bool CreateSavedSearchForTags { get; }
+
+		Guid JobHistoryObjectTypeGuid { get; }
 	}
 }

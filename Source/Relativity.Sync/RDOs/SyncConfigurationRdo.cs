@@ -7,7 +7,7 @@ namespace Relativity.Sync.RDOs
     [Rdo(SyncRdoGuids.SyncConfigurationGuid, "Sync Configuration")]
     internal sealed class SyncConfigurationRdo : IRdoType
     {
-        public int ArtifactId { get; set; }
+	    public int ArtifactId { get; set; }
 
         [RdoField(SyncRdoGuids.RdoArtifactTypeIdGuid, RdoFieldType.WholeNumber)]
         public int RdoArtifactTypeId { get; set; }

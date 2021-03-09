@@ -83,10 +83,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
 			configuration.DestinationWorkspaceArtifactId = destinationWorkspace.ArtifactID;
-			configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
+			configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			configuration.DataSourceArtifactId = configuration.SavedSearchArtifactId;
 			configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now:yyyy MMMM dd HH.mm.ss.fff}").ConfigureAwait(false);
-			configuration.DestinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			configuration.DestinationFolderArtifactId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
 			await configureAsync(SourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
 

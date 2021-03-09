@@ -13,23 +13,24 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
-
-		private static readonly Guid _JOB_HISTORY_GUID = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
-
+		
 		public JobHistoryNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_logger = logger;
 		}
 
-		public async Task<string> GetJobNameAsync(int jobHistoryArtifactId, int sourceWorkspaceArtifactId, CancellationToken token)
+		public async Task<string> GetJobNameAsync(Guid jobHistoryGuid, int jobHistoryArtifactId, int sourceWorkspaceArtifactId, CancellationToken token)
 		{
 			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = new QueryRequest()
 				{
+					ObjectType = new ObjectTypeRef()
+					{
+						Guid = jobHistoryGuid
+					},
 					Condition = $"'ArtifactID' == {jobHistoryArtifactId}",
-					ObjectType = new ObjectTypeRef() {Guid = _JOB_HISTORY_GUID },
 					IncludeNameInQueryResult = true
 				};
 				const int start = 0;

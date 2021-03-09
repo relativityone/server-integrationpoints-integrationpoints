@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.System
 			string jobHistoryName = Guid.NewGuid().ToString();
 			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			string destinationWorkspaceTagName = Guid.NewGuid().ToString();
-			int destinationWorkspaceTagId = await Rdos.CreateDestinationWorkspaceTagInstance(ServiceFactory, _sourceWorkspaceArtifactId, 0, destinationWorkspaceTagName).ConfigureAwait(false);
+			int destinationWorkspaceTagId = await Rdos.CreateDestinationWorkspaceTagInstanceAsync(ServiceFactory, _sourceWorkspaceArtifactId, 0, destinationWorkspaceTagName).ConfigureAwait(false);
 
 			var configuration = new ConfigurationStub
 			{
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.System
 
 		private async Task<IList<int>> UploadDocumentsAsync(int numDocuments)
 		{
-			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
 			ImportDataTableWrapper importDataTableWrapper = DataTableFactory.GenerateDocumentsWithExtractedText(numDocuments);
 
 			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(_sourceWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);

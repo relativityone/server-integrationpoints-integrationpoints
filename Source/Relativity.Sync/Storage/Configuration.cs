@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Polly;
-using Relativity.Kepler.Transport;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 
@@ -17,7 +8,6 @@ namespace Relativity.Sync.Storage
 {
 	internal sealed class Configuration : IConfiguration
 	{
-		private readonly IRdoGuidProvider _rdoGuidProvider;
 		private readonly IRdoManager _rdoManager;
 		private readonly int _workspaceArtifactId;
 		private readonly int _syncConfigurationArtifactId;
@@ -26,11 +16,9 @@ namespace Relativity.Sync.Storage
 		private readonly ISemaphoreSlim _semaphoreSlim;
 
 		private SyncConfigurationRdo _configuration;
-		private RdoTypeInfo _configurationTypeInfo;
 
-		private Configuration(SyncJobParameters syncJobParameters, IRdoGuidProvider rdoGuidProvider, IRdoManager rdoManager, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
+		private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
 		{
-			_rdoGuidProvider = rdoGuidProvider;
 			_rdoManager = rdoManager;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
 			_syncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
@@ -69,8 +57,6 @@ namespace Relativity.Sync.Storage
 		private async Task ReadAsync()
 		{
 			_logger.LogVerbose("Reading Sync Configuration {artifactId}.", _syncConfigurationArtifactId);
-			_configurationTypeInfo = _rdoGuidProvider.GetValue<SyncConfigurationRdo>();
-
 
 			_configuration = await _rdoManager
 				.GetAsync<SyncConfigurationRdo>(_workspaceArtifactId, _syncConfigurationArtifactId)
@@ -86,9 +72,9 @@ namespace Relativity.Sync.Storage
 		}
 
 		public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, ISyncLog logger,
-			ISemaphoreSlim semaphoreSlim, IRdoGuidProvider rdoGuidProvider, IRdoManager rdoManager)
+			ISemaphoreSlim semaphoreSlim, IRdoManager rdoManager)
 		{
-			Configuration configuration = new Configuration(syncJobParameters,rdoGuidProvider, rdoManager, logger, semaphoreSlim);
+			Configuration configuration = new Configuration(syncJobParameters, rdoManager, logger, semaphoreSlim);
 			await configuration.ReadAsync().ConfigureAwait(false);
 			return configuration;
 		}

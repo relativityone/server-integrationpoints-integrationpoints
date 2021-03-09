@@ -90,7 +90,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(
 				SourceWorkspace.ArtifactID,
-				Rdos.GetRootFolderInstance(ServiceFactory, SourceWorkspace.ArtifactID).GetAwaiter().GetResult(),
+				Rdos.GetRootFolderInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID).GetAwaiter().GetResult(),
 				dataTableWrapper);
 
 			ImportJobExecutor.ExecuteAsync(documentImportJob).GetAwaiter().GetResult();
@@ -114,11 +114,11 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 			Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
 			Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
-			Configuration.DataSourceArtifactId = Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).GetAwaiter().GetResult();
+			Configuration.DataSourceArtifactId = Rdos.GetSavedSearchInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).GetAwaiter().GetResult();
 			Configuration.DestinationFolderStructureBehavior = folderStructure;
 
 			Configuration.JobHistoryArtifactId = jobHistoryArtifactId;
-			Configuration.DestinationFolderArtifactId = Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspace.ArtifactID).GetAwaiter().GetResult();
+			Configuration.DestinationFolderArtifactId = Rdos.GetRootFolderInstanceAsync(ServiceFactory, DestinationWorkspace.ArtifactID).GetAwaiter().GetResult();
 			Configuration.SendEmails = false;
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
@@ -148,10 +148,10 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 			Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
 			Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
-			Configuration.DataSourceArtifactId = Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).GetAwaiter().GetResult();
+			Configuration.DataSourceArtifactId = Rdos.GetSavedSearchInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).GetAwaiter().GetResult();
 
 			Configuration.JobHistoryArtifactId = jobHistoryArtifactId;
-			Configuration.DestinationFolderArtifactId = Rdos.GetRootFolderInstance(ServiceFactory, DestinationWorkspace.ArtifactID).GetAwaiter().GetResult();
+			Configuration.DestinationFolderArtifactId = Rdos.GetRootFolderInstanceAsync(ServiceFactory, DestinationWorkspace.ArtifactID).GetAwaiter().GetResult();
 			Configuration.SendEmails = false;
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;

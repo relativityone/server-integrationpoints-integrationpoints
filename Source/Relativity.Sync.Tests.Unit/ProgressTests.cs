@@ -22,14 +22,15 @@ namespace Relativity.Sync.Tests.Unit
 		private const int _WORKSPACE_ID = 928;
 		private const int _ARTIFACT_ID = 682;
 
+		private const string _NAME_FIELD_NAME = "Name";
+		private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
+
 		private static readonly Guid ProgressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
 
 		private static readonly Guid OrderGuid = new Guid("610A1E44-7AAA-47FC-8FA0-92F8C8C8A94A");
 		private static readonly Guid StatusGuid = new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B");
-		private static readonly Guid NameGuid = new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95");
 		private static readonly Guid ExceptionGuid = new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939");
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
-		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
 		[SetUp]
 		public void SetUp()
@@ -76,8 +77,8 @@ namespace Relativity.Sync.Tests.Unit
 			createRequest.ParentObject.ArtifactID.Should().Be(syncConfigurationArtifactId);
 			const int three = 3;
 			createRequest.FieldValues.Count().Should().Be(three);
-			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == NameGuid);
-			createRequest.FieldValues.First(x => x.Field.Guid == NameGuid).Value.Should().Be(name);
+			createRequest.FieldValues.Should().Contain(x => x.Field.Name == _NAME_FIELD_NAME);
+			createRequest.FieldValues.First(x => x.Field.Name == _NAME_FIELD_NAME).Value.Should().Be(name);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == OrderGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == OrderGuid).Value.Should().Be(order);
 
@@ -174,11 +175,11 @@ namespace Relativity.Sync.Tests.Unit
 		private bool AssertQueryRequest(QueryRequest queryRequest, string name, int syncConfigurationArtifactId)
 		{
 			queryRequest.ObjectType.Guid.Should().Be(ProgressObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{NameGuid}' == '{name}' AND '{ParentArtifactGuid}' == {syncConfigurationArtifactId}");
+			queryRequest.Condition.Should().Be($"'{_NAME_FIELD_NAME}' == '{name}' AND '{_PARENT_OBJECT_FIELD_NAME}' == {syncConfigurationArtifactId}");
 
 			const int expectedNumberOfFields = 5;
 			queryRequest.Fields.Count().Should().Be(expectedNumberOfFields);
-			queryRequest.Fields.Should().Contain(x => x.Guid == NameGuid);
+			queryRequest.Fields.Should().Contain(x => x.Name == _NAME_FIELD_NAME);
 			queryRequest.Fields.Should().Contain(x => x.Guid == ExceptionGuid);
 			queryRequest.Fields.Should().Contain(x => x.Guid == OrderGuid);
 			queryRequest.Fields.Should().Contain(x => x.Guid == StatusGuid);
@@ -212,13 +213,14 @@ namespace Relativity.Sync.Tests.Unit
 			var relativityObjectResult = new RelativityObject
 			{
 				ArtifactID = _ARTIFACT_ID,
+				Name = name,
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair
 					{
 						Field = new Field
 						{
-							Guids = new List<Guid> {NameGuid}
+							Name = _NAME_FIELD_NAME
 						},
 						Value = name
 					},
@@ -264,7 +266,7 @@ namespace Relativity.Sync.Tests.Unit
 			queryRequest.Condition.Should().Be($"'ArtifactID' == {_ARTIFACT_ID}");
 			const int five = 5;
 			queryRequest.Fields.Count().Should().Be(five);
-			queryRequest.Fields.Should().Contain(x => x.Guid == NameGuid);
+			queryRequest.Fields.Should().Contain(x => x.Name == _NAME_FIELD_NAME);
 			queryRequest.Fields.Should().Contain(x => x.Guid == OrderGuid);
 			queryRequest.Fields.Should().Contain(x => x.Guid == StatusGuid);
 			queryRequest.Fields.Should().Contain(x => x.Guid == ExceptionGuid);
@@ -306,7 +308,7 @@ namespace Relativity.Sync.Tests.Unit
 			SyncJobStatus oldValue = progress.Status;
 
 			// ACT
-			Func<Task> action = async () => await progress.SetStatusAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => progress.SetStatusAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
@@ -347,7 +349,7 @@ namespace Relativity.Sync.Tests.Unit
 			string oldValue = progress.Exception;
 
 			// ACT
-			Func<Task> action = async () => await progress.SetExceptionAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => progress.SetExceptionAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
@@ -388,7 +390,7 @@ namespace Relativity.Sync.Tests.Unit
 			string oldValue = progress.Message;
 
 			// ACT
-			Func<Task> action = async () => await progress.SetMessageAsync(newValue).ConfigureAwait(false);
+			Func<Task> action = () => progress.SetMessageAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
@@ -437,7 +439,7 @@ namespace Relativity.Sync.Tests.Unit
 		private bool AssertQueryAllRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
 		{
 			queryRequest.ObjectType.Guid.Should().Be(ProgressObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{ParentArtifactGuid}' == OBJECT {syncConfigurationArtifactId}");
+			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}");
 			return true;
 		}
 

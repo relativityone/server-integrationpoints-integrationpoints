@@ -26,8 +26,7 @@ namespace Relativity.Sync.Tests.System
 		private int _syncConfigurationId;
 		private SnapshotPartitionExecutor _instance;
 		private IBatchRepository _batchRepository;
-
-		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
+		
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid _SYNC_BATCH_OBJECT_TYPE = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
@@ -175,7 +174,7 @@ namespace Relativity.Sync.Tests.System
 				var request = new QueryRequest
 				{
 					ObjectType = SyncBatchObjectTypeRef,
-					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationId}",
+					Condition = $"'SyncConfiguration' == OBJECT {syncConfigurationId}",
 					Sorts = new[]
 					{
 						new Sort

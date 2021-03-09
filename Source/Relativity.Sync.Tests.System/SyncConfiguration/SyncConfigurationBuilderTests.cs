@@ -45,11 +45,11 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			
-			int savedSearchId = await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			int savedSearchId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
 			WorkspaceRef destinationWorkspace = await destinationWorkspaceTask.ConfigureAwait(false);
 			
-			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			int destinationFolderId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			
 			ISyncContext syncContext =
 				new SyncContext(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID, jobHistoryId);

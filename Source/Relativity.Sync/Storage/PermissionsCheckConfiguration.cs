@@ -38,6 +38,8 @@ namespace Relativity.Sync.Storage
 
 		public bool CreateSavedSearchForTags => _cache.GetFieldValue(x => x.CreateSavedSearchInDestination);
 
+		public Guid JobHistoryObjectTypeGuid => _cache.GetFieldValue(x => x.JobHistoryType);
+
 		private async Task<int> GetSourceProviderArtifactIdAsync()
 		{
 			using (var objectManager = await _sourceServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))

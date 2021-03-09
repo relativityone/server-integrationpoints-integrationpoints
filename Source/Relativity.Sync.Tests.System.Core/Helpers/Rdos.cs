@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -10,21 +9,11 @@ using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.User;
 using Relativity.Sync.Utils;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
 using User = Relativity.Services.User.User;
-using Newtonsoft.Json;
-using Relativity.API;
-using Relativity.Services.ArtifactGuid;
-using Relativity.Services.Interfaces.ObjectType;
-using Relativity.Services.Interfaces.ObjectType.Models;
-using Relativity.Services.Interfaces.Shared;
-using Relativity.Services.Interfaces.Shared.Models;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
-using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Stubs;
 
@@ -109,7 +98,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateRelativitySourceCaseInstance(ServiceFactory serviceFactory,
+		public static async Task<int> CreateRelativitySourceCaseInstanceAsync(ServiceFactory serviceFactory,
 			int destinationWorkspaceArtifactId, RelativitySourceCaseTag tag)
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -150,7 +139,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateRelativitySourceJobInstance(ServiceFactory serviceFactory,
+		public static async Task<int> CreateRelativitySourceJobInstanceAsync(ServiceFactory serviceFactory,
 			int destinationWorkspaceArtifactId, RelativitySourceJobTag tag)
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -187,7 +176,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateDestinationWorkspaceTagInstance(ServiceFactory serviceFactory,
+		public static async Task<int> CreateDestinationWorkspaceTagInstanceAsync(ServiceFactory serviceFactory,
 			int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
 		{
 			const string destinationInstanceName = "This Instance";
@@ -237,7 +226,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> GetSavedSearchInstance(ServiceFactory serviceFactory, int workspaceId,
+		public static async Task<int> GetSavedSearchInstanceAsync(ServiceFactory serviceFactory, int workspaceId,
 			string name = "All Documents")
 		{
 			using (IKeywordSearchManager keywordSearchManager = serviceFactory.CreateProxy<IKeywordSearchManager>())
@@ -258,7 +247,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> GetRootFolderInstance(ServiceFactory serviceFactory, int workspaceId)
+		public static async Task<int> GetRootFolderInstanceAsync(ServiceFactory serviceFactory, int workspaceId)
 		{
 			using (IFolderManager folderManager = serviceFactory.CreateProxy<IFolderManager>())
 			{
@@ -267,7 +256,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateFolderInstance(ServiceFactory serviceFactory, int workspaceId,
+		public static async Task<int> CreateFolderInstanceAsync(ServiceFactory serviceFactory, int workspaceId,
 			string folderName)
 		{
 			using (IFolderManager folderManager = serviceFactory.CreateProxy<IFolderManager>())
@@ -284,7 +273,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<string> GetFolderPathSourceFieldName(ServiceFactory serviceFactory, int workspaceId)
+		public static async Task<string> GetFolderPathSourceFieldNameAsync(ServiceFactory serviceFactory, int workspaceId)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -378,19 +367,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			};
 		}
 
-		public static async Task<int> CreateSyncConfigurationRdoAsync( int workspaceId,
-			ConfigurationStub configurationStub, ISyncLog logger = null,ISerializer serializer = null)
-		{
-			serializer = serializer ?? new JSONSerializer();
-			logger = logger ?? TestLogHelper.GetLogger();
-			var rdoManager = new RdoManager(logger, new ServicesManagerStub(), new RdoGuidProvider());
-			SyncConfigurationRdo configuration = GetConfiguration(configurationStub, serializer);
-
-			await rdoManager.CreateAsync(workspaceId, configuration, configuration.JobHistoryId).ConfigureAwait(false);
-
-			return configuration.ArtifactId;
-		}
-
 		private static SyncConfigurationRdo GetConfiguration(ConfigurationStub configurationStub, ISerializer serializer)
 		{
 			return new SyncConfigurationRdo
@@ -466,8 +442,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				return documents;
 			}
 		}
-
-
+		
 		public static async Task<RelativityObject> GetJobHistoryAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -502,53 +477,25 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<(int artifactId, int artifactTypeId)> CreateBasicRdoTypeAsync(ServiceFactory serviceFactory, 
-			int workspaceId, string typeName, ObjectTypeIdentifier parentObjectType)
+		public static async Task<int> CreateSyncConfigurationRdoAsync(int workspaceId,
+			ConfigurationStub configurationStub, ISyncLog logger = null, ISerializer serializer = null)
 		{
-			ObjectTypeRequest objectTypeRequest = new ObjectTypeRequest
-			{
-				ParentObjectType = new Securable<ObjectTypeIdentifier>(parentObjectType),
-				Name = typeName
-			};
+			serializer = serializer ?? new JSONSerializer();
+			logger = logger ?? TestLogHelper.GetLogger();
+			var rdoManager = new RdoManager(logger, new ServicesManagerStub(), new RdoGuidProvider());
+			SyncConfigurationRdo configuration = GetConfiguration(configurationStub, serializer);
 
-			using (IObjectTypeManager objectTypeManager = serviceFactory.CreateProxy<IObjectTypeManager>())
-			using (IArtifactGuidManager guidManager = serviceFactory.CreateProxy<IArtifactGuidManager>())
-			{
-				int artifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest)
-					.ConfigureAwait(false);
+			await rdoManager.CreateAsync(workspaceId, configuration).ConfigureAwait(false);
 
-				var newGuid = Guid.NewGuid();
-				
-				await guidManager.CreateSingleAsync(workspaceId, artifactId, new List<Guid>() {newGuid})
-					.ConfigureAwait(false);
-
-				ObjectTypeResponse response = await objectTypeManager.ReadAsync(workspaceId, artifactId)
-					.ConfigureAwait(false);
-				
-				return (artifactId,response.ArtifactTypeID);
-			}
-		}
-
-		public static async Task<RelativityObject> CreateBasicRdoAsync(ServiceFactory serviceFactory, int workspaceId, int objectTypeId)
-		{
-			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
-			{
-				CreateRequest request = new CreateRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						ArtifactID = objectTypeId
-					}
-				};
-				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object;
-			}
+			return configuration.ArtifactId;
 		}
 
 		public static Task<int> CreateSyncConfigurationRdoAsync(int workspaceId, int jobHistoryId)
 		{
-			return CreateSyncConfigurationRdoAsync(workspaceId,
-				new ConfigurationStub {JobHistoryArtifactId = jobHistoryId});
+			return CreateSyncConfigurationRdoAsync(workspaceId, new ConfigurationStub
+			{
+				JobHistoryArtifactId = jobHistoryId
+			});
 		}
 	}
 }
