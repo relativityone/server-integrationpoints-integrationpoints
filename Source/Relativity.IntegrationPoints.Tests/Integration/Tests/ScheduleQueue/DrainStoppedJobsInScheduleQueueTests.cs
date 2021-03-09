@@ -1,17 +1,18 @@
 ﻿using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
-using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
-	[TestFixture]
+	[IdentifiedTestFixture("3F7A107D-6CE6-4021-9D10-723BF4662769")]
+	[TestExecutionCategory.CI, TestLevel.L1]
 	public class DrainStoppedJobsInScheduleQueueTests : TestsBase
 	{
-		[Test]
+		[IdentifiedTest("6AC120D6-EDBE-4905-8C4B-CDC1340E87F3")]
 		public void Agent_ShouldNotPickUpTheJob_WhenHasBeenMarkedToBeRemoved()
 		{
 			// Arrange
@@ -34,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyJobsWithIdsAreInQueue(jobsInQueue);
 		}
 
-		[Test]
+		[IdentifiedTest("5FD8409E-F0D6-4CE1-88D0-B9601314551B")]
 		public void Agent_ShouldNotPickupNextJob_WhenActuallyJobWasDrainStopped()
 		{
 			// Arrange
@@ -62,7 +63,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyJobsAreNotLockedByAgent(agent, jobsInQueue);
 		}
 
-		[Test]
+		[IdentifiedTest("A21344C7-1CB6-439B-8478-B346B702CD3A")]
 		public void Agent_ShouldPickUpDrainStoppedJobAtFirst()
 		{
 			// Arrange

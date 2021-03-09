@@ -1,17 +1,18 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.ScheduleQueue.Core.Data;
-using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
-	[TestFixture]
+	[IdentifiedTestFixture("F3B9D08E-5326-42B5-A360-9D874D6D05C6")]
+	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ScheduleAgentTests : TestsBase
 	{
-		[Test]
+		[IdentifiedTest("70482A9F-21E2-42D7-A9F2-2E83013FFF99")]
 		public void Agent_ShouldCompleteExecution_WhenScheduleQueueIsEmpty()
 		{
 			// Arrange
@@ -26,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			action.ShouldNotThrow();
 		}
 
-		[Test]
+		[IdentifiedTest("2D67D0B5-73E6-4D57-B0F9-4AC118A835B3")]
 		public void Agent_ShouldPickUpJob_AndRemoveFromTheQueueAfterExecution()
 		{
 			// Arrange
@@ -47,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
-		[Test]
+		[IdentifiedTest("B3BFE442-1A05-4B4A-89FD-ABB6AC35B60A")]
 		public void Agent_ShouldProcessTwoJobs_InOneExecutionTrigger()
 		{
 			// Arrange
@@ -69,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
-		[Test]
+		[IdentifiedTest("8577B637-7BF7-4B87-B6CC-0AABF9AF0E09")]
 		public void Agent_ShouldNotProcessAndDelete_WhenJobRelatedIntegrationPointNotExist()
 		{
 			// Arrange
@@ -92,7 +93,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
-		[Test]
+		[IdentifiedTest("6D71DE00-B990-40C7-AFBB-1F1245A68176")]
 		public void Agent_ShouldNotProcessAndDelete_WhenJobRelatedWorkspaceNotExist()
 		{
 			// Arrange

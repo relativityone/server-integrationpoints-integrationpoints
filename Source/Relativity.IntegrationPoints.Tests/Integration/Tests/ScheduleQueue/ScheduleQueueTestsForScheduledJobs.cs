@@ -2,17 +2,18 @@
 using FluentAssertions;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
-	[TestFixture]
+	[IdentifiedTestFixture("DADEA8A3-8043-44B6-A8BF-A0B9BBC793D0")]
+	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ScheduleQueueTestsForScheduledJobs : TestsBase
 	{
-		[Test]
+		[IdentifiedTest("C6E9E6A2-BDD6-4767-97EE-55BE95323AE3")]
 		public void Job_ShouldNotBePushedToTheQueueAfterRun_WhenScheduledNextRunExceedsEndDate()
 		{
 			// Arrange
@@ -22,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			DateTime endDateTime = startDateTime;
 
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
-			var job = HelperManager.JobHelper.ScheduleJobWithScheduleRule(rule);
+			HelperManager.JobHelper.ScheduleJobWithScheduleRule(rule);
 
 			var sut = PrepareSutWithMockedQueryManager(agent);
 
@@ -33,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			Database.JobsInQueue.Should().BeEmpty();
 		}
 
-		[Test]
+		[IdentifiedTest("A74C60F2-6FC7-4884-9AB3-FFCB794E26BF")]
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithDailyInterval()
 		{
 			// Arrange
@@ -56,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
-		[Test]
+		[IdentifiedTest("8A840DD4-C9F6-4D83-8762-5F6A62D22074")]
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithWeeklyInterval()
 		{
 			// Arrange
@@ -79,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
-		[Test]
+		[IdentifiedTest("639EF3D4-D655-4C2C-AD74-37E9A1300B0A")]
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithMonthlyInterval()
 		{
 			// Arrange
