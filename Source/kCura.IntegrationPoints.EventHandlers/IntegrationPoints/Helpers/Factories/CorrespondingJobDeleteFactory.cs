@@ -10,10 +10,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 {
 	public static class CorrespondingJobDeleteFactory
 	{
+		private static Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+
 		public static ICorrespondingJobDelete Create(IHelper helper)
 		{
-			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, helper);
+			IQueryManager queryManager = new QueryManager(helper, _agentGuid);
+			IAgentService agentService = new AgentService(helper, queryManager, _agentGuid);
+			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 			IJobService jobService = new JobService(agentService, jobServiceDataProvider, helper);
 			return new CorrespondingJobDelete(jobService);
 		}

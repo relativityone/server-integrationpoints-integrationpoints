@@ -1,9 +1,10 @@
 ﻿using System.Data;
+using kCura.ScheduleQueue.Core.Data.Interfaces;
 using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class GetAllJobs
+	public class GetAllJobs : IQuery<DataTable>
 	{
 		private readonly IQueueDBContext _qDbContext;
 

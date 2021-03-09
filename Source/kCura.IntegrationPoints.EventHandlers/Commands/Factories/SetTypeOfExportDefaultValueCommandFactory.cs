@@ -41,8 +41,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
 			IChoiceQuery choiceQuery = new ChoiceQuery(helper.GetServicesManager());
 
-			IAgentService agentService = new AgentService(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(agentService, helper);
+			Guid agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+
+			IQueryManager queryManager = new QueryManager(helper, agentGuid);
+			IAgentService agentService = new AgentService(helper, queryManager, agentGuid);
+			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 			IJobService jobService = new JobService(agentService, jobServiceDataProvider, helper);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
