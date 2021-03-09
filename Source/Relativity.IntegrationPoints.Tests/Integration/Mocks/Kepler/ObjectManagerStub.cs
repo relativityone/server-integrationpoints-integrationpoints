@@ -4,8 +4,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub : KeplerStubBase<IObjectManager>
 	{
-		public ObjectManagerStub(InMemoryDatabase database) : base(database)
-		{
-		}
 	}
 }

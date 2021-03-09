@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext.Exceptions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -8,22 +9,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-	    public void SetupIntegrationPoint(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
+	    public void SetupIntegrationPoints(InMemoryDatabase database, IEnumerable<IntegrationPointTest> integrationPoints)
 	    {
-		    Mock.Setup(x => x.ReadAsync(workspace.ArtifactId, It.Is<ReadRequest>(r =>
-				    r.Object.ArtifactID == integrationPoint.ArtifactId)))
-			    .Returns(() =>
-				    {
-					    var result = Database.IntegrationPoints.Exists(x => x.ArtifactId == integrationPoint.ArtifactId)
-						    ? new ReadResult {Object = new RelativityObject()}
-						    : new ReadResult {Object = null};
+		    foreach (var integrationPoint in integrationPoints)
+		    {
+				Mock.Setup(x => x.ReadAsync(integrationPoint.WorkspaceId, It.Is<ReadRequest>(r =>
+						r.Object.ArtifactID == integrationPoint.ArtifactId)))
+					.Returns((int workspaceId, ReadRequest request) =>
+						{
+							var result = database.IntegrationPoints.FirstOrDefault(
+									x => x.ArtifactId == request.Object.ArtifactID) != null
+								? new ReadResult { Object = new RelativityObject() }
+								: new ReadResult { Object = null };
 
-					    return Task.FromResult(result);
-				    }
-
-				);
-		}
-    }
+							return Task.FromResult(result);
+						}
+					);
+			}
+	    }
+	}
 
 
 }

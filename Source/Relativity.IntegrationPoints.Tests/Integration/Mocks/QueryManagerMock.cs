@@ -149,7 +149,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 				_db.JobsInQueue.Where(x => _db.Agents.Exists(a => a.ArtifactId == x.LockedByAgentID))
 					.ForEach(x => x.LockedByAgentID = null);
 
-				_db.JobsInQueue.RemoveAll(x => x.LockedByAgentID == null && !_db.Workspaces.Exists(w => w.ArtifactId == x.WorkspaceID));
+				_db.JobsInQueue.RemoveAll(x => x.LockedByAgentID == null && 
+				                               _db.Workspaces.FirstOrDefault(w => w.ArtifactId == x.WorkspaceID) == null);
 			});
 		}
 

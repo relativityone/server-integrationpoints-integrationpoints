@@ -1,6 +1,5 @@
 ﻿using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler;
-using ObjectManagerStub = Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler.ObjectManagerStub;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -11,10 +10,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public WorkspaceManagerStub WorkspaceManager { get; }
 
 
-		public ProxyMock(InMemoryDatabase database)
+		public ProxyMock()
 		{
-			ObjectManager = new ObjectManagerStub(database);
-			WorkspaceManager = new WorkspaceManagerStub(database);
+			ObjectManager = new ObjectManagerStub();
+			WorkspaceManager = new WorkspaceManagerStub();
 		}
 
 		public void Clear()

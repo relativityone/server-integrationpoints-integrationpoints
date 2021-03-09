@@ -43,7 +43,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit" -OutputFile $LogPath -WithCoverage
 
     $LogPath = Join-Path $LogsDir "IntegrationTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ IntegrationPoints.Tests.Integration.Feature" -OutputFile $LogPath -WithCoverage
+    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {

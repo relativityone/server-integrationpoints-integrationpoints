@@ -24,9 +24,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		protected TestsBase()
 		{
-			Database = new InMemoryDatabase();
+			Proxy = new ProxyMock();
 
-			Proxy = new ProxyMock(Database);
+			Database = new InMemoryDatabase(Proxy);
 
 			Helper = new TestHelper(Proxy);
 
