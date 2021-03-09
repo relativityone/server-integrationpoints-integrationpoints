@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators;
 using kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup;
+using kCura.IntegrationPoints.RelativitySync.RdoCleanup;
 using kCura.IntegrationPoints.Security;
 using Relativity.API;
 
@@ -112,6 +113,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IOldBatchesCleanupServiceFactory>().ImplementedBy<OldBatchesCleanupServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IOldBatchesCleanupService>().UsingFactoryMethod(c => c.Resolve<IOldBatchesCleanupServiceFactory>().Create()).LifestyleTransient());
 			container.Register(Component.For<RemoveBatchesFromOldJobsCommand>().ImplementedBy<RemoveBatchesFromOldJobsCommand>().LifestyleTransient());
+
+			container.Register(Component.For<ISyncRdoCleanupService>().ImplementedBy<SyncRdoCleanupService>().LifestyleTransient());
+			container.Register(Component.For<SyncRdoDeleteCommand>().ImplementedBy<SyncRdoDeleteCommand>().LifestyleTransient());
+
 			container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
 			container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
