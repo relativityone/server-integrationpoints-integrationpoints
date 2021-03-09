@@ -109,9 +109,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			return dateTime.AddDays(daysToAdd);
 		}
 
-		private ScheduleTestAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
 		{
-			return new ScheduleTestAgent(agent,
+			return new FakeAgent(agent,
 				Container.Resolve<IAgentHelper>(),
 				queryManager: Container.Resolve<IQueryManager>());
 		}

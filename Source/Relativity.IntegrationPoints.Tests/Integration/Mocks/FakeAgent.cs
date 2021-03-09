@@ -14,13 +14,13 @@ using Job = kCura.ScheduleQueue.Core.Job;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class ScheduleTestAgent : ScheduleQueueAgentBase
+	public class FakeAgent : ScheduleQueueAgentBase
 	{
 		public Func<Job, TaskResult> ProcessJobMockFunc { get; set; }
 
 		public List<long> ProcessedJobIds { get; } = new List<long>();
 
-		public ScheduleTestAgent(AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
+		public FakeAgent(AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
 			IQueryManager queryManager = null, IAPILog logger = null) 
 			: base(agent.AgentGuid, agentService, jobService, scheduleRuleFactory, 

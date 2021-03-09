@@ -81,7 +81,7 @@
     <Compile Include="Integration\Mocks\Kepler\WorkspaceManagerStub.cs" />
     <Compile Include="Integration\Mocks\ProxyMock.cs" />
     <Compile Include="Integration\Mocks\QueryManagerMock.cs" />
-    <Compile Include="Integration\Mocks\ScheduleTestAgent.cs" />
+    <Compile Include="Integration\Mocks\FakeAgent.cs" />
     <Compile Include="Integration\Mocks\TestHelper.cs" />
     <Compile Include="Integration\Models\AgentTest.cs" />
     <Compile Include="Integration\Models\IntegrationPointTest.cs" />
