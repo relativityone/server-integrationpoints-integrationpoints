@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				CreateJobHistoryOnIntegrationPoint(integrationPointId, batchInstance, JobTypeChoices.JobHistoryRun);
 
 				DataRow row;
-				using (DataTable dataTable = new CreateScheduledJob(_queueContext).Execute(
+				using (DataTable dataTable = new CreateScheduledJob(_queueContext,
 					workspaceID: WorkspaceArtifactId,
 					relatedObjectArtifactID: integrationPointId,
 					taskType: "SyncManager",
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 					jobFlags: 0,
 					SubmittedBy: 777,
 					rootJobID: 1,
-					parentJobID: 1))
+					parentJobID: 1).Execute())
 				{
 					row = dataTable.Rows[0];
 				}

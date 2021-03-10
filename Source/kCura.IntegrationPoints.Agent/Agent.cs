@@ -26,7 +26,6 @@ using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.TimeMachine;
-using kCura.WinEDDS.Service;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Component = Castle.MicroKernel.Registration.Component;

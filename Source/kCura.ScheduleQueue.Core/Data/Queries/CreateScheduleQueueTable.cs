@@ -1,10 +1,12 @@
-﻿using kCura.ScheduleQueue.Core.Properties;
+﻿using kCura.ScheduleQueue.Core.Data.Interfaces;
+using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class CreateScheduleQueueTable
+	public class CreateScheduleQueueTable : ICommand
 	{
-		private readonly IQueueDBContext qDBContext = null;
+		private readonly IQueueDBContext qDBContext;
+		
 		public CreateScheduleQueueTable(IQueueDBContext qDBContext)
 		{
 			this.qDBContext = qDBContext;

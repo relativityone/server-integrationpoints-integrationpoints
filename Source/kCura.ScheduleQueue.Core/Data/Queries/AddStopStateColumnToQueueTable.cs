@@ -1,8 +1,9 @@
-﻿using kCura.ScheduleQueue.Core.Properties;
+﻿using kCura.ScheduleQueue.Core.Data.Interfaces;
+using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class AddStopStateColumnToQueueTable
+	public class AddStopStateColumnToQueueTable : ICommand
 	{
 		private readonly IQueueDBContext _queueDbContext;
 		public AddStopStateColumnToQueueTable(IQueueDBContext queueDbContext)

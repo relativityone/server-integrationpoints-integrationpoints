@@ -1,27 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using kCura.ScheduleQueue.Core.Data.Interfaces;
 using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class UpdateScheduledJob
+	public class UpdateScheduledJob : ICommand
 	{
-		private readonly IQueueDBContext qDBContext = null;
-		public UpdateScheduledJob(IQueueDBContext qDBContext)
+		private readonly IQueueDBContext _dbContext;
+		
+		private readonly long _jobId;
+		private readonly DateTime _nextUtcRunTime;
+
+		public UpdateScheduledJob(IQueueDBContext dbContext, long jobId, DateTime nextUtcRunTime)
 		{
-			this.qDBContext = qDBContext;
+			_dbContext = dbContext;
+			
+			_jobId = jobId;
+			_nextUtcRunTime = nextUtcRunTime;
 		}
 
-		public void Execute(long jobID, DateTime nextUTCRunTime)
+		public void Execute()
 		{
-			string sql = string.Format(Resources.UpdateScheduledJob, qDBContext.TableName);
+			string sql = string.Format(Resources.UpdateScheduledJob, _dbContext.TableName);
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
-			sqlParams.Add(new SqlParameter("@JobID", jobID));
-			sqlParams.Add(new SqlParameter("@NextRunTime", nextUTCRunTime));
+			sqlParams.Add(new SqlParameter("@JobID", _jobId));
+			sqlParams.Add(new SqlParameter("@NextRunTime", _nextUtcRunTime));
 
-			qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
+			_dbContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
 		}
 	}
 }

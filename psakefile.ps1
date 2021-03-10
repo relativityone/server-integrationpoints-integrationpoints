@@ -41,6 +41,9 @@ Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
 Task Test -Description "Run tests that don't require a deployed environment." {
     $LogPath = Join-Path $LogsDir "UnitTestResults.xml"
     Invoke-Tests -WhereClause "cat == Unit" -OutputFile $LogPath -WithCoverage
+
+    $LogPath = Join-Path $LogsDir "IntegrationTestResults.xml"
+    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {

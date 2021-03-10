@@ -2,25 +2,21 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data.Queries;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
 	public class JobServiceDataProvider : IJobServiceDataProvider
 	{
-		private readonly IQueueDBContext _context;
+		private readonly IQueryManager _queryManager;
 
-		public JobServiceDataProvider(IAgentService agentService, IHelper dbHelper)
+		public JobServiceDataProvider(IQueryManager queryManager)
 		{
-			_context = new QueueDBContext(dbHelper, agentService.QueueTable);
+			_queryManager = queryManager;
 		}
 
-		public DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resurceGroupIdsArray)
+		public DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resourceGroupIdsArray)
 		{
-			var query = new GetNextJob(_context);
-
-			using (DataTable dataTable = query.Execute(agentId, agentTypeId, resurceGroupIdsArray))
+			using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId, resourceGroupIdsArray).Execute())
 			{
 				return GetFirstRowOrDefault(dataTable);
 			}
@@ -33,62 +29,43 @@ namespace kCura.ScheduleQueue.Core.Data
 
 		public void UpdateScheduledJob(long jobId, DateTime nextUtcRunDateTime)
 		{
-			new UpdateScheduledJob(_context).Execute(jobId, nextUtcRunDateTime);
+			_queryManager
+				.UpdateScheduledJob(jobId, nextUtcRunDateTime)
+				.Execute();
 		}
 
 		public void UnlockScheduledJob(int agentId)
 		{
-			new UnlockScheduledJob(_context).Execute(agentId);
+			_queryManager
+				.UnlockScheduledJob(agentId)
+				.Execute();
 		}
 
 		public void UnlockJob(long jobID)
 		{
-			new UnlockJob(_context).Execute(jobID);
+			_queryManager
+				.UnlockJob(jobID)
+				.Execute();
 		}
 
 		public void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
 		{
-			IDBContext dbContext = _context.EddsDBContext;
-			try
-			{
-				dbContext.BeginTransaction();
-
-				DeleteJob(oldScheduledJobId, _context.TableName, dbContext);
-
-				CreateScheduledJob(workspaceID, relatedObjectArtifactID, taskType,
-					nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
-					jobDetails, jobFlags, submittedBy, rootJobID, parentJobID, _context.TableName, dbContext);
-
-				dbContext.CommitTransaction();
-			}
-			catch (Exception )
-			{
-				dbContext.RollbackTransaction();
-				throw;
-			}
-			
+			_queryManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID, 
+					taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails, 
+					jobFlags, submittedBy, rootJobID, parentJobID)
+				.Execute();
 		}
 
 		public DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
 		{
-			var query = new CreateScheduledJob(_context);
-			using (DataTable dataTable = query.Execute(
-				workspaceID,
-				relatedObjectArtifactID,
-				taskType,
-				nextRunTime,
-				agentTypeId,
-				scheduleRuleType,
-				serializedScheduleRule,
-				jobDetails,
-				jobFlags,
-				submittedBy,
-				rootJobID,
-				parentJobID))
+			using (DataTable dataTable = _queryManager.CreateScheduledJob(workspaceID, relatedObjectArtifactID,
+					taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails, 
+					jobFlags, submittedBy, rootJobID, parentJobID)
+				.Execute())
 			{
 				return GetFirstRowOrDefault(dataTable);
 			}
@@ -96,23 +73,21 @@ namespace kCura.ScheduleQueue.Core.Data
 
 		public DataTable GetJobsByIntegrationPointId(long integrationPointId)
 		{
-			var query = new GetJobsByIntegrationPointId(_context);
-			return query.Execute(integrationPointId);
+			return _queryManager
+				.GetJobsByIntegrationPointId(integrationPointId)
+				.Execute();
 		}
 
 		public void DeleteJob(long jobId)
 		{
-			new DeleteJob(_context).Execute(jobId);
-		}
-
-		public void DeleteJob(long jobId, string tableName, IDBContext context)
-		{
-			new DeleteJob(context, tableName).Execute(jobId);
+			_queryManager
+				.DeleteJob(jobId)
+				.Execute();
 		}
 
 		public DataRow GetJob(long jobId)
 		{
-			using (DataTable dataTable = new GetJob(_context).Execute(jobId))
+			using (DataTable dataTable = _queryManager.GetJob(jobId).Execute())
 			{
 				return GetFirstRowOrDefault(dataTable);
 			}
@@ -125,46 +100,30 @@ namespace kCura.ScheduleQueue.Core.Data
 
 		public DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes)
 		{
-			return new GetJobByRelatedObjectIdAndTaskType(_context).Execute(workspaceId, relatedObjectArtifactId, taskTypes);
+			return _queryManager
+				.GetJobByRelatedObjectIdAndTaskType(workspaceId, relatedObjectArtifactId, taskTypes)
+				.Execute();
 		}
 
 		public DataTable GetAllJobs()
 		{
-			return new GetAllJobs(_context).Execute();
+			return _queryManager
+				.GetAllJobs()
+				.Execute();
 		}
 
 		public int UpdateStopState(IList<long> jobIds, StopState state)
 		{
-			return new UpdateStopState(_context).Execute(jobIds, state);
+			return _queryManager
+				.UpdateStopState(jobIds, state)
+				.Execute();
 		}
 
 		public void CleanupJobQueueTable()
 		{
-			new CleanupJobQueueTable(_context).Execute();
-		}
-
-		private DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
-			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
-			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID, 
-			string tableName, IDBContext dbContext)
-		{
-			var query = new CreateScheduledJob(dbContext, tableName);
-			using (DataTable dataTable = query.Execute(
-				workspaceID,
-				relatedObjectArtifactID,
-				taskType,
-				nextRunTime,
-				agentTypeId,
-				scheduleRuleType,
-				serializedScheduleRule,
-				jobDetails,
-				jobFlags,
-				submittedBy,
-				rootJobID,
-				parentJobID))
-			{
-				return GetFirstRowOrDefault(dataTable);
-			}
+			_queryManager
+				.CleanupJobQueueTable()
+				.Execute();
 		}
 	}
 }
