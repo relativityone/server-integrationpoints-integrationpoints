@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models.Import;
@@ -33,8 +34,10 @@ namespace kCura.IntegrationPoints.UITests.Tests.ImportSdk
 		[OneTimeSetUp]
 		public async Task OneTimeSetUpAsync()
 		{
+			string myFirstProviderPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), SharedVariables.MyFirstProviderPath);
+
 			RelativityApplicationManager appManager = new RelativityApplicationManager(Helper);
-			await appManager.ImportApplicationToLibraryAsync(SharedVariables.MyFirstProviderPath).ConfigureAwait(false);
+			await appManager.ImportApplicationToLibraryAsync(myFirstProviderPath).ConfigureAwait(false);
 			await SourceContext.ApplicationInstallationHelper.InstallMyFirstProviderAsync().ConfigureAwait(false);
 
 			
