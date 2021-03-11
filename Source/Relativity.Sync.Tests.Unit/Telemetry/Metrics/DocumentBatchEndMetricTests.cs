@@ -64,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 		protected override void VerifyApmSink(Mock<IAPMClient> apmMock)
 		{
-			apmMock.Verify(x => x.Log(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(d =>
+			apmMock.Verify(x => x.Count(_APPLICATION_NAME, It.Is<Dictionary<string, object>>(d =>
 				d["AvgSizeLessThan1MB"].Equals(_sut.AvgSizeLessThan1MB) &&
 				d["AvgTimeLessThan1MB"].Equals(_sut.AvgTimeLessThan1MB) &&
 				d["AvgSizeLessBetween1and10MB"].Equals(_sut.AvgSizeLessBetween1and10MB) &&

@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Telemetry
+﻿using Relativity.Sync.Telemetry.Metrics;
+
+namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
 	///     Logs <see cref="IMetric"/>s to New Relic.
@@ -24,7 +26,14 @@
 			var customData = metric.GetApmMetrics();
 			if (customData.Count > 0)
 			{
-				_apmClient.Log(_NEW_RELIC_INDEX_NAME, customData);
+				if (metric is BatchEndPerformanceMetric)
+				{
+					_apmClient.Gauge(_NEW_RELIC_INDEX_NAME, metric.WorkflowId, customData);
+				}
+				else
+				{
+					_apmClient.Count(_NEW_RELIC_INDEX_NAME, customData);
+				}
 			}
 		}
 	}

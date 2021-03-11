@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
@@ -23,12 +24,15 @@ namespace Relativity.Sync.Executors
 		private readonly Func<IStopwatch> _stopwatchFactory;
 
 		protected readonly ISyncMetrics _syncMetrics;
+		private readonly IUserContextConfiguration _userContextConfiguration;
 		protected readonly IJobStatisticsContainer _jobStatisticsContainer;
 		protected readonly IImportJobFactory _importJobFactory;
+		protected readonly BatchRecordType _recordType;
 		protected readonly IFieldManager _fieldManager;
 		protected readonly ISyncLog _logger;
 
 		protected SynchronizationExecutorBase(IImportJobFactory importJobFactory,
+			BatchRecordType recordType,
 			IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory,
 			IDocumentTagRepository documentsTagRepository,
@@ -38,12 +42,14 @@ namespace Relativity.Sync.Executors
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
 			Func<IStopwatch> stopwatchFactory,
-			ISyncMetrics syncMetrics, 
+			ISyncMetrics syncMetrics,
+			IUserContextConfiguration userContextConfiguration,
 			ISyncLog logger)
 		{
 			_batchRepository = batchRepository;
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;
 			_importJobFactory = importJobFactory;
+			_recordType = recordType;
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
 			_jobStatisticsContainer = jobStatisticsContainer;
@@ -52,6 +58,7 @@ namespace Relativity.Sync.Executors
 			_automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
 			_stopwatchFactory = stopwatchFactory;
 			_syncMetrics = syncMetrics;
+			_userContextConfiguration = userContextConfiguration;
 			_logger = logger;
 		}
 
@@ -59,7 +66,34 @@ namespace Relativity.Sync.Executors
 
 		protected abstract void UpdateImportSettings(TConfiguration configuration);
 
-		protected abstract void ReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
+		protected abstract void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
+		
+		protected void ReportBatchMetrics(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
+			TimeSpan importApiTimer)
+		{
+			_syncMetrics.Send(GetBatchPerformanceMetric(batchId, savedSearchId, batchProcessResult, importApiTimer));
+			ChildReportBatchMetrics(batchId, batchProcessResult, batchTime, importApiTimer);
+		}
+
+		private IMetric GetBatchPerformanceMetric(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan importApiTimer)
+		{
+			var metric = new BatchEndPerformanceMetric
+			{
+				Elapsed = (long) importApiTimer.TotalSeconds,
+				JobID = batchId,
+				WorkspaceID = _jobCleanupConfiguration.SourceWorkspaceArtifactId,
+				RecordNumber = batchProcessResult.TotalRecordsTransferred,
+				JobSizeGB = UnitsConverter.BytesToGigabytes(batchProcessResult.BytesTransferred),
+				JobSizeGB_Metadata = UnitsConverter.BytesToGigabytes(batchProcessResult.MetadataBytesTransferred),
+				JobSizeGB_Files = UnitsConverter.BytesToGigabytes(batchProcessResult.FilesBytesTransferred),
+				UserID = _userContextConfiguration.ExecutingUserId,
+				SavedSearchID = savedSearchId,
+				RecordType = _recordType,
+				JobStatus = batchProcessResult.ExecutionResult.Status
+			};
+
+			return metric;
+		}
 
 		public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CompositeCancellationToken token)
 		{
@@ -121,7 +155,7 @@ namespace Relativity.Sync.Executors
 								}
 								
 								batchTimer.Stop();
-								ReportBatchMetrics(batchId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
+								ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
 
 								ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
 									batchProcessingResult.ExecutionResult, sourceTaggingResult, destinationTaggingResult);

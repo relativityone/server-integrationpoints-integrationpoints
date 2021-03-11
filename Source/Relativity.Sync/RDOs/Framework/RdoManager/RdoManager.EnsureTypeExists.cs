@@ -97,6 +97,7 @@ namespace Relativity.Sync.RDOs.Framework
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
                             ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            HasUnicode = true,
                             IsRequired = fieldInfo.IsRequired
                         });
 
@@ -107,6 +108,7 @@ namespace Relativity.Sync.RDOs.Framework
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
                             ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            HasUnicode = true,
                             Length = fieldInfo.TextLength,
                             IsRequired = fieldInfo.IsRequired
                         });
