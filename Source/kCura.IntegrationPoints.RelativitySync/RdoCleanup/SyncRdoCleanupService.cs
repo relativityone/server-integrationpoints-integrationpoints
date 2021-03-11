@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
 							}
 						}
 					}).ConfigureAwait(false);
-					_logger.LogInformation("Mass delete objects of type '{guid}' result: {@result}", objectTypeGuid, massDeleteResult);
+					_logger.LogInformation("Mass delete objects of type '{guid}' success: {success} message: {message}", objectTypeGuid, massDeleteResult.Success, massDeleteResult.Message);
 				}
 			}
 			catch (Exception ex)
