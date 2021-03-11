@@ -38,8 +38,6 @@ namespace Relativity.Sync.Configuration
 
 		bool MoveExistingDocuments { get; }
 		
-		// used for metrics only
 		int DataSourceArtifactId { get; }
-
 	}
 }

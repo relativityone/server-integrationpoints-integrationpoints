@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -181,6 +181,35 @@ namespace Relativity.Sync.Tests.System.RDOs
             result.ArtifactId.Should().Be(artifactId);
             result.SomeField.Should().Be(sampleRdo.SomeField);
             result.OptionalTextField.Should().BeNull();
+        }
+
+        [IdentifiedTest("C518602D-47CA-4D58-8AC1-A9CAC3F8B065")]
+        public async Task GetAsync_ShouldStreamLongTextField_AndHandleUnicode_WhenFrameworkCreatedObjectType()
+        {
+	        // Arrange
+	        var workspace = await Environment.CreateWorkspaceAsync();
+
+	        await _sut.EnsureTypeExistsAsync<ExtendedSampleRdo>(workspace.ArtifactID).ConfigureAwait(false);
+
+	        string longText = string.Join("", Enumerable.Repeat("ą", 10000));
+	        string shortText = "Żółw";
+
+	        var extendedSampleRdo = new ExtendedSampleRdo()
+	        {
+		        SomeField = 5,
+		        LongTextField = longText,
+                OptionalTextField = shortText
+	        };
+
+	        await _sut.CreateAsync(workspace.ArtifactID, extendedSampleRdo).ConfigureAwait(false);
+
+	        // Act
+	        var result = await _sut.GetAsync<ExtendedSampleRdo>(workspace.ArtifactID, extendedSampleRdo.ArtifactId, x => x.LongTextField, x=> x.OptionalTextField)
+		        .ConfigureAwait(false);
+
+	        result.ArtifactId.Should().Be(extendedSampleRdo.ArtifactId);
+	        result.LongTextField.Should().Be(longText);
+	        result.OptionalTextField.Should().Be(shortText);
         }
 
         [IdentifiedTest("BF1A2F1B-9217-4D57-AEAD-D98877343FDB")]
