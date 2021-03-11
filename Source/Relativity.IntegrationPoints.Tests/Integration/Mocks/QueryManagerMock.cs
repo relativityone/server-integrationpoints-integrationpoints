@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Method "kCura.Vendor.Castle.Core.Internal.CollectionExtensions.ForEach" exists in two different assemblies: "kCura.Vendor.Castle.Core" and "Relativity.Services.ServiceProxy" so we have to explicitly choose one of them
+extern alias ServiceProxy;
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -6,8 +9,9 @@ using FluentAssertions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Interfaces;
-using kCura.Vendor.Castle.Core.Internal;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+
+using ServiceProxy::kCura.Vendor.Castle.Core.Internal;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {

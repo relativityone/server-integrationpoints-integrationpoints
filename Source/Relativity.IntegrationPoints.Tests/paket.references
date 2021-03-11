@@ -1,4 +1,6 @@
 ﻿Relativity
+Relativity.Services.Interfaces
+Relativity.Services.Interfaces.Private
 
 Moq
 FluentAssertions
