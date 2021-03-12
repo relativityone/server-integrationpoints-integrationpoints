@@ -10,6 +10,8 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Interfaces.Tab;
+using Relativity.Services.Interfaces.Tab.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -24,7 +26,7 @@ namespace Relativity.Sync.RDOs.Framework
             (int rdoArtifactId, HashSet<Guid> existingFields) =
                 await GetTypeIdAsync(typeInfo.Name, workspaceId).ConfigureAwait(false)
                 ?? await CreateTypeAsync(typeInfo, workspaceId).ConfigureAwait(false);
-
+            
             await CreateMissingFieldsAsync(typeInfo, workspaceId, existingFields, rdoArtifactId).ConfigureAwait(false);
         }
         
@@ -146,27 +148,35 @@ namespace Relativity.Sync.RDOs.Framework
             }
         }
 
-        private async Task<(int artifactId, HashSet<Guid>)> CreateTypeAsync(RdoTypeInfo typeInfo,
-            int workspaceId)
+        private async Task<(int artifactId, HashSet<Guid>)> CreateTypeAsync(RdoTypeInfo typeInfo, int workspaceId)
         {
             _logger.LogDebug("Creating type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
-            using (IObjectTypeManager objectTypeManager =
-                _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
-            using (IArtifactGuidManager guidManager =
-                _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+            using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+            using (IArtifactGuidManager guidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
             {
-                ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
+	            ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
 
-                int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest)
-                    .ConfigureAwait(false);
-
-                await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId,
-                        new List<Guid>() {typeInfo.TypeGuid})
-                    .ConfigureAwait(false);
+                int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
+                await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() {typeInfo.TypeGuid}).ConfigureAwait(false);
+                await DeleteTabAsync(workspaceId, objectTypeArtifactId).ConfigureAwait(false);
 
                 _logger.LogInformation("Created type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
                 return (objectTypeArtifactId, new HashSet<Guid>());
             }
+        }
+
+        private async Task DeleteTabAsync(int workspaceId, int objectTypeId)
+        {
+	        using (ITabManager tabManager = _servicesMgr.CreateProxy<ITabManager>(ExecutionIdentity.System))
+	        {
+		        List<NavigationTabResponse> allTabs = await tabManager.GetAllNavigationTabs(workspaceId).ConfigureAwait(false);
+		        List<NavigationTabResponse> objectTypeTabs = allTabs.Where(x => x.ObjectTypeIdentifier?.Value?.ArtifactID == objectTypeId).ToList();
+		        foreach (NavigationTabResponse tab in objectTypeTabs)
+		        {
+                    _logger.LogInformation("Deleting tab Artifact ID: {tabId} for Object Type Artifact ID: {objectTypeId}", tab.ArtifactID, objectTypeId);
+			        await tabManager.DeleteAsync(workspaceId, tab.ArtifactID).ConfigureAwait(false);
+		        }
+	        }
         }
 
         private static ObjectTypeRequest GetObjectTypeDefinition(RdoTypeInfo typeInfo)
@@ -184,7 +194,7 @@ namespace Relativity.Sync.RDOs.Framework
                 PivotEnabled = false,
                 RelativityApplications = null,
                 SamplingEnabled = false,
-                UseRelativityForms = null
+                UseRelativityForms = null,
             };
 
             if (typeInfo.ParentTypeGuid != null)
