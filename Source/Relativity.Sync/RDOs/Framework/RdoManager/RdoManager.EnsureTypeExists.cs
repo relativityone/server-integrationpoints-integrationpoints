@@ -158,25 +158,36 @@ namespace Relativity.Sync.RDOs.Framework
 
                 int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
                 await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() {typeInfo.TypeGuid}).ConfigureAwait(false);
-                await DeleteTabAsync(workspaceId, objectTypeArtifactId).ConfigureAwait(false);
+                await DeleteTabAsync(workspaceId, typeInfo.Name).ConfigureAwait(false);
 
                 _logger.LogInformation("Created type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
                 return (objectTypeArtifactId, new HashSet<Guid>());
             }
         }
 
-        private async Task DeleteTabAsync(int workspaceId, int objectTypeId)
+        private async Task DeleteTabAsync(int workspaceId, string objectTypeName)
         {
+            using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 	        using (ITabManager tabManager = _servicesMgr.CreateProxy<ITabManager>(ExecutionIdentity.System))
 	        {
-		        List<NavigationTabResponse> allTabs = await tabManager.GetAllNavigationTabs(workspaceId).ConfigureAwait(false);
-		        List<NavigationTabResponse> objectTypeTabs = allTabs.Where(x => x.ObjectTypeIdentifier?.Value?.ArtifactID == objectTypeId).ToList();
-		        foreach (NavigationTabResponse tab in objectTypeTabs)
+		        QueryResult queryResult = await objectManager.QueryAsync(workspaceId, new QueryRequest()
 		        {
-                    _logger.LogInformation("Deleting tab Artifact ID: {tabId} for Object Type Artifact ID: {objectTypeId}", tab.ArtifactID, objectTypeId);
-			        await tabManager.DeleteAsync(workspaceId, tab.ArtifactID).ConfigureAwait(false);
+                    ObjectType = new ObjectTypeRef()
+                    {
+                        ArtifactTypeID = (int)ArtifactType.Tab
+                    },
+                    Condition = $"'Object Type' == '{objectTypeName}'"
+		        }, 0, 1).ConfigureAwait(false);
+
+		        if (queryResult.Objects == null || queryResult.Objects.Count == 0)
+		        {
+			        return;
 		        }
-	        }
+
+		        int tabArtifactId = queryResult.Objects.First().ArtifactID;
+		        _logger.LogInformation("Deleting tab Artifact ID: {tabArtifactId} for Object Type: '{objectTypeName}'", tabArtifactId, objectTypeName);
+                await tabManager.DeleteAsync(workspaceId, tabArtifactId).ConfigureAwait(false);
+            }
         }
 
         private static ObjectTypeRequest GetObjectTypeDefinition(RdoTypeInfo typeInfo)
