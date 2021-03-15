@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
@@ -47,8 +48,12 @@ namespace Relativity.Sync.Executors.SumReporting
 				IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
 			};
 
-			Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(() => _imageFileRepository.CalculateImagesStatisticsAsync(
-				configuration.SourceWorkspaceArtifactId, _queryRequestProvider.GetRequestForCurrentPipeline(), options), token);
+			Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(async () =>
+			{
+				QueryRequest request = await _queryRequestProvider.GetRequestForCurrentPipelineAsync(token).ConfigureAwait(false);
+				return await _imageFileRepository.CalculateImagesStatisticsAsync(
+					configuration.SourceWorkspaceArtifactId, request, options).ConfigureAwait(false);
+			}, token);
 			return calculateImagesTotalSizeTask;
 		}
 	}

@@ -1,9 +1,11 @@
-﻿using Relativity.Services.Objects.DataContracts;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
 	internal interface ISnapshotQueryRequestProvider
 	{
-		QueryRequest GetRequestForCurrentPipeline();
+		Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token);
 	}
 }

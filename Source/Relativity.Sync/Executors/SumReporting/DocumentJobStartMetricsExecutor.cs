@@ -50,9 +50,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 			_syncMetrics.Send(metric);
 
-			Task<long> calculateNativesTotalSizeTask = Task.Run(() => _nativeFileRepository.CalculateNativesTotalSizeAsync(
-				configuration.SourceWorkspaceArtifactId, _queryRequestProvider.GetRequestForCurrentPipeline()), token.StopCancellationToken);
-			_jobStatisticsContainer.NativesBytesRequested = calculateNativesTotalSizeTask;
+			_jobStatisticsContainer.NativesBytesRequested = CreateCalculateNativesTotalSizeTaskAsync(configuration, token.StopCancellationToken);
 
 			try
 			{
@@ -64,6 +62,18 @@ namespace Relativity.Sync.Executors.SumReporting
 			}
 
 			return ExecutionResult.Success();
+		}
+
+		private Task<long> CreateCalculateNativesTotalSizeTaskAsync(IDocumentJobStartMetricsConfiguration configuration,
+			CancellationToken token)
+		{
+			Task<long> calculateNativesTotalSizeTask = Task.Run(async () =>
+			{
+				QueryRequest request = await _queryRequestProvider.GetRequestForCurrentPipelineAsync(token).ConfigureAwait(false);
+				return await _nativeFileRepository.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
+			}, token);
+
+			return calculateNativesTotalSizeTask;
 		}
 
 		private async Task LogFieldsMappingDetailsAsync(ISumReporterConfiguration configuration, CancellationToken token)
