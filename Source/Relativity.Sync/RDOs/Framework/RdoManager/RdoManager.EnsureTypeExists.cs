@@ -10,6 +10,8 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Interfaces.Tab;
+using Relativity.Services.Interfaces.Tab.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -24,7 +26,7 @@ namespace Relativity.Sync.RDOs.Framework
             (int rdoArtifactId, HashSet<Guid> existingFields) =
                 await GetTypeIdAsync(typeInfo.Name, workspaceId).ConfigureAwait(false)
                 ?? await CreateTypeAsync(typeInfo, workspaceId).ConfigureAwait(false);
-
+            
             await CreateMissingFieldsAsync(typeInfo, workspaceId, existingFields, rdoArtifactId).ConfigureAwait(false);
         }
         
@@ -148,26 +150,45 @@ namespace Relativity.Sync.RDOs.Framework
             }
         }
 
-        private async Task<(int artifactId, HashSet<Guid>)> CreateTypeAsync(RdoTypeInfo typeInfo,
-            int workspaceId)
+        private async Task<(int artifactId, HashSet<Guid>)> CreateTypeAsync(RdoTypeInfo typeInfo, int workspaceId)
         {
             _logger.LogDebug("Creating type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
-            using (IObjectTypeManager objectTypeManager =
-                _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
-            using (IArtifactGuidManager guidManager =
-                _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+            using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
+            using (IArtifactGuidManager guidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
             {
-                ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
+	            ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
 
-                int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest)
-                    .ConfigureAwait(false);
-
-                await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId,
-                        new List<Guid>() {typeInfo.TypeGuid})
-                    .ConfigureAwait(false);
+                int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
+                await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() {typeInfo.TypeGuid}).ConfigureAwait(false);
+                await DeleteTabAsync(workspaceId, typeInfo.Name).ConfigureAwait(false);
 
                 _logger.LogInformation("Created type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
                 return (objectTypeArtifactId, new HashSet<Guid>());
+            }
+        }
+
+        private async Task DeleteTabAsync(int workspaceId, string objectTypeName)
+        {
+            using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+	        using (ITabManager tabManager = _servicesMgr.CreateProxy<ITabManager>(ExecutionIdentity.System))
+	        {
+		        QueryResult queryResult = await objectManager.QueryAsync(workspaceId, new QueryRequest()
+		        {
+                    ObjectType = new ObjectTypeRef()
+                    {
+                        ArtifactTypeID = (int)ArtifactType.Tab
+                    },
+                    Condition = $"'Object Type' == '{objectTypeName}'"
+		        }, 0, 1).ConfigureAwait(false);
+
+		        if (queryResult.Objects == null || queryResult.Objects.Count == 0)
+		        {
+			        return;
+		        }
+
+		        int tabArtifactId = queryResult.Objects.First().ArtifactID;
+		        _logger.LogInformation("Deleting tab Artifact ID: {tabArtifactId} for Object Type: '{objectTypeName}'", tabArtifactId, objectTypeName);
+                await tabManager.DeleteAsync(workspaceId, tabArtifactId).ConfigureAwait(false);
             }
         }
 
@@ -186,7 +207,7 @@ namespace Relativity.Sync.RDOs.Framework
                 PivotEnabled = false,
                 RelativityApplications = null,
                 SamplingEnabled = false,
-                UseRelativityForms = null
+                UseRelativityForms = null,
             };
 
             if (typeInfo.ParentTypeGuid != null)
