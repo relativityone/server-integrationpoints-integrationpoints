@@ -4,16 +4,22 @@ using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
 using System.Linq.Expressions;
 
-#pragma warning disable 1591
-
 namespace Relativity.Sync.SyncConfiguration
 {
+    /// <summary>
+    /// Main Sync configuration builder class.
+    /// </summary>
     public class SyncConfigurationBuilder
     {
         private readonly ISyncContext _syncContext;
         private readonly ISyncServiceManager _servicesMgr;
         private readonly ISerializer _serializer;
 
+        /// <summary>
+        /// Creates new instance of <see cref="SyncConfigurationBuilder"/> class.
+        /// </summary>
+        /// <param name="syncContext">Sync configuration context.</param>
+        /// <param name="servicesMgr">Sync service manager.</param>
         public SyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr)
         {
             _syncContext = syncContext;
@@ -22,6 +28,10 @@ namespace Relativity.Sync.SyncConfiguration
             _serializer = new JSONSerializer();
         }
 
+        /// <summary>
+        /// Configures Sync RDOs.
+        /// </summary>
+        /// <param name="rdoOptions">Sync RDO options.</param>
         public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions)
         {
             ValidateInput(rdoOptions);
