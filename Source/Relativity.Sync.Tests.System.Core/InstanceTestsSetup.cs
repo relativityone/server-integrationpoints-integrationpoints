@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			SuppressCertificateCheckingIfConfigured();
 
-			await ConfigureRequiredInstanceSettings().ConfigureAwait(false);
+			await ConfigureRequiredInstanceSettingsAsync().ConfigureAwait(false);
 
 			OverrideBanzaiLogger();
 
@@ -51,14 +51,14 @@ namespace Relativity.Sync.Tests.System.Core
 			LogWriter.SetFactory(new SyncLogWriterFactory(AppSettings.UseLogger ? (ISyncLog)new ConsoleLogger() : new EmptyLogger()));
 		}
 
-		private async Task ConfigureRequiredInstanceSettings()
+		private async Task ConfigureRequiredInstanceSettingsAsync()
 		{
 			Logger.LogInformation("Configuring instance settings");
-			await CreateInstanceSettingIfNotExist("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
-			await CreateInstanceSettingIfNotExist("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True").ConfigureAwait(false);
+			await CreateInstanceSettingIfNotExistAsync("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
+			await CreateInstanceSettingIfNotExistAsync("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True").ConfigureAwait(false);
 		}
 
-		private static async Task CreateInstanceSettingIfNotExist(string name, string section, ValueType valueType, string value)
+		private static async Task CreateInstanceSettingIfNotExistAsync(string name, string section, ValueType valueType, string value)
 		{
 			ServiceFactory serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
 			using (IInstanceSettingManager settingManager = serviceFactory.CreateProxy<IInstanceSettingManager>())
