@@ -237,24 +237,14 @@ namespace Relativity.Sync.Tests.Integration
 
 		private static Type GetSnapshotNodeType(Type pipelineType)
 		{
-			if (pipelineType == typeof(SyncDocumentRetryPipeline))
+			if (pipelineType == typeof(SyncDocumentRetryPipeline) || pipelineType == typeof(SyncImageRetryPipeline))
 			{
-				return typeof(DocumentRetryDataSourceSnapshotNode);
+				return typeof(RetryDataSourceSnapshotNode);
 			}
 
-			if (pipelineType == typeof(SyncDocumentRunPipeline))
+			if (pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncImageRunPipeline))
 			{
-				return typeof(Nodes.DocumentDataSourceSnapshotNode);
-			}
-
-			if (pipelineType == typeof(SyncImageRetryPipeline))
-			{
-				return typeof(ImageRetryDataSourceSnapshotNode);
-			}
-
-			if (pipelineType == typeof(SyncImageRunPipeline))
-			{
-				return typeof(ImageDataSourceSnapshotNode);
+				return typeof(DataSourceSnapshotNode);
 			}
 
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");

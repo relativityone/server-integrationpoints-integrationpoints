@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 
 			configuration.SetFieldMappings(identifierMapping);
 			
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IImageDataSourceSnapshotConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);

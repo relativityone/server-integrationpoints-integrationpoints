@@ -9,21 +9,21 @@ using Relativity.Sync.ExecutionConstrains;
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {
 	[TestFixture]
-	public sealed class DocumentRetryDataSourceSnapshotExecutionConstrainsTests
+	public sealed class RetryDataSourceSnapshotExecutionConstrainsTests
 	{
-		private DocumentRetryDataSourceSnapshotExecutionConstrains _instance;
+		private RetryDataSourceSnapshotExecutionConstrains _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new DocumentRetryDataSourceSnapshotExecutionConstrains();
+			_instance = new RetryDataSourceSnapshotExecutionConstrains();
 		}
 
 		[TestCase(true, false)]
 		[TestCase(false, true)]
 		public async Task CanExecuteAsync_ShouldRespect_IsSnapshotCreated(bool snapshotExists, bool expectedCanExecute)
 		{
-			Mock<IDocumentRetryDataSourceSnapshotConfiguration> configuration = new Mock<IDocumentRetryDataSourceSnapshotConfiguration>();
+			Mock<IRetryDataSourceSnapshotConfiguration> configuration = new Mock<IRetryDataSourceSnapshotConfiguration>();
 
 			configuration.Setup(x => x.IsSnapshotCreated).Returns(snapshotExists);
 			configuration.Setup(x => x.JobHistoryToRetryId).Returns(1);
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		[TestCase(1, true)]
 		public async Task CanExecuteAsync_ShouldReturnTrue_OnlyWhen_JobHistoryToRetry_IsNotNull(int? jobHisotryToRetry, bool expectedCanExecute)
 		{
-			Mock<IDocumentRetryDataSourceSnapshotConfiguration> configuration = new Mock<IDocumentRetryDataSourceSnapshotConfiguration>();
+			Mock<IRetryDataSourceSnapshotConfiguration> configuration = new Mock<IRetryDataSourceSnapshotConfiguration>();
 
 			configuration.Setup(x => x.IsSnapshotCreated).Returns(false);
 			configuration.Setup(x => x.JobHistoryToRetryId).Returns(jobHisotryToRetry);
