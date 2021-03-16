@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +17,6 @@ namespace Relativity.Sync.Transfer
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-		private const string _DOCUMENTS_WITH_PRODUCED_IMAGES = "('Production::Image Count' > 0)";
-		private const string _DOCUMENTS_WITH_ORIGINAL_IMAGES = "('Has Images' == CHOICE 1034243)";
-
 		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager)
 		{
 			_configuration = configuration;
@@ -37,17 +33,15 @@ namespace Relativity.Sync.Transfer
 					? await CreateDocumentRetryQueryRequestAsync(token).ConfigureAwait(false)
 					: await CreateDocumentQueryRequestAsync(token).ConfigureAwait(false);
 			}
-			else if (pipeline.IsImagePipeline())
+
+			if (pipeline.IsImagePipeline())
 			{
 				return pipeline.IsRetryPipeline()
 					? await CreateImageRetryQueryRequestAsync(token).ConfigureAwait(false)
 					: await CreateImageQueryRequestAsync(token).ConfigureAwait(false);
 			}
-			else
-			{
-				//TODO
-				throw new Exception();
-			}
+
+			throw new SyncException("Unable to determine Sync flow type. Snapshot query request creation failed");
 		}
 
 		private async Task<QueryRequest> CreateDocumentQueryRequestAsync(CancellationToken token)
@@ -123,12 +117,16 @@ namespace Relativity.Sync.Transfer
 			if (_configuration.ProductionImagePrecedence.Any())
 			{
 				return _configuration.IncludeOriginalImageIfNotFoundInProductions
-					? $"({_DOCUMENTS_WITH_PRODUCED_IMAGES} OR {_DOCUMENTS_WITH_ORIGINAL_IMAGES})"
-					: _DOCUMENTS_WITH_PRODUCED_IMAGES;
+					? $"({DocumentsWithProducedImages} OR {DocumentsWithOriginalImages})"
+					: DocumentsWithProducedImages;
 			}
 
-			return _DOCUMENTS_WITH_ORIGINAL_IMAGES;
+			return DocumentsWithOriginalImages;
 		}
+
+		private static string DocumentsWithProducedImages => "('Production::Image Count' > 0)";
+
+		private static string DocumentsWithOriginalImages => "('Has Images' == CHOICE 1034243)";
 
 		private string DocumentsInSavedSearch() => $"('ArtifactId' IN SAVEDSEARCH {_configuration.DataSourceArtifactId})";
 
