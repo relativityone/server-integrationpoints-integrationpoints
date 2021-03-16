@@ -16,7 +16,7 @@ namespace Relativity.Sync.Pipelines
 				.AddChild<ImageRetryDataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()
 				.ForLastChild()
-				.AddChild<JobStartMetricsNode>()
+				.AddChild<ImageJobStartMetricsNode>()
 				.AddChild<DestinationWorkspaceTagsCreationNode>()
 				.AddChild<SourceWorkspaceTagsCreationNode>()
 				.AddChild<DataDestinationInitializationNode>()

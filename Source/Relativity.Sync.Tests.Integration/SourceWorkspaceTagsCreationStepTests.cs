@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Integration
 			typeof(IDocumentDataSourceSnapshotConfiguration),
 			typeof(IDestinationWorkspaceTagsCreationConfiguration),
 			typeof(IDataDestinationInitializationConfiguration),
-			typeof(ISumReporterConfiguration),
+			typeof(IDocumentJobStartMetricsConfiguration),
 			typeof(INotificationConfiguration),
 			typeof(IJobStatusConsolidationConfiguration),
 			typeof(IJobCleanupConfiguration),

@@ -10,14 +10,16 @@ namespace Relativity.Sync.Executors.SumReporting
 {
 	internal class ImageJobStartMetricsExecutor : IExecutor<IImageJobStartMetricsConfiguration>
 	{
+		private readonly ISyncLog _syncLog;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IImageFileRepository _imageFileRepository;
 		private readonly ISnapshotQueryRequestProvider _queryRequestProvider;
 
-		public ImageJobStartMetricsExecutor(ISyncMetrics syncMetrics, IJobStatisticsContainer jobStatisticsContainer,
+		public ImageJobStartMetricsExecutor(ISyncLog syncLog, ISyncMetrics syncMetrics, IJobStatisticsContainer jobStatisticsContainer,
 			IImageFileRepository imageFileRepository, ISnapshotQueryRequestProvider queryRequestProvider)
 		{
+			_syncLog = syncLog;
 			_syncMetrics = syncMetrics;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_imageFileRepository = imageFileRepository;
@@ -50,6 +52,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 			Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(async () =>
 			{
+				_syncLog.LogInformation("Image statistics calculation has been started...");
 				QueryRequest request = await _queryRequestProvider.GetRequestForCurrentPipelineAsync(token).ConfigureAwait(false);
 				return await _imageFileRepository.CalculateImagesStatisticsAsync(
 					configuration.SourceWorkspaceArtifactId, request, options).ConfigureAwait(false);

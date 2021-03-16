@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,6 +70,7 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
 			Task<long> calculateNativesTotalSizeTask = Task.Run(async () =>
 			{
+				_logger.LogInformation("Natives bytes requested calculation has been started...");
 				QueryRequest request = await _queryRequestProvider.GetRequestForCurrentPipelineAsync(token).ConfigureAwait(false);
 				return await _nativeFileRepository.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
 			}, token);

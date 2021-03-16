@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IImageDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IImageJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IImageRetryDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IImageJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDocumentDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IDocumentJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)
@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDocumentRetryDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IDocumentJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)

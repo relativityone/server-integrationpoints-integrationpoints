@@ -27,6 +27,7 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterTypesInExecutingAssembly<IExportFieldSanitizer>();
 			builder.RegisterType<RetriableLongTextStreamBuilderFactory>().As<IRetriableStreamBuilderFactory>();
 			builder.RegisterType<InstanceSettings>().As<IInstanceSettings>();
+			builder.RegisterType<SnapshotQueryRequestProvider>().As<ISnapshotQueryRequestProvider>();
 		}
 	}
 }

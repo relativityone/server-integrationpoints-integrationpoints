@@ -16,7 +16,7 @@ namespace Relativity.Sync.Pipelines
 				.AddChild<DocumentDataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()
 				.ForLastChild()
-				.AddChild<JobStartMetricsNode>()
+				.AddChild<DocumentJobStartMetricsNode>()
 				.AddChild<DestinationWorkspaceTagsCreationNode>()
 				.AddChild<SourceWorkspaceTagsCreationNode>()
 				.AddChild<DataDestinationInitializationNode>()
