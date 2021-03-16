@@ -15,7 +15,8 @@ namespace Relativity.Sync.Tests.Common
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentDataSourceSnapshotConfiguration, IDocumentRetryDataSourceSnapshotConfiguration, IImageDataSourceSnapshotConfiguration, IImageRetryDataSourceSnapshotConfiguration,
-		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration
+		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
+		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
