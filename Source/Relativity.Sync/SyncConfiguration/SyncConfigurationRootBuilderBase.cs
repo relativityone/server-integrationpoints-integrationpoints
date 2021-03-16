@@ -12,8 +12,6 @@ using Relativity.Sync.Utils;
 using System.Linq.Expressions;
 using Relativity.Sync.RDOs.Framework;
 
-#pragma warning disable 1591
-
 namespace Relativity.Sync.SyncConfiguration
 {
     internal abstract class SyncConfigurationRootBuilderBase : ISyncConfigurationRootBuilder

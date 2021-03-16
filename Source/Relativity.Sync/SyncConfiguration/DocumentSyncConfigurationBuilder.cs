@@ -77,11 +77,10 @@ namespace Relativity.Sync.SyncConfiguration
 			return this;
 		}
 
-		protected override async Task ValidateAsync()
+		protected override Task ValidateAsync()
 		{
 			SetFieldsMapping();
-
-			await SetDestinationFolderStructureAsync().ConfigureAwait(false);
+			return SetDestinationFolderStructureAsync();
 		}
 
 		#region Private methods

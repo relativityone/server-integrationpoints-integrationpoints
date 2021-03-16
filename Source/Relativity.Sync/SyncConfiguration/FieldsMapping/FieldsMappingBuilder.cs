@@ -37,8 +37,8 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 
 			using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				var sourceField = ReadIdentifierFieldAsync(_sourceWorkspaceId, objectManager).GetAwaiter().GetResult();
-				var destinationField = ReadIdentifierFieldAsync(_destinationWorkspaceId, objectManager).GetAwaiter().GetResult();
+				FieldEntry sourceField = ReadIdentifierFieldAsync(_sourceWorkspaceId, objectManager).GetAwaiter().GetResult();
+				FieldEntry destinationField = ReadIdentifierFieldAsync(_destinationWorkspaceId, objectManager).GetAwaiter().GetResult();
 
 				FieldsMapping.Add(new FieldMap
 				{
@@ -55,8 +55,8 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 		{
 			using (var fieldManager = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
-				var sourceField = ReadFieldEntryByIdAsync(_sourceWorkspaceId, sourceFieldId, fieldManager).GetAwaiter().GetResult();
-				var destinationField = ReadFieldEntryByIdAsync(_destinationWorkspaceId, destinationFieldId, fieldManager).GetAwaiter().GetResult();
+				FieldEntry sourceField = ReadFieldEntryByIdAsync(_sourceWorkspaceId, sourceFieldId, fieldManager).GetAwaiter().GetResult();
+				FieldEntry destinationField = ReadFieldEntryByIdAsync(_destinationWorkspaceId, destinationFieldId, fieldManager).GetAwaiter().GetResult();
 
 				FieldsMapping.Add(new FieldMap
 				{
@@ -73,8 +73,8 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 		{
 			using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				var sourceField = ReadFieldEntryByNameAsync(_sourceWorkspaceId, sourceFieldName, objectManager).GetAwaiter().GetResult();
-				var destinationField = ReadFieldEntryByNameAsync(_destinationWorkspaceId, destinationFieldName, objectManager).GetAwaiter().GetResult();
+				FieldEntry sourceField = ReadFieldEntryByNameAsync(_sourceWorkspaceId, sourceFieldName, objectManager).GetAwaiter().GetResult();
+				FieldEntry destinationField = ReadFieldEntryByNameAsync(_destinationWorkspaceId, destinationFieldName, objectManager).GetAwaiter().GetResult();
 
 				FieldsMapping.Add(new FieldMap
 				{
