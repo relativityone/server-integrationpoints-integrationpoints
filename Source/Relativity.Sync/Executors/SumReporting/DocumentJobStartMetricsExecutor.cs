@@ -78,7 +78,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			return calculateNativesTotalSizeTask;
 		}
 
-		private async Task LogFieldsMappingDetailsAsync(ISumReporterConfiguration configuration, CancellationToken token)
+		private async Task LogFieldsMappingDetailsAsync(IDocumentJobStartMetricsConfiguration configuration, CancellationToken token)
 		{
 			IList<FieldInfoDto> documentFields = await _fieldManager.GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
 

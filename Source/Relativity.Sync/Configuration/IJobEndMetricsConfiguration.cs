@@ -1,7 +1,13 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	interface IJobEndMetricsConfiguration : ISumReporterConfiguration
+	interface IJobEndMetricsConfiguration : IConfiguration
 	{
+		int? JobHistoryToRetryId { get; }
+
+		int SourceWorkspaceArtifactId { get; }
+
+		int DestinationWorkspaceArtifactId { get; }
+
 		int SyncConfigurationArtifactId { get; }
 
 		ImportOverwriteMode ImportOverwriteMode { get; }

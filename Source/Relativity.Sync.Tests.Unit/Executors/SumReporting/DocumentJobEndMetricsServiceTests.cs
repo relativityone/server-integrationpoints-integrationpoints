@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
