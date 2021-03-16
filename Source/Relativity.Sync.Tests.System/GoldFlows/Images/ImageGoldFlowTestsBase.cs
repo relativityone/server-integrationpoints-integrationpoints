@@ -10,7 +10,6 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.GoldFlows.Images
 {
@@ -37,9 +36,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset);
 		}
 
-		[IdentifiedTest("1af24688-54e2-44eb-86f4-60fb28d37df4")]
-		[TestType.MainFlow]
-		public async Task SyncJob_Should_SyncImages()
+		public virtual async Task SyncJob_Should_SyncImages()
 		{
 			// Arrange
 			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunAsync).ConfigureAwait(false);
@@ -67,9 +64,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			);
 		}
 
-		[IdentifiedTest("d77b1e0c-e39d-4084-9e84-6efb40ae0fe0")]
-		[TestType.MainFlow]
-		public async Task SyncJob_Should_RetryImages()
+		public virtual async Task SyncJob_Should_RetryImages()
 		{
 			// Arrange
 			int jobHistoryToRetryId = -1;
