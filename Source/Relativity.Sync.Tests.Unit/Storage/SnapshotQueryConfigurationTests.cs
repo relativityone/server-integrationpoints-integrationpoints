@@ -5,31 +5,22 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	internal class ImageJobStartMetricsConfigurationTests : ConfigurationTestBase
+	internal class SnapshotQueryConfigurationTests : ConfigurationTestBase
 	{
 		private JSONSerializer _serializer;
 
-		private ImageJobStartMetricsConfiguration _sut;
-
-		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 102779;
+		private SnapshotQueryConfiguration _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_serializer = new JSONSerializer();
 
-			_sut = new ImageJobStartMetricsConfiguration(_configuration.Object, _serializer, new SyncJobParameters(1, _SOURCE_WORKSPACE_ARTIFACT_ID, 1));
+			_sut = new SnapshotQueryConfiguration(_configuration.Object, _serializer);
 		}
-
+		
 		[Test]
-		public void SourceWorkspaceArtifactId_ShouldReturnProperValue()
-		{
-			// Act & Assert
-			_sut.SourceWorkspaceArtifactId.Should().Be(_SOURCE_WORKSPACE_ARTIFACT_ID);
-		}
-
-		[Test]
-		public void JobHistoryToRetryId_ShouldReturnProperValue()
+		public void JobHistoryToRetryId_ShouldReturnValue()
 		{
 			// Arrange
 			const int jobHistoryArtifactId = 104799;
@@ -38,20 +29,20 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Act & Assert
 			_sut.JobHistoryToRetryId.Should().Be(jobHistoryArtifactId);
 		}
-
+		
 		[Test]
-		public void DestinationWorkspaceArtifactId_ShouldReturnProperValue()
+		public void DataSourceArtifactId_ShouldReturnValue()
 		{
 			// Arrange
-			const int destinationWorkspaceArtifactId = 106799;
-			_configurationRdo.DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId;
+			const int dataSourceArtifactId = 105799;
+			_configurationRdo.DataSourceArtifactId = dataSourceArtifactId;
 
 			// Act & Assert
-			_sut.DestinationWorkspaceArtifactId.Should().Be(destinationWorkspaceArtifactId);
+			_sut.DataSourceArtifactId.Should().Be(dataSourceArtifactId);
 		}
 
 		[Test]
-		public void ProductionImagePrecedence_ShouldReturnProperValue()
+		public void ProductionImagePrecedence_ShouldReturnValue()
 		{
 			// Arrange
 			var expectedValue = new[] { 1, 2, 3 };
@@ -63,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public void IncludeOriginalImageIfNotFoundInProductions_ShouldBeRetrieved(bool expectedValue)
+		public void IncludeOriginalImageIfNotFoundInProductions_ShouldReturnValue(bool expectedValue)
 		{
 			// Arrange
 			_configurationRdo.IncludeOriginalImages = expectedValue;
