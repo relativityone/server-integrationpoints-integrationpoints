@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using NUnit.Framework;
@@ -18,9 +17,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal class ImageSynchronizationExecutorTests : SystemTest
 	{
-		private const int _CONTROL_NUMBER_FIELD_ID = 1003667;
-		private const string _CONTROL_NUMBER_FIELD_DISPLAY_NAME = "Control Number";
-
 		private string SourceWorkspaceName => $"Source.{Guid.NewGuid()}";
 		private string DestinationWorkspaceName => $"Destination.{Guid.NewGuid()}";
 
@@ -41,7 +37,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 				.SetupImageConfiguration(identifierFieldMap, batchSize: _BATCH_SIZE)
 				.SetupContainer()
 				.SetDocumentTracking()
-				.ExecuteDocumentPreSynchronizationExecutors();
+				.ExecutePreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
