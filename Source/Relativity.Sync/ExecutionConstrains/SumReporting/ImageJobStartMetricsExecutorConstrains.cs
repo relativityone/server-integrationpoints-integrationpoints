@@ -4,7 +4,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.ExecutionConstrains.SumReporting
 {
-	class ImageJobStartMetricsExecutorConstrains : IExecutionConstrains<IImageJobStartMetricsConfiguration>
+	internal class ImageJobStartMetricsExecutorConstrains : IExecutionConstrains<IImageJobStartMetricsConfiguration>
 	{
 		public Task<bool> CanExecuteAsync(IImageJobStartMetricsConfiguration configuration, CancellationToken token)
 		{

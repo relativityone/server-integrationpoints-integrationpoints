@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	interface IDocumentJobStartMetricsConfiguration : IConfiguration
+	internal interface IDocumentJobStartMetricsConfiguration : IConfiguration
 	{
 		int? JobHistoryToRetryId { get; }
 

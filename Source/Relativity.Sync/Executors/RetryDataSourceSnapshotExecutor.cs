@@ -8,8 +8,8 @@ namespace Relativity.Sync.Executors
 	internal class RetryDataSourceSnapshotExecutor : DataSourceSnapshotExecutor, IExecutor<IRetryDataSourceSnapshotConfiguration>
 	{
 		public RetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, 
-			IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger, 
-			ISnapshotQueryRequestProvider snapshotQueryRequestProvider) 
+				IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger, 
+				ISnapshotQueryRequestProvider snapshotQueryRequestProvider) 
 			: base(serviceFactory, jobProgressUpdaterFactory, logger, snapshotQueryRequestProvider)
 		{
 		}
