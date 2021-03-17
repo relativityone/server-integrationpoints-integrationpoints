@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 			};
 			
 		
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDocumentRetryDataSourceSnapshotConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(configuration);
 			
 			// ACT
 			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);

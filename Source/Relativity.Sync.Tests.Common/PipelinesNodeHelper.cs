@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IImageDataSourceSnapshotConfiguration)},
+				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]
 				{
 					typeof(IImageJobStartMetricsConfiguration),
@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IImageRetryDataSourceSnapshotConfiguration)},
+				new[] {typeof(IRetryDataSourceSnapshotConfiguration)},
 				new[]
 				{
 					typeof(IImageJobStartMetricsConfiguration),
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDocumentDataSourceSnapshotConfiguration)},
+				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]
 				{
 					typeof(IDocumentJobStartMetricsConfiguration),
@@ -130,7 +130,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDocumentRetryDataSourceSnapshotConfiguration)},
+				new[] {typeof(IRetryDataSourceSnapshotConfiguration)},
 				new[]
 				{
 					typeof(IDocumentJobStartMetricsConfiguration),

@@ -15,9 +15,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
     using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
     using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
 
-    internal sealed class DocumentDataSourceSnapshotConfigurationTests : ConfigurationTestBase
+    internal sealed class DataSourceSnapshotConfigurationTests : ConfigurationTestBase
     {
-        private DocumentDataSourceSnapshotConfiguration _instance;
+        private DataSourceSnapshotConfiguration _instance;
 
         private Mock<IFieldMappings> _fieldMappings;
 
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             _fieldMappings = new Mock<IFieldMappings>();
 
-            _instance = new DocumentDataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object,
+            _instance = new DataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object,
                 new SyncJobParameters(1, _WORKSPACE_ID, 1));
         }
 

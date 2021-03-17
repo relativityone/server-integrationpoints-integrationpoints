@@ -11,19 +11,19 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 	[TestFixture]
 	public sealed class ImageRetryDataSourceSnapshotExecutionConstrainsTests
 	{
-		private ImageRetryDataSourceSnapshotExecutionConstrains _instance;
+		private RetryDataSourceSnapshotExecutionConstrains _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new ImageRetryDataSourceSnapshotExecutionConstrains();
+			_instance = new RetryDataSourceSnapshotExecutionConstrains();
 		}
 
 		[TestCase(true, false)]
 		[TestCase(false, true)]
 		public async Task CanExecuteAsync_ShouldReturnTrue_When_IsSnapshotCreated(bool snapshotExists, bool expectedCanExecute)
 		{
-			Mock<IImageRetryDataSourceSnapshotConfiguration> configuration = new Mock<IImageRetryDataSourceSnapshotConfiguration>();
+			Mock<IRetryDataSourceSnapshotConfiguration> configuration = new Mock<IRetryDataSourceSnapshotConfiguration>();
 
 			configuration.Setup(x => x.IsSnapshotCreated).Returns(snapshotExists);
 			configuration.Setup(x => x.JobHistoryToRetryId).Returns(1);
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		[TestCase(1, true)]
 		public async Task CanExecuteAsync_ShouldReturnTrue_OnlyWhen_JobHistoryToRetry_IsNotNull(int? jobHisotryToRetry, bool expectedCanExecute)
 		{
-			Mock<IImageRetryDataSourceSnapshotConfiguration> configuration = new Mock<IImageRetryDataSourceSnapshotConfiguration>();
+			Mock<IRetryDataSourceSnapshotConfiguration> configuration = new Mock<IRetryDataSourceSnapshotConfiguration>();
 
 			configuration.Setup(x => x.IsSnapshotCreated).Returns(false);
 			configuration.Setup(x => x.JobHistoryToRetryId).Returns(jobHisotryToRetry);

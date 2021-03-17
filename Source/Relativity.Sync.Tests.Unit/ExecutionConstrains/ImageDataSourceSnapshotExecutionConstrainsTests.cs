@@ -11,19 +11,19 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 	[TestFixture]
 	public sealed class ImageDataSourceSnapshotExecutionConstrainsTests
 	{
-		private ImageDataSourceSnapshotExecutionConstrains _instance;
+		private DataSourceSnapshotExecutionConstrains _instance;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new ImageDataSourceSnapshotExecutionConstrains();
+			_instance = new DataSourceSnapshotExecutionConstrains();
 		}
 
 		[TestCase(true, false)]
 		[TestCase(false, true)]
 		public async Task ItShouldPreventExecutionIfSnapshotExists(bool snapshotExists, bool expectedCanExecute)
 		{
-			Mock<IImageDataSourceSnapshotConfiguration> configuration = new Mock<IImageDataSourceSnapshotConfiguration>();
+			Mock<IDataSourceSnapshotConfiguration> configuration = new Mock<IDataSourceSnapshotConfiguration>();
 
 			configuration.Setup(x => x.IsSnapshotCreated).Returns(snapshotExists);
 

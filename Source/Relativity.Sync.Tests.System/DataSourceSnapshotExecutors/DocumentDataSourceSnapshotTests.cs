@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 				JobHistoryArtifactId = jobHistoryArtifactId
 			};
 
-			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDocumentDataSourceSnapshotConfiguration>(configuration);
+			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);
 
 			// ACT
 			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);

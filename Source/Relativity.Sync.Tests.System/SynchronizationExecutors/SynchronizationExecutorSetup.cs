@@ -254,7 +254,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 		private SynchronizationExecutorSetup CreateDocumentDataSourceSnapshot()
 		{
-			IExecutor<IDocumentDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
+			IExecutor<IDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 
 			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
 				.GetAwaiter().GetResult();
@@ -266,7 +266,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 		private SynchronizationExecutorSetup CreateImageDataSourceSnapshot()
 		{
-			IExecutor<IImageDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
+			IExecutor<IDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 
 			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
 				.GetAwaiter().GetResult();
