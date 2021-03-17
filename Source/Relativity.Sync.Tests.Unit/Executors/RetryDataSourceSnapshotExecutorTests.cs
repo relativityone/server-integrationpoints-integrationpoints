@@ -80,19 +80,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 1));
 			_configuration.Verify(x => x.SetSnapshotDataAsync(runId, totalRecords));
 			_jobProgressUpdater.Verify(x => x.SetTotalItemsCountAsync(totalRecords));
-		}
-
-		private bool AssertQueryRequest(QueryRequest queryRequest)
-		{
-			const int documentArtifactTypeId = (int) ArtifactType.Document;
-			queryRequest.ObjectType.ArtifactTypeID.Should().Be(documentArtifactTypeId);
-
-			queryRequest.Condition.Should().Be($"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_JOB_HISOTRY_TO_RETRY_ID}])) AND ('Artifact ID' IN SAVEDSEARCH {_DATA_SOURCE_ID})");
-
-			return true;
 		}
 
 		[Test]
@@ -106,33 +95,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// ASSERT
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);
 			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
-		}
-
-		[Test]
-		[TestCase(DestinationFolderStructureBehavior.None)]
-		[TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
-		public async Task ItShouldNotIncludeFolderPathSourceField(DestinationFolderStructureBehavior destinationFolderStructureBehavior)
-		{
-			const string folderPathSourceFieldName = "folder path";
-
-			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
-			{
-				RecordCount = 1L,
-				RunID = Guid.NewGuid()
-			};
-			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
-
-			// ACT
-			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertNotIncludingFolderPathSourceField(qr, folderPathSourceFieldName)), 1));
-		}
-
-		private bool AssertNotIncludingFolderPathSourceField(QueryRequest queryRequest, string folderPathSourceFieldName)
-		{
-			queryRequest.Fields.Should().NotContain(x => x.Name == folderPathSourceFieldName);
-			return true;
 		}
 
 		[Test]

@@ -88,32 +88,5 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);
 			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
 		}
-
-		[Test]
-		[TestCase(DestinationFolderStructureBehavior.None)]
-		[TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
-		public async Task ItShouldNotIncludeFolderPathSourceField(DestinationFolderStructureBehavior destinationFolderStructureBehavior)
-		{
-			const string folderPathSourceFieldName = "folder path";
-
-			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
-			{
-				RecordCount = 1L,
-				RunID = Guid.NewGuid()
-			};
-			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
-
-			// ACT
-			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-
-			// ASSERT
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertNotIncludingFolderPathSourceField(qr, folderPathSourceFieldName)), 1));
-		}
-
-		private bool AssertNotIncludingFolderPathSourceField(QueryRequest queryRequest, string folderPathSourceFieldName)
-		{
-			queryRequest.Fields.Should().NotContain(x => x.Name == folderPathSourceFieldName);
-			return true;
-		}
 	}
 }
