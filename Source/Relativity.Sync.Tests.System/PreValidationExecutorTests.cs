@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
-			_sourceWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
