@@ -10,7 +10,7 @@ nuget Relativity.IntegrationPoints.SDK 1.0.7
 
 //Main Relativity packages
 nuget kCura 13.1.0
-nuget kCura.Agent ~> 13.1 
+nuget kCura.Agent ~> 14.0 
 nuget kCura.EventHandler 15.1.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
@@ -32,15 +32,15 @@ nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget Relativity.Kepler 2.14.3
 nuget Relativity.Kepler.Client 2.14.3
-nuget Relativity.Logging 2018.11.8
-nuget Relativity.Logging.Interfaces 2018.11.8
+nuget Relativity.Logging 2019.10.2
+nuget Relativity.Logging.Interfaces 2019.10.2
 nuget Relativity.OAuth2Client 1.5.2
 nuget Relativity.OAuth2Client.Interfaces 1.5.2
 nuget Relativity.Productions.Services.Interfaces 11.1.0
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3000.0.1
-nuget Relativity.Toggles 1.0.0.100
+nuget Relativity.Toggles 1.0.1
 nuget Relativity.Vfs.IO 1.0.24
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre.6
 
@@ -88,6 +88,7 @@ group Tests
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
+	nuget Newtonsoft.Json 12.0.3
 	nuget NUnit 3.11 redirects: force
 	nuget Relativity.Kepler 2.14.3
 	nuget Relativity.Kepler.Client 2.14.3
@@ -101,7 +102,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-        nuget Relativity.Sync 0.7.0-pre.17
+    nuget Relativity.Sync 0.1.105-local
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9

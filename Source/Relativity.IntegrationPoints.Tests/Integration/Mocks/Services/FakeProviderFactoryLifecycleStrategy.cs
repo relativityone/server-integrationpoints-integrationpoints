@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Services.Domain;
+using Relativity.IntegrationPoints.Contracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {

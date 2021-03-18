@@ -4,7 +4,7 @@ Relativity.Kepler.Client
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataTransfer.MessageService
-Relativity.IntegrationPoints.SDK
+Relativity.IntegrationPoints.Contracts
 
 Moq
 FluentAssertions
