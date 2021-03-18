@@ -7,62 +7,73 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 	{
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
-			Log($"VERBOSE - {string.Format(messageTemplate, propertyValues)}");
+			Console.WriteLine($"[VERBOSE] {messageTemplate}; {String.Join(", ", propertyValues)}");
+			Console.Out.Flush();
 		}
 
 		public void LogVerbose(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			Log($"VERBOSE - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
+			Console.WriteLine($"[VERBOSE] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+			Console.Out.Flush();
 		}
 
 		public void LogDebug(string messageTemplate, params object[] propertyValues)
 		{
-			Log($"DEBUG - {string.Format(messageTemplate, propertyValues)}");
+			Console.WriteLine($"[DEBUG] {messageTemplate}; {String.Join(", ", propertyValues)}");
+			Console.Out.Flush();
 		}
 
 		public void LogDebug(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			Log($"DEBUG - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
+			Console.WriteLine($"[DEBUG] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+			Console.Out.Flush();
 		}
 
 		public void LogInformation(string messageTemplate, params object[] propertyValues)
 		{
-			Log($"INFO - {string.Format(messageTemplate, propertyValues)}");
+			Console.WriteLine($"[INFO] {messageTemplate}; {String.Join(", ", propertyValues)}");
 		}
 
 		public void LogInformation(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			Log($"INFO - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
+			Console.WriteLine($"[INFO] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+			Console.Out.Flush();
 		}
 
 		public void LogWarning(string messageTemplate, params object[] propertyValues)
 		{
-			Log($"WARN - {string.Format(messageTemplate, propertyValues)}");
+			Console.WriteLine($"[WARNING] {messageTemplate}; {String.Join(", ", propertyValues)}");
+			Console.Out.Flush();
 		}
 
 		public void LogWarning(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			Log($"WARN - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
+			Console.WriteLine($"[WARNING] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+			Console.Out.Flush();
 		}
 
 		public void LogError(string messageTemplate, params object[] propertyValues)
 		{
-			Log($"ERROR - {string.Format(messageTemplate, propertyValues)}");
+			Console.WriteLine($"[ERROR] {messageTemplate}; {String.Join(", ", propertyValues)}");
+			Console.Out.Flush();
 		}
 
 		public void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			Log($"ERROR - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
+			Console.WriteLine($"[ERROR] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+			Console.Out.Flush();
 		}
 
 		public void LogFatal(string messageTemplate, params object[] propertyValues)
 		{
-			Log($"FATAL - {string.Format(messageTemplate, propertyValues)}");
+			Console.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}");
+			Console.Out.Flush();
 		}
 
 		public void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
-			Log($"FATAL - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
+			Console.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+			Console.Out.Flush();
 		}
 
 		public IAPILog ForContext<T>()
@@ -83,11 +94,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public IDisposable LogContextPushProperty(string propertyName, object obj)
 		{
 			return (IDisposable)null;
-		}
-
-		private void Log(string renderedText)
-		{
-			Console.WriteLine($"{DateTime.Now} - {renderedText}");
 		}
 	}
 }

@@ -143,7 +143,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			Container.Register(Component.For<IWorkspaceDBContext>().ImplementedBy<FakeWorkspaceDbContext>().UsingFactoryMethod(
 				c => new FakeWorkspaceDbContext(SourceWorkspaceId)));
-			//Container.Register(Component.For<>().ImplementedBy<>());
+			//Container.Register(Component.For<ISecretsRepository>().ImplementedBy<>());
 			//Container.Register(Component.For<>().ImplementedBy<>());
 			//Container.Register(Component.For<>().ImplementedBy<>());
 			//Container.Register(Component.For<>().ImplementedBy<>());
