@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data
 
 		private async Task<List<Choice>> GetChoicesOnFieldAsync(int workspaceArtifactId, Guid fieldGuid)
 		{
-			int fieldId = await ReadFieldIdByGuid(workspaceArtifactId, fieldGuid).ConfigureAwait(false);
+			int fieldId = await ReadFieldIdByGuidAsync(workspaceArtifactId, fieldGuid).ConfigureAwait(false);
 
 			using (IChoiceQueryManager choiceManager = _servicesMgr.CreateProxy<IChoiceQueryManager>(ExecutionIdentity.System))
 			{
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		private async Task<int> ReadFieldIdByGuid(int workspaceArtifactId, Guid fieldGuid)
+		private async Task<int> ReadFieldIdByGuidAsync(int workspaceArtifactId, Guid fieldGuid)
 		{
 			using (IArtifactGuidManager guidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
 			{

@@ -10,9 +10,8 @@ nuget Relativity.IntegrationPoints.SDK 1.0.7
 
 //Main Relativity packages
 nuget kCura 13.1.0
-nuget kCura.Agent ~> 13.1
-nuget kCura.EventHandler ~> 11.3 // update to version 13.1 requires update packages in Relativity.IntegrationPoints.SDK
-nuget Relativity.Authentication ~> 12.0
+nuget kCura.Agent ~> 13.1 
+nuget kCura.EventHandler 15.1.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
 nuget Relativity.DataExchange.Client.SDK 1.13.4
@@ -57,6 +56,7 @@ nuget Microsoft.AspNet.SignalR.Core 2.2.0
 nuget Microsoft.AspNet.Web.Optimization 1.1.3 strategy: max
 nuget Microsoft.AspNet.WebApi 5.2.3
 nuget Microsoft.Net.Http 2.2.29 strategy: max
+nuget Microsoft.Owin.Host.SystemWeb strategy: max
 nuget Mono.TextTransform 1.0.0
 nuget System.Reactive 4.0.0
 nuget SystemWrapper.Wrappers 0.25.0.186
@@ -90,6 +90,8 @@ group Tests
 	source https://proget.kcura.corp/nuget/NuGet
 	nuget NUnit 3.11 redirects: force
 	nuget Relativity.Kepler 2.14.3
+	nuget Relativity.Kepler.Client 2.14.3
+	nuget Relativity.Telemetry.Services.Interface 3000.0.1
 	nuget Relativity.Services.Interfaces 13.2.5
 	nuget Relativity.Testing.Framework ~> 0.22
 	nuget Relativity.Testing.Framework.Api ~> 0.22

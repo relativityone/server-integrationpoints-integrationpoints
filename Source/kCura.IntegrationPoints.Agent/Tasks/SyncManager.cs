@@ -31,22 +31,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	[SynchronizedTask]
 	public class SyncManager : BatchManagerBase<string>, ITaskWithJobHistory
 	{
+		private IEnumerable<IBatchStatus> _batchStatus;
+
+		private readonly IAgentValidator _agentValidator;
+		private readonly IAPILog _logger;
 		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IDataProviderFactory _providerFactory;
 		private readonly IGuidService _guidService;
 		private readonly IJobHistoryErrorService _jobHistoryErrorService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobManager _jobManager;
 		private readonly IJobService _jobService;
-		private readonly IAPILog _logger;
-		private readonly IDataProviderFactory _providerFactory;
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 
-		protected IIntegrationPointService IntegrationPointService { get; }
 		protected readonly IHelper Helper;
 		protected readonly IManagerFactory ManagerFactory;
 		protected readonly ISerializer Serializer;
-		private IEnumerable<IBatchStatus> _batchStatus;
-		private readonly IAgentValidator _agentValidator;
+
+		protected IIntegrationPointService IntegrationPointService { get; }
 
 		public SyncManager(
 			ICaseServiceContext caseServiceContext,

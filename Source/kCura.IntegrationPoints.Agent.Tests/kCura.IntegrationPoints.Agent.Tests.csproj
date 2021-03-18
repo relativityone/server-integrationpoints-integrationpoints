@@ -207,17 +207,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="IdentityModel">
-          <HintPath>..\..\packages\IdentityModel\lib\net45\IdentityModel.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="kCura">
           <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
           <Private>True</Private>
@@ -295,127 +284,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Microsoft.AspNet.Identity.Core">
-          <HintPath>..\..\packages\Microsoft.AspNet.Identity.Core\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.IdentityModel.Protocol.Extensions">
-          <HintPath>..\..\packages\Microsoft.IdentityModel.Protocol.Extensions\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin">
-          <HintPath>..\..\packages\Microsoft.Owin\lib\net45\Microsoft.Owin.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin.FileSystems">
-          <HintPath>..\..\packages\Microsoft.Owin.FileSystems\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin.Host.SystemWeb">
-          <HintPath>..\..\packages\Microsoft.Owin.Host.SystemWeb\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin.Security">
-          <HintPath>..\..\packages\Microsoft.Owin.Security\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin.Security.Cookies">
-          <HintPath>..\..\packages\Microsoft.Owin.Security.Cookies\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin.Security.OAuth">
-          <HintPath>..\..\packages\Microsoft.Owin.Security.OAuth\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin.Security.OpenIdConnect">
-          <HintPath>..\..\packages\Microsoft.Owin.Security.OpenIdConnect\lib\net45\Microsoft.Owin.Security.OpenIdConnect.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Owin.StaticFiles">
-          <HintPath>..\..\packages\Microsoft.Owin.StaticFiles\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Web.Administration">
-          <HintPath>..\..\packages\Microsoft.Web.Administration\lib\net20\Microsoft.Web.Administration.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Moq">
           <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
@@ -460,17 +328,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Owin">
-          <HintPath>..\..\packages\Owin\lib\net40\Owin.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
@@ -504,17 +361,6 @@
       <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Authentication">
-          <HintPath>..\..\packages\Relativity.Authentication\lib\net462\Relativity.Authentication.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -844,17 +690,6 @@
       <ItemGroup>
         <Reference Include="Renci.SshNet">
           <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.IdentityModel.Tokens.Jwt">
-          <HintPath>..\..\packages\System.IdentityModel.Tokens.Jwt\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

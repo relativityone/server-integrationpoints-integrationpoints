@@ -3,54 +3,66 @@ using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class EmptyLogger : IAPILog
+	public class ConsoleLogger : IAPILog
 	{
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
+			Log($"VERBOSE - {string.Format(messageTemplate, propertyValues)}");
 		}
 
 		public void LogVerbose(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
+			Log($"VERBOSE - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
 		}
 
 		public void LogDebug(string messageTemplate, params object[] propertyValues)
 		{
+			Log($"DEBUG - {string.Format(messageTemplate, propertyValues)}");
 		}
 
 		public void LogDebug(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
+			Log($"DEBUG - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
 		}
 
 		public void LogInformation(string messageTemplate, params object[] propertyValues)
 		{
+			Log($"INFO - {string.Format(messageTemplate, propertyValues)}");
 		}
 
 		public void LogInformation(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
+			Log($"INFO - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
 		}
 
 		public void LogWarning(string messageTemplate, params object[] propertyValues)
 		{
+			Log($"WARN - {string.Format(messageTemplate, propertyValues)}");
 		}
 
 		public void LogWarning(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
+			Log($"WARN - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
 		}
 
 		public void LogError(string messageTemplate, params object[] propertyValues)
 		{
+			Log($"ERROR - {string.Format(messageTemplate, propertyValues)}");
 		}
 
 		public void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
+			Log($"ERROR - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
 		}
 
 		public void LogFatal(string messageTemplate, params object[] propertyValues)
 		{
+			Log($"FATAL - {string.Format(messageTemplate, propertyValues)}");
 		}
 
 		public void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues)
 		{
+			Log($"FATAL - {string.Format(messageTemplate, propertyValues)}{Environment.NewLine}{exception}");
 		}
 
 		public IAPILog ForContext<T>()
@@ -71,6 +83,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public IDisposable LogContextPushProperty(string propertyName, object obj)
 		{
 			return (IDisposable)null;
+		}
+
+		private void Log(string renderedText)
+		{
+			Console.WriteLine($"{DateTime.Now} - {renderedText}");
 		}
 	}
 }
