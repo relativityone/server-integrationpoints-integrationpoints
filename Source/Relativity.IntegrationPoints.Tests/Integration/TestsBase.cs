@@ -1,9 +1,11 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -151,14 +153,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<ISecretsRepository>().ImplementedBy<SecretsRepository>());
 			Container.Register(Component.For<ISecretStoreFacade>().ImplementedBy<SecretStoreFacade>());
 			Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()));
-
-			//Container.Register(Component.For<>().ImplementedBy<>());
-			//Container.Register(Component.For<>().ImplementedBy<>());
-			//Container.Register(Component.For<>().ImplementedBy<>());
+			Container.Register(Component.For<Lazy<ISecretStore>>().UsingFactoryMethod(c => 
+				new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())));
 		}
 
 		private void RegisterFakeRipServices()
 		{
+			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
 			Container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<FakeProviderFactoryLifecycleStrategy>());
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>());
 			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>());
