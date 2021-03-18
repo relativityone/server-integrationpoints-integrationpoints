@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.8] - 2021-03-18
+### Changed
+- Updated kCura.EventHandler to 15.1.0
+
 ## [1.0.7] - 2019-01-16
 ### Added
 - make-sdk.bat for generating Relativity Integration Points SDK.
