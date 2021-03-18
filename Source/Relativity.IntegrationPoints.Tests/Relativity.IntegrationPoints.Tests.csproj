@@ -65,6 +65,7 @@
     <Compile Include="Integration\Mocks\Services\FakeProviderFactoryLifecycleStrategy.cs" />
     <Compile Include="Integration\Mocks\Services\FakeRepositoryFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeScratchTableRepository.cs" />
+    <Compile Include="Integration\Mocks\Services\FakeWorkspaceDbContext.cs" />
     <Compile Include="Integration\Tests\Agent\SyncManagerTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\DrainStoppedJobsInScheduleQueueTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\ScheduleAgentTests.cs" />

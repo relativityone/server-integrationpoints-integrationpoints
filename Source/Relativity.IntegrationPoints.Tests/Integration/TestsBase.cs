@@ -94,7 +94,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		private void RegisterRipServices()
 		{
-			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>());
 			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
 			Container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>());
 			Container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>());
@@ -112,7 +111,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>());
 			
 			Container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>());
-			Container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<ProviderFactoryLifecycleStrategy>());
 			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
 			Container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().UsingFactoryMethod(kernel =>
 				new AgentService(kernel.Resolve<IHelper>(), kernel.Resolve<IQueryManager>(), Const.Agent._RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
@@ -142,8 +140,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>());
 			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderValidator>());
 			Container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>());
-			
-			//Container.Register(Component.For<>().ImplementedBy<>());
+
+			Container.Register(Component.For<IWorkspaceDBContext>().ImplementedBy<FakeWorkspaceDbContext>().UsingFactoryMethod(
+				c => new FakeWorkspaceDbContext(SourceWorkspaceId)));
 			//Container.Register(Component.For<>().ImplementedBy<>());
 			//Container.Register(Component.For<>().ImplementedBy<>());
 			//Container.Register(Component.For<>().ImplementedBy<>());
@@ -156,8 +155,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		private void RegisterFakeRipServices()
 		{
+			Container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<FakeProviderFactoryLifecycleStrategy>());
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>());
 			Container.Register(Component.For<IBatchStatus>().ImplementedBy<FakeBatchStatus>());
+			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>());
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<InMemoryDatabase>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))));
 		}
