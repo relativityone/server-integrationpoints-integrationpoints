@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void SyncManager_ShouldSplitJobIntoBatches()
 		{
 			// Arrange
-			//SyncManager sut = PrepareSut();
+			SyncManager sut = PrepareSut();
 		}
 	}
 }
