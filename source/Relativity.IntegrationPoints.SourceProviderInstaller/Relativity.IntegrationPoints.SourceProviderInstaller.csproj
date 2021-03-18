@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" Version="3.1.0" />
-    <PackageReference Include="kCura.EventHandler" Version="11.0.105.1" />
+    <PackageReference Include="kCura.EventHandler" Version="15.1.0" />
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="11.1.0" />
   </ItemGroup>
 
