@@ -50,6 +50,9 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
 
+			configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+				configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
+
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceObjectTypesCreationConfiguration>(configuration);
 			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);

@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.System
 
 		private const int _NOT_EXISTING_WORKSPACE = 1;
 
+
 		[SetUp]
 		public async Task SetUp()
 		{
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Tests.System
 		}
 
 		[IdentifiedTest("BAA6FBA3-B03A-4627-9217-873D00ACDA59")]
-		public Task ValdiateAsync_ShouldSuccessfullyValidateJob()
+		public Task ValidateAsync_ShouldSuccessfullyValidateJob()
 		{
 			// Arrange
 			ConfigurationStub configuration = new ConfigurationStub
@@ -37,6 +38,9 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 			};
+
+			configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+				configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPreValidationConfiguration>(configuration);
 			
@@ -53,6 +57,9 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				DestinationWorkspaceArtifactId = _NOT_EXISTING_WORKSPACE,
 			};
+
+			configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+				configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPreValidationConfiguration>(configuration);
 

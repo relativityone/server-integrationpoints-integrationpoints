@@ -15,9 +15,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			ContainerFactory factory = new ContainerFactory();
 
-			configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
-				configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
-
 			SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId);
 
 			IAPM apm = new NullAPM();
