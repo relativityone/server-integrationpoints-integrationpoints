@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_tagNameFormatter.Setup(x => x.FormatSourceJobTagName(It.IsAny<string>(), It.IsAny<int>())).Returns(jobTagName);
 
 			// act
-			await _sut.CreateSourceJobTagAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), 0, CancellationToken.None).ConfigureAwait(false);
+			await _sut.CreateOrReadSourceJobTagAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), 0, CancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_sourceJobTagRepository.Verify(x => x.CreateAsync(It.IsAny<int>(), It.Is<RelativitySourceJobTag>(tag => 

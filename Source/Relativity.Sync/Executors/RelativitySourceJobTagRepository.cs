@@ -28,6 +28,11 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
+		public Task<RelativitySourceJobTag> ReadAsync(int destinationWorkspaceArtifactId, int jobHistoryArtifactId, CancellationToken token)
+		{
+			return Task.FromResult<RelativitySourceJobTag>(null);
+		}
+
 		public async Task<RelativitySourceJobTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
 		{
 			_logger.LogVerbose($"Creating {nameof(RelativitySourceJobTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} Source case tag artifact ID: {{sourceCaseTagArtifactId}}",

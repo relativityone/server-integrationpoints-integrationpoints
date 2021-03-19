@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				Name = sourceCaseTagName
 			};
 			_sourceCaseTagService.Setup(x => x.CreateOrUpdateSourceCaseTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None)).ReturnsAsync(sourceCaseTag);
-			_sourceJobTagService.Setup(x => x.CreateSourceJobTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None))
+			_sourceJobTagService.Setup(x => x.CreateOrReadSourceJobTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None))
 				.ReturnsAsync(new RelativitySourceJobTag());
 
 			var configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				Name = sourceJobTagName
 			};
 			_sourceCaseTagService.Setup(x => x.CreateOrUpdateSourceCaseTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None)).ReturnsAsync(new RelativitySourceCaseTag());
-			_sourceJobTagService.Setup(x => x.CreateSourceJobTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None))
+			_sourceJobTagService.Setup(x => x.CreateOrReadSourceJobTagAsync(It.IsAny<IDestinationWorkspaceTagsCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None))
 				.ReturnsAsync(sourceJobTag);
 
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
