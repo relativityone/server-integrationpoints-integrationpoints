@@ -103,16 +103,7 @@ namespace Relativity.Sync.Tests.Integration
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult()));
-
-			_objectManagerMock.Setup(x => x.QueryAsync(
-					destinationWorkspaceArtifactId,
-					It.Is<QueryRequest>(q =>
-						q.ObjectType.Guid == SourceJobTagObjectType &&
-						q.Condition.Contains(jobArtifactId.ToString())),
-					It.IsAny<int>(),
-					It.IsAny<int>()))
-				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
-
+			
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
@@ -132,6 +123,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
 			)).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
+
+			SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
 			// Act
 			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -183,15 +176,6 @@ namespace Relativity.Sync.Tests.Integration
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
-
-			_objectManagerMock.Setup(x => x.QueryAsync(
-					destinationWorkspaceArtifactId,
-					It.Is<QueryRequest>(q =>
-						q.ObjectType.Guid == SourceJobTagObjectType &&
-						q.Condition.Contains(jobArtifactId.ToString())),
-					It.IsAny<int>(),
-					It.IsAny<int>()))
-				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
 				destinationWorkspaceArtifactId,
@@ -255,6 +239,8 @@ namespace Relativity.Sync.Tests.Integration
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
 			)).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
 
+			SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
+
 			// Act
 			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -308,15 +294,6 @@ namespace Relativity.Sync.Tests.Integration
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
-
-			_objectManagerMock.Setup(x => x.QueryAsync(
-					destinationWorkspaceArtifactId,
-					It.Is<QueryRequest>(q =>
-						q.ObjectType.Guid == SourceJobTagObjectType &&
-						q.Condition.Contains(jobArtifactId.ToString())),
-					It.IsAny<int>(),
-					It.IsAny<int>()))
-				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
 				destinationWorkspaceArtifactId,
@@ -377,6 +354,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
 			)).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = sourceJobTagArtifactId } }));
+
+			SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
 			// Act
 			_executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -566,30 +545,12 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult()));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
-					destinationWorkspaceArtifactId,
-					It.Is<QueryRequest>(q =>
-						q.ObjectType.Guid == SourceJobTagObjectType &&
-						q.Condition.Contains(jobArtifactId.ToString())),
-					It.IsAny<int>(),
-					It.IsAny<int>()))
-				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
-
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
 			).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } })
 			).Verifiable();
-
-			_objectManagerMock.Setup(x => x.QueryAsync(
-					destinationWorkspaceArtifactId,
-					It.Is<QueryRequest>(q =>
-						q.ObjectType.Guid == SourceJobTagObjectType &&
-						q.Condition.Contains(jobArtifactId.ToString())),
-					It.IsAny<int>(),
-					It.IsAny<int>()))
-				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
-
+			
 			_objectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
@@ -598,6 +559,8 @@ namespace Relativity.Sync.Tests.Integration
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>()
 			)).Throws<ServiceException>();
+
+			SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
 			// ACT
 			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -646,15 +609,6 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult()));
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
-					destinationWorkspaceArtifactId,
-					It.Is<QueryRequest>(q => 
-						q.ObjectType.Guid == SourceJobTagObjectType &&
-						q.Condition.Contains(jobArtifactId.ToString())),
-					It.IsAny<int>(),
-					It.IsAny<int>()))
-				.ReturnsAsync(new QueryResult() {TotalCount = 0});
-
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
@@ -674,6 +628,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
 			)).Throws<ServiceException>();
+
+			SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
 			// ACT
 			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -749,6 +705,17 @@ namespace Relativity.Sync.Tests.Integration
 			Assert.IsNotNull(result.Exception);
 			Assert.IsInstanceOf<SyncException>(result.Exception);
 			Assert.IsTrue(result.Exception.Message.Contains(sourceWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture)));
+		}
+
+		private void SetupObjectManagerWithNonExistingSourceJobTag(int workspaceArtifactId)
+		{
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					workspaceArtifactId,
+					It.Is<QueryRequest>(q =>
+						q.ObjectType.Guid == SourceJobTagObjectType),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
 		}
 	}
 }
