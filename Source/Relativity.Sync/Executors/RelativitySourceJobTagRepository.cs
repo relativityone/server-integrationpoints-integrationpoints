@@ -28,9 +28,27 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public Task<RelativitySourceJobTag> ReadAsync(int destinationWorkspaceArtifactId, int jobHistoryArtifactId, CancellationToken token)
+		public async Task<RelativitySourceJobTag> ReadAsync(int destinationWorkspaceArtifactId, int jobHistoryArtifactId, CancellationToken token)
 		{
-			return Task.FromResult<RelativitySourceJobTag>(null);
+			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				QueryRequest queryRequest = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = RelativitySourceJobTypeGuid,
+					},
+					Condition = $"'JobHistoryArtifactId' == {jobHistoryArtifactId}",
+					Fields = GetFieldRefs(),
+					IncludeNameInQueryResult = true
+				};
+
+				QueryResult result = await objectManager.QueryAsync(destinationWorkspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
+
+				return result.TotalCount > 0
+					? PrepareSourceJobTag(result.Objects.First())
+					: null;
+			}
 		}
 
 		public async Task<RelativitySourceJobTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
@@ -78,6 +96,33 @@ namespace Relativity.Sync.Executors
 				
 				return createdTag;
 			}
+		}
+
+		private IEnumerable<FieldRef> GetFieldRefs()
+		{
+			return new FieldRef[]
+			{
+				new FieldRef
+				{
+					Guid = JobHistoryIdFieldGuid
+				},
+				new FieldRef
+				{
+					Guid = JobHistoryNameGuid
+				}
+			};
+		}
+
+		private static RelativitySourceJobTag PrepareSourceJobTag(RelativityObject obj)
+		{
+			return new RelativitySourceJobTag
+			{
+				ArtifactId = obj.ArtifactID,
+				Name = obj.Name,
+				JobHistoryArtifactId = (int) obj.FieldValues.First(x => x.Field.Guids.Contains(JobHistoryIdFieldGuid)).Value,
+				JobHistoryName = (string) obj.FieldValues.First(x => x.Field.Guids.Contains(JobHistoryNameGuid)).Value,
+				SourceCaseTagArtifactId = obj.ParentObject.ArtifactID
+			};
 		}
 
 		private IEnumerable<FieldRefValuePair> CreateFieldValues(string sourceJobTagName, int jobHistoryArtifactId, string jobHistoryName)
