@@ -9,7 +9,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class JobHelper : HelperBase
 	{
-		public JobHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock) : base(manager, database, proxyMock)
+		public JobHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock)
+			: base(manager, database, proxyMock)
 		{
 		}
 
@@ -22,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		public JobTest ScheduleBasicJob(DateTime? nextRunTime = null)
 		{
-			var job = CreateBasicJob()
+			JobTest job = CreateBasicJob()
 				.Build();
 
 			job.NextRunTime = nextRunTime ?? DateTime.UtcNow;
@@ -39,14 +40,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return ScheduleJob(job);
 		}
 
+		public JobTest ScheduleIntegrationPointRun(IntegrationPointTest integrationPoint)
+		{
+			JobTest job = CreateBasicJob(integrationPoint).Build();
+			return ScheduleJob(job);
+		}
+		
 		private JobBuilder CreateBasicJob()
 		{
-			WorkspaceTest workspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(HelperManager.WorkspaceHelper.SourceWorkspace);
+			return CreateBasicJob(integrationPoint);
+		}
 
-			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
-
+		private JobBuilder CreateBasicJob(IntegrationPointTest integrationPoint)
+		{
 			return new JobBuilder()
-				.WithWorkspace(workspace)
+				.WithWorkspace(HelperManager.WorkspaceHelper.SourceWorkspace)
 				.WithIntegrationPoint(integrationPoint);
 		}
 

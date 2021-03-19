@@ -6,9 +6,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 	{
 		private readonly InMemoryDatabase _db;
 		private readonly ProxyMock _proxy;
-
-		#region Helper Fields
-
+		
 		private WorkspaceHelper _workspaceHelper;
 
 		private AgentHelper _agentHelper;
@@ -17,8 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		private IntegrationPointHelper _integrationPointHelper;
 
-
-		#endregion
+		private JobHistoryHelper _jobHistoryHelper;
 
 		public HelperManager(InMemoryDatabase db, ProxyMock proxy)
 		{
@@ -33,5 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		public JobHelper JobHelper => _jobHelper ?? (_jobHelper = new JobHelper(this, _db, _proxy));
 
 		public IntegrationPointHelper IntegrationPointHelper => _integrationPointHelper ?? (_integrationPointHelper = new IntegrationPointHelper(this, _db, _proxy));
+
+		public JobHistoryHelper JobHistoryHelper => _jobHistoryHelper ?? (_jobHistoryHelper = new JobHistoryHelper(this, _db, _proxy));
 	}
 }

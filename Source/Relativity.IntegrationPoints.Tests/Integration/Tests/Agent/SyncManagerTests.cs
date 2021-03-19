@@ -1,4 +1,6 @@
 ﻿using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.ScheduleQueue.Core;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
@@ -18,7 +20,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void SyncManager_ShouldSplitJobIntoBatches()
 		{
 			// Arrange
+			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(HelperManager.WorkspaceHelper.SourceWorkspace);
+			JobTest job = HelperManager.JobHelper.ScheduleIntegrationPointRun(integrationPoint);
+			JobHistoryTest jobHistory = HelperManager.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+
 			SyncManager sut = PrepareSut();
+
+			// Act
+			sut.Execute(new Job(job.AsDataRow()));
 		}
 	}
 }

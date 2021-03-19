@@ -15,7 +15,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		{
 			var integrationPoint = new IntegrationPointTest
 			{
-				ArtifactId = Artifact.NextId(),
 				WorkspaceId = workspace.ArtifactId
 			};
 
@@ -26,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
-			foreach (var integrationPoint in Database.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
+			foreach (IntegrationPointTest integrationPoint in Database.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
 			{
 				Database.IntegrationPoints.Remove(integrationPoint);
 			}

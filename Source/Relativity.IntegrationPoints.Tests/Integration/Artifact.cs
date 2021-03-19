@@ -4,9 +4,6 @@
 	{
 		private static int _currentArtifactId = 100000;
 		
-		public static int NextId()
-		{
-			return ++_currentArtifactId;
-	}
+		public static int NextId() => ++_currentArtifactId;
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using kCura.ScheduleQueue.Core.Core;
+using Newtonsoft.Json;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -24,22 +25,29 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
 
+		public TaskParametersTest JobDetailsHelper { get; }
+
 		public JobTest()
 		{
 			JobId = Integration.JobId.Next;
 			AgentTypeID = Const.Agent._INTEGRATION_POINTS_AGENT_TYPE_ID;
+			JobDetailsHelper = new TaskParametersTest()
+			{
+				BatchInstance = Guid.NewGuid()
+			};
+			JobDetails = JsonConvert.SerializeObject(JobDetailsHelper);
 		}
 
-		public DataRow AsRow()
+		public DataRow AsDataRow()
 		{
-			return this.AsTable().Rows[0];
+			return AsTable().Rows[0];
 		}
 
 		public DataTable AsTable()
 		{
 			DataTable dt = DatabaseSchema.ScheduleQueueSchema();
 
-			var row = dt.NewRow();
+			DataRow row = dt.NewRow();
 
 			row["JobID"] = JobId;
 			row["RootJobID"] = (object)RootJobId ?? DBNull.Value;

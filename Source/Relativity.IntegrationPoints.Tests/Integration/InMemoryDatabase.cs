@@ -19,12 +19,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public ObservableCollection<IntegrationPointTest> IntegrationPoints { get; set; } = new ObservableCollection<IntegrationPointTest>();
 
+		public ObservableCollection<JobHistoryTest> JobHistory { get; set; } = new ObservableCollection<JobHistoryTest>();
+
 		public InMemoryDatabase(ProxyMock proxy)
 		{
 			_proxy = proxy;
 
 			SetupWorkspaces();
 			SetupIntegrationPoints();
+			SetupJobHistory();
 		}
 
 		public void Clear()
@@ -33,20 +36,34 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			JobsInQueue.Clear();
 			Workspaces.Clear();
 			IntegrationPoints.Clear();
+			JobHistory.Clear();
 		}
 
 		private void SetupWorkspaces()
 		{
 			Workspaces.CollectionChanged += (sender, args) =>
+			{
 				OnNewItemsAdded<WorkspaceTest>(sender, args,
-					(newItem) => _proxy.ObjectManager.SetupWorkspace(this, newItem));
+					(newItems) => _proxy.ObjectManager.SetupWorkspace(this, newItems));
+			};
 		}
 
 		private void SetupIntegrationPoints()
 		{
 			IntegrationPoints.CollectionChanged += (sender, args) =>
+			{
 				OnNewItemsAdded<IntegrationPointTest>(sender, args,
 					(newItems) => _proxy.ObjectManager.SetupIntegrationPoints(this, newItems));
+			};
+		}
+
+		private void SetupJobHistory()
+		{
+			JobHistory.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<JobHistoryTest>(sender, args, 
+					newItems => _proxy.ObjectManager.SetupJobHistory(this, newItems));
+			};
 		}
 
 		void OnNewItemsAdded<T>(object sender, NotifyCollectionChangedEventArgs e, Action<IEnumerable<T>> onAddFunc)

@@ -53,16 +53,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public IWindsorContainer Container { get; set; }
 
 		public HelperManager HelperManager { get; set; }
-
-		protected int SourceWorkspaceId { get; }
-
-		protected int DestinationWorkspaceId { get; }
-
+		
 		protected TestsBase()
 		{
-			SourceWorkspaceId = Artifact.NextId();
-			DestinationWorkspaceId = Artifact.NextId();
-
 			Proxy = new ProxyMock();
 
 			Database = new InMemoryDatabase(Proxy);
@@ -72,7 +65,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Context = new TestContext();
 
 			HelperManager = new HelperManager(Database, Proxy);
-
+			
 			SetupContainer();
 		}
 
@@ -88,7 +81,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices();
 			RegisterRipAgentTasks();
-
 		}
 
 		private void RegisterRelativityApiServices()
@@ -100,6 +92,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		private void RegisterRipServices()
 		{
+			int sourceWorkspaceArtifactId = HelperManager.WorkspaceHelper.SourceWorkspace.ArtifactId;
+
+			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
 			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
 			Container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>());
 			Container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>());
@@ -130,7 +125,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>());
 			Container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>());
 			Container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>()
-				.UsingFactoryMethod(c => new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), SourceWorkspaceId)));
+				.UsingFactoryMethod(c =>
+				{
+					return new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspaceArtifactId);
+				}));
 			Container.Register(Component.For<IIntegrationPointService>().ImplementedBy<IntegrationPointService>()
 				.UsingFactoryMethod(c => c.Resolve<IServiceFactory>().CreateIntegrationPointService(c.Resolve<IHelper>())));
 			Container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>()
@@ -139,7 +137,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				.UsingFactoryMethod(c =>
 				{
 					IRelativityObjectManagerFactory factory = c.Resolve<IRelativityObjectManagerFactory>();
-					return factory.CreateRelativityObjectManager(SourceWorkspaceId);
+					return factory.CreateRelativityObjectManager(sourceWorkspaceArtifactId);
 				}).LifestyleTransient());
 			Container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
 
@@ -149,7 +147,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>());
 
 			Container.Register(Component.For<IWorkspaceDBContext>().ImplementedBy<FakeWorkspaceDbContext>().UsingFactoryMethod(
-				c => new FakeWorkspaceDbContext(SourceWorkspaceId)));
+				c => new FakeWorkspaceDbContext(sourceWorkspaceArtifactId)));
 			Container.Register(Component.For<ISecretsRepository>().ImplementedBy<SecretsRepository>());
 			Container.Register(Component.For<ISecretStoreFacade>().ImplementedBy<SecretStoreFacade>());
 			Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()));
@@ -159,7 +157,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		private void RegisterFakeRipServices()
 		{
-			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
 			Container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<FakeProviderFactoryLifecycleStrategy>());
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>());
 			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>());
