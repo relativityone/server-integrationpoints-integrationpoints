@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs;
@@ -103,6 +104,15 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult()));
 
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					destinationWorkspaceArtifactId,
+					It.Is<QueryRequest>(q =>
+						q.ObjectType.Guid == SourceJobTagObjectType &&
+						q.Condition.Contains(jobArtifactId.ToString())),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
+
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
@@ -173,6 +183,15 @@ namespace Relativity.Sync.Tests.Integration
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
+
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					destinationWorkspaceArtifactId,
+					It.Is<QueryRequest>(q =>
+						q.ObjectType.Guid == SourceJobTagObjectType &&
+						q.Condition.Contains(jobArtifactId.ToString())),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
 				destinationWorkspaceArtifactId,
@@ -289,6 +308,15 @@ namespace Relativity.Sync.Tests.Integration
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject() { Name = destinationWorkspaceName } } }));
+
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					destinationWorkspaceArtifactId,
+					It.Is<QueryRequest>(q =>
+						q.ObjectType.Guid == SourceJobTagObjectType &&
+						q.Condition.Contains(jobArtifactId.ToString())),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
 				destinationWorkspaceArtifactId,
@@ -538,11 +566,29 @@ namespace Relativity.Sync.Tests.Integration
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult()));
 
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					destinationWorkspaceArtifactId,
+					It.Is<QueryRequest>(q =>
+						q.ObjectType.Guid == SourceJobTagObjectType &&
+						q.Condition.Contains(jobArtifactId.ToString())),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
+
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
 				It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
 			).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } })
 			).Verifiable();
+
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					destinationWorkspaceArtifactId,
+					It.Is<QueryRequest>(q =>
+						q.ObjectType.Guid == SourceJobTagObjectType &&
+						q.Condition.Contains(jobArtifactId.ToString())),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult() { TotalCount = 0 });
 
 			_objectManagerMock.Setup(x => x.QueryAsync(
 				sourceWorkspaceArtifactId,
@@ -599,6 +645,15 @@ namespace Relativity.Sync.Tests.Integration
 				CancellationToken.None,
 				It.IsAny<IProgress<ProgressReport>>())
 			).Returns(Task.FromResult(new QueryResult()));
+
+			_objectManagerMock.Setup(x => x.QueryAsync(
+					destinationWorkspaceArtifactId,
+					It.Is<QueryRequest>(q => 
+						q.ObjectType.Guid == SourceJobTagObjectType &&
+						q.Condition.Contains(jobArtifactId.ToString())),
+					It.IsAny<int>(),
+					It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult() {TotalCount = 0});
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
