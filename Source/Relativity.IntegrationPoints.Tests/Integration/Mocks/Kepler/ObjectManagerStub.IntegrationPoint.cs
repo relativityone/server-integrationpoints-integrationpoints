@@ -35,6 +35,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 						It.Is<RelativityObjectRef>(objectRef => objectRef.ArtifactID == integrationPoint.ArtifactId),
 						It.Is<FieldRef>(field => field.Guid == IntegrationPointTest.FieldsMappingGuid)))
 					.ReturnsAsync(new KeplerStream(new MemoryStream(Encoding.Unicode.GetBytes(integrationPoint.FieldMappings))));
+
+				Mock.Setup(x => x.UpdateAsync(integrationPoint.WorkspaceId, It.Is<UpdateRequest>(r =>
+					r.Object.ArtifactID == integrationPoint.ArtifactId))).ReturnsAsync(
+					new UpdateResult()
+					{
+						EventHandlerStatuses = new List<EventHandlerStatus>()
+					});
 		    }
 	    }
 	}

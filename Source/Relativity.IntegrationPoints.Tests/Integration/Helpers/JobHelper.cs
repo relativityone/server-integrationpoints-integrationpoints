@@ -9,6 +9,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class JobHelper : HelperBase
 	{
+		private const int _userId = 9;
+
 		public JobHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock)
 			: base(manager, database, proxyMock)
 		{
@@ -56,7 +58,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		{
 			return new JobBuilder()
 				.WithWorkspace(HelperManager.WorkspaceHelper.SourceWorkspace)
-				.WithIntegrationPoint(integrationPoint);
+				.WithIntegrationPoint(integrationPoint)
+				.WithSubmittedBy(_userId);
 		}
 
 		#region Verification

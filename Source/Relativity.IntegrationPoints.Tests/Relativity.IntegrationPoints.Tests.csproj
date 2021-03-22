@@ -60,8 +60,14 @@
     <Compile Include="Integration\Artifact.cs" />
     <Compile Include="Integration\Const.cs" />
     <Compile Include="Integration\DatabaseSchema.cs" />
+    <Compile Include="Integration\Helpers\DestinationProviderHelper.cs" />
+    <Compile Include="Integration\Helpers\IntegrationPointTypeHelper.cs" />
     <Compile Include="Integration\Helpers\JobHistoryHelper.cs" />
+    <Compile Include="Integration\Helpers\SourceProviderHelper.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.DestinationProvider.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPointType.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SourceProvider.cs" />
     <Compile Include="Integration\Mocks\Services\FakeBatchStatus.cs" />
     <Compile Include="Integration\Mocks\Services\FakeMessageService.cs" />
     <Compile Include="Integration\Mocks\Services\FakePermissionValidator.cs" />
@@ -70,7 +76,11 @@
     <Compile Include="Integration\Mocks\Services\FakeScratchTableRepository.cs" />
     <Compile Include="Integration\Mocks\Services\FakeValidator.cs" />
     <Compile Include="Integration\Mocks\Services\FakeWorkspaceDbContext.cs" />
+    <Compile Include="Integration\Models\DestinationProviderTest.cs" />
+    <Compile Include="Integration\Models\IntegrationPointTypeTest.cs" />
     <Compile Include="Integration\Models\JobHistoryTest.cs" />
+    <Compile Include="Integration\Models\RdoTestBase.cs" />
+    <Compile Include="Integration\Models\SourceProviderTest.cs" />
     <Compile Include="Integration\Models\TaskParametersTest.cs" />
     <Compile Include="Integration\Tests\Agent\SyncManagerTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\DrainStoppedJobsInScheduleQueueTests.cs" />

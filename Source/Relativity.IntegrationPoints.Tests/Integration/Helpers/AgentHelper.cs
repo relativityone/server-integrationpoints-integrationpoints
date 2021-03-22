@@ -16,8 +16,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			var agent = new AgentTest
 			{
 				ArtifactId = artifactId,
-				AgentTypeId = Const.Agent._INTEGRATION_POINTS_AGENT_TYPE_ID,
-				AgentGuid = Const.Agent._RELATIVITY_INTEGRATION_POINTS_AGENT_GUID,
+				AgentTypeId = Const.Agent.INTEGRATION_POINTS_AGENT_TYPE_ID,
+				AgentGuid = Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID,
 				FullNamespace = typeof(AgentTest).FullName,
 				Name = $"Integration Points Agent ({artifactId})"
 			};

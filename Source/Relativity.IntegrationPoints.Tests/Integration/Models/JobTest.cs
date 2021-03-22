@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public JobTest()
 		{
 			JobId = Integration.JobId.Next;
-			AgentTypeID = Const.Agent._INTEGRATION_POINTS_AGENT_TYPE_ID;
+			AgentTypeID = Const.Agent.INTEGRATION_POINTS_AGENT_TYPE_ID;
 			JobDetailsHelper = new TaskParametersTest()
 			{
 				BatchInstance = Guid.NewGuid()

@@ -15,7 +15,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		private IntegrationPointHelper _integrationPointHelper;
 
+		private IntegrationPointTypeHelper _integrationPointTypeHelper;
+
 		private JobHistoryHelper _jobHistoryHelper;
+
+		private SourceProviderHelper _sourceProviderHelper;
+
+		private DestinationProviderHelper _destinationProviderHelper;
 
 		public HelperManager(InMemoryDatabase db, ProxyMock proxy)
 		{
@@ -30,7 +36,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		public JobHelper JobHelper => _jobHelper ?? (_jobHelper = new JobHelper(this, _db, _proxy));
 
 		public IntegrationPointHelper IntegrationPointHelper => _integrationPointHelper ?? (_integrationPointHelper = new IntegrationPointHelper(this, _db, _proxy));
+		
+		public IntegrationPointTypeHelper IntegrationPointTypeHelper => _integrationPointTypeHelper ?? (_integrationPointTypeHelper = new IntegrationPointTypeHelper(this, _db, _proxy));
 
 		public JobHistoryHelper JobHistoryHelper => _jobHistoryHelper ?? (_jobHistoryHelper = new JobHistoryHelper(this, _db, _proxy));
+
+		public SourceProviderHelper SourceProviderHelper => _sourceProviderHelper ?? (_sourceProviderHelper = new SourceProviderHelper(this, _db, _proxy));
+
+		public DestinationProviderHelper DestinationProviderHelper => _destinationProviderHelper ?? (_destinationProviderHelper = new DestinationProviderHelper(this, _db, _proxy));
 	}
 }

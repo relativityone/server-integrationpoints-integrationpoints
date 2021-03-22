@@ -114,7 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>());
 			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
 			Container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().UsingFactoryMethod(c =>
-				new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueryManager>(), Const.Agent._RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
+				new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
 			Container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>());
 			Container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>());
 

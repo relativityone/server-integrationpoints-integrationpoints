@@ -5,14 +5,10 @@ using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public class JobHistoryTest
+	public class JobHistoryTest : RdoTestBase
 	{
 		public const string BatchInstanceFieldName = "Batch Instance";
-
-		public int ArtifactId { get; set; }
-
-		public int WorkspaceId { get; set; }
-
+		
 		public int[] Documents { get; set; }
 
 		public int[] IntegrationPoint { get; set; }
@@ -49,11 +45,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public JobHistoryTest()
 		{
-			ArtifactId = Artifact.NextId();
-			Name = $"Job History (Artifact ID {ArtifactId})";
+			Name = $"Job History";
 		}
 
-		public RelativityObject ToRelativityObject()
+		public override RelativityObject ToRelativityObject()
 		{
 			return new RelativityObject()
 			{

@@ -27,6 +27,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 						return Task.FromResult(result);
 					});
+
+				Mock.Setup(x => x.UpdateAsync(jobHistory.WorkspaceId, It.Is<UpdateRequest>(r =>
+						r.Object.ArtifactID == jobHistory.ArtifactId)))
+					.Returns((int workspaceId, UpdateRequest request) =>
+					{
+						UpdateResult result = new UpdateResult()
+						{
+							EventHandlerStatuses = new List<EventHandlerStatus>()
+						};
+						return Task.FromResult(result);
+					});
 			}
 		}
 	}

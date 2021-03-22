@@ -20,7 +20,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void SyncManager_ShouldSplitJobIntoBatches()
 		{
 			// Arrange
-			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(HelperManager.WorkspaceHelper.SourceWorkspace);
+			WorkspaceTest sourceWorkspace = HelperManager.WorkspaceHelper.SourceWorkspace;
+			SourceProviderTest sourceProvider = HelperManager.SourceProviderHelper.CreateSourceProvider(sourceWorkspace);
+			DestinationProviderTest destinationProviderTest = HelperManager.DestinationProviderHelper.CreateDestinationProvider(sourceWorkspace);
+			IntegrationPointTypeTest integrationPointType = HelperManager.IntegrationPointTypeHelper.CreateIntegrationPointType(sourceWorkspace);
+			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(sourceWorkspace);
+			integrationPoint.Type = integrationPointType.ArtifactId;
+			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+			integrationPoint.DestinationProvider = destinationProviderTest.ArtifactId;
+
 			JobTest job = HelperManager.JobHelper.ScheduleIntegrationPointRun(integrationPoint);
 			JobHistoryTest jobHistory = HelperManager.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 

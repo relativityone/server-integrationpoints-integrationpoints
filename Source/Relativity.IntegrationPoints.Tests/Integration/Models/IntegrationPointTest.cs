@@ -4,14 +4,10 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public class IntegrationPointTest
+	public class IntegrationPointTest : RdoTestBase
 	{
 		public static Guid FieldsMappingGuid { get; } = new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7");
-
-		public int ArtifactId { get; set; }
-
-		public int WorkspaceId { get; set; }
-
+		
 		public DateTime? NextScheduledRuntimeUTC { get; set; }
 
 		public DateTime? LastRuntimeUTC { get; set; }
@@ -20,9 +16,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public bool? EnableScheduler { get; set; }
 
-		public string SourceConfiguration { get; set; }
+		public string SourceConfiguration { get; set; } = "{}";
 
-		public string DestinationConfiguration { get; set; }
+		public string DestinationConfiguration { get; set; } = "{}";
 
 		public int? SourceProvider { get; set; }
 
@@ -50,11 +46,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public IntegrationPointTest()
 		{
-			ArtifactId = Integration.Artifact.NextId();
 			Name = $"Integration Point (Artifact ID {ArtifactId})";
 		}
 
-		public RelativityObject ToRelativityObject()
+		public override RelativityObject ToRelativityObject()
 		{
 			return new RelativityObject()
 			{

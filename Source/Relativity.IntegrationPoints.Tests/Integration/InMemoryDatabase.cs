@@ -19,7 +19,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public ObservableCollection<IntegrationPointTest> IntegrationPoints { get; set; } = new ObservableCollection<IntegrationPointTest>();
 
+		public ObservableCollection<IntegrationPointTypeTest> IntegrationPointTypes { get; set; } = new ObservableCollection<IntegrationPointTypeTest>();
+
 		public ObservableCollection<JobHistoryTest> JobHistory { get; set; } = new ObservableCollection<JobHistoryTest>();
+
+		public ObservableCollection<SourceProviderTest> SourceProviders { get; set; } = new ObservableCollection<SourceProviderTest>();
+
+		public ObservableCollection<DestinationProviderTest> DestinationProviders { get; set; } = new ObservableCollection<DestinationProviderTest>();
 
 		public InMemoryDatabase(ProxyMock proxy)
 		{
@@ -27,7 +33,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			SetupWorkspaces();
 			SetupIntegrationPoints();
+			SetupIntegrationPointTypes();
 			SetupJobHistory();
+			SetupSourceProviders();
+			SetupDestinationProviders();
 		}
 
 		public void Clear()
@@ -37,6 +46,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Workspaces.Clear();
 			IntegrationPoints.Clear();
 			JobHistory.Clear();
+			SourceProviders.Clear();
+			DestinationProviders.Clear();
 		}
 
 		private void SetupWorkspaces()
@@ -57,12 +68,39 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			};
 		}
 
+		private void SetupIntegrationPointTypes()
+		{
+			IntegrationPointTypes.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<IntegrationPointTypeTest>(sender, args,
+					(newItems) => _proxy.ObjectManager.SetupIntegrationPointTypes(this, newItems));
+			};
+		}
+
 		private void SetupJobHistory()
 		{
 			JobHistory.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<JobHistoryTest>(sender, args, 
 					newItems => _proxy.ObjectManager.SetupJobHistory(this, newItems));
+			};
+		}
+
+		private void SetupSourceProviders()
+		{
+			SourceProviders.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<SourceProviderTest>(sender, args,
+					newItems => _proxy.ObjectManager.SetupSourceProviders(this, newItems));
+			};
+		}
+
+		private void SetupDestinationProviders()
+		{
+			DestinationProviders.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<DestinationProviderTest>(sender, args,
+					newItems => _proxy.ObjectManager.SetupDestinationProviders(this, newItems));
 			};
 		}
 
