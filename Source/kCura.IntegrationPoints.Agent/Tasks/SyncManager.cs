@@ -439,7 +439,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					_jobStopManager?.ThrowIfStopRequested();
 
-					var result = _reader.GetString(0);
+					string result = _reader.GetString(0);
 					yield return result;
 				}
 				Dispose();

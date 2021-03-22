@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 	{
 		public IProviderFactory CreateProviderFactory(Guid applicationId)
 		{
-			throw new NotImplementedException();
+			return new FakeProviderFactory();
 		}
 
 		public void OnReleaseProviderFactory(Guid applicationId)

@@ -6,6 +6,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -67,6 +68,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			HelperManager = new HelperManager(Database, Proxy);
 			
 			SetupContainer();
+
+			SetupGlobalSettings();
+		}
+
+		private void SetupGlobalSettings()
+		{
+			Config.Instance.InstanceSettingsProvider = new FakeInstanceSettingsProvider();
 		}
 
 		public void SetupContainer()

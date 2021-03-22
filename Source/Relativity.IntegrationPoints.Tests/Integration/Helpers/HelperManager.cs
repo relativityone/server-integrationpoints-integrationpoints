@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			_db = db;
 			_proxy = proxy;
 		}
-
+		
 		public WorkspaceHelper WorkspaceHelper => _workspaceHelper ?? (_workspaceHelper = new WorkspaceHelper(this, _db, _proxy));
 
 		public AgentHelper AgentHelper => _agentHelper ?? (_agentHelper = new AgentHelper(this, _db, _proxy));

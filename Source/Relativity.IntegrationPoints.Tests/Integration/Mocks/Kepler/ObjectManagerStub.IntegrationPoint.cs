@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -29,12 +28,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 							return Task.FromResult(result);
 						}
 					);
-
+				
 				Mock.Setup(x => x.StreamLongTextAsync(
 						integrationPoint.WorkspaceId,
 						It.Is<RelativityObjectRef>(objectRef => objectRef.ArtifactID == integrationPoint.ArtifactId),
 						It.Is<FieldRef>(field => field.Guid == IntegrationPointTest.FieldsMappingGuid)))
-					.ReturnsAsync(new KeplerStream(new MemoryStream(Encoding.Unicode.GetBytes(integrationPoint.FieldMappings))));
+					.ReturnsAsync(new KeplerResponseStream(new HttpResponseMessage(HttpStatusCode.OK)
+					{
+						Content = new StringContent(integrationPoint.FieldMappings)
+					}));
 
 				Mock.Setup(x => x.UpdateAsync(integrationPoint.WorkspaceId, It.Is<UpdateRequest>(r =>
 					r.Object.ArtifactID == integrationPoint.ArtifactId))).ReturnsAsync(

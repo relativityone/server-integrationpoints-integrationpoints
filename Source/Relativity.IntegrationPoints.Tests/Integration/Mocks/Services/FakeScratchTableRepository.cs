@@ -62,7 +62,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public string GetResourceDBPrepend()
 		{
-			throw new System.NotImplementedException();
+			return "FAKE";
 		}
 
 		public void Dispose()

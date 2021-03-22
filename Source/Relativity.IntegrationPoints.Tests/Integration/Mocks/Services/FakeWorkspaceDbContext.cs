@@ -33,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public int ExecuteNonQuerySQLStatement(string sqlStatement, IEnumerable<SqlParameter> parameters)
 		{
-			throw new System.NotImplementedException();
+			return 0;
 		}
 
 		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement)
