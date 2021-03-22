@@ -5,8 +5,8 @@ source https://proget.kcura.corp/nuget/NuGet
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.0.5
-nuget Relativity.IntegrationPoints.Contracts 1.0.7
-nuget Relativity.IntegrationPoints.SDK 1.0.7
+nuget Relativity.IntegrationPoints.Contracts 1.0.8
+nuget Relativity.IntegrationPoints.SDK 1.0.8
 
 //Main Relativity packages
 nuget kCura 13.1.0
