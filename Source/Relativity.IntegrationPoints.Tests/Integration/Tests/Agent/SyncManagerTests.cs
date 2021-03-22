@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.ScheduleQueue.Core;
+using Newtonsoft.Json.Linq;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 
@@ -17,22 +21,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			WorkspaceTest sourceWorkspace = HelperManager.WorkspaceHelper.SourceWorkspace;
-			SourceProviderTest sourceProvider = HelperManager.SourceProviderHelper.CreateSourceProvider(sourceWorkspace);
-			DestinationProviderTest destinationProviderTest = HelperManager.DestinationProviderHelper.CreateDestinationProvider(sourceWorkspace);
-			IntegrationPointTypeTest integrationPointType = HelperManager.IntegrationPointTypeHelper.CreateIntegrationPointType(sourceWorkspace);
-
-			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(sourceWorkspace);
-			integrationPoint.Type = integrationPointType.ArtifactId;
-			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
-			integrationPoint.DestinationProvider = destinationProviderTest.ArtifactId;
+			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateIntegrationPointWithFakeProviders(sourceWorkspace);
 			
 			JobTest job = HelperManager.JobHelper.ScheduleIntegrationPointRun(integrationPoint);
 			HelperManager.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 			return job;
 		}
 
-		private SyncManager PrepareSut()
+		private SyncManager PrepareSut(int numberOfRecords)
 		{
+			Container.Register(Component.For<IDataReader>().UsingFactoryMethod(c => new FakeDataReader(numberOfRecords)));
 			SyncManager sut = Container.Resolve<SyncManager>();
 			return sut;
 		}
@@ -41,15 +39,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void SyncManager_ShouldSplitJobIntoBatches()
 		{
 			// Arrange
+			const int numberOfRecords = 1500;
+			const int expectedNumberOfSyncWorkersJobs = 2;
 			JobTest job = PrepareJob();
-			SyncManager sut = PrepareSut();
+			SyncManager sut = PrepareSut(numberOfRecords);
 
 			// Act
 			sut.Execute(new Job(job.AsDataRow()));
 
 			// Assert
-			List<JobTest> batchTasks = Database.JobsInQueue.Where(x => x.TaskType == "SyncWorker").ToList();
-			batchTasks.Count.Should().Be(2);
+			List<JobTest> syncWorkerJobs = Database.JobsInQueue.Where(x => x.TaskType == "SyncWorker").ToList();
+			syncWorkerJobs.Count.Should().Be(expectedNumberOfSyncWorkersJobs);
+			AssertNumberOfRecords(syncWorkerJobs[0], 1000);
+			AssertNumberOfRecords(syncWorkerJobs[1], 500);
+		}
+
+		private void AssertNumberOfRecords(JobTest job, int numberOfRecords)
+		{
+			JArray records = JArray.FromObject(JObject.Parse(job.JobDetails)["BatchParameters"]);
+			records.Count.Should().Be(numberOfRecords);
 		}
 	}
 }

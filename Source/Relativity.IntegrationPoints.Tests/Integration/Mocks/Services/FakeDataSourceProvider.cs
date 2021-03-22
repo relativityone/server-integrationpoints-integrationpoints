@@ -7,6 +7,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
 	public class FakeDataSourceProvider : IDataSourceProvider
 	{
+		private readonly IDataReader _dataReader;
+
+		public FakeDataSourceProvider(IDataReader dataReader)
+		{
+			_dataReader = dataReader;
+		}
+
 		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
 		{
 			throw new System.NotImplementedException();
@@ -19,7 +26,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
 		{
-			return new FakeDataReader();
+			return _dataReader;
 		}
 	}
 }

@@ -5,8 +5,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
 	public class FakeDataReader : IDataReader
 	{
+		private readonly int _numberOfRecords;
+
 		private int _currentItem = 0;
-		private const int _numberOfRecords = 1500;
+
+		public FakeDataReader(int numberOfRecords)
+		{
+			_numberOfRecords = numberOfRecords;
+		}
 
 		public int Depth { get; }
 
@@ -149,8 +155,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 		{
 			return ++_currentItem <= _numberOfRecords;
 		}
-
-
+		
 		public void Dispose()
 		{
 

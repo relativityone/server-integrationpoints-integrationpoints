@@ -35,6 +35,8 @@ using kCura.ScheduleQueue.Core.Services;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
@@ -165,6 +167,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		private void RegisterFakeRipServices()
 		{
+			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<FakeDataSourceProvider>());
+			Container.Register(Component.For<IProviderFactory>().ImplementedBy<FakeProviderFactory>());
 			Container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<FakeProviderFactoryLifecycleStrategy>());
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>());
 			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>());
