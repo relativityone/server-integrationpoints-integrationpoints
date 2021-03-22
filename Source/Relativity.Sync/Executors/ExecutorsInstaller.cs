@@ -37,8 +37,11 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 
-			builder.RegisterType<JobStartMetricsExecutorConstrains>().As<IExecutionConstrains<ISumReporterConfiguration>>();
-			builder.RegisterType<JobStartMetricsExecutor>().As<IExecutor<ISumReporterConfiguration>>();
+			builder.RegisterType<DocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IDocumentJobStartMetricsConfiguration>>();
+			builder.RegisterType<DocumentJobStartMetricsExecutor>().As<IExecutor<IDocumentJobStartMetricsConfiguration>>();
+			builder.RegisterType<ImageJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IImageJobStartMetricsConfiguration>>();
+			builder.RegisterType<ImageJobStartMetricsExecutor>().As<IExecutor<IImageJobStartMetricsConfiguration>>();
+
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
@@ -53,17 +56,13 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<PermissionCheckExecutor>().As<IExecutor<IPermissionsCheckConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutor>().As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
-			
-			builder.RegisterType<DocumentDataSourceSnapshotExecutor>().As<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<DocumentRetryDataSourceSnapshotExecutor>().As<IExecutor<IDocumentRetryDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageDataSourceSnapshotExecutor>().As<IExecutor<IImageDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageRetryDataSourceSnapshotExecutor>().As<IExecutor<IImageRetryDataSourceSnapshotConfiguration>>();
 
-			builder.RegisterType<DocumentDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDocumentDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<DocumentRetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDocumentRetryDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IImageDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageRetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IImageRetryDataSourceSnapshotConfiguration>>();
-			
+			builder.RegisterType<DataSourceSnapshotExecutor>().As<IExecutor<IDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<RetryDataSourceSnapshotExecutor>().As<IExecutor<IRetryDataSourceSnapshotConfiguration>>();
+
+			builder.RegisterType<DataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<RetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IRetryDataSourceSnapshotConfiguration>>();
+
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			

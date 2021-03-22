@@ -15,10 +15,11 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<PermissionsCheckConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SnapshotPartitionConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<DocumentDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<DocumentRetryDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<ImageDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<ImageRetryDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<ImageJobStartMetricsConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<RetryDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<SnapshotQueryConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<FieldConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ImageRetrieveConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationConfiguration>().AsImplementedInterfaces();

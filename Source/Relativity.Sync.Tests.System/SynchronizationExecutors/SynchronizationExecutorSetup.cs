@@ -181,21 +181,12 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			return this;
 		}
 
-		public SynchronizationExecutorSetup ExecuteDocumentPreSynchronizationExecutors()
+		public SynchronizationExecutorSetup ExecutePreSynchronizationExecutors()
 		{
 			return this
 				.SetDestinationWorkspaceTagArtifactId()
 				.CreateSourceTagsInDestinationWorkspace()
-				.CreateDocumentDataSourceSnapshot()
-				.PartitionDataSourceSnapshot();
-		}
-
-		public SynchronizationExecutorSetup ExecuteImagePreSynchronizationExecutors()
-		{
-			return this
-				.SetDestinationWorkspaceTagArtifactId()
-				.CreateSourceTagsInDestinationWorkspace()
-				.CreateImageDataSourceSnapshot()
+				.CreateDataSourceSnapshot()
 				.PartitionDataSourceSnapshot();
 		}
 
@@ -252,21 +243,9 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			return this;
 		}
 
-		private SynchronizationExecutorSetup CreateDocumentDataSourceSnapshot()
+		private SynchronizationExecutorSetup CreateDataSourceSnapshot()
 		{
-			IExecutor<IDocumentDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
-
-			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
-				.GetAwaiter().GetResult();
-
-			Assert.AreEqual(ExecutionStatus.Completed, dataSourceSnapshotExecutorResult.Status);
-
-			return this;
-		}
-
-		private SynchronizationExecutorSetup CreateImageDataSourceSnapshot()
-		{
-			IExecutor<IImageDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
+			IExecutor<IDataSourceSnapshotConfiguration> dataSourceSnapshotExecutor = Container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 
 			ExecutionResult dataSourceSnapshotExecutorResult = dataSourceSnapshotExecutor.ExecuteAsync(Configuration, CompositeCancellationToken.None)
 				.GetAwaiter().GetResult();

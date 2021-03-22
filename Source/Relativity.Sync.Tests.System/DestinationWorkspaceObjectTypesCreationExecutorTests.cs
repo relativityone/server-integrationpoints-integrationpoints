@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
-			_sourceWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
@@ -49,6 +49,9 @@ namespace Relativity.Sync.Tests.System
 				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
+
+			configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+				configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceObjectTypesCreationConfiguration>(configuration);

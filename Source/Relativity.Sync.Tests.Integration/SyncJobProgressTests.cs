@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Integration
 			// ASSERT
 			string[] multiNodeChildIds =
 			{
-				_container.ResolveNode<ISumReporterConfiguration>().Id,
+				_container.ResolveNode<IDocumentJobStartMetricsConfiguration>().Id,
 				_container.ResolveNode<IDestinationWorkspaceTagsCreationConfiguration>().Id,
 				_container.ResolveNode<ISourceWorkspaceTagsCreationConfiguration>().Id,
 				_container.ResolveNode<IDataDestinationInitializationConfiguration>().Id

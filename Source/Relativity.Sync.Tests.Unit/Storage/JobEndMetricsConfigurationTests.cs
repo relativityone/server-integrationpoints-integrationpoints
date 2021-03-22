@@ -1,12 +1,7 @@
 ﻿using FluentAssertions;
-using Moq;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
-using System;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
-using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {

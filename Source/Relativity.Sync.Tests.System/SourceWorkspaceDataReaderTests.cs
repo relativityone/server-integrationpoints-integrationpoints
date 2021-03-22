@@ -109,8 +109,8 @@ namespace Relativity.Sync.Tests.System
 			IContainer container = ContainerHelper.Create(configuration);
 
 			// Create snapshot
-			IExecutor<IDocumentDataSourceSnapshotConfiguration> executor =
-				container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
+			IExecutor<IDataSourceSnapshotConfiguration> executor =
+				container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 			ExecutionResult result =
 				await executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -234,7 +234,7 @@ namespace Relativity.Sync.Tests.System
 			IContainer container = ContainerHelper.Create(configuration);
 
 			// Create snapshot
-			IExecutor<IImageDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
+			IExecutor<IDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 			ExecutionResult result = await executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 

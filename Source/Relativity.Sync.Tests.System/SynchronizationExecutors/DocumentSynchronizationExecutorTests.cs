@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 				.ImportData(dataSet, true, true)
 				.SetupDocumentConfiguration(identifierFieldMap, batchSize: batchSize, totalRecordsCount: totalRecordsCount)
 				.SetupContainer()
-				.ExecuteDocumentPreSynchronizationExecutors();
+				.ExecutePreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 				.ImportMetadata(DataTableFactory.GenerateDocumentWithUserField())
 				.SetupDocumentConfiguration(UserFieldMap)
 				.SetupContainer()
-				.ExecuteDocumentPreSynchronizationExecutors();
+				.ExecutePreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 				.SetupDocumentConfiguration(identifierFieldMap, batchSize: _BATCH_SIZE)
 				.SetupContainer()
 				.SetDocumentTracking()
-				.ExecuteDocumentPreSynchronizationExecutors();
+				.ExecutePreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -117,7 +117,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 				.SetupDocumentConfiguration(identifierFieldMap)
 				.SetupContainer()
 				.SetSupportedByViewer()
-				.ExecuteDocumentPreSynchronizationExecutors();
+				.ExecutePreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
