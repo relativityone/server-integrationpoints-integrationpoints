@@ -43,6 +43,8 @@ namespace Relativity.IntegrationPoints.Tests.Unit.RelativitySync.RdoCleanup
 			_servicesMgrMock.Setup(x => x.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System)).Returns(_objectTypeManager.Object);
 			_servicesMgrMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(_objectManager.Object);
 
+			_objectManager.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByCriteriaRequest>())).ReturnsAsync(new MassDeleteResult());
+
 			_loggerFake = new Mock<IAPILog>();
 			_sut = new SyncRdoCleanupService(_servicesMgrMock.Object, _loggerFake.Object);
 		}
@@ -71,6 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Unit.RelativitySync.RdoCleanup
 			const int progressObjectTypeId = 222;
 			const int batchObjectTypeId = 222;
 			const int configurationObjectTypeId = 222;
+
 			_artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(progressObjectTypeId);
 			_artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(batchObjectTypeId);
 			_artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(configurationObjectTypeId);

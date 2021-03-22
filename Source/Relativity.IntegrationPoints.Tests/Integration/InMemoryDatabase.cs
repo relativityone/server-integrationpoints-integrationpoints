@@ -45,6 +45,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			JobsInQueue.Clear();
 			Workspaces.Clear();
 			IntegrationPoints.Clear();
+			IntegrationPointTypes.Clear();
 			JobHistory.Clear();
 			SourceProviders.Clear();
 			DestinationProviders.Clear();

@@ -23,9 +23,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return job;
 		}
 
-		public JobTest ScheduleBasicJob(DateTime? nextRunTime = null)
+		public JobTest ScheduleBasicJob(WorkspaceTest workspace, DateTime? nextRunTime = null)
 		{
-			JobTest job = CreateBasicJob()
+			JobTest job = CreateBasicJob(workspace)
 				.Build();
 
 			job.NextRunTime = nextRunTime ?? DateTime.UtcNow;
@@ -33,31 +33,31 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return ScheduleJob(job);
 		}
 
-		public JobTest ScheduleJobWithScheduleRule(ScheduleRuleTest rule)
+		public JobTest ScheduleJobWithScheduleRule(WorkspaceTest workspace, ScheduleRuleTest rule)
 		{
-			JobTest job = CreateBasicJob()
+			JobTest job = CreateBasicJob(workspace)
 				.WithScheduleRule(rule)
 				.Build();
 
 			return ScheduleJob(job);
 		}
 
-		public JobTest ScheduleIntegrationPointRun(IntegrationPointTest integrationPoint)
+		public JobTest ScheduleIntegrationPointRun(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
 		{
-			JobTest job = CreateBasicJob(integrationPoint).Build();
+			JobTest job = CreateBasicJob(workspace, integrationPoint).Build();
 			return ScheduleJob(job);
 		}
 		
-		private JobBuilder CreateBasicJob()
+		private JobBuilder CreateBasicJob(WorkspaceTest workspace)
 		{
-			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(HelperManager.WorkspaceHelper.SourceWorkspace);
-			return CreateBasicJob(integrationPoint);
+			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
+			return CreateBasicJob(workspace, integrationPoint);
 		}
 
-		private JobBuilder CreateBasicJob(IntegrationPointTest integrationPoint)
+		private JobBuilder CreateBasicJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
 		{
 			return new JobBuilder()
-				.WithWorkspace(HelperManager.WorkspaceHelper.SourceWorkspace)
+				.WithWorkspace(workspace)
 				.WithIntegrationPoint(integrationPoint)
 				.WithSubmittedBy(_userId);
 		}

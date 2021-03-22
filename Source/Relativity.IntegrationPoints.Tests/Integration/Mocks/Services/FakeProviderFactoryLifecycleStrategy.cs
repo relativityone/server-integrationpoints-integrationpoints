@@ -20,7 +20,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public void OnReleaseProviderFactory(Guid applicationId)
 		{
-			throw new NotImplementedException();
 		}
 	}
 }
