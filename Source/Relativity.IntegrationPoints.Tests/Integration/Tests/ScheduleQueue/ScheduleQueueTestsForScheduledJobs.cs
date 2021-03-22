@@ -66,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddMonths(1);
 
-			DateTime expectedNextRunTime = GetNextWeekDay(startDateTime, DayOfWeek.Monday);
+			DateTime expectedNextRunTime = GetNextWeekDay(startDateTime);
 
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateWeeklyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, DaysOfWeek.Monday);
 			JobTest job = PrepareJob(rule);
@@ -109,7 +109,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			return HelperManager.JobHelper.ScheduleJobWithScheduleRule(SourceWorkspace, rule);
 		}
 
-		private DateTime GetNextWeekDay(DateTime dateTime, DayOfWeek dayOfWeek)
+		private DateTime GetNextWeekDay(DateTime dateTime)
 		{
 			DateTime newDateTime = dateTime.AddDays(7);
 			DateTime result = new DateTime(newDateTime.Year, newDateTime.Month, newDateTime.Day, 12, 0, 0);
