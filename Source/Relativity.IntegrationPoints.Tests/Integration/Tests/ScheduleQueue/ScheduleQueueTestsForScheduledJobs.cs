@@ -111,8 +111,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 		private DateTime GetNextWeekDay(DateTime dateTime, DayOfWeek dayOfWeek)
 		{
-			int daysToAdd = ((int)dayOfWeek - (int)dateTime.DayOfWeek + 7) % 7;
-			return dateTime.AddDays(daysToAdd);
+			DateTime newDateTime = dateTime.AddDays(7);
+			DateTime result = new DateTime(newDateTime.Year, newDateTime.Month, newDateTime.Day, 12, 0, 0);
+			return result;
 		}
 
 		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
