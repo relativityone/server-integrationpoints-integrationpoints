@@ -2,6 +2,7 @@
 using FluentAssertions;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -58,6 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		}
 
 		[IdentifiedTest("8A840DD4-C9F6-4D83-8762-5F6A62D22074")]
+		[Ignore("REL-538685")]
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithWeeklyInterval()
 		{
 			// Arrange
