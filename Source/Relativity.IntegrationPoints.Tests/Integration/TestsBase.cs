@@ -71,7 +71,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			Context = new TestContext();
 
-			HelperManager = new HelperManager(Database, Proxy);
+			HelperManager = new HelperManager(Database, Proxy, Context);
 
 			SetupGlobalSettings();
 

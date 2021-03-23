@@ -6,7 +6,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 	{
 		private readonly InMemoryDatabase _db;
 		private readonly ProxyMock _proxy;
-		
+
 		private WorkspaceHelper _workspaceHelper;
 
 		private AgentHelper _agentHelper;
@@ -23,11 +23,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		private DestinationProviderHelper _destinationProviderHelper;
 
-		public HelperManager(InMemoryDatabase db, ProxyMock proxy)
+		public HelperManager(InMemoryDatabase db, ProxyMock proxy, TestContext testContext)
 		{
 			_db = db;
 			_proxy = proxy;
+			TestContext = testContext;
 		}
+
+		public TestContext TestContext { get; }
 		
 		public WorkspaceHelper WorkspaceHelper => _workspaceHelper ?? (_workspaceHelper = new WorkspaceHelper(this, _db, _proxy));
 
