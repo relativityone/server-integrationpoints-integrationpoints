@@ -7,6 +7,7 @@ Microsoft.AspNet.SignalR.Core
 Microsoft.AspNet.Web.Optimization
 Microsoft.AspNet.WebApi.WebHost
 Microsoft.Owin.Host.SystemWeb
+Microsoft.Owin.Security
 Relativity
 Relativity.API
 Relativity.CustomPages

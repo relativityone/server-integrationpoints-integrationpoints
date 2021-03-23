@@ -29,24 +29,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly Lazy<IExternalServiceInstrumentationProvider> _instrumentationProvider;
 
 		public RepositoryFactory(IHelper helper, IServicesMgr destinationServiceMgr)
-			: this(helper, destinationServiceMgr, CreateRelativityObjectManagerFactory(helper), CreateInstrumentationProvider(helper))
-		{
-		}
-
-
-		private RepositoryFactory(
-			IHelper helper,
-			IServicesMgr destinationServiceMgr,
-			Lazy<IRelativityObjectManagerFactory> objectManagerFactory,
-			Lazy<IExternalServiceInstrumentationProvider> instrumentationProvider)
 		{
 			_helper = helper;
 			_destinationServiceMgr = destinationServiceMgr;
 			_sourceServiceMgr = _helper.GetServicesManager(); //TODO: it's on our wall of shame
-			_objectManagerFactory = objectManagerFactory;
-			_instrumentationProvider = instrumentationProvider;
+			_objectManagerFactory = CreateRelativityObjectManagerFactory(helper);
+			_instrumentationProvider = CreateInstrumentationProvider(helper);
 		}
-
+		
 		private IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
 		private IExternalServiceInstrumentationProvider InstrumentationProvider => _instrumentationProvider.Value;
 

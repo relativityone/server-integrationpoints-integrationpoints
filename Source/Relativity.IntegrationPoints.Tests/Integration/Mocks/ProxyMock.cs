@@ -8,8 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public ObjectManagerStub ObjectManager { get; }
 
 		public WorkspaceManagerStub WorkspaceManager { get; }
-
-
+		
 		public ProxyMock()
 		{
 			ObjectManager = new ObjectManagerStub();

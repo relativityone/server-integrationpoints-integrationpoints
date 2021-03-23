@@ -4,7 +4,6 @@ kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 kCura.OutsideIn.FI.Win32
-Relativity.Authentication
 Relativity.DataExchange.Client.SDK
 Relativity.Data
 Relativity.DataTransfer.MessageService

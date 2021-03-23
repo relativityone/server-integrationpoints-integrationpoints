@@ -9,7 +9,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
 	public class JobHelper : HelperBase
 	{
-		public JobHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock) : base(manager, database, proxyMock)
+		public JobHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock)
+			: base(manager, database, proxyMock)
 		{
 		}
 
@@ -20,9 +21,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return job;
 		}
 
-		public JobTest ScheduleBasicJob(DateTime? nextRunTime = null)
+		public JobTest ScheduleBasicJob(WorkspaceTest workspace, DateTime? nextRunTime = null)
 		{
-			var job = CreateBasicJob()
+			JobTest job = CreateBasicJob(workspace)
 				.Build();
 
 			job.NextRunTime = nextRunTime ?? DateTime.UtcNow;
@@ -30,24 +31,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return ScheduleJob(job);
 		}
 
-		public JobTest ScheduleJobWithScheduleRule(ScheduleRuleTest rule)
+		public JobTest ScheduleJobWithScheduleRule(WorkspaceTest workspace, ScheduleRuleTest rule)
 		{
-			JobTest job = CreateBasicJob()
+			JobTest job = CreateBasicJob(workspace)
 				.WithScheduleRule(rule)
 				.Build();
 
 			return ScheduleJob(job);
 		}
 
-		private JobBuilder CreateBasicJob()
+		public JobTest ScheduleIntegrationPointRun(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
 		{
-			WorkspaceTest workspace = HelperManager.WorkspaceHelper.CreateWorkspace();
-
+			JobTest job = CreateBasicJob(workspace, integrationPoint).Build();
+			return ScheduleJob(job);
+		}
+		
+		private JobBuilder CreateBasicJob(WorkspaceTest workspace)
+		{
 			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
+			return CreateBasicJob(workspace, integrationPoint);
+		}
 
+		private JobBuilder CreateBasicJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
+		{
 			return new JobBuilder()
 				.WithWorkspace(workspace)
-				.WithIntegrationPoint(integrationPoint);
+				.WithIntegrationPoint(integrationPoint)
+				.WithSubmittedBy(HelperManager.TestContext.UserId);
 		}
 
 		#region Verification

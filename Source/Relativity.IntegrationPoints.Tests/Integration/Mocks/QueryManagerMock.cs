@@ -162,7 +162,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			var dataTable = DatabaseSchema.AgentSchema();
 
-			_db.JobsInQueue.ForEach(x => dataTable.ImportRow(x.AsRow()));
+			_db.JobsInQueue.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
@@ -189,7 +189,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 				taskTypes.Contains(x.TaskType));
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsRow()));
+			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
@@ -199,7 +199,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var jobs = _db.JobsInQueue.Where(x => x.RelatedObjectArtifactID == integrationPointId);
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsRow()));
+			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
@@ -209,7 +209,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var jobs = _db.JobsInQueue.Where(x => x.JobId == jobId);
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsRow()));
+			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}

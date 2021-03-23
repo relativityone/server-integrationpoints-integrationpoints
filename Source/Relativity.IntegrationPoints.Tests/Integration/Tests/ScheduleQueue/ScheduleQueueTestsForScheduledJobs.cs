@@ -2,6 +2,7 @@
 using FluentAssertions;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -17,15 +18,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Job_ShouldNotBePushedToTheQueueAfterRun_WhenScheduledNextRunExceedsEndDate()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime;
 
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
-			HelperManager.JobHelper.ScheduleJobWithScheduleRule(rule);
+			PrepareJob(rule);
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -38,7 +39,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithDailyInterval()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddDays(2);
@@ -46,9 +47,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			DateTime expectedNextRunTime = startDateTime.AddDays(1);
 
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
-			var job = HelperManager.JobHelper.ScheduleJobWithScheduleRule(rule);
+			JobTest job = PrepareJob(rule);
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -58,20 +59,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		}
 
 		[IdentifiedTest("8A840DD4-C9F6-4D83-8762-5F6A62D22074")]
+		[Ignore("REL-538685")]
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithWeeklyInterval()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddMonths(1);
 
-			DateTime expectedNextRunTime = GetNextWeekDay(startDateTime, DayOfWeek.Monday);
+			DateTime expectedNextRunTime = GetNextWeekDay(startDateTime);
 
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateWeeklyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, DaysOfWeek.Monday);
-			var job = HelperManager.JobHelper.ScheduleJobWithScheduleRule(rule);
+			JobTest job = PrepareJob(rule);
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -84,7 +86,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithMonthlyInterval()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddMonths(3);
@@ -93,9 +95,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateMonthlyRule(startDateTime, endDateTime, 
 				TimeZoneInfo.Utc, dayOfMonth: 1);
-			var job = HelperManager.JobHelper.ScheduleJobWithScheduleRule(rule);
+			JobTest job = PrepareJob(rule);
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -104,10 +106,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
-		private DateTime GetNextWeekDay(DateTime dateTime, DayOfWeek dayOfWeek)
+		private JobTest PrepareJob(ScheduleRuleTest rule)
 		{
-			int daysToAdd = ((int)dayOfWeek - (int)dateTime.DayOfWeek + 7) % 7;
-			return dateTime.AddDays(daysToAdd);
+			return HelperManager.JobHelper.ScheduleJobWithScheduleRule(SourceWorkspace, rule);
+		}
+
+		private DateTime GetNextWeekDay(DateTime dateTime)
+		{
+			DateTime newDateTime = dateTime.AddDays(7);
+			DateTime result = new DateTime(newDateTime.Year, newDateTime.Month, newDateTime.Day, 12, 0, 0);
+			return result;
 		}
 
 		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)

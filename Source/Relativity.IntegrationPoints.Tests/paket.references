@@ -1,6 +1,11 @@
-﻿Relativity
+﻿kCura.Apps.Common.Config
+Relativity
+Relativity.Kepler.Client
+	alias Relativity.Services.ServiceProxy.dll ServiceProxy
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
+Relativity.DataTransfer.MessageService
+Relativity.IntegrationPoints.Contracts
 
 Moq
 FluentAssertions

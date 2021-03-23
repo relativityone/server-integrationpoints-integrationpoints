@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public ILogFactory GetLoggerFactory()
 		{
 			var loggerFactory = new Mock<ILogFactory>();
-			loggerFactory.Setup(x => x.GetLogger()).Returns(new EmptyLogger());
+			loggerFactory.Setup(x => x.GetLogger()).Returns(new ConsoleLogger());
 
 			return loggerFactory.Object;
 		}

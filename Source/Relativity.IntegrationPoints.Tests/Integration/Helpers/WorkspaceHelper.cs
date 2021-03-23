@@ -7,7 +7,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 	public class WorkspaceHelper : HelperBase
 	{
 		public WorkspaceHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxy) : base(manager, database, proxy)
-		{ }
+		{
+		}
 
 		public WorkspaceTest CreateWorkspace()
 		{

@@ -23,6 +23,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return this;
 		}
 
+		public JobBuilder WithSubmittedBy(int userId)
+		{
+			_job.SubmittedBy = userId;
+
+			return this;
+		}
+
 		public JobBuilder WithWorkspace(WorkspaceTest workspace)
 		{
 			_job.WorkspaceID = workspace.ArtifactId;

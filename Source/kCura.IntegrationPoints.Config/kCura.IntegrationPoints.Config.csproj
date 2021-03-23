@@ -53,6 +53,8 @@
     </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="ConfigBase.cs" />
+    <Compile Include="DefaultInstanceSettingsProvider.cs" />
+    <Compile Include="IInstanceSettingsProvider.cs" />
     <Compile Include="WebApiConfig.cs" />
     <Compile Include="IConfig.cs" />
     <Compile Include="IWebApiConfig.cs" />

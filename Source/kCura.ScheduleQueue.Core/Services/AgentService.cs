@@ -7,8 +7,10 @@ namespace kCura.ScheduleQueue.Core.Services
 {
 	public class AgentService : IAgentService
 	{
-		private readonly IQueryManager _queryManager;
 		private bool _creationOfQTableHasRun;
+		private AgentTypeInformation _agentTypeInformation;
+
+		private readonly IQueryManager _queryManager;
 		private readonly IAPILog _logger;
 
 		public AgentService(IHelper dbHelper, IQueryManager queryManager, Guid agentGuid)
@@ -20,7 +22,6 @@ namespace kCura.ScheduleQueue.Core.Services
 		}
 
 		public Guid AgentGuid { get; }
-		private AgentTypeInformation _agentTypeInformation;
 
 		public AgentTypeInformation AgentTypeInformation => _agentTypeInformation ?? (_agentTypeInformation = GetAgentTypeInformation());
 

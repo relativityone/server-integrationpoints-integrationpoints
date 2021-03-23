@@ -55,7 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		protected override IEnumerable<int> GetListOfResourceGroupIDs()
 		{
-			return Const.Agent._RESOURCE_GROUP_IDS;
+			return Const.Agent.RESOURCE_GROUP_IDS;
 		}
 
 		public override string Name { get; }

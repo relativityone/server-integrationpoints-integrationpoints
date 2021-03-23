@@ -15,7 +15,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		{
 			var integrationPoint = new IntegrationPointTest
 			{
-				ArtifactId = Artifact.NextId(),
 				WorkspaceId = workspace.ArtifactId
 			};
 
@@ -24,9 +23,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return integrationPoint;
 		}
 
+		public IntegrationPointTest CreateIntegrationPointWithFakeProviders(WorkspaceTest workspace)
+		{
+			SourceProviderTest sourceProvider = HelperManager.SourceProviderHelper.CreateSourceProvider(workspace);
+			DestinationProviderTest destinationProviderTest = HelperManager.DestinationProviderHelper.CreateDestinationProvider(workspace);
+			IntegrationPointTypeTest integrationPointType = HelperManager.IntegrationPointTypeHelper.CreateIntegrationPointType(workspace);
+
+			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint(workspace);
+
+			integrationPoint.Type = integrationPointType.ArtifactId;
+			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+			integrationPoint.DestinationProvider = destinationProviderTest.ArtifactId;
+
+			return integrationPoint;
+		}
+
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
-			foreach (var integrationPoint in Database.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
+			foreach (IntegrationPointTest integrationPoint in Database.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
 			{
 				Database.IntegrationPoints.Remove(integrationPoint);
 			}
