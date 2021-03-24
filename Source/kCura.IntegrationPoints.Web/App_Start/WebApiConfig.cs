@@ -374,13 +374,7 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/WorkspaceFinder/{federatedInstanceId}",
 				defaults: new {controller = "WorkspaceFinder", action = "GetFederatedInstanceWorkspaces"}
 			);
-
-			config.Routes.MapHttpRoute(
-				name: "GetFieldCatalogMappingsForCurrentInstance",
-				routeTemplate: "{workspaceID}/api/FieldCatalog/{destinationWorkspaceId}",
-				defaults: new {controller = "FieldCatalog", action = "GetCurrentInstanceFields"}
-			);
-
+			
 			config.Routes.MapHttpRoute(
 				name: "CheckToggle",
 				routeTemplate: "{workspaceID}/api/ToggleAPI/{toggleName}",

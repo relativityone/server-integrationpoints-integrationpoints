@@ -887,23 +887,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
-
-		this.GetCatalogFieldMappings = function () {
-			self.CatalogField = {};
-			var destinationWorkspaceID = IP.utils.getParameterByName('AppID', window.top);
-
-			IP.data.ajax({
-				url: IP.utils.generateWebAPIURL('FieldCatalog', destinationWorkspaceID),
-				type: 'POST',
-				success: function (data) {
-					self.CatalogField = data;
-				},
-				error: function (error) {
-					console.log(error);
-				}
-			});
-		};
-
+		
 		/********** Submit Validation**********/
 		this.submit = function () {
 			this.showErrors(true);
@@ -952,7 +936,6 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 
 		/********** AutoMap Controls  **********/
-		this.GetCatalogFieldMappings();
 		this.autoFieldMap = function () {
 			self.autoFieldMapWithCustomOptions();
 		};

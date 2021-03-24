@@ -77,12 +77,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				integrationPointRepository,
 				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
 		}
-
-		public IFieldCatalogService CreateFieldCatalogService(IHelper targetHelper)
-		{
-			return new FieldCatalogService(targetHelper);
-		}
-
+		
 		public IJobHistoryService CreateJobHistoryService(IAPILog logger)
 		{
 			IJobHistoryService jobHistoryService = new JobHistoryService(

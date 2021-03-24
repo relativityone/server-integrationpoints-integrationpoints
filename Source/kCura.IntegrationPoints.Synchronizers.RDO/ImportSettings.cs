@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public string ErrorFilePath { get; set; } = string.Empty;
 
 		[JsonIgnore]
-		public Encoding ExtractedTextEncoding => Encoding.GetEncoding(ExtractedTextFileEncoding);
+		public Encoding ExtractedTextEncoding => string.IsNullOrWhiteSpace(ExtractedTextFileEncoding) ? Encoding.Default : Encoding.GetEncoding(ExtractedTextFileEncoding);
 
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public string ExtractedTextFileEncoding { get; set; }
