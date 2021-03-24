@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.SecretStore;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
@@ -182,6 +183,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private void RegisterRipAgentTasks()
 		{
 			Container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
+		}
+
+		private void RegisterValidators()
+		{
+			Container.Register(Component.For<ArtifactValidator>());
 		}
 
 		private void SetupGlobalSettings()
