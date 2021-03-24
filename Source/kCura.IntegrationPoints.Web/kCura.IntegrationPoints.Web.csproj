@@ -122,7 +122,6 @@
     <Compile Include="Installers\Context\WorkspaceContextRegistration.cs" />
     <Compile Include="Context\WorkspaceContext\SessionWorkspaceContextService.cs" />
     <Compile Include="Controllers\API\ExportSettingsValidationController.cs" />
-    <Compile Include="Controllers\API\FieldCatalogController.cs" />
     <Compile Include="Controllers\API\ImportPreviewController.cs" />
     <Compile Include="Controllers\API\ImportProviderDocumentController.cs" />
     <Compile Include="Controllers\API\ImportProviderImageController.cs" />
