@@ -12,7 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Name { get; set; }
 
-		public IntegrationPointTypeTest()
+		public IntegrationPointTypeTest() : base("IntegrationPointType")
 		{
 			Name = $"Fake Integration Point Type";
 			Identifier = Guid.NewGuid().ToString();

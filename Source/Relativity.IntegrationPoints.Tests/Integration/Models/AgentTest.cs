@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public AgentTest()
 		{
-			ArtifactId = Artifact.NextId();
+			ArtifactId = ArtifactProvider.NextId();
 		}
 
 		public DataRow AsRow()

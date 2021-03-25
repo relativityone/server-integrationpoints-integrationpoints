@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Configuration { get; set; }
 
-		public SourceProviderTest()
+		public SourceProviderTest() : base("SourceProvider")
 		{
 			Name = $"Fake Source Provider";
 			Identifier = Guid.NewGuid().ToString();

@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		public AgentTest CreateIntegrationPointAgent()
 		{
-			int artifactId = Artifact.NextId();
+			int artifactId = ArtifactProvider.NextId();
 
 			var agent = new AgentTest
 			{

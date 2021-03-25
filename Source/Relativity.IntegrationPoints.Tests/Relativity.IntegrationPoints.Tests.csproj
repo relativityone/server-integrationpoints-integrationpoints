@@ -53,7 +53,7 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Integration\Artifact.cs" />
+    <Compile Include="Integration\ArtifactProvider.cs" />
     <Compile Include="Integration\Const.cs" />
     <Compile Include="Integration\DatabaseSchema.cs" />
     <Compile Include="Integration\Helpers\DestinationProviderHelper.cs" />
@@ -76,7 +76,9 @@
     <Compile Include="Integration\Mocks\Services\FakeScratchTableRepository.cs" />
     <Compile Include="Integration\Mocks\Services\FakeValidator.cs" />
     <Compile Include="Integration\Mocks\Services\FakeWorkspaceDbContext.cs" />
+    <Compile Include="Integration\Models\ArtifactTest.cs" />
     <Compile Include="Integration\Models\DestinationProviderTest.cs" />
+    <Compile Include="Integration\Models\FolderTest.cs" />
     <Compile Include="Integration\Models\IntegrationPointTypeTest.cs" />
     <Compile Include="Integration\Models\JobHistoryTest.cs" />
     <Compile Include="Integration\Models\RdoTestBase.cs" />

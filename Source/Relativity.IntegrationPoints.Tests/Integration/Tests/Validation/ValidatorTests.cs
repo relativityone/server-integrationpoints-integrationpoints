@@ -1,7 +1,10 @@
 ﻿using FluentAssertions;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.IntegrationPoints.Tests.Integration.Helpers;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
@@ -14,19 +17,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 		public void ArtifactValidator_ShouldValidate()
 		{
 			// Arrange
+			WorkspaceTest destinationWorkspace = HelperManager.WorkspaceHelper.CreateWorkspace();
 
-			ArtifactValidator sut = PrepareSut<ArtifactValidator>();
+			ArtifactValidator sut = new ArtifactValidator(
+				Container.Resolve<IArtifactService>(),
+				SourceWorkspace.ArtifactId,
+				"Folder");
 
 			// Act
 			ValidationResult result = sut.Validate(0);
 
 			// Assert
 			VerifyValidationPassed(result);
-		}
-
-		private T PrepareSut<T>() where T: IValidator
-		{
-			return Container.Resolve<T>();
 		}
 
 		private void VerifyValidationPassed(ValidationResult result)

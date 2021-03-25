@@ -1,6 +1,6 @@
 ﻿namespace Relativity.IntegrationPoints.Tests.Integration
 {
-	public static class Artifact
+	public static class ArtifactProvider
 	{
 		private static int _currentArtifactId = 100000;
 		

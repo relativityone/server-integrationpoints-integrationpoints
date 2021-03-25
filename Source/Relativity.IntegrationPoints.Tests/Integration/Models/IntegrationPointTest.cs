@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Name { get; set; }
 
-		public IntegrationPointTest()
+		public IntegrationPointTest() : base("IntegrationPoint")
 		{
 			Name = $"Integration Point (Artifact ID {ArtifactId})";
 		}

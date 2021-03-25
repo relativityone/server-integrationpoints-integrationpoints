@@ -93,6 +93,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
 			RegisterRipAgentTasks();
+			RegisterValidators();
 		}
 
 		private void RegisterRelativityApiServices()
@@ -163,6 +164,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()));
 			Container.Register(Component.For<Lazy<ISecretStore>>().UsingFactoryMethod(c =>
 				new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())));
+
+			Container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>());
 		}
 
 		private void RegisterFakeRipServices()
@@ -187,7 +190,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		private void RegisterValidators()
 		{
-			Container.Register(Component.For<ArtifactValidator>());
 		}
 
 		private void SetupGlobalSettings()

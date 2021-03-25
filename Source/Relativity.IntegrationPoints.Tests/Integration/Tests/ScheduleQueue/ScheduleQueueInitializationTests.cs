@@ -37,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 			JobTest jobWithoutWorkspace = HelperManager.JobHelper.ScheduleJob(new JobTest()
 			{
-				WorkspaceID = Artifact.NextId()
+				WorkspaceID = ArtifactProvider.NextId()
 			});
 
 

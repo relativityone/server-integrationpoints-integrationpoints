@@ -7,7 +7,7 @@
 
 		public WorkspaceTest()
 		{
-			ArtifactId = Artifact.NextId();
+			ArtifactId = ArtifactProvider.NextId();
 		}
 	}
 }
