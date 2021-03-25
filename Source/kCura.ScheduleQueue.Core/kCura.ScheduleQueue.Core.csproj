@@ -118,7 +118,6 @@
     <Compile Include="ScheduleRules\Weekly.cs" />
     <Compile Include="Services\AgentService.cs" />
     <Compile Include="Services\JobService.cs" />
-    <Compile Include="Services\TimeMachineService.cs" />
     <Compile Include="TimeMachine\DefaultTimeMachineProvider.cs" />
     <Compile Include="TimeMachine\AgentTimeMachineProvider.cs" />
     <Compile Include="Validation\IQueueJobValidator.cs" />

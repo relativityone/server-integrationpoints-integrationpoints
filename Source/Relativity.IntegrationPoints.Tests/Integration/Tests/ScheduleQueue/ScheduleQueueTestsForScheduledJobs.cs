@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NUnit.Framework;
@@ -14,10 +15,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ScheduleQueueTestsForScheduledJobs : TestsBase
 	{
+		private readonly DateTime _FIXED_DATE_TIME = new DateTime(2021, 10, 20);
+
 		[IdentifiedTest("C6E9E6A2-BDD6-4767-97EE-55BE95323AE3")]
 		public void Job_ShouldNotBePushedToTheQueueAfterRun_WhenScheduledNextRunExceedsEndDate()
 		{
 			// Arrange
+			Context.SetDateTime(_FIXED_DATE_TIME);
+
 			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
@@ -39,10 +44,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithDailyInterval()
 		{
 			// Arrange
+			Context.SetDateTime(_FIXED_DATE_TIME);
+
 			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
-			DateTime endDateTime = startDateTime.AddDays(2);
+			DateTime endDateTime = startDateTime.AddYears(1);
 
 			DateTime expectedNextRunTime = startDateTime.AddDays(1);
 
@@ -59,18 +66,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		}
 
 		[IdentifiedTest("8A840DD4-C9F6-4D83-8762-5F6A62D22074")]
-		[Ignore("REL-538685")]
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithWeeklyInterval()
 		{
 			// Arrange
+			Context.SetDateTime(_FIXED_DATE_TIME);
+
 			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
+			DaysOfWeek dayOfWeek = ConvertToInternalDaysOfWeek(Context.CurrentDateTime.DayOfWeek);
+
 			DateTime startDateTime = Context.CurrentDateTime;
-			DateTime endDateTime = startDateTime.AddMonths(1);
+			DateTime endDateTime = startDateTime.AddYears(1);
 
-			DateTime expectedNextRunTime = GetNextWeekDay(startDateTime);
+			DateTime expectedNextRunTime = startDateTime.AddDays(7);
 
-			ScheduleRuleTest rule = ScheduleRuleTest.CreateWeeklyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, DaysOfWeek.Monday);
+			ScheduleRuleTest rule = ScheduleRuleTest.CreateWeeklyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, dayOfWeek);
 			JobTest job = PrepareJob(rule);
 
 			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
@@ -86,10 +96,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Job_ShouldBePushedToTheQueueAfterRun_WhenIsScheduledWithMonthlyInterval()
 		{
 			// Arrange
+			Context.SetDateTime(_FIXED_DATE_TIME);
+
 			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
-			DateTime endDateTime = startDateTime.AddMonths(3);
+			DateTime endDateTime = startDateTime.AddYears(1);
 
 			DateTime expectedNextRunTime = new DateTime(startDateTime.Year, startDateTime.Month + 1, 1);
 
@@ -106,23 +118,50 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			HelperManager.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
+		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		{
+			FakeAgent fakeAgent = new FakeAgent(agent,
+				Container.Resolve<IAgentHelper>(),
+				scheduleRuleFactory: Container.Resolve<IScheduleRuleFactory>(),
+				queryManager: Container.Resolve<IQueryManager>());
+
+			fakeAgent.ProcessJobMockFunc = (job) =>
+			{
+				DateTime timeAfterJobFinished = Context.CurrentDateTime.AddMinutes(10);
+				Context.SetDateTime(timeAfterJobFinished);
+
+				return new TaskResult { Status = TaskStatusEnum.Success };
+			};
+
+			return fakeAgent;
+		}
+
 		private JobTest PrepareJob(ScheduleRuleTest rule)
 		{
 			return HelperManager.JobHelper.ScheduleJobWithScheduleRule(SourceWorkspace, rule);
 		}
 
-		private DateTime GetNextWeekDay(DateTime dateTime)
+		private DaysOfWeek ConvertToInternalDaysOfWeek(DayOfWeek dayOfWeek)
 		{
-			DateTime newDateTime = dateTime.AddDays(7);
-			DateTime result = new DateTime(newDateTime.Year, newDateTime.Month, newDateTime.Day, 12, 0, 0);
-			return result;
-		}
-
-		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
-		{
-			return new FakeAgent(agent,
-				Container.Resolve<IAgentHelper>(),
-				queryManager: Container.Resolve<IQueryManager>());
+			switch (dayOfWeek)
+			{
+				case DayOfWeek.Monday:
+					return DaysOfWeek.Monday;
+				case DayOfWeek.Tuesday:
+					return DaysOfWeek.Tuesday;
+				case DayOfWeek.Wednesday:
+					return DaysOfWeek.Wednesday;
+				case DayOfWeek.Thursday:
+					return DaysOfWeek.Thursday;
+				case DayOfWeek.Friday:
+					return DaysOfWeek.Friday;
+				case DayOfWeek.Saturday:
+					return DaysOfWeek.Saturday;
+				case DayOfWeek.Sunday:
+					return DaysOfWeek.Sunday;
+				default:
+					return DaysOfWeek.None;
+			}
 		}
 	}
 }
