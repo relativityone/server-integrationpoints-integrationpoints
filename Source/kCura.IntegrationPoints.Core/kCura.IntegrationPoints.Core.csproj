@@ -373,7 +373,6 @@
     <Compile Include="Services\Exporter\IExporterService.cs" />
     <Compile Include="Services\Exporter\LazyExceptArtifactFieldDto.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
-    <Compile Include="Services\FieldCatalogService.cs" />
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
@@ -383,7 +382,6 @@
     <Compile Include="Services\IntegrationPoint\IIntegrationPointProfileService.cs" />
     <Compile Include="Services\IntegrationPoint\IIntegrationPointService.cs" />
     <Compile Include="Services\IntegrationPoint\IIntegrationPointTypeService.cs" />
-    <Compile Include="Services\IFieldCatalogService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointProfileService.cs" />
     <Compile Include="Services\IntegrationPoint\IntegrationPointServiceBase.cs" />
