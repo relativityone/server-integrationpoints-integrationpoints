@@ -131,6 +131,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			}).LifestyleSingleton());
 			Container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>());
 			Container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>());
+			Container.Register(Component.For<ITimeService>().UsingFactoryMethod(() => new FakeTimeService(Context)));
 			Container.Register(Component.For<IScheduleRuleFactory>().ImplementedBy<DefaultScheduleRuleFactory>());
 			Container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
 			Container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>());
