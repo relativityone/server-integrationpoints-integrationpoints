@@ -170,7 +170,7 @@ namespace Relativity.Sync.RDOs
         public Guid DestinationWorkspaceNameField { get; set; }
 
         [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationWorkspaceArtifactIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
-        public Guid DestinationWorkspaceArtifactIdField { get; set; }
+        public Guid DestinationWorkspaceWorkspaceArtifactIdField { get; set; }
         
         [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationWorkspaceNameGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid DestinationWorkspaceDestinationWorkspaceName { get; set; }

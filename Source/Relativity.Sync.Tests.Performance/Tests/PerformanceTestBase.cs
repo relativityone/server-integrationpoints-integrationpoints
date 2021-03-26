@@ -205,7 +205,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
 
 				RelativityObject jobHistory = await Rdos
-					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId)
+					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId, Configuration.JobHistory.TypeGuid)
 					.ConfigureAwait(false);
 
 				string aggregatedJobHistoryErrors = null;

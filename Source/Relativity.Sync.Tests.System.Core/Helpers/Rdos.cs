@@ -64,14 +64,14 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		public static async Task<int> CreateJobHistoryInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
+		public static async Task<int> CreateJobHistoryInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name", Guid? jobHistoryTypeGuid = null)
 		{
-			RelativityObject result = await CreateJobHistoryRelativityObjectInstanceAsync(serviceFactory, workspaceId, name).ConfigureAwait(false);
+			RelativityObject result = await CreateJobHistoryRelativityObjectInstanceAsync(serviceFactory, workspaceId, jobHistoryTypeGuid ?? new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9"), name).ConfigureAwait(false);
 
 			return result.ArtifactID;
 		}
 
-		public static async Task<RelativityObject> CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
+		public static async Task<RelativityObject> CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory serviceFactory, int workspaceId, Guid jobHistoryTypeGuid, string name = "Name")
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					},
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")
+						Guid = jobHistoryTypeGuid
 					}
 				};
 				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
@@ -394,25 +394,35 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
 				
 				// JobHistoryGuids
-				JobHistoryType = DefaultGuids.JobHistory.TypeGuid,
-				JobHistoryGuidTotalField = DefaultGuids.JobHistory.TotalItemsFieldGuid,
-				JobHistoryGuidFailedField = DefaultGuids.JobHistory.FailedItemsFieldGuid,
-				JobHistoryCompletedItemsField = DefaultGuids.JobHistory.CompletedItemsFieldGuid,
-				JobHistoryDestinationWorkspaceInformationField = DefaultGuids.JobHistory.DestinationWorkspaceInformationGuid,
+				JobHistoryType = configurationStub.JobHistory.TypeGuid,
+				JobHistoryGuidTotalField = configurationStub.JobHistory.TotalItemsFieldGuid,
+				JobHistoryGuidFailedField = configurationStub.JobHistory.FailedItemsFieldGuid,
+				JobHistoryCompletedItemsField = configurationStub.JobHistory.CompletedItemsFieldGuid,
+				JobHistoryDestinationWorkspaceInformationField = configurationStub.JobHistory.DestinationWorkspaceInformationGuid,
 				
 				// JobHistoryErrorGuids
-				JobHistoryErrorType = DefaultGuids.JobHistoryError.TypeGuid,
-				JobHistoryErrorErrorMessages = DefaultGuids.JobHistoryError.ErrorMessagesGuid,
-				JobHistoryErrorErrorStatus = DefaultGuids.JobHistoryError.ErrorStatusGuid,
-				JobHistoryErrorErrorType = DefaultGuids.JobHistoryError.ErrorTypeGuid,
-				JobHistoryErrorName = DefaultGuids.JobHistoryError.NameGuid,
-				JobHistoryErrorSourceUniqueId = DefaultGuids.JobHistoryError.SourceUniqueIdGuid,
-				JobHistoryErrorStackTrace = DefaultGuids.JobHistoryError.StackTraceGuid,
-				JobHistoryErrorTimeStamp = DefaultGuids.JobHistoryError.TimeStampGuid,
-				JobHistoryErrorItemLevelError = DefaultGuids.JobHistoryError.ItemLevelErrorGuid,
-				JobHistoryErrorJobLevelError = DefaultGuids.JobHistoryError.JobLevelErrorGuid,
-				JobHistoryErrorJobHistoryRelation = DefaultGuids.JobHistoryError.JobHistoryRelationGuid,
-				JobHistoryErrorNewChoice = DefaultGuids.JobHistoryError.NewStatusGuid,
+				JobHistoryErrorType = configurationStub.JobHistoryError.TypeGuid,
+				JobHistoryErrorErrorMessages = configurationStub.JobHistoryError.ErrorMessagesGuid,
+				JobHistoryErrorErrorStatus = configurationStub.JobHistoryError.ErrorStatusGuid,
+				JobHistoryErrorErrorType = configurationStub.JobHistoryError.ErrorTypeGuid,
+				JobHistoryErrorName = configurationStub.JobHistoryError.NameGuid,
+				JobHistoryErrorSourceUniqueId = configurationStub.JobHistoryError.SourceUniqueIdGuid,
+				JobHistoryErrorStackTrace = configurationStub.JobHistoryError.StackTraceGuid,
+				JobHistoryErrorTimeStamp = configurationStub.JobHistoryError.TimeStampGuid,
+				JobHistoryErrorItemLevelError = configurationStub.JobHistoryError.ItemLevelErrorGuid,
+				JobHistoryErrorJobLevelError = configurationStub.JobHistoryError.JobLevelErrorGuid,
+				JobHistoryErrorJobHistoryRelation = configurationStub.JobHistoryError.JobHistoryRelationGuid,
+				JobHistoryErrorNewChoice = configurationStub.JobHistoryError.NewStatusGuid,
+				
+				// DestinationWorkspaceGuids
+				DestinationWorkspaceType = configurationStub.DestinationWorkspace.TypeGuid,
+				DestinationWorkspaceNameField = configurationStub.DestinationWorkspace.NameGuid,
+				DestinationWorkspaceWorkspaceArtifactIdField = configurationStub.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid,
+				DestinationWorkspaceDestinationWorkspaceName = configurationStub.DestinationWorkspace.DestinationWorkspaceNameGuid,
+				DestinationWorkspaceDestinationInstanceArtifactId = configurationStub.DestinationWorkspace.DestinationInstanceArtifactIdGuid,
+				DestinationWorkspaceDestinationInstanceName = configurationStub.DestinationWorkspace.DestinationInstanceNameGuid,
+				DestinationWorkspaceOnDocumentField = configurationStub.DestinationWorkspace.DestinationWorkspaceOnDocument,
+				JobHistoryOnDocumentField = configurationStub.DestinationWorkspace.JobHistoryOnDocumentGuid,
 			};
 		}
 
@@ -443,7 +453,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 		
-		public static async Task<RelativityObject> GetJobHistoryAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId)
+		public static async Task<RelativityObject> GetJobHistoryAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId, Guid jobHistoryGuid)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -451,7 +461,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")
+						Guid = jobHistoryGuid
 					},
 					Condition = $"'ArtifactId' == {jobHistoryId}",
 					Fields = new []

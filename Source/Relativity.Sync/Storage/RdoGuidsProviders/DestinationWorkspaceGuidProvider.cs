@@ -19,7 +19,7 @@ namespace Relativity.Sync.Storage.RdoGuidsProviders
             _configuration.GetFieldValue(x => x.DestinationWorkspaceDestinationWorkspaceName);
         
         public Guid DestinationWorkspaceArtifactIdGuid =>
-            _configuration.GetFieldValue(x => x.DestinationWorkspaceDestinationInstanceArtifactId);
+            _configuration.GetFieldValue(x => x.DestinationWorkspaceWorkspaceArtifactIdField);
 
         public Guid DestinationInstanceNameGuid =>
             _configuration.GetFieldValue(x => x.DestinationWorkspaceDestinationInstanceName);

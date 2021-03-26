@@ -66,6 +66,16 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryErrorType = RdoOptions.JobHistoryError.TypeGuid;
             SyncConfiguration.JobHistoryErrorJobHistoryRelation = RdoOptions.JobHistoryError.JobHistoryRelationGuid;
             SyncConfiguration.JobHistoryErrorNewChoice = RdoOptions.JobHistoryError.NewStatusGuid;
+            
+            // DestinationWorkspace
+            SyncConfiguration.DestinationWorkspaceType = RdoOptions.DestinationWorkspace.TypeGuid;
+            SyncConfiguration.DestinationWorkspaceNameField = RdoOptions.DestinationWorkspace.NameGuid;
+            SyncConfiguration.DestinationWorkspaceWorkspaceArtifactIdField = RdoOptions.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid;
+            SyncConfiguration.DestinationWorkspaceDestinationWorkspaceName = RdoOptions.DestinationWorkspace.DestinationWorkspaceNameGuid;
+            SyncConfiguration.DestinationWorkspaceDestinationInstanceName = RdoOptions.DestinationWorkspace.DestinationInstanceNameGuid;
+            SyncConfiguration.DestinationWorkspaceDestinationInstanceArtifactId = RdoOptions.DestinationWorkspace.DestinationInstanceArtifactIdGuid;
+            SyncConfiguration.JobHistoryOnDocumentField = RdoOptions.DestinationWorkspace.JobHistoryOnDocumentGuid;
+            SyncConfiguration.DestinationWorkspaceOnDocumentField = RdoOptions.DestinationWorkspace.DestinationWorkspaceOnDocument;
         }
 
         public void OverwriteMode(OverwriteOptions options)
