@@ -16,6 +16,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private readonly ObservableCollection<JobHistoryTest> _jobHistory = new ObservableCollection<JobHistoryTest>();
 		private readonly ObservableCollection<SourceProviderTest> _sourceProviders = new ObservableCollection<SourceProviderTest>();
 		private readonly ObservableCollection<DestinationProviderTest> _destinationProviders = new ObservableCollection<DestinationProviderTest>();
+		private readonly ObservableCollection<FolderTest> _folders = new ObservableCollection<FolderTest>();
+		private readonly ObservableCollection<ArtifactTest> _artifacts = new ObservableCollection<ArtifactTest>();
 
 		public List<AgentTest> Agents { get; set; } = new List<AgentTest>();
 
@@ -33,11 +35,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public IList<DestinationProviderTest> DestinationProviders => _destinationProviders;
 
+		public IList<FolderTest> Folders => _folders;
+
+		public IList<ArtifactTest> Artifacts => _artifacts;
+
 		public InMemoryDatabase(ProxyMock proxy)
 		{
 			_proxy = proxy;
 
 			SetupWorkspaces();
+			SetupFolders();
 			SetupIntegrationPoints();
 			SetupIntegrationPointTypes();
 			SetupJobHistory();
@@ -50,6 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Agents.Clear();
 			JobsInQueue.Clear();
 			Workspaces.Clear();
+			Folders.Clear();
 			IntegrationPoints.Clear();
 			IntegrationPointTypes.Clear();
 			JobHistory.Clear();
@@ -62,7 +70,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_workspaces.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<WorkspaceTest>(sender, args,
-					(newItems) => _proxy.ObjectManager.SetupWorkspace(this, newItems));
+					(newItem) =>
+					{
+						_proxy.ObjectManager.SetupWorkspace(this, newItem);
+					});
 			};
 		}
 
@@ -71,7 +82,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_integrationPoints.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<IntegrationPointTest>(sender, args,
-					(newItems) => _proxy.ObjectManager.SetupIntegrationPoints(this, newItems));
+					(newItem) =>
+					{
+						_proxy.ObjectManager.SetupArtifact(this, newItem);
+						_proxy.ObjectManager.SetupIntegrationPoints(this, newItem);
+					});
 			};
 		}
 
@@ -80,7 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_integrationPointTypes.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<IntegrationPointTypeTest>(sender, args,
-					(newItems) => _proxy.ObjectManager.SetupIntegrationPointTypes(this, newItems));
+					(newItem) => _proxy.ObjectManager.SetupIntegrationPointTypes(this, newItem));
 			};
 		}
 
@@ -89,7 +104,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_jobHistory.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<JobHistoryTest>(sender, args, 
-					newItems => _proxy.ObjectManager.SetupJobHistory(this, newItems));
+					newItem => _proxy.ObjectManager.SetupJobHistory(this, newItem));
 			};
 		}
 
@@ -98,7 +113,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_sourceProviders.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<SourceProviderTest>(sender, args,
-					newItems => _proxy.ObjectManager.SetupSourceProviders(this, newItems));
+					newItem => _proxy.ObjectManager.SetupSourceProviders(this, newItem));
 			};
 		}
 
@@ -107,16 +122,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_destinationProviders.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<DestinationProviderTest>(sender, args,
-					newItems => _proxy.ObjectManager.SetupDestinationProviders(this, newItems));
+					newItem => _proxy.ObjectManager.SetupDestinationProviders(this, newItem));
 			};
 		}
 
-		void OnNewItemsAdded<T>(object sender, NotifyCollectionChangedEventArgs e, Action<IEnumerable<T>> onAddFunc)
+		private void SetupFolders()
+		{
+			_folders.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<FolderTest>(sender, args,
+					newItem =>
+					{
+						this.Artifacts.Add(newItem.Artifact);
+						_proxy.ObjectManager.SetupArtifact(this, newItem);
+					});
+			};
+		}
+
+		void OnNewItemsAdded<T>(object sender, NotifyCollectionChangedEventArgs e, Action<T> onAddFunc)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				IEnumerable<T> newItem = sender as IEnumerable<T>;
-				onAddFunc(newItem);
+				IEnumerable<T> newItems = sender as IEnumerable<T>;
+				foreach (var newItem in newItems)
+				{
+					onAddFunc(newItem);
+				}
+
 			}
 		}
 	}

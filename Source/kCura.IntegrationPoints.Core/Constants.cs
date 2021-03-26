@@ -178,5 +178,18 @@ namespace kCura.IntegrationPoints.Core
 		{
 			public const string TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME = "Text Precedence";
 		}
+
+		public static class InstanceSettings
+		{
+			public const string RELATIVITY_AUTHENTICATION_SECTION = "Relativity.Authentication";
+			public const string FRIENDLY_INSTANCE_NAME = "FriendlyInstanceName";
+
+			public const string RELATIVITY_CORE_SECTION = "Relativity.Core";
+			public const string ALLOW_NO_SNAPSHOT_IMPORT = "AllowNoSnapshotImport";
+			public const string RESTRICT_REFERENTIAL_FILE_LINKS_ON_IMPORT = "RestrictReferentialFileLinksOnImport";
+
+			public const string INTEGRATION_POINTS_SECTION = "kCura.IntegrationPoints";
+			public const string BLOCKED_HOSTS = "BlockedIPs";
+		}
 	}
 }

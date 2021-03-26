@@ -1,8 +1,11 @@
 ﻿using System;
 using Moq;
 using Relativity.API;
-using Relativity.Services.Interfaces.Workspace;
+using Relativity.Services.InstanceSetting;
+using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
+using Relativity.Services.Permission;
+using IWorkspaceManager = Relativity.Services.Interfaces.Workspace.IWorkspaceManager;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -16,6 +19,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
 			RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
+			RegisterProxyInServiceManagerMock<IPermissionManager>(proxy.PermissionManager.Object);
+			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(proxy.InstanceSettingManager.Object);
+			RegisterProxyInServiceManagerMock<IGroupManager>(proxy.GroupManager.Object);
 		}
 
 		private void RegisterProxyInServiceManagerMock<T>(T proxy) 

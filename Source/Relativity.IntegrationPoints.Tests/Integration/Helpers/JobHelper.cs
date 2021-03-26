@@ -57,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return new JobBuilder()
 				.WithWorkspace(workspace)
 				.WithIntegrationPoint(integrationPoint)
-				.WithSubmittedBy(HelperManager.TestContext.UserId);
+				.WithSubmittedBy(HelperManager.TestContext.User.ArtifactId);
 		}
 
 		#region Verification

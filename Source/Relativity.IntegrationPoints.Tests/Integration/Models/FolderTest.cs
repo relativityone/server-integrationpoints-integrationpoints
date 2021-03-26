@@ -1,8 +1,18 @@
-﻿namespace Relativity.IntegrationPoints.Tests.Integration.Models
+﻿using Relativity.Services.Objects.DataContracts;
+
+namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public class FolderTest
+	public class FolderTest : RdoTestBase
 	{
-		public int ArtifactId { get; set; }
-		public int WorkspaceId { get; set; }
+		public string Name { get; set; }
+
+		public FolderTest() : base("Folder")
+		{
+		}
+
+		public override RelativityObject ToRelativityObject()
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

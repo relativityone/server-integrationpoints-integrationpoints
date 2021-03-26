@@ -4,7 +4,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
 	public abstract class RdoTestBase
 	{
-		public ArtifactTest Artifact { get; set; }
+		public ArtifactTest Artifact { get; }
 
 		public int ArtifactId => Artifact.ArtifactId;
 

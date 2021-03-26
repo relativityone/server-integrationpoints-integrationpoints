@@ -15,6 +15,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			WorkspaceTest workspace = new WorkspaceTest();
 
 			Database.Workspaces.Add(workspace);
+			Database.Folders.Add(new FolderTest
+			{
+				WorkspaceId = workspace.ArtifactId,
+				Name = workspace.Name
+			});
 
 			return workspace;
 		}

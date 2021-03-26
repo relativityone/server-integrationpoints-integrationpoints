@@ -37,6 +37,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\kCura.Agent\lib\net462\kCura.Agent.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=11.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,10 +64,16 @@
     <Compile Include="Integration\Helpers\IntegrationPointTypeHelper.cs" />
     <Compile Include="Integration\Helpers\JobHistoryHelper.cs" />
     <Compile Include="Integration\Helpers\SourceProviderHelper.cs" />
+    <Compile Include="Integration\InstanceSettings.cs" />
+    <Compile Include="Integration\Mocks\FakeUser.cs" />
+    <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.DestinationProvider.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPointType.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SourceProvider.cs" />
+    <Compile Include="Integration\Mocks\Kepler\PermissionManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ProductionManagerStub.cs" />
     <Compile Include="Integration\Mocks\Services\FakeBatchStatus.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataReader.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataSourceProvider.cs" />
@@ -74,6 +84,7 @@
     <Compile Include="Integration\Mocks\Services\FakeProviderFactoryLifecycleStrategy.cs" />
     <Compile Include="Integration\Mocks\Services\FakeRepositoryFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeScratchTableRepository.cs" />
+    <Compile Include="Integration\Mocks\Services\FakeSqlServiceFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeTimeService.cs" />
     <Compile Include="Integration\Mocks\Services\FakeValidator.cs" />
     <Compile Include="Integration\Mocks\Services\FakeWorkspaceDbContext.cs" />
