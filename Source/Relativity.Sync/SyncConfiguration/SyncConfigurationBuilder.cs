@@ -42,6 +42,19 @@ namespace Relativity.Sync.SyncConfiguration
         {
             ValidateJobHistoryGuids(rdoOptions.JobHistory);
             ValidateJobHistoryErrorGuids(rdoOptions.JobHistoryError);
+            ValidateDestinationWorkspaceGuids(rdoOptions.DestinationWorkspace);
+        }
+
+        private void ValidateDestinationWorkspaceGuids(DestinationWorkspaceOptions options)
+        {
+            ValidateProperty(options, x => x.TypeGuid);
+            ValidateProperty(options, x => x.NameGuid);
+            ValidateProperty(options, x => x.DestinationWorkspaceNameGuid);
+            ValidateProperty(options, x => x.DestinationWorkspaceArtifactIdGuid);
+            ValidateProperty(options, x => x.DestinationInstanceNameGuid);
+            ValidateProperty(options, x => x.DestinationInstanceArtifactIdGuid);
+            ValidateProperty(options, x => x.JobHistoryOnDocumentGuid);
+            ValidateProperty(options, x => x.DestinationWorkspaceOnDocument);
         }
 
         private void ValidateJobHistoryErrorGuids(JobHistoryErrorOptions options)

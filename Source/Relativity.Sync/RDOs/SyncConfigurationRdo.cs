@@ -161,5 +161,31 @@ namespace Relativity.Sync.RDOs
         
         [RdoField(SyncRdoGuids.JobHistoryErrorRetriedChoiceGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorRetriedChoice { get; set; }
+        
+        // DestinationWorkspace RDO configuration
+        [RdoField(SyncRdoGuids.DestinationWorkspaceTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid DestinationWorkspaceType { get; set; }
+        
+        [RdoField(SyncRdoGuids.DestinationWorkspaceNameFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid DestinationWorkspaceNameField { get; set; }
+
+        [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationWorkspaceArtifactIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid DestinationWorkspaceArtifactIdField { get; set; }
+        
+        [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationWorkspaceNameGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid DestinationWorkspaceDestinationWorkspaceName { get; set; }
+        
+        [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationInstanceNameGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid DestinationWorkspaceDestinationInstanceName { get; set; }
+        
+        [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationInstanceArtifactIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid DestinationWorkspaceDestinationInstanceArtifactId { get; set; }
+        
+        [RdoField(SyncRdoGuids.JobHistoryOnDocumentFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryOnDocumentField { get; set; }
+
+        [RdoField(SyncRdoGuids.DestinationWorkspaceOnDocumentFieldGuid, RdoFieldType.FixedLengthText,
+            fixedTextLength: 36)]
+        public Guid DestinationWorkspaceOnDocumentField { get; set; }
     }
 }

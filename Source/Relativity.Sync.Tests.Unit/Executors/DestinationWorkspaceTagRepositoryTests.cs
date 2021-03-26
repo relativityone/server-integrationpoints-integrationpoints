@@ -17,6 +17,7 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -62,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_stopWatch = new Mock<IStopwatch>();
 
 			_sut = new DestinationWorkspaceTagRepository(serviceFactory.Object, _federatedInstance.Object,
-				_tagNameFormatter.Object, _syncLog, _syncMetrics.Object, () => _stopWatch.Object);
+				_tagNameFormatter.Object, new ConfigurationStub(), _syncLog, _syncMetrics.Object, () => _stopWatch.Object);
 		}
 
 		[Test]
