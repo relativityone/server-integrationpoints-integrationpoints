@@ -12,6 +12,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 {
 	using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
 	using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
+	using RdoExpressionGuid = Expression<Func<SyncConfigurationRdo, Guid>>;
+	using RdoExpressionGuidNullable = Expression<Func<SyncConfigurationRdo, Guid?>>;
  
 	
 	[TestFixture]
@@ -62,16 +64,21 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
-		[TestCase("", false)]
-		[TestCase(null, false)]
-		[TestCase("guid", true)]
-		public void ItShouldRetrieveIsSnapshotCreated(string snapshot, bool expectedValue)
+		[TestCaseSource(nameof(SnapshotCaseSource))]
+		public void ItShouldRetrieveIsSnapshotCreated(Guid? snapshot, bool expectedValue)
 		{
 			// Arrange
 			_configurationRdo.SnapshotId = snapshot;
 
 			// Act & Assert
 			_instance.IsSnapshotCreated.Should().Be(expectedValue);
+		}
+		
+		static IEnumerable<TestCaseData> SnapshotCaseSource()
+		{
+			yield return new TestCaseData((Guid?) null, false);
+			yield return new TestCaseData((Guid?) Guid.Empty, false);
+			yield return new TestCaseData((Guid?) Guid.NewGuid(), true);
 		}
 
 		[Test]
@@ -85,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
 			// Assert
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionString>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))), snapshotId.ToString()));
+			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionGuidNullable>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))), (Guid?) snapshotId));
 			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotRecordsCount))), totalRecordsCount));
 		}
 

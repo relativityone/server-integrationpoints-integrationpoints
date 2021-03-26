@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[Test]
 		public void ItShouldReturnExportRunId()
 		{
-			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
+			Guid runId = new Guid("7B7CB209-69A5-4903-A210-3452EAB7BB34");
 
 			_configurationRdo.SnapshotId = runId;
 
@@ -69,14 +70,12 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			Guid actualRunId = _instance.ExportRunId;
 
 			// ASSERT
-			actualRunId.Should().Be(Guid.Parse(runId));
+			actualRunId.Should().Be(runId);
 		}
 
 		[Test]
-		[TestCase("")]
-		[TestCase("ABC")]
-		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
-		public void ItShouldReturnEmptyGuidForInvalidString(string runId)
+		[TestCaseSource(nameof(SnapshotCaseSource))]
+		public void ItShouldReturnEmptyGuidForInvalidString(Guid? runId)
 		{
 			_configurationRdo.SnapshotId = runId;
 
@@ -88,6 +87,12 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// ASSERT
 			action.Should().Throw<ArgumentException>();
+		}
+		
+		static IEnumerable<TestCaseData> SnapshotCaseSource()
+		{
+			yield return new TestCaseData((Guid?) null);
+			yield return new TestCaseData((Guid?) Guid.Empty);
 		}
 	}
 }
