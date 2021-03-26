@@ -7,6 +7,9 @@ namespace Relativity.Sync.SyncConfiguration.Options
     /// </summary>
     public class DestinationWorkspaceOptions
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public DestinationWorkspaceOptions(Guid typeGuid, Guid nameGuid, Guid destinationWorkspaceNameGuid, Guid destinationWorkspaceArtifactIdGuid, Guid destinationInstanceNameGuid, Guid destinationInstanceArtifactIdGuid, Guid jobHistoryOnDocumentGuid, Guid destinationWorkspaceOnDocument)
         {
             TypeGuid = typeGuid;
