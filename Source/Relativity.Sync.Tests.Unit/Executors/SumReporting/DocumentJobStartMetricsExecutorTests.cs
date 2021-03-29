@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		}
 
 		[Test]
-		public async Task ExecuteAsync_ShouldReportMetric()
+		public async Task ExecuteAsync_ShouldReportJobStartMetric()
 		{
 			// Act
 			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -183,6 +183,23 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				return true;
 			};
 			_syncLogMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.Is<Dictionary<string, object>>(actual => verify(actual))));
+		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldReportJobResumeMetric_WhenResuming()
+		{
+			// Arrange
+			_configurationFake.SetupGet(x => x.Resuming).Returns(true);
+
+			// Act
+			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			_syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
+				metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobStartMetric>()), Times.Never);
+			_jobStatisticsContainer.NativesBytesRequested.Should().BeNull();
+			_syncLogMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()), Times.Never);
 		}
 
 		public static IEnumerable<TestCaseData> FieldsMappingTestCaseSource()
