@@ -49,6 +49,13 @@ namespace Relativity.Sync.SyncConfiguration
 			return this;
 		}
 
+		public new IDocumentSyncConfigurationBuilder CorrelationId(string correlationId)
+		{
+			base.CorrelationId(correlationId);
+
+			return this;
+		}
+
 		public new IDocumentSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
 		{
 			base.OverwriteMode(options);

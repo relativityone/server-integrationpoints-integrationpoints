@@ -41,26 +41,35 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		public async Task<ExecutionResult> ExecuteAsync(IDocumentJobStartMetricsConfiguration configuration, CompositeCancellationToken token)
 		{
-			JobStartMetric metric = new JobStartMetric
+			if (configuration.Resuming)
 			{
-				Type = TelemetryConstants.PROVIDER_NAME,
-				FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA,
-				RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
-			};
-
-			_syncMetrics.Send(metric);
-
-			_jobStatisticsContainer.NativesBytesRequested = CreateCalculateNativesTotalSizeTaskAsync(configuration, token.StopCancellationToken);
-
-			try
-			{
-				await LogFieldsMappingDetailsAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
+				_syncMetrics.Send(new JobResumeMetric
+				{
+					Type = TelemetryConstants.PROVIDER_NAME,
+					RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
+				});
 			}
-			catch (Exception exception)
+			else
 			{
-				_logger.LogError("Exception occurred when trying to log mapping details", exception);
-			}
+				_syncMetrics.Send(new JobStartMetric
+				{
+					Type = TelemetryConstants.PROVIDER_NAME,
+					FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA,
+					RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
+				});
 
+				_jobStatisticsContainer.NativesBytesRequested = CreateCalculateNativesTotalSizeTaskAsync(configuration, token.StopCancellationToken);
+
+				try
+				{
+					await LogFieldsMappingDetailsAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
+				}
+				catch (Exception exception)
+				{
+					_logger.LogError("Exception occurred when trying to log mapping details", exception);
+				}
+			}
+			
 			return ExecutionResult.Success();
 		}
 

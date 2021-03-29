@@ -10,10 +10,13 @@ namespace Relativity.Sync.Telemetry.Metrics
 	{
 		private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
 
+		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_CORRELATION_ID)]
+		public string CorrelationId { get; set; }
+
 		public string Name { get; }
-
+		
 		public string WorkflowId { get; set; }
-
+		
 		protected MetricBase()
 		{
 			Name = GetType().Name;
