@@ -13,6 +13,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 {
     using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
     using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
+    using RdoExpressionGuid = Expression<Func<SyncConfigurationRdo, Guid>>;
+    using RdoExpressionGuidNullable = Expression<Func<SyncConfigurationRdo, Guid?>>;
 
     [TestFixture]
     internal abstract class ConfigurationTestBase
@@ -56,6 +58,22 @@ namespace Relativity.Sync.Tests.Unit.Storage
         }
         
         protected bool MatchMemberName(RdoExpressionString expression, string memberName)
+        {
+            var memberExpression = ((expression.Body as UnaryExpression)?.Operand as MemberExpression)
+                                   ?? (expression.Body as MemberExpression);
+
+            return memberExpression.Member.Name == memberName;
+        }
+        
+        protected bool MatchMemberName(RdoExpressionGuid expression, string memberName)
+        {
+            var memberExpression = ((expression.Body as UnaryExpression)?.Operand as MemberExpression)
+                                   ?? (expression.Body as MemberExpression);
+
+            return memberExpression.Member.Name == memberName;
+        }
+        
+        protected bool MatchMemberName(RdoExpressionGuidNullable expression, string memberName)
         {
             var memberExpression = ((expression.Body as UnaryExpression)?.Operand as MemberExpression)
                                    ?? (expression.Body as MemberExpression);

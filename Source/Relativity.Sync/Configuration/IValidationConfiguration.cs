@@ -36,5 +36,9 @@ namespace Relativity.Sync.Configuration
 		IList<FieldMap> GetFieldMappings();
 
 		string GetFolderPathSourceFieldName();
+		
+		bool Resuming { get; }
+		
+		Guid? SnapshotId { get; }
 	}
 }
