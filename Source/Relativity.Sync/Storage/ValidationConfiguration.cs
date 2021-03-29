@@ -67,7 +67,9 @@ namespace Relativity.Sync.Storage
         public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
 
         public string GetFolderPathSourceFieldName() => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);
+        
         public bool Resuming => _cache.GetFieldValue(x => x.Resuming);
+        
         public Guid? SnapshotId => _cache.GetFieldValue(x => x.SnapshotId);
     }
 }

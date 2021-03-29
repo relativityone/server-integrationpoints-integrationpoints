@@ -25,8 +25,15 @@ namespace Relativity.Sync.Storage
 
 		public int DataSourceArtifactId => Cache.GetFieldValue(x => x.DataSourceArtifactId);
 
-		public bool IsSnapshotCreated => Cache.GetFieldValue(x => x.SnapshotId) != null &&
-		                                 !Cache.GetFieldValue(x => x.SnapshotId).Equals(Guid.Empty);
+		public bool IsSnapshotCreated
+		{
+			get
+			{
+				Guid? fieldValue = Cache.GetFieldValue(x => x.SnapshotId);
+				return fieldValue != null &&
+				       !fieldValue.Equals(Guid.Empty);
+			}
+		}
 
 		public async Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount)
 		{

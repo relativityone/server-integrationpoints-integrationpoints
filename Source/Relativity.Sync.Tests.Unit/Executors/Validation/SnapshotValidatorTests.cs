@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
         [TestCase(true)]
         [TestCase(false)]
-        public void ShouldValidate_Should_RespectResumingFromConfiguration(bool resuming)
+        public void ShouldValidate_ShouldRespectResumingFromConfiguration(bool resuming)
         {
             // Arrange
             _configuration.Resuming = resuming;
