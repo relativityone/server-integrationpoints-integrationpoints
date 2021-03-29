@@ -234,8 +234,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new FakeRepositoryFactory(kernel.Resolve<InMemoryDatabase>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))));
 
 			Container.Register(Component.For<IBatchStatus>().ImplementedBy<FakeBatchStatus>());
-			Container.Register(Component.For<IValidator>().ImplementedBy<FakeValidator>());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<FakePermissionValidator>());
 		}
 
 		private void RegisterRipAgentTasks()

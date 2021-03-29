@@ -1,15 +1,16 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 
@@ -23,12 +24,86 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 		public void EmailValidator_ShouldValidate()
 		{
 			// Arrange
-			object email = "relativity.admin@kcura.com";
+			object emails = "relativity.admin@kcura.com;rip.jenkins@kcura.com";
 
 			IValidator sut = Container.Resolve<IValidator>(nameof(EmailValidator));
 
 			// Act
-			ValidationResult result = sut.Validate(email);
+			ValidationResult result = sut.Validate(emails);
+
+			// Assert
+			VerifyValidationPassed(result);
+		}
+
+		[IdentifiedTest("1017CADD-26FA-4E2E-B7E0-CC6890AB211B")]
+		public void NameValidator_ShouldValidate()
+		{
+			// Arrange
+			object name = "TestFileWithoutInvalidCharacters.js";
+
+			IValidator sut = Container.Resolve<IValidator>(nameof(NameValidator));
+
+			// Act
+			ValidationResult result = sut.Validate(name);
+
+			// Assert
+			VerifyValidationPassed(result);
+		}
+
+		[IdentifiedTest("5A93D188-D7AE-4E92-886E-D33D4B00432F")]
+		public void SchedulerValidator_ShouldValidate()
+		{
+			// Arrange
+			object value = new Scheduler
+			{
+				EnableScheduler = true,
+				EndDate = "3/30/2021",
+				TimeZoneOffsetInMinute = 0,
+				StartDate = "3/20/2021",
+				SelectedFrequency = "Weekly",
+				Reoccur = 2,
+				ScheduledTime = "10:00",
+				SendOn = Serializer.Serialize(new Weekly()
+				{
+					SelectedDays = new List<string>
+					{
+						"Monday", 
+						"Friday"
+					}
+				}),
+				TimeZoneId = null
+			};
+
+			IValidator sut = Container.Resolve<IValidator>(nameof(SchedulerValidator));
+
+			// Act
+			ValidationResult result = sut.Validate(value);
+
+			// Assert
+			VerifyValidationPassed(result);
+		}
+
+		[IdentifiedTest("65455C36-778B-42A6-BC37-88624EF84C61")]
+		public void IntegrationPointTypeValidator_ShouldValidate()
+		{
+			// Arrange
+			IntegrationPointTypeTest integrationPointType = 
+				HelperManager.IntegrationPointTypeHelper.CreateIntegrationPointType(new IntegrationPointTypeTest
+				{
+					WorkspaceId = SourceWorkspace.ArtifactId,
+					Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()
+				});
+
+			object value = new IntegrationPointProviderValidationModel()
+			{
+				SourceProviderIdentifier = kCura.IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
+				Type = integrationPointType.ArtifactId
+			};
+
+			IValidator sut = Container.Resolve<IValidator>(nameof(IntegrationPointTypeValidator));
+
+			// Act
+			ValidationResult result = sut.Validate(value);
 
 			// Assert
 			VerifyValidationPassed(result);
@@ -49,27 +124,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
 			// Act
 			ValidationResult result = sut.Validate(folder.ArtifactId);
-
-			// Assert
-			VerifyValidationPassed(result);
-		}
-
-		[IdentifiedTest("EA5F1E35-204F-44C4-B499-D535337DB61E")]
-		public void ImportPermissionValidator_ShouldValidate()
-		{
-			// Arrange
-			IPermissionValidator sut = Container.Resolve<IPermissionValidator>(nameof(ImportPermissionValidator));
-
-			IntegrationPointProviderValidationModel model = new IntegrationPointProviderValidationModel()
-			{
-				DestinationConfiguration = Serializer.Serialize(new DestinationConfiguration
-				{
-					ArtifactTypeId = (int) ArtifactType.Document
-				})
-			};
-
-			// Act
-			ValidationResult result = sut.Validate(model);
 
 			// Assert
 			VerifyValidationPassed(result);

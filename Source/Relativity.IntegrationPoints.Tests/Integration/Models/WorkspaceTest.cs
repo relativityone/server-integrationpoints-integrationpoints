@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 
@@ -12,6 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public WorkspaceTest()
 		{
 			ArtifactId = ArtifactProvider.NextId();
+			Name = $"Workspace - {Guid.NewGuid()}";
 		}
 
 		public RelativityObject ToRelativityObject()

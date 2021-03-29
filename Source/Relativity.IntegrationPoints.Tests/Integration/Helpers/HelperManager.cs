@@ -23,6 +23,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		private DestinationProviderHelper _destinationProviderHelper;
 
+		private SavedSearchHelper _savedSearchHelper;
+
 		public HelperManager(InMemoryDatabase db, ProxyMock proxy, TestContext testContext)
 		{
 			_db = db;
@@ -47,5 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		public SourceProviderHelper SourceProviderHelper => _sourceProviderHelper ?? (_sourceProviderHelper = new SourceProviderHelper(this, _db, _proxy));
 
 		public DestinationProviderHelper DestinationProviderHelper => _destinationProviderHelper ?? (_destinationProviderHelper = new DestinationProviderHelper(this, _db, _proxy));
+
+		public SavedSearchHelper SavedSearchHelper => _savedSearchHelper ?? (_savedSearchHelper = new SavedSearchHelper(this, _db, _proxy));
 	}
 }

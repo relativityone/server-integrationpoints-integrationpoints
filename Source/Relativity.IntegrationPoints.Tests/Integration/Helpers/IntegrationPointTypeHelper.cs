@@ -21,5 +21,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 			return integrationPointType;
 		}
+
+		public IntegrationPointTypeTest CreateIntegrationPointType(IntegrationPointTypeTest integrationPointType)
+		{
+			Database.IntegrationPointTypes.Add(integrationPointType);
+
+			return integrationPointType;
+		}
 	}
 }

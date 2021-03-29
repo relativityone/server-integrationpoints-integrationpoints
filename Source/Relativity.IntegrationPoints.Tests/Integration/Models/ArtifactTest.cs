@@ -5,7 +5,5 @@
 		public int ArtifactId { get; set; }
 		
 		public string ArtifactType { get; set; }
-
-		public int ParentArtifactId { get; set; }
 	}
 }

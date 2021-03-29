@@ -8,6 +8,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public int ArtifactId => Artifact.ArtifactId;
 
+		public int ParenObjectArtifactId { get; set; }
+
 		public int WorkspaceId { get; set; }
 
 		protected RdoTestBase(string artifactTypeName)

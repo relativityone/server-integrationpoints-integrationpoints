@@ -18,6 +18,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private readonly ObservableCollection<DestinationProviderTest> _destinationProviders = new ObservableCollection<DestinationProviderTest>();
 		private readonly ObservableCollection<FolderTest> _folders = new ObservableCollection<FolderTest>();
 		private readonly ObservableCollection<ArtifactTest> _artifacts = new ObservableCollection<ArtifactTest>();
+		private readonly ObservableCollection<SavedSearchTest> _savedSearches = new ObservableCollection<SavedSearchTest>();
+		private readonly ObservableCollection<FieldTest> _fields = new ObservableCollection<FieldTest>();
 
 		public List<AgentTest> Agents { get; set; } = new List<AgentTest>();
 
@@ -39,6 +41,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public IList<ArtifactTest> Artifacts => _artifacts;
 
+		public IList<SavedSearchTest> SavedSearches => _savedSearches;
+
+		public IList<FieldTest> Fields => _fields;
+
 		public InMemoryDatabase(ProxyMock proxy)
 		{
 			_proxy = proxy;
@@ -50,6 +56,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			SetupJobHistory();
 			SetupSourceProviders();
 			SetupDestinationProviders();
+			SetupSavedSearches();
+			SetupFields();
 		}
 
 		public void Clear()
@@ -63,6 +71,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			JobHistory.Clear();
 			SourceProviders.Clear();
 			DestinationProviders.Clear();
+			SavedSearches.Clear();
+			Fields.Clear();
 		}
 
 		private void SetupWorkspaces()
@@ -72,6 +82,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				OnNewItemsAdded<WorkspaceTest>(sender, args,
 					(newItem) =>
 					{
+						_proxy.ObjectManager.SetupDocumentFields(this, newItem);
 						_proxy.ObjectManager.SetupWorkspace(this, newItem);
 					});
 			};
@@ -135,6 +146,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 					{
 						this.Artifacts.Add(newItem.Artifact);
 						_proxy.ObjectManager.SetupArtifact(this, newItem);
+					});
+			};
+		}
+
+		private void SetupSavedSearches()
+		{
+			_savedSearches.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<SavedSearchTest>(sender, args,
+					newItem =>
+					{
+						_proxy.ObjectManager.SetupSavedSearch(this, newItem);
+					});
+			};
+		}
+
+		private void SetupFields()
+		{
+			_fields.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<FieldTest>(sender, args,
+					newItem =>
+					{
+						//TODO
 					});
 			};
 		}
