@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			// ARRANGE
 			_syncConfigurationRdo.JobHistoryId = 5;
-			_syncConfigurationRdo.SnapshotId = "snapshot";
+			_syncConfigurationRdo.SnapshotId = new Guid();
 
 
 			// ACT && ASSERT

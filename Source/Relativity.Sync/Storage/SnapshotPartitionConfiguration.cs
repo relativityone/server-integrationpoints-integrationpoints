@@ -27,15 +27,13 @@ namespace Relativity.Sync.Storage
 		{
 			get
 			{
-				string runId = _cache.GetFieldValue(x => x.SnapshotId);
-				Guid guid;
-				if (Guid.TryParse(runId, out guid))
+				Guid? snapshotId = _cache.GetFieldValue(x => x.SnapshotId);
+				if (snapshotId == Guid.Empty)
 				{
-					return guid;
+					snapshotId = null;
 				}
 
-				_syncLog.LogError("Unable to parse export run ID {runId}.", runId);
-				throw new ArgumentException($"Run ID needs to be valid GUID, but {runId} found.");
+				return snapshotId ?? throw new ArgumentException($"Run ID needs to be valid GUID, but null found.");
 			}
 		}
 

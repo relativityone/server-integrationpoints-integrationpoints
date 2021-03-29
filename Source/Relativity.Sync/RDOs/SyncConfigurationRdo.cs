@@ -76,7 +76,7 @@ namespace Relativity.Sync.RDOs
         public int? JobHistoryToRetryId { get; set; }
 
         [RdoField(SyncRdoGuids.SnapshotIdGuid, RdoFieldType.FixedLengthText)]
-        public string SnapshotId { get; set; }
+        public Guid? SnapshotId { get; set; }
 
         [RdoField(SyncRdoGuids.SnapshotRecordsCountGuid, RdoFieldType.WholeNumber)]
         public int SnapshotRecordsCount { get; set; }

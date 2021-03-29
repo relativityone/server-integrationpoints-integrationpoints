@@ -115,6 +115,10 @@ namespace Relativity.Sync.Tests.Common
 		public string FolderPathSourceFieldName { get; set; }
 
 		public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;
+		
+		public bool Resuming { get; set; }
+		
+		public Guid? SnapshotId { get; set; }
 
 		public string FileSizeColumn { get; set; }
 
