@@ -96,7 +96,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 					(newItem) =>
 					{
 						_proxy.ObjectManager.SetupArtifact(this, newItem);
-						_proxy.ObjectManager.SetupIntegrationPoints(this, newItem);
+						_proxy.ObjectManager.SetupIntegrationPoint(this, newItem);
 					});
 			};
 		}
@@ -106,7 +106,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_integrationPointTypes.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<IntegrationPointTypeTest>(sender, args,
-					(newItem) => _proxy.ObjectManager.SetupIntegrationPointTypes(this, newItem));
+					(newItem) => _proxy.ObjectManager.SetupIntegrationPointType(this, newItem));
 			};
 		}
 
@@ -124,7 +124,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_sourceProviders.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<SourceProviderTest>(sender, args,
-					newItem => _proxy.ObjectManager.SetupSourceProviders(this, newItem));
+					newItem => _proxy.ObjectManager.SetupSourceProvider(this, newItem));
 			};
 		}
 
