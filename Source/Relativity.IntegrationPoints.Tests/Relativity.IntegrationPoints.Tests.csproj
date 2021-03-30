@@ -64,7 +64,6 @@
     <Compile Include="Integration\Helpers\FieldsMappingHelper.cs" />
     <Compile Include="Integration\Helpers\IntegrationPointTypeHelper.cs" />
     <Compile Include="Integration\Helpers\JobHistoryHelper.cs" />
-    <Compile Include="Integration\Helpers\SavedSearchHelper.cs" />
     <Compile Include="Integration\Helpers\SourceProviderHelper.cs" />
     <Compile Include="Integration\InstanceSettings.cs" />
     <Compile Include="Integration\Mocks\FakeUser.cs" />
