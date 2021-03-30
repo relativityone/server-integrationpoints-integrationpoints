@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private const int _DATA_SOURCE_ID = 8;
 		private const int _USER_ID = 68;
 		private const int _SOURCE_WORKSPACE_ID = 70;
-		private const string _WORKFLOW_ID = "WORKFLOW_ID";
+		private const string _CORRELATION_ID = "CORRELATION_ID";
 
 		public static (object[] BatchResults, object ExpectedResult)[] AggregationTestCaseSource { get; } =
 		{
@@ -224,7 +224,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					TotalReadTime = TimeSpan.FromSeconds(x)
 				}).ToList());
 			
-			_syncMetricsMock.Setup(x => x.Send(It.IsAny<IMetric>())).Callback((IMetric m) => m.WorkflowId = _WORKFLOW_ID);
+			_syncMetricsMock.Setup(x => x.Send(It.IsAny<IMetric>())).Callback((IMetric m) => m.CorrelationId = _CORRELATION_ID);
 
 			_jobCleanupConfigurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
 
@@ -242,7 +242,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				&& m.StageName == "Transfer"
 				&& m.Elapsed == iapiTime / 1000
 				&& m.APMCategory == "PerformanceBatchJob"
-				&& m.CorrelationID == _WORKFLOW_ID
+				&& m.CorrelationId == _CORRELATION_ID
 				&& m.JobID == 1
 				&& m.WorkspaceID == _SOURCE_WORKSPACE_ID
 				&& m.JobStatus == ExecutionStatus.Completed

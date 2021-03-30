@@ -10,7 +10,6 @@ namespace Relativity.Sync.Telemetry.Metrics
         public long? Elapsed { get; set; }
 
         public string APMCategory => "PerformanceBatchJob";
-        public string CorrelationID => WorkflowId;
         public int? JobID { get; set; }
         public int? WorkspaceID { get; set; }
 

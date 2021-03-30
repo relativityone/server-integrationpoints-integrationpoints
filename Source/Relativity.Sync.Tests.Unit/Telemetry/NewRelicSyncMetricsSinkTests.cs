@@ -55,17 +55,17 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		public void Send_ShouldGauge_BatchEndPerformanceMetric()
 		{
 			// Arrange
-			const string workflowId = "Test";
+			const string correlationId = "Test";
 			var metric = new BatchEndPerformanceMetric
 			{
-				WorkflowId = workflowId
+				CorrelationId = correlationId
 			};
 
 			// Act
 			_sut.Send(metric);
 			
 			// Assert
-			_apmClientMock.Verify(x => x.Gauge(_APPLICATION_NAME, workflowId, It.IsAny<Dictionary<string, object>>()));
+			_apmClientMock.Verify(x => x.Gauge(_APPLICATION_NAME, correlationId, It.IsAny<Dictionary<string, object>>()));
 		}
 
 		internal class TestMetric : MetricBase<TestMetric>
