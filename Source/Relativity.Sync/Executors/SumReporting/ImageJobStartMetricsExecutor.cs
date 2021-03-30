@@ -28,30 +28,26 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		public Task<ExecutionResult> ExecuteAsync(IImageJobStartMetricsConfiguration configuration, CompositeCancellationToken token)
 		{
-			IMetric metric;
-
 			if (configuration.Resuming)
 			{
-				metric = new JobResumeMetric
+				_syncMetrics.Send(new JobResumeMetric
 				{
 					Type = TelemetryConstants.PROVIDER_NAME,
 					RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
-				};
+				});
 			}
 			else
 			{
-				metric = new JobStartMetric
+				_syncMetrics.Send(new JobStartMetric
 				{
 					Type = TelemetryConstants.PROVIDER_NAME,
 					FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES,
 					RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
-				};
+				});
 
 				_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token.StopCancellationToken);
 			}
-
-			_syncMetrics.Send(metric);
-
+			
 			return Task.FromResult(ExecutionResult.Success());
 		}
 
