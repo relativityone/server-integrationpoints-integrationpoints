@@ -21,6 +21,7 @@ using kCura.WinEDDS.Service.Export;
 using Relativity.DataExchange;
 using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Extensions;
 using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
 
@@ -102,7 +103,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			Task<SyncJobState> RunAsync();
 
-			Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems);
+			Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems, Guid? jobHistoryGuid = null);
 			void AssertDocuments(string[] sourceDocumentsNames, string[] destinationDocumentsNames);
 			void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds);
 		}
@@ -129,12 +130,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				return syncRunner.RunAsync(_parameters, _goldFlowTestSuite.User.ArtifactID);
 			}
 
-			public async Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems)
+			public async Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems, Guid? jobHistoryGuid = null)
 			{
 				result.Status.Should().Be(SyncJobStatus.Completed, result.Message);
+				jobHistoryGuid = jobHistoryGuid ?? DefaultGuids.JobHistory.TypeGuid;
 
 				RelativityObject jobHistory = await Rdos
-					.GetJobHistoryAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, _configuration.JobHistoryArtifactId)
+					.GetJobHistoryAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, _configuration.JobHistoryArtifactId, jobHistoryGuid.Value)
 					.ConfigureAwait(false);
 				int itemsTransferred = (int)jobHistory["Items Transferred"].Value;
 				int totalItems = (int) jobHistory["Total Items"].Value;

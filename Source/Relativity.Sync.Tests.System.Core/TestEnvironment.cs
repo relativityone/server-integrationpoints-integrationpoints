@@ -27,10 +27,12 @@ namespace Relativity.Sync.Tests.System.Core
 	{
 		private int _templateWorkspaceArtifactId = -1;
 		private const string _RELATIVITY_SYNC_TEST_HELPER_RAP = "Relativity_Sync_Test_Helper.xml";
+		private const string _CUSTOM_RELATIVITY_SYNC_TEST_HELPER_RAP = "Custom_Relativity_Sync_Test_Helper.xml";
 		private readonly List<WorkspaceRef> _workspaces = new List<WorkspaceRef>();
 		private readonly SemaphoreSlim _templateWorkspaceSemaphore = new SemaphoreSlim(1);
 		private readonly ServiceFactory _serviceFactory;
 		private static readonly Guid _HELPER_APP_GUID = new Guid("e08fd0d9-c3a1-4654-87ad-104f08980b84");
+		private static readonly Guid _CUSTOM_HELPER_APP_GUID = new Guid("fdd69e45-880a-40bb-aae1-784271974d49");
 
 		public TestEnvironment()
 		{
@@ -80,6 +82,13 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
 			await CreateFieldsInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
+			return workspace;
+		}
+		
+		public async Task<WorkspaceRef> CreateWorkspaceWithCustomAppAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
+		{
+			WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
+			await InstallCustomHelperAppAsync(workspace.ArtifactID).ConfigureAwait(false);
 			return workspace;
 		}
 
@@ -192,26 +201,41 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public async Task CreateFieldsInWorkspaceAsync(int workspaceArtifactId)
 		{
-			await InstallHelperAppIfNeededAsync().ConfigureAwait(false);
-			using (var applicationInstallManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
+			await InstallHelperAppIfNeededAsync(_RELATIVITY_SYNC_TEST_HELPER_RAP, _HELPER_APP_GUID).ConfigureAwait(false);
+			await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _HELPER_APP_GUID);
+			
+			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
+		}
+
+		public async Task InstallCustomHelperAppAsync(int workspaceArtifactId)
+		{
+			await InstallHelperAppIfNeededAsync(_CUSTOM_RELATIVITY_SYNC_TEST_HELPER_RAP, _CUSTOM_HELPER_APP_GUID).ConfigureAwait(false);
+			await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _CUSTOM_HELPER_APP_GUID);
+			
+			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
+		}
+		
+		private async Task InstallApplicationFromLibraryToWorkspaceAsync(int workspaceArtifactId, Guid appGuid)
+		{
+			using (var applicationInstallManager =
+				_serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
 			{
 				var installApplicationRequest = new InstallApplicationRequest
 				{
-					WorkspaceIDs = new List<int> { workspaceArtifactId }
+					WorkspaceIDs = new List<int> {workspaceArtifactId}
 				};
-				InstallApplicationResponse install = await applicationInstallManager.InstallApplicationAsync(-1, _HELPER_APP_GUID, installApplicationRequest).ConfigureAwait(false);
+				InstallApplicationResponse install = await applicationInstallManager
+					.InstallApplicationAsync(-1, appGuid, installApplicationRequest).ConfigureAwait(false);
 				int applicationInstallId = install.Results.First().ApplicationInstallID;
 				InstallStatusCode installStatusCode;
 				do
 				{
 					await Task.Yield();
-					GetInstallStatusResponse status = await applicationInstallManager.GetStatusAsync(-1, _HELPER_APP_GUID, applicationInstallId).ConfigureAwait(false);
+					GetInstallStatusResponse status = await applicationInstallManager
+						.GetStatusAsync(-1, appGuid, applicationInstallId).ConfigureAwait(false);
 					installStatusCode = status.InstallStatus.Code;
-				}
-				while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
+				} while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
 			}
-			
-			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
 		}
 
 		private static async Task EnsureRdosExistsAsync(int workspaceArtifactId)
@@ -223,13 +247,13 @@ namespace Relativity.Sync.Tests.System.Core
 
 		}
 
-		private async Task InstallHelperAppIfNeededAsync()
+		private async Task InstallHelperAppIfNeededAsync(string appFileName, Guid appGuid)
 		{
-			using (var fileStream = GetHelperApplicationXml())
+			using (var fileStream = GetHelperApplicationXml(appFileName))
 			using (var applicationLibraryManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.ILibraryApplicationManager>())
 			{
 				List<LibraryApplicationResponse> apps = await applicationLibraryManager.ReadAllAsync(-1).ConfigureAwait(false);
-				LibraryApplicationResponse libraryApp = apps.FirstOrDefault(app => app.Guids.Contains(_HELPER_APP_GUID));
+				LibraryApplicationResponse libraryApp = apps.FirstOrDefault(app => app.Guids.Contains(appGuid));
 				var libraryAppVersion = new Version(libraryApp?.Version ?? "0.0.0.0");
 				Version appXmlAppVersion = GetVersionFromApplicationXmlStream(fileStream);
 
@@ -243,7 +267,7 @@ namespace Relativity.Sync.Tests.System.Core
 						var updateLibraryApplicationRequest = new UpdateLibraryApplicationRequest
 						{
 							CreateIfMissing = true,
-							FileName = Path.ChangeExtension(_RELATIVITY_SYNC_TEST_HELPER_RAP, "rap"),
+							FileName = Path.ChangeExtension(appFileName, "rap"),
 							IgnoreVersion = false,
 							RefreshCustomPages = false
 						};
@@ -298,10 +322,10 @@ namespace Relativity.Sync.Tests.System.Core
 			return appXml;
 		}
 
-		private static Stream GetHelperApplicationXml()
+		private static Stream GetHelperApplicationXml(string appResourceName)
 		{
 			Assembly asm = Assembly.GetExecutingAssembly();
-			string resource = $"Relativity.Sync.Tests.System.Core.Resources.{_RELATIVITY_SYNC_TEST_HELPER_RAP}";
+			string resource = $"Relativity.Sync.Tests.System.Core.Resources.{appResourceName}";
 			return asm.GetManifestResourceStream(resource);
 		}
 

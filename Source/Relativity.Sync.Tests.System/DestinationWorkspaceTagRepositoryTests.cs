@@ -10,6 +10,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Utils;
@@ -56,6 +57,7 @@ namespace Relativity.Sync.Tests.System
 			var repository = new DestinationWorkspaceTagRepository(new ServiceFactoryStub(ServiceFactory),
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
+				configuration,
 				new EmptyLogger(),
 				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, jobHistoryId)),
 				() => new StopwatchWrapper());

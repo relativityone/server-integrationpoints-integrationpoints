@@ -1,5 +1,6 @@
 using System;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage.RdoGuidsProviders;
 using Relativity.Sync.SyncConfiguration.Options;
 
 namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
@@ -31,6 +32,19 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
             NewStatusGuid = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A")
         };
 
+        public static IDestinationWorkspaceTagGuidProvider DestinationWorkspace =>
+            new DestinationWorkspaceTagGuidProviderStub
+            {
+                NameGuid = new Guid("155649C0-DB15-4EE7-B449-BFDF2A54B7B5"),
+                TypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198"),
+                DestinationInstanceNameGuid = new Guid("909ADC7C-2BB9-46CA-9F85-DA32901D6554"),
+                DestinationWorkspaceNameGuid = new Guid("348D7394-2658-4DA4-87D0-8183824ADF98"),
+                DestinationInstanceArtifactIdGuid = new Guid("323458DB-8A06-464B-9402-AF2516CF47E0"),
+                DestinationWorkspaceArtifactIdGuid = new Guid("207E6836-2961-466B-A0D2-29974A4FAD36"),
+                DestinationWorkspaceOnDocument = new Guid("8980C2FA-0D33-4686-9A97-EA9D6F0B4196"),
+                JobHistoryOnDocumentGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6")
+            };
+
         public static RdoOptions DefaultRdoOptions => new RdoOptions(
             new JobHistoryOptions(
                 JobHistory.TypeGuid,
@@ -38,7 +52,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 JobHistory.FailedItemsFieldGuid,
                 JobHistory.TotalItemsFieldGuid,
                 JobHistory.DestinationWorkspaceInformationGuid
-                ),
+            ),
             new JobHistoryErrorOptions(
                 JobHistoryError.TypeGuid,
                 JobHistoryError.NameGuid,
@@ -52,7 +66,17 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 JobHistoryError.ItemLevelErrorGuid,
                 JobHistoryError.JobLevelErrorGuid,
                 JobHistoryError.NewStatusGuid
-                )
-            );
+            ),
+            new DestinationWorkspaceOptions(
+                DestinationWorkspace.TypeGuid,
+                DestinationWorkspace.NameGuid,
+                DestinationWorkspace.DestinationWorkspaceNameGuid,
+                DestinationWorkspace.DestinationWorkspaceArtifactIdGuid,
+                DestinationWorkspace.DestinationInstanceNameGuid,
+                DestinationWorkspace.DestinationInstanceArtifactIdGuid,
+                DestinationWorkspace.JobHistoryOnDocumentGuid,
+                DestinationWorkspace.DestinationWorkspaceOnDocument
+            )
+        );
     }
 }

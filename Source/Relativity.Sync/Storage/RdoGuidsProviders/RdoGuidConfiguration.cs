@@ -13,9 +13,11 @@ namespace Relativity.Sync.Storage.RdoGuidsProviders
         {
             JobHistory = new JobHistoryRdoGuidsProvider(cache);
             JobHistoryError = new JobHistoryErrorGuidsProvider(cache);
+            DestinationWorkspace = new DestinationWorkspaceTagGuidProvider(cache);
         }
 
         public IJobHistoryRdoGuidsProvider JobHistory { get; }
         public IJobHistoryErrorGuidsProvider JobHistoryError { get; }
+        public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; }
     }
 }

@@ -66,6 +66,16 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryErrorType = RdoOptions.JobHistoryError.TypeGuid;
             SyncConfiguration.JobHistoryErrorJobHistoryRelation = RdoOptions.JobHistoryError.JobHistoryRelationGuid;
             SyncConfiguration.JobHistoryErrorNewChoice = RdoOptions.JobHistoryError.NewStatusGuid;
+            
+            // DestinationWorkspace
+            SyncConfiguration.DestinationWorkspaceType = RdoOptions.DestinationWorkspace.TypeGuid;
+            SyncConfiguration.DestinationWorkspaceNameField = RdoOptions.DestinationWorkspace.NameGuid;
+            SyncConfiguration.DestinationWorkspaceWorkspaceArtifactIdField = RdoOptions.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid;
+            SyncConfiguration.DestinationWorkspaceDestinationWorkspaceName = RdoOptions.DestinationWorkspace.DestinationWorkspaceNameGuid;
+            SyncConfiguration.DestinationWorkspaceDestinationInstanceName = RdoOptions.DestinationWorkspace.DestinationInstanceNameGuid;
+            SyncConfiguration.DestinationWorkspaceDestinationInstanceArtifactId = RdoOptions.DestinationWorkspace.DestinationInstanceArtifactIdGuid;
+            SyncConfiguration.JobHistoryOnDocumentField = RdoOptions.DestinationWorkspace.JobHistoryOnDocumentGuid;
+            SyncConfiguration.DestinationWorkspaceOnDocumentField = RdoOptions.DestinationWorkspace.DestinationWorkspaceOnDocument;
         }
 
         public void OverwriteMode(OverwriteOptions options)
@@ -128,7 +138,17 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.JobHistoryRelationGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.ItemLevelErrorChoiceGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.JobLevelErrorChoiceGuid),
-                GetValidationInfo(RdoOptions.JobHistoryError, x => x.NewStatusGuid)
+                GetValidationInfo(RdoOptions.JobHistoryError, x => x.NewStatusGuid),
+                
+                // DestinationWorkspace
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.TypeGuid),
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.NameGuid),
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.DestinationWorkspaceNameGuid),
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.DestinationWorkspaceArtifactIdGuid),
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.DestinationInstanceNameGuid),
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.DestinationInstanceArtifactIdGuid),
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.JobHistoryOnDocumentGuid),
+                GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.DestinationWorkspaceOnDocument)
             };
         }
         

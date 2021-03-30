@@ -23,6 +23,10 @@
 	  <EmbeddedResource Include="Resources\Relativity_Sync_Test_Helper.xml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </EmbeddedResource>
+	  <None Remove="Resources\Custom_Relativity_Sync_Test_Helper.xml" />
+	  <EmbeddedResource Include="Resources\Custom_Relativity_Sync_Test_Helper.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />

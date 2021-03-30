@@ -59,5 +59,14 @@ namespace Relativity.Sync.RDOs
         public const string JobHistoryErrorInProgressChoiceGuid = "A3CE4293-AB88-4A98-8415-0DE3F3127A76";
         public const string JobHistoryErrorRetriedChoiceGuid = "0859833A-B8F4-4352-92CA-38AA8FD46388";
         public const string JobHistoryIdGuid = "FF793525-29AB-40B2-A8AE-88E574EAD0DE";
+
+        public const string DestinationWorkspaceTypeGuid = "0F562699-B51B-4DD3-97BE-BDFF4BC70FDC";
+        public const string DestinationWorkspaceNameFieldGuid = "6EF7642E-5063-447F-8713-62B59FE18524";
+        public const string DestinationWorkspaceDestinationWorkspaceArtifactIdGuid = "4F69A57F-D76D-46A9-9FD0-60F60320BDD3";
+        public const string DestinationWorkspaceDestinationWorkspaceNameGuid = "622016C3-D31A-4F60-91A0-7F7D74C92005";
+        public const string DestinationWorkspaceDestinationInstanceNameGuid = "970B9B9F-3D8A-406C-834D-F9AF7367D171";
+        public const string DestinationWorkspaceDestinationInstanceArtifactIdGuid = "A5CC5DA6-F965-47FD-ACED-03C5AF2FE64B";
+        public const string JobHistoryOnDocumentFieldGuid = "A60FBE28-D7ED-49CA-BB1D-2EA58CFF406B";
+        public const string DestinationWorkspaceOnDocumentFieldGuid = "D8C32815-2311-4554-87E4-81BB649719A4";
     }
 }
