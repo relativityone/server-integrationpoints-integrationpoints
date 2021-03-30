@@ -1,5 +1,4 @@
-﻿using Moq;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler;
+﻿using Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -19,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			ObjectManager = new ObjectManagerStub();
 			WorkspaceManager = new WorkspaceManagerStub();
-			PermissionManager = new PermissionManagerStub(context.User);
+			PermissionManager = new PermissionManagerStub();
 			InstanceSettingManager = new InstanceSettingManagerStub(context);
 			GroupManager = new GroupManagerStub(context.User);
 

@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
@@ -125,8 +126,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
 			RegisterRipAgentTasks();
-			RegisterValidators();
 			RegisterAuthentication();
+
+			Container.Install(new ValidationInstaller());
 		}
 
 		private void RegisterRelativityApiServices()
@@ -243,31 +245,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private void RegisterRipAgentTasks()
 		{
 			Container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
-		}
-
-		private void RegisterValidators()
-		{
-			Container.Register(Component.For<IRelativityProviderValidatorsFactory>().ImplementedBy<RelativityProviderValidatorsFactory>().LifestyleTransient());
-
-			Container.Register(Component.For<INonValidCharactersValidator>().ImplementedBy<NonValidCharactersValidator>());
-
-			Container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>().Named(nameof(EmailValidator)).LifestyleTransient());
-			Container.Register(Component.For<IValidator>().ImplementedBy<NameValidator>().Named(nameof(NameValidator)).LifestyleTransient());
-			Container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>().Named(nameof(SchedulerValidator)).LifestyleTransient());
-			Container.Register(Component.For<IValidator>().ImplementedBy<IntegrationPointTypeValidator>().Named(nameof(IntegrationPointTypeValidator)).LifestyleTransient());
-			Container.Register(Component.For<IValidator>().ImplementedBy<RelativityProviderConfigurationValidator>().Named(nameof(RelativityProviderConfigurationValidator)).LifestyleTransient());
-
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<ImportPermissionValidator>().Named(nameof(ImportPermissionValidator)).LifestyleTransient());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<PermissionValidator>().Named(nameof(PermissionValidator)).LifestyleTransient());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<SavePermissionValidator>().Named(nameof(SavePermissionValidator)).LifestyleTransient());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<StopJobPermissionValidator>().Named(nameof(StopJobPermissionValidator)).LifestyleTransient());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<ViewErrorsPermissionValidator>().Named(nameof(ViewErrorsPermissionValidator)).LifestyleTransient());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<RelativityProviderPermissionValidator>().Named(nameof(RelativityProviderPermissionValidator)).LifestyleTransient());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<NativeCopyLinksValidator>().Named(nameof(NativeCopyLinksValidator)).LifestyleTransient());
-
-			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderValidator>().LifestyleTransient());
-			Container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>().LifestyleTransient());
-			Container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleTransient());
 		}
 
 		private void RegisterAuthentication()

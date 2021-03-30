@@ -12,7 +12,6 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
 	[IdentifiedTestFixture("DADEA8A3-8043-44B6-A8BF-A0B9BBC793D0")]
-	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ScheduleQueueTestsForScheduledJobs : TestsBase
 	{
 		private readonly DateTime _FIXED_DATE_TIME = new DateTime(2021, 10, 20);
