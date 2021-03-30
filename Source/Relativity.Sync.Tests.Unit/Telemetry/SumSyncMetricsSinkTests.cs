@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			// Arrange
 			TestMetric metric = new TestMetric
 			{
-				WorkflowId = "id",
+				CorrelationId = "id",
 				Test = 1000
 			};
 
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_sut.Send(metric);
 
 			// Assert
-			_metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync("TestName", _workspaceGuid, metric.WorkflowId, metric.Test.Value), Times.Once);
+			_metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync("TestName", _workspaceGuid, metric.CorrelationId, metric.Test.Value), Times.Once);
 		}
 
 		[Test]
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			// Arrange
 			NotMatchingValueMetric metric = new NotMatchingValueMetric
 			{
-				WorkflowId = "id",
+				CorrelationId = "id",
 				InvalidValue = "1000"
 			};
 
@@ -72,8 +72,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_sut.Send(metric);
 
 			// Assert
-			_syncLogMock.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), "InvalidType", metric.WorkflowId, metric.InvalidValue), Times.Once);
-			_metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync("InvalidType", _workspaceGuid, metric.WorkflowId, It.IsAny<double>()), Times.Never);
+			_syncLogMock.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), "InvalidType", metric.CorrelationId, metric.InvalidValue), Times.Once);
+			_metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync("InvalidType", _workspaceGuid, metric.CorrelationId, It.IsAny<double>()), Times.Never);
 		}
 
 		[Test]

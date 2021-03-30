@@ -36,27 +36,27 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		protected override void VerifySumSink(Mock<IMetricsManager> metricsManagerMock)
 		{
 			metricsManagerMock.Verify(x => x.LogPointInTimeStringAsync(TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.RetryJobEndStatus));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.RetryJobEndStatus));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.TotalRecordsTransferred.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalRecordsTransferred.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TAGGED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.TotalRecordsTagged.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalRecordsTagged.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.TotalRecordsFailed.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalRecordsFailed.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.TotalRecordsRequested.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalRecordsRequested.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_BYTES_TOTAL_TRANSFERRED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.BytesTransferred.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.BytesTransferred.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeStringAsync(TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.JobEndStatus));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.JobEndStatus));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_REQUESTED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.BytesNativesRequested.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.BytesNativesRequested.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.BytesMetadataTransferred.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.BytesMetadataTransferred.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_BYTES_NATIVES_TRANSFERRED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.BytesNativesTransferred.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.BytesNativesTransferred.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.TotalMappedFields.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalMappedFields.Value));
 
 			metricsManagerMock.Verify(x => x.Dispose());
 			metricsManagerMock.VerifyNoOtherCalls();

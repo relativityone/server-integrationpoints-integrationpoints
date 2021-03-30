@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				apmSink
 			};
 
-			_syncMetrics = new SyncMetrics(sinks, new ConfigurationStub(), _jobParameters);
+			_syncMetrics = new SyncMetrics(sinks, new ConfigurationStub());
 		}
 
 		[Test]

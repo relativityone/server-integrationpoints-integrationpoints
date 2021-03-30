@@ -7,9 +7,7 @@ namespace Relativity.Sync.Telemetry
 		string Name { get; }
 
 		string CorrelationId { get; set; }
-
-		string WorkflowId { get; set; }
-
+		
 		Dictionary<string, object> GetApmMetrics();
 
 		IEnumerable<SumMetric> GetSumMetrics();
