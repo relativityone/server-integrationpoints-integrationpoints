@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using Relativity.Services.Permission;
 

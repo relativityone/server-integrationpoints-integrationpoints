@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupIntegrationPointTypes(InMemoryDatabase database, IntegrationPointTypeTest integrationPointType)
+		public void SetupIntegrationPointType(InMemoryDatabase database, IntegrationPointTypeTest integrationPointType)
 		{
 			Mock.Setup(x => x.ReadAsync(integrationPointType.WorkspaceId, It.Is<ReadRequest>(r =>
 					r.Object.ArtifactID == integrationPointType.ArtifactId)))

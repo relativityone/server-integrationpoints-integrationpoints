@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -11,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupDestinationProviders(InMemoryDatabase database, DestinationProviderTest destinationProvider)
+		public void SetupDestinationProvider(InMemoryDatabase database, DestinationProviderTest destinationProvider)
 		{
 			Mock.Setup(x => x.ReadAsync(destinationProvider.WorkspaceId, It.Is<ReadRequest>(r =>
 					r.Object.ArtifactID == destinationProvider.ArtifactId)))

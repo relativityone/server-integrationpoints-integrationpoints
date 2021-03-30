@@ -69,12 +69,12 @@
     <Compile Include="Integration\Mocks\FakeUser.cs" />
     <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Artifact.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.DestinationProvider.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPointType.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SourceProvider.cs" />
     <Compile Include="Integration\Mocks\Kepler\PermissionManagerStub.cs" />
-    <Compile Include="Integration\Mocks\Kepler\ProductionManagerStub.cs" />
     <Compile Include="Integration\Mocks\Services\FakeBatchStatus.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataReader.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataSourceProvider.cs" />

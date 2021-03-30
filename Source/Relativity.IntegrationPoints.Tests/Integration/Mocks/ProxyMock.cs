@@ -9,8 +9,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public WorkspaceManagerStub WorkspaceManager { get; }
 
-		public ProductionManagerStub ProductionManager { get; }
-
 		public PermissionManagerStub PermissionManager { get; }
 
 		public InstanceSettingManagerStub InstanceSettingManager { get; set; }
@@ -21,7 +19,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			ObjectManager = new ObjectManagerStub();
 			WorkspaceManager = new WorkspaceManagerStub();
-			ProductionManager = new ProductionManagerStub();
 			PermissionManager = new PermissionManagerStub(context.User);
 			InstanceSettingManager = new InstanceSettingManagerStub(context);
 			GroupManager = new GroupManagerStub(context.User);
@@ -34,13 +31,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			PermissionManager.SetupPermissionsCheck();
 			InstanceSettingManager.SetupInstanceSetting();
 			GroupManager.SetupGroupManager();
-		}
-
-		public void Clear()
-		{
-			ObjectManager.Mock.Reset();
-			WorkspaceManager.Mock.Reset();
-			ProductionManager.Mock.Reset();
 		}
 	}
 }

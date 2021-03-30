@@ -133,7 +133,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			_destinationProviders.CollectionChanged += (sender, args) =>
 			{
 				OnNewItemsAdded<DestinationProviderTest>(sender, args,
-					newItem => _proxy.ObjectManager.SetupDestinationProviders(this, newItem));
+					newItem => _proxy.ObjectManager.SetupDestinationProvider(this, newItem));
 			};
 		}
 
