@@ -18,9 +18,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 					r.Object.ArtifactID == integrationPoint.ArtifactId)))
 				.Returns((int workspaceId, ReadRequest request) =>
 					{
-						ReadResult result = database.IntegrationPoints.FirstOrDefault(
-								x => x.ArtifactId == request.Object.ArtifactID) != null
-							? new ReadResult { Object = integrationPoint.ToRelativityObject() }
+						IntegrationPointTest readIntegrationPoint = database.IntegrationPoints
+							.FirstOrDefault(x => x.ArtifactId == request.Object.ArtifactID);
+
+						ReadResult result = readIntegrationPoint != null
+							? new ReadResult { Object = readIntegrationPoint.ToRelativityObject() }
 							: new ReadResult { Object = null };
 
 						return Task.FromResult(result);
@@ -31,10 +33,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 					integrationPoint.WorkspaceId,
 					It.Is<RelativityObjectRef>(objectRef => objectRef.ArtifactID == integrationPoint.ArtifactId),
 					It.Is<FieldRef>(field => field.Guid == IntegrationPointTest.FieldsMappingGuid)))
-				.ReturnsAsync(new KeplerResponseStream(new HttpResponseMessage(HttpStatusCode.OK)
-				{
-					Content = new StringContent(integrationPoint.FieldMappings)
-				}));
+				.Returns((int workspaceId, RelativityObjectRef objectRef, FieldRef fieldRef) =>
+					{
+						RelativityObject obj = database.IntegrationPoints
+							.First(x => x.ArtifactId == objectRef.ArtifactID)
+							.ToRelativityObject();
+
+						return Task.FromResult<IKeplerStream>(new KeplerResponseStream(new HttpResponseMessage(HttpStatusCode.OK)
+						{
+							Content = new StringContent(obj.FieldValues.Single(x => 
+								x.Field.Guids.Single() == fieldRef.Guid.GetValueOrDefault()).Value.ToString())
+						}));
+					});
 
 			Mock.Setup(x => x.UpdateAsync(integrationPoint.WorkspaceId, It.Is<UpdateRequest>(r =>
 				r.Object.ArtifactID == integrationPoint.ArtifactId))).ReturnsAsync(

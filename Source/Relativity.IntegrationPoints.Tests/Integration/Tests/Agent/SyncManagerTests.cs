@@ -19,8 +19,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		private JobTest PrepareJob()
 		{
 			HelperManager.AgentHelper.CreateIntegrationPointAgent();
-			
-			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateIntegrationPointWithFakeProviders(SourceWorkspace);
+
+			WorkspaceTest destinationWorkspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+
+			IntegrationPointTest integrationPoint =
+				HelperManager.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(SourceWorkspace,
+					destinationWorkspace);
 			
 			JobTest job = HelperManager.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 			HelperManager.JobHistoryHelper.CreateJobHistory(job, integrationPoint);

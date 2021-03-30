@@ -15,9 +15,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public IntegrationPointTypeTest() : base("IntegrationPointType")
 		{
-			Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportName;
-			Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString();
-			ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID;
 		}
 
 		public override RelativityObject ToRelativityObject()

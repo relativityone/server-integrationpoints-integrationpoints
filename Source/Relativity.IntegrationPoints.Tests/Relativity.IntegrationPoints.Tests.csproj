@@ -61,6 +61,7 @@
     <Compile Include="Integration\Const.cs" />
     <Compile Include="Integration\DatabaseSchema.cs" />
     <Compile Include="Integration\Helpers\DestinationProviderHelper.cs" />
+    <Compile Include="Integration\Helpers\FieldsMappingHelper.cs" />
     <Compile Include="Integration\Helpers\IntegrationPointTypeHelper.cs" />
     <Compile Include="Integration\Helpers\JobHistoryHelper.cs" />
     <Compile Include="Integration\Helpers\SavedSearchHelper.cs" />

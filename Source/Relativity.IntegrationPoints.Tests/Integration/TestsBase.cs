@@ -104,11 +104,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			SetupGlobalSettings();
 
-			SourceWorkspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+			SourceWorkspace = HelperManager.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp();
 
 			SetupContainer(SourceWorkspace);
 
 			Serializer = Container.Resolve<ISerializer>();
+
+			HelperManager.InitializeSerializer(Serializer);
 		}
 
 		private void SetupContainer(WorkspaceTest sourceWorkspace)

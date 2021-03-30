@@ -118,12 +118,20 @@ namespace kCura.IntegrationPoints.Core
 				public const string FTP = "85120BC8-B2B9-4F05-99E9-DE37BB6C0E15";
 				public const string LDAP = "5BF1F2C2-9670-4D6E-A3E9-DBC83DB6C232";
 				public const string IMPORTLOADFILE = "548f0873-8e5e-4da6-9f27-5f9cda764636";
+
+				public const string RELATIVITY_NAME = "Relativity";
+				public const string LDAP_NAME = "LDAP";
+				public const string FTP_NAME = "FTP (CSV File)";
+				public const string IMPORTLOADFILE_NAME = "Load File";
 			}
 
 			public static class DestinationProviders
 			{
 				public const string RELATIVITY = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 				public const string LOADFILE = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
+
+				public const string RELATIVITY_NAME = "Relativity";
+				public const string LOADFILE_NAME = "Load File";
 			}
 
 			public static class Validation
