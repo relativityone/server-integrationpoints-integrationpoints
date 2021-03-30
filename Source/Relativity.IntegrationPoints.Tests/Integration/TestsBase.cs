@@ -56,9 +56,11 @@ using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
+	[TestExecutionCategory.CI, TestLevel.L1]
 	public abstract class TestsBase
 	{
 		public InMemoryDatabase Database { get; set; }

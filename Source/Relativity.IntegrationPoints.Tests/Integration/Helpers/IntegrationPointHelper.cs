@@ -38,6 +38,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return integrationPoint;
 		}
 
+		public IntegrationPointTest CreateIntegrationPoint(IntegrationPointTest integrationPoint)
+		{
+			Database.IntegrationPoints.Add(integrationPoint);
+
+			return integrationPoint;
+		}
+
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
 			foreach (IntegrationPointTest integrationPoint in Database.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())

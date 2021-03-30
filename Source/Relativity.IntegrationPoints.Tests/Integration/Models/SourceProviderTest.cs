@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
@@ -110,6 +111,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 						Value = Name
 					},
 				}
+			};
+		}
+
+		public SourceProvider ToRdo()
+		{
+			return new SourceProvider
+			{
+				RelativityObject = ToRelativityObject(),
+				ArtifactId = ArtifactId,
+				ParentArtifactId = ParenObjectArtifactId,
+				Config = null,
+				Identifier = Identifier,
+				SourceConfigurationUrl = SourceConfigurationUrl,
+				ApplicationIdentifier = ApplicationIdentifier,
+				ViewConfigurationUrl = ViewConfigurationUrl,
+				Configuration = Configuration,
+				Name = Name
 			};
 		}
 	}

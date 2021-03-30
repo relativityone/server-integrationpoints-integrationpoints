@@ -88,6 +88,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		{
 			var ruleToSerialize = new PeriodicScheduleRule
 			{
+				LocalTimeOfDay = TimeSpan.Zero,
 				Interval = Interval,
 				StartDate = StartDate,
 				EndDate = EndDate,

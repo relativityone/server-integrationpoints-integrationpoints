@@ -71,5 +71,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 				}
 			};
 		}
+
+		public DestinationProvider ToRdo()
+		{
+			return new DestinationProvider
+			{
+				RelativityObject = ToRelativityObject(),
+				ArtifactId = ArtifactId,
+				ParentArtifactId = ParenObjectArtifactId,
+				Identifier = Identifier,
+				ApplicationIdentifier = ApplicationIdentifier,
+				Name = Name
+			};
+		}
 	}
 }
