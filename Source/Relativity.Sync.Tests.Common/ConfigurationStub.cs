@@ -27,9 +27,7 @@ namespace Relativity.Sync.Tests.Common
 		private const int _ASCII_RECORD_SEPARATOR = 30;
 
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
-
-		public bool Resuming { get; }
-
+		
 		public string DataDestinationName { get; set; }
 
 		public bool IsDataDestinationArtifactIdSet { get; set; }
