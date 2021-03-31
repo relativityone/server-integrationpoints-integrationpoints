@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
 		}
 		
-		[IdentifiedTest("25b723da-82fe-4f56-ae9f-4a8b2a4d60f4")]
+		[IdentifiedTest("4be91e77-327d-41d6-afcc-a9d1090f0b04")]
 		[TestType.MainFlow]
 		public async Task SyncJob_Should_SyncDocuments_WithCustomRDOs()
 		{
@@ -81,8 +81,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			int jobHistoryToRetryId = -1, destinationWorkspaceId = -1;
 			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(async (sourceWorkspace, destinationWorkspace, configuration) =>
 			{
-				destinationWorkspaceId = destinationWorkspace.ArtifactID;
-				
+					destinationWorkspaceId = destinationWorkspace.ArtifactID;
+					await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
 
 					jobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID)
 						.ConfigureAwait(false);
