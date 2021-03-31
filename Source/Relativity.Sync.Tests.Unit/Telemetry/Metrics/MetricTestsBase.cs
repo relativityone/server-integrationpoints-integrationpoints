@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -22,6 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 		protected readonly Guid _EXPECTED_WORKSPACE_GUID = Guid.NewGuid();
 		protected readonly SyncJobParameters _jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _JOB_HISTORY_ID);
+		private ConfigurationStub _metricsConfiguration;
 
 		protected const string _APPLICATION_NAME = "Relativity.Sync";
 
@@ -54,7 +56,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				apmSink
 			};
 
-			_syncMetrics = new SyncMetrics(sinks, new ConfigurationStub());
+			_metricsConfiguration = new ConfigurationStub();
+			_syncMetrics = new SyncMetrics(sinks, _metricsConfiguration);
 		}
 
 		[Test]
@@ -99,9 +102,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			_syncMetrics.Send(metric);
 
 			// Assert
-			metric.WorkflowId = _jobParameters.WorkflowId.Value;
-			metric.ExecutingApplication = _jobParameters.ExecutingApplication;
-			metric.ExecutingApplicationVersion = _jobParameters.ExecutingApplicationVersion;
+			metric.CorrelationId.Should().Be(_metricsConfiguration.CorrelationId);
+			metric.ExecutingApplication.Should().Be(_metricsConfiguration.ExecutingApplication);
+			metric.ExecutingApplicationVersion.Should().Be(_metricsConfiguration.ExecutingApplicationVersion);
 		}
 
 		protected void VerifySplunkSink(IMetric metric)

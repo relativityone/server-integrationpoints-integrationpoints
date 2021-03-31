@@ -26,8 +26,8 @@ namespace Relativity.Sync.Telemetry
 		public void Send(IMetric metric)
 		{
 			metric.CorrelationId = _metricsConfiguration.CorrelationId;
-			metric.ExecutingApplication = _syncJobParameters.ExecutingApplication;
-			metric.ExecutingApplicationVersion = _syncJobParameters.ExecutingApplicationVersion;
+			metric.ExecutingApplication = _metricsConfiguration.ExecutingApplication;
+			metric.ExecutingApplicationVersion = _metricsConfiguration.ExecutingApplicationVersion;
 			
 			foreach (ISyncMetricsSink sink in _sinks)
 			{

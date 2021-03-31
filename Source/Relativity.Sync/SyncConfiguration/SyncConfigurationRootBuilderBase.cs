@@ -36,6 +36,9 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration = new SyncConfigurationRdo 
             {
                 CorrelationId = Guid.NewGuid().ToString(),
+                ExecutingApplication = syncContext.ExecutingApplication,   
+                ExecutingApplicationVersion = syncContext.ExecutingApplicationVersion.ToString(),   
+                
                 DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId,
                 JobHistoryId =  syncContext.JobHistoryId,
                 ImportOverwriteMode = ImportOverwriteMode.AppendOnly.GetDescription(),

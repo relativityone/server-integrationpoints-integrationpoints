@@ -25,16 +25,6 @@ namespace Relativity.Sync
 		public string SyncBuildVersion { get; }
 		
 		/// <summary>
-		/// Executing application
-		/// </summary>
-		public string ExecutingApplication { get; }
-		
-		/// <summary>
-		/// Executing application version
-		/// </summary>
-		public string ExecutingApplicationVersion { get; }
-
-		/// <summary>
 		/// Name of the Sync application
 		/// </summary>
 		public string SyncApplicationName { get; set; } = "Relativity.Sync";
@@ -62,22 +52,12 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int jobHistoryArtifactId, string executingApplication, Version executingApplicationVersion)
+		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int jobHistoryArtifactId)
 		{
 			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
-			ExecutingApplication = executingApplication;
-			ExecutingApplicationVersion = executingApplicationVersion.ToString();
 			SyncBuildVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			WorkflowId = new Lazy<string>(() => $"{TelemetryConstants.PROVIDER_NAME}_{jobHistoryArtifactId}");
-		}
-
-		/// <summary>
-		/// Internal constructor to simplify testing
-		/// </summary>
-		internal SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int jobHistoryArtifactId) :
-			this(syncConfigurationArtifactId, workspaceId, jobHistoryArtifactId, "SyncTests", new Version(1, 2, 3))
-		{
 		}
 	}
 }

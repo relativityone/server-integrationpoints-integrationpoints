@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.SyncConfiguration
+﻿using System;
+
+namespace Relativity.Sync.SyncConfiguration
 {
 	/// <summary>
 	/// Represents Sync configuration context.
@@ -19,5 +21,15 @@
 		/// Job History Artifact ID.
 		/// </summary>
 		int JobHistoryId { get; }
+		
+		/// <summary>
+		/// Name of executing application
+		/// </summary>
+		string ExecutingApplication { get; }
+		
+		/// <summary>
+		/// Version of the executing application
+		/// </summary>
+		Version ExecutingApplicationVersion { get; }
 	}
 }
