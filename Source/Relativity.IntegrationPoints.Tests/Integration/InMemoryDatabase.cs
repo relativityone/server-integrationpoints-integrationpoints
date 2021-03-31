@@ -79,7 +79,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_workspaces.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<WorkspaceTest>(sender, args,
+				OnNewItemsAdded<WorkspaceTest>(args,
 					(newItem) =>
 					{
 						_proxy.ObjectManager.SetupDocumentFields(this, newItem);
@@ -92,7 +92,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_integrationPoints.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<IntegrationPointTest>(sender, args,
+				OnNewItemsAdded<IntegrationPointTest>(args,
 					(newItem) =>
 					{
 						_proxy.ObjectManager.SetupArtifact(this, newItem);
@@ -105,7 +105,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_integrationPointTypes.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<IntegrationPointTypeTest>(sender, args,
+				OnNewItemsAdded<IntegrationPointTypeTest>(args,
 					(newItem) => _proxy.ObjectManager.SetupIntegrationPointType(this, newItem));
 			};
 		}
@@ -114,7 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_jobHistory.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<JobHistoryTest>(sender, args, 
+				OnNewItemsAdded<JobHistoryTest>(args, 
 					newItem => _proxy.ObjectManager.SetupJobHistory(this, newItem));
 			};
 		}
@@ -123,7 +123,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_sourceProviders.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<SourceProviderTest>(sender, args,
+				OnNewItemsAdded<SourceProviderTest>(args,
 					newItem => _proxy.ObjectManager.SetupSourceProvider(this, newItem));
 			};
 		}
@@ -132,7 +132,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_destinationProviders.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<DestinationProviderTest>(sender, args,
+				OnNewItemsAdded<DestinationProviderTest>(args,
 					newItem => _proxy.ObjectManager.SetupDestinationProvider(this, newItem));
 			};
 		}
@@ -141,7 +141,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_folders.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<FolderTest>(sender, args,
+				OnNewItemsAdded<FolderTest>(args,
 					newItem =>
 					{
 						this.Artifacts.Add(newItem.Artifact);
@@ -154,7 +154,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_savedSearches.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<SavedSearchTest>(sender, args,
+				OnNewItemsAdded<SavedSearchTest>(args,
 					newItem =>
 					{
 						_proxy.ObjectManager.SetupSavedSearch(this, newItem);
@@ -166,7 +166,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_fields.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<FieldTest>(sender, args,
+				OnNewItemsAdded<FieldTest>(args,
 					newItem =>
 					{
 						//TODO
@@ -174,7 +174,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			};
 		}
 
-		void OnNewItemsAdded<T>(object sender, NotifyCollectionChangedEventArgs e, Action<T> onAddFunc)
+		void OnNewItemsAdded<T>(NotifyCollectionChangedEventArgs e, Action<T> onAddFunc)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
