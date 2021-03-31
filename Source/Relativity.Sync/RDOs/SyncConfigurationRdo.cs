@@ -190,5 +190,11 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.DestinationWorkspaceOnDocumentFieldGuid, RdoFieldType.FixedLengthText,
             fixedTextLength: 36)]
         public Guid DestinationWorkspaceOnDocumentField { get; set; }
+
+        [RdoField(SyncRdoGuids.ExecutingApplicationGuid, RdoFieldType.FixedLengthText)]
+        public string ExecutingApplication { get; set; }
+        
+        [RdoField(SyncRdoGuids.ExecutingApplicationVersionGuid, RdoFieldType.FixedLengthText, fixedTextLength: 10)]
+        public string ExecutingApplicationVersion { get; set; }
     }
 }

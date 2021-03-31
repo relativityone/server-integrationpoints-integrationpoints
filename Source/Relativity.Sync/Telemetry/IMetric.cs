@@ -8,6 +8,10 @@ namespace Relativity.Sync.Telemetry
 
 		string CorrelationId { get; set; }
 		
+		string ExecutingApplication { get; set;  }
+		
+		string ExecutingApplicationVersion { get; set; }
+
 		Dictionary<string, object> GetApmMetrics();
 
 		IEnumerable<SumMetric> GetSumMetrics();

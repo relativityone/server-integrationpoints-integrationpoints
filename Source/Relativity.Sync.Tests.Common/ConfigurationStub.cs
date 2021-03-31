@@ -220,6 +220,10 @@ namespace Relativity.Sync.Tests.Common
 		
 		public DestinationLocationType DestinationType { get; set; }
 
-		public string CorrelationId { get; }
+		public string CorrelationId { get; set; }
+
+		public string ExecutingApplication { get; set; }
+
+		public string ExecutingApplicationVersion { get; set; } 
 	}
 }

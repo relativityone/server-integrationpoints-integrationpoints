@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -22,9 +23,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 		protected readonly Guid _EXPECTED_WORKSPACE_GUID = Guid.NewGuid();
 		protected readonly SyncJobParameters _jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _JOB_HISTORY_ID);
+		private ConfigurationStub _metricsConfiguration;
 
 		protected const string _APPLICATION_NAME = "Relativity.Sync";
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -54,7 +55,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				apmSink
 			};
 
-			_syncMetrics = new SyncMetrics(sinks, new ConfigurationStub());
+			_metricsConfiguration = new ConfigurationStub();
+			_syncMetrics = new SyncMetrics(sinks, _metricsConfiguration);
 		}
 
 		[Test]
@@ -86,6 +88,28 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			// Assert
 			_metricsManagerMock.Verify(x => x.Dispose());
 			_metricsManagerMock.VerifyNoOtherCalls();
+		}
+		
+		[Test]
+		public void Send_ShouldSetAllDecoratorsOnMetric()
+		{
+			// Arrange
+			IMetric metric = EmptyTestMetric();
+			string correlationId = Guid.NewGuid().ToString();
+			const string executingAppName = "SomeApp";
+			const string executingAppVersion = "1.2.3.4";
+
+			_metricsConfiguration.CorrelationId = correlationId;
+			_metricsConfiguration.ExecutingApplication = executingAppName;
+			_metricsConfiguration.ExecutingApplicationVersion = executingAppVersion;
+			
+			// Act
+			_syncMetrics.Send(metric);
+
+			// Assert
+			metric.CorrelationId.Should().Be(correlationId);
+			metric.ExecutingApplication.Should().Be(executingAppName);
+			metric.ExecutingApplicationVersion.Should().Be(executingAppVersion);
 		}
 
 		protected void VerifySplunkSink(IMetric metric)

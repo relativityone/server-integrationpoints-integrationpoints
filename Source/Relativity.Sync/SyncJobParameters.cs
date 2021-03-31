@@ -23,7 +23,7 @@ namespace Relativity.Sync
 		/// Build version of Sync
 		/// </summary>
 		public string SyncBuildVersion { get; }
-
+		
 		/// <summary>
 		/// Name of the Sync application
 		/// </summary>
