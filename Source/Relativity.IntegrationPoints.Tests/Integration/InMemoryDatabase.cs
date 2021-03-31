@@ -178,12 +178,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				IEnumerable<T> newItems = sender as IEnumerable<T>;
-				foreach (var newItem in newItems)
+				foreach (T newItem in e.NewItems)
 				{
 					onAddFunc(newItem);
 				}
-
 			}
 		}
 	}
