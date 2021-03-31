@@ -222,8 +222,8 @@ namespace Relativity.Sync.Tests.Common
 
 		public string CorrelationId { get; set; }
 
-		public string ExecutingApplication { get; set; } = "SyncTest";
+		public string ExecutingApplication { get; set; }
 
-		public string ExecutingApplicationVersion { get; set; } = "1.2.3.4";
+		public string ExecutingApplicationVersion { get; set; } 
 	}
 }
