@@ -6,6 +6,7 @@ namespace Relativity.Sync.Configuration
     {
         IJobHistoryRdoGuidsProvider JobHistory { get; }
         IJobHistoryErrorGuidsProvider JobHistoryError { get; }
+        IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; }
     }
 
     internal interface IJobHistoryRdoGuidsProvider
@@ -35,5 +36,17 @@ namespace Relativity.Sync.Configuration
         Guid JobHistoryRelationGuid { get; }
         
         Guid NewStatusGuid { get; }
+    }
+    
+    internal interface IDestinationWorkspaceTagGuidProvider
+    {
+        Guid TypeGuid { get; }
+        Guid NameGuid { get; }
+        Guid DestinationWorkspaceNameGuid { get; }
+        Guid DestinationWorkspaceArtifactIdGuid { get; }
+        Guid DestinationInstanceNameGuid { get; }
+        Guid DestinationInstanceArtifactIdGuid { get; }
+        Guid JobHistoryOnDocumentGuid { get; }
+        Guid DestinationWorkspaceOnDocument { get; }
     }
 }

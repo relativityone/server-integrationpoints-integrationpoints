@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			await SetupAsync(testCase, "All Documents").ConfigureAwait(false);
 			await RunJobAsync().ConfigureAwait(false);
 
-			RelativityObject jobHistory = await Rdos.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId).ConfigureAwait(false);
+			RelativityObject jobHistory = await Rdos.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId, Configuration.JobHistory.TypeGuid).ConfigureAwait(false);
 
 			int totalItems = (int)jobHistory["Total Items"].Value;
 			int itemsTranferred = (int)jobHistory["Items Transferred"].Value;

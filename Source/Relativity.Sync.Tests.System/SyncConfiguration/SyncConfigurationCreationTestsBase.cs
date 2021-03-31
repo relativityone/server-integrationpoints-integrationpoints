@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			WorkspaceRef destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 			DestinationWorkspaceId = destinationWorkspace.ArtifactID;
 
-			JobHistory = await Rdos.CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory, SourceWorkspaceId).ConfigureAwait(false);
+			JobHistory = await Rdos.CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory, SourceWorkspaceId, new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")).ConfigureAwait(false);
 		}
 
 		protected async Task AssertCreatedConfigurationAsync(int createdConfigurationId, SyncConfigurationRdo expectedConfiguration)
