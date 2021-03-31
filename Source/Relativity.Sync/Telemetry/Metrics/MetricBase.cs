@@ -35,9 +35,6 @@ namespace Relativity.Sync.Telemetry.Metrics
 			Dictionary<string, object> apmMetrics = metricProperties
 				.Where(item => item.Key.GetCustomAttribute<APMIgnoreMetricAttribute>() == null)
 				.ToDictionary(keyValuePair => keyValuePair.Key.Name, keyValuePair => GetValue(keyValuePair.Key));
-
-			apmMetrics[nameof(ExecutingApplication)] = ExecutingApplication;
-			apmMetrics[nameof(ExecutingApplicationVersion)] = ExecutingApplicationVersion;
 			
 			return apmMetrics;
 		}
