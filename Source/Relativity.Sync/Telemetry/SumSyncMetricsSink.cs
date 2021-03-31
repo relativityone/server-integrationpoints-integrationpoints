@@ -31,7 +31,7 @@ namespace Relativity.Sync.Telemetry
 			{
 				Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);
 
-				foreach (var sumMetric in metric.GetSumMetrics())
+				foreach (SumMetric sumMetric in metric.GetSumMetrics())
 				{
 					try
 					{
@@ -39,8 +39,8 @@ namespace Relativity.Sync.Telemetry
 					}
 					catch (Exception e)
 					{
-						_logger.LogError(e, "Logging to SUM failed. The metric with bucket '{bucket}' and workflow ID '{workflowId}' had value '{value}'.",
-							sumMetric.Bucket, sumMetric.WorkflowId, sumMetric.Value);
+						_logger.LogError(e, "Logging to SUM failed. The metric with bucket '{bucket}' and Correlation ID '{correlationId}' had value '{value}'.",
+							sumMetric.Bucket, sumMetric.CorrelationId, sumMetric.Value);
 					}
 				}
 			}
@@ -51,17 +51,17 @@ namespace Relativity.Sync.Telemetry
 			switch (metric.Type)
 			{
 				case MetricType.PointInTimeString:
-					return metricsManager.LogPointInTimeStringAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, metric.Value.ToString());
+					return metricsManager.LogPointInTimeStringAsync(metric.Bucket, workspaceGuid, metric.CorrelationId, metric.Value.ToString());
 				case MetricType.PointInTimeLong:
-					return metricsManager.LogPointInTimeLongAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (long)metric.Value);
+					return metricsManager.LogPointInTimeLongAsync(metric.Bucket, workspaceGuid, metric.CorrelationId, (long)metric.Value);
 				case MetricType.PointInTimeDouble:
-					return metricsManager.LogPointInTimeDoubleAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (double)metric.Value);
+					return metricsManager.LogPointInTimeDoubleAsync(metric.Bucket, workspaceGuid, metric.CorrelationId, (double)metric.Value);
 				case MetricType.TimedOperation:
-					return metricsManager.LogTimerAsDoubleAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (double)metric.Value);
+					return metricsManager.LogTimerAsDoubleAsync(metric.Bucket, workspaceGuid, metric.CorrelationId, (double)metric.Value);
 				case MetricType.Counter:
-					return metricsManager.LogCountAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, 1);
+					return metricsManager.LogCountAsync(metric.Bucket, workspaceGuid, metric.CorrelationId, 1);
 				case MetricType.GaugeOperation:
-					return metricsManager.LogGaugeAsync(metric.Bucket, workspaceGuid, metric.WorkflowId, (long)metric.Value);
+					return metricsManager.LogGaugeAsync(metric.Bucket, workspaceGuid, metric.CorrelationId, (long)metric.Value);
 				default:
 					_logger.LogDebug("Logging metric type '{type}' to SUM is not implemented.", metric.Type);
 					return Task.CompletedTask;

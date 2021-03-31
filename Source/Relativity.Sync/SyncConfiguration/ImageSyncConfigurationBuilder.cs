@@ -27,6 +27,13 @@ namespace Relativity.Sync.SyncConfiguration
 			SyncConfiguration.IncludeOriginalImages = true;
 		}
 
+		public new IImageSyncConfigurationBuilder CorrelationId(string correlationId)
+		{
+			base.CorrelationId(correlationId);
+
+			return this;
+		}
+
 		public new IImageSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
 		{
 			base.OverwriteMode(options);

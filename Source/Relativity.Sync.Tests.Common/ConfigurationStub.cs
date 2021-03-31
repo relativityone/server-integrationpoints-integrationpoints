@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Common
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
-		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration
+		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Common
 		private const int _ASCII_RECORD_SEPARATOR = 30;
 
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
-
+		
 		public string DataDestinationName { get; set; }
 
 		public bool IsDataDestinationArtifactIdSet { get; set; }
@@ -220,5 +220,6 @@ namespace Relativity.Sync.Tests.Common
 		
 		public DestinationLocationType DestinationType { get; set; }
 
+		public string CorrelationId { get; }
 	}
 }

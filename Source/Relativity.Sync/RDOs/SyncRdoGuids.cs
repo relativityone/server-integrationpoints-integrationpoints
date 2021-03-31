@@ -3,11 +3,11 @@ namespace Relativity.Sync.RDOs
     internal static class SyncRdoGuids
     {
 	    public const string SyncConfigurationGuid = "3BE3DE56-839F-4F0E-8446-E1691ED5FD57";
+	    public const string CorrelationIdGuid = "865E048E-9E64-4EA9-82FD-CFF6E17A7558";
+	    public const string ResumingGuid = "A5B0959D-96CE-4CA0-9E4A-576132F29165";
 
         public const string CreateSavedSearchInDestinationGuid = "BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D";
         public const string SavedSearchInDestinationArtifactIdGuid = "83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31";
-
-        public const string ResumingGuid = "A5B0959D-96CE-4CA0-9E4A-576132F29165";
 
         public const string DataDestinationArtifactIdGuid = "0E9D7B8E-4643-41CC-9B07-3A66C98248A1";
         public const string DataDestinationTypeGuid = "86D9A34A-B394-41CF-BFF4-BD4FF49A932D";

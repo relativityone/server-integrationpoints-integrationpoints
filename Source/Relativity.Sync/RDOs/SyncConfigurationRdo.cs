@@ -9,6 +9,12 @@ namespace Relativity.Sync.RDOs
     {
 	    public int ArtifactId { get; set; }
 
+        [RdoField(SyncRdoGuids.CorrelationIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public string CorrelationId { get; set; }
+
+        [RdoField(SyncRdoGuids.ResumingGuid, RdoFieldType.YesNo)]
+        public bool Resuming { get; set; }
+
         [RdoField(SyncRdoGuids.RdoArtifactTypeIdGuid, RdoFieldType.WholeNumber)]
         public int RdoArtifactTypeId { get; set; }
 
@@ -96,9 +102,6 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int DestinationWorkspaceTagArtifactId { get; set; }
         
-        [RdoField(SyncRdoGuids.ResumingGuid, RdoFieldType.YesNo)]
-        public bool Resuming { get; set; }
-
         // JobHistory configuration
         [RdoField(SyncRdoGuids.JobHistoryTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryType { get; set; }

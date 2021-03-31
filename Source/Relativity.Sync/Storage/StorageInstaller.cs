@@ -11,6 +11,7 @@ namespace Relativity.Sync.Storage
 		{
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 
+			builder.RegisterType<MetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<PreValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<PermissionsCheckConfiguration>().AsImplementedInterfaces();

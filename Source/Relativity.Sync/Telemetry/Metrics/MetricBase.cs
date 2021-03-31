@@ -10,10 +10,11 @@ namespace Relativity.Sync.Telemetry.Metrics
 	{
 		private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
 
+		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_CORRELATION_ID)]
+		public string CorrelationId { get; set; }
+
 		public string Name { get; }
-
-		public string WorkflowId { get; set; }
-
+		
 		protected MetricBase()
 		{
 			Name = GetType().Name;
@@ -40,10 +41,10 @@ namespace Relativity.Sync.Telemetry.Metrics
 				.Where(p => p.Value != null)
 				.Select(p => new SumMetric
 				{
+					CorrelationId = CorrelationId,
 					Type = p.Value.Type,
 					Bucket = GetBucketName(p.Value),
-					Value = p.Key.GetValue(this),
-					WorkflowId = WorkflowId
+					Value = p.Key.GetValue(this)
 				})
 				.Where(m => m.Value != null);
 		}

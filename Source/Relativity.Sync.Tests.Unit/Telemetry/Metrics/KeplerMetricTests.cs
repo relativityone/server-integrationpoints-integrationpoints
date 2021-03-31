@@ -33,16 +33,16 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		{
 			metricsManagerMock.Verify(x => x.LogTimerAsDoubleAsync(
 				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{_KEPLER_NAME}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX}",
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.Duration.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.Duration.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(
 				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{_KEPLER_NAME}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX}",
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.NumberOfHttpRetriesForSuccess.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.NumberOfHttpRetriesForSuccess.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(
 				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{_KEPLER_NAME}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX}",
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.NumberOfHttpRetriesForFailed.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.NumberOfHttpRetriesForFailed.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(
 				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{_KEPLER_NAME}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX}",
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AuthTokenExpirationCount.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AuthTokenExpirationCount.Value));
 
 			metricsManagerMock.Verify(x => x.Dispose());
 			metricsManagerMock.VerifyNoOtherCalls();

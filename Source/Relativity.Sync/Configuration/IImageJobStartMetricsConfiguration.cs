@@ -2,6 +2,8 @@
 {
 	internal interface IImageJobStartMetricsConfiguration : IConfiguration
 	{
+		bool Resuming { get; }
+
 		int? JobHistoryToRetryId { get; }
 
 		int SourceWorkspaceArtifactId { get; }

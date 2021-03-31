@@ -3,6 +3,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
@@ -53,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				apmSink
 			};
 
-			_syncMetrics = new SyncMetrics(sinks, _jobParameters);
+			_syncMetrics = new SyncMetrics(sinks, new ConfigurationStub());
 		}
 
 		[Test]

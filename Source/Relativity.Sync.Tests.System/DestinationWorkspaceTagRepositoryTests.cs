@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.System
 				new TagNameFormatter(new EmptyLogger()),
 				configuration,
 				new EmptyLogger(),
-				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, jobHistoryId)),
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new ConfigurationStub()),
 				() => new StopwatchWrapper());
 
 			IList<TagDocumentsResult<int>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
