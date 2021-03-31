@@ -26,7 +26,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		private ConfigurationStub _metricsConfiguration;
 
 		protected const string _APPLICATION_NAME = "Relativity.Sync";
-
 		[SetUp]
 		public void SetUp()
 		{
@@ -96,15 +95,21 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		{
 			// Arrange
 			IMetric metric = EmptyTestMetric();
+			string correlationId = Guid.NewGuid().ToString();
+			const string executingAppName = "SomeApp";
+			const string executingAppVersion = "1.2.3.4";
 
-
+			_metricsConfiguration.CorrelationId = correlationId;
+			_metricsConfiguration.ExecutingApplication = executingAppName;
+			_metricsConfiguration.ExecutingApplicationVersion = executingAppVersion;
+			
 			// Act
 			_syncMetrics.Send(metric);
 
 			// Assert
-			metric.CorrelationId.Should().Be(_metricsConfiguration.CorrelationId);
-			metric.ExecutingApplication.Should().Be(_metricsConfiguration.ExecutingApplication);
-			metric.ExecutingApplicationVersion.Should().Be(_metricsConfiguration.ExecutingApplicationVersion);
+			metric.CorrelationId.Should().Be(correlationId);
+			metric.ExecutingApplication.Should().Be(executingAppName);
+			metric.ExecutingApplicationVersion.Should().Be(executingAppVersion);
 		}
 
 		protected void VerifySplunkSink(IMetric metric)
