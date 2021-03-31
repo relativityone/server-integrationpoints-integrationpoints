@@ -25,6 +25,8 @@ namespace Relativity.Sync.Telemetry
 		public void Send(IMetric metric)
 		{
 			metric.WorkflowId = _syncJobParameters.WorkflowId.Value;
+			metric.ExecutingApplication = _syncJobParameters.ExecutingApplication;
+			metric.ExecutingApplicationVersion = _syncJobParameters.ExecutingApplicationVersion;
 
 			foreach (ISyncMetricsSink sink in _sinks)
 			{

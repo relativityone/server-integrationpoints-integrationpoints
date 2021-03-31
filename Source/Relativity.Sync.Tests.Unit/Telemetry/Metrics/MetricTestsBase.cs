@@ -86,6 +86,22 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			_metricsManagerMock.Verify(x => x.Dispose());
 			_metricsManagerMock.VerifyNoOtherCalls();
 		}
+		
+		[Test]
+		public void Send_ShouldSetAllDecoratorsOnMetric()
+		{
+			// Arrange
+			IMetric metric = EmptyTestMetric();
+
+
+			// Act
+			_syncMetrics.Send(metric);
+
+			// Assert
+			metric.WorkflowId = _jobParameters.WorkflowId.Value;
+			metric.ExecutingApplication = _jobParameters.ExecutingApplication;
+			metric.ExecutingApplicationVersion = _jobParameters.ExecutingApplicationVersion;
+		}
 
 		protected void VerifySplunkSink(IMetric metric)
 		{

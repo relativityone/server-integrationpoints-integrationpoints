@@ -13,6 +13,10 @@ namespace Relativity.Sync.Telemetry.Metrics
 		public string Name { get; }
 
 		public string WorkflowId { get; set; }
+		
+		public string ExecutingApplication { get; set;  }
+		
+		public string ExecutingApplicationVersion { get; set; }
 
 		protected MetricBase()
 		{
@@ -30,6 +34,10 @@ namespace Relativity.Sync.Telemetry.Metrics
 			Dictionary<string, object> apmMetrics = metricProperties
 				.Where(item => item.Key.GetCustomAttribute<APMIgnoreMetricAttribute>() == null)
 				.ToDictionary(keyValuePair => keyValuePair.Key.Name, keyValuePair => GetValue(keyValuePair.Key));
+
+			apmMetrics[nameof(ExecutingApplication)] = ExecutingApplication;
+			apmMetrics[nameof(ExecutingApplicationVersion)] = ExecutingApplicationVersion;
+			
 			return apmMetrics;
 		}
 

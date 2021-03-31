@@ -7,6 +7,10 @@ namespace Relativity.Sync.Telemetry
 		string Name { get; }
 
 		string WorkflowId { get; set; }
+		
+		string ExecutingApplication { get; set;  }
+		
+		string ExecutingApplicationVersion { get; set; }
 
 		Dictionary<string, object> GetApmMetrics();
 
