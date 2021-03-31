@@ -17,7 +17,10 @@
 			public const string KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX = "Failed";
 			public const string KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX = "AuthRefresh";
 
+			public const string JOB_CORRELATION_ID = "Relativity.Sync.Job.CorrelationId";
+
 			public const string JOB_START_TYPE = "Relativity.Sync.Job.Start.Type";
+			public const string JOB_RESUME_TYPE = "Relativity.Sync.Job.Resume.Type";
 
 			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearched.NativesAndMetadata";
 			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearched.Images";

@@ -11,6 +11,12 @@ namespace Relativity.Sync.SyncConfiguration
 		where T : ISyncConfigurationRootBuilder
 	{
 		/// <summary>
+		/// Configures the Correlation ID value.
+		/// </summary>
+		/// <param name="correlationId">New Correlation ID.</param>
+		T CorrelationId(string correlationId);
+
+		/// <summary>
 		/// Configures overwrite mode.
 		/// </summary>
 		/// <param name="options">The overwrite options.</param>

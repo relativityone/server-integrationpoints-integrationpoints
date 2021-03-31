@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		}
 
 		[Test]
-		public async Task ExecuteAsync_ShouldReportMetric()
+		public async Task ExecuteAsync_ShouldReportJobStartMetric()
 		{
 			// Act
 			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -55,10 +55,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m =>
 				m.Type == TelemetryConstants.PROVIDER_NAME &&
 				m.FlowType == TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES)));
+			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobResumeMetric>()), Times.Never);
 		}
 
 		[Test]
-		public async Task ExecuteAsync_ShouldReportRetryMetric_WhenRetryFlowIsSelected()
+		public async Task ExecuteAsync_ShouldReportJobStartRetryMetric_WhenRetryFlowIsSelected()
 		{
 			// Arrange
 			_configurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(100);
@@ -68,10 +69,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			// Assert
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.RetryType != null)));
+			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobResumeMetric>()), Times.Never);
 		}
 
 		[Test]
-		public async Task ExecuteAsync_ShouldSetImagesBytesRequestedInStatisticsContainer()
+		public async Task ExecuteAsync_ShouldSetImagesBytesRequestedInStatisticsContainer_WhenJobStart()
 		{
 			// Arrange
 			ImagesStatistics expectedImageStatistics = new ImagesStatistics(10, 100);
@@ -86,6 +88,23 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			ImagesStatistics imageStatistics = await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false);
 			imageStatistics.Should().BeEquivalentTo(expectedImageStatistics);
+			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobResumeMetric>()), Times.Never);
+		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldSendJobResumeMetric_WhenResuming()
+		{
+			// Arrange
+			_configurationFake.SetupGet(x => x.Resuming).Returns(true);
+
+			// Act
+			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			_syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
+				metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
+			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobStartMetric>()), Times.Never);
+			_jobStatisticsContainer.ImagesStatistics.Should().BeNull();
 		}
 	}
 }

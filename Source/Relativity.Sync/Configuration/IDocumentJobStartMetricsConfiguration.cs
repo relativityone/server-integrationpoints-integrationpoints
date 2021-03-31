@@ -2,6 +2,8 @@
 {
 	internal interface IDocumentJobStartMetricsConfiguration : IConfiguration
 	{
+		bool Resuming { get; }
+
 		int? JobHistoryToRetryId { get; }
 
 		int SourceWorkspaceArtifactId { get; }

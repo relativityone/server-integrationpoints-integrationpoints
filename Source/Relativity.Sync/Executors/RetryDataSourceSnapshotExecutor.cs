@@ -14,7 +14,7 @@ namespace Relativity.Sync.Executors
 		{
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IRetryDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(IRetryDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
 		{
 			Logger.LogInformation("Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry", 
 				nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode, ImportOverwriteMode.AppendOverlay);
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Executors
 
 			Logger.LogInformation("{ImportOverwriteMode} was successfully updated to {appendOverlay}", nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode);
 
-			return await base.ExecuteAsync(configuration, token).ConfigureAwait(false);
+			return base.ExecuteAsync(configuration, token);
 		}
 	}
 }

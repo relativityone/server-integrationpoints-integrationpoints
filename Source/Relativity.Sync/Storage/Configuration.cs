@@ -17,13 +17,13 @@ namespace Relativity.Sync.Storage
 
 		private SyncConfigurationRdo _configuration;
 
-		private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
+		private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
 		{
 			_rdoManager = rdoManager;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
 			_syncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
-			_logger = logger;
 			_semaphoreSlim = semaphoreSlim;
+			_logger = logger;
 		}
 
 		public T GetFieldValue<T>(Func<SyncConfigurationRdo, T> valueGetter)
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Storage
 		public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, ISyncLog logger,
 			ISemaphoreSlim semaphoreSlim, IRdoManager rdoManager)
 		{
-			Configuration configuration = new Configuration(syncJobParameters, rdoManager, logger, semaphoreSlim);
+			Configuration configuration = new Configuration(syncJobParameters, rdoManager, semaphoreSlim, logger);
 			await configuration.ReadAsync().ConfigureAwait(false);
 			return configuration;
 		}

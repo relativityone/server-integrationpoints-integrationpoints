@@ -42,21 +42,21 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		protected override void VerifySumSink(Mock<IMetricsManager> metricsManagerMock)
 		{
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgSizeLessThan1MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgSizeLessThan1MB.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgTimeLessThan1MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgTimeLessThan1MB.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgSizeLessBetween1and10MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgSizeLessBetween1and10MB.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgTimeLessBetween1and10MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgTimeLessBetween1and10MB.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN10AND20MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgSizeLessBetween10and20MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgSizeLessBetween10and20MB.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN10AND20MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgTimeLessBetween10and20MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgTimeLessBetween10and20MB.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgSizeOver20MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgSizeOver20MB.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync(TelemetryConstants.MetricIdentifiers.DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB,
-				_EXPECTED_WORKSPACE_GUID, _sut.WorkflowId, _sut.AvgTimeOver20MB.Value));
+				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.AvgTimeOver20MB.Value));
 
 			metricsManagerMock.Verify(x => x.Dispose());
 			metricsManagerMock.VerifyNoOtherCalls();

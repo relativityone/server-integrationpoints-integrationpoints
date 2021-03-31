@@ -58,7 +58,7 @@ namespace Relativity.Sync
 		/// Workflow ID.
 		/// </summary>
 		public Lazy<string> WorkflowId { get; }
-
+		
 		/// <summary>
 		/// Default constructor
 		/// </summary>

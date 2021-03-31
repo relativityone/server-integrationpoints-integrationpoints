@@ -28,7 +28,7 @@ namespace Relativity.Sync.Telemetry
 			{
 				if (metric is BatchEndPerformanceMetric)
 				{
-					_apmClient.Gauge(_NEW_RELIC_INDEX_NAME, metric.WorkflowId, customData);
+					_apmClient.Gauge(_NEW_RELIC_INDEX_NAME, metric.CorrelationId, customData);
 				}
 				else
 				{

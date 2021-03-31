@@ -25,7 +25,7 @@ namespace Relativity.Sync.SyncConfiguration
         public readonly SyncConfigurationRdo SyncConfiguration;
 
         protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, ISyncServiceManager servicesMgr,
-            RdoOptions rdoOptions, IRdoManager rdoManager,  ISerializer serializer)
+            RdoOptions rdoOptions, IRdoManager rdoManager, ISerializer serializer)
         {
             SyncContext = syncContext;
             ServicesMgr = servicesMgr;
@@ -33,9 +33,10 @@ namespace Relativity.Sync.SyncConfiguration
             _rdoManager = rdoManager;
             Serializer = serializer;
 
-            SyncConfiguration = new SyncConfigurationRdo
+            SyncConfiguration = new SyncConfigurationRdo 
             {
-                DestinationWorkspaceArtifactId = SyncContext.DestinationWorkspaceId,
+                CorrelationId = Guid.NewGuid().ToString(),
+                DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId,
                 JobHistoryId =  syncContext.JobHistoryId,
                 ImportOverwriteMode = ImportOverwriteMode.AppendOnly.GetDescription(),
                 FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings.GetDescription()
@@ -76,6 +77,11 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DestinationWorkspaceDestinationInstanceArtifactId = RdoOptions.DestinationWorkspace.DestinationInstanceArtifactIdGuid;
             SyncConfiguration.JobHistoryOnDocumentField = RdoOptions.DestinationWorkspace.JobHistoryOnDocumentGuid;
             SyncConfiguration.DestinationWorkspaceOnDocumentField = RdoOptions.DestinationWorkspace.DestinationWorkspaceOnDocument;
+        }
+
+        public void CorrelationId(string correlationId)
+        {
+	        SyncConfiguration.CorrelationId = correlationId;
         }
 
         public void OverwriteMode(OverwriteOptions options)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -8,26 +9,26 @@ namespace Relativity.Sync.Telemetry
 	internal class SyncMetrics : ISyncMetrics
 	{
 		private readonly IEnumerable<ISyncMetricsSink> _sinks;
-		private readonly SyncJobParameters _syncJobParameters;
+		private readonly IMetricsConfiguration _metricsConfiguration;
 
 		/// <summary>
 		///     Creates a new instance of <see cref="SyncMetrics" /> with the given sinks.
 		/// </summary>
 		/// <param name="sinks">Sinks to which metrics should be sent</param>
-		/// <param name="syncJobParameters">ID which correlates all metrics across a job</param>
-		public SyncMetrics(IEnumerable<ISyncMetricsSink> sinks, SyncJobParameters syncJobParameters)
+		/// <param name="metricsConfiguration">Metrics configuration.</param>
+		public SyncMetrics(IEnumerable<ISyncMetricsSink> sinks, IMetricsConfiguration metricsConfiguration)
 		{
 			_sinks = sinks;
-			_syncJobParameters = syncJobParameters;
+			_metricsConfiguration = metricsConfiguration;
 		}
 
 		/// <inheritdoc />
 		public void Send(IMetric metric)
 		{
-			metric.WorkflowId = _syncJobParameters.WorkflowId.Value;
+			metric.CorrelationId = _metricsConfiguration.CorrelationId;
 			metric.ExecutingApplication = _syncJobParameters.ExecutingApplication;
 			metric.ExecutingApplicationVersion = _syncJobParameters.ExecutingApplicationVersion;
-
+			
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
 				sink.Send(metric);
