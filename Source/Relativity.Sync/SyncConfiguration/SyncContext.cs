@@ -37,6 +37,9 @@ namespace Relativity.Sync.SyncConfiguration
 			ExecutingApplicationVersion = executingApplicationVersion;
 		}
 		
+		/// <summary>
+		/// Internal constructor to make testing easier
+		/// </summary>
 		internal SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId) 
 			: this(sourceWorkspaceId, destinationWorkspaceId, jobHistoryId, "SyncTests", new Version()){}
 	}
