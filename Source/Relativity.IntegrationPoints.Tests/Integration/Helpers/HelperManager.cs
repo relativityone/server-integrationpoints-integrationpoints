@@ -1,4 +1,5 @@
-﻿using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 {
@@ -6,6 +7,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 	{
 		private readonly InMemoryDatabase _db;
 		private readonly ProxyMock _proxy;
+		
+		private ISerializer _serializer;
 
 		private WorkspaceHelper _workspaceHelper;
 
@@ -23,11 +26,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		private DestinationProviderHelper _destinationProviderHelper;
 
+		private FieldsMappingHelper _fieldsMappingHelper;
+
 		public HelperManager(InMemoryDatabase db, ProxyMock proxy, TestContext testContext)
 		{
 			_db = db;
 			_proxy = proxy;
 			TestContext = testContext;
+		}
+
+		public void InitializeSerializer(ISerializer serializer)
+		{
+			_serializer = serializer;
 		}
 
 		public TestContext TestContext { get; }
@@ -38,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		public JobHelper JobHelper => _jobHelper ?? (_jobHelper = new JobHelper(this, _db, _proxy));
 
-		public IntegrationPointHelper IntegrationPointHelper => _integrationPointHelper ?? (_integrationPointHelper = new IntegrationPointHelper(this, _db, _proxy));
+		public IntegrationPointHelper IntegrationPointHelper => _integrationPointHelper ?? (_integrationPointHelper = new IntegrationPointHelper(this, _db, _proxy, _serializer));
 		
 		public IntegrationPointTypeHelper IntegrationPointTypeHelper => _integrationPointTypeHelper ?? (_integrationPointTypeHelper = new IntegrationPointTypeHelper(this, _db, _proxy));
 
@@ -47,5 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		public SourceProviderHelper SourceProviderHelper => _sourceProviderHelper ?? (_sourceProviderHelper = new SourceProviderHelper(this, _db, _proxy));
 
 		public DestinationProviderHelper DestinationProviderHelper => _destinationProviderHelper ?? (_destinationProviderHelper = new DestinationProviderHelper(this, _db, _proxy));
+
+		public FieldsMappingHelper FieldsMappingHelper => _fieldsMappingHelper ?? (_fieldsMappingHelper = new FieldsMappingHelper(this, _db, _proxy));
 	}
 }

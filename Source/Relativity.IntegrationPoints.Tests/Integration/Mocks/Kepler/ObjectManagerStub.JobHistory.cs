@@ -9,36 +9,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupJobHistory(InMemoryDatabase database, IEnumerable<JobHistoryTest> jobHistoryItems)
+		public void SetupJobHistory(InMemoryDatabase database, JobHistoryTest jobHistory)
 		{
-			foreach (JobHistoryTest jobHistory in jobHistoryItems)
-			{
-				Mock.Setup(x => x.QueryAsync(jobHistory.WorkspaceId, It.Is<QueryRequest>(r =>
-						r.Condition == $"'{JobHistoryTest.BatchInstanceFieldName}' == '{jobHistory.BatchInstance}'"), It.IsAny<int>(), It.IsAny<int>()))
-					.Returns((int workspaceId, QueryRequest request, int start, int length) =>
+			Mock.Setup(x => x.QueryAsync(jobHistory.WorkspaceId, It.Is<QueryRequest>(r =>
+					r.Condition == $"'{JobHistoryTest.BatchInstanceFieldName}' == '{jobHistory.BatchInstance}'"), It.IsAny<int>(), It.IsAny<int>()))
+				.Returns((int workspaceId, QueryRequest request, int start, int length) =>
+				{
+					QueryResult result = new QueryResult();
+
+					if (database.JobHistory.FirstOrDefault(x => x.BatchInstance == jobHistory.BatchInstance) != null)
 					{
-						QueryResult result = new QueryResult();
+						result.Objects.Add(jobHistory.ToRelativityObject());
+						result.TotalCount = result.Objects.Count;
+					}
 
-						if (database.JobHistory.FirstOrDefault(x => x.BatchInstance == jobHistory.BatchInstance) != null)
-						{
-							result.Objects.Add(jobHistory.ToRelativityObject());
-							result.TotalCount = result.Objects.Count;
-						}
+					return Task.FromResult(result);
+				});
 
-						return Task.FromResult(result);
-					});
-
-				Mock.Setup(x => x.UpdateAsync(jobHistory.WorkspaceId, It.Is<UpdateRequest>(r =>
-						r.Object.ArtifactID == jobHistory.ArtifactId)))
-					.Returns((int workspaceId, UpdateRequest request) =>
+			Mock.Setup(x => x.UpdateAsync(jobHistory.WorkspaceId, It.Is<UpdateRequest>(r =>
+					r.Object.ArtifactID == jobHistory.ArtifactId)))
+				.Returns((int workspaceId, UpdateRequest request) =>
+				{
+					UpdateResult result = new UpdateResult()
 					{
-						UpdateResult result = new UpdateResult()
-						{
-							EventHandlerStatuses = new List<EventHandlerStatus>()
-						};
-						return Task.FromResult(result);
-					});
-			}
+						EventHandlerStatuses = new List<EventHandlerStatus>()
+					};
+					return Task.FromResult(result);
+				});
 		}
 	}
 }

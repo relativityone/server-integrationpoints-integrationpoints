@@ -1,5 +1,4 @@
-﻿using Moq;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler;
+﻿using Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -8,17 +7,29 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public ObjectManagerStub ObjectManager { get; }
 
 		public WorkspaceManagerStub WorkspaceManager { get; }
+
+		public PermissionManagerStub PermissionManager { get; }
+
+		public InstanceSettingManagerStub InstanceSettingManager { get; set; }
+
+		public GroupManagerStub GroupManager { get; set; }
 		
-		public ProxyMock()
+		public ProxyMock(TestContext context)
 		{
 			ObjectManager = new ObjectManagerStub();
 			WorkspaceManager = new WorkspaceManagerStub();
+			PermissionManager = new PermissionManagerStub();
+			InstanceSettingManager = new InstanceSettingManagerStub(context);
+			GroupManager = new GroupManagerStub(context.User);
+
+			SetupFixedMocks();
 		}
 
-		public void Clear()
+		private void SetupFixedMocks()
 		{
-			ObjectManager.Mock.Reset();
-			WorkspaceManager.Mock.Reset();
+			PermissionManager.SetupPermissionsCheck();
+			InstanceSettingManager.SetupInstanceSetting();
+			GroupManager.SetupGroupManager();
 		}
 	}
 }

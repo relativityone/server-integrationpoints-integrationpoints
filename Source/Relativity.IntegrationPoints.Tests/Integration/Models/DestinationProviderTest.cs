@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
@@ -12,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Name { get; set; }
 
-		public DestinationProviderTest()
+		public DestinationProviderTest() : base("DestinationProvider") 
 		{
 			Name = $"Fake Destination Provider";
 			Identifier = Guid.NewGuid().ToString();
@@ -68,6 +69,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 						Value = Name
 					}
 				}
+			};
+		}
+
+		public DestinationProvider ToRdo()
+		{
+			return new DestinationProvider
+			{
+				RelativityObject = ToRelativityObject(),
+				ArtifactId = ArtifactId,
+				ParentArtifactId = ParenObjectArtifactId,
+				Identifier = Identifier,
+				ApplicationIdentifier = ApplicationIdentifier,
+				Name = Name
 			};
 		}
 	}

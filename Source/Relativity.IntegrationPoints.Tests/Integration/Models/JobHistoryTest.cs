@@ -43,7 +43,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Name { get; set; }
 
-		public JobHistoryTest()
+		public JobHistoryTest() : base("JobHistory")
 		{
 			Name = $"Job History";
 		}

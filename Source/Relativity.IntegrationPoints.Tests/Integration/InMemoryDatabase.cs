@@ -16,6 +16,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private readonly ObservableCollection<JobHistoryTest> _jobHistory = new ObservableCollection<JobHistoryTest>();
 		private readonly ObservableCollection<SourceProviderTest> _sourceProviders = new ObservableCollection<SourceProviderTest>();
 		private readonly ObservableCollection<DestinationProviderTest> _destinationProviders = new ObservableCollection<DestinationProviderTest>();
+		private readonly ObservableCollection<FolderTest> _folders = new ObservableCollection<FolderTest>();
+		private readonly ObservableCollection<ArtifactTest> _artifacts = new ObservableCollection<ArtifactTest>();
+		private readonly ObservableCollection<SavedSearchTest> _savedSearches = new ObservableCollection<SavedSearchTest>();
+		private readonly ObservableCollection<FieldTest> _fields = new ObservableCollection<FieldTest>();
 
 		public List<AgentTest> Agents { get; set; } = new List<AgentTest>();
 
@@ -33,16 +37,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public IList<DestinationProviderTest> DestinationProviders => _destinationProviders;
 
+		public IList<FolderTest> Folders => _folders;
+
+		public IList<ArtifactTest> Artifacts => _artifacts;
+
+		public IList<SavedSearchTest> SavedSearches => _savedSearches;
+
+		public IList<FieldTest> Fields => _fields;
+
 		public InMemoryDatabase(ProxyMock proxy)
 		{
 			_proxy = proxy;
 
 			SetupWorkspaces();
+			SetupFolders();
 			SetupIntegrationPoints();
 			SetupIntegrationPointTypes();
 			SetupJobHistory();
 			SetupSourceProviders();
 			SetupDestinationProviders();
+			SetupSavedSearches();
+			SetupFields();
 		}
 
 		public void Clear()
@@ -50,19 +65,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Agents.Clear();
 			JobsInQueue.Clear();
 			Workspaces.Clear();
+			Folders.Clear();
 			IntegrationPoints.Clear();
 			IntegrationPointTypes.Clear();
 			JobHistory.Clear();
 			SourceProviders.Clear();
 			DestinationProviders.Clear();
+			SavedSearches.Clear();
+			Fields.Clear();
 		}
 
 		private void SetupWorkspaces()
 		{
 			_workspaces.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<WorkspaceTest>(sender, args,
-					(newItems) => _proxy.ObjectManager.SetupWorkspace(this, newItems));
+				OnNewItemsAdded<WorkspaceTest>(args,
+					(newItem) =>
+					{
+						_proxy.ObjectManager.SetupDocumentFields(this, newItem);
+						_proxy.ObjectManager.SetupWorkspace(this, newItem);
+					});
 			};
 		}
 
@@ -70,8 +92,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_integrationPoints.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<IntegrationPointTest>(sender, args,
-					(newItems) => _proxy.ObjectManager.SetupIntegrationPoints(this, newItems));
+				OnNewItemsAdded<IntegrationPointTest>(args,
+					(newItem) =>
+					{
+						_proxy.ObjectManager.SetupArtifact(this, newItem);
+						_proxy.ObjectManager.SetupIntegrationPoint(this, newItem);
+					});
 			};
 		}
 
@@ -79,8 +105,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_integrationPointTypes.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<IntegrationPointTypeTest>(sender, args,
-					(newItems) => _proxy.ObjectManager.SetupIntegrationPointTypes(this, newItems));
+				OnNewItemsAdded<IntegrationPointTypeTest>(args,
+					(newItem) => _proxy.ObjectManager.SetupIntegrationPointType(this, newItem));
 			};
 		}
 
@@ -88,8 +114,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_jobHistory.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<JobHistoryTest>(sender, args, 
-					newItems => _proxy.ObjectManager.SetupJobHistory(this, newItems));
+				OnNewItemsAdded<JobHistoryTest>(args, 
+					newItem => _proxy.ObjectManager.SetupJobHistory(this, newItem));
 			};
 		}
 
@@ -97,8 +123,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_sourceProviders.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<SourceProviderTest>(sender, args,
-					newItems => _proxy.ObjectManager.SetupSourceProviders(this, newItems));
+				OnNewItemsAdded<SourceProviderTest>(args,
+					newItem => _proxy.ObjectManager.SetupSourceProvider(this, newItem));
 			};
 		}
 
@@ -106,17 +132,56 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			_destinationProviders.CollectionChanged += (sender, args) =>
 			{
-				OnNewItemsAdded<DestinationProviderTest>(sender, args,
-					newItems => _proxy.ObjectManager.SetupDestinationProviders(this, newItems));
+				OnNewItemsAdded<DestinationProviderTest>(args,
+					newItem => _proxy.ObjectManager.SetupDestinationProvider(this, newItem));
 			};
 		}
 
-		void OnNewItemsAdded<T>(object sender, NotifyCollectionChangedEventArgs e, Action<IEnumerable<T>> onAddFunc)
+		private void SetupFolders()
+		{
+			_folders.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<FolderTest>(args,
+					newItem =>
+					{
+						this.Artifacts.Add(newItem.Artifact);
+						_proxy.ObjectManager.SetupArtifact(this, newItem);
+					});
+			};
+		}
+
+		private void SetupSavedSearches()
+		{
+			_savedSearches.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<SavedSearchTest>(args,
+					newItem =>
+					{
+						_proxy.ObjectManager.SetupSavedSearch(this, newItem);
+					});
+			};
+		}
+
+		private void SetupFields()
+		{
+			_fields.CollectionChanged += (sender, args) =>
+			{
+				OnNewItemsAdded<FieldTest>(args,
+					newItem =>
+					{
+						//TODO
+					});
+			};
+		}
+
+		void OnNewItemsAdded<T>(NotifyCollectionChangedEventArgs e, Action<T> onAddFunc)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
-				IEnumerable<T> newItem = sender as IEnumerable<T>;
-				onAddFunc(newItem);
+				foreach (T newItem in e.NewItems)
+				{
+					onAddFunc(newItem);
+				}
 			}
 		}
 	}

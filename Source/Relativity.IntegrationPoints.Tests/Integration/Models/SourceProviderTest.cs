@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
+using kCura.IntegrationPoints.Core;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -18,11 +20,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Configuration { get; set; }
 
-		public SourceProviderTest()
+		public SourceProviderTest() : base("SourceProvider")
 		{
-			Name = $"Fake Source Provider";
-			Identifier = Guid.NewGuid().ToString();
-			ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID;
 		}
 
 		public override RelativityObject ToRelativityObject()
@@ -110,6 +109,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 						Value = Name
 					},
 				}
+			};
+		}
+
+		public SourceProvider ToRdo()
+		{
+			return new SourceProvider
+			{
+				RelativityObject = ToRelativityObject(),
+				ArtifactId = ArtifactId,
+				ParentArtifactId = ParenObjectArtifactId,
+				Config = null,
+				Identifier = Identifier,
+				SourceConfigurationUrl = SourceConfigurationUrl,
+				ApplicationIdentifier = ApplicationIdentifier,
+				ViewConfigurationUrl = ViewConfigurationUrl,
+				Configuration = Configuration,
+				Name = Name
 			};
 		}
 	}

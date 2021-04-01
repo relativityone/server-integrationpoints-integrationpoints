@@ -37,6 +37,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\kCura.Agent\lib\net462\kCura.Agent.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Productions.Services.Interfaces, Version=11.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,34 +57,45 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Integration\Artifact.cs" />
+    <Compile Include="Integration\ArtifactProvider.cs" />
     <Compile Include="Integration\Const.cs" />
     <Compile Include="Integration\DatabaseSchema.cs" />
     <Compile Include="Integration\Helpers\DestinationProviderHelper.cs" />
+    <Compile Include="Integration\Helpers\FieldsMappingHelper.cs" />
     <Compile Include="Integration\Helpers\IntegrationPointTypeHelper.cs" />
     <Compile Include="Integration\Helpers\JobHistoryHelper.cs" />
     <Compile Include="Integration\Helpers\SourceProviderHelper.cs" />
+    <Compile Include="Integration\InstanceSettings.cs" />
+    <Compile Include="Integration\Mocks\FakeUser.cs" />
+    <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Artifact.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.DestinationProvider.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPointType.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SourceProvider.cs" />
+    <Compile Include="Integration\Mocks\Kepler\PermissionManagerStub.cs" />
     <Compile Include="Integration\Mocks\Services\FakeBatchStatus.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataReader.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataSourceProvider.cs" />
     <Compile Include="Integration\Mocks\Services\FakeInstanceSettingsProvider.cs" />
     <Compile Include="Integration\Mocks\Services\FakeMessageService.cs" />
-    <Compile Include="Integration\Mocks\Services\FakePermissionValidator.cs" />
     <Compile Include="Integration\Mocks\Services\FakeProviderFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeProviderFactoryLifecycleStrategy.cs" />
     <Compile Include="Integration\Mocks\Services\FakeRepositoryFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeScratchTableRepository.cs" />
+    <Compile Include="Integration\Mocks\Services\FakeSqlServiceFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeTimeService.cs" />
     <Compile Include="Integration\Mocks\Services\FakeValidator.cs" />
     <Compile Include="Integration\Mocks\Services\FakeWorkspaceDbContext.cs" />
+    <Compile Include="Integration\Models\ArtifactTest.cs" />
     <Compile Include="Integration\Models\DestinationProviderTest.cs" />
+    <Compile Include="Integration\Models\FieldTest.cs" />
+    <Compile Include="Integration\Models\FolderTest.cs" />
     <Compile Include="Integration\Models\IntegrationPointTypeTest.cs" />
     <Compile Include="Integration\Models\JobHistoryTest.cs" />
     <Compile Include="Integration\Models\RdoTestBase.cs" />
+    <Compile Include="Integration\Models\SavedSearchTest.cs" />
     <Compile Include="Integration\Models\SourceProviderTest.cs" />
     <Compile Include="Integration\Models\TaskParametersTest.cs" />
     <Compile Include="Integration\Tests\Agent\SyncManagerTests.cs" />
@@ -114,6 +129,8 @@
     <Compile Include="Integration\Models\WorkspaceTest.cs" />
     <Compile Include="Integration\TestContext.cs" />
     <Compile Include="Integration\TestsBase.cs" />
+    <Compile Include="Integration\Tests\Validation\AgentValidatorTests.cs" />
+    <Compile Include="Integration\Tests\Validation\ValidationExecutorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\RelativitySync\RdoCleanup\SyncRdoCleanupServiceTests.cs" />
   </ItemGroup>
@@ -123,6 +140,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPoint.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SavedSearch.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Field.cs" />
     <None Include="paket.references" />
     <None Include="readme.md" />
   </ItemGroup>
@@ -236,6 +255,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="BCrypt.Net-Core">
+          <HintPath>..\..\packages\BCrypt.Net-Core\lib\net452\BCrypt.Net-Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="FluentAssertions">
           <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
           <Private>True</Private>
@@ -243,6 +273,17 @@
         </Reference>
         <Reference Include="FluentAssertions.Core">
           <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura">
+          <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -276,6 +317,17 @@
       <ItemGroup>
         <Reference Include="kCura.Apps.Common.Utils">
           <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="kCura.Injection">
+          <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

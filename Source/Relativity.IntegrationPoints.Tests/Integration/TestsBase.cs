@@ -2,15 +2,26 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
+using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Context;
+using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Authentication.WebApi;
+using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Installers;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -19,6 +30,10 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Validation.Helpers;
+using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.SecretStore;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
@@ -28,6 +43,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -41,9 +57,11 @@ using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
+	[TestExecutionCategory.CI, TestLevel.L1]
 	public abstract class TestsBase
 	{
 		public InMemoryDatabase Database { get; set; }
@@ -59,27 +77,43 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public HelperManager HelperManager { get; set; }
 
 		public WorkspaceTest SourceWorkspace { get; set; }
+
+		public FakeUser User { get; set; }
+
+		public ISerializer Serializer { get; set; }
 		
 		[SetUp]
 		public virtual void SetUp()
 		{
-			Proxy = new ProxyMock();
+			User = new FakeUser
+			{
+				IsAdmin = true
+			};
+
+			Context = new TestContext
+			{
+				User = User
+			};
+
+			Proxy = new ProxyMock(Context);
 
 			Database = new InMemoryDatabase(Proxy);
 
 			Helper = new TestHelper(Proxy);
 
-			Context = new TestContext();
-
 			HelperManager = new HelperManager(Database, Proxy, Context);
 
 			SetupGlobalSettings();
 
-			SourceWorkspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+			SourceWorkspace = HelperManager.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp();
 
 			SetupContainer(SourceWorkspace);
+
+			Serializer = Container.Resolve<ISerializer>();
+
+			HelperManager.InitializeSerializer(Serializer);
 		}
-		
+
 		private void SetupContainer(WorkspaceTest sourceWorkspace)
 		{
 			Container = new WindsorContainer();
@@ -92,6 +126,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
 			RegisterRipAgentTasks();
+			RegisterAuthentication();
+
+			Container.Install(new ValidationInstaller());
 		}
 
 		private void RegisterRelativityApiServices()
@@ -154,15 +191,42 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>().LifestyleTransient());
 
 			Container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<IntegrationPointRepository>());
-			Container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>());
-			Container.Register(Component.For<IIntegrationPointProviderValidator>().ImplementedBy<IntegrationPointProviderValidator>());
-			Container.Register(Component.For<IIntegrationPointPermissionValidator>().ImplementedBy<IntegrationPointPermissionValidator>());
 
 			Container.Register(Component.For<ISecretsRepository>().ImplementedBy<SecretsRepository>());
 			Container.Register(Component.For<ISecretStoreFacade>().ImplementedBy<SecretStoreFacade>());
 			Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()));
 			Container.Register(Component.For<Lazy<ISecretStore>>().UsingFactoryMethod(c =>
 				new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())));
+
+			Container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>());
+
+			Container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>().LifestyleSingleton());
+			Container.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
+			Container.Register(Component.For<IProductionManager>().ImplementedBy<ProductionManager>());
+			Container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>());
+			Container.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
+			Container.Register(Component.For<IRetryHandlerFactory>().ImplementedBy<RetryHandlerFactory>().LifestyleSingleton());
+			Container.Register(Component.For<IExternalServiceInstrumentationProvider>().ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>().LifestyleSingleton());
+			Container.Register(Component.For<IConfig>().Instance(Config.Instance).LifestyleSingleton());
+			Container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
+			Container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>().LifestyleSingleton());
+
+			Container.Register(Component.For<JobContextProvider>().UsingFactoryMethod(k =>
+			{
+				JobTest job = new JobBuilder()
+					.Build();
+
+				JobContextProvider jobContextProvider = new JobContextProvider();
+				jobContextProvider.StartJobContext(new Job(job.AsDataRow()));
+
+				return jobContextProvider;
+			}));
+
+			Container.Register(Component.For<CurrentUser>().UsingFactoryMethod(k =>
+			{
+				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				return new CurrentUser(userID: jobContextProvider.Job.SubmittedBy);
+			}).LifestyleTransient());
 		}
 
 		private void RegisterFakeRipServices()
@@ -176,13 +240,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new FakeRepositoryFactory(kernel.Resolve<InMemoryDatabase>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))));
 
 			Container.Register(Component.For<IBatchStatus>().ImplementedBy<FakeBatchStatus>());
-			Container.Register(Component.For<IValidator>().ImplementedBy<FakeValidator>());
-			Container.Register(Component.For<IPermissionValidator>().ImplementedBy<FakePermissionValidator>());
 		}
 
 		private void RegisterRipAgentTasks()
 		{
 			Container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
+		}
+
+		private void RegisterAuthentication()
+		{
+			Container.Register(Component.For<ILoginHelperFacade>().ImplementedBy<LoginHelperRetryDecorator>().LifestyleTransient());
+			Container.Register(Component.For<ILoginHelperFacade>().ImplementedBy<LoginHelperInstrumentationDecorator>().LifestyleTransient());
+			Container.Register(Component.For<ILoginHelperFacade>().ImplementedBy<LoginHelperFacade>().LifestyleSingleton());
+
+			Container.Register(Component.For<IWebApiLoginService>().ImplementedBy<WebApiLoginService>().LifestyleTransient());
+
+			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<OAuth2TokenGenerator>().LifestyleTransient());
 		}
 
 		private void SetupGlobalSettings()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
@@ -12,11 +13,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Name { get; set; }
 
-		public IntegrationPointTypeTest()
+		public IntegrationPointTypeTest() : base("IntegrationPointType")
 		{
-			Name = $"Fake Integration Point Type";
-			Identifier = Guid.NewGuid().ToString();
-			ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID;
 		}
 
 		public override RelativityObject ToRelativityObject()
@@ -68,6 +66,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 						Value = Name
 					},
 				}
+			};
+		}
+
+		public IntegrationPointType ToRdo()
+		{
+			return new IntegrationPointType
+			{
+				RelativityObject = ToRelativityObject(),
+				ArtifactId = ArtifactId,
+				ParentArtifactId = ParenObjectArtifactId,
+				ApplicationIdentifier = ApplicationIdentifier,
+				Identifier = Identifier,
+				Name = Name
 			};
 		}
 	}

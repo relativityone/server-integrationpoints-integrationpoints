@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -44,7 +46,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Name { get; set; }
 
-		public IntegrationPointTest()
+		public IntegrationPointTest() : base("IntegrationPoint")
 		{
 			Name = $"Integration Point (Artifact ID {ArtifactId})";
 		}
@@ -278,6 +280,34 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 						Value = Name
 					},
 				}
+			};
+		}
+
+		public IntegrationPoint ToRdo()
+		{
+			return new IntegrationPoint
+			{
+				RelativityObject = ToRelativityObject(),
+				ArtifactId = ArtifactId,
+				ParentArtifactId = ParenObjectArtifactId,
+				NextScheduledRuntimeUTC = NextScheduledRuntimeUTC,
+				LastRuntimeUTC = LastRuntimeUTC,
+				FieldMappings = FieldMappings,
+				EnableScheduler = EnableScheduler,
+				SourceConfiguration = SourceConfiguration,
+				DestinationConfiguration = DestinationConfiguration,
+				SourceProvider = SourceProvider,
+				ScheduleRule = ScheduleRule,
+				OverwriteFields = OverwriteFields,
+				DestinationProvider = DestinationProvider,
+				JobHistory = JobHistory,
+				LogErrors = LogErrors,
+				EmailNotificationRecipients = EmailNotificationRecipients,
+				HasErrors = HasErrors,
+				Type = Type,
+				SecuredConfiguration = SecuredConfiguration,
+				PromoteEligible = PromoteEligible,
+				Name = Name
 			};
 		}
 	}

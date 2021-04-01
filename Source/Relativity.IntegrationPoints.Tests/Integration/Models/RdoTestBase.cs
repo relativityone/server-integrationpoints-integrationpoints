@@ -4,13 +4,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
 	public abstract class RdoTestBase
 	{
-		public int ArtifactId { get; set; }
+		public ArtifactTest Artifact { get; }
+
+		public int ArtifactId => Artifact.ArtifactId;
+
+		public int ParenObjectArtifactId { get; set; }
 
 		public int WorkspaceId { get; set; }
 
-		protected RdoTestBase()
+		protected RdoTestBase(string artifactTypeName)
 		{
-			ArtifactId = Artifact.NextId();
+			Artifact = new ArtifactTest
+			{
+				ArtifactId = ArtifactProvider.NextId(),
+				ArtifactType = artifactTypeName
+			};
 		}
 
 		public abstract RelativityObject ToRelativityObject();

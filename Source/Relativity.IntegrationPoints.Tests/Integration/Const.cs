@@ -13,10 +13,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			public static readonly Guid RELATIVITY_INTEGRATION_POINTS_AGENT_GUID =
 				new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
-			public static readonly int INTEGRATION_POINTS_AGENT_TYPE_ID = Artifact.NextId();
+			public static readonly int INTEGRATION_POINTS_AGENT_TYPE_ID = ArtifactProvider.NextId();
 
 			public static readonly List<int> RESOURCE_GROUP_IDS = new List<int>
-				{Artifact.NextId(), Artifact.NextId(), Artifact.NextId()};
+				{ArtifactProvider.NextId(), ArtifactProvider.NextId(), ArtifactProvider.NextId()};
 		}
 	}
 }

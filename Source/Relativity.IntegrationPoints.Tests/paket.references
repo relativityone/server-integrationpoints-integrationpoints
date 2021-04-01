@@ -1,4 +1,5 @@
-﻿kCura.Apps.Common.Config
+﻿kCura
+kCura.Apps.Common.Config
 Relativity
 Relativity.Kepler.Client
 	alias Relativity.Services.ServiceProxy.dll ServiceProxy

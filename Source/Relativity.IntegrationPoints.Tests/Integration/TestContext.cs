@@ -1,4 +1,5 @@
 ﻿using System;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
@@ -8,7 +9,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public DateTime CurrentDateTime => _currentDateTime ?? DateTime.UtcNow;
 
-		public int UserId { get; set; } = 9;
+		public FakeUser User { get; set; }
+
+		public InstanceSettings InstanceSettings { get; set; }
+
+		public TestContext()
+		{
+			InstanceSettings = new InstanceSettings();
+		}
 
 		public void SetDateTime(DateTime? dateTime)
 		{

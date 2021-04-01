@@ -7,7 +7,6 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
 	[IdentifiedTestFixture("E3F6E382-1680-41EA-9DA5-12003FD1988E")]
-	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ScheduleQueueInitializationTests : TestsBase
 	{
 		[IdentifiedTest("544F7D10-F5FA-4848-AA50-2543FCB22A03")]
@@ -37,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 			JobTest jobWithoutWorkspace = HelperManager.JobHelper.ScheduleJob(new JobTest()
 			{
-				WorkspaceID = Artifact.NextId()
+				WorkspaceID = ArtifactProvider.NextId()
 			});
 
 
