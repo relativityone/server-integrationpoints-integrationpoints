@@ -7,7 +7,9 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
+using kCura.Utility.Extensions;
 using Relativity.API;
+using Relativity.Logging;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -130,15 +132,24 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				while (nextJob != null)
 				{
+					LogJobInformation(nextJob);
+
 					bool isJobValid = PreExecuteJobValidation(nextJob);
 					if (!isJobValid)
 					{
+						Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
+
 						_jobService.DeleteJob(nextJob.JobId);
 						nextJob = GetNextQueueJob();
 						continue;
 					}
 
+					Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+
 					TaskResult jobResult = ProcessJob(nextJob);
+
+					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
+
 					FinalizeJobExecution(nextJob, jobResult);
 					nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
 				}
@@ -314,6 +325,18 @@ namespace kCura.ScheduleQueue.AgentBase
 		private void LogValidationJobFailed(Job job, ValidationResult result)
 		{
 			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Message);
+		}
+
+		private void LogJobInformation(Job job)
+		{
+			Logger.LogInformation("Job {jobId} has been picked up from the queue. Job Information: " +
+			                    "WorkspaceID: {workspaceId} " +
+			                    "RelatedObjectArtifactID: {relatedObjectArtifactId} " +
+			                    "Task types: {taskType} " +
+			                    "Submitted by: {submittedBy} " +
+								"Details: {jobDetails}" +
+								"StopState: {stopState}",
+					job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, job.SubmittedBy, job.JobDetails, job.StopState);
 		}
 		#endregion
 	}

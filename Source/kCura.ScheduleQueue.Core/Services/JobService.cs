@@ -87,6 +87,11 @@ namespace kCura.ScheduleQueue.Core.Services
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
 			if (nextUtcRunDateTime.HasValue)
 			{
+				_log.LogInformation("Job {jobId} was scheduled with following details: " +
+				                    "NextRunTime - {nextRunTime} " +
+				                    "ScheduleRule - {scheduleRule}",
+					job.JobId, nextUtcRunDateTime, job.SerializedScheduleRule);
+
 				TaskParameters taskParameters = new TaskParameters()
 				{
 					BatchInstance = Guid.NewGuid()
@@ -98,6 +103,8 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 			else
 			{
+				_log.LogInformation("Deleting job {jobId} from the queue since it wasn't scheduled...");
+
 				DeleteJob(job.JobId);
 			}
 
