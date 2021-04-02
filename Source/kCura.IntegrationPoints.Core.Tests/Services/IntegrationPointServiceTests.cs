@@ -29,7 +29,8 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
-using Relativity.Services.Choice;
+using Relativity.Services.Objects.DataContracts;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -168,7 +169,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
 				.Returns(_previousJobHistoryArtifactId);
-			_objectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns(_previousJobHistory);
+			_objectManager.Query<Data.JobHistory>(Arg.Is<QueryRequest>(q => q.Condition.Contains(_previousJobHistoryArtifactId.ToString())))
+				.Returns(new List<Data.JobHistory>
+				{
+					_previousJobHistory
+				});
 
 			_integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(_integrationPoint);
 			_objectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
@@ -185,6 +190,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(false);
+
+			_jobHistoryService.CreateRdo(
+					Arg.Any<Data.IntegrationPoint>(),
+					Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
+					Arg.Any<DateTime?>())
+				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
 			// act
 			_instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
@@ -653,6 +664,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_managerFactory.CreateQueueManager().Returns(_queueManager);
 
+			_jobHistoryService.CreateRdo(
+					Arg.Any<Data.IntegrationPoint>(),
+					Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
+					Arg.Any<DateTime?>())
+				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
 
@@ -685,6 +701,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			_integrationPoint.HasErrors = null;
 
+			_jobHistoryService.CreateRdo(
+					Arg.Any<Data.IntegrationPoint>(),
+					Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
+					Arg.Any<DateTime?>())
+				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
+
 			// Act
 			Assert.Throws<Exception>(() =>
 				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId),
@@ -694,7 +716,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
 			_objectManager.Received(1).Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value);
 
-			_validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
+			_validationExecutor.DidNotReceive().ValidateOnRun(Arg.Is<ValidationContext>(x =>
 				x.IntegrationPointType == _integrationPointType &&
 				x.SourceProvider == _sourceProvider &&
 				x.UserId == _userId &&
@@ -713,6 +735,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
+			_integrationPoint.HasErrors = true;
 			_jobHistoryService.CreateRdo(
 							Arg.Any<Data.IntegrationPoint>(),
 							Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
@@ -783,7 +806,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			_integrationPoint.HasErrors = true;
-			_objectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Returns((Data.JobHistory)null);
+			_objectManager.Query<Data.JobHistory>(Arg.Is<QueryRequest>(q => q.Condition.Contains(_previousJobHistoryArtifactId.ToString())))
+				.Returns((List<Data.JobHistory>)null);
 
 			// Act
 			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
@@ -800,7 +824,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			_integrationPoint.HasErrors = true;
-			_objectManager.Read<Data.JobHistory>(_previousJobHistoryArtifactId).Throws<Exception>();
+			_objectManager.Query<Data.JobHistory>(Arg.Is<QueryRequest>(q => q.Condition.Contains(_previousJobHistoryArtifactId.ToString())))
+				.Throws<Exception>();
 
 			// Act
 			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
@@ -815,6 +840,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			// Arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+
+			_jobHistoryService.CreateRdo(
+					Arg.Any<Data.IntegrationPoint>(),
+					Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
+					Arg.Any<DateTime?>())
+				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
 			_integrationPoint.HasErrors = true;
 			_previousJobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
@@ -834,6 +865,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 
 			_integrationPoint.HasErrors = true;
+
+			_jobHistoryService.CreateRdo(
+					Arg.Any<Data.IntegrationPoint>(),
+					Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
+					Arg.Any<DateTime?>())
+				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
 			// Act
 			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);

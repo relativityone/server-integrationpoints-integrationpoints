@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string LOAD_FILE_DESTINATION_PROVIDER_GUID = DestinationProviders.LOADFILE;
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
 			public const string RETRY_ON_STOPPED_JOB = "The transfer cannot be retried because it has been stopped.";
+			public const string FAILED_TO_CREATE_JOB_HISTORY = "Unable to create JobHistory.";
 			public const string FAILED_TO_RETRIEVE_JOB_HISTORY = "Unable to retrieve the previous job history.";
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
 			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE = "Unable to retrieve Integration Point Profile.";
