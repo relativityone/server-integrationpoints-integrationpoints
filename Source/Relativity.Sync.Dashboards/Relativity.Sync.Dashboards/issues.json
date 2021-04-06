@@ -444,7 +444,7 @@
 		"Exception": "*Relativity.Services.Exceptions.ServiceException: Update Failed*Relativity.Sync.Executors.SyncFieldManager.<EnsureFieldsExistAsync>*"
 	},
 	{
-		"Jira": "REL-534299",
+		"Jira": "REL-534268",
 		"Exception": "*System.Net.WebException: Unable to connect to the remote server*A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond*"
 	},
 	{
