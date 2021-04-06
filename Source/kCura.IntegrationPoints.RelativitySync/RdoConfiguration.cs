@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Data;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage.RdoGuidsProviders;
 using Relativity.Sync.SyncConfiguration.Options;
+using Constants = Relativity.Production.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -29,7 +30,17 @@ namespace kCura.IntegrationPoints.RelativitySync
                 ErrorTypeChoices.JobHistoryErrorItemGuid,
                 ErrorTypeChoices.JobHistoryErrorJobGuid,
                 ErrorStatusChoices.JobHistoryErrorNewGuid
-            )
+            ),
+            new DestinationWorkspaceOptions(
+                ObjectTypeGuids.DestinationWorkspaceGuid,
+                DestinationWorkspaceFieldGuids.NameGuid,
+                DestinationWorkspaceFieldGuids.DestinationWorkspaceNameGuid,
+                DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactIDGuid,
+                DestinationWorkspaceFieldGuids.DestinationInstanceNameGuid,
+                DestinationWorkspaceFieldGuids.DestinationInstanceArtifactIDGuid,
+                DocumentFieldGuids.JobHistoryGuid,
+                DocumentFieldGuids.RelativityDestinationCaseGuid
+                )
         );
     }
 }

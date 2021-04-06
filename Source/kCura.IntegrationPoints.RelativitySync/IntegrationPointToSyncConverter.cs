@@ -47,7 +47,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
 			FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointModel.DestinationConfiguration);
 
-			ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId);
+			ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId, 
+				Core.Constants.IntegrationPoints.APPLICATION_NAME, typeof(IntegrationPointToSyncConverter).Assembly.GetName().Version);
 
 			SyncConfigurationBuilder builder = new SyncConfigurationBuilder(syncContext, servicesMgr);
 
