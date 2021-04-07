@@ -53,7 +53,7 @@ namespace Relativity.Sync.Tests.System
 				Groups = new List<Artifact> { group }
 			});
 
-			permissionService.AddWorkspaceToGroup(_workspace.ArtifactID, group.ArtifactID);
+			permissionService.WorkspacePermissionService.AddWorkspaceToGroup(_workspace.ArtifactID, group.ArtifactID);
 		}
 
 		[IdentifiedTest("219adc9a-e1e4-4de8-bb46-c27fc05239e3")]

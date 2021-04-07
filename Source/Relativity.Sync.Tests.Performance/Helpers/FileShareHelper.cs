@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		private bool IsAppInstalled()
 		{
-			LibraryApplication armTestServicesApp = RelativityFacade.Instance.Resolve<IRelativityApplicationService>()
+			LibraryApplication armTestServicesApp = RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
 				.Get("ARM Test Services");
 
 			return armTestServicesApp != null;
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			string rapPath = GetTestServicesRapPathAsync().Result;
 			try
 			{
-				RelativityFacade.Instance.Resolve<IRelativityApplicationService>()
+				RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
 					.InstallToLibrary(rapPath, new LibraryApplicationInstallOptions()
 				{
 					CreateIfMissing = true
