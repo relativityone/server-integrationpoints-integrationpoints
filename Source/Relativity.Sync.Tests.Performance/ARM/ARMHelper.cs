@@ -121,7 +121,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private Version GetInstalledArmVersion()
 		{
-			LibraryApplication armApplication = RelativityFacade.Instance.Resolve<IRelativityApplicationService>()
+			LibraryApplication armApplication = RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
 					.Get("ARM");
 
 			return armApplication != null ? new Version(armApplication.Version) : null;
@@ -134,7 +134,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			{
 				Logger.LogInformation("Installing ARM...");
 
-				IRelativityApplicationService applicationService = RelativityFacade.Instance.Resolve<IRelativityApplicationService>();
+				ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
 				applicationService.InstallToLibrary(rapPath, new LibraryApplicationInstallOptions()
 				{
