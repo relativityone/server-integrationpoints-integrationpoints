@@ -86,7 +86,6 @@
     <Compile Include="Integration\Mocks\Services\FakeScratchTableRepository.cs" />
     <Compile Include="Integration\Mocks\Services\FakeSqlServiceFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeTimeService.cs" />
-    <Compile Include="Integration\Mocks\Services\FakeValidator.cs" />
     <Compile Include="Integration\Mocks\Services\FakeWorkspaceDbContext.cs" />
     <Compile Include="Integration\Models\ArtifactTest.cs" />
     <Compile Include="Integration\Models\DestinationProviderTest.cs" />
