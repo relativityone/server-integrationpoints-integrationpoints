@@ -52,14 +52,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		}
 
 		[TestCaseSource(nameof(DocumentTypePipelines))]
-
 		public void CreateJobEndMetricsService_ShouldReturnDocumentJobEndMetricsService_WhenPipelineIsDocumentTypeAndNotSuspending(ISyncPipeline syncPipeline)
 		{
 			// Arrange
 			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
 
 			// Act
-			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(false);
+			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(isSuspended: false);
 
 			// Assert
 			result.Should().BeOfType<DocumentJobEndMetricsService>();
@@ -72,10 +71,36 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
 
 			// Act
-			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(false);
+			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(isSuspended: false);
 
 			// Assert
 			result.Should().BeOfType<ImageJobEndMetricsService>();
+		}
+
+		[TestCaseSource(nameof(DocumentTypePipelines))]
+		public void CreateJobEndMetricsService_ShouldReturnDocumentJobSuspendedMetricsService_WhenPipelineIsDocumentTypeAndSuspending(ISyncPipeline syncPipeline)
+		{
+			// Arrange
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
+
+			// Act
+			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(isSuspended: true);
+
+			// Assert
+			result.Should().BeOfType<DocumentJobSuspendedMetricsService>();
+		}
+
+		[TestCaseSource(nameof(ImageTypePipelines))]
+		public void CreateJobEndMetricsService_ShouldReturnImageJobSuspendedMetricsService_WhenPipelineIsImageTypeAndSuspending(ISyncPipeline syncPipeline)
+		{
+			// Arrange
+			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
+
+			// Act
+			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(isSuspended: true);
+
+			// Assert
+			result.Should().BeOfType<ImageJobSuspendedMetricsService>();
 		}
 
 		[TestCase(true)]
