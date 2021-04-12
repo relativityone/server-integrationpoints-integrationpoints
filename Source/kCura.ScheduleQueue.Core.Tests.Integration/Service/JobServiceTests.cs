@@ -51,24 +51,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			_helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query);
 		}
 
-		[IdentifiedTest("0da98dae-1bdc-490c-86b5-016ac098b24c")]
-		public void CreateJob_NoneStoppingState()
-		{
-			// act
-			Job job = _instance.CreateJob(999999, 99999999, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-
-			// assert
-			Assert.AreEqual(job.StopState, StopState.None);
-		}
-
-		[IdentifiedTest("d0e209a3-362c-429b-a7b6-4cc83bf4aefa")]
-		[Description("When we update the stop state, there is a possibility that the job is already removed from the queue. This scenario will occur when the job is finished before we get to update the job.")]
-		public void UpdateStopState_JobDoesNotExist()
-		{
-			Assert.Throws<InvalidOperationException>(() => _instance.UpdateStopState( new List<long>() {  987654321 }, StopState.Stopping));
-		}
-
-
 		[IdentifiedTestCase("009766e9-c334-4628-9b6a-e681404b7aa8", StopState.None)]
 		[IdentifiedTestCase("0fb6d2f7-9779-494b-bef9-045f5ec36f95", StopState.Stopping)]
 		[IdentifiedTestCase("dd30600a-568c-4818-9dbd-15c2a76519ad", StopState.Unstoppable)]
@@ -157,50 +139,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 
 			// act & assert
 			Assert.Throws<ExecuteSQLStatementFailedException>(() => _instance.UpdateStopState(ids, StopState.Stopping));
-		}
-
-		[IdentifiedTest("d8710768-a29d-4a97-a3b6-2299adf54f2e")]
-		public void GetJobs_NoJobsEmptyTable()
-		{
-			// act
-			IList<Job> jobs = _instance.GetJobs(-1);
-
-			// assert
-			Assert.IsNotNull(jobs);
-			Assert.IsEmpty(jobs);
-		}
-
-		[IdentifiedTest("614f4038-4bb8-4b5e-a178-43f6a7c1f865")]
-		public void GetJobs_NoJobs()
-		{
-			// arrange
-			int integrationPointArtifactIds = 789654123;
-			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-
-			// act
-			IList<Job> jobs = _instance.GetJobs(-1);
-
-			// assert
-			Assert.IsNotNull(jobs);
-			Assert.IsEmpty(jobs);
-		}
-
-		[IdentifiedTest("fdb44d2b-2136-4235-bbb5-6975595b0cbb")]
-		public void GetJobs_FoundMatches()
-		{
-			// arrange
-			int integrationPointArtifactIds = 789654123;
-			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-			_instance.CreateJob(999999, integrationPointArtifactIds, TaskType.None.ToString(), DateTime.MaxValue, String.Empty, 9, null, null);
-
-			// act
-			IList<Job> jobs = _instance.GetJobs(integrationPointArtifactIds);
-
-			// assert
-			Assert.IsNotNull(jobs);
-			Assert.AreEqual(2, jobs.Count);
-			// TODO : add more verifications
 		}
 
 		[IdentifiedTestCase("20242fa5-38cc-48a5-8b2e-b14ce5bfdee8", StopState.None)]

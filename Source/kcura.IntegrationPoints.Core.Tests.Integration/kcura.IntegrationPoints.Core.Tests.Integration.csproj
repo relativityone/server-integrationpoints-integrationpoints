@@ -68,7 +68,6 @@
     <Compile Include="Services\IntegrationPointServiceForSaveTests.cs" />
     <Compile Include="Services\IntegrationPointServiceForSchedulerTests.cs" />
     <Compile Include="Services\IntegrationPointServiceTestsForOtherProviders.cs" />
-    <Compile Include="Services\JobHistory\JobHistoryServiceTests.cs" />
     <Compile Include="Tagging\SourceDocumentsTaggerTests.cs" />
   </ItemGroup>
   <ItemGroup>

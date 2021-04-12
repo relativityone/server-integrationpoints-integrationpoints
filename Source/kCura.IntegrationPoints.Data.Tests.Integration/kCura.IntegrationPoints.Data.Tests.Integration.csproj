@@ -62,10 +62,8 @@
     <Compile Include="Repositories\DestinationWorkspaceRepositoryTests.cs" />
     <Compile Include="Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Repositories\RelativityObjectManager\ExportQueryResultTests.cs" />
-    <Compile Include="Repositories\RelativityObjectManager\StreamLongTextAsyncTests.cs" />
     <Compile Include="Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Repositories\KeplerWorkspaceRepositoryTests.cs" />
-    <Compile Include="Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Repositories\ScratchTableRepositoryTests.cs" />
   </ItemGroup>
