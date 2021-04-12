@@ -30,16 +30,12 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<INode<SyncExecutionContext>> _childNodeFake;
 		private Mock<ISyncLog> _loggerFake;
 		
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			_drainStopTokenSource = new CancellationTokenSource();
-			_token = new CompositeCancellationToken(new CancellationToken(false), _drainStopTokenSource.Token);
-		}
-
 		[SetUp]
 		public void SetUp()
 		{
+			_drainStopTokenSource = new CancellationTokenSource();
+			_token = new CompositeCancellationToken(CancellationToken.None, _drainStopTokenSource.Token);
+
 			var progress = new Mock<IProgress<SyncJobState>>();
 			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
