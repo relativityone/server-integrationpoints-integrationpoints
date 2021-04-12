@@ -53,41 +53,41 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 		[TestCaseSource(nameof(DocumentTypePipelines))]
 
-		public void CreateJobEndMetricsService_ShouldReturnDocumentJobEndMetricsService_WhenPipelineIsDocumentType(ISyncPipeline syncPipeline)
+		public void CreateJobEndMetricsService_ShouldReturnDocumentJobEndMetricsService_WhenPipelineIsDocumentTypeAndNotSuspending(ISyncPipeline syncPipeline)
 		{
 			// Arrange
 			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
 
 			// Act
-			var result = _sut.CreateJobEndMetricsService();
+			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(false);
 
 			// Assert
 			result.Should().BeOfType<DocumentJobEndMetricsService>();
 		}
 
 		[TestCaseSource(nameof(ImageTypePipelines))]
-		public void CreateJobEndMetricsService_ShouldReturnImageJobEndMetricsService_WhenPipelineIsImageType(ISyncPipeline syncPipeline)
+		public void CreateJobEndMetricsService_ShouldReturnImageJobEndMetricsService_WhenPipelineIsImageTypeAndNotSuspending(ISyncPipeline syncPipeline)
 		{
 			// Arrange
 			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(syncPipeline);
 
 			// Act
-			var result = _sut.CreateJobEndMetricsService();
+			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(false);
 
 			// Assert
 			result.Should().BeOfType<ImageJobEndMetricsService>();
 		}
 
-		[Test]
-
-		public void CreateJobEndMetricsService_ShouldReturnEmptyJobEndMetricsService_WhenPipelineTypeIsUnableToDetermine()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void CreateJobEndMetricsService_ShouldReturnEmptyJobEndMetricsService_WhenPipelineTypeIsUnableToDetermine(bool isSuspended)
 		{
 			// Arrange
 			var testPipeline = new Mock<ISyncPipeline>();
 			_pipelineSelectorFake.Setup(x => x.GetPipeline()).Returns(testPipeline.Object);
 
 			// Act
-			var result = _sut.CreateJobEndMetricsService();
+			IJobEndMetricsService result = _sut.CreateJobEndMetricsService(isSuspended);
 
 			// Assert
 			result.Should().BeOfType<EmptyJobEndMetricsService>();

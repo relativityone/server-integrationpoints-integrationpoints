@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			var jobEndMetricsService = new Mock<IJobEndMetricsService>();
 			_jobEndMetricsServiceFactory = new Mock<IJobEndMetricsServiceFactory>();
-			_jobEndMetricsServiceFactory.Setup(x => x.CreateJobEndMetricsService()).Returns(jobEndMetricsService.Object);
+			_jobEndMetricsServiceFactory.Setup(x => x.CreateJobEndMetricsService(It.IsAny<bool>())).Returns(jobEndMetricsService.Object);
 
 			_childNodeFake = new Mock<INode<SyncExecutionContext>>();
 
