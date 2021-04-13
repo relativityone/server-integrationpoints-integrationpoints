@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
@@ -8,7 +7,6 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -69,101 +67,6 @@ namespace Relativity.Sync.Tests.System
 			retrievedImages.Select(x => x.Filename).Should().BeEquivalentTo(dataset.GetFiles().Select(x => x.Name));
 			retrievedImages.Select(x => x.DocumentArtifactId).Distinct().Count().Should()
 				.Be(expectedDistinctDocumentsCount);
-		}
-
-		[IdentifiedTest("50ee0c92-60e1-46c4-bd7e-2c83b952e51b")]
-		public async Task CalculateImagesTotalSizeAsync_ShouldCalculateCorrectSize()
-		{
-			// Arrange
-			Dataset dataset = Dataset.Images;
-			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await ImportHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
-			QueryRequest request = GetQueryRequest();
-
-			// Act
-			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
-
-			// Assert
-			calculatedImagesStatistics.TotalCount.Should().Be(dataset.TotalItemCount);
-			calculatedImagesStatistics.TotalSize.Should().Be(dataset.GetTotalFilesSize());
-		}
-
-		[IdentifiedTest("ab852f80-fda3-4347-a5c1-29d595c7030d")]
-		public async Task CalculateImagesTotalSizeAsync_ShouldCalculateCorrectSize_ForProduction()
-		{
-			// Arrange
-			ProductionDto production = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.ImagesBig).ConfigureAwait(false);
-			var request = GetQueryRequest();
-
-			// Act
-			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new[] { production.ArtifactId } }).ConfigureAwait(false);
-
-			// Assert
-			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.ImagesBig.TotalItemCount);
-			calculatedImagesStatistics.TotalSize.Should().Be(Dataset.ImagesBig.GetTotalFilesSize());
-		}
-
-		[IdentifiedTest("c6ef001e-68b7-438d-9697-8406bf56797c")]
-		public async Task CalculateImagesTotalSizeAsync_ShouldIncludeOriginalImagesWhenEnabled()
-		{
-			// Arrange
-			ProductionDto production = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.Images).ConfigureAwait(false);
-
-			Dataset dataset = Dataset.ThreeImages;
-			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await ImportHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
-
-			QueryRequest request = GetQueryRequest();
-
-			// Act
-			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new[] { production.ArtifactId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
-
-			// Assert
-			calculatedImagesStatistics.TotalCount.Should().Be(Dataset.Images.TotalItemCount + Dataset.ThreeImages.TotalItemCount);
-			calculatedImagesStatistics.TotalSize.Should().Be(Dataset.Images.GetTotalFilesSize() + Dataset.ThreeImages.GetTotalFilesSize());
-		}
-
-		[IdentifiedTest("dc9a2ed8-092a-4e2f-8476-6e578a127b3c")]
-		public async Task CalculateImagesTotalSizeAsync_ShouldRespectProductionPrecedence()
-		{
-			// Arrange
-			ProductionDto singleDocumentProduction = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.SingleDocumentProduction).ConfigureAwait(false);
-			ProductionDto twoDocumentProduction = await CreateAndImportProductionAsync(_workspace.ArtifactID, Dataset.TwoDocumentProduction).ConfigureAwait(false);
-
-			Dataset dataset = Dataset.ThreeImages;
-			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			await ImportHelper.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
-
-			QueryRequest request = GetQueryRequest();
-
-			// Act
-			ImagesStatistics calculatedImagesStatistics = await _sut.CalculateImagesStatisticsAsync(_workspace.ArtifactID, request,
-				new QueryImagesOptions { ProductionIds = new[] { singleDocumentProduction.ArtifactId, twoDocumentProduction.ArtifactId }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
-
-			// Assert
-			ImagesStatistics expectedImagesStatistics = GetExpectedImagesStatisticsWithPrecedence(new[]
-				{Dataset.SingleDocumentProduction, Dataset.TwoDocumentProduction, Dataset.ThreeImages});
-
-			calculatedImagesStatistics.TotalCount.Should().Be(expectedImagesStatistics.TotalCount);
-			calculatedImagesStatistics.TotalSize.Should().Be(expectedImagesStatistics.TotalSize);
-		}
-
-		private ImagesStatistics GetExpectedImagesStatisticsWithPrecedence(Dataset[] datasets)
-		{
-			var sizes = new Dictionary<string, long>();
-
-			foreach (var image in datasets.SelectMany(x => x.GetFiles()))
-			{
-				if (!sizes.ContainsKey(image.Name))
-				{
-					sizes.Add(image.Name, image.Length);
-				}
-			}
-
-			return new ImagesStatistics(sizes.Count, sizes.Sum(x => x.Value));
 		}
 
 		private QueryRequest GetQueryRequest()

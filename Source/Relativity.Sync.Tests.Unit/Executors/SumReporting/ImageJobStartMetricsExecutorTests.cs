@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 	{
 		private Mock<ISyncMetrics> _syncMetricsMock;
 
-		private Mock<IImageFileRepository> _imageFileRepositoryFake;
+		private Mock<IFileStatisticsCalculator> _fileStatisticsCalculatorFake;
 		private Mock<IImageJobStartMetricsConfiguration> _configurationFake;
 
 		private IJobStatisticsContainer _jobStatisticsContainer;
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		{
 			_syncMetricsMock = new Mock<ISyncMetrics>();
 
-			_imageFileRepositoryFake = new Mock<IImageFileRepository>();
+			_fileStatisticsCalculatorFake = new Mock<IFileStatisticsCalculator>();
 
 			_configurationFake = new Mock<IImageJobStartMetricsConfiguration>();
 
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				syncLog.Object,
 				_syncMetricsMock.Object,
 				_jobStatisticsContainer,
-				_imageFileRepositoryFake.Object,
+				_fileStatisticsCalculatorFake.Object,
 				queryRequestProvider.Object);
 		}
 
@@ -78,8 +78,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Arrange
 			ImagesStatistics expectedImageStatistics = new ImagesStatistics(10, 100);
 
-			_imageFileRepositoryFake.Setup(x =>
-					x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<QueryImagesOptions>()))
+			_fileStatisticsCalculatorFake.Setup(x =>
+					x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 
+						It.IsAny<QueryImagesOptions>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(expectedImageStatistics);
 
 			// Act

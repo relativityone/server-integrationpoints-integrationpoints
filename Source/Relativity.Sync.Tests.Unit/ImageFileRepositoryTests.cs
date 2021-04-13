@@ -20,7 +20,6 @@ namespace Relativity.Sync.Tests.Unit
 		private const int WORKSPACE_ID = 5;
 
 		private Mock<ISearchManagerFactory> _searchManagerFactoryMock;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
 		private Mock<ISyncLog> _loggerMock;
 		private ImageFileRepository _sut;
 		private Mock<ISearchManager> _searchManagerMock;
@@ -29,7 +28,6 @@ namespace Relativity.Sync.Tests.Unit
 		public void Setup()
 		{
 			_searchManagerFactoryMock = new Mock<ISearchManagerFactory>();
-			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
 			_loggerMock = new Mock<ISyncLog>();
 
 			_searchManagerMock = new Mock<ISearchManager>();
@@ -37,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 			_searchManagerFactoryMock.Setup(x => x.CreateSearchManagerAsync()).ReturnsAsync(_searchManagerMock.Object);
 
 
-			_sut = new ImageFileRepository(_searchManagerFactoryMock.Object, _serviceFactoryMock.Object, _loggerMock.Object);
+			_sut = new ImageFileRepository(_searchManagerFactoryMock.Object, _loggerMock.Object);
 		}
 
 		[Test]

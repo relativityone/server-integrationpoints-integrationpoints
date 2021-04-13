@@ -21,21 +21,21 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly IFieldManager _fieldManager;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly INativeFileRepository _nativeFileRepository;
+		private readonly IFileStatisticsCalculator _fileStatisticsCalculator;
 		private readonly ISnapshotQueryRequestProvider _queryRequestProvider;
 
-		private string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
+		private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
 
 		public DocumentJobStartMetricsExecutor(ISyncLog logger, ISyncMetrics syncMetrics, IFieldManager fieldManager,
-			ISourceServiceFactoryForUser serviceFactory, IJobStatisticsContainer jobStatisticsContainer, 
-			INativeFileRepository nativeFileRepository, ISnapshotQueryRequestProvider queryRequestProvider)
+			ISourceServiceFactoryForUser serviceFactory, IJobStatisticsContainer jobStatisticsContainer,
+			IFileStatisticsCalculator fileStatisticsCalculator, ISnapshotQueryRequestProvider queryRequestProvider)
 		{
 			_logger = logger;
 			_syncMetrics = syncMetrics;
 			_fieldManager = fieldManager;
 			_serviceFactory = serviceFactory;
 			_jobStatisticsContainer = jobStatisticsContainer;
-			_nativeFileRepository = nativeFileRepository;
+			_fileStatisticsCalculator = fileStatisticsCalculator;
 			_queryRequestProvider = queryRequestProvider;
 		}
 
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Executors.SumReporting
 					RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
 				});
 
-				_jobStatisticsContainer.NativesBytesRequested = CreateCalculateNativesTotalSizeTaskAsync(configuration, token.StopCancellationToken);
+				_jobStatisticsContainer.NativesBytesRequested = CreateCalculateNativesTotalSizeTaskAsync(configuration, token);
 
 				try
 				{
@@ -74,14 +74,14 @@ namespace Relativity.Sync.Executors.SumReporting
 		}
 
 		private Task<long> CreateCalculateNativesTotalSizeTaskAsync(IDocumentJobStartMetricsConfiguration configuration,
-			CancellationToken token)
+			CompositeCancellationToken token)
 		{
 			Task<long> calculateNativesTotalSizeTask = Task.Run(async () =>
 			{
 				_logger.LogInformation("Natives bytes requested calculation has been started...");
-				QueryRequest request = await _queryRequestProvider.GetRequestForCurrentPipelineAsync(token).ConfigureAwait(false);
-				return await _nativeFileRepository.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
-			}, token);
+				QueryRequest request = await _queryRequestProvider.GetRequestForCurrentPipelineAsync(token.StopCancellationToken).ConfigureAwait(false);
+				return await _fileStatisticsCalculator.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, request, token).ConfigureAwait(false);
+			}, token.StopCancellationToken);
 
 			return calculateNativesTotalSizeTask;
 		}

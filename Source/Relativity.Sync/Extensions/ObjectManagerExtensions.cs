@@ -1,4 +1,5 @@
-﻿using Relativity.Services.DataContracts.DTOs.Results;
+﻿using System;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using System.Collections.Generic;
@@ -11,14 +12,19 @@ namespace Relativity.Sync.Extensions
 	{
 		public static async Task<List<RelativityObjectSlim>> QueryAllAsync(this IObjectManager objectManager, int workspaceId, QueryRequest queryRequest)
 		{
-			int retrievedRecordCount = 0;
-			List<RelativityObjectSlim> result = new List<RelativityObjectSlim>();
-
 			ExportInitializationResults exportInitializationResults = await objectManager.InitializeExportAsync(workspaceId, queryRequest, 1).ConfigureAwait(false);
 			int exportedRecordsCount = (int)exportInitializationResults.RecordCount;
 
+			return await objectManager.QueryAllByExportRunId(workspaceId, exportInitializationResults.RunID, 0, exportedRecordsCount).ConfigureAwait(false);
+		}
+
+		public static async Task<List<RelativityObjectSlim>> QueryAllByExportRunId(this IObjectManager objectManager, int workspaceId, Guid runId, int start, int length)
+		{
+			int retrievedRecordCount = 0;
+			List<RelativityObjectSlim> result = new List<RelativityObjectSlim>();
+
 			RelativityObjectSlim[] exportResultsBlock = await objectManager
-				.RetrieveResultsBlockFromExportAsync(workspaceId, exportInitializationResults.RunID, exportedRecordsCount - retrievedRecordCount, retrievedRecordCount)
+				.RetrieveResultsBlockFromExportAsync(workspaceId, runId, length, start)
 				.ConfigureAwait(false);
 
 			while (exportResultsBlock != null && exportResultsBlock.Any())
@@ -28,7 +34,7 @@ namespace Relativity.Sync.Extensions
 				retrievedRecordCount += exportResultsBlock.Length;
 
 				exportResultsBlock = await objectManager
-					.RetrieveResultsBlockFromExportAsync(workspaceId, exportInitializationResults.RunID, exportedRecordsCount - retrievedRecordCount, retrievedRecordCount)
+					.RetrieveResultsBlockFromExportAsync(workspaceId, runId, length - retrievedRecordCount, retrievedRecordCount)
 					.ConfigureAwait(false);
 			}
 

@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 		private Mock<IFieldManager> _fieldManagerFake;
 		private Mock<IObjectManager> _objectManagerFake;
-		private Mock<INativeFileRepository> _nativeFileRepositoryFake;
+		private Mock<IFileStatisticsCalculator> _fileStatisticsCalculatorFake;
 		private Mock<IDocumentJobStartMetricsConfiguration> _configurationFake;
 
 		private IJobStatisticsContainer _jobStatisticsContainer;
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerFake.Object);
 
-			_nativeFileRepositoryFake = new Mock<INativeFileRepository>();
+			_fileStatisticsCalculatorFake = new Mock<IFileStatisticsCalculator>();
 
 			_jobStatisticsContainer = new JobStatisticsContainer();
 
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				_fieldManagerFake.Object,
 				serviceFactory.Object,
 				_jobStatisticsContainer,
-				_nativeFileRepositoryFake.Object,
+				_fileStatisticsCalculatorFake.Object,
 				queryRequestProvider.Object);
 		}
 
@@ -101,8 +101,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Arrange
 			const long expectedNativesBytesRequested = 100;
 
-			_nativeFileRepositoryFake.Setup(x =>
-					x.CalculateNativesTotalSizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>()))
+			_fileStatisticsCalculatorFake.Setup(x =>
+					x.CalculateNativesTotalSizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(expectedNativesBytesRequested);
 
 			// Act
