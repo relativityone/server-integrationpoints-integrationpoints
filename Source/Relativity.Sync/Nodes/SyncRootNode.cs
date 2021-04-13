@@ -104,7 +104,7 @@ namespace Relativity.Sync.Nodes
 						status = ExecutionStatus.Canceled;
 					}
 
-					IJobEndMetricsService jobEndMetricsService = _jobEndMetricsServiceFactory.CreateJobEndMetricsService(context.Subject.CompositeCancellationToken.DrainStopCancellationToken.IsCancellationRequested);
+					IJobEndMetricsService jobEndMetricsService = _jobEndMetricsServiceFactory.CreateJobEndMetricsService(context.Subject.CompositeCancellationToken.IsDrainStopRequested);
 					return jobEndMetricsService.ExecuteAsync(status);
 				}
 			}
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Nodes
 		{
 			try
 			{
-				if (context.Subject.CompositeCancellationToken.DrainStopCancellationToken.IsCancellationRequested)
+				if (context.Subject.CompositeCancellationToken.IsDrainStopRequested)
 				{
 					return ExecutionResult.Skipped();
 				}
