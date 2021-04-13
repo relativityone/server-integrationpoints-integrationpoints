@@ -1,12 +1,10 @@
-﻿using Relativity.IntegrationPoints.Tests.Integration.Mocks;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
+﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
+namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
-	public class SourceProviderHelper : HelperBase
+	public class SourceProviderHelper : WorkspaceHelperBase
 	{
-		public SourceProviderHelper(HelperManager helperManager, InMemoryDatabase database, ProxyMock proxyMock)
-			: base(helperManager, database, proxyMock)
+		public SourceProviderHelper(WorkspaceTest workspace) : base(workspace)
 		{
 		}
 
@@ -20,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID
 			};
 
-			Database.SourceProviders.Add(sourceProvider);
+			Workspace.SourceProviders.Add(sourceProvider);
 		}
 
 		public void CreateRelativity(WorkspaceTest workspace)
@@ -33,7 +31,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID
 			};
 
-			Database.SourceProviders.Add(sourceProvider);
+			Workspace.SourceProviders.Add(sourceProvider);
 		}
 
 		public void CreateFTP(WorkspaceTest workspace)
@@ -46,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID
 			};
 
-			Database.SourceProviders.Add(sourceProvider);
+			Workspace.SourceProviders.Add(sourceProvider);
 		}
 
 		public void CreateLoadFile(WorkspaceTest workspace)
@@ -59,7 +57,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID
 			};
 
-			Database.SourceProviders.Add(sourceProvider);
+			Workspace.SourceProviders.Add(sourceProvider);
 		}
+
+		
 	}
 }

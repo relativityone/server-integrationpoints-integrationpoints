@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupDestinationProvider(InMemoryDatabase database, DestinationProviderTest destinationProvider)
+		public void SetupDestinationProvider(WorkspaceTest database, DestinationProviderTest destinationProvider)
 		{
 			Mock.Setup(x => x.ReadAsync(destinationProvider.WorkspaceId, It.Is<ReadRequest>(r =>
 					r.Object.ArtifactID == destinationProvider.ArtifactId)))

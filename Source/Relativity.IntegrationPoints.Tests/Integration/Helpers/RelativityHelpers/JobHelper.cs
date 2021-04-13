@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
+namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
-	public class JobHelper : HelperBase
+	public class JobHelper : RelativityHelperBase
 	{
-		public JobHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock)
-			: base(manager, database, proxyMock)
+
+		public JobHelper(RelativityInstanceTest relativity) : base(relativity)
 		{
 		}
 
 		public JobTest ScheduleJob(JobTest job)
 		{
-			Database.JobsInQueue.Add(job);
+			Relativity.JobsInQueue.Add(job);
 
 			return job;
 		}
@@ -48,7 +47,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 		
 		private JobBuilder CreateBasicJob(WorkspaceTest workspace)
 		{
-			IntegrationPointTest integrationPoint = HelperManager.IntegrationPointHelper.CreateEmptyIntegrationPoint(workspace);
+			IntegrationPointTest integrationPoint = workspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
+			workspace.IntegrationPoints.Add(integrationPoint);
 			return CreateBasicJob(workspace, integrationPoint);
 		}
 
@@ -57,30 +57,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 			return new JobBuilder()
 				.WithWorkspace(workspace)
 				.WithIntegrationPoint(integrationPoint)
-				.WithSubmittedBy(HelperManager.TestContext.User.ArtifactId);
+				.WithSubmittedBy(Relativity.TestContext.User.ArtifactId);
 		}
 
 		#region Verification
 
 		public void VerifyJobsWithIdsAreInQueue(IEnumerable<long> jobs)
 		{
-			Database.JobsInQueue.Select(x => x.JobId).Should().Contain(jobs);
+			Relativity.JobsInQueue.Select(x => x.JobId).Should().Contain(jobs);
 		}
 
 		public void VerifyJobsWithIdsWereRemovedFromQueue(IEnumerable<long> jobs)
 		{
-			Database.JobsInQueue.Select(x => x.JobId).Should().NotContain(jobs);
+			Relativity.JobsInQueue.Select(x => x.JobId).Should().NotContain(jobs);
 		}
 
 		public void VerifyJobsAreNotLockedByAgent(AgentTest agent, IEnumerable<long> jobs)
 		{
-			Database.JobsInQueue.Where(x => jobs.Contains(x.JobId))
+			Relativity.JobsInQueue.Where(x => jobs.Contains(x.JobId))
 				.All(x => x.LockedByAgentID != agent.ArtifactId).Should().BeTrue();
 		}
 
 		public void VerifyScheduledJobWasReScheduled(JobTest job, DateTime expectedNextRunTime)
 		{
-			Database.JobsInQueue.Should().Contain(x =>
+			Relativity.JobsInQueue.Should().Contain(x =>
 				x.RelatedObjectArtifactID == job.RelatedObjectArtifactID &&
 				x.WorkspaceID == job.WorkspaceID &&
 				x.NextRunTime.Date == expectedNextRunTime.Date);

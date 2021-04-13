@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupArtifact(InMemoryDatabase database, RdoTestBase testRdo)
+		public void SetupArtifact(WorkspaceTest database, RdoTestBase testRdo)
 		{
 			Mock.Setup(x => x.QueryAsync(testRdo.WorkspaceId, It.Is<QueryRequest>(q =>
 					q.ObjectType.Name == testRdo.Artifact.ArtifactType &&

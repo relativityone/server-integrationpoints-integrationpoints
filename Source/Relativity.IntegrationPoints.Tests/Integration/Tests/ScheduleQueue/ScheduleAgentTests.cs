@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldCompleteExecution_WhenScheduleQueueIsEmpty()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			var sut = PrepareSutWithMockedQueryManager(agent);
 
@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldPickUpJob_AndRemoveFromTheQueueAfterExecution()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job = PrepareJob();
 
@@ -44,14 +44,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Assert
 			sut.VerifyJobsWereProcessed(jobsInQueue);
 			
-			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
 		[IdentifiedTest("B3BFE442-1A05-4B4A-89FD-ABB6AC35B60A")]
 		public void Agent_ShouldProcessTwoJobs_InOneExecutionTrigger()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job1 = PrepareJob();
 			JobTest job2 = PrepareJob();
@@ -66,18 +66,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Assert
 			sut.VerifyJobsWereProcessed(jobsInQueue);
 
-			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
 		[IdentifiedTest("8577B637-7BF7-4B87-B6CC-0AABF9AF0E09")]
 		public void Agent_ShouldNotProcessAndDelete_WhenJobRelatedIntegrationPointNotExist()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job = PrepareJob();
 
-			HelperManager.IntegrationPointHelper.RemoveIntegrationPoint(job.RelatedObjectArtifactID);
+			SourceWorkspace.Helpers.IntegrationPointHelper.RemoveIntegrationPoint(job.RelatedObjectArtifactID);
 
 			var jobsInQueue = new[] { job.JobId };
 
@@ -89,18 +89,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Assert
 			sut.VerifyJobsWereNotProcessed(jobsInQueue);
 
-			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
 		[IdentifiedTest("6D71DE00-B990-40C7-AFBB-1F1245A68176")]
 		public void Agent_ShouldNotProcessAndDelete_WhenJobRelatedWorkspaceNotExist()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job = PrepareJob();
 
-			HelperManager.WorkspaceHelper.RemoveWorkspace(job.WorkspaceID);
+			FakeRelativityInstance.Helpers.WorkspaceHelper.RemoveWorkspace(job.WorkspaceID);
 
 			var jobsInQueue = new[] { job.JobId };
 
@@ -112,7 +112,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Assert
 			sut.VerifyJobsWereNotProcessed(jobsInQueue);
 
-			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
 		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
@@ -124,7 +124,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 		private JobTest PrepareJob()
 		{
-			return HelperManager.JobHelper.ScheduleBasicJob(SourceWorkspace);
+			return FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 		}
 	}
 }

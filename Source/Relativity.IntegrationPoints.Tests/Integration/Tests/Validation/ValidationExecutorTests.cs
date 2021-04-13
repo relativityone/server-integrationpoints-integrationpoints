@@ -74,17 +74,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
 		private ValidationContext PrepareValidationContext()
 		{
-			WorkspaceTest destinationWorkspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
 			IntegrationPointTest integrationPoint =
-				HelperManager.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(SourceWorkspace,
-					destinationWorkspace);
+				SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(destinationWorkspace);
 
-			IntegrationPointTypeTest integrationPointType = Database.IntegrationPointTypes.Single(x => x.ArtifactId == integrationPoint.Type);
+			IntegrationPointTypeTest integrationPointType = SourceWorkspace.IntegrationPointTypes.Single(x => x.ArtifactId == integrationPoint.Type);
 
-			SourceProviderTest sourceProvider = Database.SourceProviders.Single(x => x.ArtifactId == integrationPoint.SourceProvider);
+			SourceProviderTest sourceProvider = SourceWorkspace.SourceProviders.Single(x => x.ArtifactId == integrationPoint.SourceProvider);
 
-			DestinationProviderTest destinationProvider = Database.DestinationProviders.Single(x => x.ArtifactId == integrationPoint.DestinationProvider);
+			DestinationProviderTest destinationProvider = SourceWorkspace.DestinationProviders.Single(x => x.ArtifactId == integrationPoint.DestinationProvider);
 
 			ValidationContext context = new ValidationContext
 			{

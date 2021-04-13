@@ -18,16 +18,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	{
 		private JobTest PrepareJob()
 		{
-			HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-			WorkspaceTest destinationWorkspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
 			IntegrationPointTest integrationPoint =
-				HelperManager.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(SourceWorkspace,
-					destinationWorkspace);
+				SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(destinationWorkspace);
 			
-			JobTest job = HelperManager.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
-			HelperManager.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
+			SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 			return job;
 		}
 
@@ -51,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			sut.Execute(new Job(job.AsDataRow()));
 
 			// Assert
-			List<JobTest> syncWorkerJobs = Database.JobsInQueue.Where(x => x.TaskType == "SyncWorker").ToList();
+			List<JobTest> syncWorkerJobs = FakeRelativityInstance.JobsInQueue.Where(x => x.TaskType == "SyncWorker").ToList();
 			syncWorkerJobs.Count.Should().Be(expectedNumberOfSyncWorkersJobs);
 			AssertNumberOfRecords(syncWorkerJobs[0], 1000);
 			AssertNumberOfRecords(syncWorkerJobs[1], 500);

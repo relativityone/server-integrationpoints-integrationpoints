@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
+namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
-	public class FieldsMappingHelper : HelperBase
-	{
-		public FieldsMappingHelper(HelperManager helperManager, InMemoryDatabase database, ProxyMock proxyMock) 
-			: base(helperManager, database, proxyMock)
+	public class FieldsMappingHelper : WorkspaceHelperBase
+	{	
+		public FieldsMappingHelper(WorkspaceTest workspace) : base(workspace)
 		{
 		}
-
-		public List<FieldMap> PrepareIdentifierFieldsMapping(WorkspaceTest sourceWorkspace, WorkspaceTest destinationWorkspace)
+	
+		public List<FieldMap> PrepareIdentifierFieldsMapping( WorkspaceTest destinationWorkspace)
 		{
-			FieldTest sourceControlNumber = Database.Fields.First(x =>
-				x.WorkspaceId == sourceWorkspace.ArtifactId && x.IsIdentifier);
-			FieldTest destinationControlNumber = Database.Fields.First(x =>
+			FieldTest sourceControlNumber = Workspace.Fields.First(x =>
+				x.WorkspaceId == Workspace.ArtifactId && x.IsIdentifier);
+			
+			FieldTest destinationControlNumber = destinationWorkspace.Fields.First(x =>
 				x.WorkspaceId == destinationWorkspace.ArtifactId && x.IsIdentifier);
 
 			return new List<FieldMap>

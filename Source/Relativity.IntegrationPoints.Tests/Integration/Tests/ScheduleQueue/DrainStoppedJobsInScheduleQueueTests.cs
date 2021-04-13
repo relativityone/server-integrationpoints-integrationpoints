@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldNotPickUpTheJob_WhenHasBeenMarkedToBeRemoved()
 		{
 			// Arrange
-			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job = PrepareJob();
 
@@ -31,14 +31,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Assert
 			sut.VerifyJobsWereNotProcessed(jobsInQueue);
 
-			HelperManager.JobHelper.VerifyJobsWithIdsAreInQueue(jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsAreInQueue(jobsInQueue);
 		}
 
 		[IdentifiedTest("5FD8409E-F0D6-4CE1-88D0-B9601314551B")]
 		public void Agent_ShouldNotPickupNextJob_WhenActuallyJobWasDrainStopped()
 		{
 			// Arrange
-			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job1 = PrepareJob();
 			JobTest job2 = PrepareJob();
@@ -57,19 +57,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 			sut.VerifyJobsWereNotProcessed(new[] {job2.JobId});
 
-			HelperManager.JobHelper.VerifyJobsWithIdsAreInQueue(jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsAreInQueue(jobsInQueue);
 
-			HelperManager.JobHelper.VerifyJobsAreNotLockedByAgent(agent, jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsAreNotLockedByAgent(agent, jobsInQueue);
 		}
 
 		[IdentifiedTest("A21344C7-1CB6-439B-8478-B346B702CD3A")]
 		public void Agent_ShouldPickUpDrainStoppedJobAtFirst()
 		{
 			// Arrange
-			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job1 = PrepareJob();
-			JobTest job2 = HelperManager.JobHelper.ScheduleJob(new JobTest()
+			JobTest job2 = FakeRelativityInstance.Helpers.JobHelper.ScheduleJob(new JobTest()
 			{
 				WorkspaceID = job1.WorkspaceID,
 				RelatedObjectArtifactID = job1.RelatedObjectArtifactID,
@@ -94,7 +94,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 		private JobTest PrepareJob()
 		{
-			return HelperManager.JobHelper.ScheduleBasicJob(SourceWorkspace);
+			return FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 		}
 	}
 }

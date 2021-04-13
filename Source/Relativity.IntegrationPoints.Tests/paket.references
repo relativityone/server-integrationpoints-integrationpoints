@@ -11,6 +11,7 @@ Relativity.IntegrationPoints.Contracts
 Moq
 FluentAssertions
 Relativity.Testing.Identification
+System.Reactive
 
 group Tests
 	NUnit

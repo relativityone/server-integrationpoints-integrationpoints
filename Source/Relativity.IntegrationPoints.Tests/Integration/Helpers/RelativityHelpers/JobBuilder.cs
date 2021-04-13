@@ -1,6 +1,6 @@
 ﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
+namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
 	public class JobBuilder
 	{

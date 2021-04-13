@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupJobHistory(InMemoryDatabase database, JobHistoryTest jobHistory)
+		public void SetupJobHistory(WorkspaceTest database, JobHistoryTest jobHistory)
 		{
 			Mock.Setup(x => x.QueryAsync(jobHistory.WorkspaceId, It.Is<QueryRequest>(r =>
 					r.Condition == $"'{JobHistoryTest.BatchInstanceFieldName}' == '{jobHistory.BatchInstance}'"), It.IsAny<int>(), It.IsAny<int>()))

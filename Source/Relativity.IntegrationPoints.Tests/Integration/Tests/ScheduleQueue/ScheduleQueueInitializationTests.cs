@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void ScheduleQueueTable_ShouldBeCreatedOnce_WhenAgentIsRunning()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 			
 			QueryManagerMock queryManagerMock = (QueryManagerMock)Container.Resolve<IQueryManager>();
 			
@@ -32,9 +32,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldRemoveJobs_WhenAreNotLockedAndCorrespondingWorkspaceDoesNotExist()
 		{
 			// Arrange
-			var agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-			JobTest jobWithoutWorkspace = HelperManager.JobHelper.ScheduleJob(new JobTest()
+			JobTest jobWithoutWorkspace = FakeRelativityInstance.Helpers.JobHelper.ScheduleJob(new JobTest()
 			{
 				WorkspaceID = ArtifactProvider.NextId()
 			});
@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Assert
 			sut.VerifyJobsWereNotProcessed(new [] {jobWithoutWorkspace.JobId});
 
-			HelperManager.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new []{jobWithoutWorkspace.JobId});
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new []{jobWithoutWorkspace.JobId});
 		}
 
 		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
