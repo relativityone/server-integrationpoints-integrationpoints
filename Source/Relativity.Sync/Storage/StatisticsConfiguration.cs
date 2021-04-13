@@ -6,7 +6,7 @@ namespace Relativity.Sync.Storage
 	{
 		private readonly IConfiguration _cache;
 
-		public int SyncStatisticsId => _cache.GetFieldValue(x => x.SyncStatisticsIdGuid);
+		public int SyncStatisticsId => _cache.GetFieldValue(x => x.SyncStatisticsId);
 
 		public StatisticsConfiguration(IConfiguration cache)
 		{
