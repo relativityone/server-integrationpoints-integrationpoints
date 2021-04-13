@@ -130,7 +130,6 @@
     <Compile Include="Integration\TestsBase.cs" />
     <Compile Include="Integration\Tests\Validation\AgentValidatorTests.cs" />
     <Compile Include="Integration\Tests\Validation\ValidationExecutorTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\RelativitySync\RdoCleanup\SyncRdoCleanupServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>

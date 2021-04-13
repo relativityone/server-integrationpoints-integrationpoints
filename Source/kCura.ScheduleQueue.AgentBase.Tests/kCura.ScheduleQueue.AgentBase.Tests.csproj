@@ -50,7 +50,6 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleQueueAgentBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
