@@ -104,7 +104,7 @@ namespace Relativity.Sync.Nodes
 						status = ExecutionStatus.Canceled;
 					}
 
-					var jobEndMetricsService = _jobEndMetricsServiceFactory.CreateJobEndMetricsService();
+					IJobEndMetricsService jobEndMetricsService = _jobEndMetricsServiceFactory.CreateJobEndMetricsService(context.Subject.CompositeCancellationToken.IsDrainStopRequested);
 					return jobEndMetricsService.ExecuteAsync(status);
 				}
 			}
@@ -123,6 +123,11 @@ namespace Relativity.Sync.Nodes
 		{
 			try
 			{
+				if (context.Subject.CompositeCancellationToken.IsDrainStopRequested)
+				{
+					return ExecutionResult.Skipped();
+				}
+
 				bool canExecute = await command.CanExecuteAsync(context.Subject.CompositeCancellationToken.StopCancellationToken).ConfigureAwait(false);
 
 				ExecutionResult executionResult = canExecute
