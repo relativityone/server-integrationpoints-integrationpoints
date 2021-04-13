@@ -15,11 +15,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 	
 		public List<FieldMap> PrepareIdentifierFieldsMapping( WorkspaceTest destinationWorkspace)
 		{
-			FieldTest sourceControlNumber = Workspace.Fields.First(x =>
-				x.WorkspaceId == Workspace.ArtifactId && x.IsIdentifier);
+			FieldTest sourceControlNumber = Workspace.Fields.First(x => x.IsIdentifier);
 			
-			FieldTest destinationControlNumber = destinationWorkspace.Fields.First(x =>
-				x.WorkspaceId == destinationWorkspace.ArtifactId && x.IsIdentifier);
+			FieldTest destinationControlNumber = destinationWorkspace.Fields.First(x => x.IsIdentifier);
 
 			return new List<FieldMap>
 			{

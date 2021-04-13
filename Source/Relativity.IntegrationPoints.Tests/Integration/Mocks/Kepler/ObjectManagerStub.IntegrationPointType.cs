@@ -9,13 +9,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupIntegrationPointType(WorkspaceTest database, IntegrationPointTypeTest integrationPointType)
+		public void SetupIntegrationPointType(WorkspaceTest workspace, IntegrationPointTypeTest integrationPointType)
 		{
-			Mock.Setup(x => x.ReadAsync(integrationPointType.WorkspaceId, It.Is<ReadRequest>(r =>
+			Mock.Setup(x => x.ReadAsync(workspace.ArtifactId, It.Is<ReadRequest>(r =>
 					r.Object.ArtifactID == integrationPointType.ArtifactId)))
 				.Returns((int workspaceId, ReadRequest request) =>
 					{
-						ReadResult result = database.IntegrationPointTypes.FirstOrDefault(
+						ReadResult result = workspace.IntegrationPointTypes.FirstOrDefault(
 							x => x.ArtifactId == request.Object.ArtifactID) != null
 							? new ReadResult { Object = integrationPointType.ToRelativityObject() }
 							: new ReadResult { Object = null };

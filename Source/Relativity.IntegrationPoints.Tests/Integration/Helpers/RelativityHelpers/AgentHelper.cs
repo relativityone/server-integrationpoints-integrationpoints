@@ -1,8 +1,6 @@
-﻿using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
+﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
+namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
 	public class AgentHelper : RelativityHelperBase
 	{

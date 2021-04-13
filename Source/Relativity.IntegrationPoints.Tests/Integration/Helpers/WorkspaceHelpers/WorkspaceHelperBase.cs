@@ -4,9 +4,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 {
     public abstract class WorkspaceHelperBase
     {
-        public WorkspaceTest Workspace { get; }
+        protected WorkspaceTest Workspace { get; }
 
-        public WorkspaceHelperBase(WorkspaceTest workspace)
+        protected WorkspaceHelperBase(WorkspaceTest workspace)
         {
             Workspace = workspace;
         }

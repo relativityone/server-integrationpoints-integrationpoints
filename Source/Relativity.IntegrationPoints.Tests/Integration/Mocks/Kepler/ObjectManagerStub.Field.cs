@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 			    .Returns((int workspaceId, QueryRequest request, int start, int length) =>
 			    {
 				    IList<FieldTest> searches = workspace.Fields
-					    .Where(x => x.WorkspaceId == workspaceId && x.IsDocumentField).ToList();
+					    .Where(x => x.IsDocumentField).ToList();
 
 				    return Task.FromResult(new QueryResult
 				    {

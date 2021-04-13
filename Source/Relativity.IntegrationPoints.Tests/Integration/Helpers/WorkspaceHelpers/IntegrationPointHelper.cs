@@ -22,10 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public IntegrationPointTest CreateEmptyIntegrationPoint()
 		{
-			var integrationPoint = new IntegrationPointTest
-			{
-				WorkspaceId = Workspace.ArtifactId
-			};
+			var integrationPoint = new IntegrationPointTest();
 
 			Workspace.IntegrationPoints.Add(integrationPoint);
 
@@ -36,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
 			
-			FolderTest destinationFolder = destinationWorkspace.Folders.First(x => x.WorkspaceId == destinationWorkspace.ArtifactId);
+			FolderTest destinationFolder = destinationWorkspace.Folders.First();
 
 			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
 
@@ -50,7 +47,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace);
 
-			integrationPoint.WorkspaceId = Workspace.ArtifactId;
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
 			{

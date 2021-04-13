@@ -2,8 +2,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 {
     public abstract class RelativityHelperBase
     {
-        public RelativityInstanceTest Relativity { get; }
-        public RelativityHelperBase(RelativityInstanceTest relativity)
+        protected RelativityInstanceTest Relativity { get; }
+
+        protected RelativityHelperBase(RelativityInstanceTest relativity)
         {
             Relativity = relativity;
         }

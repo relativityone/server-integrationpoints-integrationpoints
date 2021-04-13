@@ -9,14 +9,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-	    public void SetupSavedSearch(WorkspaceTest database, SavedSearchTest savedSearch)
+	    public void SetupSavedSearch(WorkspaceTest workspace, SavedSearchTest savedSearch)
 	    {
-		    Mock.Setup(x => x.QueryAsync(savedSearch.WorkspaceId, It.Is<QueryRequest>(q =>
+		    Mock.Setup(x => x.QueryAsync(workspace.ArtifactId, It.Is<QueryRequest>(q =>
 				    q.ObjectType.ArtifactTypeID == (int) ArtifactType.Search &&
 				    q.Condition == $"'Artifact ID' == {savedSearch.ArtifactId}"), It.IsAny<int>(), It.IsAny<int>()))
 			    .Returns((int workspaceId, QueryRequest request, int start, int length) =>
 			    {
-				    IList<SavedSearchTest> searches = database.SavedSearches
+				    IList<SavedSearchTest> searches = workspace.SavedSearches
 					    .Where(x => x.ArtifactId == savedSearch.ArtifactId).ToList();
 
 				    return Task.FromResult(new QueryResult

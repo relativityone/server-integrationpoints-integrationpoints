@@ -14,7 +14,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				BatchInstance = job.JobDetailsHelper.BatchInstance.ToString(),
 				IntegrationPoint = new[] { integrationPoint.ArtifactId },
-				WorkspaceId = integrationPoint.WorkspaceId
 			};
 			Workspace.JobHistory.Add(jobHistory);
 			return jobHistory;

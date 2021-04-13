@@ -9,15 +9,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupJobHistory(WorkspaceTest database, JobHistoryTest jobHistory)
+		public void SetupJobHistory(WorkspaceTest workspace, JobHistoryTest jobHistory)
 		{
-			Mock.Setup(x => x.QueryAsync(jobHistory.WorkspaceId, It.Is<QueryRequest>(r =>
+			Mock.Setup(x => x.QueryAsync(workspace.ArtifactId, It.Is<QueryRequest>(r =>
 					r.Condition == $"'{JobHistoryTest.BatchInstanceFieldName}' == '{jobHistory.BatchInstance}'"), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns((int workspaceId, QueryRequest request, int start, int length) =>
 				{
 					QueryResult result = new QueryResult();
 
-					if (database.JobHistory.FirstOrDefault(x => x.BatchInstance == jobHistory.BatchInstance) != null)
+					if (workspace.JobHistory.FirstOrDefault(x => x.BatchInstance == jobHistory.BatchInstance) != null)
 					{
 						result.Objects.Add(jobHistory.ToRelativityObject());
 						result.TotalCount = result.Objects.Count;
@@ -26,7 +26,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 					return Task.FromResult(result);
 				});
 
-			Mock.Setup(x => x.UpdateAsync(jobHistory.WorkspaceId, It.Is<UpdateRequest>(r =>
+			Mock.Setup(x => x.UpdateAsync(workspace.ArtifactId, It.Is<UpdateRequest>(r =>
 					r.Object.ArtifactID == jobHistory.ArtifactId)))
 				.Returns((int workspaceId, UpdateRequest request) =>
 				{

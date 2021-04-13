@@ -12,7 +12,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var integrationPointType = new IntegrationPointTypeTest
 			{
-				WorkspaceId = Workspace.ArtifactId,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportName,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString(),
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
@@ -27,7 +26,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var integrationPointType = new IntegrationPointTypeTest
 			{
-				WorkspaceId = Workspace.ArtifactId,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportName,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString(),
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,

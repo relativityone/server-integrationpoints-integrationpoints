@@ -12,7 +12,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var sourceProvider = new SourceProviderTest
 			{
-				WorkspaceId = workspace.ArtifactId,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP_NAME,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP,
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID
@@ -25,7 +24,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var sourceProvider = new SourceProviderTest
 			{
-				WorkspaceId = workspace.ArtifactId,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY_NAME,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY,
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID
@@ -38,7 +36,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var sourceProvider = new SourceProviderTest
 			{
-				WorkspaceId = workspace.ArtifactId,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.FTP_NAME,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.FTP,
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID
@@ -51,7 +48,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var sourceProvider = new SourceProviderTest
 			{
-				WorkspaceId = workspace.ArtifactId,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE_NAME,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE,
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID

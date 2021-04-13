@@ -12,13 +12,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
     {
-	    public void SetupIntegrationPoint(WorkspaceTest database, IntegrationPointTest integrationPoint)
+	    public void SetupIntegrationPoint(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
 	    {
-			Mock.Setup(x => x.ReadAsync(integrationPoint.WorkspaceId, It.Is<ReadRequest>(r =>
+			Mock.Setup(x => x.ReadAsync(workspace.ArtifactId, It.Is<ReadRequest>(r =>
 					r.Object.ArtifactID == integrationPoint.ArtifactId)))
 				.Returns((int workspaceId, ReadRequest request) =>
 					{
-						IntegrationPointTest readIntegrationPoint = database.IntegrationPoints
+						IntegrationPointTest readIntegrationPoint = workspace.IntegrationPoints
 							.FirstOrDefault(x => x.ArtifactId == request.Object.ArtifactID);
 
 						ReadResult result = readIntegrationPoint != null
@@ -30,12 +30,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 				);
 			
 			Mock.Setup(x => x.StreamLongTextAsync(
-					integrationPoint.WorkspaceId,
+					workspace.ArtifactId,
 					It.Is<RelativityObjectRef>(objectRef => objectRef.ArtifactID == integrationPoint.ArtifactId),
 					It.Is<FieldRef>(field => field.Guid == IntegrationPointTest.FieldsMappingGuid)))
 				.Returns((int workspaceId, RelativityObjectRef objectRef, FieldRef fieldRef) =>
 					{
-						RelativityObject obj = database.IntegrationPoints
+						RelativityObject obj = workspace.IntegrationPoints
 							.First(x => x.ArtifactId == objectRef.ArtifactID)
 							.ToRelativityObject();
 
@@ -46,7 +46,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 						}));
 					});
 
-			Mock.Setup(x => x.UpdateAsync(integrationPoint.WorkspaceId, It.Is<UpdateRequest>(r =>
+			Mock.Setup(x => x.UpdateAsync(workspace.ArtifactId, It.Is<UpdateRequest>(r =>
 				r.Object.ArtifactID == integrationPoint.ArtifactId))).ReturnsAsync(
 				new UpdateResult()
 				{

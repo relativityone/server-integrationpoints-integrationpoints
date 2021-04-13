@@ -25,13 +25,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			
 			workspace.Folders.Add(new FolderTest
 			{
-				WorkspaceId = workspace.ArtifactId,
 				Name = workspace.Name
 			});
 
 			workspace.Fields.Add(new FieldTest
 			{
-				WorkspaceId = workspace.ArtifactId,
 				IsDocumentField = true,
 				IsIdentifier = true,
 				Name = "Control Number"
@@ -39,7 +37,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 			workspace.SavedSearches.Add(new SavedSearchTest
 			{
-				WorkspaceId = workspace.ArtifactId,
 				ParenObjectArtifactId = workspace.ArtifactId,
 				Name = "All Documents"
 			});
