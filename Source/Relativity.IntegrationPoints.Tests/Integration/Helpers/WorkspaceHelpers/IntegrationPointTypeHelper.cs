@@ -35,7 +35,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			return integrationPointType;
 		}
-
-		
 	}
 }
