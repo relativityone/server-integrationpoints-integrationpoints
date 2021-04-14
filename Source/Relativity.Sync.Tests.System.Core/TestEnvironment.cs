@@ -245,7 +245,6 @@ namespace Relativity.Sync.Tests.System.Core
 			await rdoManager.EnsureTypeExistsAsync<SyncProgressRdo>(workspaceArtifactId).ConfigureAwait(false);
 			await rdoManager.EnsureTypeExistsAsync<SyncBatchRdo>(workspaceArtifactId).ConfigureAwait(false);
 			await rdoManager.EnsureTypeExistsAsync<SyncStatisticsRdo>(workspaceArtifactId).ConfigureAwait(false);
-
 		}
 
 		private async Task InstallHelperAppIfNeededAsync(string appFileName, Guid appGuid)

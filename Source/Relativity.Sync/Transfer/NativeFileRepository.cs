@@ -9,11 +9,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class NativeFileRepository : INativeFileRepository
 	{
-		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
-		private const string _LOCATION_COLUMN_NAME = "Location";
-		private const string _FILENAME_COLUMN_NAME = "Filename";
-		private const string _SIZE_COLUMN_NAME = "Size";
-
 		private readonly ISearchManagerFactory _searchManagerFactory;
 		private readonly ISyncLog _logger;
 
@@ -76,10 +71,10 @@ namespace Relativity.Sync.Transfer
 
 		private INativeFile GetNativeFile(DataRow dataRow)
 		{
-			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
-			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
-			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
-			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
+			int documentArtifactId = GetValue<int>(dataRow, "DocumentArtifactID");
+			string location = GetValue<string>(dataRow, "Location");
+			string fileName = GetValue<string>(dataRow, "Filename");
+			long size = GetValue<long>(dataRow, "Size");
 
 			return new NativeFile(documentArtifactId, location, fileName, size);
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
@@ -30,10 +31,11 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document }
 				};
 
-				var result = objectManager.QueryAllAsync(_workspaceId, request)
+				ExportInitializationResults exportInitializationResults = objectManager
+					.InitializeExportAsync(_workspaceId, request, 1)
 					.GetAwaiter().GetResult();
 
-				return result.Count == _expectedDocCount;
+				return (int)exportInitializationResults.RecordCount == _expectedDocCount;
 			}
 		}
 
