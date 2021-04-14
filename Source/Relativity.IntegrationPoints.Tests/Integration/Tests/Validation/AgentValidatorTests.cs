@@ -27,11 +27,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
 		private IntegrationPoint PrepareIntegrationPoint()
 		{
-			WorkspaceTest destinationWorkspace = HelperManager.WorkspaceHelper.CreateWorkspace();
+			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
 			IntegrationPointTest integrationPoint =
-				HelperManager.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(SourceWorkspace,
-					destinationWorkspace);
+				SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(destinationWorkspace);
 
 			return integrationPoint.ToRdo();
 		}

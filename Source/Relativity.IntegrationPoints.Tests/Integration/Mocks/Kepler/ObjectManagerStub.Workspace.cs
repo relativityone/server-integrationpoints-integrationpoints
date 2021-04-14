@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupWorkspace(InMemoryDatabase database, WorkspaceTest workspace)
+		public void SetupWorkspace(RelativityInstanceTest database, WorkspaceTest workspace)
 		{
 			Mock.Setup(x => x.QuerySlimAsync(-1, It.Is<QueryRequest>(q =>
 					q.ObjectType.ArtifactTypeID == (int)ArtifactType.Case &&

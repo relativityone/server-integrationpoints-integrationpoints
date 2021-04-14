@@ -1,14 +1,9 @@
-﻿using Relativity.IntegrationPoints.Tests.Integration.Mocks;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
+﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
+namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
-	public class AgentHelper : HelperBase
+	public class AgentHelper : RelativityHelperBase
 	{
-		public AgentHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock) : base(manager, database, proxyMock)
-		{
-		}
-
 		public AgentTest CreateIntegrationPointAgent()
 		{
 			int artifactId = ArtifactProvider.NextId();
@@ -22,9 +17,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 				Name = $"Integration Points Agent ({artifactId})"
 			};
 
-			Database.Agents.Add(agent);
-
+			Relativity.Agents.Add(agent);
+			
 			return agent;
+		}
+
+		public AgentHelper(RelativityInstanceTest relativity) : base(relativity)
+		{
 		}
 	}
 }

@@ -7,60 +7,50 @@ using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
+namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
-	public class IntegrationPointHelper : HelperBase
+	public class IntegrationPointHelper : WorkspaceHelperBase
 	{
 		private readonly ISerializer _serializer;
-
-		public IntegrationPointHelper(HelperManager manager, InMemoryDatabase database, ProxyMock proxyMock, ISerializer serializer) 
-			: base(manager, database, proxyMock)
+		
+		public IntegrationPointHelper(WorkspaceTest workspace, ISerializer serializer) : base(workspace)
 		{
 			_serializer = serializer;
 		}
 
-		public IntegrationPointTest CreateEmptyIntegrationPoint(WorkspaceTest workspace)
+		public IntegrationPointTest CreateEmptyIntegrationPoint()
 		{
-			var integrationPoint = new IntegrationPointTest
-			{
-				WorkspaceId = workspace.ArtifactId
-			};
+			var integrationPoint = new IntegrationPointTest();
 
-			Database.IntegrationPoints.Add(integrationPoint);
+			Workspace.IntegrationPoints.Add(integrationPoint);
 
 			return integrationPoint;
 		}
 
-		public IntegrationPointTest CreateSavedSearchIntegrationPoint(WorkspaceTest sourceWorkspace, WorkspaceTest destinationWorkspace)
+		public IntegrationPointTest CreateSavedSearchIntegrationPoint( WorkspaceTest destinationWorkspace)
 		{
-			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint(sourceWorkspace);
+			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
 			
-			FolderTest destinationFolder = Database.Folders.First(x => x.WorkspaceId == destinationWorkspace.ArtifactId);
+			FolderTest destinationFolder = destinationWorkspace.Folders.First();
 
-			SavedSearchTest sourceSavedSearch = Database.SavedSearches.First(x => x.WorkspaceId == sourceWorkspace.ArtifactId);
+			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
 
-			IntegrationPointTypeTest integrationPointType = Database.IntegrationPointTypes.First(x => 
-				x.WorkspaceId == sourceWorkspace.ArtifactId &&
-				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
+			IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
-			SourceProviderTest sourceProvider = Database.SourceProviders.First(x =>
-				x.WorkspaceId == sourceWorkspace.ArtifactId &&
+			SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 
-			DestinationProviderTest destinationProvider = Database.DestinationProviders.First(x =>
-				x.WorkspaceId == sourceWorkspace.ArtifactId &&
+			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
-			List<FieldMap> fieldsMapping = HelperManager.FieldsMappingHelper.PrepareIdentifierFieldsMapping(sourceWorkspace, destinationWorkspace);
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace);
 
-			integrationPoint.WorkspaceId = sourceWorkspace.ArtifactId;
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
 			{
-				SourceWorkspaceArtifactId = sourceWorkspace.ArtifactId,
+				SourceWorkspaceArtifactId = Workspace.ArtifactId,
 				TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
 				TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
 				SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
@@ -86,10 +76,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
 
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
-			foreach (IntegrationPointTest integrationPoint in Database.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
+			foreach (IntegrationPointTest integrationPoint in Workspace.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
 			{
-				Database.IntegrationPoints.Remove(integrationPoint);
+				Workspace.IntegrationPoints.Remove(integrationPoint);
 			}
 		}
+
+		
 	}
 }

@@ -29,11 +29,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
-using kCura.IntegrationPoints.Core.Validation.Helpers;
-using kCura.IntegrationPoints.Core.Validation.Parts;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.SecretStore;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
@@ -53,7 +48,7 @@ using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.Tests.Integration.Helpers;
+using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -64,7 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public abstract class TestsBase
 	{
-		public InMemoryDatabase Database { get; set; }
+		public RelativityInstanceTest FakeRelativityInstance { get; set; }
 
 		public ProxyMock Proxy { get; set; }
 
@@ -73,8 +68,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public TestContext Context { get; set; }
 
 		public IWindsorContainer Container { get; set; }
-
-		public HelperManager HelperManager { get; set; }
 
 		public WorkspaceTest SourceWorkspace { get; set; }
 
@@ -94,33 +87,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			{
 				User = User
 			};
-
+			
 			Proxy = new ProxyMock(Context);
-
-			Database = new InMemoryDatabase(Proxy);
-
 			Helper = new TestHelper(Proxy);
 
-			HelperManager = new HelperManager(Database, Proxy, Context);
+			int sourceWorkspaceArtifactId = ArtifactProvider.NextId();
+
+			SetupContainer(sourceWorkspaceArtifactId);
+			Serializer = Container.Resolve<ISerializer>();
+			
+			FakeRelativityInstance = new RelativityInstanceTest(Proxy, Context, Serializer);
+			SourceWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(sourceWorkspaceArtifactId);
 
 			SetupGlobalSettings();
-
-			SourceWorkspace = HelperManager.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp();
-
-			SetupContainer(SourceWorkspace);
-
-			Serializer = Container.Resolve<ISerializer>();
-
-			HelperManager.InitializeSerializer(Serializer);
 		}
 
-		private void SetupContainer(WorkspaceTest sourceWorkspace)
+		private void SetupContainer(int sourceWorkspace)
 		{
 			Container = new WindsorContainer();
 			Container.Kernel.Resolver.AddSubResolver(new CollectionResolver(Container.Kernel));
 
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
-			Container.Register(Component.For<InMemoryDatabase>().Instance(Database).LifestyleSingleton());
+			Container.Register(Component.For<RelativityInstanceTest>().UsingFactoryMethod(() => FakeRelativityInstance).LifestyleSingleton());
 
 			RegisterRelativityApiServices();
 			RegisterFakeRipServices();
@@ -138,19 +126,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetServicesManager()));
 		}
 
-		private void RegisterRipServices(WorkspaceTest sourceWorkspace)
+		private void RegisterRipServices(int sourceWorkspaceId)
 		{
 			Container.Register(Component.For<IWorkspaceDBContext>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
-				new FakeWorkspaceDbContext(sourceWorkspace.ArtifactId))
+				new FakeWorkspaceDbContext(sourceWorkspaceId))
 			);
 
 			Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
-				new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspace.ArtifactId)));
+				new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspaceId)));
 
 			Container.Register(Component.For<IRelativityObjectManager>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
 			{
 				IRelativityObjectManagerFactory factory = c.Resolve<IRelativityObjectManagerFactory>();
-				return factory.CreateRelativityObjectManager(sourceWorkspace.ArtifactId);
+				return factory.CreateRelativityObjectManager(sourceWorkspaceId);
 			}).LifestyleTransient());
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
@@ -237,7 +225,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>());
 			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>());
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
-				new FakeRepositoryFactory(kernel.Resolve<InMemoryDatabase>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))));
+				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))));
 
 			Container.Register(Component.For<IBatchStatus>().ImplementedBy<FakeBatchStatus>());
 		}

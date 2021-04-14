@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime;
@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			sut.Execute();
 
 			// Assert
-			Database.JobsInQueue.Should().BeEmpty();
+			FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
 		}
 
 		[IdentifiedTest("A74C60F2-6FC7-4884-9AB3-FFCB794E26BF")]
@@ -45,7 +45,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddYears(1);
@@ -61,7 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			sut.Execute();
 
 			// Assert
-			HelperManager.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
 		[IdentifiedTest("8A840DD4-C9F6-4D83-8762-5F6A62D22074")]
@@ -70,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			DaysOfWeek dayOfWeek = ConvertToInternalDaysOfWeek(Context.CurrentDateTime.DayOfWeek);
 
@@ -88,7 +88,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			sut.Execute();
 
 			// Assert
-			HelperManager.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
 		[IdentifiedTest("639EF3D4-D655-4C2C-AD74-37E9A1300B0A")]
@@ -97,7 +97,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = HelperManager.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddYears(1);
@@ -114,7 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			sut.Execute();
 
 			// Assert
-			HelperManager.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
 		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
@@ -137,7 +137,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 		private JobTest PrepareJob(ScheduleRuleTest rule)
 		{
-			return HelperManager.JobHelper.ScheduleJobWithScheduleRule(SourceWorkspace, rule);
+			return FakeRelativityInstance.Helpers.JobHelper.ScheduleJobWithScheduleRule(SourceWorkspace, rule);
 		}
 
 		private DaysOfWeek ConvertToInternalDaysOfWeek(DayOfWeek dayOfWeek)

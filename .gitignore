@@ -96,3 +96,4 @@ buildtools/
 !buildtools/packages.config
 FunctionalTest.runsettings
 FunctionalTestSettings
+.idea/

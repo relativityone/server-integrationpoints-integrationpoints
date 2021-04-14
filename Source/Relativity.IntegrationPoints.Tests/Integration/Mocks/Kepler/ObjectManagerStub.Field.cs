@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-	    public void SetupDocumentFields(InMemoryDatabase database, WorkspaceTest workspace)
+	    public void SetupDocumentFields(WorkspaceTest workspace)
 	    {
 		    Mock.Setup(x => x.QueryAsync(workspace.ArtifactId, It.Is<QueryRequest>(q =>
 					    q.ObjectType.ArtifactTypeID == (int) ArtifactType.Field &&
@@ -17,8 +17,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 				    It.IsAny<int>(), It.IsAny<int>()))
 			    .Returns((int workspaceId, QueryRequest request, int start, int length) =>
 			    {
-				    IList<FieldTest> searches = database.Fields
-					    .Where(x => x.WorkspaceId == workspaceId && x.IsDocumentField).ToList();
+				    IList<FieldTest> searches = workspace.Fields
+					    .Where(x => x.IsDocumentField).ToList();
 
 				    return Task.FromResult(new QueryResult
 				    {

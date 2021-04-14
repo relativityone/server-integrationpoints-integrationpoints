@@ -5,10 +5,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
 	public class FakeRepositoryFactory : IRepositoryFactory
 	{
-		private readonly InMemoryDatabase _db;
+		private readonly RelativityInstanceTest _db;
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public FakeRepositoryFactory(InMemoryDatabase db, IRepositoryFactory repositoryFactory)
+		public FakeRepositoryFactory(RelativityInstanceTest db, IRepositoryFactory repositoryFactory)
 		{
 			_db = db;
 			_repositoryFactory = repositoryFactory;

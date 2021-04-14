@@ -60,12 +60,21 @@
     <Compile Include="Integration\ArtifactProvider.cs" />
     <Compile Include="Integration\Const.cs" />
     <Compile Include="Integration\DatabaseSchema.cs" />
-    <Compile Include="Integration\Helpers\DestinationProviderHelper.cs" />
-    <Compile Include="Integration\Helpers\FieldsMappingHelper.cs" />
-    <Compile Include="Integration\Helpers\IntegrationPointTypeHelper.cs" />
-    <Compile Include="Integration\Helpers\JobHistoryHelper.cs" />
-    <Compile Include="Integration\Helpers\SourceProviderHelper.cs" />
+    <Compile Include="Integration\Helpers\ObservableCollectionExtensions.cs" />
+    <Compile Include="Integration\Helpers\RelativityHelpers\AgentHelper.cs" />
+    <Compile Include="Integration\Helpers\RelativityHelpers\JobBuilder.cs" />
+    <Compile Include="Integration\Helpers\RelativityHelpers\JobHelper.cs" />
+    <Compile Include="Integration\Helpers\RelativityHelpers\RelativityHelperBase.cs" />
+    <Compile Include="Integration\Helpers\RelativityHelpers\WorkspaceHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelpers\DestinationProviderHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelpers\FieldsMappingHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelpers\IntegrationPointHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelpers\IntegrationPointTypeHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelpers\JobHistoryHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelpers\SourceProviderHelper.cs" />
+    <Compile Include="Integration\Helpers\WorkspaceHelpers\WorkspaceHelperBase.cs" />
     <Compile Include="Integration\InstanceSettings.cs" />
+    <Compile Include="Integration\IRelativityHelpers.cs" />
     <Compile Include="Integration\Mocks\FakeUser.cs" />
     <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
@@ -92,6 +101,7 @@
     <Compile Include="Integration\Models\FieldTest.cs" />
     <Compile Include="Integration\Models\FolderTest.cs" />
     <Compile Include="Integration\Models\IntegrationPointTypeTest.cs" />
+    <Compile Include="Integration\Models\IWorkspaceHelpers.cs" />
     <Compile Include="Integration\Models\JobHistoryTest.cs" />
     <Compile Include="Integration\Models\RdoTestBase.cs" />
     <Compile Include="Integration\Models\SavedSearchTest.cs" />
@@ -102,14 +112,7 @@
     <Compile Include="Integration\Tests\ScheduleQueue\ScheduleAgentTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\ScheduleQueueInitializationTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\ScheduleQueueTestsForScheduledJobs.cs" />
-    <Compile Include="Integration\Helpers\AgentHelper.cs" />
-    <Compile Include="Integration\Helpers\HelperBase.cs" />
-    <Compile Include="Integration\Helpers\HelperManager.cs" />
-    <Compile Include="Integration\Helpers\IntegrationPointHelper.cs" />
-    <Compile Include="Integration\Helpers\JobBuilder.cs" />
-    <Compile Include="Integration\Helpers\JobHelper.cs" />
-    <Compile Include="Integration\Helpers\WorkspaceHelper.cs" />
-    <Compile Include="Integration\InMemoryDatabase.cs" />
+    <Compile Include="Integration\RelativityInstanceTest.cs" />
     <Compile Include="Integration\JobId.cs" />
     <Compile Include="Integration\Mocks\ConsoleLogger.cs" />
     <Compile Include="Integration\Mocks\Kepler\IKeplerStub.cs" />
@@ -537,6 +540,26 @@
       <ItemGroup>
         <Reference Include="Relativity.Testing.Identification">
           <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -6,9 +6,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
 	public class FakeScratchTableRepository : IScratchTableRepository
 	{
-		private readonly InMemoryDatabase _db;
+		private readonly RelativityInstanceTest _db;
 
-		public FakeScratchTableRepository(InMemoryDatabase db, int workspaceArtifactID, string tablePrefix, string tableSuffix)
+		public FakeScratchTableRepository(RelativityInstanceTest db, int workspaceArtifactID, string tablePrefix, string tableSuffix)
 		{
 			_db = db;
 		}

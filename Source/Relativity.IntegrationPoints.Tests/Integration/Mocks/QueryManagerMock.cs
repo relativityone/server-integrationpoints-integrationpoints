@@ -17,12 +17,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
 	class QueryManagerMock : IQueryManager
 	{
-		private readonly InMemoryDatabase _db;
+		private readonly RelativityInstanceTest _db;
 		private readonly TestContext _context;
 
 		private int _scheduleQueueCreateRequestCount;
 
-		public QueryManagerMock(InMemoryDatabase database, TestContext context)
+		public QueryManagerMock(RelativityInstanceTest database, TestContext context)
 		{
 			_db = database;
 			_context = context;
