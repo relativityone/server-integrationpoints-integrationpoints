@@ -22,11 +22,11 @@
 			public const string JOB_START_TYPE = "Relativity.Sync.Job.Start.Type";
 			public const string JOB_RESUME_TYPE = "Relativity.Sync.Job.Resume.Type";
 
-			public const string JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.Suspended.Status.SavedSearched.NativesAndMetadata";
-			public const string JOB_SUSPENDED_STATUS_IMAGES = "Relativity.Sync.Job.Suspended.Status.SavedSearched.Images";
+			public const string JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.Suspended.Status.SavedSearch.NativesAndMetadata";
+			public const string JOB_SUSPENDED_STATUS_IMAGES = "Relativity.Sync.Job.Suspended.Status.SavedSearch.Images";
 
-			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearched.NativesAndMetadata";
-			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearched.Images";
+			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearch.NativesAndMetadata";
+			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearch.Images";
 
 			public const string RETRY_JOB_START_TYPE = "Relativity.Sync.Retry.Job.Start.Type";
 			public const string RETRY_JOB_END_STATUS = "Relativity.Sync.Retry.Job.End.Status";
