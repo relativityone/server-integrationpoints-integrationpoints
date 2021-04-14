@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
@@ -58,49 +56,52 @@ namespace Relativity.Sync.Transfer
 		private async Task<SyncStatisticsRdo> CalculateFilesTotalSizeAsync(int workspaceId, QueryRequest request, 
 			Func<IList<int>, Task<FileSizeResult>> filesCalculationFunc, CompositeCancellationToken token)
 		{
-			_logger.LogInformation("Initializing calculating total files size (in chunks of {batchSize})",
-				_configuration.BatchSizeForFileQueries);
-
-			SyncStatisticsRdo syncStatistics = await InitializeDocumentsQuery(workspaceId, request).ConfigureAwait(false);
+			SyncStatisticsRdo syncStatistics;
 			try
 			{
-				int batchIndex = 1;
+				_logger.LogInformation("Initializing calculating total files size (in chunks of {batchSize})",
+					_configuration.BatchSizeForFileQueries);
 
-				long start = syncStatistics.DocumentsCalculated;
-				IList<int> batch = await GetNextBatch(workspaceId, syncStatistics.RunId, start,
-						_configuration.BatchSizeForFileQueries)
-					.ConfigureAwait(false);
-				do
+				syncStatistics = await InitializeDocumentsQuery(workspaceId, request).ConfigureAwait(false);
+				try
 				{
-					_logger.LogInformation("Calculating total files size for {documentsCount} in chunk {batchIndex}.",
-						batch.Count, batchIndex);
+					int batchIndex = 1;
 
-					FileSizeResult result = await filesCalculationFunc(batch).ConfigureAwait(false);
-
-					syncStatistics.FilesSizeCalculated += result.FilesSize;
-					syncStatistics.FilesCountCalculated += result.FilesCount;
-					syncStatistics.DocumentsCalculated += result.DocumentsCount;
-
-					_logger.LogInformation("Calculated total files size for {documentsCount} in chunk {batchIndex}.",
-						batch.Count, batchIndex++);
-
-					if (token.IsDrainStopRequested)
+					IList<int> batch;
+					while ((batch = await GetNextBatch(workspaceId, syncStatistics).ConfigureAwait(false)) != null)
 					{
-						_logger.LogInformation("Files size calculation has been drain-stopped.");
-						break;
+						_logger.LogInformation("Calculating total files size for {documentsCount} in chunk {batchIndex}.",
+							batch.Count, batchIndex);
+
+						FileSizeResult result = await filesCalculationFunc(batch).ConfigureAwait(false);
+
+						syncStatistics.FilesSizeCalculated += result.FilesSize;
+						syncStatistics.FilesCountCalculated += result.FilesCount;
+						syncStatistics.DocumentsCalculated += result.DocumentsCount;
+
+						_logger.LogInformation("Calculated total files size for {documentsCount} in chunk {batchIndex}.",
+							batch.Count, batchIndex++);
+
+						if (token.IsDrainStopRequested)
+						{
+							_logger.LogInformation("Files size calculation has been drain-stopped.");
+							break;
+						}
 					}
+				}
+				finally
+				{
+					await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
+				}
 
-					start += batch.Count;
-				} while ((batch = await GetNextBatch(workspaceId, syncStatistics.RunId, start,
-						_configuration.BatchSizeForFileQueries).ConfigureAwait(false)) != null);
+				_logger.LogInformation("Finished calculating total files size (in chunks of {batchSize} ",
+					_configuration.BatchSizeForFileQueries);
 			}
-			finally
+			catch (Exception ex)
 			{
-				await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
+				_logger.LogError(ex, "Error occurred during statistics calculation. Empty values has been returned.");
+				syncStatistics = new SyncStatisticsRdo();
 			}
-
-			_logger.LogInformation("Finished calculating total files size (in chunks of {batchSize} ",
-				_configuration.BatchSizeForFileQueries);
 
 			return syncStatistics;
 		}
@@ -119,21 +120,16 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<FileSizeResult> CalculateImagesSize(int workspaceId, IList<int> batch, QueryImagesOptions options)
 		{
-			IEnumerable<ImageFile> imagesInBatch = await _imageFileRepository
-				.QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
+			IList<ImageFile> imagesInBatch = (await _imageFileRepository
+					.QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false))
+				.ToList();
 
-			FileSizeResult result = new FileSizeResult
+			return new FileSizeResult
 			{
-				DocumentsCount = batch.Count
+				DocumentsCount = batch.Count,
+				FilesCount = imagesInBatch.Count(),
+				FilesSize = imagesInBatch.Sum(x => x.Size)
 			};
-
-			foreach (ImageFile image in imagesInBatch)
-			{
-				result.FilesCount++;
-				result.FilesSize += image.Size;
-			}
-
-			return result;
 		}
 
 		private async Task<SyncStatisticsRdo> InitializeDocumentsQuery(int workspaceId, QueryRequest request)
@@ -157,12 +153,17 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		private async Task<IList<int>> GetNextBatch(int workspaceId, Guid runId, long start, long length)
+		private async Task<IList<int>> GetNextBatch(int workspaceId, SyncStatisticsRdo statistics)
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
+				int blockSize = Math.Min(
+					(int)(statistics.DocumentsRequested - statistics.DocumentsCalculated),
+					_configuration.BatchSizeForFileQueries);
+
 				RelativityObjectSlim[] exportResultsBlock = await objectManager
-					.RetrieveResultsBlockFromExportAsync(workspaceId, runId, (int)length, (int)start)
+					.RetrieveResultsBlockFromExportAsync(workspaceId, statistics.RunId,
+						blockSize, (int)statistics.DocumentsCalculated)
 					.ConfigureAwait(false);
 
 				return exportResultsBlock != null && exportResultsBlock.Any()

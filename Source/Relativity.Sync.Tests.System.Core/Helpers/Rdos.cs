@@ -509,14 +509,27 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static async Task<int> CreateEmptySyncStatisticsRdoAsync(int workspaceId)
 		{
-			ISyncLog log = TestLogHelper.GetLogger();
-			var rdoManager = new RdoManager(log, new ServicesManagerStub(), new RdoGuidProvider());
+			IRdoManager rdoManager = CreateRdoManager();
 
 			SyncStatisticsRdo syncStatistics = new SyncStatisticsRdo();
 
 			await rdoManager.CreateAsync(workspaceId, syncStatistics).ConfigureAwait(false);
 
 			return syncStatistics.ArtifactId;
+		}
+
+		public static Task<TRdo> ReadRdoAsync<TRdo>(int workspaceId, int artifactId)
+			where TRdo : IRdoType, new()
+		{
+			IRdoManager rdoManager = CreateRdoManager();
+
+			return rdoManager.GetAsync<TRdo>(workspaceId, artifactId);
+		}
+
+		private static IRdoManager CreateRdoManager()
+		{
+			ISyncLog log = TestLogHelper.GetLogger();
+			return new RdoManager(log, new ServicesManagerStub(), new RdoGuidProvider());
 		}
 	}
 }

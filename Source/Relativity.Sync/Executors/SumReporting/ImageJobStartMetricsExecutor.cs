@@ -62,7 +62,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(async () =>
 			{
 				_syncLog.LogInformation("Image statistics calculation has been started...");
-				QueryRequest request = await _queryRequestProvider.GetRequestForCurrentPipelineAsync(token.StopCancellationToken).ConfigureAwait(false);
+				QueryRequest request = await _queryRequestProvider.GetRequestWithIdentifierOnlyForCurrentPipelineAsync(token.StopCancellationToken).ConfigureAwait(false);
 				return await _fileStatisticsCalculator.CalculateImagesStatisticsAsync(
 					configuration.SourceWorkspaceArtifactId, request, options, token).ConfigureAwait(false);
 			}, token.StopCancellationToken);
