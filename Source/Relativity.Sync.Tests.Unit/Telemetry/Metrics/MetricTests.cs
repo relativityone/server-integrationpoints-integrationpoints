@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Castle.DynamicProxy.Internal;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;
@@ -27,10 +28,13 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		public void IMetricImplementingClasses_ShouldHaveOnlyNullableProperties_Guard(Type type)
 		{
 			// Act
-			var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+			PropertyInfo[] properties = type
+				.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+				.Where(x => x.PropertyType.IsClass)
+				.ToArray();
 
 			// Assert
-			properties.Should().OnlyContain(x => GetDefaultValue(x.PropertyType) == null);
+			properties.Should().OnlyContain(x => GetDefaultValue(x.PropertyType) == null, $"metric of type '{type.FullName}' should have only nullable properties");
 		}
 
 		[Test]
@@ -107,6 +111,34 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 			// Assert
 			apmMetrics.Keys.Should().NotContain("ApmIgnoredMetric");
+		}
+
+		[Test]
+		public void GetApmMetrics_ShouldIncludeCommonApmMetricsCustomData()
+		{
+			// Arrange
+			TestMetric metric = new TestMetric()
+			{
+				CorrelationId = Guid.NewGuid().ToString(),
+				ExecutingApplication = "app",
+				ExecutingApplicationVersion = "1.0",
+				DataSourceType = "data source",
+				DataDestinationType = "data dest",
+				FlowType = "flow type",
+				IsRetry = true
+			};
+
+			// Act
+			Dictionary<string, object> apmMetrics = metric.GetApmMetrics();
+
+			// Assert
+			apmMetrics[nameof(IMetric.CorrelationId)].Should().Be(metric.CorrelationId);
+			apmMetrics[nameof(IMetric.ExecutingApplication)].Should().Be(metric.ExecutingApplication);
+			apmMetrics[nameof(IMetric.ExecutingApplicationVersion)].Should().Be(metric.ExecutingApplicationVersion);
+			apmMetrics[nameof(IMetric.DataSourceType)].Should().Be(metric.DataSourceType);
+			apmMetrics[nameof(IMetric.DataDestinationType)].Should().Be(metric.DataDestinationType);
+			apmMetrics[nameof(IMetric.FlowType)].Should().Be(metric.FlowType);
+			apmMetrics[nameof(IMetric.IsRetry)].Should().Be(metric.IsRetry);
 		}
 
 		public static object GetDefaultValue(Type t)

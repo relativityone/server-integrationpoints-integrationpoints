@@ -10,7 +10,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 	public class NewRelicSyncMetricsSinkTests
 	{
 		private Mock<IAPMClient> _apmClientMock;
-
 		private NewRelicSyncMetricsSink _sut;
 
 		private const string _APPLICATION_NAME = "Relativity.Sync";
