@@ -7,5 +7,13 @@
 		string ExecutingApplication { get; }
 		
 		string ExecutingApplicationVersion { get; }
+
+		string DataSourceType { get; }
+
+		string DataDestinationType { get; }
+
+		bool ImageImport { get; }
+
+		int? JobHistoryToRetryId { get; }
 	}
 }

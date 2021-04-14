@@ -28,6 +28,10 @@ namespace Relativity.Sync.Telemetry
 			metric.CorrelationId = _metricsConfiguration.CorrelationId;
 			metric.ExecutingApplication = _metricsConfiguration.ExecutingApplication;
 			metric.ExecutingApplicationVersion = _metricsConfiguration.ExecutingApplicationVersion;
+			metric.DataSourceType = _metricsConfiguration.DataSourceType;
+			metric.DataDestinationType = _metricsConfiguration.DataDestinationType;
+			metric.IsRetry = _metricsConfiguration.JobHistoryToRetryId.HasValue;
+			metric.FlowType = _metricsConfiguration.ImageImport ? "Images" : "NativesOrMetadata";
 			
 			foreach (ISyncMetricsSink sink in _sinks)
 			{

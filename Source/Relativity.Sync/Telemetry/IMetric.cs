@@ -12,6 +12,14 @@ namespace Relativity.Sync.Telemetry
 		
 		string ExecutingApplicationVersion { get; set; }
 
+		string DataSourceType { get; set; }
+
+		string DataDestinationType { get; set; }
+
+		string FlowType { get; set; }
+
+		bool IsRetry { get; set; }
+
 		Dictionary<string, object> GetApmMetrics();
 
 		IEnumerable<SumMetric> GetSumMetrics();
