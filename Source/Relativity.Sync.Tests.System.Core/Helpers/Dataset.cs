@@ -52,10 +52,10 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return Path.Combine(CurrentDirectory, _DATASETS_FOLDER_PATH, filesPath);
 		}
 
-		public long GetTotalFilesSize(string fileFilter = "*.*")
+		public long GetTotalFilesSize(string specificFolder = "", string fileFilter = "*.*")
 		{
 			return Directory
-				.EnumerateFiles(Path.Combine(CurrentDirectory, _DATASETS_FOLDER_PATH, Name), fileFilter,
+				.EnumerateFiles(Path.Combine(CurrentDirectory, _DATASETS_FOLDER_PATH, Name, specificFolder), fileFilter,
 					SearchOption.AllDirectories).Select(x => new FileInfo(x).Length).Sum();
 		}
 

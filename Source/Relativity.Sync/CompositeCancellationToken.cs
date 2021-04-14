@@ -25,12 +25,12 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Gets the value that indicates if regular stop has been triggered.
 		/// </summary>
-		public bool IsStopRequested => StopCancellationToken.IsCancellationRequested;
+		public virtual bool IsStopRequested => StopCancellationToken.IsCancellationRequested;
 
 		/// <summary>
 		/// Gets the value that indicates if drain stop has been triggered.
 		/// </summary>
-		public bool IsDrainStopRequested => DrainStopCancellationToken.IsCancellationRequested;
+		public virtual bool IsDrainStopRequested => DrainStopCancellationToken.IsCancellationRequested;
 
 		/// <summary>
 		/// Creates new instance of this class.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
@@ -16,8 +17,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal class FileStatisticsCalculator : IFileStatisticsCalculator
 	{
-		private const int _BATCH_SIZE_FOR_FILE_QUERIES = 10000;
-
 		private readonly IStatisticsConfiguration _configuration;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IImageFileRepository _imageFileRepository;
@@ -41,132 +40,142 @@ namespace Relativity.Sync.Transfer
 		/// </summary>
 		public async Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request, CompositeCancellationToken token)
 		{
-			_logger.LogInformation("Initializing calculating total natives size (in chunks of {batchSize})", _BATCH_SIZE_FOR_FILE_QUERIES);
+			SyncStatisticsRdo result = await CalculateFilesTotalSizeAsync(workspaceId, request,
+				async batch => await CalculateNativesSize(workspaceId, batch), token).ConfigureAwait(false);
 
-			IEnumerable<IList<int>> documentArtifactIdBatches = await QueryDocumentsAsync(workspaceId, request).ConfigureAwait(false);
-
-			long nativesTotalSize = 0, nativesTotalCount = 0, documentsTotalCount = 0;
-			try
-			{
-				int batchIndex = 1;
-
-				foreach (IList<int> batch in documentArtifactIdBatches)
-				{
-					if (token.IsDrainStopRequested)
-					{
-						_logger.LogInformation("Natives size calculation has been drain-stopped.");
-						return nativesTotalSize;
-					}
-
-					_logger.LogInformation("Calculating total natives size for {documentsCount} in chunk {batchIndex}.", batch.Count, batchIndex);
-
-					IList<INativeFile> nativesInBatch = (await _nativeFileRepository.QueryAsync(workspaceId, batch).ConfigureAwait(false)).ToList();
-					nativesTotalSize += nativesInBatch.Sum(x => x.Size);
-					nativesTotalCount += nativesInBatch.Count;
-					documentsTotalCount += batch.Count;
-
-					_logger.LogInformation("Calculated total natives size for {documentsCount} in chunk {batchIndex}.", batch.Count, batchIndex++);
-				}
-			}
-			finally
-			{
-				await WriteDocumentsSizeStatistics(workspaceId, documentsTotalCount, nativesTotalSize, nativesTotalCount).ConfigureAwait(false);
-			}
-
-			_logger.LogInformation("Finished calculating total natives size (in chunks of {batchSize} ", _BATCH_SIZE_FOR_FILE_QUERIES);
-
-			return nativesTotalSize;
+			return result.FilesSizeCalculated;
 		}
 
-		public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId, 
+		public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId,
 			QueryRequest request, QueryImagesOptions options, CompositeCancellationToken token)
 		{
-			_logger.LogInformation("Initializing calculating images totals for (in chunks of {batchSize} )", _BATCH_SIZE_FOR_FILE_QUERIES);
-			
-			IEnumerable<IList<int>> documentArtifactIdBatches = await QueryDocumentsAsync(workspaceId, request).ConfigureAwait(false);
+			SyncStatisticsRdo result = await CalculateFilesTotalSizeAsync(workspaceId, request,
+				async batch => await CalculateImagesSize(workspaceId, batch, options), token).ConfigureAwait(false);
 
-			long imagesTotalCount = 0, imagesTotalSize = 0, documentsTotalCount = 0;
+			return new ImagesStatistics(result.FilesCountCalculated, result.FilesSizeCalculated);
+		}
+
+		private async Task<SyncStatisticsRdo> CalculateFilesTotalSizeAsync(int workspaceId, QueryRequest request, 
+			Func<IList<int>, Task<FileSizeResult>> filesCalculationFunc, CompositeCancellationToken token)
+		{
+			_logger.LogInformation("Initializing calculating total files size (in chunks of {batchSize})",
+				_configuration.BatchSizeForFileQueries);
+
+			SyncStatisticsRdo syncStatistics = await InitializeDocumentsQuery(workspaceId, request).ConfigureAwait(false);
 			try
 			{
 				int batchIndex = 1;
-				foreach (IList<int> batch in documentArtifactIdBatches)
+
+				long start = syncStatistics.DocumentsCalculated;
+				IList<int> batch = await GetNextBatch(workspaceId, syncStatistics.RunId, start,
+						_configuration.BatchSizeForFileQueries)
+					.ConfigureAwait(false);
+				do
 				{
+					_logger.LogInformation("Calculating total files size for {documentsCount} in chunk {batchIndex}.",
+						batch.Count, batchIndex);
+
+					FileSizeResult result = await filesCalculationFunc(batch).ConfigureAwait(false);
+
+					syncStatistics.FilesSizeCalculated += result.FilesSize;
+					syncStatistics.FilesCountCalculated += result.FilesCount;
+					syncStatistics.DocumentsCalculated += result.DocumentsCount;
+
+					_logger.LogInformation("Calculated total files size for {documentsCount} in chunk {batchIndex}.",
+						batch.Count, batchIndex++);
+
 					if (token.IsDrainStopRequested)
 					{
-						_logger.LogInformation("Images size calculation has been drain-stopped.");
-						return new ImagesStatistics(imagesTotalCount, imagesTotalSize);
+						_logger.LogInformation("Files size calculation has been drain-stopped.");
+						break;
 					}
 
-					_logger.LogInformation("Calculating images totals for {documentsCount} documents in chunk {batchIndex}.", batch.Count, batchIndex);
-
-					IEnumerable<ImageFile> imagesInBatch = await _imageFileRepository.QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
-
-					foreach (ImageFile image in imagesInBatch)
-					{
-						imagesTotalCount++;
-						imagesTotalSize += image.Size;
-					}
-
-					documentsTotalCount += batch.Count;
-
-					_logger.LogInformation("Calculated images totals for {documentsCount} documents in chunk {batchIndex}.", batch.Count, batchIndex++);
-				}
+					start += batch.Count;
+				} while ((batch = await GetNextBatch(workspaceId, syncStatistics.RunId, start,
+						_configuration.BatchSizeForFileQueries).ConfigureAwait(false)) != null);
 			}
 			finally
 			{
-				await WriteDocumentsSizeStatistics(workspaceId, documentsTotalCount, imagesTotalSize, imagesTotalCount).ConfigureAwait(false);
+				await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
 			}
 
-			_logger.LogInformation("Finished calculating images totals for (in chunks of {batchSize} ", _BATCH_SIZE_FOR_FILE_QUERIES);
+			_logger.LogInformation("Finished calculating total files size (in chunks of {batchSize} ",
+				_configuration.BatchSizeForFileQueries);
 
-			return new ImagesStatistics(imagesTotalCount, imagesTotalSize);
+			return syncStatistics;
 		}
 
-		private async Task<IEnumerable<IList<int>>> QueryDocumentsAsync(int workspaceId, QueryRequest request)
+		private async Task<FileSizeResult> CalculateNativesSize(int workspaceId, IList<int> batch)
+		{
+			IList<INativeFile> nativesInBatch = (await _nativeFileRepository.QueryAsync(workspaceId, batch).ConfigureAwait(false)).ToList();
+
+			return new FileSizeResult
+			{
+				DocumentsCount = batch.Count,
+				FilesCount = nativesInBatch.Count,
+				FilesSize = nativesInBatch.Sum(x => x.Size)
+			};
+		}
+
+		private async Task<FileSizeResult> CalculateImagesSize(int workspaceId, IList<int> batch, QueryImagesOptions options)
+		{
+			IEnumerable<ImageFile> imagesInBatch = await _imageFileRepository
+				.QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
+
+			FileSizeResult result = new FileSizeResult
+			{
+				DocumentsCount = batch.Count
+			};
+
+			foreach (ImageFile image in imagesInBatch)
+			{
+				result.FilesCount++;
+				result.FilesSize += image.Size;
+			}
+
+			return result;
+		}
+
+		private async Task<SyncStatisticsRdo> InitializeDocumentsQuery(int workspaceId, QueryRequest request)
 		{
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				SyncStatisticsRdo syncStatistics = await _rdoManager.GetAsync<SyncStatisticsRdo>(workspaceId, _configuration.SyncStatisticsId).ConfigureAwait(false);
 
-				List<RelativityObjectSlim> documents;
 				if (syncStatistics.RunId == Guid.Empty)
 				{
 					ExportInitializationResults exportInitializationResults = await objectManager.InitializeExportAsync(workspaceId, request, 1).ConfigureAwait(false);
 					int exportedRecordsCount = (int)exportInitializationResults.RecordCount;
-					
-					documents = await objectManager.QueryAllByExportRunId(workspaceId, 
-							exportInitializationResults.RunID, 0, exportedRecordsCount)
-						.ConfigureAwait(false);
 
 					syncStatistics.RunId = exportInitializationResults.RunID;
 					syncStatistics.DocumentsRequested = exportedRecordsCount;
 
 					await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
 				}
-				else
-				{
-					documents = await objectManager.QueryAllByExportRunId(workspaceId, syncStatistics.RunId,
-							(int)syncStatistics.DocumentsCalculated, (int)syncStatistics.DocumentsRequested)
-						.ConfigureAwait(false);
-				}
 
-				IEnumerable<IList<int>> documentArtifactIdBatches = documents
-					.Select(x => x.ArtifactID)
-					.SplitList(_BATCH_SIZE_FOR_FILE_QUERIES);
-
-				return documentArtifactIdBatches;
+				return syncStatistics;
 			}
 		}
 
-		private async Task WriteDocumentsSizeStatistics(int workspaceId, long documentsTotalCount, long filesTotalSize, long filesTotalCount)
+		private async Task<IList<int>> GetNextBatch(int workspaceId, Guid runId, long start, long length)
 		{
-			SyncStatisticsRdo syncStatistics = await _rdoManager.GetAsync<SyncStatisticsRdo>(workspaceId, _configuration.SyncStatisticsId).ConfigureAwait(false);
+			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				RelativityObjectSlim[] exportResultsBlock = await objectManager
+					.RetrieveResultsBlockFromExportAsync(workspaceId, runId, (int)length, (int)start)
+					.ConfigureAwait(false);
 
-			syncStatistics.DocumentsCalculated += documentsTotalCount;
-			syncStatistics.FilesSizeCalculated += filesTotalSize;
-			syncStatistics.FilesCountCalculated += filesTotalCount;
+				return exportResultsBlock != null && exportResultsBlock.Any()
+					? exportResultsBlock.Select(x => x.ArtifactID).ToList()
+					: null;
+			}
+		}
 
-			await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
+		private class FileSizeResult
+		{
+			public long DocumentsCount { get; set; }
+			public long FilesCount { get; set; }
+			public long FilesSize { get; set; }
 		}
 	}
 }

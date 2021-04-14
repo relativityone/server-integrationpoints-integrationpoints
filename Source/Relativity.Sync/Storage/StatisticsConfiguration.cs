@@ -8,6 +8,8 @@ namespace Relativity.Sync.Storage
 
 		public int SyncStatisticsId => _cache.GetFieldValue(x => x.SyncStatisticsId);
 
+		public int BatchSizeForFileQueries => 10000;
+
 		public StatisticsConfiguration(IConfiguration cache)
 		{
 			_cache = cache;
