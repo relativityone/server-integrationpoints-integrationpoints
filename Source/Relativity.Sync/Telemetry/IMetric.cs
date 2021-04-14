@@ -16,7 +16,7 @@ namespace Relativity.Sync.Telemetry
 
 		string DataDestinationType { get; set; }
 
-		string FlowType { get; set; }
+		string FlowName { get; set; }
 
 		bool IsRetry { get; set; }
 

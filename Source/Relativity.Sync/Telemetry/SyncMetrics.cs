@@ -31,7 +31,7 @@ namespace Relativity.Sync.Telemetry
 			metric.DataSourceType = _metricsConfiguration.DataSourceType;
 			metric.DataDestinationType = _metricsConfiguration.DataDestinationType;
 			metric.IsRetry = _metricsConfiguration.JobHistoryToRetryId.HasValue;
-			metric.FlowType = _metricsConfiguration.ImageImport ? "Images" : "NativesOrMetadata";
+			metric.FlowName = _metricsConfiguration.ImageImport ? "Images" : "NativesOrMetadata";
 			
 			foreach (ISyncMetricsSink sink in _sinks)
 			{

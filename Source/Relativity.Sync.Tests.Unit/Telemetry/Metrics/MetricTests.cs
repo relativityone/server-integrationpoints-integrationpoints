@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				ExecutingApplicationVersion = "1.0",
 				DataSourceType = "data source",
 				DataDestinationType = "data dest",
-				FlowType = "flow type",
+				FlowName = "flow type",
 				IsRetry = true
 			};
 
@@ -137,7 +137,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			apmMetrics[nameof(IMetric.ExecutingApplicationVersion)].Should().Be(metric.ExecutingApplicationVersion);
 			apmMetrics[nameof(IMetric.DataSourceType)].Should().Be(metric.DataSourceType);
 			apmMetrics[nameof(IMetric.DataDestinationType)].Should().Be(metric.DataDestinationType);
-			apmMetrics[nameof(IMetric.FlowType)].Should().Be(metric.FlowType);
+			apmMetrics[nameof(IMetric.FlowName)].Should().Be(metric.FlowName);
 			apmMetrics[nameof(IMetric.IsRetry)].Should().Be(metric.IsRetry);
 		}
 

@@ -121,7 +121,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			metric.DataSourceType.Should().Be(dataSourceType);
 			metric.DataDestinationType.Should().Be(dataDestinationType);
 			metric.IsRetry.Should().Be(true);
-			metric.FlowType.Should().Be("Images");
+			metric.FlowName.Should().Be("Images");
 		}
 
 		[TestCase(null, false)]
@@ -151,7 +151,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			_syncMetrics.Send(metric);
 
 			// Assert
-			metric.FlowType.Should().Be(expectedFlowType);
+			metric.FlowName.Should().Be(expectedFlowType);
 		}
 
 		protected void VerifySplunkSink(IMetric metric)
