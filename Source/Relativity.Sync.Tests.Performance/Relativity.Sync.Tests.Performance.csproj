@@ -30,7 +30,7 @@
   <!-- Relativity Packages with Release Versioning Schema -->
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
-    <PackageReference Include="Moq" Version="4.13.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
   </ItemGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
