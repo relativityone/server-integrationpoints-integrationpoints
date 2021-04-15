@@ -107,7 +107,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
 				metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
 			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobStartMetric>()), Times.Never);
-			_jobStatisticsContainer.ImagesStatistics.Should().BeNull();
 		}
 	}
 }
