@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Telemetry.Metrics;
+﻿using System.Collections.Generic;
+using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Telemetry
 {
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Telemetry
 		/// <inheritdoc />
 		public void Send(IMetric metric)
 		{
-			var customData = metric.GetApmMetrics();
+			Dictionary<string, object> customData = metric.GetApmMetrics();
 			if (customData.Count > 0)
 			{
 				if (metric is BatchEndPerformanceMetric)

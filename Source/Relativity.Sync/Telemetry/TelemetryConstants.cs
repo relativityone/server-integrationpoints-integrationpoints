@@ -7,8 +7,8 @@
 
 		public const string PROVIDER_NAME = "Sync";
 
-		public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearched.Images";
-		public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearched.NativesAndMetadata";
+		public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearch.Images";
+		public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearch.NativesAndMetadata";
 		
 		public static class MetricIdentifiers
 		{
@@ -17,16 +17,19 @@
 			public const string KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX = "Failed";
 			public const string KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX = "AuthRefresh";
 
+			public const string APM_FLOW_NAME_IMAGES = "Images";
+			public const string APM_FLOW_NAME_NATIVES_OR_METADATA = "NativesOrMetadata";
+
 			public const string JOB_CORRELATION_ID = "Relativity.Sync.Job.CorrelationId";
 
 			public const string JOB_START_TYPE = "Relativity.Sync.Job.Start.Type";
 			public const string JOB_RESUME_TYPE = "Relativity.Sync.Job.Resume.Type";
 
-			public const string JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.Suspended.Status.SavedSearched.NativesAndMetadata";
-			public const string JOB_SUSPENDED_STATUS_IMAGES = "Relativity.Sync.Job.Suspended.Status.SavedSearched.Images";
+			public const string JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.Suspended.Status.SavedSearch.NativesAndMetadata";
+			public const string JOB_SUSPENDED_STATUS_IMAGES = "Relativity.Sync.Job.Suspended.Status.SavedSearch.Images";
 
-			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearched.NativesAndMetadata";
-			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearched.Images";
+			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearch.NativesAndMetadata";
+			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearch.Images";
 
 			public const string RETRY_JOB_START_TYPE = "Relativity.Sync.Retry.Job.Start.Type";
 			public const string RETRY_JOB_END_STATUS = "Relativity.Sync.Retry.Job.End.Status";
@@ -56,10 +59,7 @@
 
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Over20MB";
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Over20MB";
-
-			public const string DATA_LONGTEXT_STREAM_LARGEST_SIZE = "Relativity.Sync.Data.LongTextStream.LargestLongText.Size";
-			public const string DATA_LONGTEXT_STREAM_LARGEST_TIME = "Relativity.Sync.Data.LongTextStream.LargestLongText.Time";
-
+			
 			public const string KEPLER_SERVICE_INTERCEPTOR_PREFIX = "Relativity.Sync.KeplerServiceInterceptor";
 
 			public const string TAG_DOCUMENTS_SOURCE_UPDATE_TIME = "Relativity.Sync.TagDocuments.SourceUpdate.Time";

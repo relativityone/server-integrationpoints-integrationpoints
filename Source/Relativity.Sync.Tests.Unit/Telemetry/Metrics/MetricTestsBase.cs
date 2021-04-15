@@ -3,8 +3,8 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
-using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 		protected readonly Guid _EXPECTED_WORKSPACE_GUID = Guid.NewGuid();
 		protected readonly SyncJobParameters _jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _JOB_HISTORY_ID);
-		private ConfigurationStub _metricsConfiguration;
+		private Mock<IMetricsConfiguration> _metricsConfigurationFake;
 
 		protected const string _APPLICATION_NAME = "Relativity.Sync";
 		[SetUp]
@@ -55,8 +55,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				apmSink
 			};
 
-			_metricsConfiguration = new ConfigurationStub();
-			_syncMetrics = new SyncMetrics(sinks, _metricsConfiguration);
+			_metricsConfigurationFake = new Mock<IMetricsConfiguration>();
+			_syncMetrics = new SyncMetrics(sinks, _metricsConfigurationFake.Object);
 		}
 
 		[Test]
@@ -98,11 +98,19 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			string correlationId = Guid.NewGuid().ToString();
 			const string executingAppName = "SomeApp";
 			const string executingAppVersion = "1.2.3.4";
+			const string dataSourceType = "SavedSearch";
+			const string dataDestinationType = "Folder";
+			int? jobHistoryToRetry = 123;
+			const bool imagePush = true;
 
-			_metricsConfiguration.CorrelationId = correlationId;
-			_metricsConfiguration.ExecutingApplication = executingAppName;
-			_metricsConfiguration.ExecutingApplicationVersion = executingAppVersion;
-			
+			_metricsConfigurationFake.SetupGet(x => x.CorrelationId).Returns(correlationId);
+			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplication).Returns(executingAppName);
+			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplicationVersion).Returns(executingAppVersion);
+			_metricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(dataSourceType);
+			_metricsConfigurationFake.SetupGet(x => x.DataDestinationType).Returns(dataDestinationType);
+			_metricsConfigurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(jobHistoryToRetry);
+			_metricsConfigurationFake.SetupGet(x => x.ImageImport).Returns(imagePush);
+
 			// Act
 			_syncMetrics.Send(metric);
 
@@ -110,6 +118,40 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			metric.CorrelationId.Should().Be(correlationId);
 			metric.ExecutingApplication.Should().Be(executingAppName);
 			metric.ExecutingApplicationVersion.Should().Be(executingAppVersion);
+			metric.DataSourceType.Should().Be(dataSourceType);
+			metric.DataDestinationType.Should().Be(dataDestinationType);
+			metric.IsRetry.Should().Be(true);
+			metric.FlowName.Should().Be("Images");
+		}
+
+		[TestCase(null, false)]
+		[TestCase(123, true)]
+		public void Send_ShouldSetIsRetryProperty(int? jobHistoryToRetry, bool expectedResult)
+		{
+			// Arrange
+			IMetric metric = EmptyTestMetric();
+			_metricsConfigurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(jobHistoryToRetry);
+
+			// Act
+			_syncMetrics.Send(metric);
+
+			// Assert
+			metric.IsRetry.Should().Be(expectedResult);
+		}
+
+		[TestCase(true, "Images")]
+		[TestCase(false, "NativesOrMetadata")]
+		public void Send_ShouldSetFlowType(bool imageImport, string expectedFlowType)
+		{
+			// Arrange
+			IMetric metric = EmptyTestMetric();
+			_metricsConfigurationFake.SetupGet(x => x.ImageImport).Returns(imageImport);
+
+			// Act
+			_syncMetrics.Send(metric);
+
+			// Assert
+			metric.FlowName.Should().Be(expectedFlowType);
 		}
 
 		protected void VerifySplunkSink(IMetric metric)

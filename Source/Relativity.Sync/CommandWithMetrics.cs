@@ -23,15 +23,15 @@ namespace Relativity.Sync
 
 		public Task<bool> CanExecuteAsync(CancellationToken token)
 		{
-			return MeasureExecutionTimeAsync(() => _innerCommand.CanExecuteAsync(token), token);
+			return MeasureExecutionTimeAsync(() => _innerCommand.CanExecuteAsync(token), "CanExecute", token);
 		}
 
 		public Task<ExecutionResult> ExecuteAsync(CompositeCancellationToken token)
 		{
-			return MeasureExecutionTimeAsync(() => _innerCommand.ExecuteAsync(token), token.StopCancellationToken);
+			return MeasureExecutionTimeAsync(() => _innerCommand.ExecuteAsync(token), "Execute", token.StopCancellationToken);
 		}
 
-		private async Task<TResult> MeasureExecutionTimeAsync<TResult>(Func<Task<TResult>> action, CancellationToken token)
+		private async Task<TResult> MeasureExecutionTimeAsync<TResult>(Func<Task<TResult>> action, string actionName, CancellationToken token)
 		{
 			ExecutionStatus status = ExecutionStatus.None;
 			_stopwatch.Start();
@@ -55,7 +55,7 @@ namespace Relativity.Sync
 			finally
 			{
 				_stopwatch.Stop();
-				_metrics.Send(new CommandMetric(typeof(T).Name)
+				_metrics.Send(new CommandMetric($"{typeof(T).Name}.{actionName}")
 				{
 					ExecutionStatus = status,
 					Duration = _stopwatch.Elapsed.TotalMilliseconds

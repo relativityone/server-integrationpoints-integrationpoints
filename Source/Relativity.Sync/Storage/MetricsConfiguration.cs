@@ -16,5 +16,13 @@ namespace Relativity.Sync.Storage
 		public string ExecutingApplication => _cache.GetFieldValue(x => x.ExecutingApplication);
 		
 		public string ExecutingApplicationVersion => _cache.GetFieldValue(x => x.ExecutingApplicationVersion);
+
+		public string DataSourceType => _cache.GetFieldValue(x => x.DataSourceType);
+
+		public string DataDestinationType => _cache.GetFieldValue(x => x.DataDestinationType);
+
+		public bool ImageImport => _cache.GetFieldValue(x => x.ImageImport);
+
+		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 	}
 }

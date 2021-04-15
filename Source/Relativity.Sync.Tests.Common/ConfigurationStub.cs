@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Common
 		private const int _BATCH_SIZE_FOR_FILE_QUERIES = 10000;
 
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
-		
+
 		public string DataDestinationName { get; set; }
 
 		public bool IsDataDestinationArtifactIdSet { get; set; }
@@ -82,6 +82,10 @@ namespace Relativity.Sync.Tests.Common
 		{
 			_emailNotificationRecipients = emailNotificationRecipients;
 		}
+
+		string IMetricsConfiguration.DataSourceType => DataSourceType.ToString();
+
+		public string DataDestinationType { get; }
 
 		public int SourceWorkspaceArtifactId { get; set; }
 

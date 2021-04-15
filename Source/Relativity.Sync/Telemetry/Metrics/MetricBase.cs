@@ -19,6 +19,14 @@ namespace Relativity.Sync.Telemetry.Metrics
 		
 		public string ExecutingApplicationVersion { get; set; }
 
+		public string DataSourceType { get; set; }
+
+		public string DataDestinationType { get; set; }
+
+		public string FlowName { get; set; }
+
+		public bool IsRetry { get; set; }
+
 		protected MetricBase()
 		{
 			Name = GetType().Name;
