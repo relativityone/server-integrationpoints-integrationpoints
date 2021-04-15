@@ -17,6 +17,9 @@
 			public const string KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX = "Failed";
 			public const string KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX = "AuthRefresh";
 
+			public const string APM_FLOW_NAME_IMAGES = "Images";
+			public const string APM_FLOW_NAME_NATIVES_OR_METADATA = "NativesOrMetadata";
+
 			public const string JOB_CORRELATION_ID = "Relativity.Sync.Job.CorrelationId";
 
 			public const string JOB_START_TYPE = "Relativity.Sync.Job.Start.Type";
