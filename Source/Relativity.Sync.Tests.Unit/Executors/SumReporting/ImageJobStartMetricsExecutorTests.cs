@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 	{
 		private Mock<ISyncMetrics> _syncMetricsMock;
 
-		private Mock<IImageFileRepository> _imageFileRepositoryFake;
+		private Mock<IFileStatisticsCalculator> _fileStatisticsCalculatorFake;
 		private Mock<IImageJobStartMetricsConfiguration> _configurationFake;
 
 		private IJobStatisticsContainer _jobStatisticsContainer;
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		{
 			_syncMetricsMock = new Mock<ISyncMetrics>();
 
-			_imageFileRepositoryFake = new Mock<IImageFileRepository>();
+			_fileStatisticsCalculatorFake = new Mock<IFileStatisticsCalculator>();
 
 			_configurationFake = new Mock<IImageJobStartMetricsConfiguration>();
 
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				syncLog.Object,
 				_syncMetricsMock.Object,
 				_jobStatisticsContainer,
-				_imageFileRepositoryFake.Object,
+				_fileStatisticsCalculatorFake.Object,
 				queryRequestProvider.Object);
 		}
 
@@ -72,14 +72,18 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobResumeMetric>()), Times.Never);
 		}
 
-		[Test]
-		public async Task ExecuteAsync_ShouldSetImagesBytesRequestedInStatisticsContainer_WhenJobStart()
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task ExecuteAsync_ShouldAlwaysSetImagesBytesRequestedInStatisticsContainer(bool isResuming)
 		{
 			// Arrange
 			ImagesStatistics expectedImageStatistics = new ImagesStatistics(10, 100);
 
-			_imageFileRepositoryFake.Setup(x =>
-					x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<QueryImagesOptions>()))
+			_configurationFake.SetupGet(x => x.Resuming).Returns(isResuming);
+
+			_fileStatisticsCalculatorFake.Setup(x =>
+					x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 
+						It.IsAny<QueryImagesOptions>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(expectedImageStatistics);
 
 			// Act
@@ -88,7 +92,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			ImagesStatistics imageStatistics = await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false);
 			imageStatistics.Should().BeEquivalentTo(expectedImageStatistics);
-			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobResumeMetric>()), Times.Never);
 		}
 
 		[Test]
@@ -104,7 +107,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
 				metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
 			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobStartMetric>()), Times.Never);
-			_jobStatisticsContainer.ImagesStatistics.Should().BeNull();
 		}
 	}
 }

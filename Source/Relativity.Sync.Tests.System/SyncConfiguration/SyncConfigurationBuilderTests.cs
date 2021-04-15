@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Objects.Exceptions;
 using Relativity.Services.Workspace;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration;
@@ -36,7 +32,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		}
 
 		[IdentifiedTest("08889EA2-DFFB-4F21-8723-5D2C4F23646C")]
-		public async Task SyncConfigurationBuilder_ShouldSaveConfiguration()
+		public async Task SyncConfigurationBuilder_ShouldSaveConfigurationWithSyncStatistics()
 		{
 			// Arrange
 			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
@@ -63,9 +59,16 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				.SaveAsync().ConfigureAwait(false);
 
 			// Assert
-			RelativityObject createdSyncConfiguration = await ReadSyncConfiguration(sourceWorkspace.ArtifactID, createdConfigurationId).ConfigureAwait(false);
+			SyncConfigurationRdo createdSyncConfiguration =
+				await Rdos.ReadRdoAsync<SyncConfigurationRdo>(sourceWorkspace.ArtifactID, createdConfigurationId).ConfigureAwait(false);
 
-			createdSyncConfiguration.ArtifactID.Should().Be(createdConfigurationId);
+			createdSyncConfiguration.ArtifactId.Should().Be(createdConfigurationId);
+
+			SyncStatisticsRdo syncStatistics = 
+				await Rdos.ReadRdoAsync<SyncStatisticsRdo>(sourceWorkspace.ArtifactID, createdSyncConfiguration.SyncStatisticsId)
+					.ConfigureAwait(false);
+
+			syncStatistics.Should().NotBeNull();
 		}
 		
 		private async Task<RelativityObject> ReadSyncConfiguration(int workspaceId, int configurationId)

@@ -14,7 +14,6 @@ using Relativity.Sync.Tests.Common;
 using User = Relativity.Services.User.User;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
-using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Stubs;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
@@ -392,7 +391,10 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				IncludeOriginalImages = configurationStub.ProductionImagePrecedence is null || configurationStub.IncludeOriginalImageIfNotFoundInProductions,
 				ImageFileCopyMode = configurationStub.ImportImageFileCopyMode.GetDescription(),
 				ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
-				
+
+				//Drain-Stop
+				SyncStatisticsId = configurationStub.SyncStatisticsId,
+
 				// JobHistoryGuids
 				JobHistoryType = configurationStub.JobHistory.TypeGuid,
 				JobHistoryGuidTotalField = configurationStub.JobHistory.TotalItemsFieldGuid,
@@ -506,6 +508,31 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			{
 				JobHistoryArtifactId = jobHistoryId
 			});
+		}
+
+		public static async Task<int> CreateEmptySyncStatisticsRdoAsync(int workspaceId)
+		{
+			IRdoManager rdoManager = CreateRdoManager();
+
+			SyncStatisticsRdo syncStatistics = new SyncStatisticsRdo();
+
+			await rdoManager.CreateAsync(workspaceId, syncStatistics).ConfigureAwait(false);
+
+			return syncStatistics.ArtifactId;
+		}
+
+		public static Task<TRdo> ReadRdoAsync<TRdo>(int workspaceId, int artifactId)
+			where TRdo : IRdoType, new()
+		{
+			IRdoManager rdoManager = CreateRdoManager();
+
+			return rdoManager.GetAsync<TRdo>(workspaceId, artifactId);
+		}
+
+		private static IRdoManager CreateRdoManager()
+		{
+			ISyncLog log = TestLogHelper.GetLogger();
+			return new RdoManager(log, new ServicesManagerStub(), new RdoGuidProvider());
 		}
 	}
 }

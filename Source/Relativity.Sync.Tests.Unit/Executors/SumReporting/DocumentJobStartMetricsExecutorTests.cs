@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 		private Mock<IFieldManager> _fieldManagerFake;
 		private Mock<IObjectManager> _objectManagerFake;
-		private Mock<INativeFileRepository> _nativeFileRepositoryFake;
+		private Mock<IFileStatisticsCalculator> _fileStatisticsCalculatorFake;
 		private Mock<IDocumentJobStartMetricsConfiguration> _configurationFake;
 
 		private IJobStatisticsContainer _jobStatisticsContainer;
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerFake.Object);
 
-			_nativeFileRepositoryFake = new Mock<INativeFileRepository>();
+			_fileStatisticsCalculatorFake = new Mock<IFileStatisticsCalculator>();
 
 			_jobStatisticsContainer = new JobStatisticsContainer();
 
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				_fieldManagerFake.Object,
 				serviceFactory.Object,
 				_jobStatisticsContainer,
-				_nativeFileRepositoryFake.Object,
+				_fileStatisticsCalculatorFake.Object,
 				queryRequestProvider.Object);
 		}
 
@@ -95,14 +95,17 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.RetryType != null)));
 		}
 
-		[Test]
-		public async Task ExecuteAsync_ShouldSetNativesBytesRequestedInStatisticsContainer()
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task ExecuteAsync_ShouldSetNativesBytesRequestedInStatisticsContainer(bool isResuming)
 		{
 			// Arrange
+			_configurationFake.SetupGet(x => x.Resuming).Returns(isResuming);
+
 			const long expectedNativesBytesRequested = 100;
 
-			_nativeFileRepositoryFake.Setup(x =>
-					x.CalculateNativesTotalSizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>()))
+			_fileStatisticsCalculatorFake.Setup(x =>
+					x.CalculateNativesTotalSizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(expectedNativesBytesRequested);
 
 			// Act
@@ -198,7 +201,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
 				metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
 			_syncMetricsMock.Verify(x => x.Send(It.IsAny<JobStartMetric>()), Times.Never);
-			_jobStatisticsContainer.NativesBytesRequested.Should().BeNull();
+
 			_syncLogMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()), Times.Never);
 		}
 

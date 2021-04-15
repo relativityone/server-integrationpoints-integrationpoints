@@ -168,7 +168,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             };
 
             action.Should().Throw<InvalidSyncConfigurationException>().WithMessage(
-                $"Guid {notExistingGuid.ToString()} for {rdoPath.PropertyType.Name}.{propertyPath.Name} does not exits");
+                $"Guid {notExistingGuid} for {rdoPath.PropertyType.Name}.{propertyPath.Name} does not exist");
         }
 
         [Test]

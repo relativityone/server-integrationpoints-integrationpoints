@@ -3,18 +3,12 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Relativity.Sync.Telemetry;
-using Relativity.Sync.Extensions;
-using Relativity.Services.Objects;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Services.Objects.DataContracts;
 using kCura.WinEDDS.Service.Export;
 
 namespace Relativity.Sync.Transfer
 {
 	internal class ImageFileRepository : IImageFileRepository
 	{
-		private const int _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES = 10000;
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _LOCATION_COLUMN_NAME = "Location";
 		private const string _FILENAME_COLUMN_NAME_PRODUCTION = "ImageFileName";
@@ -26,13 +20,11 @@ namespace Relativity.Sync.Transfer
 		private const string _SIZE_COLUMN_NAME = "Size";
 
 		private readonly ISearchManagerFactory _searchManagerFactory;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
-		public ImageFileRepository(ISearchManagerFactory searchManagerFactory, ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public ImageFileRepository(ISearchManagerFactory searchManagerFactory, ISyncLog logger)
 		{
 			_searchManagerFactory = searchManagerFactory;
-			_serviceFactory = serviceFactory;
 			_logger = logger;
 		}
 
@@ -59,41 +51,6 @@ namespace Relativity.Sync.Transfer
 
 				return imageFiles;
 			}
-		}
-
-		public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId, QueryRequest request, QueryImagesOptions options)
-		{
-			_logger.LogInformation("Initializing calculating images totals for (in chunks of {batchSize} )", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
-
-			long imagesTotalCount = 0;
-			long imagesTotalSize = 0;
-			
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				IEnumerable<IList<int>> documentArtifactIdBatches = (await objectManager.QueryAllAsync(workspaceId, request).ConfigureAwait(false))
-					.Select(x => x.ArtifactID)
-					.SplitList(_BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
-
-				int batchIndex = 1;
-				foreach (IList<int> batch in documentArtifactIdBatches)
-				{
-					_logger.LogInformation("Calculating images totals for {documentsCount} documents in chunk {batchIndex}.", batch.Count, batchIndex);
-
-					IEnumerable<ImageFile> imagesInBatch = await QueryImagesForDocumentsAsync(workspaceId, batch.ToArray(), options).ConfigureAwait(false);
-
-					foreach (ImageFile image in imagesInBatch)
-					{
-						imagesTotalCount++;
-						imagesTotalSize += image.Size;
-					}
-
-					_logger.LogInformation("Calculated images totals for {documentsCount} documents in chunk {batchIndex}.", batch.Count, batchIndex++);
-				}
-			}
-
-			_logger.LogInformation("Finished calculating images totals for (in chunks of {batchSize} ", _BATCH_SIZE_FOR_IMAGES_SIZE_QUERIES);
-
-			return new ImagesStatistics(imagesTotalCount, imagesTotalSize);
 		}
 
 		private ImageFile[] RetrieveImagesByProductionsForDocuments(ISearchManager searchManager, int workspaceId, int[] documentIds, QueryImagesOptions options)

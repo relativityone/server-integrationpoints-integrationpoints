@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Common
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
-		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration
+		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -25,6 +25,7 @@ namespace Relativity.Sync.Tests.Common
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
+		private const int _BATCH_SIZE_FOR_FILE_QUERIES = 10000;
 
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
 
@@ -121,7 +122,11 @@ namespace Relativity.Sync.Tests.Common
 		public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;
 		
 		public bool Resuming { get; set; }
-		
+
+		public int SyncStatisticsId { get; set; }
+
+		public int BatchSizeForFileQueries { get; set; } = _BATCH_SIZE_FOR_FILE_QUERIES;
+
 		public Guid? SnapshotId { get; set; }
 
 		public string FileSizeColumn { get; set; }
