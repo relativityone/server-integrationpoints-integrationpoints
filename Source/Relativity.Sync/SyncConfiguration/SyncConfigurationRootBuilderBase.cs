@@ -203,8 +203,7 @@ namespace Relativity.Sync.SyncConfiguration
         {
 			SyncStatisticsRdo syncStatistics = new SyncStatisticsRdo();
 
-			await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, syncStatistics, 
-				SyncConfiguration.ArtifactId).ConfigureAwait(false);
+			await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, syncStatistics).ConfigureAwait(false);
 
 			return syncStatistics.ArtifactId;
         }

@@ -36,7 +36,7 @@ namespace Relativity.Sync.Transfer
 		public async Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request, CompositeCancellationToken token)
 		{
 			SyncStatisticsRdo result = await CalculateFilesTotalSizeAsync(workspaceId, request,
-				async batch => await CalculateNativesSizeAsync(workspaceId, batch), token).ConfigureAwait(false);
+				batch => CalculateNativesSizeAsync(workspaceId, batch), token).ConfigureAwait(false);
 
 			return result.FilesSizeCalculated;
 		}
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Transfer
 			QueryRequest request, QueryImagesOptions options, CompositeCancellationToken token)
 		{
 			SyncStatisticsRdo result = await CalculateFilesTotalSizeAsync(workspaceId, request,
-				async batch => await CalculateImagesSizeAsync(workspaceId, batch, options), token).ConfigureAwait(false);
+				batch => CalculateImagesSizeAsync(workspaceId, batch, options), token).ConfigureAwait(false);
 
 			return new ImagesStatistics(result.FilesCountCalculated, result.FilesSizeCalculated);
 		}

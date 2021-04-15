@@ -95,10 +95,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => m.RetryType != null)));
 		}
 
-		[Test]
-		public async Task ExecuteAsync_ShouldSetNativesBytesRequestedInStatisticsContainer()
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task ExecuteAsync_ShouldSetNativesBytesRequestedInStatisticsContainer(bool isResuming)
 		{
 			// Arrange
+			_configurationFake.SetupGet(x => x.Resuming).Returns(isResuming);
+
 			const long expectedNativesBytesRequested = 100;
 
 			_fileStatisticsCalculatorFake.Setup(x =>

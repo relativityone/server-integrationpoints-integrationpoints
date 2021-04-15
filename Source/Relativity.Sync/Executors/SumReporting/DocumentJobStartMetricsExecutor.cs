@@ -58,8 +58,6 @@ namespace Relativity.Sync.Executors.SumReporting
 					RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
 				});
 
-				_jobStatisticsContainer.NativesBytesRequested = CreateCalculateNativesTotalSizeTaskAsync(configuration, token);
-
 				try
 				{
 					await LogFieldsMappingDetailsAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
@@ -69,7 +67,9 @@ namespace Relativity.Sync.Executors.SumReporting
 					_logger.LogError("Exception occurred when trying to log mapping details", exception);
 				}
 			}
-			
+
+			_jobStatisticsContainer.NativesBytesRequested = CreateCalculateNativesTotalSizeTaskAsync(configuration, token);
+
 			return ExecutionResult.Success();
 		}
 

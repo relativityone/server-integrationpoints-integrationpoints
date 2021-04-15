@@ -43,10 +43,10 @@ namespace Relativity.Sync.Executors.SumReporting
 					FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_IMAGES,
 					RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
 				});
-
-				_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token);
 			}
-			
+
+			_jobStatisticsContainer.ImagesStatistics = CreateCalculateImagesTotalSizeTaskAsync(configuration, token);
+
 			return Task.FromResult(ExecutionResult.Success());
 		}
 
