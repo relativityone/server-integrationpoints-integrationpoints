@@ -78,7 +78,10 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			ContainerFactory containerFactory = new ContainerFactory();
 			RelativityServices relativityServices = CreateMockedRelativityServices();
-			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, 1),
+
+			SyncJobParameters parameters = FakeHelper.CreateSyncJobParameters();
+
+			containerFactory.RegisterSyncDependencies(containerBuilder, parameters,
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
 			MockSearchManagerFactory(containerBuilder);

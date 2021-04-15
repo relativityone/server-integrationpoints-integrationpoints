@@ -56,8 +56,8 @@ namespace Relativity.Sync
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to create Sync job {workflowId}.", _syncJobParameters.WorkflowId.Value);
-				throw new SyncException("Unable to create Sync job. See inner exception for more details.", ex, _syncJobParameters.WorkflowId.Value);
+				_logger.LogError(ex, "Failed to create Sync job {workflowId}.", _syncJobParameters.WorkflowId);
+				throw new SyncException("Unable to create Sync job. See inner exception for more details.", ex, _syncJobParameters.WorkflowId);
 			}
 		}
 	}
