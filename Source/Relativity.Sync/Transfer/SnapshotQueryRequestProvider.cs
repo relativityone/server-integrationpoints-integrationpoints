@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,14 +25,27 @@ namespace Relativity.Sync.Transfer
 			_fieldManager = fieldManager;
 		}
 
-		public async Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token)
+		public Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token)
+		{
+			return GetRequestForCurrentPipelineInternalAsync(false, token);
+		}
+
+		public Task<QueryRequest> GetRequestWithIdentifierOnlyForCurrentPipelineAsync(CancellationToken token)
+		{
+			return GetRequestForCurrentPipelineInternalAsync(true, token);
+		}
+
+		private async Task<QueryRequest> GetRequestForCurrentPipelineInternalAsync(bool withIdentifierOnly,
+			CancellationToken token)
 		{
 			var pipeline = _pipelineSelector.GetPipeline();
 			if (pipeline.IsDocumentPipeline())
 			{
+				IEnumerable<FieldInfoDto> fields = await GetDocumentFieldsAsync(withIdentifierOnly, token).ConfigureAwait(false);
+
 				return pipeline.IsRetryPipeline()
-					? await CreateDocumentRetryQueryRequestAsync(token).ConfigureAwait(false)
-					: await CreateDocumentQueryRequestAsync(token).ConfigureAwait(false);
+					? CreateDocumentRetryQueryRequest(fields)
+					: CreateDocumentQueryRequest(fields);
 			}
 
 			if (pipeline.IsImagePipeline())
@@ -44,10 +58,15 @@ namespace Relativity.Sync.Transfer
 			throw new SyncException("Unable to determine Sync flow type. Snapshot query request creation failed");
 		}
 
-		private async Task<QueryRequest> CreateDocumentQueryRequestAsync(CancellationToken token)
+		private async Task<IEnumerable<FieldInfoDto>> GetDocumentFieldsAsync(bool withIdentifierOnly, CancellationToken token)
 		{
-			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
+			return withIdentifierOnly
+				? new[] { await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false) }
+				: await _fieldManager.GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
+		}
 
+		private QueryRequest CreateDocumentQueryRequest(IEnumerable<FieldInfoDto> fields)
+		{
 			return new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
@@ -55,14 +74,12 @@ namespace Relativity.Sync.Transfer
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
 				Condition = DocumentsInSavedSearch(),
-				Fields = documentFields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
+				Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
 			};
 		}
 
-		private async Task<QueryRequest> CreateDocumentRetryQueryRequestAsync(CancellationToken token)
+		private QueryRequest CreateDocumentRetryQueryRequest(IEnumerable<FieldInfoDto> fields)
 		{
-			IEnumerable<FieldInfoDto> documentFields = await _fieldManager.GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
-
 			return new QueryRequest
 			{
 				ObjectType = new ObjectTypeRef
@@ -70,7 +87,7 @@ namespace Relativity.Sync.Transfer
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
 				Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()}",
-				Fields = documentFields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
+				Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
 			};
 		}
 

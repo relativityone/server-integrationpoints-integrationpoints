@@ -118,6 +118,9 @@ namespace Relativity.Sync.SyncConfiguration
             await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
             await _rdoManager.EnsureTypeExistsAsync<SyncProgressRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
             await _rdoManager.EnsureTypeExistsAsync<SyncBatchRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
+            await _rdoManager.EnsureTypeExistsAsync<SyncStatisticsRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
+
+            SyncConfiguration.SyncStatisticsId = await CreateEmptySyncStatisticsAsync().ConfigureAwait(false);
 
             await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, SyncConfiguration).ConfigureAwait(false);
 
@@ -185,7 +188,7 @@ namespace Relativity.Sync.SyncConfiguration
                 HashSet<Guid> existingGuids = new HashSet<Guid>(guidArtifactIdPairs.Select(x => x.Guid));
 
                 string[] notExistingGuidErrors = validationInfos.Where(x => !existingGuids.Contains(x.Guid))
-                    .Select(x => $"Guid {x.Guid.ToString()} for {x.PropertyPath} does not exits")
+                    .Select(x => $"Guid {x.Guid} for {x.PropertyPath} does not exist")
                     .ToArray();
 
                 if (notExistingGuidErrors.Any())
@@ -194,6 +197,15 @@ namespace Relativity.Sync.SyncConfiguration
                         notExistingGuidErrors));
                 }
             }
+        }
+
+        private async Task<int> CreateEmptySyncStatisticsAsync()
+        {
+			SyncStatisticsRdo syncStatistics = new SyncStatisticsRdo();
+
+			await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, syncStatistics).ConfigureAwait(false);
+
+			return syncStatistics.ArtifactId;
         }
 
         protected abstract Task ValidateAsync();

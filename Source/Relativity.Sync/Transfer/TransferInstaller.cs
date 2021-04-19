@@ -13,6 +13,7 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<SearchManagerFactory>().As<ISearchManagerFactory>().SingleInstance();
 			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
 			builder.RegisterType<ImageFileRepository>().As<IImageFileRepository>();
+			builder.RegisterType<FileStatisticsCalculator>().As<IFileStatisticsCalculator>();
 			builder.RegisterType<FieldManager>().As<IFieldManager>();
 			builder.RegisterType<ExportDataSanitizer>().As<IExportDataSanitizer>();
 			builder.RegisterType<FolderPathRetriever>().As<IFolderPathRetriever>();

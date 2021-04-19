@@ -8,6 +8,7 @@ namespace Relativity.Sync.RDOs
 	    public const string ExecutingApplicationVersionGuid = "9BB9A7B1-730B-4BBF-9010-370E578C4B33";
 	    
 	    public const string ResumingGuid = "A5B0959D-96CE-4CA0-9E4A-576132F29165";
+	    public const string SyncStatisticsIdGuid = "6E07067A-AFDB-447F-8F90-C9A49E412714";
 
         public const string CreateSavedSearchInDestinationGuid = "BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D";
         public const string SavedSearchInDestinationArtifactIdGuid = "83F4DD7A-2231-4C54-BAAA-D1D5B0FE6E31";
