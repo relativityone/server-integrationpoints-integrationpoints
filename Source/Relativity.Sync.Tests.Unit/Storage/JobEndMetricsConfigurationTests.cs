@@ -1,7 +1,10 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -18,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			_configurationRdo.JobHistoryToRetryId = _JOB_HISTORY_TO_RETRY_ARTIFACT_ID;
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
 			_sut = new JobEndMetricsConfiguration(_configuration.Object, syncJobParameters);
 		}
 

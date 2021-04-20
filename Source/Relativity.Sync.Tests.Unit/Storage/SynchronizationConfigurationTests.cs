@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
 
@@ -23,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, Guid.NewGuid());
 			_syncConfig = new SynchronizationConfiguration(_configuration.Object, syncJobParameters, new JSONSerializer(), new EmptyLogger());
 		}
 

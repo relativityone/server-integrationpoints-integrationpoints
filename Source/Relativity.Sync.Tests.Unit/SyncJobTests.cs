@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Unit.Stubs;
 
 namespace Relativity.Sync.Tests.Unit
@@ -22,9 +23,7 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncJobParameters _syncJobParameters;
 		private ExecutionOptions _executionOptions;
 
-		private const int _JOB_HISTORY_ARTIFACT_ID = 111;
-
-		private readonly string _WORKFLOW_ID = $"{TelemetryConstants.PROVIDER_NAME}_{_JOB_HISTORY_ARTIFACT_ID}";
+		private readonly Guid _WORKFLOW_ID = Guid.NewGuid();
 
 		[SetUp]
 		public void SetUp()
@@ -38,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit
 				ThrowOnError = true
 			};
 
-			_syncJobParameters = new SyncJobParameters(1, 1, _JOB_HISTORY_ARTIFACT_ID);
+			_syncJobParameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), _WORKFLOW_ID);
 			_instance = new SyncJob(_pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 		}
 
@@ -64,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = () => _instance.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
-			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
+			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID.ToString());
 		}
 
 		[Test]
@@ -103,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit
 			Func<Task> action = () => instance.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
-			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID);
+			action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID.ToString());
 		}
 		
 		[Test]

@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -30,7 +31,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			_fieldMappings = new Mock<IFieldMappings>();
 
-			_instance = new RetryDataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object, new SyncJobParameters(1, _WORKSPACE_ID, 1));
+			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<Guid>());
+
+			_instance = new RetryDataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object, parameters);
 		}
 
 		[Test]

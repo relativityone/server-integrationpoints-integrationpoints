@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry
@@ -18,13 +19,12 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 
 		private SumSyncMetricsSink _sut;
 
-		private const int _WORKSPACE_ID = 111;
 		private readonly Guid _workspaceGuid = Guid.NewGuid();
 
 		[SetUp]
 		public void SetUp()
 		{
-			_syncJobParamters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<int>());
+			_syncJobParamters = FakeHelper.CreateSyncJobParameters();
 
 			_metricsManagerMock = new Mock<IMetricsManager>();
 

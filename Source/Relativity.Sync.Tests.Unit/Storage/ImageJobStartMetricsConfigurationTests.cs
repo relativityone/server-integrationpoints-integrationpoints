@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
@@ -12,13 +13,14 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private ImageJobStartMetricsConfiguration _sut;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 102779;
+		private readonly Guid _WORKFLOW_ID = Guid.NewGuid();
 
 		[SetUp]
 		public void SetUp()
 		{
 			_serializer = new JSONSerializer();
 
-			_sut = new ImageJobStartMetricsConfiguration(_configuration.Object, _serializer, new SyncJobParameters(1, _SOURCE_WORKSPACE_ARTIFACT_ID, 1));
+			_sut = new ImageJobStartMetricsConfiguration(_configuration.Object, _serializer, new SyncJobParameters(1, _SOURCE_WORKSPACE_ARTIFACT_ID, _WORKFLOW_ID));
 		}
 
 		[Test]

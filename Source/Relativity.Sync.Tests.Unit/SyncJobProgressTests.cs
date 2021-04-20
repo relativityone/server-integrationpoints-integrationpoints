@@ -3,9 +3,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using Moq;
 using Relativity.Services.Exceptions;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Unit.Stubs;
+using Relativity.Sync.Tests.Common;
+using ProgressRepositoryStub = Relativity.Sync.Tests.Unit.Stubs.ProgressRepositoryStub;
+using ProgressStub = Relativity.Sync.Tests.Unit.Stubs.ProgressStub;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -20,9 +21,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			const int syncConfigurationArtifactId = 1010000;
-			const int sourceWorkspaceArtifactId = 1020000;
-			_jobParameters = new SyncJobParameters(syncConfigurationArtifactId, sourceWorkspaceArtifactId, 1);
+			_jobParameters = FakeHelper.CreateSyncJobParameters();
 			_progressRepository = new ProgressRepositoryStub();
 			_counter = new ProgressStateCounter();
 			_instance = new SyncJobProgress(_jobParameters, _progressRepository, _counter, Mock.Of<ISyncLog>());

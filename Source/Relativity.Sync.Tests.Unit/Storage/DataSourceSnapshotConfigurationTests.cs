@@ -23,6 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         private Mock<IFieldMappings> _fieldMappings;
 
         private const int _WORKSPACE_ID = 589632;
+        private readonly Guid _WORKFLOW_ID = Guid.NewGuid();
 
         [SetUp]
         public void SetUp()
@@ -30,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             _fieldMappings = new Mock<IFieldMappings>();
 
             _instance = new DataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object,
-                new SyncJobParameters(1, _WORKSPACE_ID, 1));
+                new SyncJobParameters(1, _WORKSPACE_ID, _WORKFLOW_ID));
         }
 
         [Test]
