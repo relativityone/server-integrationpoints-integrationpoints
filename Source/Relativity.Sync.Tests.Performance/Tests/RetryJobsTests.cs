@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -136,11 +137,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRdoAsync(SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
 			Logger.LogInformation("Configuration RDO created");
 
-			SyncJobParameters jobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId);
+			SyncJobParameters jobParameters = FakeHelper.CreateSyncJobParameters();
 			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
 
 			Logger.LogInformation("Starting the job");
-			SyncJobState syncJobState = await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);
+			await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);
 		}
 
 	}

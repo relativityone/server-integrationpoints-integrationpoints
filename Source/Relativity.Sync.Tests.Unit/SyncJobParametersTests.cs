@@ -22,12 +22,12 @@ namespace Relativity.Sync.Tests.Unit
 		public void WorkflowId_ShouldBeInitializedWithGivenValue()
 		{
 			// Arrange
-			string workflowId = $"{TelemetryConstants.PROVIDER_NAME}_1";
+			Guid workflowId = Guid.NewGuid();
 
-			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, Guid.NewGuid());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, workflowId);
 
 			// Assert
-			syncJobParameters.WorkflowId.Should().Be(workflowId);
+			syncJobParameters.WorkflowId.Should().Be(workflowId.ToString());
 		}
 
 		[Test]

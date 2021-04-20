@@ -9,6 +9,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -30,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SendEmailsReturnsTrueWhenEmailsExistTest()
 		{
 			// Arrange
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
+			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
@@ -46,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SendEmailsReturnsFalseWhenNoEmailsExistTest()
 		{
 			// Arrange
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
+			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
 			_configurationRdo.EmailNotificationRecipients = null;
 			
@@ -63,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void EmailRecipientsPopulatedOnlyOnceFrom_configurationTest()
 		{
 			// Arrange
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
+			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
@@ -83,7 +84,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void EmailRecipientsParsingShouldRemoveEmptyEntriesTest()
 		{
 			// Arrange
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
+			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
@@ -115,7 +116,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_syncServiceManagerMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
 				.Returns(objectManagerMock.Object);
 
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
+			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
@@ -136,7 +137,10 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void PropertiesInSyncJobParametersShouldBeRetrievedTest()
 		{
 			// Arrange
-			var syncJobParameters = new SyncJobParameters(int.MaxValue, int.MaxValue, int.MaxValue);
+			const int syncConfigurationId = 1;
+			const int workspaceId = 2;
+
+			var syncJobParameters = new SyncJobParameters(syncConfigurationId, workspaceId, It.IsAny<Guid>());
 			_syncServiceManagerMock = new Mock<ISyncServiceManager>();
 			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
 
@@ -145,8 +149,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			int actualSyncConfigurationArtifactId = instance.SyncConfigurationArtifactId;
 
 			// Assert
-			actualSourceWorkspaceArtifactId.Should().Be(int.MaxValue);
-			actualSyncConfigurationArtifactId.Should().Be(int.MaxValue);
+			actualSourceWorkspaceArtifactId.Should().Be(workspaceId);
+			actualSyncConfigurationArtifactId.Should().Be(syncConfigurationId);
 		}
 	}
 }

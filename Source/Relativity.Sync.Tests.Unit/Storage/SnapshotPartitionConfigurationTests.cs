@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, It.IsAny<Guid>());
 			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration
 			{
 				BatchSize = _BATCH_SIZE

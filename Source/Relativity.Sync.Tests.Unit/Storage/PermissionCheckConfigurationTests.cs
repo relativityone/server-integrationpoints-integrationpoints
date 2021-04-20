@@ -7,7 +7,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
-using IConfiguration = Relativity.Sync.Storage.IConfiguration;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -25,11 +25,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			const int jobId = 50;
-
 			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_objectManager = new Mock<IObjectManager>();
-			_sycJobParameters = new SyncJobParameters(jobId, _WORKSPACE_ARTIFACT_ID, 1);
+			_sycJobParameters = FakeHelper.CreateSyncJobParameters();
 			_instance = new PermissionsCheckConfiguration(_configuration.Object, _sycJobParameters,_sourceServiceFactory.Object);
 		}
 

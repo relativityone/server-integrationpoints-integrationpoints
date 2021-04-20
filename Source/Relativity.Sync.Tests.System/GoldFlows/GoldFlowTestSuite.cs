@@ -122,7 +122,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			{
 				_goldFlowTestSuite = goldFlowTestSuite;
 				_configuration = configuration;
-				_parameters = new SyncJobParameters(configurationId, goldFlowTestSuite.SourceWorkspace.ArtifactID, _configuration.JobHistoryArtifactId);
+				_parameters = new SyncJobParameters(configurationId, goldFlowTestSuite.SourceWorkspace.ArtifactID, Guid.NewGuid());
 			}
 
 			public Task<SyncJobState> RunAsync()

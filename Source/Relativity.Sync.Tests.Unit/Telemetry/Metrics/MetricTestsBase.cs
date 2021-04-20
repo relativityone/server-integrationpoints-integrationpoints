@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
@@ -19,10 +20,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		private Mock<IAPMClient> _apmMock;
 
 		protected const int _WORKSPACE_ID = 100;
-		protected const int _JOB_HISTORY_ID = 200;
 
 		protected readonly Guid _EXPECTED_WORKSPACE_GUID = Guid.NewGuid();
-		protected readonly SyncJobParameters _jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _JOB_HISTORY_ID);
+		protected readonly SyncJobParameters _jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<Guid>());
 		private Mock<IMetricsConfiguration> _metricsConfigurationFake;
 
 		protected const string _APPLICATION_NAME = "Relativity.Sync";

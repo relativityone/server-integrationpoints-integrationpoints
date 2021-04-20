@@ -5,10 +5,9 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -24,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			_fieldMappings = new Mock<IFieldMappings>();
-			SyncJobParameters jobParameters = new SyncJobParameters(1, _WORKSPACE_ID, 1);
+			SyncJobParameters jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<Guid>());
 			_syncServiceManagerMock = new Mock<ISyncServiceManager>();
 			_sut = new ValidationConfiguration(_configuration.Object, _fieldMappings.Object, jobParameters, _syncServiceManagerMock.Object);
 		}

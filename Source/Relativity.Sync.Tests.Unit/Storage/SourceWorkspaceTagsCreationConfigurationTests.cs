@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -17,13 +18,12 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	{
 		private SourceWorkspaceTagsCreationConfiguration _config;
 
-		private const int _JOB_ID = 1;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 2;
 
 		[SetUp]
 		public void SetUp()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
 			_config = new SourceWorkspaceTagsCreationConfiguration(_configuration.Object, syncJobParameters);
 		}
 

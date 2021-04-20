@@ -13,6 +13,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -48,10 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
-			_syncJobParameters = new SyncJobParameters(0, 0, 0)
-			{
-				SyncApplicationName = "Test App"
-			};
+			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			_logger = new EmptyLogger();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);

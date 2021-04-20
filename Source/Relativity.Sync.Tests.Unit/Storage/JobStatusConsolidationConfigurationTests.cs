@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -61,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private JobStatusConsolidationConfiguration PrepareSut(int syncConfigurationArtifactId)
 		{
-			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, _WORKSPACE_ARTIFACT_ID, 1);
+			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, _WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
 			var sut = new JobStatusConsolidationConfiguration(_configuration.Object, syncJobParameters);
 			return sut;
 		}

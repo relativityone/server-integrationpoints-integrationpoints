@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 
@@ -13,8 +15,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
+			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
 
-			_sut = new DocumentJobStartMetricsConfiguration(_configuration.Object, new SyncJobParameters(1, _SOURCE_WORKSPACE_ARTIFACT_ID, 1));
+			_sut = new DocumentJobStartMetricsConfiguration(_configuration.Object, parameters);
 		}
 
 		[Test]
