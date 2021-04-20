@@ -590,7 +590,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		private void ValidateIntegrationPointBeforeRetryErrors(int workspaceArtifactId, 
 			int integrationPointArtifactId, Data.IntegrationPoint integrationPoint, SourceProvider sourceProvider)
 		{
-			if (!sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+			if (!sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID, StringComparison.InvariantCultureIgnoreCase))
 			{
 				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 			}

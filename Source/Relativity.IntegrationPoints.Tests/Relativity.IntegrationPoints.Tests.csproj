@@ -74,16 +74,14 @@
     <Compile Include="Integration\Helpers\WorkspaceHelpers\SourceProviderHelper.cs" />
     <Compile Include="Integration\Helpers\WorkspaceHelpers\WorkspaceHelperBase.cs" />
     <Compile Include="Integration\InstanceSettings.cs" />
-    <Compile Include="Integration\IRelativityHelpers.cs" />
+    <Compile Include="Integration\Mocks\FakeQueueRepository.cs" />
     <Compile Include="Integration\Mocks\FakeUser.cs" />
     <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Artifact.cs" />
-    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.DestinationProvider.cs" />
-    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPointType.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
-    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SourceProvider.cs" />
     <Compile Include="Integration\Mocks\Kepler\PermissionManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Services\FakeAuditRepository.cs" />
     <Compile Include="Integration\Mocks\Services\FakeBatchStatus.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataReader.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataSourceProvider.cs" />
@@ -101,18 +99,20 @@
     <Compile Include="Integration\Models\FieldTest.cs" />
     <Compile Include="Integration\Models\FolderTest.cs" />
     <Compile Include="Integration\Models\IntegrationPointTypeTest.cs" />
+    <Compile Include="Integration\Models\IRelativityHelpers.cs" />
     <Compile Include="Integration\Models\IWorkspaceHelpers.cs" />
     <Compile Include="Integration\Models\JobHistoryTest.cs" />
     <Compile Include="Integration\Models\RdoTestBase.cs" />
+    <Compile Include="Integration\Models\RelativityInstanceTest.cs" />
     <Compile Include="Integration\Models\SavedSearchTest.cs" />
     <Compile Include="Integration\Models\SourceProviderTest.cs" />
     <Compile Include="Integration\Models\TaskParametersTest.cs" />
     <Compile Include="Integration\Tests\Agent\SyncManagerTests.cs" />
+    <Compile Include="Integration\Tests\Controllers\JobControllerTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\DrainStoppedJobsInScheduleQueueTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\ScheduleAgentTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\ScheduleQueueInitializationTests.cs" />
     <Compile Include="Integration\Tests\ScheduleQueue\ScheduleQueueTestsForScheduledJobs.cs" />
-    <Compile Include="Integration\RelativityInstanceTest.cs" />
     <Compile Include="Integration\JobId.cs" />
     <Compile Include="Integration\Mocks\ConsoleLogger.cs" />
     <Compile Include="Integration\Mocks\Kepler\IKeplerStub.cs" />
@@ -338,6 +338,39 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Net.Http.Formatting">
+          <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Web.Http">
+          <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core\lib\net45\System.Web.Http.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Web.Infrastructure">
+          <HintPath>..\..\packages\Microsoft.Web.Infrastructure\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Moq">
           <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
@@ -393,6 +426,17 @@
         </Reference>
         <Reference Include="Relativity">
           <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.API">
+          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -685,17 +729,6 @@
       <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\tests\Polly\lib\net45\Polly.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\tests\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

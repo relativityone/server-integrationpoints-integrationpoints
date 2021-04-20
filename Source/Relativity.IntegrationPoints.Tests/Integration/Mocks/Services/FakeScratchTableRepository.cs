@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {

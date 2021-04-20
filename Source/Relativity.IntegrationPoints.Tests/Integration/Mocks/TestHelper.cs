@@ -9,7 +9,7 @@ using IWorkspaceManager = Relativity.Services.Interfaces.Workspace.IWorkspaceMan
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class TestHelper : IHelper, IAgentHelper
+	public class TestHelper : IHelper, IAgentHelper, ICPHelper
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
 
@@ -97,6 +97,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		}
 
 		public IAuthenticationMgr GetAuthenticationManager()
+		{
+			throw new NotImplementedException();
+		}
+
+		public ICSRFManager GetCSRFManager()
+		{
+			throw new NotImplementedException();
+		}
+
+		public int GetActiveCaseID()
 		{
 			throw new NotImplementedException();
 		}

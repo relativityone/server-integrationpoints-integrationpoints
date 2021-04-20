@@ -1,7 +1,6 @@
-using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 
-namespace Relativity.IntegrationPoints.Tests.Integration
+namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public interface IRelativityHelpers
     {

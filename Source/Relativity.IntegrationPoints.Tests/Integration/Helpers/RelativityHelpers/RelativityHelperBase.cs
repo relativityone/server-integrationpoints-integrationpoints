@@ -1,3 +1,5 @@
+using Relativity.IntegrationPoints.Tests.Integration.Models;
+
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
     public abstract class RelativityHelperBase

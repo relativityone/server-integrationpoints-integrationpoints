@@ -1,24 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using kCura.Apps.Common.Utils.Serializers;
-using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration
+namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
 	public class RelativityInstanceTest
 	{
-		private readonly ProxyMock _proxy;
 		private readonly TestContext _testContext;
 		private readonly ISerializer _serializer;
 		private readonly ObservableCollection<WorkspaceTest> _workspaces = new ObservableCollection<WorkspaceTest>();
 		
 
-		public List<AgentTest> Agents { get; set; } = new List<AgentTest>();
+		public List<AgentTest> Agents { get; } = new List<AgentTest>();
 
-		public List<JobTest> JobsInQueue { get; set; } = new List<JobTest>();
+		public List<JobTest> JobsInQueue { get; } = new List<JobTest>();
 
 		public IList<WorkspaceTest> Workspaces => _workspaces;
 
@@ -28,11 +25,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public RelativityInstanceTest(ProxyMock proxy, TestContext testContext, ISerializer serializer)
 		{
-			_proxy = proxy;
 			_testContext = testContext;
 			_serializer = serializer;
 
-			SetupWorkspaces();
 			Helpers = new RelativityHelpers(this, proxy, _serializer);
 		}
 
@@ -41,17 +36,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Agents.Clear();
 			JobsInQueue.Clear();
 			Workspaces.Clear();
-		}
-
-		private void SetupWorkspaces()
-		{
-			_workspaces.SetupOnAddedHandler((newItem) =>
-			{
-				_proxy.ObjectManager.SetupDocumentFields(newItem);
-				_proxy.ObjectManager.SetupWorkspace(this, newItem);
-			});
-
-			_workspaces.SetupDisposeOnRemove();
 		}
 
 		private class RelativityHelpers : IRelativityHelpers

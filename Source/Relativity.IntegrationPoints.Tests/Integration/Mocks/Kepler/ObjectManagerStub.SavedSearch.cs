@@ -1,31 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Moq;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-	    public void SetupSavedSearch(WorkspaceTest workspace, SavedSearchTest savedSearch)
+	    private void SetupSavedSearch()
 	    {
-		    Mock.Setup(x => x.QueryAsync(workspace.ArtifactId, It.Is<QueryRequest>(q =>
-				    q.ObjectType.ArtifactTypeID == (int) ArtifactType.Search &&
-				    q.Condition == $"'Artifact ID' == {savedSearch.ArtifactId}"), It.IsAny<int>(), It.IsAny<int>()))
+		    Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+				    It.Is<QueryRequest>(r => IsSavedSearchQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
+			    .Returns((int workspaceId, QueryRequest request, int start, int length) =>
+				    {
+					    QueryResult result = GetRelativityObjectsForRequest(x => x.SavedSearches, null, workspaceId, request, length);
+					    return Task.FromResult(result);
+				    }
+			    );
+
+		    Mock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(),
+				    It.Is<QueryRequest>(r => IsSavedSearchQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
 			    .Returns((int workspaceId, QueryRequest request, int start, int length) =>
 			    {
-				    IList<SavedSearchTest> searches = workspace.SavedSearches
-					    .Where(x => x.ArtifactId == savedSearch.ArtifactId).ToList();
-
-				    return Task.FromResult(new QueryResult
-				    {
-					    Objects = searches.Select(x => x.ToRelativityObject()).ToList(),
-					    ResultCount = searches.Count,
-					    TotalCount = searches.Count
-				    });
+				    QueryResultSlim result = GetQuerySlimsForRequest(x=>x.SavedSearches, null, workspaceId, request, length);
+				    return Task.FromResult(result);
 			    });
+	    }
+
+	    private bool IsSavedSearchQuery(QueryRequest query)
+	    {
+		    return query.ObjectType.ArtifactTypeID == (int) ArtifactType.Search;
 	    }
     }
 }

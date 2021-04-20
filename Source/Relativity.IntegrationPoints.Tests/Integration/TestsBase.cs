@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -39,6 +40,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -82,7 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			{
 				IsAdmin = true
 			};
-
+			
 			Context = new TestContext
 			{
 				User = User
@@ -97,14 +99,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Serializer = Container.Resolve<ISerializer>();
 			
 			FakeRelativityInstance = new RelativityInstanceTest(Proxy, Context, Serializer);
+			Proxy.ObjectManager.SetupCreateRequests(FakeRelativityInstance);
+			
 			SourceWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(sourceWorkspaceArtifactId);
 
 			SetupGlobalSettings();
 		}
 
+		protected virtual WindsorContainer GetContainer()
+		{
+			return new WindsorContainer();
+		}
+		
 		private void SetupContainer(int sourceWorkspace)
 		{
-			Container = new WindsorContainer();
+			Container = GetContainer();
 			Container.Kernel.Resolver.AddSubResolver(new CollectionResolver(Container.Kernel));
 
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
@@ -121,7 +130,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		private void RegisterRelativityApiServices()
 		{
-			Container.Register(Component.For<IHelper, IAgentHelper>().Instance(Helper));
+			Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
 			Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetServicesManager()));
 		}
@@ -146,12 +155,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>());
 			Container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>());
 			Container.Register(Component.For<IJobService>().ImplementedBy<JobService>());
+			
 			Container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().UsingFactoryMethod(c =>
 			{
 				var serializer = new JSONSerializer();
 				IAPILog logger = c.Resolve<IHelper>().GetLoggerFactory().GetLogger();
 				return new SerializerWithLogging(serializer, logger);
 			}).LifestyleSingleton());
+			
 			Container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>());
 			Container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>());
 			Container.Register(Component.For<ITimeService>().UsingFactoryMethod(() => new FakeTimeService(Context)));

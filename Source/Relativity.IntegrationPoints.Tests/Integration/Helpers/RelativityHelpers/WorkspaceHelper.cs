@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 		public WorkspaceTest CreateWorkspace(int? workspaceArtifactId = null)
 		{
-			WorkspaceTest workspace = new WorkspaceTest(_proxy, _serializer, workspaceArtifactId);
+			WorkspaceTest workspace = new WorkspaceTest(_serializer, workspaceArtifactId);
 
 			Relativity.Workspaces.Add(workspace);
 			
@@ -40,9 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				ParenObjectArtifactId = workspace.ArtifactId,
 				Name = "All Documents"
 			});
-
-			Relativity.Workspaces.Add(workspace);
-			
+		
 			return workspace;
 		}
 
@@ -61,9 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			
 			workspace.Helpers.IntegrationPointTypeHelper.CreateImportType();
 			workspace.Helpers.IntegrationPointTypeHelper.CreateExportType();
-
-			Relativity.Workspaces.Add(workspace);
-			
+		
 			return workspace;
 		}
 

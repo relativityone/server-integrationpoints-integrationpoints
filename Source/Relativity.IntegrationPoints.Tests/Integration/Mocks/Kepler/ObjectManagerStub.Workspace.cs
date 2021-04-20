@@ -1,45 +1,66 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data;
 using Moq;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public partial class ObjectManagerStub
 	{
-		public void SetupWorkspace(RelativityInstanceTest database, WorkspaceTest workspace)
+		private void SetupWorkspace()
 		{
-			Mock.Setup(x => x.QuerySlimAsync(-1, It.Is<QueryRequest>(q =>
-					q.ObjectType.ArtifactTypeID == (int)ArtifactType.Case &&
-					q.Condition == $"'ArtifactID' == {workspace.ArtifactId}"), 0, 1))
-				.Returns(() =>
-				{
-					var result = database.Workspaces.FirstOrDefault(
-							x => x.ArtifactId == workspace.ArtifactId) != null
-						? new QueryResultSlim { TotalCount = 1 }
-						: new QueryResultSlim();
-
-					return Task.FromResult(result);
-				});
-
-			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(q =>
-					q.ObjectType.ArtifactTypeID == (int) ArtifactType.Case &&
-					q.Fields.Single().Name == WorkspaceFieldsConstants.NAME_FIELD &&
-					q.Condition == $"'ArtifactID' == {workspace.ArtifactId}"), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns(() =>
-				{
-					var objects = database.Workspaces
-						.Where(x => x.ArtifactId == workspace.ArtifactId)
-						.Select(x => x.ToRelativityObject())
-						.ToList();
-
-					return Task.FromResult(new QueryResult
+			Mock.Setup(x => x.QueryAsync(-1, 
+					It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Case), 
+					It.IsAny<int>(), It.IsAny<int>()))
+				.Returns((int workspaceId, QueryRequest request, int start, int length) =>
 					{
-						Objects = objects,
-					});
-				});
+						List<RelativityObject> foundObjects = GetWorkspaces(request);
+
+						QueryResult result = new QueryResult();
+						result.Objects = foundObjects.Take(length).ToList();
+						result.TotalCount = result.ResultCount = result.Objects.Count;
+
+						return Task.FromResult(result);
+					}
+				);
+			
+			Mock.Setup(x => x.QuerySlimAsync(-1, 
+					It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Case), 
+					It.IsAny<int>(), It.IsAny<int>()))
+				.Returns((int workspaceId, QueryRequest request, int start, int length) =>
+					{
+						List<RelativityObject> foundObjects = GetWorkspaces(request);
+
+						QueryResultSlim result = new QueryResultSlim();
+						result.Objects = foundObjects.Take(length).Select(x => ToSlim(x, request.Fields)).ToList();
+						result.TotalCount = result.ResultCount = result.Objects.Count;
+
+						return Task.FromResult(result);
+					}
+				);
+		}
+
+		private List<RelativityObject> GetWorkspaces(QueryRequest request)
+		{
+			List<RelativityObject> foundObjects = new List<RelativityObject>();
+
+			if (IsArtifactIdCondition(request.Condition, out int artifactId))
+			{
+				AddRelativityObjectsToResult(
+					_relativity.Workspaces.Where(
+						x => x.ArtifactId == artifactId)
+					, foundObjects);
+			}
+			else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+			{
+				AddRelativityObjectsToResult(
+					_relativity.Workspaces.Where(
+						x => artifactIds.Contains(x.ArtifactId))
+					, foundObjects);
+			}
+
+			return foundObjects;
 		}
 	}
 }

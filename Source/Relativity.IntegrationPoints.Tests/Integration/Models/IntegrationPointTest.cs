@@ -26,11 +26,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string ScheduleRule { get; set; }
 
-		public ChoiceRef OverwriteFields { get; set; }
+		public ChoiceRef OverwriteFields { get; set; } = OverwriteFieldsChoices.IntegrationPointAppendOnly;
 
 		public int? DestinationProvider { get; set; }
 
-		public int[] JobHistory { get; set; }
+		public int[] JobHistory { get; set; } = new int[0];
 
 		public bool? LogErrors { get; set; }
 

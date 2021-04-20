@@ -1,85 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Data;
-using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-    public class WorkspaceTest : IDisposable
+    public class WorkspaceTest : RdoTestBase
     {
-        private readonly ProxyMock _proxy;
-
-        public int ArtifactId { get; set; }
         public string Name { get; set; }
 
-        private readonly ObservableCollection<IntegrationPointTest> _integrationPoints =
-            new ObservableCollection<IntegrationPointTest>();
+        public IList<IntegrationPointTest> IntegrationPoints { get; } = new List<IntegrationPointTest>();
 
-        private readonly ObservableCollection<IntegrationPointTypeTest> _integrationPointTypes =
-            new ObservableCollection<IntegrationPointTypeTest>();
+        public IList<IntegrationPointTypeTest> IntegrationPointTypes { get; } = new List<IntegrationPointTypeTest>();
 
-        private readonly ObservableCollection<JobHistoryTest> _jobHistory = new ObservableCollection<JobHistoryTest>();
+        public IList<JobHistoryTest> JobHistory { get; } = new List<JobHistoryTest>();
+        
+        public IList<SourceProviderTest> SourceProviders { get; } = new List<SourceProviderTest>();
 
-        private readonly ObservableCollection<SourceProviderTest> _sourceProviders =
-            new ObservableCollection<SourceProviderTest>();
+        public IList<DestinationProviderTest> DestinationProviders { get; } = new List<DestinationProviderTest>();
 
-        private readonly ObservableCollection<DestinationProviderTest> _destinationProviders =
-            new ObservableCollection<DestinationProviderTest>();
+        public IList<FolderTest> Folders { get; } = new List<FolderTest>();
 
-        private readonly ObservableCollection<FolderTest> _folders = new ObservableCollection<FolderTest>();
-        private readonly ObservableCollection<ArtifactTest> _artifacts = new ObservableCollection<ArtifactTest>();
+        public IList<ArtifactTest> Artifacts => GetAllArtifacts();
 
-        private readonly ObservableCollection<SavedSearchTest> _savedSearches =
-            new ObservableCollection<SavedSearchTest>();
+        private IList<ArtifactTest> GetAllArtifacts()
+        {
+            IEnumerable<ArtifactTest> GetArtifacts(IEnumerable<RdoTestBase> rdos) => rdos.Select(x => x.Artifact);
 
-        private readonly ObservableCollection<FieldTest> _fields = new ObservableCollection<FieldTest>();
-        private readonly CompositeDisposable _cleanup = new CompositeDisposable();
+            return GetArtifacts(IntegrationPoints)
+                .Concat(GetArtifacts(IntegrationPointTypes))
+                .Concat(GetArtifacts(JobHistory))
+                .Concat(GetArtifacts(SourceProviders))
+                .Concat(GetArtifacts(DestinationProviders))
+                .Concat(GetArtifacts(Folders))
+                .Concat(GetArtifacts(SavedSearches))
+                .ToList();
+        }
 
-        public IList<IntegrationPointTest> IntegrationPoints => _integrationPoints;
+        public IList<SavedSearchTest> SavedSearches { get; } = new List<SavedSearchTest>();
 
-        public IList<IntegrationPointTypeTest> IntegrationPointTypes => _integrationPointTypes;
-
-        public IList<JobHistoryTest> JobHistory => _jobHistory;
-
-        public IList<SourceProviderTest> SourceProviders => _sourceProviders;
-
-        public IList<DestinationProviderTest> DestinationProviders => _destinationProviders;
-
-        public IList<FolderTest> Folders => _folders;
-
-        public IList<ArtifactTest> Artifacts => _artifacts;
-
-        public IList<SavedSearchTest> SavedSearches => _savedSearches;
-
-        public IList<FieldTest> Fields => _fields;
+        public IList<FieldTest> Fields { get; } = new List<FieldTest>();
         
         public IWorkspaceHelpers Helpers { get; }
 
-        public WorkspaceTest(ProxyMock proxy, ISerializer serializer, int? workspaceArtifactId = null)
+        public FakeAuditRepository AuditRepository { get; } = new FakeAuditRepository();
+
+        public WorkspaceTest(ISerializer serializer, int? workspaceArtifactId = null) : base("Workspace", workspaceArtifactId)
         {
-            _proxy = proxy;
-            ArtifactId = workspaceArtifactId ?? ArtifactProvider.NextId();
             Name = $"Workspace - {Guid.NewGuid()}";
 
             Helpers = new WorkspaceHelpers(this, serializer);
-            
-            SetupIntegrationPoints();
-            SetupIntegrationPointTypes();
-            SetupJobHistory();
-            SetupSourceProviders();
-            SetupDestinationProviders();
-            SetupFolders();
-            SetupSavedSearches();
-            SetupFields();
         }
 
-        public RelativityObject ToRelativityObject()
+        /// <summary>
+        /// Used to realize ObjectManager.Read, which does not specify object type
+        /// </summary>
+        public RdoTestBase ReadArtifact(int artifactId)
+        {
+            RdoTestBase TryFind<T>(IList<T> rdos) where T : RdoTestBase
+            {
+                return rdos.FirstOrDefault(x => x.ArtifactId == artifactId);
+            }
+
+            return TryFind(IntegrationPoints)
+                   ?? TryFind(IntegrationPointTypes)
+                   ?? TryFind(JobHistory)
+                   ?? TryFind(SourceProviders)
+                   ?? TryFind(DestinationProviders)
+                   ?? TryFind(Folders)
+                   ?? TryFind(SavedSearches)
+                   ?? TryFind(Fields);
+        }
+
+        public override RelativityObject ToRelativityObject()
         {
             return new RelativityObject
             {
@@ -96,72 +93,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                     }
                 },
             };
-        }
-
-        private void SetupIntegrationPoints()
-        {
-            _integrationPoints.SetupOnAddedHandler((newItem) =>
-                {
-                    _proxy.ObjectManager.SetupArtifact(this, newItem);
-                    _proxy.ObjectManager.SetupIntegrationPoint(this, newItem);
-                })
-                .DisposeWith(_cleanup);
-        }
-
-        private void SetupIntegrationPointTypes()
-        {
-            _integrationPointTypes
-                .SetupOnAddedHandler((newItem) => _proxy.ObjectManager.SetupIntegrationPointType(this, newItem))
-                .DisposeWith(_cleanup);
-        }
-
-        private void SetupJobHistory()
-        {
-            _jobHistory.SetupOnAddedHandler(newItem => _proxy.ObjectManager.SetupJobHistory(this, newItem))
-                .DisposeWith(_cleanup);
-        }
-
-        private void SetupSourceProviders()
-        {
-            _sourceProviders.SetupOnAddedHandler(newItem => _proxy.ObjectManager.SetupSourceProvider(this, newItem))
-                .DisposeWith(_cleanup);
-        }
-
-        private void SetupDestinationProviders()
-        {
-            _destinationProviders
-                .SetupOnAddedHandler(newItem => _proxy.ObjectManager.SetupDestinationProvider(this, newItem))
-                .DisposeWith(_cleanup);
-        }
-
-        private void SetupFolders()
-        {
-            _folders.SetupOnAddedHandler(newItem =>
-                {
-                    this.Artifacts.Add(newItem.Artifact);
-                    _proxy.ObjectManager.SetupArtifact(this, newItem);
-                })
-                .DisposeWith(_cleanup);
-        }
-
-        private void SetupSavedSearches()
-        {
-            _savedSearches.SetupOnAddedHandler(newItem => { _proxy.ObjectManager.SetupSavedSearch(this, newItem); })
-                .DisposeWith(_cleanup);
-        }
-
-        private void SetupFields()
-        {
-            _destinationProviders.SetupOnAddedHandler(newItem =>
-                {
-                    //TODO
-                })
-                .DisposeWith(_cleanup);
-        }
-
-        public void Dispose()
-        {
-            _cleanup.Dispose();
         }
 
         private class WorkspaceHelpers : IWorkspaceHelpers

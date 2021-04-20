@@ -1,6 +1,7 @@
 ﻿kCura
 kCura.Apps.Common.Config
 Relativity
+Relativity.API
 Relativity.Kepler.Client
 	alias Relativity.Services.ServiceProxy.dll ServiceProxy
 Relativity.Services.Interfaces
@@ -12,6 +13,8 @@ Moq
 FluentAssertions
 Relativity.Testing.Identification
 System.Reactive
+Microsoft.AspNet.WebApi.Core
+Microsoft.Web.Infrastructure
 
 group Tests
 	NUnit

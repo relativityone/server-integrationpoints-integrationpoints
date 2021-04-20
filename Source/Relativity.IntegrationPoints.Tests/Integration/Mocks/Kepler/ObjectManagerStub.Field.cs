@@ -9,24 +9,44 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-	    public void SetupDocumentFields(WorkspaceTest workspace)
-	    {
-		    Mock.Setup(x => x.QueryAsync(workspace.ArtifactId, It.Is<QueryRequest>(q =>
-					    q.ObjectType.ArtifactTypeID == (int) ArtifactType.Field &&
-					    q.Condition == $"'Object Type Artifact Type Id' == OBJECT {(int) ArtifactType.Document}"),
-				    It.IsAny<int>(), It.IsAny<int>()))
-			    .Returns((int workspaceId, QueryRequest request, int start, int length) =>
-			    {
-				    IList<FieldTest> searches = workspace.Fields
-					    .Where(x => x.IsDocumentField).ToList();
+        private void SetupDocumentFields()
+        {
+            bool IsDocumentFieldCondition(string condition)
+            {
+                return condition == @"'Object Type Artifact Type Id' == OBJECT 10";
+            }
 
-				    return Task.FromResult(new QueryResult
-				    {
-					    Objects = searches.Select(x => x.ToRelativityObject()).ToList(),
-					    ResultCount = searches.Count,
-					    TotalCount = searches.Count
-				    });
-			    });
-	    }
+            IList<FieldTest> DocumentFieldFilter(QueryRequest request, IList<FieldTest> list)
+            {
+                if (IsDocumentFieldCondition(request.Condition))
+                {
+                    return list.Where(x => x.IsDocumentField).ToList();
+                }
+
+                return new List<FieldTest>();
+            }
+            
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+                    It.Is<QueryRequest>(r => IsFieldQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns((int workspaceId, QueryRequest request, int start, int length) =>
+                    {
+                        QueryResult result = GetRelativityObjectsForRequest(x => x.Fields, DocumentFieldFilter, workspaceId, request, length);
+                        return Task.FromResult(result);
+                    }
+                );
+
+            Mock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(),
+                    It.Is<QueryRequest>(r => IsFieldQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns((int workspaceId, QueryRequest request, int start, int length) =>
+                {
+                    QueryResultSlim result = GetQuerySlimsForRequest(x=>x.Fields, DocumentFieldFilter, workspaceId, request, length);
+                    return Task.FromResult(result);
+                });
+        }
+
+        private bool IsFieldQuery(QueryRequest r)
+        {
+	        return r.ObjectType.ArtifactTypeID == (int) ArtifactType.Field;
+        }
     }
 }

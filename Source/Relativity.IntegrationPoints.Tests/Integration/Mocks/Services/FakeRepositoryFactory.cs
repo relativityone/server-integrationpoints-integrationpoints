@@ -1,5 +1,7 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
+﻿using System.Linq;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
@@ -81,7 +83,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public IQueueRepository GetQueueRepository()
 		{
-			return _repositoryFactory.GetQueueRepository();
+			return new FakeQueueRepository(_db.JobsInQueue);
 		}
 
 		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactID, string tablePrefix, string tableSuffix)
@@ -146,7 +148,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId)
 		{
-			return _repositoryFactory.GetRelativityAuditRepository(workspaceArtifactId);
+			return _db.Workspaces.First(x => x.ArtifactId == workspaceArtifactId).AuditRepository;
 		}
 
 		public IResourcePoolRepository GetResourcePoolRepository()

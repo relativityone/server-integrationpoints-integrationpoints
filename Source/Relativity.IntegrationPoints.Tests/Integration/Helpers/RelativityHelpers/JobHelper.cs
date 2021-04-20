@@ -48,7 +48,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 		private JobBuilder CreateBasicJob(WorkspaceTest workspace)
 		{
 			IntegrationPointTest integrationPoint = workspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
-			workspace.IntegrationPoints.Add(integrationPoint);
 			return CreateBasicJob(workspace, integrationPoint);
 		}
 
