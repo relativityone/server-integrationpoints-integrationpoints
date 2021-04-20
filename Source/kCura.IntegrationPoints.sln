@@ -104,8 +104,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Age
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Tests.Integration", "kcura.IntegrationPoints.Core.Tests.Integration\kCura.IntegrationPoints.Core.Tests.Integration.csproj", "{8DB72A8A-8638-469E-A2AA-992A728637F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Data.Tests.Integration", "kCura.IntegrationPoints.Data.Tests.Integration\kCura.IntegrationPoints.Data.Tests.Integration.csproj", "{0C680191-A959-49ED-979E-F7908F4FC6CB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration", "kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.csproj", "{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.EventHandlers.Tests.Integration", "kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj", "{F983176A-DE11-4328-AEDA-81630DD0D587}"
@@ -113,8 +111,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration", "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj", "{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web.Tests.Integration", "kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj", "{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core.Tests.Integration", "kCura.ScheduleQueue.Core.Tests.Integration\kCura.ScheduleQueue.Core.Tests.Integration.csproj", "{88D683E8-3E9F-403D-86EF-AD4982A02B92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Services.Tests", "Relativity.IntegrationPoints.Services.Tests\Relativity.IntegrationPoints.Services.Tests.csproj", "{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}"
 EndProject
@@ -332,10 +328,6 @@ Global
 		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C680191-A959-49ED-979E-F7908F4FC6CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C680191-A959-49ED-979E-F7908F4FC6CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C680191-A959-49ED-979E-F7908F4FC6CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C680191-A959-49ED-979E-F7908F4FC6CB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -352,10 +344,6 @@ Global
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88D683E8-3E9F-403D-86EF-AD4982A02B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88D683E8-3E9F-403D-86EF-AD4982A02B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88D683E8-3E9F-403D-86EF-AD4982A02B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88D683E8-3E9F-403D-86EF-AD4982A02B92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -484,12 +472,10 @@ Global
 		{5E44277B-5C51-4367-874B-EFA44EB2B956} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{8DB72A8A-8638-469E-A2AA-992A728637F1} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
-		{0C680191-A959-49ED-979E-F7908F4FC6CB} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{F983176A-DE11-4328-AEDA-81630DD0D587} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
-		{88D683E8-3E9F-403D-86EF-AD4982A02B92} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{F556FF4E-5F7D-46D6-A343-A21ED5169F44} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
