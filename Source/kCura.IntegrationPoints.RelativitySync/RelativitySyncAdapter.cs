@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 
 			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.JobHistoryId)
+			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.JobIdentifier)
 											{
 												TriggerValue = "rip"
 											};
