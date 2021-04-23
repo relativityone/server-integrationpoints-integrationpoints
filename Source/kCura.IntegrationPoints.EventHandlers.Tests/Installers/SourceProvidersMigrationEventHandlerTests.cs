@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.EventHandler;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Models;
@@ -9,10 +13,6 @@ using LanguageExt;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Services;
 using static LanguageExt.Prelude;
@@ -30,19 +30,23 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
         private Mock<IRipProviderInstaller> _providerInstallerMock;
         private Mock<IErrorService> _errorServiceMock;
+        private Mock<IAPILog> _loggerMock;
 
         [OneTimeSetUp]
         public void Setup()
         {
+	        _loggerMock = new Mock<IAPILog>();
             _errorServiceMock = new Mock<IErrorService>();
             _providerInstallerMock = new Mock<IRipProviderInstaller>();
-            _providerInstallerMock.Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider>>()))
+            _providerInstallerMock.Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<SourceProvider>>()))
                 .Returns(Task.FromResult(Right<string, Unit>(Unit.Default)));
 
             var helper = new Mock<IEHHelper>
             {
                 DefaultValue = DefaultValue.Mock
             };
+            helper.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>())
+	            .Returns(_loggerMock.Object);
 
             _sut = new SubjectUnderTests(
                 helper.Object,
@@ -154,10 +158,42 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             VerifyProviderWasInstalledUsingProductionManager(provider2ToInstall.Name);
         }
 
+        [Test]
+        public void ShouldNotFailWhenDuplicatedSourceProvidersExistsInTemplateWorkspace()
+        {
+            // arrange
+            var providerToInstall = new Data.SourceProvider
+            {
+	            ApplicationIdentifier = "72194851-ad15-4769-bec5-04011498a1b4",
+	            Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bc",
+	            ArtifactId = 789,
+	            Name = "test",
+	            SourceConfigurationUrl = "fake url",
+	            ViewConfigurationUrl = "config url",
+	            Config = new SourceProviderConfiguration()
+            };
+            var providersToInstall = new List<Data.SourceProvider>
+            {
+	            providerToInstall,
+	            providerToInstall
+            };
+            _sut.SourceProvidersToReturn = providersToInstall;
+
+            // act
+            Response result = _sut.Execute();
+
+            //assert
+            result.Success.Should().BeTrue();
+            VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(1);
+            VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
+
+            _loggerMock.Verify(x => x.LogWarning("There are duplicated entries in SourceProvider database table in Template Workspace Artifact ID: {templateWorkspaceArtifactId}", It.IsAny<int>()));
+        }
+
         private void VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(int expectedNumberOfProviders)
         {
             string failureMessage = $"because {expectedNumberOfProviders} provider was installed in previous workspace";
-            bool Predicate(IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders) => sourceProviders.Count() == expectedNumberOfProviders;
+            bool Predicate(IEnumerable<SourceProvider> sourceProviders) => sourceProviders.Count() == expectedNumberOfProviders;
 
             VerifyInstallationUsingProviderInstaller(failureMessage, Predicate);
         }
@@ -166,7 +202,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
         {
             string failureMessage = $"because '{providerName}' provider was installed in previous workspace";
 
-            bool Predicate(IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders) =>
+            bool Predicate(IEnumerable<SourceProvider> sourceProviders) =>
                 sourceProviders.SingleOrDefault(p => p.Name == providerName) != null;
 
             VerifyInstallationUsingProviderInstaller(failureMessage, Predicate);
@@ -174,11 +210,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
         private void VerifyInstallationUsingProviderInstaller(
             string failureMessage,
-            Func<IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider>, bool> predicate)
+            Func<IEnumerable<SourceProvider>, bool> predicate)
         {
             _providerInstallerMock
                 .Verify(x =>
-                        x.InstallProvidersAsync(It.Is<IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider>>(request => predicate(request))),
+                        x.InstallProvidersAsync(It.Is<IEnumerable<SourceProvider>>(request => predicate(request))),
                     failureMessage
                 );
         }
