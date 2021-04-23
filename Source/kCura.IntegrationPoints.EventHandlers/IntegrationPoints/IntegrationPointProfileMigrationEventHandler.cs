@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
 				.GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
-			var profilesInCreatedWorkspace = new HashSet<int>(await _integrationPointProfilesQuery.CheckIfProfilesExist(WorkspaceID, allProfiles.Select(x => x.ArtifactId)).ConfigureAwait(false));
+			var profilesInCreatedWorkspace = new HashSet<int>(await _integrationPointProfilesQuery.CheckIfProfilesExistAsync(WorkspaceID, allProfiles.Select(x => x.ArtifactId)).ConfigureAwait(false));
 
 
 			profilesToPreserve = CheckProfilesExistInWorkspace(profilesToPreserve, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration);

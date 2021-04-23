@@ -1,18 +1,20 @@
-﻿using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Provider;
-using kCura.IntegrationPoints.Core.Services;
-using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using kCura.EventHandler;
+using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Core.Provider;
+using kCura.IntegrationPoints.Core.Services;
+using Relativity.API;
+using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     [Guid("0846CFFC-757D-4F19-A439-24510012CCBE")]
-    [EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
+    [Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
     public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
         private readonly IRipProviderInstaller _ripProviderInstaller;
@@ -29,8 +31,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         protected override void Run()
         {
-            List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller);
+            Logger.LogInformation("Retrieving Source Providers to install.");
+            List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
+            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger);
             Response migrationJobResult = migrationJob.Execute();
             if (!migrationJobResult.Success)
             {
@@ -42,12 +45,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         protected override string GetFailureMessage(Exception ex) => "Failed to migrate Source Provider.";
 
-        private List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> GetSourceProvidersToInstall()
+        private List<SourceProvider> GetSourceProvidersToInstall()
         {
             List<Data.SourceProvider> sourceProviders = GetSourceProvidersFromPreviousWorkspace();
 
-	        List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> results = sourceProviders.Select(
-		        provider => new global::Relativity.IntegrationPoints.Contracts.SourceProvider
+	        List<SourceProvider> results = sourceProviders.Select(
+		        provider => new SourceProvider
 		        {
 			        Name = provider.Name,
 			        Url = provider.SourceConfigurationUrl,
@@ -77,21 +80,42 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         [Guid("DDF4C569-AE1D-45F8-9E0F-740399BA059F")]
         private sealed class SourceProvidersMigration : InternalSourceProviderInstaller
         {
-            private readonly List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> _sourceProviders;
+            private readonly List<SourceProvider> _sourceProviders;
+            private readonly int _templateWorkspaceId;
+            private readonly IAPILog _logger;
 
 	        public SourceProvidersMigration(
-		        List<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProvidersToMigrate,
+		        List<SourceProvider> sourceProvidersToMigrate,
 		        IEHHelper helper, 
-		        IRipProviderInstaller providerInstaller)
+		        IRipProviderInstaller providerInstaller,
+		        int templateWorkspaceId,
+		        IAPILog logger)
 		        : base(providerInstaller)
 	        {
 		        _sourceProviders = sourceProvidersToMigrate;
-		        Helper = helper;
+		        _templateWorkspaceId = templateWorkspaceId;
+		        _logger = logger;
+                Helper = helper;
 	        }
 
-	        public override IDictionary<Guid, global::Relativity.IntegrationPoints.Contracts.SourceProvider> GetSourceProviders()
-            {
-                return _sourceProviders.ToDictionary(provider => provider.GUID);
+	        public override IDictionary<Guid, SourceProvider> GetSourceProviders()
+	        {
+		        List<SourceProvider> deduplicatedProviders = new List<SourceProvider>();
+		        foreach (SourceProvider sourceProvider in _sourceProviders)
+		        {
+			        if (deduplicatedProviders.All(x => x.GUID != sourceProvider.GUID))
+			        {
+				        deduplicatedProviders.Add(sourceProvider);
+			        }
+                }
+
+		        if (_sourceProviders.Count > deduplicatedProviders.Count)
+		        {
+			        // REL-539111
+                    _logger.LogWarning("There are duplicated entries in SourceProvider database table in Template Workspace Artifact ID: {templateWorkspaceArtifactId}", _templateWorkspaceId);
+		        }
+
+                return deduplicatedProviders.ToDictionary(provider => provider.GUID);
             }
         }
     }

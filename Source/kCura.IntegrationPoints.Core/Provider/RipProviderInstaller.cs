@@ -120,25 +120,39 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private async Task<Either<string, Unit>> AddOrUpdateProviderAsync(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
-            IDictionary<Guid, SourceProvider> installedRdoProviderDict = await GetInstalledRdoProvidersAsync(provider).ConfigureAwait(false);
+            List<SourceProvider> installedRdoProviders = await GetInstalledRdoProvidersAsync(provider.ApplicationGUID).ConfigureAwait(false);
+            SourceProvider sourceProvider = installedRdoProviders.FirstOrDefault(x => Guid.Parse(x.Identifier) == provider.GUID);
 
-            if (installedRdoProviderDict.ContainsKey(provider.GUID))
+            if (sourceProvider != null)
             {
-                SourceProvider providerToUpdate = installedRdoProviderDict[provider.GUID];
-                return UpdateExistingProvider(providerToUpdate, provider);
+                return UpdateExistingProvider(sourceProvider, provider);
             }
             return AddProvider(provider);
         }
 
-        private async Task<IDictionary<Guid, SourceProvider>> GetInstalledRdoProvidersAsync(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
+        private async Task<List<SourceProvider>> GetInstalledRdoProvidersAsync(Guid applicationGuid)
         {
-            List<SourceProvider> installedRdoProviders = await _sourceProviderRepository
-                .GetSourceProviderRdoByApplicationIdentifierAsync(provider.ApplicationGUID)
+	        List<SourceProvider> installedSourceProviders = await _sourceProviderRepository
+                .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid)
                 .ConfigureAwait(false);
 
-            Dictionary<Guid, SourceProvider> installedRdoProviderDict =
-                installedRdoProviders.ToDictionary(x => Guid.Parse(x.Identifier), x => x);
-            return installedRdoProviderDict;
+            List<SourceProvider> deduplicatedProviders = new List<SourceProvider>();
+
+            foreach (SourceProvider installedProvider in installedSourceProviders)
+            {
+	            if (deduplicatedProviders.All(x => x.Identifier != installedProvider.Identifier))
+	            {
+		            deduplicatedProviders.Add(installedProvider);
+	            }
+            }
+
+            if (installedSourceProviders.Count > deduplicatedProviders.Count)
+            {
+	            // REL-539111
+                _logger.LogWarning("There are duplicated entries in SourceProvider database table.");
+            }
+            
+            return deduplicatedProviders;
         }
 
         private Either<string, Unit> UpdateExistingProvider(SourceProvider existingProviderDto, global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
