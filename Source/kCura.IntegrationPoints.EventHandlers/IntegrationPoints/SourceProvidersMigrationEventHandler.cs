@@ -31,10 +31,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         protected override void Run()
         {
-            Logger.LogInformation("Retrieving Source Providers to install.");
+            Logger.LogInformation($"Running {nameof(SourceProvidersMigrationEventHandler)}");
             List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
             var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger);
+            Logger.LogInformation("Executing Source Providers migration job");
             Response migrationJobResult = migrationJob.Execute();
+            Logger.LogInformation("Source Providers migration job execution result success: {result}", migrationJobResult.Success);
             if (!migrationJobResult.Success)
             {
                 throw new InvalidSourceProviderException(migrationJobResult.Message, migrationJobResult.Exception);
@@ -65,6 +67,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         protected virtual List<Data.SourceProvider> GetSourceProvidersFromPreviousWorkspace()
         {
+            Logger.LogInformation("Retrieving Source Providers from Template Workspace Artifact ID: {templateWorkspaceArtifactId}", WorkspaceTemplateServiceContext.WorkspaceID);
             List<Data.SourceProvider> sourceProviderRdos = WorkspaceTemplateServiceContext.RelativityObjectManagerService.RelativityObjectManager.Query<Data.SourceProvider>(new QueryRequest());
 
             if (sourceProviderRdos == null || sourceProviderRdos.Count == 0)
@@ -72,6 +75,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 Logger.LogError("Could not retrieve source providers from previous workspace {PreviousWorkspaceArtifactID}", WorkspaceTemplateServiceContext.WorkspaceID);
                 return new List<Data.SourceProvider>();
             }
+
+            Logger.LogInformation("Found {count} Source Providers in Template Workspace Artifact ID: {templateWorkspaceArtifactId}", sourceProviderRdos.Count, WorkspaceTemplateServiceContext.WorkspaceID);
+
             return sourceProviderRdos;
         }
 
