@@ -168,19 +168,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public void GetIntegrationPointExportTypeArtifactIDAsync_ShouldFail_WhenWrongNumberOfIntegrationPointExportTypeArtifactID([Values(0, 2)] int integrationPointTypesCount)
-		{
-			// Arrange
-			SetUpSyncProviders(integrationPointTypesCount: integrationPointTypesCount);
-
-			// Act
-			Func<Task<int>> action = () => _sut.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
-
-			// Assert
-			AssertWrongNumberOfArtifactIDsInCollection(action);
-		}
-
-		[Test]
 		public async Task GetSyncDestinationProviderArtifactIDAsync_ShouldReturnNonSyncSourceProviderArtifactID()
 		{
 			// Arrange
@@ -194,7 +181,59 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 		}
 
 		[Test]
-		public void GetSyncSourceProviderArtifactIDAsync_ShouldFail_WhenWrongNumberOfSourceProviders([Values(0, 2)] int relativitySourceProviderCount)
+		public void GetIntegrationPointExportTypeArtifactIDAsync_ShouldFail_WhenNoIntegrationPointExportTypeArtifactID()
+		{
+			// Arrange
+			SetUpSyncProviders(integrationPointTypesCount: 0);
+
+			// Act
+			Func<Task<int>> action = () => _sut.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
+
+			// Assert
+			AssertNoArtifactIDsInCollection(action);
+		}
+
+		[Test]
+		public void GetSyncSourceProviderArtifactIDAsync_ShouldFail_WhenNoSourceProviders()
+		{
+			// Arrange
+			SetUpSyncProviders(relativitySourceProviderCount: 0);
+
+			// Act
+			Func<Task<int>> action = () => _sut.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID);
+
+			// Assert
+			AssertNoArtifactIDsInCollection(action);
+		}
+
+		[Test]
+		public void GetSyncDestinationProviderArtifactIDAsync_ShouldFail_WhenNoDestinationProviders()
+		{
+			// Arrange
+			SetUpSyncProviders(relativityDestinationProviderCount: 0);
+
+			// Act
+			Func<Task<int>> action = () => _sut.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID);
+
+			// Assert
+			AssertNoArtifactIDsInCollection(action);
+		}
+		
+		[Test]
+		public void GetIntegrationPointExportTypeArtifactIDAsync_ShouldFail_WhenOneOrMoreIntegrationPointExportTypeArtifactID([Values(1, 2)] int integrationPointTypesCount)
+		{
+			// Arrange
+			SetUpSyncProviders(integrationPointTypesCount: integrationPointTypesCount);
+
+			// Act
+			Func<Task<int>> action = () => _sut.GetIntegrationPointExportTypeArtifactIDAsync(_WORKSPACE_ID);
+
+			// Assert
+			AssertOneOrMoreArtifactIDsInCollection(action);
+		}
+
+		[Test]
+		public void GetSyncSourceProviderArtifactIDAsync_ShouldFail_WhenOneOrMoreSourceProviders([Values(1, 2)] int relativitySourceProviderCount)
 		{
 			// Arrange
 			SetUpSyncProviders(relativitySourceProviderCount);
@@ -203,11 +242,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			Func<Task<int>> action = () => _sut.GetSyncSourceProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			AssertWrongNumberOfArtifactIDsInCollection(action);
+			AssertOneOrMoreArtifactIDsInCollection(action);
 		}
 
 		[Test]
-		public void GetSyncDestinationProviderArtifactIDAsync_ShouldFail_WhenWrongNumberOfDestinationProviders([Values(0, 2)] int relativityDestinationProviderCount)
+		public void GetSyncDestinationProviderArtifactIDAsync_ShouldFail_WhenOneOrMoreDestinationProviders([Values(1, 2)] int relativityDestinationProviderCount)
 		{
 			// Arrange
 			SetUpSyncProviders(relativityDestinationProviderCount: relativityDestinationProviderCount);
@@ -216,12 +255,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			Func<Task<int>> action = () => _sut.GetSyncDestinationProviderArtifactIDAsync(_WORKSPACE_ID);
 
 			// Assert
-			AssertWrongNumberOfArtifactIDsInCollection(action);
+			AssertOneOrMoreArtifactIDsInCollection(action);
 		}
 
-		private static void AssertWrongNumberOfArtifactIDsInCollection(Func<Task<int>> sut)
+		private static void AssertNoArtifactIDsInCollection(Func<Task<int>> sut)
 		{
 			sut.ShouldThrowExactly<InvalidOperationException>();
+		}
+
+		private static void AssertOneOrMoreArtifactIDsInCollection(Func<Task<int>> sut)
+		{
+			sut.ShouldNotThrow<InvalidOperationException>();
 		}
 
 		private IEnumerable<IntegrationPointProfile> CreateProfilesToUpdate()
