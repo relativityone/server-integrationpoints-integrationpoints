@@ -27,24 +27,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 		private Mock<ISourceProviderRepository> _sourceProviderRepositoryMock;
 		private Mock<IApplicationGuidFinder> _appGuidFinderMock;
 		private Mock<IDataProviderFactoryFactory> _dataProviderFactoryFactoryMock;
+		private Mock<IAPILog> _loggerFake;
 
 		private RipProviderInstaller _sut;
 
 		private SourceProvider _sourceProviderToCreate;
-		private global::Relativity.IntegrationPoints.Contracts.SourceProvider[] _sourceProvidersToCreate;
+		private SourceProvider[] _sourceProvidersToCreate;
 		private Guid _existingProviderApplicationGuid;
 
 		[SetUp]
 		public void SetUp()
 		{
-			var loggerMock = new Mock<IAPILog>();
-
 			_sourceProviderRepositoryMock = new Mock<ISourceProviderRepository>();
 			_appGuidFinderMock = new Mock<IApplicationGuidFinder>();
 			_dataProviderFactoryFactoryMock = new Mock<IDataProviderFactoryFactory>();
+			_loggerFake = new Mock<IAPILog>();
 
 			_sut = new RipProviderInstaller(
-				loggerMock.Object,
+				_loggerFake.Object,
 				_sourceProviderRepositoryMock.Object,
 				_appGuidFinderMock.Object,
 				_dataProviderFactoryFactoryMock.Object
@@ -193,6 +193,37 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
 			// assert
 			result.Should().BeLeft("Argument 'providersToInstall' cannot be null", "because providers were null");
+		}
+
+		[Test]
+		public void ShouldNotFailWhenThereIsDuplicatedSourceProvider()
+		{
+			// arrange
+			const int numberOfDuplicates = 2;
+			_sourceProviderRepositoryMock.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>()))
+				.ReturnsAsync(
+					Enumerable
+						.Repeat(_existingProviderApplicationGuid, numberOfDuplicates)
+						.Select(x => new Data.SourceProvider()
+						{
+							Identifier = x.ToString()
+						})
+						.ToList()
+				);
+
+			RipProviderInstaller sut = new RipProviderInstaller(
+				_loggerFake.Object,
+				_sourceProviderRepositoryMock.Object,
+				_appGuidFinderMock.Object,
+				_dataProviderFactoryFactoryMock.Object
+			);
+
+			// act
+			Func<Task<Either<string, Unit>>> action = () => sut.InstallProvidersAsync(_sourceProvidersToCreate);
+
+			// assert
+			action.ShouldNotThrow();
+			_loggerFake.Verify(x => x.LogWarning("There are duplicated entries in SourceProvider database table."));
 		}
 
 		private void SetupDataProviderFactoryFactory(Exception exceptionToThrow = null)
