@@ -40,6 +40,8 @@ namespace kCura.IntegrationPoints.Core.Provider
                 return $"Argument '{nameof(providersToInstall)}' cannot be null";
             }
 
+            _logger.LogInformation("Installing Source Providers");
+
             try
             {
                 return await InstallProvidersInternalAsync(providersToInstall).ConfigureAwait(false);
@@ -77,6 +79,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         {
             foreach (global::Relativity.IntegrationPoints.Contracts.SourceProvider provider in providersToInstall)
             {
+                _logger.LogInformation("Installing Source Provider GUID: {guid}", provider.GUID);
                 Either<string, Unit> installProviderResult = await InstallProviderAsync(dataProviderFactory, provider).ConfigureAwait(false);
                 if (installProviderResult.IsLeft)
                 {
@@ -157,6 +160,8 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private Either<string, Unit> UpdateExistingProvider(SourceProvider existingProviderDto, global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
+            _logger.LogInformation("Updating existing provider GUID: {guid}", existingProviderDto.Identifier);
+
             existingProviderDto.Name = provider.Name;
             existingProviderDto.SourceConfigurationUrl = provider.Url;
             existingProviderDto.ViewConfigurationUrl = provider.ViewDataUrl;
@@ -181,6 +186,8 @@ namespace kCura.IntegrationPoints.Core.Provider
             {
                 return "Cannot add null provider";
             }
+
+            _logger.LogInformation("Adding Source Provider GUID: {guid}", newProvider.GUID);
 
             var providerDto = new SourceProvider
             {
