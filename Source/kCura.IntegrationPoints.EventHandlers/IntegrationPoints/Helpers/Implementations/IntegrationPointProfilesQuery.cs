@@ -79,16 +79,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return integrationPointProfiles;
 		}
 
-		public async Task<IEnumerable<int>> CheckIfProfilesExist(int workspaceID, IEnumerable<int> artifactIds)
+		public async Task<IEnumerable<int>> CheckIfProfilesExistAsync(int workspaceID, IEnumerable<int> artifactIds)
 		{
-			if (!artifactIds.Any())
+			List<int> artifactIdsList = artifactIds.ToList();
+
+			if (!artifactIdsList.Any())
 			{
 				return Enumerable.Empty<int>();
 			}
 
 			var queryRequest = new QueryRequest
 			{
-				Condition = $"'ArtifactId' in [{string.Join(", ", artifactIds)}]",
+				Condition = $"'ArtifactId' in [{string.Join(", ", artifactIdsList)}]",
 				Fields = new FieldRef[0]
 			};
 
@@ -147,25 +149,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				   !isProductionSelectedAsSourceOrDestination;
 		}
 
-		public Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
+		public async Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
 		{
-			return GetSingleObjectArtifactIDByStringFieldValueAsync<DestinationProvider>(workspaceID,
+			return await GetSingleObjectArtifactIDByStringFieldValueAsync<DestinationProvider>(workspaceID,
 				destinationProvider => destinationProvider.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY).ConfigureAwait(false);
 		}
 
-		public Task<int> GetSyncSourceProviderArtifactIDAsync(int workspaceID)
+		public async Task<int> GetSyncSourceProviderArtifactIDAsync(int workspaceID)
 		{
-			return GetSingleObjectArtifactIDByStringFieldValueAsync<SourceProvider>(workspaceID,
+			return await GetSingleObjectArtifactIDByStringFieldValueAsync<SourceProvider>(workspaceID,
 				sourceProvider => sourceProvider.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY).ConfigureAwait(false);
 		}
 
-		public Task<int> GetIntegrationPointExportTypeArtifactIDAsync(int workspaceID)
+		public async Task<int> GetIntegrationPointExportTypeArtifactIDAsync(int workspaceID)
 		{
-			return GetSingleObjectArtifactIDByStringFieldValueAsync<IntegrationPointType>(workspaceID,
+			return await GetSingleObjectArtifactIDByStringFieldValueAsync<IntegrationPointType>(workspaceID,
 				type => type.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
+				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ConfigureAwait(false);
 		}
 
 		private async Task<int> GetSingleObjectArtifactIDByStringFieldValueAsync<TSource>(int workspaceID,
@@ -175,7 +177,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceID, propertySelector, fieldValue)
 				.ConfigureAwait(false);
 
-			int artifactID = objectsArtifactIDs.Single();
+			int artifactID = objectsArtifactIDs.First();
 			return artifactID;
 		}
 
