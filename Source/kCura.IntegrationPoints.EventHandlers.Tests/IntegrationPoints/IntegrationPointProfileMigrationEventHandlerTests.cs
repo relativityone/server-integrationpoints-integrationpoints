@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(true);
 
 			_integrationPointProfilesQueryFake
-				.Setup(x => x.CheckIfProfilesExist(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+				.Setup(x => x.CheckIfProfilesExistAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
 				.ReturnsAsync(ProfilesToModifyArtifactIds(syncProfilesCount).Skip(1).Select(x => x.ArtifactId));
 
 			// Act
@@ -290,7 +290,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 			IEnumerable<int> profilesToDelete_SkipOne = ProfilesToDeleteArtifactIDs(nonSyncProfilesCount).Skip(1).Select(x => x.ArtifactId);
 			_integrationPointProfilesQueryFake
-				.Setup(x => x.CheckIfProfilesExist(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+				.Setup(x => x.CheckIfProfilesExistAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
 				.ReturnsAsync(profilesToDelete_SkipOne);
 
 			// Act
@@ -349,7 +349,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.ReturnsAsync(allProfiles);
 
 			_integrationPointProfilesQueryFake.Setup(x =>
-					x.CheckIfProfilesExist(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
+					x.CheckIfProfilesExistAsync(_CREATED_WORKSPACE_ARTIFACT_ID, It.IsAny<IEnumerable<int>>()))
 				.ReturnsAsync(profilesToUpdate.Concat(profilesToDelete).Select(x => x.ArtifactId));
 
 			_integrationPointProfilesQueryFake
