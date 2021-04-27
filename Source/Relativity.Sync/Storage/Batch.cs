@@ -7,7 +7,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
@@ -87,6 +86,13 @@ namespace Relativity.Sync.Storage
 		{
 			await UpdateFieldValueAsync(TaggedItemsCountGuid, taggedItemsCount).ConfigureAwait(false);
 			TaggedItemsCount = taggedItemsCount;
+		}
+
+		public async Task SetStartingIndexAsync(int newStartIndex)
+		{
+			await UpdateFieldValueAsync(StartingIndexGuid, newStartIndex).ConfigureAwait(false);
+
+			StartingIndex = newStartIndex;
 		}
 
 		private async Task CreateAsync(int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)

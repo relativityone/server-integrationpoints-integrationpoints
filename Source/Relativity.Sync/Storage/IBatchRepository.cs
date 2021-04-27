@@ -37,7 +37,7 @@ namespace Relativity.Sync.Storage
 		Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId);
 
 		/// <summary>
-		/// Returns all batches that has not been started yet (have status New).
+		/// Returns all batches that have not been finished - first Paused, then New.
 		/// </summary>
 		Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int workspaceArtifactId, int syncConfigurationId);
 

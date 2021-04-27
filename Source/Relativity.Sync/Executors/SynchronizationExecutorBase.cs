@@ -131,12 +131,12 @@ namespace Relativity.Sync.Executors
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 						IStopwatch batchTimer = GetStartedTimer();
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.StopCancellationToken).ConfigureAwait(false))
+						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.AnyReasonCancellationToken).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
 							{
 								IStopwatch importApiTimer = GetStartedTimer();
-								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token.StopCancellationToken).ConfigureAwait(false);
+								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
 								importApiTimer.Stop();
 
 								Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
@@ -210,27 +210,70 @@ namespace Relativity.Sync.Executors
 				return ExecutionResult.Canceled();
 			}
 
+			if (executionResults.Any(x => x.Status == ExecutionStatus.Paused))
+			{
+				return ExecutionResult.Paused();
+			}
+
 			return null;
 		}
 
-		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CancellationToken token)
+		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CompositeCancellationToken token)
 		{
 			BatchProcessResult batchProcessResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
 
+			await SetBatchStatusAsync(batch, batchProcessResult.ExecutionResult.Status).ConfigureAwait(false);
+			
 			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
-			await batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
+			await batch.SetFailedItemsCountAsync(batch.FailedItemsCount + failedItemsCount).ConfigureAwait(false);
 
 			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
-			await batch.SetTransferredItemsCountAsync(processedItemsCount).ConfigureAwait(false);
+			await batch.SetTransferredItemsCountAsync(batch.TransferredItemsCount + processedItemsCount).ConfigureAwait(false);
+
+			if (batch.Status == BatchStatus.Paused)
+			{
+				await batch.SetStartingIndexAsync(batch.StartingIndex + failedItemsCount + processedItemsCount).ConfigureAwait(false);
+			}
 
 			batchProcessResult.TotalRecordsRequested = batch.TotalItemsCount;
-			batchProcessResult.TotalRecordsTransferred = processedItemsCount;
-			batchProcessResult.TotalRecordsFailed = failedItemsCount;
+			batchProcessResult.TotalRecordsTransferred = batch.TransferredItemsCount;
+			batchProcessResult.TotalRecordsFailed = batch.FailedItemsCount;
 
 			return batchProcessResult;
 		}
 
-		private async Task<BatchProcessResult> RunImportJobAsync(IImportJob importJob, CancellationToken token)
+		private Task SetBatchStatusAsync(IBatch batch, ExecutionStatus executionResultStatus)
+		{
+			BatchStatus status = BatchStatus.New;
+			switch (executionResultStatus)
+			{
+				case ExecutionStatus.Canceled:
+					status = BatchStatus.Cancelled;
+					break;
+				case ExecutionStatus.Completed:
+					status = BatchStatus.Completed;
+					break;
+				case ExecutionStatus.CompletedWithErrors:
+					status = BatchStatus.CompletedWithErrors;
+					break;
+				case ExecutionStatus.Failed:
+					status = BatchStatus.Failed;
+					break;
+				
+				case ExecutionStatus.Paused:
+					status = BatchStatus.Paused;
+					break;
+				case ExecutionStatus.Skipped:
+				case ExecutionStatus.None:
+					status = BatchStatus.New;
+					break;
+			}
+			
+			_logger.LogInformation("Setting status {status} for batch {batchId}", status, batch.ArtifactId);
+			return batch.SetStatusAsync(status);
+		}
+
+		private async Task<BatchProcessResult> RunImportJobAsync(IImportJob importJob, CompositeCancellationToken token)
 		{
 			ImportJobResult importJobResult = await importJob.RunAsync(token).ConfigureAwait(false);
 
