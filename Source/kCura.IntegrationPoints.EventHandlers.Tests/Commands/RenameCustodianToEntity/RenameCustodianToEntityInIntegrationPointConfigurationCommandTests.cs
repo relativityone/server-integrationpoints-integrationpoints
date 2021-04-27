@@ -1,8 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity;
 using Moq;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianToEntity
@@ -10,48 +17,50 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianTo
 	[TestFixture]
 	public class RenameCustodianToEntityInIntegrationPointConfigurationCommandTests
 	{
-		private Mock<IIntegrationPointForSourceService> _integrationPointForSourceService;
-		private Mock<IIntegrationPointService> _integrationPointService;
+		private RenameCustodianToEntityInIntegrationPointConfigurationCommand _sut;
+
+		private Mock<IEHHelper> _helperFake;
+		private Mock<IRelativityObjectManager> _relativityObjectManagerMock;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_integrationPointForSourceService = new Mock<IIntegrationPointForSourceService>();
-			_integrationPointService = new Mock<IIntegrationPointService>();
+			IAPILog log = Substitute.For<IAPILog>();
 
-			var emptyIntegrationPointsList = new List<Data.IntegrationPoint>();
-			_integrationPointForSourceService.Setup(service => service.GetAllForSourceProvider(It.IsAny<string>()))
-				.Returns(emptyIntegrationPointsList);
+			Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
+			logFactory.Setup(x => x.GetLogger()).Returns(log);
+
+			_helperFake = new Mock<IEHHelper>();
+			_helperFake.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
+
+			_relativityObjectManagerMock = new Mock<IRelativityObjectManager>();
+			_relativityObjectManagerMock.Setup(x => x.Query<SourceProvider>(It.IsAny<QueryRequest>(), ExecutionIdentity.System))
+				.Returns(new List<SourceProvider>());
+
+			_sut = new RenameCustodianToEntityInIntegrationPointConfigurationCommand(_helperFake.Object, _relativityObjectManagerMock.Object);
 		}
 
 		[Test]
 		public void ItShouldProcessIntegrationPointForAllNecessaryProviders()
 		{
 			// arrange
-			RenameCustodianToEntityInIntegrationPointConfigurationCommand sut = CreateSut();
-
-			// act
-			sut.Execute();
-
-			// assert
 			string[] expectedSourceProviders =
 			{
 				Constants.IntegrationPoints.SourceProviders.LDAP,
 				Constants.IntegrationPoints.SourceProviders.FTP,
 				Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE
 			};
+
+			// act
+			_sut.Execute();
+
+			// assert
 			foreach (string provider in expectedSourceProviders)
 			{
-				_integrationPointForSourceService.Verify(
-					service => service.GetAllForSourceProvider(provider),
-					Times.Once,
-					$"Integration Point for provider: {provider} should be processed.");
+				_relativityObjectManagerMock.Verify(
+					x => x.Query<SourceProvider>(It.Is<QueryRequest>(q => q.Condition.Contains(provider)), It.IsAny<ExecutionIdentity>()),
+					Times.Once);
 			}
-		}
-
-		private RenameCustodianToEntityInIntegrationPointConfigurationCommand CreateSut()
-		{
-			return new RenameCustodianToEntityInIntegrationPointConfigurationCommand(_integrationPointForSourceService.Object, _integrationPointService.Object);
 		}
 	}
 }

@@ -1,119 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.Commands;
+using Moq;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Choice = kCura.Relativity.Client.DTOs.Choice;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 {
 	public abstract class UpdateConfigurationCommandTestsBase : TestBase
 	{
-		protected abstract string ExpectedProviderType { get; }
+		private Mock<IExportQueryResult> _exportQueryResultFake;
 
-		protected IIntegrationPointForSourceService IntegrationPointForSourceService { get; set; }
-		protected IIntegrationPointService IntegrationPointService { get; set; }
-		protected Data.IntegrationPoint IntegrationPointWithoutSecuredConfiguration { get; set; }
-		protected Data.IntegrationPoint IntegrationPointWithSecuredConfiguration { get; set; }
+		protected Mock<IEHHelper> EHHelperFake { get; set; }
+		protected Mock<IRelativityObjectManager> RelativityObjectManagerMock { get;set; }
+		protected Mock<IObjectManager> ObjectManagerMock { get; set; }
 
-		protected IEHCommand Command { get; set; }
+		protected abstract List<string> Names { get; }
 
 		public override void SetUp()
 		{
-			IntegrationPointForSourceService = Substitute.For<IIntegrationPointForSourceService>();
-			IntegrationPointService = Substitute.For<IIntegrationPointService>();
+			_exportQueryResultFake = new Mock<IExportQueryResult>();
 
-			IntegrationPointWithoutSecuredConfiguration = new Data.IntegrationPoint
+			RelativityObjectManagerMock = new Mock<IRelativityObjectManager>();
+			RelativityObjectManagerMock.Setup(x => x.QueryWithExportAsync(
+				It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<ExecutionIdentity>())).ReturnsAsync(_exportQueryResultFake.Object);
+
+			ObjectManagerMock = new Mock<IObjectManager>();
+			ObjectManagerMock.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdatePerObjectsRequest>()))
+				.Returns(Task.FromResult(new MassUpdateResult()));
+
+			Mock<IServicesMgr> servicesMgrFake = new Mock<IServicesMgr>();
+			servicesMgrFake.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(ObjectManagerMock.Object);
+
+			IAPILog log = Substitute.For<IAPILog>();
+
+			Mock<ILogFactory> logFactoryFake = new Mock<ILogFactory>();
+			logFactoryFake.Setup(x => x.GetLogger()).Returns(log);
+
+			EHHelperFake = new Mock<IEHHelper>();
+			EHHelperFake.Setup(x => x.GetLoggerFactory()).Returns(logFactoryFake.Object);
+			EHHelperFake.Setup(x => x.GetServicesManager()).Returns(servicesMgrFake.Object);
+		}
+
+		protected void ShouldNotBeUpdated()
+		{
+			ObjectManagerMock.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdatePerObjectsRequest>()), Times.Never);
+		}
+
+		protected void ShouldBeUpdated(RelativityObjectSlim objectSlim)
+		{
+			ObjectManagerMock.Verify(m => m.UpdateAsync(It.IsAny<int>(),
+				It.IsAny<MassUpdatePerObjectsRequest>()), Times.Once);
+
+			ObjectManagerMock.Verify(m => m.UpdateAsync(It.IsAny<int>(),
+				It.Is<MassUpdatePerObjectsRequest>(x => x.ObjectValues[0].Values.SequenceEqual(objectSlim.Values))),
+				Times.Once);
+		}
+
+		protected virtual void SetupRead(RelativityObjectSlim value)
+		{
+			_exportQueryResultFake.Setup(x => x.ExportResult).Returns(new ExportInitializationResults
 			{
-				ArtifactId = 1,
-				Name = "Name",
-				OverwriteFields = new Choice(1) { Name = "Name" },
-				SourceConfiguration = "",
-				SourceProvider = 1,
-				Type = 1,
-				DestinationConfiguration = "",
-				FieldMappings = "",
-				EnableScheduler = false,
-				DestinationProvider = 1,
-				LogErrors = true,
-				HasErrors = false,
-				EmailNotificationRecipients = "",
-				LastRuntimeUTC = DateTime.UtcNow,
-				NextScheduledRuntimeUTC = DateTime.UtcNow,
-				SecuredConfiguration = "",
-				ScheduleRule = ""
-			};
+				FieldData = Names.Select(x => new FieldMetadata { Name = x }).ToList()
+			});
 
-			IntegrationPointWithSecuredConfiguration =
-				new Data.IntegrationPoint
-				{
-					ArtifactId = 1,
-					Name = "Name",
-					OverwriteFields = new Choice(1) { Name = "Name" },
-					SourceConfiguration = "",
-					SourceProvider = 1,
-					Type = 1,
-					DestinationConfiguration = "",
-					FieldMappings = "",
-					EnableScheduler = false,
-					DestinationProvider = 1,
-					LogErrors = true,
-					HasErrors = false,
-					EmailNotificationRecipients = "",
-					LastRuntimeUTC = DateTime.UtcNow,
-					NextScheduledRuntimeUTC = DateTime.UtcNow,
-					SecuredConfiguration = "securedConfiguration",
-					ScheduleRule = ""
-				};
+			_exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<int>()))
+				.ReturnsAsync(new List<RelativityObjectSlim> { value });
+
+			RelativityObjectManagerMock.Setup(x => x.Query<SourceProvider>(It.IsAny<QueryRequest>(), ExecutionIdentity.System))
+				.Returns(new List<SourceProvider> { new SourceProvider() });
 		}
-
-		protected virtual void ShouldProcessAllValidIntegrationPoints(int expectedNumberOfUpdates)
-		{
-			IntegrationPointForSourceService.GetAllForSourceProvider(Arg.Is(ExpectedProviderType))
-				.Returns(new List<Data.IntegrationPoint>
-				{
-					IntegrationPointWithoutSecuredConfiguration,
-					IntegrationPointWithoutSecuredConfiguration,
-					IntegrationPointWithSecuredConfiguration,
-					IntegrationPointWithoutSecuredConfiguration,
-					IntegrationPointWithSecuredConfiguration
-				});
-
-			Command.Execute();
-
-			IntegrationPointService.ReceivedWithAnyArgs(expectedNumberOfUpdates).SaveIntegration(null);
-		}
-
-		[Test]
-		public void ShouldThrowWhenRetrievingIntegrationPointsThrow()
-		{
-			IntegrationPointForSourceService.GetAllForSourceProvider(Arg.Is(ExpectedProviderType)).Throws<TimeoutException>();
-
-			Assert.Throws<TimeoutException>(Command.Execute);
-		}
-
-		[Test]
-		public void ShouldNotThrowWhenNoIntegrationPointsAreReturned()
-		{
-			IntegrationPointForSourceService.GetAllForSourceProvider(Arg.Is(ExpectedProviderType)).Returns(new List<Data.IntegrationPoint>());
-
-			Command.Execute();
-		}
-
-		[Test]
-		public void ShouldQueryForCorrectProvider()
-		{
-			IntegrationPointForSourceService.GetAllForSourceProvider(Arg.Any<string>()).Returns(new List<Data.IntegrationPoint>());
-
-			Command.Execute();
-
-			IntegrationPointForSourceService.Received(1).GetAllForSourceProvider(Arg.Is(ExpectedProviderType));
-		}
-
-		[Test]
-		public abstract void ShouldProcessAllValidIntegrationPoints();
 	}
 }

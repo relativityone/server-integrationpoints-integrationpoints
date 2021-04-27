@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 			int sourceProviderArtifactID,
 			int destinationProviderArtifactID);
 		IList<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds);
-		IList<IntegrationPoint> GetIntegrationPointsWithAllFields(List<int> sourceProviderIds);
 		IList<IntegrationPoint> GetAllIntegrationPoints();
 		IList<IntegrationPoint> GetIntegrationPointsWithAllFields();
 	}

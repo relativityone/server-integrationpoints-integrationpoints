@@ -178,15 +178,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return Query(_workspaceID, sourceProviderQuery);
 		}
 
-		public IList<IntegrationPoint> GetIntegrationPointsWithAllFields(List<int> sourceProviderIds)
-		{
-			IList<IntegrationPoint> integrationPointsWithoutFields = GetIntegrationPointsWithoutFields(sourceProviderIds);
-
-			return integrationPointsWithoutFields
-				.Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
-				.ToList();
-		}
-
 		public IList<IntegrationPoint> GetAllIntegrationPoints()
 		{
 			var query = new QueryRequest()
@@ -211,13 +202,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new QueryRequest();
 
 			return Query(_workspaceID, query);
-		}
-
-		private IList<IntegrationPoint> GetIntegrationPointsWithoutFields(List<int> sourceProviderIds)
-		{
-			QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
-
-			return Query(_workspaceID, sourceProviderQuery);
 		}
 
 		private IEnumerable<FieldRef> GetFields()
