@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
 			return Task.FromResult(_batches.Last());
 		}
 
-		public Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId)
+		public Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int workspaceArtifactId, int syncConfigurationId)
 		{
 			throw new NotImplementedException();
 		}

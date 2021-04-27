@@ -47,6 +47,12 @@ namespace Relativity.Sync
 		/// The batch was cancelled by an external entity.
 		/// </summary>
 		[Description("Cancelled")]
-		Cancelled
+		Cancelled,
+		
+		/// <summary>
+		/// Batch was paused due to job drain-stop
+		/// </summary>
+		[Description("Paused")]
+		Paused
 	}
 }

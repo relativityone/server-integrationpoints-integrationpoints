@@ -39,7 +39,7 @@ namespace Relativity.Sync.Storage
 		/// <summary>
 		/// Returns all batches that has not been started yet (have status New).
 		/// </summary>
-		Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId);
+		Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int workspaceArtifactId, int syncConfigurationId);
 
 		/// <summary>
 		/// Returns batch with lowest starting index higher than given one. Null if no such batch found.

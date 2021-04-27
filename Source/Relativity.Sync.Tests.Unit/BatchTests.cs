@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.UI;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -171,29 +172,20 @@ namespace Relativity.Sync.Tests.Unit
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
 		private static QueryResult PrepareQueryResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1)
+			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? artifactId = null)
 		{
 			QueryResult readResult = new QueryResult
 			{
 				Objects = new List<RelativityObject>()
 				{
-					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy, taggedItemsCount)
+					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy, taggedItemsCount, artifactId)
 				}
 			};
+
+			readResult.TotalCount = readResult.Objects.Count();
 			return readResult;
 		}
-
-		private static QueryResult PrepareQueryResult()
-		{
-			return new QueryResult
-			{
-				Objects = new List<RelativityObject>
-				{
-					PrepareObject()
-				}
-			};
-		}
-
+		
 		private static QueryResultSlim PrepareQueryResultSlim()
 		{
 			return new QueryResultSlim
@@ -207,12 +199,12 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "New", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1)
+			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? artifactId = null)
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
 			return new RelativityObject
 			{
-				ArtifactID = _ARTIFACT_ID,
+				ArtifactID = artifactId ?? _ARTIFACT_ID,
 				FieldValues = new List<FieldValuePair>
 				{
 					new FieldValuePair
@@ -607,21 +599,20 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task GetAllNewBatchesIdsAsync_ShouldReturnAnyNewBatchIds()
+		public async Task GetAllBatchesIdsToExecuteAsync_ShouldReturnPausedAndThenNewBatchIds()
 		{
 			// Arrange
-			QueryResult queryResult = PrepareQueryResult();
-			queryResult.TotalCount = 1;
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(r => r.Condition.Contains("New")), 1, int.MaxValue)).ReturnsAsync(PrepareQueryResult(status: BatchStatus.New.GetDescription(), artifactId: 1));
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(r => r.Condition.Contains("Paused")), 1, int.MaxValue)).ReturnsAsync(PrepareQueryResult(status: BatchStatus.Paused.GetDescription(), artifactId: 2));
 
 			// Act
-			IEnumerable<int> batchIds = await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			// Assert
 			batchIds.Should().NotBeNullOrEmpty();
-			batchIds.Any().Should().BeTrue();
+			batchIds.Should().ContainInOrder(new[] {2, 1});
 
-			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
+			VerifyQueryAllRequests();
 		}
 
 		[Test]
@@ -632,14 +623,14 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
 
 			// Act
-			IEnumerable<int> batchIds = await _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			// Assert
 			batchIds.Should().NotBeNull();
 			batchIds.Should().BeEmpty();
 			batchIds.Any().Should().BeFalse();
 
-			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
+			VerifyQueryAllRequests();
 		}
 
 		[Test]
@@ -649,9 +640,9 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).Throws<NotAuthorizedException>();
 
 			// Act & Assert
-			Assert.ThrowsAsync<NotAuthorizedException>(() => _batchRepository.GetAllNewBatchesIdsAsync(_WORKSPACE_ID, _ARTIFACT_ID));
+			Assert.ThrowsAsync<NotAuthorizedException>(() => _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID));
 
-			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryAllNewRequest(rr)), 1, int.MaxValue), Times.Once);
+			VerifyQueryAllRequests();
 		}
 
 		[Test]
@@ -753,12 +744,18 @@ namespace Relativity.Sync.Tests.Unit
 				request.ObjectIdentificationCriteria.ObjectType.Guid == BatchObjectTypeGuid &&
 				request.ObjectIdentificationCriteria.Condition == $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}";
 		}
-
-		private bool AssertQueryAllNewRequest(QueryRequest queryRequest)
+		
+		private void VerifyQueryAllRequests()
 		{
-			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == 'New'");
-			return true;
+			void VerifyStatusWasRead(BatchStatus status)
+			{
+				string expectedCondition =
+					$"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == '{status.GetDescription()}'";
+				_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => rr.ObjectType.Guid == BatchObjectTypeGuid && rr.Condition == expectedCondition), 1, int.MaxValue), Times.Once);
+			}
+			
+			VerifyStatusWasRead(BatchStatus.Paused);
+			VerifyStatusWasRead(BatchStatus.New);
 		}
 	}
 }

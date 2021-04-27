@@ -154,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
 			IEnumerable<int> batches = new[] { 1 };
-			_batchRepositoryMock.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			_batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
 			Mock<IBatch> batchFake = new Mock<IBatch>();
 			batchFake.SetupGet(x => x.TotalItemsCount).Returns(totalRecordsRequested);
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchFake.Object);
@@ -202,7 +202,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CancellationToken>())).ReturnsAsync(importJob);
 
 			IEnumerable<int> batches = new[] { 1 };
-			_batchRepositoryMock.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			_batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
 			Mock<IBatch> batchFake = new Mock<IBatch>();
 			batchFake.SetupGet(x => x.TotalItemsCount).Returns(totalRecordsRequested);
 
@@ -651,7 +651,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			IEnumerable<int> batches = Enumerable.Repeat(1, numberOfBatches);
 
-			_batchRepositoryMock.Setup(x => x.GetAllNewBatchesIdsAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
+			_batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batches);
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((new Mock<IBatch>()).Object);
 		}
 
