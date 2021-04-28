@@ -55,6 +55,14 @@ namespace Relativity.Sync
 		{
 			return new ExecutionResult(ExecutionStatus.Skipped, string.Empty, null);
 		}
+		
+		/// <summary>
+		/// Creates a <see cref="ExecutionResult"/> for a paused operation.
+		/// </summary>
+		public static ExecutionResult Paused()
+		{
+			return new ExecutionResult(ExecutionStatus.Paused, string.Empty, null);
+		}
 
 		/// <summary>
 		/// Status of the execution. <see cref="Exception"/> and <see cref="Message"/> will only have meaningful

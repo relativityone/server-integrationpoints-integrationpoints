@@ -20,6 +20,9 @@ namespace Relativity.Sync
 		Skipped,
 
 		[Description("Failed")]
-		Failed
+		Failed,
+		
+		[Description("Paused")]
+		Paused
 	}
 }

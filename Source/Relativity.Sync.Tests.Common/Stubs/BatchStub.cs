@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
-namespace Relativity.Sync.Tests.System.Core.Stubs
+namespace Relativity.Sync.Tests.Common.Stubs
 {
 	internal sealed class BatchStub : IBatch
 	{
@@ -16,11 +16,11 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
 
 		public int TotalItemsCount { get; }
 
-		public int StartingIndex { get; }
+		public int StartingIndex { get; set; }
 
-		public int FailedItemsCount { get; private set; }
+		public int FailedItemsCount { get; internal set; }
 
-		public int TransferredItemsCount { get; private set; }
+		public int TransferredItemsCount { get; internal set; }
 
 		public string LockedBy { get; private set; }
 
@@ -57,6 +57,12 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
 		public Task SetTaggedItemsCountAsync(int taggedItemsCount)
 		{
 			TaggedItemsCount = taggedItemsCount;
+			return Task.CompletedTask;
+		}
+
+		public Task SetStartingIndexAsync(int newStartIndex)
+		{
+			StartingIndex = newStartIndex;
 			return Task.CompletedTask;
 		}
 

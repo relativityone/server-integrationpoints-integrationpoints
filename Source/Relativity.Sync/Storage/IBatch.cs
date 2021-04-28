@@ -20,5 +20,6 @@ namespace Relativity.Sync.Storage
 		Task SetStatusAsync(BatchStatus status);
 		Task SetTransferredItemsCountAsync(int transferredItemsCount);
 		Task SetTaggedItemsCountAsync(int taggedItemsCount);
+		Task SetStartingIndexAsync(int newStartIndex);
 	}
 }

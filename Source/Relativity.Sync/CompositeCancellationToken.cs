@@ -15,12 +15,18 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Regular cancellation token, that should be used to stop a job (e.g. requested by user)
 		/// </summary>
-		public CancellationToken StopCancellationToken { get; set; }
+		public CancellationToken StopCancellationToken { get; }
 
 		/// <summary>
 		/// Cancellation token that signals a job to suspend (e.g. drain-stop)
 		/// </summary>
-		public CancellationToken DrainStopCancellationToken { get; set; }
+		public CancellationToken DrainStopCancellationToken { get;  }
+
+
+		/// <summary>
+		/// Cancellation token that signals either cancel or drain stop
+		/// </summary>
+		public CancellationToken AnyReasonCancellationToken { get; }
 
 		/// <summary>
 		/// Gets the value that indicates if regular stop has been triggered.
@@ -39,6 +45,13 @@ namespace Relativity.Sync
 		{
 			StopCancellationToken = stopCancellationToken;
 			DrainStopCancellationToken = drainStopCancellationToken;
+
+			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+			StopCancellationToken.Register(() => cancellationTokenSource.Cancel());
+			DrainStopCancellationToken.Register(() => cancellationTokenSource.Cancel());
+
+			AnyReasonCancellationToken = cancellationTokenSource.Token;
 		}
 	}
 }

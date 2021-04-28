@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -58,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit
 			});
 
 			// act
-			ImportJobResult importJobResult = await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			ImportJobResult importJobResult = await _importJob.RunAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			importJobResult.ExecutionResult.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
@@ -79,7 +76,7 @@ namespace Relativity.Sync.Tests.Unit
 			});
 
 			// act
-			ImportJobResult importJobResult = await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			ImportJobResult importJobResult = await _importJob.RunAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			importJobResult.ExecutionResult.Status.Should().Be(ExecutionStatus.Failed);
@@ -100,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit
 			});
 
 			// act
-			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			await _importJob.RunAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_semaphore.Verify(x => x.Release(), Times.Once);
@@ -115,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit
 			});
 
 			// act
-			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			await _importJob.RunAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_semaphore.Verify(x => x.Release(), Times.Once);
@@ -131,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit
 			});
 
 			// act
-			await _importJob.RunAsync(CancellationToken.None).ConfigureAwait(false);
+			await _importJob.RunAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_semaphore.Verify(x => x.Release(), Times.Once);
@@ -143,7 +140,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncImportBulkArtifactJob.Setup(x => x.Execute()).Raises(x => x.OnComplete += null, CreateJobReport());
 
 			// act
-			Func<Task<ImportJobResult>> action = () => _importJob.RunAsync(CancellationToken.None);
+			Func<Task<ImportJobResult>> action = () => _importJob.RunAsync(CompositeCancellationToken.None);
 
 			// assert
 			action.Should().NotThrow();
@@ -154,14 +151,55 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldNotThrowExceptionWhenCanceled()
 		{
-			CancellationTokenSource token = new CancellationTokenSource();
-			token.Cancel();
+			CancellationTokenSource stopCancellationTokenSource = new CancellationTokenSource();
+			stopCancellationTokenSource.Cancel();
 
 			// act
-			Func<Task> action = () => _importJob.RunAsync(token.Token);
+			Func<Task> action = () => _importJob.RunAsync(new CompositeCancellationToken(stopCancellationTokenSource.Token, CancellationToken.None));
 
 			// assert
 			action.Should().NotThrow<OperationCanceledException>();
+		}
+		
+		[Test]
+		public void ItShouldNotThrowExceptionWhenPausedBeforeExecution()
+		{
+			CancellationTokenSource drainStopCancellationTokenSource = new CancellationTokenSource();
+			drainStopCancellationTokenSource.Cancel();
+
+			// act
+			Func<Task> action = () => _importJob.RunAsync(new CompositeCancellationToken(CancellationToken.None, drainStopCancellationTokenSource.Token));
+
+			// assert
+			action.Should().NotThrow<OperationCanceledException>();
+		}
+		
+		[Test]
+		public async Task ItShouldNotExecuteImportJob_WhenCancelledBeforeExecution()
+		{
+			// Arrange
+			CancellationTokenSource stopCancellationTokenSource = new CancellationTokenSource();
+			stopCancellationTokenSource.Cancel();
+
+			// Act
+			await _importJob.RunAsync(new CompositeCancellationToken(stopCancellationTokenSource.Token, CancellationToken.None));
+
+			// Assert
+			_syncImportBulkArtifactJob.Verify(x => x.Execute(), Times.Never);
+		}
+		
+		[Test]
+		public async Task ItShouldNotExecuteImportJob_WhenDrainStoppedBeforeExecution()
+		{
+			// Arrange
+			CancellationTokenSource drainStopCancellationTokenSource = new CancellationTokenSource();
+			drainStopCancellationTokenSource.Cancel();
+
+			// Act
+			await _importJob.RunAsync(new CompositeCancellationToken(CancellationToken.None, drainStopCancellationTokenSource.Token));
+
+			// Assert
+			_syncImportBulkArtifactJob.Verify(x => x.Execute(), Times.Never);
 		}
 
 		[Test]
