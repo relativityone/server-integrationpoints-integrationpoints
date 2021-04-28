@@ -147,7 +147,7 @@ namespace Relativity.Sync.Executors
 		{
 			ExecutionResult executionResult = ExecutionResult.Success();
 
-			if (token.StopCancellationToken.IsCancellationRequested)
+			if (token.IsStopRequested)
 			{
 				executionResult = ExecutionResult.Canceled();
 				return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());

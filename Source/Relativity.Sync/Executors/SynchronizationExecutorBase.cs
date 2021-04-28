@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
@@ -244,31 +245,8 @@ namespace Relativity.Sync.Executors
 
 		private Task SetBatchStatusAsync(IBatch batch, ExecutionStatus executionResultStatus)
 		{
-			BatchStatus status = BatchStatus.New;
-			switch (executionResultStatus)
-			{
-				case ExecutionStatus.Canceled:
-					status = BatchStatus.Cancelled;
-					break;
-				case ExecutionStatus.Completed:
-					status = BatchStatus.Completed;
-					break;
-				case ExecutionStatus.CompletedWithErrors:
-					status = BatchStatus.CompletedWithErrors;
-					break;
-				case ExecutionStatus.Failed:
-					status = BatchStatus.Failed;
-					break;
-				
-				case ExecutionStatus.Paused:
-					status = BatchStatus.Paused;
-					break;
-				case ExecutionStatus.Skipped:
-				case ExecutionStatus.None:
-					status = BatchStatus.New;
-					break;
-			}
-			
+			BatchStatus status = executionResultStatus.ToBatchStatus();
+
 			_logger.LogInformation("Setting status {status} for batch {batchId}", status, batch.ArtifactId);
 			return batch.SetStatusAsync(status);
 		}
