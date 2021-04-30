@@ -5,6 +5,7 @@ Relativity.API
 Relativity.Services.Interfaces
 Polly
 Relativity.Toggles
+Relativity.OutsideIn
 kCura.OutsideIn.FI.Win32
 
 Relativity.Kepler.Service

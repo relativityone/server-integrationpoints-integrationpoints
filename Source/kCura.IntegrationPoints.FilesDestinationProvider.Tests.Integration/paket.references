@@ -12,6 +12,7 @@ Relativity.Toggles
 System.Reactive
 NSubstitute
 relativity.testing.identification
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll

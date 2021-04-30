@@ -9,6 +9,7 @@ Relativity.Telemetry.MetricsCollection
 Relativity.Vfs.IO
 Relativity.DataTransfer.MessageService
 Relativity.AutomatedWorkflows.Services.Interfaces
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
