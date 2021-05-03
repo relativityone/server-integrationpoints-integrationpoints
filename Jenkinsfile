@@ -1,9 +1,9 @@
 #!groovy
 
 library 'PipelineTools@RMT-9.4.3'
-library 'SCVMMHelpers@3.2.0'
-library 'GitHelpers@1.0.0'
-library 'SlackHelpers@3.0.0'
+library 'SCVMMHelpers@7.1.2'
+library 'GitHelpers@1.2.0'
+library 'SlackHelpers@5.1.1'
 library 'TestTrackerHelpers@2.0.0'
 
 properties([
