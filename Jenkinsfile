@@ -85,7 +85,7 @@ properties([
 // *********
 // Set variable below to the branch name, when you create new release branch!!!
 // This should be changed on the release branch
-def relativityBranchFallback = "develop"
+def relativityBranchFallback = "release-11.1-juniper"
 
 def jenkinsHelpers = null
 
