@@ -1,6 +1,6 @@
 #!groovy
 
-library 'PipelineTools@RMT-9.4.3'
+library 'PipelineTools@11.0.3'
 library 'SCVMMHelpers@7.1.2'
 library 'GitHelpers@1.0.0'
 library 'SlackHelpers@3.0.0'
