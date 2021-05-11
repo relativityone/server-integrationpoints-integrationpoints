@@ -48,7 +48,6 @@ Thumbs.db
 *.msm
 *.exe
 !Source/kCura.IntegrationPoint.Tests.Core/ExternalDependencies/TransferConsole/*.exe
-*.rap
 *.intermediate.manifest
 *ReSharper*
 .lastbuildstate
@@ -94,7 +93,6 @@ Artifacts
 .vs/
 buildtools/
 !buildtools/packages.config
-!buildtools/ARMTestServices.rap
 FunctionalTest.runsettings
 FunctionalTestSettings
 .idea/
