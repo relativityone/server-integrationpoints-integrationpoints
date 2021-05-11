@@ -48,6 +48,7 @@ Thumbs.db
 *.msm
 *.exe
 !Source/kCura.IntegrationPoint.Tests.Core/ExternalDependencies/TransferConsole/*.exe
+*.rap
 *.intermediate.manifest
 *ReSharper*
 .lastbuildstate
