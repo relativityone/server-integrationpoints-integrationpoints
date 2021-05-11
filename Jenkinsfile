@@ -1,9 +1,9 @@
 #!groovy
 
-library 'PipelineTools@RMT-9.4.3'
-library 'SCVMMHelpers@3.2.0'
+library 'PipelineTools@RMT-9.5.0'
+library 'SCVMMHelpers@7.1.2'
 library 'GitHelpers@1.0.0'
-library 'SlackHelpers@3.0.0'
+library 'SlackHelpers@3.2.2'
 library 'TestTrackerHelpers@2.0.0'
 
 properties([
@@ -85,7 +85,7 @@ properties([
 // *********
 // Set variable below to the branch name, when you create new release branch!!!
 // This should be changed on the release branch
-def relativityBranchFallback = "develop"
+def relativityBranchFallback = "release-11.1-juniper"
 
 def jenkinsHelpers = null
 
