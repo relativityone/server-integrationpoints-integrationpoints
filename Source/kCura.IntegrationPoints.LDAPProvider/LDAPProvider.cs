@@ -31,7 +31,9 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
 		{
-			LogRetrievingData(entryIds);
+			IList<string> entryIdsList = entryIds.ToList();
+
+			LogRetrievingData(entryIdsList);
 
 			LDAPSettings settings = _reader.GetSettings(providerConfiguration.Configuration);
 			List<string> fieldsToLoad = fields.Select(f => f.FieldIdentifier).ToList();
@@ -43,7 +45,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			ILDAPService ldapService = _ldapServiceFactory.Create(_logger, _serializer, settings, securedConfiguration, fieldsToLoad);
 			ldapService.InitializeConnection();
 			ldapService.FetchItems();
-			return new LDAPServiceDataReader(ldapService, entryIds, identifier, fieldsToLoad,
+			return new LDAPServiceDataReader(ldapService, entryIdsList, identifier, fieldsToLoad,
 				new LDAPDataFormatterDefault(settings, _helper));
 		}
 
@@ -91,9 +93,9 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			_logger.LogInformation("Attempting to retrieve fields in LDAP Provider.");
 		}
 
-		private void LogRetrievingData(IEnumerable<string> entryIds )
+		private void LogRetrievingData(IList<string> entryIds )
 		{
-			_logger.LogInformation("Attempting to retrieve data in LDAP Provider for ids: {Ids}.", string.Join(",", entryIds));
+			_logger.LogInformation("Attempting to retrieve data in LDAP Provider for IDs count {count}.", entryIds.Count);
 		}
 
 		private void LogRetrievingBatchableIds(FieldEntry entry)

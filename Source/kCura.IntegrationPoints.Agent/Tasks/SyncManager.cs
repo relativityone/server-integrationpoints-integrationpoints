@@ -532,11 +532,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 		private void LogCreateBatchJobEnd(Job job, List<string> batchIDs)
 		{
-			_logger.LogInformation("Finished creating batch job: {Job}, batchIDs: {batchIDs}.", job, batchIDs);
+			_logger.LogInformation("Finished creating batch job: {Job}, batchIDs count {count}.", job, batchIDs.Count);
 		}
 		private void LogCreateBatchJobStart(Job job, List<string> batchIDs)
 		{
-			_logger.LogInformation("Started creating batch job: {Job}, batchIDs: {batchIDs}.", job, batchIDs);
+			_logger.LogInformation("Started creating batch job: {Job}, batchIDs count {count}.", job, batchIDs.Count);
 		}
 		private void LogJobPreExecuteStart(Job job)
 		{

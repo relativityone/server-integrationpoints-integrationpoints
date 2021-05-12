@@ -239,9 +239,9 @@ namespace kCura.IntegrationPoints.FtpProvider
 			_logger.LogInformation("Attempting to get batchable ids in FTP Provider for field {FieldIdentifier}.", identifier.FieldIdentifier);
 		}
 
-		private void LogRetrievingData(IEnumerable<string> entryIds)
+		private void LogRetrievingData(IList<string> entryIds)
 		{
-			_logger.LogInformation("Attempting to get data in FTP Provider for ids: {Ids}.", string.Join(",", entryIds));
+			_logger.LogInformation("Attempting to get data in FTP Provider for IDs count {count}", entryIds.Count);
 		}
 
 		private void LogRetrievingFieldsError(Exception ex)
@@ -271,9 +271,9 @@ namespace kCura.IntegrationPoints.FtpProvider
 				identifier.FieldIdentifier, message);
 		}
 		
-		private void LogRetrievingDataError(IEnumerable<string> entryIds, Exception ex)
+		private void LogRetrievingDataError(IList<string> entryIds, Exception ex)
 		{
-			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for ids {Ids}.", string.Join(",", entryIds));
+			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for IDs count {count}.", entryIds.Count);
 		}
 
 		private void LogRetrievingDataWarning(Exception ex, string message)
@@ -281,10 +281,10 @@ namespace kCura.IntegrationPoints.FtpProvider
 			_logger.LogWarning(ex, "Error occured while retrieving data. Details: {Message}", message);
 		}
 
-		private void LogRetrievingDataErrorWithDetails(IEnumerable<string> entryIds, Exception ex, string message)
+		private void LogRetrievingDataErrorWithDetails(IList<string> entryIds, Exception ex, string message)
 		{
-			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for ids {Ids}. Details: {Message}.",
-				string.Join(",", entryIds), message);
+			_logger.LogError(ex, "Failed to retrieve data in FTP Provider for IDs count {count}. Details: {Message}.",
+				entryIds.Count, message);
 		}
 
 		private void LogValidatingColumnsError(string columns, string expectedColumns)
