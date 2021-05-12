@@ -506,5 +506,9 @@
 	{
 		"Jira": "REL-541861",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Net.WebException: The request failed with HTTP status 504: Gateway Time-out.*"
+	},
+	{
+		"Jira": "REL-556105",
+		"Exception": "*Relativity.Sync.SyncException: Could not find folders with IDs * in workspace*"
 	}
 ]
