@@ -59,7 +59,7 @@ function createSecuredConfiguration(model) {
 
 	function checkLdap(localModel) {
 		return helper.checkLdap(localModel).fail(function (e) {
-			message.publish('saveError', 'Unable to connect to source using the specified settings.');
+			message.publish('saveError', 'Unable to connect to source using the specified settings. Check Errors tab for details.');
 		});
 	}
 
