@@ -147,7 +147,7 @@ namespace Relativity.Sync.Executors
 								TaggingExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
 
 								int documentsTaggedCount = Math.Min(sourceTaggingResult.TaggedDocumentsCount, destinationTaggingResult.TaggedDocumentsCount);
-								await batch.SetTaggedItemsCountAsync(documentsTaggedCount).ConfigureAwait(false);
+								await batch.SetTaggedItemsCountAsync(batch.TaggedItemsCount + documentsTaggedCount).ConfigureAwait(false);
 								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
 
 								if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
@@ -231,7 +231,7 @@ namespace Relativity.Sync.Executors
 			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
 			await batch.SetTransferredItemsCountAsync(batch.TransferredItemsCount + processedItemsCount).ConfigureAwait(false);
 
-			if (batch.Status == BatchStatus.Paused)
+			if (batch.Status == BatchStatus.Paused && batch.TransferredItemsCount != batch.TotalItemsCount)
 			{
 				await batch.SetStartingIndexAsync(batch.StartingIndex + failedItemsCount + processedItemsCount).ConfigureAwait(false);
 			}
