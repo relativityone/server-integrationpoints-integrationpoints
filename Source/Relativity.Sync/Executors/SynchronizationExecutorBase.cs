@@ -222,18 +222,20 @@ namespace Relativity.Sync.Executors
 		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CompositeCancellationToken token)
 		{
 			BatchProcessResult batchProcessResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
-
-			await SetBatchStatusAsync(batch, batchProcessResult.ExecutionResult.Status).ConfigureAwait(false);
-			
+		
 			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
 			await batch.SetFailedItemsCountAsync(batch.FailedItemsCount + failedItemsCount).ConfigureAwait(false);
 
 			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
 			await batch.SetTransferredItemsCountAsync(batch.TransferredItemsCount + processedItemsCount).ConfigureAwait(false);
 
-			if (batch.Status == BatchStatus.Paused && batch.TransferredItemsCount != batch.TotalItemsCount)
+			if (batchProcessResult.ExecutionResult.Status == ExecutionStatus.Paused)
 			{
-				await batch.SetStartingIndexAsync(batch.StartingIndex + failedItemsCount + processedItemsCount).ConfigureAwait(false);
+				batchProcessResult.ExecutionResult = await HandleBatchPausedAsync(batch).ConfigureAwait(false);
+			}
+			else
+			{
+				await SetBatchStatusAsync(batch, batchProcessResult.ExecutionResult.Status).ConfigureAwait(false);
 			}
 
 			batchProcessResult.TotalRecordsRequested = batch.TotalItemsCount;
@@ -241,6 +243,26 @@ namespace Relativity.Sync.Executors
 			batchProcessResult.TotalRecordsFailed = batch.FailedItemsCount;
 
 			return batchProcessResult;
+		}
+
+		private async Task<ExecutionResult> HandleBatchPausedAsync(IBatch batch)
+		{
+			if(batch.TransferredItemsCount == batch.TotalItemsCount)
+			{
+				await SetBatchStatusAsync(batch, ExecutionStatus.Completed).ConfigureAwait(false);
+				return ExecutionResult.Success();
+			}
+			else if(batch.TransferredItemsCount + batch.FailedItemsCount == batch.TotalItemsCount)
+			{
+				await SetBatchStatusAsync(batch, ExecutionStatus.CompletedWithErrors).ConfigureAwait(false);
+				return ExecutionResult.SuccessWithErrors();
+			}
+			else
+			{
+				await batch.SetStartingIndexAsync(batch.TransferredItemsCount + batch.FailedItemsCount).ConfigureAwait(false);
+				await SetBatchStatusAsync(batch, ExecutionStatus.Paused).ConfigureAwait(false);
+				return ExecutionResult.Paused();
+			}
 		}
 
 		private Task SetBatchStatusAsync(IBatch batch, ExecutionStatus executionResultStatus)
