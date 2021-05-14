@@ -19,7 +19,7 @@ namespace Relativity.Sync
 {
 	internal sealed class ContainerFactory : IContainerFactory
 	{
-		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, RelativityServices relativityServices, SyncJobExecutionConfiguration configuration,
+		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration,
 			ISyncLog logger)
 		{
 			const string syncJob = nameof(SyncJob);
@@ -29,7 +29,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(new ContextLogger(syncJobParameters, logger)).As<ISyncLog>();
 			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
-			containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
+			containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
 			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<ISyncServiceManager>();
 			containerBuilder.RegisterInstance(relativityServices.APM).As<IAPM>();
 			containerBuilder.RegisterType<WorkspaceGuidService>().As<IWorkspaceGuidService>().SingleInstance();
