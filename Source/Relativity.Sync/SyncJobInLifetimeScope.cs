@@ -10,11 +10,11 @@ namespace Relativity.Sync
 		private readonly IContainerFactory _containerFactory;
 		private readonly IContainer _container;
 		private readonly SyncJobParameters _syncJobParameters;
-		private readonly RelativityServices _relativityServices;
+		private readonly IRelativityServices _relativityServices;
 		private readonly SyncJobExecutionConfiguration _configuration;
 		private readonly ISyncLog _logger;
 
-		public SyncJobInLifetimeScope(IContainerFactory containerFactory, IContainer container, SyncJobParameters syncJobParameters, RelativityServices relativityServices,
+		public SyncJobInLifetimeScope(IContainerFactory containerFactory, IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices,
 			SyncJobExecutionConfiguration configuration, ISyncLog logger)
 		{
 			_containerFactory = containerFactory;

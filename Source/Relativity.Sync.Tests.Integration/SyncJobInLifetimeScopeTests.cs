@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IContainerFactory> _containerFactory;
 		private ISyncLog _logger;
 		private SyncJobParameters _syncJobParameters;
-		private RelativityServices _relativityServices;
+		private IRelativityServices _relativityServices;
 		private SyncJobExecutionConfiguration _configuration;
 		private Mock<ISyncJob> _syncJob;
 
