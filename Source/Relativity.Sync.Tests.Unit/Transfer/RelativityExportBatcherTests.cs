@@ -30,6 +30,29 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public async Task GetNextItemsFromBatchAsync_ShouldRespectAlreadyTransferredItems_WhenSetRemainingItems()
+		{
+			// Arrange
+			const int totalItemsCount = 10;
+			const int transferredItemsCount = 3;
+
+			int expectedRemainingItemsCount = totalItemsCount - transferredItemsCount;
+
+			Mock<IBatch> batch = new Mock<IBatch>();
+			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			batch.SetupGet(x => x.TransferredItemsCount).Returns(transferredItemsCount);
+
+			RelativityExportBatcher sut = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, It.IsAny<Guid>(), It.IsAny<int>());
+
+			// Act
+			await sut.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+
+			// Assert
+			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
+				It.IsAny<int>(), It.IsAny<Guid>(), expectedRemainingItemsCount, It.IsAny<int>()));
+		}
+
+		[Test]
 		public void GetNextItemsFromBatchAsync_ShouldReturnAllItemsInOneBlock()
 		{
 			// arrange
