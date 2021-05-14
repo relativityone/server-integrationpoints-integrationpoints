@@ -1,5 +1,4 @@
 ﻿using System;
-using Relativity.API;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync
@@ -7,7 +6,7 @@ namespace Relativity.Sync
 	/// <summary>
 	///     Provides access to Relativity Services
 	/// </summary>
-	public sealed class RelativityServices
+	public sealed class RelativityServices : IRelativityServices
 	{
 		/// <summary>
 		///     Constructor
