@@ -5,7 +5,7 @@ Relativity.API
 Relativity.Services.Interfaces
 Polly
 Relativity.Toggles
-kCura.OutsideIn.FI.Win32
+Relativity.OutsideIn
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
