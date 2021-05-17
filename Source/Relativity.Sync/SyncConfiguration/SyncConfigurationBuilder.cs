@@ -6,10 +6,8 @@ using System.Linq.Expressions;
 
 namespace Relativity.Sync.SyncConfiguration
 {
-    /// <summary>
-    /// Main Sync configuration builder class.
-    /// </summary>
-    public class SyncConfigurationBuilder
+    /// <inheritdoc />
+    public class SyncConfigurationBuilder : ISyncConfigurationBuilder
     {
         private readonly ISyncContext _syncContext;
         private readonly ISyncServiceManager _servicesMgr;
@@ -28,10 +26,7 @@ namespace Relativity.Sync.SyncConfiguration
             _serializer = new JSONSerializer();
         }
 
-        /// <summary>
-        /// Configures Sync RDOs.
-        /// </summary>
-        /// <param name="rdoOptions">Sync RDO options.</param>
+        /// <inheritdoc />
         public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions)
         {
             ValidateInput(rdoOptions);
