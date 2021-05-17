@@ -61,7 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			var myFirstProvider = new SourceProviderTest
 			{
 				Name = "My First Provider",
-				Identifier = Const.MY_FIRST_PROVIDER_GUID,
+				Identifier = MyFirstProvider.Provider.GlobalConstants.FIRST_PROVIDER_GUID,
 				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
 			};
 			

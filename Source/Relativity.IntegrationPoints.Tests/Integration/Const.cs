@@ -7,8 +7,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 	public static class Const
 	{
 		public const string INTEGRATION_POINTS_APP_GUID = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
-
-		public static readonly string MY_FIRST_PROVIDER_GUID = "c9de331d-2dca-4f78-85bd-91493d0b9b37";
 		
 		public static class Agent
 		{

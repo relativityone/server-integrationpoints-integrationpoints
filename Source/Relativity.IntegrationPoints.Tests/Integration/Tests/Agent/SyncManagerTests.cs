@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
 			IntegrationPointTest integrationPoint =
-				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider, "Name", xmlPath);
+				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider, identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
 
 			integrationPoint.SourceProvider = provider.ArtifactId;
 
