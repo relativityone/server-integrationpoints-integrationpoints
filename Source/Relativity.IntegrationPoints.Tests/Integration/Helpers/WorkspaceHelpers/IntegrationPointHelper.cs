@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 	public class IntegrationPointHelper : WorkspaceHelperBase
 	{
 		private readonly ISerializer _serializer;
-		
+
 		public IntegrationPointHelper(WorkspaceTest workspace, ISerializer serializer) : base(workspace)
 		{
 			_serializer = serializer;
@@ -29,10 +29,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
-		public IntegrationPointTest CreateSavedSearchIntegrationPoint( WorkspaceTest destinationWorkspace)
+		public IntegrationPointTest CreateSavedSearchIntegrationPoint(WorkspaceTest destinationWorkspace)
 		{
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
-			
+
 			FolderTest destinationFolder = destinationWorkspace.Folders.First();
 
 			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
@@ -74,6 +74,47 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
+
+		public IntegrationPointTest CreateImportIntegrationPoint(SourceProviderTest sourceProvider, string identifierFieldName, string sourceProviderConfiguration)
+		{
+			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+
+			FolderTest destinationFolder = Workspace.Folders.First();
+
+			IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes
+					.ImportGuid.ToString());
+
+			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders
+					.RELATIVITY);
+
+			List<FieldMap> fieldsMapping =
+				Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForImport(identifierFieldName);
+
+			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+
+			integrationPoint.SourceConfiguration = sourceProviderConfiguration;
+			integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
+			{
+				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+				ArtifactTypeId = (int) ArtifactType.Document,
+				DestinationFolderArtifactId = destinationFolder.ArtifactId,
+				CaseArtifactId = Workspace.ArtifactId
+			});
+
+			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+			integrationPoint.EnableScheduler = true;
+			integrationPoint.ScheduleRule = ScheduleRuleTest.CreateWeeklyRule(
+					new DateTime(2021, 3, 20), new DateTime(2021, 3, 30), TimeZoneInfo.Utc, DaysOfWeek.Friday)
+				.Serialize();
+			integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
+			integrationPoint.Type = integrationPointType.ArtifactId;
+
+			return integrationPoint;
+		}
+
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
 			foreach (IntegrationPointTest integrationPoint in Workspace.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
@@ -81,7 +122,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				Workspace.IntegrationPoints.Remove(integrationPoint);
 			}
 		}
-
-		
 	}
 }

@@ -48,10 +48,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 		{
 			WorkspaceTest workspace = CreateWorkspace(workspaceArtifactId);
 
-			workspace.Helpers.SourceProviderHelper.CreateLDAP(workspace);
-			workspace.Helpers.SourceProviderHelper.CreateFTP(workspace);
-			workspace.Helpers.SourceProviderHelper.CreateLoadFile(workspace);
-			workspace.Helpers.SourceProviderHelper.CreateRelativity(workspace);
+			workspace.Helpers.SourceProviderHelper.CreateLDAP();
+			workspace.Helpers.SourceProviderHelper.CreateFTP();
+			workspace.Helpers.SourceProviderHelper.CreateLoadFile();
+			workspace.Helpers.SourceProviderHelper.CreateRelativity();
 
 			workspace.Helpers.DestinationProviderHelper.CreateRelativityProvider();
 			

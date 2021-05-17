@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Data;
+using System.IO;
 using System.Linq;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json.Linq;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
+using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 
@@ -16,23 +17,29 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncManagerTests : TestsBase
 	{
-		private JobTest PrepareJob()
+		private JobTest PrepareJob(string xmlPath)
 		{
 			FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+			SourceProviderTest provider =
+				SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
 			IntegrationPointTest integrationPoint =
-				SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(destinationWorkspace);
-			
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
+				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider, "Name", xmlPath);
+
+			integrationPoint.SourceProvider = provider.ArtifactId;
+
+			integrationPoint.SourceConfiguration = xmlPath;
+
+			JobTest job =
+				FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 			SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 			return job;
 		}
 
-		private SyncManager PrepareSut(int numberOfRecords)
+		private SyncManager PrepareSut()
 		{
-			Container.Register(Component.For<IDataReader>().UsingFactoryMethod(c => new FakeDataReader(numberOfRecords)));
+			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>().IsDefault());
 			SyncManager sut = Container.Resolve<SyncManager>();
 			return sut;
 		}
@@ -43,8 +50,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			// Arrange
 			const int numberOfRecords = 1500;
 			const int expectedNumberOfSyncWorkersJobs = 2;
-			JobTest job = PrepareJob();
-			SyncManager sut = PrepareSut(numberOfRecords);
+			string xmlPath = PrepareRecords(numberOfRecords); 
+			JobTest job = PrepareJob(xmlPath);
+			SyncManager sut = PrepareSut();
 
 			// Act
 			sut.Execute(new Job(job.AsDataRow()));
@@ -54,6 +62,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			syncWorkerJobs.Count.Should().Be(expectedNumberOfSyncWorkersJobs);
 			AssertNumberOfRecords(syncWorkerJobs[0], 1000);
 			AssertNumberOfRecords(syncWorkerJobs[1], 500);
+		}
+
+		private string PrepareRecords(int numberOfRecords)
+		{
+			string xml = new MyFirstProviderXmlGenerator().GenerateRecords(numberOfRecords);
+			string tmpPath = Path.GetTempFileName();
+			File.WriteAllText(tmpPath, xml);
+			return tmpPath;
 		}
 
 		private void AssertNumberOfRecords(JobTest job, int numberOfRecords)

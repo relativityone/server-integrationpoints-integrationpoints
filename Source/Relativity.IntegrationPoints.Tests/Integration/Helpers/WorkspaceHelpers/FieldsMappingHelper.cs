@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 		}
 	
-		public List<FieldMap> PrepareIdentifierFieldsMapping( WorkspaceTest destinationWorkspace)
+		public List<FieldMap> PrepareIdentifierFieldsMapping(WorkspaceTest destinationWorkspace)
 		{
 			FieldTest sourceControlNumber = Workspace.Fields.First(x => x.IsIdentifier);
 			
@@ -36,6 +36,37 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 					{
 						DisplayName = destinationControlNumber.Name,
 						FieldIdentifier = destinationControlNumber.ArtifactId.ToString(),
+						FieldType = FieldType.String,
+						IsIdentifier = true,
+						IsRequired = true,
+						Type = ""
+					},
+					FieldMapType = FieldMapTypeEnum.Identifier
+				}
+			};
+		}
+		
+		public List<FieldMap> PrepareIdentifierFieldsMappingForImport(string identifierFieldName)
+		{
+			FieldTest sourceControlNumber = Workspace.Fields.First(x => x.IsIdentifier);
+			
+			return new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField =new FieldEntry
+					{
+						DisplayName = identifierFieldName,
+						FieldIdentifier = identifierFieldName,
+						FieldType = FieldType.String,
+						IsIdentifier = true,
+						IsRequired = true,
+						Type = ""
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = sourceControlNumber.Name,
+						FieldIdentifier = sourceControlNumber.ArtifactId.ToString(),
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,
