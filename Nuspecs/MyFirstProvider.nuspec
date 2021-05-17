@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>MyFirstProvider</id>
+    <version>1.0.0.0</version>
+    <authors>Relativity ODA LLC</authors>
+    <owners>Relativity ODA LLC</owners>
+    <licenseUrl>https://www.relativity.com/terms-of-use/</licenseUrl>
+    <projectUrl>https://platform.relativity.com/index.html</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>MyFirstProvider</description>
+    <copyright>© Relativity</copyright>
+    <tags>MyFirstProvider</tags>
+    <dependencies />
+  </metadata>
+  <files>
+    <file src="..\Artifacts\MyFirstProvider.rap" target="lib\" />
+  </files>
+</package>

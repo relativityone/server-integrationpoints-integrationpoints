@@ -4,6 +4,7 @@ properties {
     $SourceDir = Join-Path $PSScriptRoot "source"
     $Solution = ((Get-ChildItem -Path $SourceDir -Filter *.sln -File)[0].FullName)
     $ArtifactsDir = Join-Path $PSScriptRoot "Artifacts"
+    $NusepcsDir = Join-Path $PSScriptRoot "Nuspecs"
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
@@ -56,7 +57,7 @@ Task Package -Description "Package up the build artifacts" {
     $RAPBuilder = Join-Path $buildTools "Relativity.RAPBuilder\tools\Relativity.RAPBuilder.exe"
     $BuildXML = Join-Path $developmentScripts "build.xml"
 
-     exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
+    exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
 
     exec { & $RAPBuilder `
         "--source" "$PSScriptRoot" `
@@ -64,7 +65,7 @@ Task Package -Description "Package up the build artifacts" {
         "--version" "$RAPVersion"
     }
 
-    Get-ChildItem -Path $ArtifactsDir -Filter *.nuspec |
+    Get-ChildItem -Path $NusepcsDir -Filter *.nuspec |
     ForEach-Object {
         exec { & $NugetExe pack $_.FullName -OutputDirectory (Join-Path $ArtifactsDir "NuGet") -Version $PackageVersion }
     }
@@ -88,7 +89,7 @@ Task Clean -Description "Delete build artifacts" {
 
 Task Rebuild -Description "Do a rebuild" {
     Initialize-Folder $ArtifactsDir
-
+    
     Write-Verbose "Running Rebuild target on $Solution"
     exec { msbuild @($Solution,
         ("/target:Rebuild"),
