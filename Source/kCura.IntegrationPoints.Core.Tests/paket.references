@@ -13,6 +13,7 @@ Relativity.DataGrid
 Relativity.OAuth2Client
 Relativity.OAuth2Client.Interfaces
 SystemWrapper.Interfaces
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll

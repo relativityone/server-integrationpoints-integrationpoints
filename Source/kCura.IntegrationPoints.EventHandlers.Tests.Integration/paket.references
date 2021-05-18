@@ -13,6 +13,7 @@ Relativity.Kepler.Client
 Relativity.Logging.Interfaces
 Relativity.Telemetry.DataContracts.Shared
 Relativity.DataExchange.Client.SDK
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
