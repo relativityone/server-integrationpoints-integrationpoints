@@ -40,6 +40,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -126,6 +127,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterAuthentication();
 
 			Container.Install(new ValidationInstaller());
+			Container.Install(new LdapProviderInstaller());
 		}
 
 		private void RegisterRelativityApiServices()

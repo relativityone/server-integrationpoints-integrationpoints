@@ -18,5 +18,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			public static readonly List<int> RESOURCE_GROUP_IDS = new List<int>
 				{ArtifactProvider.NextId(), ArtifactProvider.NextId(), ArtifactProvider.NextId()};
 		}
+
+		public static class Provider
+		{
+			public const string _FAKE_PROVIDER = "9A33EBEA-B4F9-4427-8AD4-5D4F35F0405A";
+
+			public static readonly Guid FakeProviderGuid = new Guid(_FAKE_PROVIDER);
+		}
 	}
 }

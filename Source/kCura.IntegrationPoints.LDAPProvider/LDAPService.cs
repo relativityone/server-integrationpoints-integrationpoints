@@ -26,27 +26,25 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public void InitializeConnection()
 		{
+			_logger.LogInformation("Initializing a connection to LDAP server using legacy provider using authentication: {auth}", _settings.AuthenticationType.ToString());
+
 			_searchRoot = new DirectoryEntry(_settings.Path, _securedConfiguration.UserName, _securedConfiguration.Password, _settings.AuthenticationType);
 		}
 
 		public bool IsAuthenticated()
 		{
-			bool authentic = false;
+			_logger.LogInformation("Check if LDAP Service is authenticated.");
+
 			try
 			{
 				object nativeObject = FetchItems(1).ToList();
-				authentic = true;
+				return true;
 			}
-			catch (DirectoryServicesCOMException ex)
+			catch (Exception ex)
 			{
 				LogAuthenticationError(ex);
+				throw;
 			}
-			catch (COMException ex)
-			{
-				LogAuthenticationError(ex);
-			}
-
-			return authentic;
 		}
 
 	    public List<string> FetchAllProperties(int? overrideSizeLimit = null)
