@@ -73,6 +73,7 @@
     <Compile Include="Integration\Helpers\WorkspaceHelpers\JobHistoryHelper.cs" />
     <Compile Include="Integration\Helpers\WorkspaceHelpers\SourceProviderHelper.cs" />
     <Compile Include="Integration\Helpers\WorkspaceHelpers\WorkspaceHelperBase.cs" />
+    <Compile Include="Integration\Helpers\MyFirstProviderXmlGenerator.cs" />
     <Compile Include="Integration\InstanceSettings.cs" />
     <Compile Include="Integration\Mocks\FakeQueueRepository.cs" />
     <Compile Include="Integration\Mocks\FakeUser.cs" />
@@ -679,6 +680,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.IntegrationPoints.MyFirstProvider.Provider">
+          <HintPath>..\..\packages\tests\IntegrationPoints.MyFirstProvider\lib\Relativity.IntegrationPoints.MyFirstProvider.Provider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="kCura.EventHandler">
           <HintPath>..\..\packages\tests\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
           <Private>True</Private>
@@ -783,6 +795,33 @@
       <ItemGroup>
         <Reference Include="FaspManager">
           <HintPath>..\..\packages\tests\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.IntegrationPoints.Contracts">
+          <HintPath>..\..\packages\tests\Relativity.IntegrationPoints.SDK\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller">
+          <HintPath>..\..\packages\tests\Relativity.IntegrationPoints.SDK\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private">
+          <HintPath>..\..\packages\tests\Relativity.IntegrationPoints.Services.Interfaces.Private\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -965,6 +1004,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\tests\System.Data.SqlClient\lib\net461\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.Diagnostics.DiagnosticSource">
           <HintPath>..\..\packages\tests\System.Diagnostics.DiagnosticSource\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
           <Private>True</Private>
@@ -1003,6 +1053,17 @@
       <ItemGroup>
         <Reference Include="System.Runtime.CompilerServices.Unsafe">
           <HintPath>..\..\packages\tests\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="SystemInterface">
+          <HintPath>..\..\packages\tests\SystemWrapper.Interfaces\lib\net45\SystemInterface.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

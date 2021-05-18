@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 		}
 
-		public void CreateLDAP(WorkspaceTest workspace)
+		public void CreateLDAP()
 		{
 			var sourceProvider = new SourceProviderTest
 			{
@@ -20,7 +20,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			Workspace.SourceProviders.Add(sourceProvider);
 		}
 
-		public void CreateRelativity(WorkspaceTest workspace)
+		public void CreateRelativity()
 		{
 			var sourceProvider = new SourceProviderTest
 			{
@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			Workspace.SourceProviders.Add(sourceProvider);
 		}
 
-		public void CreateFTP(WorkspaceTest workspace)
+		public void CreateFTP()
 		{
 			var sourceProvider = new SourceProviderTest
 			{
@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			Workspace.SourceProviders.Add(sourceProvider);
 		}
 
-		public void CreateLoadFile(WorkspaceTest workspace)
+		public void CreateLoadFile()
 		{
 			var sourceProvider = new SourceProviderTest
 			{
@@ -56,6 +56,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			Workspace.SourceProviders.Add(sourceProvider);
 		}
 
-		
+		public SourceProviderTest CreateMyFirstProvider()
+		{
+			var myFirstProvider = new SourceProviderTest
+			{
+				Name = "My First Provider",
+				Identifier = MyFirstProvider.Provider.GlobalConstants.FIRST_PROVIDER_GUID,
+				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
+			};
+			
+			Workspace.SourceProviders.Add(myFirstProvider);
+			return myFirstProvider;
+		}
 	}
 }

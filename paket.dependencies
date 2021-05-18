@@ -98,6 +98,7 @@ group Tests
 	nuget Relativity.Testing.Framework ~> 0.22
 	nuget Relativity.Testing.Framework.Api ~> 0.22
 	nuget Relativity.Testing.Framework.Web ~> 0.22
+	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
 
 group Sync
 	framework: auto-detect

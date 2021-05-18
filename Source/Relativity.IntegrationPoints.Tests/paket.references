@@ -21,3 +21,4 @@ group Tests
 	Relativity.Testing.Framework
 	Relativity.Testing.Framework.Api content: none // avoid including OutsideIn binaries
 	Relativity.Testing.Framework.Web
+	IntegrationPoints.MyFirstProvider
