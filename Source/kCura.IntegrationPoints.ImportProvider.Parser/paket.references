@@ -7,6 +7,7 @@ Relativity.IntegrationPoints.Contracts
 Relativity.Logging
 SystemWrapper.Interfaces
 Relativity.DataTransfer.MessageService
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll

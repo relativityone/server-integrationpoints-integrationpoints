@@ -3,7 +3,7 @@ CSharpGuidelineAnalyzer
 kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
-kCura.OutsideIn.FI.Win32
+Relativity.OutsideIn
 Relativity.Authentication
 Relativity.DataExchange.Client.SDK
 Relativity.Data
@@ -15,6 +15,7 @@ Relativity.Services.Interfaces.Private
 Relativity.Telemetry.DataContracts.Shared
 Relativity.Telemetry.APM
 relativity.transfer.client
+iTextSharp
 FluentAssertions
 Moq
 netDumbster
