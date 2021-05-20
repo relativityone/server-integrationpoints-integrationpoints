@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {
@@ -9,6 +10,6 @@ namespace Relativity.Sync
 
 		int GetBatchItemsFailedCount(int batchId);
 
-		IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, int batchId, int totalItemsInBatch);
+		IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, IBatch batch);
 	}
 }

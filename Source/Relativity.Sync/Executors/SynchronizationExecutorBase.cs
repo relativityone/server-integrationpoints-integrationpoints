@@ -134,7 +134,7 @@ namespace Relativity.Sync.Executors
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
 						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.AnyReasonCancellationToken).ConfigureAwait(false))
 						{
-							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch.ArtifactId, batch.TotalItemsCount))
+							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch))
 							{
 								IStopwatch importApiTimer = GetStartedTimer();
 								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
