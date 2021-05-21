@@ -289,8 +289,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		// TODO: fix name
-		public void AttachToImportJob_Should_FixNameLAter()
+		public void AttachToImportJob_Should_PickPreviouslyTransferredAndFailedItems()
 		{
 			// Arrange
 			const int initialFailedItemsCount = 5;
