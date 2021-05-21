@@ -10,6 +10,7 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync
@@ -48,9 +49,10 @@ namespace Relativity.Sync
 			return _batchProgresses.ContainsKey(batchId) ? _batchProgresses[batchId].ItemsFailed : 0;
 		}
 
-		public IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, int batchId, int totalItemsInBatch)
+		public IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, IBatch batch)
 		{
-			SyncBatchProgress batchProgress = new SyncBatchProgress(batchId, totalItemsInBatch);
+			SyncBatchProgress batchProgress = new SyncBatchProgress(batch.ArtifactId, totalItems: batch.TotalItemsCount, 
+				failedItemsCount: batch.FailedItemsCount, transferredItemsCount: batch.TransferredItemsCount);
 
 			IDisposable itemProcessedSubscription = Observable
 				.FromEvent<SyncJobEventHandler<ImportApiJobProgress>, ImportApiJobProgress>(
@@ -104,7 +106,7 @@ namespace Relativity.Sync
 				})
 					.Subscribe();
 
-			_batchProgresses[batchId] = batchProgress;
+			_batchProgresses[batch.ArtifactId] = batchProgress;
 
 			_forceUpdateSignal.OnNext(Unit.Default);
 
