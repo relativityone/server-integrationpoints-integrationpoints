@@ -17,6 +17,7 @@ Relativity.Toggles
 Relativity.OAuth2Client
 Relativity.OAuth2Client.Interfaces
 SystemWrapper.Wrappers
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
