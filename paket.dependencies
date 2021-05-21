@@ -14,7 +14,7 @@ nuget kCura.Agent ~> 14.0
 nuget kCura.EventHandler 15.1.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
-nuget Relativity.DataExchange.Client.SDK 1.13.4
+nuget Relativity.DataExchange.Client.SDK 1.14.3
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0
 nuget Relativity.API 15.1.0
 nuget Relativity ~> 15.1
@@ -32,8 +32,8 @@ nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget Relativity.Kepler 2.14.3
 nuget Relativity.Kepler.Client 2.14.3
-nuget Relativity.Logging 2019.10.2
-nuget Relativity.Logging.Interfaces 2019.10.2
+nuget Relativity.Logging 3000.0.1
+nuget Relativity.Logging.Interfaces 3000.0.1
 nuget Relativity.OAuth2Client 1.5.2
 nuget Relativity.OAuth2Client.Interfaces 1.5.2
 nuget Relativity.Productions.Services.Interfaces 11.1.0
@@ -46,6 +46,7 @@ nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre.6
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
+nuget Relativity.OutsideIn 2021.3.1 content: none 			//Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget AutoMapper 4.2.1
@@ -64,6 +65,7 @@ nuget SystemWrapper.Wrappers 0.25.0.186
 nuget Polly 5.9
 nuget ZetaLongPaths 1.0.0.16
 nuget System.ValueTuple
+nuget iTextSharp 5.5.13.1
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0
@@ -104,7 +106,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-    nuget Relativity.Sync 0.7.0-pre.36
+    nuget Relativity.Sync 0.8.0-pre.2
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
