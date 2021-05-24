@@ -7,10 +7,12 @@ Microsoft.AspNet.Mvc
 Microsoft.AspNet.WebApi.Core
 Relativity.API
 Relativity.Services.Interfaces.Private
+Relativity.Telemetry.DataContracts.Shared
 Relativity.Data
 Relativity.Telemetry.APM
 Relativity.Toggles
 Relativity.DataExchange.Client.SDK
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll

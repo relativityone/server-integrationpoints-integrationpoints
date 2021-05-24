@@ -3,7 +3,7 @@ CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
-kCura.OutsideIn.FI.Win32
+Relativity.OutsideIn
 Relativity.Data
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
@@ -16,6 +16,7 @@ Relativity.Logging.Interfaces
 Relativity.Kepler.Client
 Relativity.Telemetry.DataContracts.Shared
 Relativity.DataExchange.Client.SDK
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll

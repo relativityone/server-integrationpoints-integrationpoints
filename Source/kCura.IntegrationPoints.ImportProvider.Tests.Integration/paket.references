@@ -9,6 +9,7 @@ Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.DataExchange.Client.SDK
 Relativity.Toggles
+iTextSharp
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
