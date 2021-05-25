@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			return new List<string>();
 		}
-
+		
 		private IDataReader GetBatchableIdsWithDrainStopTimeout(IDataSourceProvider provider, TimeSpan drainStopTimeout)
 		{
 			IDataReader reader = null;
