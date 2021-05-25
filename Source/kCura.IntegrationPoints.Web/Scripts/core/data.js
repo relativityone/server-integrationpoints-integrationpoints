@@ -80,19 +80,21 @@
 
 			if (settings.loading.timeout > 0 && showOverlayWidget) {
 				root.modal.open(settings.loading.timeout, (container instanceof jQuery) ? container : $(container));
+
+				settings.complete = function () {
+					if (requestCounter <= 1) {
+						requestCounter = 0;
+						if (root.modal && root.modal.close) {
+							root.modal.close();
+						}
+					} else {
+						requestCounter--;
+					}
+				};
+				
+				requestCounter++;
 			}
 
-			settings.complete = function () {
-				if (requestCounter <= 1) {
-					requestCounter = 0;
-					if (root.modal && root.modal.close) {
-						root.modal.close();
-					}
-				} else {
-					requestCounter--;
-				}
-			};
-			requestCounter++;
 			return data.deferred($.ajax(settings));
 		};
 
