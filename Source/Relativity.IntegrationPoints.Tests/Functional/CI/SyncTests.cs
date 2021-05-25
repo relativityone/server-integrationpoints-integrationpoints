@@ -1,7 +1,9 @@
 ﻿using System;
 using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Api;
-using Relativity.Testing.Framework.Web;
+using Relativity.Testing.Framework.Models;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Web.Components;
+using Relativity.Testing.Framework.Web.Navigation;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI

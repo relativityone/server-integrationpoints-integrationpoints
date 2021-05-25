@@ -3,19 +3,16 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using FluentAssertions;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Web.Controllers.API;
+using Castle.MicroKernel.Registration;
 using kCura.ScheduleQueue.Core.Core;
-using NUnit.Framework;
-using Relativity.API;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Testing.Framework;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Web.Controllers.API;
 using Relativity.Testing.Identification;
+using Relativity.Testing.Framework.Extensions;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
+using NUnit.Framework;
+using FluentAssertions;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {

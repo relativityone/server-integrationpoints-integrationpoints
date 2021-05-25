@@ -99,9 +99,9 @@ group Tests
 	nuget Relativity.Logging.Interfaces 3000.0.1
 	nuget Relativity.Telemetry.Services.Interface 3000.0.1
 	nuget Relativity.Services.Interfaces 13.2.5
-	nuget Relativity.Testing.Framework ~> 0.22
-	nuget Relativity.Testing.Framework.Api ~> 0.22
-	nuget Relativity.Testing.Framework.Web ~> 0.22
+	nuget Relativity.Testing.Framework 1.0.0
+	nuget Relativity.Testing.Framework.Api 1.0.0
+	nuget Relativity.Testing.Framework.Web 1.0.0
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
 
 group Sync
