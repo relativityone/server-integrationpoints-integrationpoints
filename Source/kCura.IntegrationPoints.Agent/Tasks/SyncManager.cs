@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				Thread.Sleep(sleep);
 
-				if (JobStopManager.ShouldDrainStop)
+				if (JobStopManager?.ShouldDrainStop == true)
 				{
 					TimeSpan timeElapsedSinceDrainStopRequested = TimeSpan.Zero;
 					while (timeElapsedSinceDrainStopRequested < drainStopTimeout)
