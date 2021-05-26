@@ -40,6 +40,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 				RipInstanceSettings.BLOCKED_HOSTS,
 				RipInstanceSettings.INTEGRATION_POINTS_SECTION,
 				settings => settings.RestrictReferentialFileLinksOnImport);
+
+			SetupInstanceSettingInternal(_context.InstanceSettings,
+				RipInstanceSettings.DRAIN_STOP_TIMEOUT,
+				RipInstanceSettings.INTEGRATION_POINTS_SECTION,
+				settings => ((int)settings.DrainStopTimeout.TotalSeconds).ToString());
 		}
 
 		private void SetupInstanceSettingInternal(InstanceSettings settings,

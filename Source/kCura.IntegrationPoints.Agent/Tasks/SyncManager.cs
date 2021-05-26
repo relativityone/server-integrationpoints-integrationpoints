@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Core;
@@ -18,6 +19,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.Core;
@@ -126,9 +128,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				FieldEntry idField = IntegrationPointService.GetIdentifierFieldEntry(IntegrationPoint.FieldMappings);
-				IDataReader idReader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration));
-
+				IDataReader idReader = GetBatchableIdsWithDrainStopTimeout(provider, GetDrainStopTimeout());
+				
 				JobStopManager?.ThrowIfStopRequested();
 				return new ReaderEnumerable(idReader, JobStopManager);
 			}
@@ -154,6 +155,57 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogGetUnbatchedIdsFinalize(job);
 			}
 			return new List<string>();
+		}
+		
+		private IDataReader GetBatchableIdsWithDrainStopTimeout(IDataSourceProvider provider, TimeSpan drainStopTimeout)
+		{
+			IDataReader reader = null;
+			bool workerThreadCompleted = false;
+			Thread workerThread = new Thread(() =>
+			{
+				try
+				{
+					FieldEntry idField = IntegrationPointService.GetIdentifierFieldEntry(IntegrationPoint.FieldMappings);
+					reader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration));
+				}
+				finally
+				{
+					workerThreadCompleted = true;
+				}
+			});
+			workerThread.Start();
+			
+			TimeSpan sleep = TimeSpan.FromSeconds(0.5);
+
+			while (!workerThreadCompleted)
+			{
+				Thread.Sleep(sleep);
+
+				if (JobStopManager?.ShouldDrainStop == true)
+				{
+					TimeSpan timeElapsedSinceDrainStopRequested = TimeSpan.Zero;
+					while (timeElapsedSinceDrainStopRequested < drainStopTimeout)
+					{
+						if (workerThreadCompleted)
+						{
+							break;
+						}
+
+						Thread.Sleep(sleep);
+						timeElapsedSinceDrainStopRequested += sleep;
+					}
+
+					if (!workerThreadCompleted && timeElapsedSinceDrainStopRequested >= drainStopTimeout)
+					{
+						workerThread.Abort();
+						JobHistory.JobStatus = JobStatusChoices.JobHistorySuspended;
+						_jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
+						throw new OperationCanceledException();
+					}
+				}
+			}
+
+			return reader;
 		}
 
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
@@ -236,7 +288,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorService.JobHistory = JobHistory;
 			_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 			
-			JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, supportsDrainStop: false);
+			JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true);
 			JobStopManager.ThrowIfStopRequested();
 
 			if (!JobHistory.StartTimeUTC.HasValue)
@@ -400,6 +452,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			IntegrationPointService.UpdateIntegrationPoint(IntegrationPoint);
 			LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(job);
+		}
+
+		private TimeSpan GetDrainStopTimeout()
+		{
+			IInstanceSettingsManager instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager();
+			return instanceSettingsManager.GetDrainStopTimeout();
 		}
 
 		public Guid GetBatchInstance(Job job)

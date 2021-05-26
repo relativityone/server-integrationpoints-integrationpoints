@@ -1,4 +1,6 @@
-﻿namespace Relativity.IntegrationPoints.Tests.Integration
+﻿using System;
+
+namespace Relativity.IntegrationPoints.Tests.Integration
 {
 	public class InstanceSettings
 	{
@@ -9,5 +11,7 @@
 		public string RestrictReferentialFileLinksOnImport { get; set; }
 
 		public string BlockedHosts { get; set; }
+
+		public TimeSpan DrainStopTimeout { get; set; }
 	}
 }
