@@ -26,12 +26,11 @@ using System.Linq;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Agent.TaskFactory;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {

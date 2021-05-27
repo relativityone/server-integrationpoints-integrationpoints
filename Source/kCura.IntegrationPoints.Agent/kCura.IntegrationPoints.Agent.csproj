@@ -72,7 +72,6 @@
     <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
-    <Compile Include="TaskFactory\TaskParametersBuilder.cs" />
     <Compile Include="TaskFactory\JobSynchronizationChecker.cs" />
     <Compile Include="TaskFactory\TaskFactoryJobHistoryServiceFactory.cs" />
     <Compile Include="TaskFactory\TaskFactoryJobHistoryService.cs" />
@@ -113,10 +112,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj">
-      <Project>{835F7005-E106-4C29-AD9C-FE8BD5CF8280}</Project>
-      <Name>kCura.IntegrationPoints.ImportProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
       <Project>{faff9dbe-b607-45b3-8392-469b5eec5259}</Project>
@@ -206,7 +201,6 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

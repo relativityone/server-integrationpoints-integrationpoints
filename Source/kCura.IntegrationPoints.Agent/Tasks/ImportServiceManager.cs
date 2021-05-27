@@ -33,7 +33,7 @@ using kCura.IntegrationPoints.Common.Handlers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
-using kCura.IntegrationPoints.ImportProvider;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {

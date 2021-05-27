@@ -19,6 +19,7 @@ using Relativity.API;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Data;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {

@@ -1,7 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
+﻿using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.ImportProvider;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.ScheduleQueue.Core.Core;
 using System;
 using FileInfo = System.IO.FileInfo;

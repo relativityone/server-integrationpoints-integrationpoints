@@ -161,6 +161,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
 
+			container.Register(Component.For<ITaskParametersBuilder>().ImplementedBy<TaskParametersBuilder>().LifestyleTransient());
+
 			container.Register(Component.For<IIntegrationPointProviderTypeService>()
 				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
 				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
