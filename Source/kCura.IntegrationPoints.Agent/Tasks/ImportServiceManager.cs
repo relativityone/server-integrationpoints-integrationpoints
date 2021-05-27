@@ -34,6 +34,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using kCura.IntegrationPoints.Core.Contracts.Import;
+using Newtonsoft.Json.Linq;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -296,7 +297,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void ValidateLoadFile(Job job)
 		{
 			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-			LoadFileTaskParameters loadFileParameters = (LoadFileTaskParameters)parameters.BatchParameters;
+
+			LoadFileTaskParameters loadFileParameters;
+			if (parameters.BatchParameters is JObject)
+			{
+				loadFileParameters = ((JObject)parameters.BatchParameters).ToObject<LoadFileTaskParameters>();
+			}
+			else
+			{
+				loadFileParameters = (LoadFileTaskParameters)parameters.BatchParameters;
+			}
 
 			System.IO.FileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
 

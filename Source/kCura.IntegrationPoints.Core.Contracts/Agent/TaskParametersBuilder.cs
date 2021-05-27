@@ -38,7 +38,11 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		{
 			FileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint);
 
-			return new LoadFileTaskParameters(loadFile.Length, loadFile.LastWriteTimeUtc);
+			return new LoadFileTaskParameters
+			{
+				Size = loadFile.Length,
+				ModifiedDate = loadFile.LastWriteTimeUtc
+			};
 		}
 	}
 }
