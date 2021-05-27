@@ -16,6 +16,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 		bool IsStopRequested();
 
 		/// <summary>
+		/// Indicates whether the job should be drain stopped (i.e. the Agent is marked to be removed and the current job supports drain stop)
+		/// </summary>
+		bool ShouldDrainStop { get; }
+
+		/// <summary>
 		///     Throws an <see cref="OperationCanceledException" /> if the task has been stopped.
 		/// </summary>
 		void ThrowIfStopRequested();

@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IAPILog _logger;
 		private readonly CancellationToken _token;
 
+		private bool _isDrainStopping;
 		private Timer _timerThread;
 		private bool _disposed;
 
@@ -85,9 +86,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			if (_supportsDrainStop && _agent.ToBeRemoved)
 			{
+				_isDrainStopping = true;
 				JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
 
-				if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
+				if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped)
+				                                                    && jobHistory.JobStatus != JobStatusChoices.JobHistorySuspended)
 				{
 					_drainStopCancellationTokenSource.Cancel();
 					UpdateStopState(StopState.DrainStopping);
@@ -142,6 +145,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			// Will throw OperationCanceledException if task is canceled.
 			_token.ThrowIfCancellationRequested();
 		}
+
+		public bool ShouldDrainStop => _isDrainStopping;
 
 		public event EventHandler<EventArgs> StopRequestedEvent;
 

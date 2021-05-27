@@ -35,7 +35,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		[SetUp]
 		public override void SetUp()
 		{
-			_jobHistory = new JobHistory();
+			_jobHistory = new JobHistory()
+			{
+				JobStatus = JobStatusChoices.JobHistoryProcessing
+			};
 			_jobServiceMock = new Mock<IJobService>();
 			_jobHistoryServiceMock = new Mock<IJobHistoryService>();
 			_jobServiceDataProviderMock = new Mock<IJobServiceDataProvider>();
