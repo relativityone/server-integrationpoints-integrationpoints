@@ -25,7 +25,7 @@ var SavedSearchService = function() {
 			dataType: 'json',
 			data: {
 				savedSearchContainerId: nodeId,
-				savedSearchId: savedSearchId === 0 ? null : savedSearchId
+				savedSearchId: savedSearchId
 			},
 			async: true,
 			success: function (result) {

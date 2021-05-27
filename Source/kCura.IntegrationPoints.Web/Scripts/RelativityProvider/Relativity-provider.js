@@ -43,11 +43,7 @@
 			var errorCallback = function () {
 				callback({ isValid: false, message: 'Unable to validate if the saved search is accessible. Please try again.' });
 			};
-			if (value === 0) {
-				okCallback(null);
-			} else {
-				savedSearchService.RetrieveSavedSearch(value, okCallback, errorCallback);
-			}
+			savedSearchService.RetrieveSavedSearch(value, okCallback, errorCallback);
 		},
 		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
