@@ -60,6 +60,8 @@ using Relativity.Telemetry.APM;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
 
+using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
+
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
 	[TestExecutionCategory.CI, TestLevel.L1]
@@ -126,6 +128,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Install(new ValidationInstaller());
 			Container.Install(new LdapProviderInstaller());
 			Container.Install(new RelativitySyncInstaller());
+			Container.Install(new ImportInstaller());
 
 			OverrideRelativitySyncInstaller();
 
@@ -216,6 +219,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())));
 
 			Container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>());
+
+			Container.Register(Component.For<ITaskParametersBuilder>().ImplementedBy<TaskParametersBuilder>().LifestyleTransient());
 
 			Container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>().LifestyleSingleton());
 			Container.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());

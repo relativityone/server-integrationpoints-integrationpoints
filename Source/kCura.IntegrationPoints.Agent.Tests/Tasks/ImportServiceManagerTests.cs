@@ -37,7 +37,6 @@ using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using kCura.IntegrationPoints.Core.Contracts.Import;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
