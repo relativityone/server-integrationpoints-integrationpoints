@@ -43,7 +43,11 @@
 			var errorCallback = function () {
 				callback({ isValid: false, message: 'Unable to validate if the saved search is accessible. Please try again.' });
 			};
-			savedSearchService.RetrieveSavedSearch(value, okCallback, errorCallback);
+			if (value === 0) {
+				okCallback(null);
+			} else {
+				savedSearchService.RetrieveSavedSearch(value, okCallback, errorCallback);
+			}
 		},
 		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
@@ -148,7 +152,7 @@
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
 		};
 
-		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
+		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId === 0 ? null : state.SavedSearchArtifactId).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsSavedSearchSelected();

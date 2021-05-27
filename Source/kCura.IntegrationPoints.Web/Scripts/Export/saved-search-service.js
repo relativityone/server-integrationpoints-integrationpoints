@@ -1,4 +1,4 @@
-﻿var SavedSearchService = function() {
+var SavedSearchService = function() {
 	var self = this;
 
 	var formatChildrenDirectory = function (parent) {
@@ -25,7 +25,7 @@
 			dataType: 'json',
 			data: {
 				savedSearchContainerId: nodeId,
-				savedSearchId: savedSearchId
+				savedSearchId: savedSearchId === 0 ? null : savedSearchId
 			},
 			async: true,
 			success: function (result) {
