@@ -2,18 +2,20 @@
 using System.IO;
 using NUnit.Framework;
 using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Web;
+using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
-using Relativity.Testing.Framework.Models;
-using Relativity.Testing.Framework.Web;
+using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[SetUpFixture]
 	public class TestsSetUpFixture
 	{
-		private const string FUNCTIONAL_TEMPLATE_NAME = "RIP Functional Tests Template";
-		private const string FUNCTIONAL_STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
+		private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
+
+		public const string WORKSPACE_TEMPLATE_NAME = "RIP Functional Tests Template";
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -22,14 +24,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			RelativityFacade.Instance.RelyOn<ApiComponent>();
 			RelativityFacade.Instance.RelyOn<WebComponent>();
 
-			RelativityFacade.Instance.Resolve<IAccountPoolService>().StandardAccountEmailFormat = FUNCTIONAL_STANDARD_ACCOUNT_EMAIL_FORMAT;
+			RelativityFacade.Instance.Resolve<IAccountPoolService>().StandardAccountEmailFormat = STANDARD_ACCOUNT_EMAIL_FORMAT;
 
 			if (TemplateWorkspaceExists())
 			{
 				return;
 			}
 
-			int workspaceId = CreateTemplateWorkspace();
+			int workspaceId = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME).ArtifactID;
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
 		}
@@ -41,17 +43,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		}
 
 		private static bool TemplateWorkspaceExists()
-			=> RelativityFacade.Instance.Resolve<IWorkspaceService>().Get(FUNCTIONAL_TEMPLATE_NAME) != null;
-
-		private static int CreateTemplateWorkspace()
-		{
-			Workspace newWorkspace = new Workspace()
-			{
-				Name = FUNCTIONAL_TEMPLATE_NAME
-			};
-
-			return RelativityFacade.Instance.Resolve<IWorkspaceService>().Create(newWorkspace).ArtifactID;
-		}
+			=> RelativityFacade.Instance.Resolve<IWorkspaceService>().Get(WORKSPACE_TEMPLATE_NAME) != null;
 
 		private static void InstallIntegrationPointsToWorkspace(int workspaceId)
 		{

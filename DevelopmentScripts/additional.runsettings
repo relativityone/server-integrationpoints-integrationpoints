@@ -2,5 +2,7 @@
   <TestRunParameters>
     <Parameter name="SystemTestData" value="SystemTests\SystemTestData" />
     <Parameter name="PerformRelativityVersionCheck" value="false" />
+	<Parameter name="DocumentImportEnforceWebMode" value="false" />
+	<Parameter name="DocumentImportTimeout" value="600" />
   </TestRunParameters>
 </RunSettings>

@@ -52,6 +52,9 @@
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Functional\Helpers\LoadFiles\UwsNativesLoadFile.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Integration\Tests\LDAP\TestData\AdministrativeTestData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
