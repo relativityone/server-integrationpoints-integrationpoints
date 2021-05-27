@@ -33,6 +33,7 @@ using kCura.IntegrationPoints.Common.Handlers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using kCura.IntegrationPoints.ImportProvider;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -147,6 +148,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogExecuteFinalize(job);
 				SendAutomatedWorkflowsTriggerAsync(job).GetAwaiter().GetResult();
 			}
+		}
+
+		protected override void RunValidation(Job job)
+		{
+			base.RunValidation(job);
+
+			ValidateLoadFile(job);
 		}
 
 		private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
@@ -283,6 +291,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
 			providerSettings.LoadFile = _importFileLocationService.LoadFileFullPath(IntegrationPointDto.ArtifactId);
 			return Serializer.Serialize(providerSettings);
+		}
+
+		private void ValidateLoadFile(Job job)
+		{
+			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+			LoadFileTaskParameters loadFileParameters = (LoadFileTaskParameters)parameters.BatchParameters;
+
+			System.IO.FileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto.ArtifactId);
+
+			if(loadFile.Length != loadFileParameters.Size || loadFile.LastWriteTimeUtc != loadFileParameters.ModifiedDate)
+			{
+				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
+				throw new IntegrationPointValidationException(result);
+			}
 		}
 
 		#region Logging

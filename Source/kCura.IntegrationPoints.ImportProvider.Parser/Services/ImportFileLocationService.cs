@@ -9,6 +9,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 
 using SystemInterface.IO;
 
+using FileInfo = System.IO.FileInfo;
+
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class ImportFileLocationService : IImportFileLocationService
@@ -71,6 +73,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 				throw new System.Exception("Invalid Load File Location");
 			}
 			return loadFileFullPath;
+		}
+
+		public FileInfo LoadFileInfo(int integrationPointArtifactId)
+		{
+			string loadFileFullPath = LoadFileFullPath(integrationPointArtifactId);
+
+			return new FileInfo(loadFileFullPath);
 		}
 
 		private string GetErrorFileName(string loadFilePath, string integrationPointName, int integrationPointArtifactId)

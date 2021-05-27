@@ -55,6 +55,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ImportProvider.cs" />
     <Compile Include="Installers\ImportProviderInstaller.cs" />
+    <Compile Include="LoadFileTaskParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">

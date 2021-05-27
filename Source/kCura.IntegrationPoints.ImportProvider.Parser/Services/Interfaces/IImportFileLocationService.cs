@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
@@ -10,5 +6,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 	{
 		string ErrorFilePath(int integrationPointArtifactId);
 		string LoadFileFullPath(int integrationPointArtifactId);
+		FileInfo LoadFileInfo(int integrationPointArtifactId);
 	}
 }
