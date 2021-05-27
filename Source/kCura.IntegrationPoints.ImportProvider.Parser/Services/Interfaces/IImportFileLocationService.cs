@@ -1,11 +1,11 @@
-﻿using System.IO;
+﻿using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
 	public interface IImportFileLocationService
 	{
-		string ErrorFilePath(int integrationPointArtifactId);
-		string LoadFileFullPath(int integrationPointArtifactId);
-		FileInfo LoadFileInfo(int integrationPointArtifactId);
+		string ErrorFilePath(IntegrationPoint integrationPoint);
+		string LoadFileFullPath(IntegrationPoint integrationPoint);
+		System.IO.FileInfo LoadFileInfo(IntegrationPoint integrationPoint);
 	}
 }

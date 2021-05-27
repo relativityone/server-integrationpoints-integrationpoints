@@ -12,6 +12,11 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 	{
 		private readonly IImportFileLocationService _importFileLocationService;
 
+		public TaskParametersBuilder(IImportFileLocationService importFileLocationService)
+		{
+			_importFileLocationService = importFileLocationService;
+		}
+
 		public TaskParameters Build(TaskType taskType, Guid batchInstanceId, IntegrationPoint integrationPoint)
 		{
 			TaskParameters parameters = new TaskParameters
@@ -33,7 +38,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
 		private LoadFileTaskParameters BuildLoadFileParameters(IntegrationPoint integrationPoint)
 		{
-			FileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint.ArtifactId);
+			FileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint);
 
 			return new LoadFileTaskParameters(loadFile.Length, loadFile.LastWriteTimeUtc);
 		}

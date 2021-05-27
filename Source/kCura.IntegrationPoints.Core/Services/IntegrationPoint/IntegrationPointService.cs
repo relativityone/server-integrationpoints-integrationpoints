@@ -50,7 +50,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IProviderTypeService providerTypeService,
 			IMessageService messageService,
 			IIntegrationPointRepository integrationPointRepository,
-			IRelativityObjectManager objectManager)
+			IRelativityObjectManager objectManager,
+			ITaskParametersBuilder taskParametersBuilder)
 			: base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
@@ -61,6 +62,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_messageService = messageService;
 			_validationExecutor = validationExecutor;
 			_integrationPointRepository = integrationPointRepository;
+			_taskParametersBuilder = taskParametersBuilder;
 		}
 
 		protected override string UnableToSaveFormat

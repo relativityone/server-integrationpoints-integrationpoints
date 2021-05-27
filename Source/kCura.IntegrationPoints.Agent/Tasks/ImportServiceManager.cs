@@ -240,7 +240,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			importSettings.JobID = ImportSettings.JobID;
 			importSettings.Provider = nameof(ProviderType.ImportLoadFile);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
-			importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(IntegrationPointDto.ArtifactId);
+			importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(IntegrationPointDto);
 
 			//For LoadFile imports, correct an off-by-one error introduced by WinEDDS.LoadFileReader interacting with
 			//ImportAPI process. This is introduced by the fact that the first record is the column header row.
@@ -289,7 +289,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private string UpdatedProviderSettingsLoadFile()
 		{
 			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-			providerSettings.LoadFile = _importFileLocationService.LoadFileFullPath(IntegrationPointDto.ArtifactId);
+			providerSettings.LoadFile = _importFileLocationService.LoadFileFullPath(IntegrationPointDto);
 			return Serializer.Serialize(providerSettings);
 		}
 
@@ -298,7 +298,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			LoadFileTaskParameters loadFileParameters = (LoadFileTaskParameters)parameters.BatchParameters;
 
-			System.IO.FileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto.ArtifactId);
+			System.IO.FileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
 
 			if(loadFile.Length != loadFileParameters.Size || loadFile.LastWriteTimeUtc != loadFileParameters.ModifiedDate)
 			{

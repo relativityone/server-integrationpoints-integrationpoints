@@ -26,6 +26,12 @@ using System.Linq;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Agent.TaskFactory;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using kCura.IntegrationPoints.ImportProvider.Parser;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using kCura.IntegrationPoints.Core.Helpers;
+using kCura.Apps.Common.Utils.Serializers;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -85,11 +91,21 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				integrationPointSerializer,
 				secretsRepository,
 				logger);
+
+			IIntegrationPointTypeService integrationPointTypeService = new IntegrationPointTypeService(helper, caseServiceContext);
+
+			IDataTransferLocationService dataTransferLocationService = new DataTransferLocationService(helper,
+				integrationPointTypeService, new LongPathDirectory(), new CryptographyHelper());
+
+			IImportFileLocationService importFileLocationService = new ImportFileLocationService(dataTransferLocationService,
+				new JSONSerializer(), new LongPathDirectory());
+			ITaskParametersBuilder taskParametersBuilder = new TaskParametersBuilder(importFileLocationService);
+
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper, integrationPointRepository);
 			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
 				integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
 				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository,
-				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager, taskParametersBuilder);
 
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
 				helper,

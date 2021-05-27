@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -15,32 +14,28 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class ImportFileLocationService : IImportFileLocationService
 	{
-
 		private const string _ERROR_FILE_FOLDER_NAME = "Error_Files";
 		private const string _ERROR_FILE_NAME_STUB = "Error_file";
 		private const string _ELEMENT_SEPARATOR = "-";
 
-		private readonly IIntegrationPointService _integrationPointReader;
 		private readonly IDataTransferLocationService _locationService;
 		private readonly ISerializer _serializer;
 		private readonly IDirectory _directoryHelper;
 
-		public ImportFileLocationService(IIntegrationPointService integrationPointReader,
+		public ImportFileLocationService(
 			IDataTransferLocationService locationService,
 			ISerializer serializer,
 			IDirectory directoryHelper)
 		{
-			_integrationPointReader = integrationPointReader;
 			_locationService = locationService;
 			_serializer = serializer;
 			_directoryHelper = directoryHelper;
 		}
 
-		public string ErrorFilePath(int integrationPointArtifactId)
+		public string ErrorFilePath(IntegrationPoint integrationPoint)
 		{
-			IntegrationPoint ip = _integrationPointReader.ReadIntegrationPoint(integrationPointArtifactId);
-			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(ip.SourceConfiguration);
-			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(ip.DestinationConfiguration);
+			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(integrationPoint.SourceConfiguration);
+			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 			string loadFileBasePath = Path.GetDirectoryName(settings.LoadFile);
 			string errorFileDirectory = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId),
 				loadFileBasePath,
@@ -50,19 +45,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				_directoryHelper.CreateDirectory(errorFileDirectory);
 			}
-			return Path.Combine(errorFileDirectory, GetErrorFileName(settings.LoadFile, ip.Name, integrationPointArtifactId));
+			return Path.Combine(errorFileDirectory, GetErrorFileName(settings.LoadFile, integrationPoint.Name, integrationPoint.ArtifactId));
 		}
 
-		public string LoadFileFullPath(int integrationPointArtifactId)
+		public string LoadFileFullPath(IntegrationPoint integrationPoint)
 		{
-			IntegrationPoint ip = _integrationPointReader.ReadIntegrationPoint(integrationPointArtifactId);
-			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(ip.SourceConfiguration);
-			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(ip.DestinationConfiguration);
+			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(integrationPoint.SourceConfiguration);
+			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 
 			// Retrieve the root path of the workspace file location as well as the relative path of the DataTransfer\Import folder
 			// We will verify that the fullPath of the load File exists in this location
 			string fileLocationRootPath = _locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId);
-			string dataTransferImportPath = _locationService.GetDefaultRelativeLocationFor(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid);
+			string dataTransferImportPath = _locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid);
 			
 			// Doing the GetFullPath make sure that if the LoadFile has "../../" in it we get the true path
 			string loadFileFullPath = Path.GetFullPath(Path.Combine(fileLocationRootPath, settings.LoadFile));
@@ -75,9 +69,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			return loadFileFullPath;
 		}
 
-		public FileInfo LoadFileInfo(int integrationPointArtifactId)
+		public FileInfo LoadFileInfo(IntegrationPoint integrationPoint)
 		{
-			string loadFileFullPath = LoadFileFullPath(integrationPointArtifactId);
+			string loadFileFullPath = LoadFileFullPath(integrationPoint);
 
 			return new FileInfo(loadFileFullPath);
 		}

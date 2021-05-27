@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
+using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
@@ -23,6 +27,8 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.ImportProvider.Parser;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
@@ -134,6 +140,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper, integrationPointRepository);
 
+			IIntegrationPointTypeService integrationPointTypeService = new IntegrationPointTypeService(Helper, caseServiceContext);
+
+			IDataTransferLocationService dataTransferLocationService = new DataTransferLocationService(Helper,
+				integrationPointTypeService, new LongPathDirectory(), new CryptographyHelper());
+
+			IImportFileLocationService importFileLocationService = new ImportFileLocationService(dataTransferLocationService,
+				new JSONSerializer(), new LongPathDirectory());
+			ITaskParametersBuilder taskParametersBuilder = new TaskParametersBuilder(importFileLocationService);
+
 			_integrationPointService = new IntegrationPointService(
 				Helper, 
 				caseServiceContext,
@@ -147,7 +162,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				providerTypeService, 
 				messageService, 
 				integrationPointRepository,
-				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
+				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
+				taskParametersBuilder);
 		}
 
 		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceID)
