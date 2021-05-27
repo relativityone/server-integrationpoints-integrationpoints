@@ -18,11 +18,11 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 		private const bool _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS = false;
 		private readonly IAPILog _logger;
 		private readonly IMessageService _messageService;
-		private readonly JobContextProvider _jobContextProvider;
+		private readonly IJobContextProvider _jobContextProvider;
 		private readonly ISerializer _serializer;
 		private readonly IConfig _config;
 
-		public ExternalServiceInstrumentationProviderWithJobContext(JobContextProvider jobContextProvider, IMessageService messageService, IAPILog logger, ISerializer serializer, IConfig config)
+		public ExternalServiceInstrumentationProviderWithJobContext(IJobContextProvider jobContextProvider, IMessageService messageService, IAPILog logger, ISerializer serializer, IConfig config)
 		{
 			_jobContextProvider = jobContextProvider;
 			_messageService = messageService;

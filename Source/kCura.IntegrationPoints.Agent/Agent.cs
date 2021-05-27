@@ -25,7 +25,10 @@ using kCura.IntegrationPoints.RelativitySync.Metrics;
 using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
+using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Component = Castle.MicroKernel.Registration.Component;
@@ -39,7 +42,7 @@ namespace kCura.IntegrationPoints.Agent
 	{
 		private ErrorService _errorService;
 		private IAgentHelper _helper;
-		private JobContextProvider _jobContextProvider;
+		private IJobContextProvider _jobContextProvider;
 		private IJobExecutor _jobExecutor;
 		private const string _AGENT_NAME = "Integration Points Agent";
 		private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
@@ -48,6 +51,23 @@ namespace kCura.IntegrationPoints.Agent
 		public virtual event ExceptionEventHandler JobExecutionError;
 
 		public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
+		{
+			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+
+			_agentLevelContainer = new Lazy<IWindsorContainer>(CreateAgentLevelContainer);
+
+#if TIME_MACHINE
+			AgentTimeMachineProvider.Current =
+				new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+#endif
+		}
+
+		protected Agent(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
+				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
+				IQueryManager queryManager = null, IAPILog logger = null) 
+			: base(agentGuid, agentService, 
+				jobService, scheduleRuleFactory, queueJobValidator, queryManager, logger)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
@@ -83,21 +103,13 @@ namespace kCura.IntegrationPoints.Agent
 			SetWebApiTimeout();
 
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
-			using (ripContainerForSync.Resolve<JobContextProvider>().StartJobContext(job))
+			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
 			{
 				if (ShouldUseRelativitySync(job, ripContainerForSync))
 				{
+					ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
 					try
 					{
-						ripContainerForSync.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
-						ripContainerForSync.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
-						ripContainerForSync.Register(Component.For<IWindsorContainer>().Instance(ripContainerForSync));
-						ripContainerForSync.Register(Component.For<IExportServiceManager>().ImplementedBy<ExportServiceManager>().Named(Guid.NewGuid().ToString()).IsDefault());
-						ripContainerForSync.Register(Component.For<IntegrationPointToSyncConverter>().ImplementedBy<IntegrationPointToSyncConverter>());
-						ripContainerForSync.Register(Component.For<IMetricsFactory>().ImplementedBy<MetricsFactory>().LifestyleTransient());
-						ripContainerForSync.Register(Component.For<ISyncJobMetric>().ImplementedBy<SyncJobMetric>().LifestyleTransient());
-						ripContainerForSync.Register(Component.For<IJobHistorySyncService>().ImplementedBy<JobHistorySyncService>().LifestyleTransient());
-
 						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
 						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
 						AgentCorrelationContext correlationContext = GetCorrelationContext(job);
@@ -189,7 +201,6 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			try
 			{
-				ripContainerForSync.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 				RelativitySyncConstrainsChecker constrainsChecker = ripContainerForSync.Resolve<RelativitySyncConstrainsChecker>();
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
@@ -258,23 +269,24 @@ namespace kCura.IntegrationPoints.Agent
 			JobExecutionError?.Invoke(job, task, exception);
 		}
 
-		protected JobContextProvider JobContextProvider
+		protected IJobContextProvider JobContextProvider
 		{
 			get
 			{
 				if (_jobContextProvider == null)
 				{
-					_jobContextProvider = _agentLevelContainer.Value.Resolve<JobContextProvider>();
+					_jobContextProvider = _agentLevelContainer.Value.Resolve<IJobContextProvider>();
 				}
 
 				return _jobContextProvider;
 			}
 		}
 
-		private IWindsorContainer CreateAgentLevelContainer()
+		protected virtual IWindsorContainer CreateAgentLevelContainer()
 		{
 			var container = new WindsorContainer();
 			container.Install(new AgentAggregatedInstaller(Helper, ScheduleRuleFactory));
+			container.Install(new RelativitySyncInstaller());
 			container.Register(Component.For<IRemovableAgent>().Instance(this));
 			return container;
 		}

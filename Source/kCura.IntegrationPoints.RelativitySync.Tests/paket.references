@@ -1,3 +1,4 @@
+Castle.Windsor
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.OutsideIn
@@ -13,4 +14,4 @@ NUnit
 
 group Sync
 	Relativity.Sync
-	Banzai
+    Banzai

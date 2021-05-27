@@ -17,7 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			
 			QueryManagerMock queryManagerMock = (QueryManagerMock)Container.Resolve<IQueryManager>();
 			
-			FakeAgent sut = new FakeAgent(agent,
+			FakeScheduleAgent sut = new FakeScheduleAgent(agent,
 				Container.Resolve<IAgentHelper>(),
 				queryManager: queryManagerMock);
 
@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			});
 
 
-			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Enabled = false;
@@ -53,9 +53,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new []{jobWithoutWorkspace.JobId});
 		}
 
-		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		private FakeScheduleAgent PrepareSutWithMockedQueryManager(AgentTest agent)
 		{
-			return new FakeAgent(agent,
+			return new FakeScheduleAgent(agent,
 				Container.Resolve<IAgentHelper>(),
 				queryManager: Container.Resolve<IQueryManager>());
 		}

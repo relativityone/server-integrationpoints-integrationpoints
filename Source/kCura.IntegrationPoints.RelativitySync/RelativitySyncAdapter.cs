@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
 using kCura.IntegrationPoints.RelativitySync.Metrics;
-using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Sync;
@@ -17,24 +14,30 @@ namespace kCura.IntegrationPoints.RelativitySync
 	public sealed class RelativitySyncAdapter
 	{
 		private readonly IExtendedJob _job;
-		private readonly IWindsorContainer _ripContainer;
 		private readonly IAPILog _logger;
 		private readonly IAPM _apmMetrics;
 		private readonly ISyncJobMetric _jobMetric;
 		private readonly IJobHistorySyncService _jobHistorySyncService;
 		private readonly Guid _correlationId;
-		private readonly IntegrationPointToSyncConverter _converter;
+		private readonly IIntegrationPointToSyncConverter _converter;
+		private readonly ISyncOperationsWrapper _syncOperations;
+		private readonly ISyncConfigurationService _syncConfigurationService;
+		private readonly ICancellationAdapter _cancellationAdapter;
 
-		public RelativitySyncAdapter(IExtendedJob job, IWindsorContainer ripContainer, IAPILog logger, IAPM apmMetrics,
-			ISyncJobMetric jobMetric, IJobHistorySyncService jobHistorySyncService, IntegrationPointToSyncConverter converter)
+		public RelativitySyncAdapter(IExtendedJob job, IAPILog logger, IAPM apmMetrics,
+			ISyncJobMetric jobMetric, IJobHistorySyncService jobHistorySyncService, IIntegrationPointToSyncConverter converter,
+			ISyncOperationsWrapper syncOperations, ISyncConfigurationService syncConfigurationService, ICancellationAdapter cancellationAdapter)
 		{
 			_job = job;
-			_ripContainer = ripContainer;
 			_logger = logger;
 			_apmMetrics = apmMetrics;
 			_jobMetric = jobMetric;
 			_jobHistorySyncService = jobHistorySyncService;
 			_converter = converter;
+			_syncOperations = syncOperations;
+			_syncConfigurationService = syncConfigurationService;
+			_cancellationAdapter = cancellationAdapter;
+			
 			_correlationId = Guid.NewGuid();
 		}
 
@@ -44,7 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
 			try
 			{
-				CompositeCancellationToken compositeCancellationToken = CancellationAdapter.GetCancellationToken(_job, _ripContainer);
+				CompositeCancellationToken compositeCancellationToken = _cancellationAdapter.GetCancellationToken();
 				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
 				using (IContainer container = InitializeSyncContainer(syncConfiguration))
 				{
@@ -202,29 +205,45 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private async Task<ISyncJob> CreateSyncJobAsync(IContainer container)
 		{
-			SyncServiceManagerForRip serviceManager = new SyncServiceManagerForRip(_ripContainer.Resolve<IHelper>().GetServicesManager());
+			int syncConfigurationArtifactId = await PrepareSyncConfigurationAsync().ConfigureAwait(false);
 
-			int syncConfigurationArtifactId;
+			ISyncJobFactory jobFactory = _syncOperations.CreateSyncJobFactory();
+			IRelativityServices relativityServices = _syncOperations.CreateRelativityServices();
+			ISyncLog syncLog = _syncOperations.CreateSyncLog();
+
+			SyncJobParameters parameters = new SyncJobParameters(
+				syncConfigurationArtifactId, _job.WorkspaceId, _job.JobIdentifier)
+			{
+				TriggerValue = "rip"
+			};
+
+			return jobFactory.Create(container, parameters, relativityServices, syncLog);
+		}
+
+		private async Task<int> PrepareSyncConfigurationAsync()
+		{
 			try
 			{
-				syncConfigurationArtifactId = await _converter.CreateSyncConfigurationAsync(_job, serviceManager).ConfigureAwait(false);
+				var syncConfigurationId = await _syncConfigurationService.TryGetResumedSyncConfigurationIdAsync(
+					_job.WorkspaceId, _job.JobHistoryId).ConfigureAwait(false);
+
+				if (syncConfigurationId.HasValue)
+				{
+					_logger.LogInformation("SyncConfiguration with ID {configurationId} exists for JobHistory {jobHistory}. Job is resumed.",
+						syncConfigurationId.Value, _job.JobHistoryId);
+					await _syncOperations.PrepareSyncConfigurationForResumeAsync(
+						_job.WorkspaceId, syncConfigurationId.Value).ConfigureAwait(false);
+
+					return syncConfigurationId.Value;
+				}
+
+				return await _converter.CreateSyncConfigurationAsync(_job).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Unable to create Sync Configuration RDO.");
+				_logger.LogError(e, "Sync Configuration RDO preparation failed.");
 				throw;
 			}
-
-			SyncJobFactory jobFactory = new SyncJobFactory();
-			SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.JobIdentifier)
-											{
-												TriggerValue = "rip"
-											};
-
-			RelativityServices relativityServices = new RelativityServices(_apmMetrics, serviceManager, ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
-			ISyncLog syncLog = new SyncLog(_logger);
-			ISyncJob syncJob = jobFactory.Create(container, parameters, relativityServices, syncLog);
-			return syncJob;
 		}
 
 		private IContainer InitializeSyncContainer(SyncConfiguration syncConfiguration)
@@ -233,8 +252,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 			// existing RIP workflow. The Autofac container we are building will only resolve adapters and related
 			// wrappers, and the Windsor container will only resolve existing RIP classes.
 			var containerBuilder = new ContainerBuilder();
-
-			_ripContainer.Register(Component.For<SyncConfiguration>().Instance(syncConfiguration));
 
 			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
 

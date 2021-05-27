@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration.Monitoring
 		private Mock<IMetricsManager> _metricManagerMock;
 		private Mock<IDateTimeHelper> _dateTimeHelperMock;
 		private Mock<IRipMetrics> _ripMetricsMock; 
-		private JobContextProvider _jobContextProvider;
+		private IJobContextProvider _jobContextProvider;
 		private IntegrationPointsMessageService _messageService;
 		private ExternalServiceInstrumentationProviderWithJobContext _sut;
 

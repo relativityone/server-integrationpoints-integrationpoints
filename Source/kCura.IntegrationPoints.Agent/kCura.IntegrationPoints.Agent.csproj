@@ -56,6 +56,7 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="Attributes\SynchronizedTaskAttribute.cs" />
+    <Compile Include="Context\IJobContextProvider.cs" />
     <Compile Include="Exceptions\AgentDropJobException.cs" />
     <Compile Include="Installer\AgentAggregatedInstaller.cs" />
     <Compile Include="Installer\AgentInstaller.cs" />
@@ -750,6 +751,7 @@
           <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
+          <Aliases>reactive</Aliases>
         </Reference>
       </ItemGroup>
     </When>

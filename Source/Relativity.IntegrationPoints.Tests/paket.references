@@ -1,6 +1,7 @@
 ﻿kCura
 kCura.Apps.Common.Config
 Relativity
+Relativity.Toggles
 Relativity.API
 Relativity.Kepler.Client
 	alias Relativity.Services.ServiceProxy.dll ServiceProxy
@@ -8,6 +9,7 @@ Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
+Relativity.OutsideIn
 
 Moq
 FluentAssertions
@@ -22,3 +24,4 @@ group Tests
 	Relativity.Testing.Framework.Api content: none // avoid including OutsideIn binaries
 	Relativity.Testing.Framework.Web
 	IntegrationPoints.MyFirstProvider
+	Relativity.Sync

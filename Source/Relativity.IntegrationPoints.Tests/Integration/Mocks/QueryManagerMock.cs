@@ -1,7 +1,4 @@
-﻿// Method "kCura.Vendor.Castle.Core.Internal.CollectionExtensions.ForEach" exists in two different assemblies: "kCura.Vendor.Castle.Core" and "Relativity.Services.ServiceProxy" so we have to explicitly choose one of them
-extern alias ServiceProxy;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,8 +7,6 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Data.Interfaces;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-
-using ServiceProxy::kCura.Vendor.Castle.Core.Internal;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -53,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var nextJob = _db.JobsInQueue.Where(x =>
 					x.AgentTypeID == agentTypeId &&
 					x.NextRunTime <= _context.CurrentDateTime &&
-					(x.StopState == StopState.None || x.StopState == StopState.DrainStopped))
+					(x.StopState.HasFlag(StopState.None) || x.StopState.HasFlag(StopState.DrainStopped)))
 				.OrderByDescending(x => x.StopState)
 				.FirstOrDefault();
 
@@ -150,8 +145,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			return new ActionCommand(() =>
 			{
-				_db.JobsInQueue.Where(x => _db.Agents.Exists(a => a.ArtifactId == x.LockedByAgentID))
-					.ForEach(x => x.LockedByAgentID = null);
+				var jobs = _db.JobsInQueue.Where(
+					x => _db.Agents.Exists(a => a.ArtifactId == x.LockedByAgentID));
+				foreach (var job in jobs)
+				{
+					job.LockedByAgentID = null;
+				}
 
 				_db.JobsInQueue.RemoveAll(x => x.LockedByAgentID == null && 
 				                               _db.Workspaces.FirstOrDefault(w => w.ArtifactId == x.WorkspaceID) == null);
@@ -170,13 +169,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
 		{
 			int affectedRows = 0;
-			_db.JobsInQueue
-				.Where(x => jobIds.Contains(x.JobId))
-				.ForEach(x =>
-				{
-					++affectedRows;
-					x.StopState = state;
-				});
+			var jobs = _db.JobsInQueue.Where(x => jobIds.Contains(x.JobId));
+			foreach(var job in jobs)
+			{
+				++affectedRows;
+				job.StopState = state;
+			}
 
 			return new ValueReturnQuery<int>(affectedRows);
 		}
@@ -189,7 +187,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 				taskTypes.Contains(x.TaskType));
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
+
+			foreach(var job in jobs)
+			{
+				dataTable.ImportRow(job.AsDataRow());
+			}
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
@@ -199,7 +201,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var jobs = _db.JobsInQueue.Where(x => x.RelatedObjectArtifactID == integrationPointId);
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
+
+			foreach(var job in jobs)
+			{
+				dataTable.ImportRow(job.AsDataRow());
+			}
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
@@ -209,7 +215,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var jobs = _db.JobsInQueue.Where(x => x.JobId == jobId);
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
+
+			foreach (var job in jobs)
+			{
+				dataTable.ImportRow(job.AsDataRow());
+			}
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
