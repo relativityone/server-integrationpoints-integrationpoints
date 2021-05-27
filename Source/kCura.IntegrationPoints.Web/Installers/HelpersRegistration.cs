@@ -1,5 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.TaskFactory;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Metrics;
@@ -62,6 +64,10 @@ namespace kCura.IntegrationPoints.Web.Installers
 				Component
 					.For<IDateTimeHelper>()
 					.ImplementedBy<DateTimeHelper>()
+					.LifestyleTransient(),
+				Component
+					.For<ITaskParametersBuilder>()
+					.ImplementedBy<TaskParametersBuilder>()
 					.LifestyleTransient()
 			);
 		}

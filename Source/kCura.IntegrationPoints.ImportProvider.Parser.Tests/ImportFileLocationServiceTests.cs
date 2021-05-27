@@ -1,139 +1,137 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoint.Tests.Core;
-using NUnit.Framework;
-using NSubstitute;
-using System;
-using SystemInterface.IO;
+﻿//using kCura.Apps.Common.Utils.Serializers;
+//using kCura.IntegrationPoints.Core.Services;
+//using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+//using kCura.IntegrationPoints.Domain.Models;
+//using kCura.IntegrationPoints.Synchronizers.RDO;
+//using kCura.IntegrationPoint.Tests.Core;
+//using NUnit.Framework;
+//using NSubstitute;
+//using System;
+//using SystemInterface.IO;
 
-namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
-{
-	[TestFixture, Category("Unit"), Category("ImportProvider")]
-	public class ImportFileLocationServiceTests : TestBase
-	{
-		private const int _IP_ARTIFACT_ID = 1004242;
-		private const string _LOAD_FILE_PATH = @"DataTransfer\Import\example-load-file.csv";
-		private const string _WORKSPACE_ROOT_LOCATION = @"\\example.host.name\fileshare\EDDS-example-app-id";
-		private const string _DATA_TRANSFER_IMPORT_LOCATION = @"DataTransfer\Import";
-		private const string _IP_NAME = @"Example-IP-Name";
-		private const string _ERROR_FILE_LOCATION =
-			@"\\example.host.name\fileshare\EDDS-example-app-id\DataTransfer\Import\Error_Files\Example-IP-Name-1004242-Error_file.csv";
-		private const string _LOAD_FILE_LOCATION =
-			@"\\example.host.name\fileshare\EDDS-example-app-id\DataTransfer\Import\example-load-file.csv";
+//namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
+//{
+//	[TestFixture, Category("Unit"), Category("ImportProvider")]
+//	public class ImportFileLocationServiceTests : TestBase
+//	{
+//		private const string _LOAD_FILE_PATH = @"DataTransfer\Import\example-load-file.csv";
+//		private const string _WORKSPACE_ROOT_LOCATION = @"\\example.host.name\fileshare\EDDS-example-app-id";
+//		private const string _DATA_TRANSFER_IMPORT_LOCATION = @"DataTransfer\Import";
+//		private const string _IP_NAME = @"Example-IP-Name";
+//		private const string _ERROR_FILE_LOCATION =
+//			@"\\example.host.name\fileshare\EDDS-example-app-id\DataTransfer\Import\Error_Files\Example-IP-Name-1004242-Error_file.csv";
+//		private const string _LOAD_FILE_LOCATION =
+//			@"\\example.host.name\fileshare\EDDS-example-app-id\DataTransfer\Import\example-load-file.csv";
 
-		IIntegrationPointService _integrationPointReader;
-		IDataTransferLocationService _locationService;
-		ISerializer _serializer;
-		IDirectory _directoryHelper;
-		ImportProviderSettings _providerSettings;
+//		private IDataTransferLocationService _locationService;
+//		private ISerializer _serializer;
+//		private IDirectory _directoryHelper;
+//		private ImportProviderSettings _providerSettings;
 
+//		private Data.IntegrationPoint _integrationPoint;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			Data.IntegrationPoint ip = new Data.IntegrationPoint();
-			_providerSettings = new ImportProviderSettings();
-			ImportSettings importApiSettings = new ImportSettings();
+//		[SetUp]
+//		public override void SetUp()
+//		{
+//			_integrationPoint = new Data.IntegrationPoint();
+//			_integrationPoint.Name = _IP_NAME;
+//			_integrationPoint.SourceConfiguration = string.Empty;
+//			_integrationPoint.DestinationConfiguration = string.Empty;
 
-			ip.Name = _IP_NAME;
-			ip.SourceConfiguration = string.Empty;
-			ip.DestinationConfiguration = string.Empty;
-			importApiSettings.CaseArtifactId = -1;
-			_providerSettings.LoadFile = _LOAD_FILE_PATH;
+//			_providerSettings = new ImportProviderSettings();
+//			ImportSettings importApiSettings = new ImportSettings();
 
-			_integrationPointReader = Substitute.For<IIntegrationPointService>();
-			_locationService = Substitute.For<IDataTransferLocationService>();
-			_serializer = Substitute.For<ISerializer>();
-			_directoryHelper = Substitute.For<IDirectory>();
+//			importApiSettings.CaseArtifactId = -1;
+//			_providerSettings.LoadFile = _LOAD_FILE_PATH;
 
-			_integrationPointReader.ReadIntegrationPoint(Arg.Any<int>()).ReturnsForAnyArgs(ip);
-			_serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
-			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(importApiSettings);
-			_locationService.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).ReturnsForAnyArgs(_WORKSPACE_ROOT_LOCATION);
-			_locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).Returns(_DATA_TRANSFER_IMPORT_LOCATION);
-		}
+//			_locationService = Substitute.For<IDataTransferLocationService>();
+//			_serializer = Substitute.For<ISerializer>();
+//			_directoryHelper = Substitute.For<IDirectory>();
 
-		[Test]
-		public void ItShouldReturnTheCorrectErrorFilePath()
-		{
-			//Arrange
-			_directoryHelper.Exists(Arg.Any<string>()).ReturnsForAnyArgs(true);
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
-				_locationService,
-				_serializer,
-				_directoryHelper);
+//			_serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
+//			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(importApiSettings);
+//			_locationService.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).ReturnsForAnyArgs(_WORKSPACE_ROOT_LOCATION);
+//			_locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).Returns(_DATA_TRANSFER_IMPORT_LOCATION);
+//		}
 
-			//Act
-			string generatedErrorFilePath = locationService.ErrorFilePath(_IP_ARTIFACT_ID);
+//		[Test]
+//		public void ItShouldReturnTheCorrectErrorFilePath()
+//		{
+//			//Arrange
+//			_directoryHelper.Exists(Arg.Any<string>()).ReturnsForAnyArgs(true);
+//			ImportFileLocationService locationService = new ImportFileLocationService(
+//				_locationService,
+//				_serializer,
+//				_directoryHelper);
 
-			//Assert
-			Assert.AreEqual(_ERROR_FILE_LOCATION, generatedErrorFilePath);
-		}
+//			//Act
+//			string generatedErrorFilePath = locationService.ErrorFilePath(_integrationPoint);
 
-		[Test]
-		public void ItShouldReturnTheCorrectLoadFileFullPath()
-		{
-			//Arrange
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
-				_locationService,
-				_serializer,
-				_directoryHelper);
+//			//Assert
+//			Assert.AreEqual(_ERROR_FILE_LOCATION, generatedErrorFilePath);
+//		}
 
-			//Act
-			string generatedLoadFilePath = locationService.LoadFileFullPath(_IP_ARTIFACT_ID);
+//		[Test]
+//		public void ItShouldReturnTheCorrectLoadFileFullPath()
+//		{
+//			//Arrange
+//			ImportFileLocationService locationService = new ImportFileLocationService(
+//				_locationService,
+//				_serializer,
+//				_directoryHelper);
 
-			//Assert
-			Assert.AreEqual(_LOAD_FILE_LOCATION, generatedLoadFilePath);
-		}
+//			//Act
+//			string generatedLoadFilePath = locationService.LoadFileFullPath(_integrationPoint);
 
-		[Test]
-		public void ItShouldThrowWhenLoadFileSettingIsARootedPath()
-		{
-			_providerSettings.LoadFile = @"\\badshare\badpath\badfile.csv";
-			//Arrange
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
-				_locationService,
-				_serializer,
-				_directoryHelper);
+//			//Assert
+//			Assert.AreEqual(_LOAD_FILE_LOCATION, generatedLoadFilePath);
+//		}
 
-			//Assert that it throws because we should not have a rooted load file path in the settings object
-			//This would be a security vulnerability
-			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_IP_ARTIFACT_ID));
-		}
+//		[Test]
+//		public void ItShouldThrowWhenLoadFileSettingIsARootedPath()
+//		{
+//			_providerSettings.LoadFile = @"\\badshare\badpath\badfile.csv";
+//			//Arrange
+//			ImportFileLocationService locationService = new ImportFileLocationService(
+//				_locationService,
+//				_serializer,
+//				_directoryHelper);
 
-		[Test]
-		public void ItShouldThrowWhenNotInTheDataTransferLocation()
-		{
-			_providerSettings.LoadFile = @"badshare\..\..\..\..\badpath\badfile.csv";
-			//Arrange
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
-				_locationService,
-				_serializer,
-				_directoryHelper);
+//			//Assert that it throws because we should not have a rooted load file path in the settings object
+//			//This would be a security vulnerability
+//			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_integrationPoint));
+//		}
 
-			//Assert that it throws because we should not have a load file path that doesn't point to the DataTransfer\Import path
-			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_IP_ARTIFACT_ID));
-		}
+//		[Test]
+//		public void ItShouldThrowWhenNotInTheDataTransferLocation()
+//		{
+//			_providerSettings.LoadFile = @"badshare\..\..\..\..\badpath\badfile.csv";
+//			//Arrange
+//			ImportFileLocationService locationService = new ImportFileLocationService(
+//				_locationService,
+//				_serializer,
+//				_directoryHelper);
 
-		[TestCase(false)]
-		[TestCase(true)]
-		public void ItShouldCreateDirectoryIfNecessary(bool directoryExists)
-		{
-			//Arrange
-			_directoryHelper.Exists(Arg.Any<string>()).ReturnsForAnyArgs(directoryExists);
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
-				_locationService,
-				_serializer,
-				_directoryHelper);
+//			//Assert that it throws because we should not have a load file path that doesn't point to the DataTransfer\Import path
+//			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_integrationPoint));
+//		}
 
-			//Act
-			locationService.ErrorFilePath(_IP_ARTIFACT_ID);
+//		[TestCase(false)]
+//		[TestCase(true)]
+//		public void ItShouldCreateDirectoryIfNecessary(bool directoryExists)
+//		{
+//			//Arrange
+//			_directoryHelper.Exists(Arg.Any<string>()).ReturnsForAnyArgs(directoryExists);
+//			ImportFileLocationService locationService = new ImportFileLocationService(
+//				_locationService,
+//				_serializer,
+//				_directoryHelper);
 
-			//Assert
-			_directoryHelper.Received(directoryExists ? 0 : 1).CreateDirectory(Arg.Any<string>());
-		}
-	}
-}
+//			//Act
+//			locationService.ErrorFilePath(_integrationPoint);
+
+//			//Assert
+//			_directoryHelper.Received(directoryExists ? 0 : 1).CreateDirectory(Arg.Any<string>());
+//		}
+//	}
+//}

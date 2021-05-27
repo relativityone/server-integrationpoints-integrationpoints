@@ -6,7 +6,7 @@ using kCura.ScheduleQueue.Core.Core;
 using System;
 using FileInfo = System.IO.FileInfo;
 
-namespace kCura.IntegrationPoints.Agent.TaskFactory
+namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {
 	public class TaskParametersBuilder : ITaskParametersBuilder
 	{
