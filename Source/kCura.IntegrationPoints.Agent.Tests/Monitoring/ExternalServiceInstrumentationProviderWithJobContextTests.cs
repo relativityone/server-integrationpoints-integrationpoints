@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 		private const int _WORKSPACE_ID = 343;
 		private readonly Guid _BATCH_INSTANCE = Guid.NewGuid();
 
-		private readonly JobContextProvider _jobContextProvider = new JobContextProvider();
+		private readonly IJobContextProvider _jobContextProvider = new JobContextProvider();
 
 		[SetUp]
 		public void SetUp()

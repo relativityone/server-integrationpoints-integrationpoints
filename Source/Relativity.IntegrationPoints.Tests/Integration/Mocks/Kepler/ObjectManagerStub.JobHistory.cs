@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             bool IsBatchInstanceCondition(string condition, out string batchInstance)
             {
                 Match match = Regex.Match(condition,
-                    $"'{JobHistoryTest.BatchInstanceFieldName}' == '(.*)'");
+                    $"'{JobHistoryFields.BatchInstance}' == '(.*)'");
 
                 if (match.Success)
                 {
@@ -81,7 +81,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 });
 
             Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(),
-	            It.Is<UpdateRequest>(r => IsJobHistoryUpdateJobStatusRequest(r))))
+                    It.Is<UpdateRequest>(u => u.FieldValues.Any(f => JobHistoryTest.Guids.Contains(f.Field.Guid.Value)))))
+                .Returns((int workspaceId, UpdateRequest request) =>
+                {
+                    JobHistoryTest jobHistory = _relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
+                        .JobHistory.Single(x => x.ArtifactId == request.Object.ArtifactID);
+
+                    foreach (var field in request.FieldValues)
+                    {
+                        jobHistory.Values[field.Field.Guid.Value] = field.Value;
+                    }
+
+                    return Task.FromResult(new UpdateResult());
+                });
+	            
+            Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(),   
+                    It.Is<UpdateRequest>(r => IsJobHistoryUpdateJobStatusRequest(r))))
 	            .Returns((int workspaceId, UpdateRequest request) =>
 	            {
 		            JobHistoryTest jobHistory = _relativity
@@ -93,12 +108,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 		            FieldRefValuePair jobStatusFieldValuePair = request.FieldValues.Single(x => x.Field.Guid == JobHistoryFieldGuids.JobStatusGuid);
 		            Relativity.Services.Objects.DataContracts.ChoiceRef jobStatus = jobStatusFieldValuePair.Value as Relativity.Services.Objects.DataContracts.ChoiceRef;
                     
-		            jobHistory.JobStatus = new ChoiceRef(new List<Guid>()
-		            {
-                        jobStatus.Guid.Value
-		            })
-		            {
-		            };
+		            jobHistory.JobStatus = new ChoiceRef(new List<Guid>() { jobStatus.Guid.Value });
 
 		            UpdateResult result = new UpdateResult()
 		            {

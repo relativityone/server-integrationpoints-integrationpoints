@@ -76,17 +76,21 @@
     <Compile Include="Integration\Helpers\MyFirstProviderXmlGenerator.cs" />
     <Compile Include="Integration\InstanceSettings.cs" />
     <Compile Include="Integration\Mocks\FakeQueueRepository.cs" />
+    <Compile Include="Integration\Mocks\FakeScheduleAgent.cs" />
     <Compile Include="Integration\Mocks\FakeUser.cs" />
     <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Artifact.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistoryError.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.ObjectType.cs" />
     <Compile Include="Integration\Mocks\Kepler\PermissionManagerStub.cs" />
     <Compile Include="Integration\Mocks\Services\FakeAuditRepository.cs" />
     <Compile Include="Integration\Mocks\Services\FakeBatchStatus.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataReader.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataSourceProvider.cs" />
     <Compile Include="Integration\Mocks\Services\FakeInstanceSettingsProvider.cs" />
+    <Compile Include="Integration\Mocks\Services\FakeJobContextProvider.cs" />
     <Compile Include="Integration\Mocks\Services\FakeMessageService.cs" />
     <Compile Include="Integration\Mocks\Services\FakeProviderFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeProviderFactoryLifecycleStrategy.cs" />
@@ -94,7 +98,10 @@
     <Compile Include="Integration\Mocks\Services\FakeScratchTableRepository.cs" />
     <Compile Include="Integration\Mocks\Services\FakeSqlServiceFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeTimeService.cs" />
+    <Compile Include="Integration\Mocks\Services\FakeToggleProviderWithDefaultValue.cs" />
     <Compile Include="Integration\Mocks\Services\FakeWorkspaceDbContext.cs" />
+    <Compile Include="Integration\Mocks\Services\Sync\FakeSyncOperationsWrapper.cs" />
+    <Compile Include="Integration\Mocks\Services\Sync\IExtendedFakeSyncOperations.cs" />
     <Compile Include="Integration\Models\ArtifactTest.cs" />
     <Compile Include="Integration\Models\DestinationProviderTest.cs" />
     <Compile Include="Integration\Models\FieldTest.cs" />
@@ -107,6 +114,7 @@
     <Compile Include="Integration\Models\RelativityInstanceTest.cs" />
     <Compile Include="Integration\Models\SavedSearchTest.cs" />
     <Compile Include="Integration\Models\SourceProviderTest.cs" />
+    <Compile Include="Integration\Models\SyncConfigurationTest.cs" />
     <Compile Include="Integration\Models\TaskParametersTest.cs" />
     <Compile Include="Integration\Tests\Agent\SyncManagerTests.cs" />
     <Compile Include="Integration\Tests\Controllers\JobControllerTests.cs" />
@@ -140,10 +148,10 @@
     <Compile Include="Integration\Models\WorkspaceTest.cs" />
     <Compile Include="Integration\TestContext.cs" />
     <Compile Include="Integration\TestsBase.cs" />
+    <Compile Include="Integration\Tests\Sync\RelativitySyncTests.cs" />
     <Compile Include="Integration\Tests\Validation\AgentValidatorTests.cs" />
     <Compile Include="Integration\Tests\Validation\ValidationExecutorTests.cs" />
     <Compile Include="Integration\Utils\ReaderUtil.cs" />
-    <Compile Include="Unit\RelativitySync\RdoCleanup\SyncRdoCleanupServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Functional\" />
@@ -153,6 +161,7 @@
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPoint.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SavedSearch.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Field.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.SyncConfiguration.cs" />
     <None Include="Integration\Tests\LDAP\TestData\JumpCloudUsersTestData.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -536,6 +545,33 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\Relativity.OutsideIn\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Services.DataContracts">
           <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
           <Private>True</Private>
@@ -616,6 +652,22 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Toggles">
+          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\System.Data.SqlClient.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.Windows">
           <Paket>True</Paket>
         </Reference>
@@ -649,6 +701,17 @@
       <ItemGroup>
         <Reference Include="Atata.WebDriverExtras">
           <HintPath>..\..\packages\tests\Atata.WebDriverExtras\lib\net46\Atata.WebDriverExtras.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Autofac">
+          <HintPath>..\..\packages\tests\Autofac\lib\net45\Autofac.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -693,17 +756,6 @@
       <ItemGroup>
         <Reference Include="kCura.EventHandler">
           <HintPath>..\..\packages\tests\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="oi">
-          <HintPath>..\..\packages\tests\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -772,18 +824,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="FreeImageNET">
-          <HintPath>..\..\packages\tests\Relativity.DataExchange.Client.SDK\lib\net462\FreeImageNET.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.DataExchange.Client.SDK">
-          <HintPath>..\..\packages\tests\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="itextsharp">
-          <HintPath>..\..\packages\tests\Relativity.DataExchange.Client.SDK\lib\net462\itextsharp.dll</HintPath>
+        <Reference Include="Relativity.AutomatedWorkflows.Services.Interfaces">
+          <HintPath>..\..\packages\tests\Relativity.AutomatedWorkflows.Services.Interfaces\lib\net462\Relativity.AutomatedWorkflows.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -793,8 +835,13 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="FaspManager">
-          <HintPath>..\..\packages\tests\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
+        <Reference Include="FreeImageNET">
+          <HintPath>..\..\packages\tests\Relativity.DataExchange.Client.SDK\lib\net462\FreeImageNET.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataExchange.Client.SDK">
+          <HintPath>..\..\packages\tests\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -831,17 +878,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\tests\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Relativity.OAuth2Client">
           <HintPath>..\..\packages\tests\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.dll</HintPath>
           <Private>True</Private>
@@ -858,8 +894,13 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.OAuth2Client.Implicit">
-          <HintPath>..\..\packages\tests\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
+          <HintPath>..\..\packages\tests\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.OAuth2Client.Interfaces">
+          <HintPath>..\..\packages\tests\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -869,13 +910,34 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
-          <HintPath>..\..\packages\tests\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\tests\Relativity.ObjectManager\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.OAuth2Client.Interfaces">
-          <HintPath>..\..\packages\tests\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
+        <Reference Include="Relativity.Services.DataContracts">
+          <HintPath>..\..\packages\tests\Relativity.ObjectManager\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.Interfaces">
+          <HintPath>..\..\packages\tests\Relativity.ObjectManager\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\tests\Relativity.ObjectManager\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Sync">
+          <HintPath>..\..\packages\tests\Relativity.Sync\lib\net462\Relativity.Sync.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -918,6 +980,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\tests\relativity.transfer.client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.DataTransfer.Nodes">
           <HintPath>..\..\packages\tests\relativity.transfer.client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
           <Private>True</Private>
@@ -1051,6 +1118,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="System.Reactive.Linq">
+          <HintPath>..\..\packages\tests\System.Reactive.Linq\lib\net46\System.Reactive.Linq.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.Runtime.CompilerServices.Unsafe">
           <HintPath>..\..\packages\tests\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
           <Private>True</Private>
@@ -1070,6 +1148,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\tests\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\tests\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
+  <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
   <Import Project="..\..\packages\tests\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\..\packages\tests\Relativity.DataExchange.Client.SDK\build\Relativity.DataExchange.Client.SDK.targets')" Label="Paket" />
 </Project>

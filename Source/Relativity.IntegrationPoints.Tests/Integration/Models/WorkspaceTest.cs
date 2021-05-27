@@ -4,12 +4,11 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-    public class WorkspaceTest : RdoTestBase
+	public class WorkspaceTest : RdoTestBase
     {
         public string Name { get; set; }
 
@@ -25,6 +24,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<FolderTest> Folders { get; } = new List<FolderTest>();
 
+        public IList<SyncConfigurationTest> SyncConfigurations { get; } = new List<SyncConfigurationTest>();
+
+        public IList<SavedSearchTest> SavedSearches { get; } = new List<SavedSearchTest>();
+
+        public IList<FieldTest> Fields { get; } = new List<FieldTest>();
+
         public IList<ArtifactTest> Artifacts => GetAllArtifacts();
 
         private IList<ArtifactTest> GetAllArtifacts()
@@ -38,16 +43,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .Concat(GetArtifacts(DestinationProviders))
                 .Concat(GetArtifacts(Folders))
                 .Concat(GetArtifacts(SavedSearches))
+                .Concat(GetArtifacts(SyncConfigurations))
+                .Concat(GetArtifacts(Fields))
                 .ToList();
         }
-
-        public IList<SavedSearchTest> SavedSearches { get; } = new List<SavedSearchTest>();
-
-        public IList<FieldTest> Fields { get; } = new List<FieldTest>();
         
         public IWorkspaceHelpers Helpers { get; }
-
-        public FakeAuditRepository AuditRepository { get; } = new FakeAuditRepository();
 
         public WorkspaceTest(ISerializer serializer, int? workspaceArtifactId = null) : base("Workspace", workspaceArtifactId)
         {
@@ -73,7 +74,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                    ?? TryFind(DestinationProviders)
                    ?? TryFind(Folders)
                    ?? TryFind(SavedSearches)
-                   ?? TryFind(Fields);
+                   ?? TryFind(Fields)
+                   ?? TryFind(SyncConfigurations);
         }
 
         public override RelativityObject ToRelativityObject()
@@ -133,8 +135,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                                                         (_jobHistoryHelper =
                                                             new JobHistoryHelper(_workspace));
 
-            public FieldsMappingHelper FieldsMappingHelper =>
-                _fieldsMappingHelper ?? (_fieldsMappingHelper = new FieldsMappingHelper(_workspace));
+            public FieldsMappingHelper FieldsMappingHelper => _fieldsMappingHelper ??
+                                                              (_fieldsMappingHelper = 
+                                                                  new FieldsMappingHelper(_workspace));
         }
     }
 }

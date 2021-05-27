@@ -1,17 +1,14 @@
-﻿using System;
+﻿extern alias reactive;
+
+using System;
 using kCura.ScheduleQueue.Core;
+using Disposable = reactive::System.Reactive.Disposables.Disposable;
 
 namespace kCura.IntegrationPoints.Agent.Context
 {
-	public class JobContextProvider
+	public class JobContextProvider : IJobContextProvider
 	{
 		private Job _job;
-		private readonly IDisposable _disposableJobContext;
-
-		public JobContextProvider()
-		{
-			_disposableJobContext = new JobContextDisposable(this);
-		}
 
 		public bool IsContextStarted => _job != null;
 
@@ -21,9 +18,10 @@ namespace kCura.IntegrationPoints.Agent.Context
 			{
 				throw new InvalidOperationException("Starting new job context before previous context was disposed");
 			}
+
 			_job = job;
 
-			return _disposableJobContext;
+			return Disposable.Create(() => _job = null);
 		}
 
 		public Job Job
@@ -35,21 +33,6 @@ namespace kCura.IntegrationPoints.Agent.Context
 					throw new InvalidOperationException("Job is not present because context wasn't initialized");
 				}
 				return _job;
-			}
-		}
-
-		private class JobContextDisposable : IDisposable
-		{
-			private readonly JobContextProvider _jobContext;
-
-			public JobContextDisposable(JobContextProvider jobContext)
-			{
-				_jobContext = jobContext;
-			}
-
-			public void Dispose()
-			{
-				_jobContext._job = null;
 			}
 		}
 	}

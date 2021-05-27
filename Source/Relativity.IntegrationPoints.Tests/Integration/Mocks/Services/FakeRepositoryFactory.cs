@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using kCura.IntegrationPoints.Data.Factories;
+﻿using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
@@ -148,8 +147,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public IRelativityAuditRepository GetRelativityAuditRepository(int workspaceArtifactId)
 		{
-			return _db.Workspaces.First(x => x.ArtifactId == workspaceArtifactId).AuditRepository;
-		}
+			return new FakeAuditRepository();
+	}
 
 		public IResourcePoolRepository GetResourcePoolRepository()
 		{

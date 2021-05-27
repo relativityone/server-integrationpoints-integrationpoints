@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Factories;
@@ -9,19 +10,32 @@ using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	internal static class CancellationAdapter
+	public class CancellationAdapter : ICancellationAdapter
 	{
-		public static CompositeCancellationToken GetCancellationToken(IExtendedJob job, IWindsorContainer ripContainer)
-		{
-			IManagerFactory managerFactory = ripContainer.Resolve<IManagerFactory>();
-			IJobService jobService = ripContainer.Resolve<IJobService>();
-			IJobHistoryService jobHistoryService = ripContainer.Resolve<IJobHistoryService>();
+		private readonly IWindsorContainer _container;
+		private readonly IExtendedJob _job;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IJobService _jobService;
+		private readonly IJobHistoryService _jobHistoryService;
 
+		public CancellationAdapter(IWindsorContainer container, IExtendedJob job, IManagerFactory managerFactory,
+			IJobService jobService, IJobHistoryService jobHistoryService)
+		{
+			_container = container;
+			_job = job;
+			_managerFactory = managerFactory;
+			_jobService = jobService;
+			_jobHistoryService = jobHistoryService;
+		}
+
+		public CompositeCancellationToken GetCancellationToken()
+		{
 			CancellationTokenSource stopTokenSource = new CancellationTokenSource();
 			CancellationTokenSource drainStopTokenSource = new CancellationTokenSource();
-			IJobStopManager jobStopManager = managerFactory.CreateJobStopManager(jobService, jobHistoryService, job.JobIdentifier, job.JobId,
+			IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _job.JobIdentifier, _job.JobId,
 				supportsDrainStop: true, stopCancellationTokenSource: stopTokenSource, drainStopCancellationTokenSource: drainStopTokenSource);
-			ripContainer.Register(Component.For<IJobStopManager>().Instance(jobStopManager));
+			_container.Register(Component.For<IJobStopManager>().Instance(jobStopManager).Named($"{nameof(jobStopManager)}-{Guid.NewGuid()}"));
+			
 			return new CompositeCancellationToken(stopTokenSource.Token, drainStopTokenSource.Token);
 		}
 	}
