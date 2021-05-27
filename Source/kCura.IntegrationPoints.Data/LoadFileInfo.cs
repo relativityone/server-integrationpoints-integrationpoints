@@ -1,12 +1,13 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core.Contracts.Import
+namespace kCura.IntegrationPoints.Data
 {
-	[Serializable]
-	public class LoadFileTaskParameters
+	public class LoadFileInfo
 	{
 		public long Size { get; set; }
 
 		public DateTime LastModifiedDate { get; set; }
+
+		public string FullPath { get; set; }
 	}
 }

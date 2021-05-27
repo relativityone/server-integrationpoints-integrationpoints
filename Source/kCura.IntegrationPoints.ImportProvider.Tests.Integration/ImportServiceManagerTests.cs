@@ -187,7 +187,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_ip.DestinationConfiguration = _serializer.Serialize(settingsObjects.ImportSettings);
 			_ip.FieldMappings = _serializer.Serialize(settingsObjects.FieldMaps);
 
-			_importFileLocationService.LoadFileFullPath(Arg.Any<Data.IntegrationPoint>()).Returns(Path.Combine(_testDataDirectory, settingsObjects.ImportProviderSettings.LoadFile));
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>())
+				.Returns(new LoadFileInfo { FullPath = Path.Combine(_testDataDirectory, settingsObjects.ImportProviderSettings.LoadFile) });
 
 			_instanceUnderTest.Execute(JobExtensions.CreateJob());
 

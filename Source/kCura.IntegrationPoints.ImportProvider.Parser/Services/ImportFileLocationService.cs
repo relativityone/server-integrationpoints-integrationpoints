@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			return Path.Combine(errorFileDirectory, GetErrorFileName(settings.LoadFile, integrationPoint.Name, integrationPoint.ArtifactId));
 		}
 
-		public string LoadFileFullPath(IntegrationPoint integrationPoint)
+		public LoadFileInfo LoadFileInfo(IntegrationPoint integrationPoint)
 		{
 			ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(integrationPoint.SourceConfiguration);
 			ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
@@ -66,14 +66,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				throw new System.Exception("Invalid Load File Location");
 			}
-			return loadFileFullPath;
-		}
+			
+			FileInfo fileInfo = new FileInfo(loadFileFullPath);
 
-		public FileInfo LoadFileInfo(IntegrationPoint integrationPoint)
-		{
-			string loadFileFullPath = LoadFileFullPath(integrationPoint);
-
-			return new FileInfo(loadFileFullPath);
+			return new LoadFileInfo
+			{
+				FullPath = loadFileFullPath,
+				Size = fileInfo.Length,
+				LastModifiedDate = fileInfo.LastWriteTimeUtc
+			};
 		}
 
 		private string GetErrorFileName(string loadFilePath, string integrationPointName, int integrationPointArtifactId)

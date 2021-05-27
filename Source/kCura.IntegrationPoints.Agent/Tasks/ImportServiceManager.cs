@@ -290,7 +290,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private string UpdatedProviderSettingsLoadFile()
 		{
 			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-			providerSettings.LoadFile = _importFileLocationService.LoadFileFullPath(IntegrationPointDto);
+			providerSettings.LoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto).FullPath;
 			return Serializer.Serialize(providerSettings);
 		}
 
@@ -308,9 +308,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				loadFileParameters = (LoadFileTaskParameters)parameters.BatchParameters;
 			}
 
-			System.IO.FileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
+			LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
 
-			if(loadFile.Length != loadFileParameters.Size || loadFile.LastWriteTimeUtc != loadFileParameters.ModifiedDate)
+			if(loadFile.Size != loadFileParameters.Size || loadFile.LastModifiedDate != loadFileParameters.LastModifiedDate)
 			{
 				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
 				throw new IntegrationPointValidationException(result);
