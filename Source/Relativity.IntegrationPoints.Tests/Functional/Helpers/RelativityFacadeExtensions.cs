@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 {
@@ -31,6 +32,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 			IWorkspaceService workspaceService = instance.Resolve<IWorkspaceService>();
 
 			workspaceService.Delete(workspace.ArtifactID);
+		}
+
+		public static void RequireAgent(this IRelativityFacade instance, string agentTypeName, int runInterval)
+		{
+			IAgentService agentService = instance.Resolve<IAgentService>();
+			agentService.Require(new Agent
+			{
+				AgentType = agentService.GetAgentType(agentTypeName),
+				AgentServer = agentService.GetAvailableAgentServers(agentTypeName).First(),
+				RunInterval = runInterval
+			});
 		}
 
 		public static void ImportDocumentsFromCsv(this IRelativityFacade instance, Workspace workspace, string pathToFile,

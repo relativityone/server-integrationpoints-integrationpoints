@@ -1,25 +1,22 @@
-﻿using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using Polly;
 using Polly.Retry;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Web;
 using Relativity.Testing.Framework.Models;
-using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
+using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[TestExecutionCategory.CI, TestLevel.L3]
 	[Feature.DataTransfer.IntegrationPoints]
-	public abstract class TestsBase : UITestFixture
+	public abstract class TestsBase : UITestFixture, ITestsImplementationTestFixture
 	{
-		private const string INTEGRATION_POINTS_AGENT_TYPE_NAME = "Integration Points Agent";
-		private const int INTEGRATION_POINTS_AGENT_RUN_INTERVAL = 5;
-
 		private readonly string _workspaceName;
-		protected Workspace _workspace;
+
+		public Workspace Workspace { get; private set; }
 
 		protected TestsBase(string workspaceName)
 		{
@@ -30,22 +27,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			base.OnSetUpFixture();
 
-			_workspace = RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
+			Workspace = RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
 
-			IAgentService agentService = RelativityFacade.Instance.Resolve<IAgentService>();
-			agentService.Require(new Agent
-			{
-				AgentType = agentService.GetAgentType(INTEGRATION_POINTS_AGENT_TYPE_NAME),
-				AgentServer = agentService.GetAvailableAgentServers(INTEGRATION_POINTS_AGENT_TYPE_NAME).First(),
-				RunInterval = INTEGRATION_POINTS_AGENT_RUN_INTERVAL
-			});
+			RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
 		}
 
 		protected override void OnTearDownFixture()
 		{
 			base.OnTearDownFixture();
 
-			RelativityFacade.Instance.DeleteWorkspace(_workspace);
+			RelativityFacade.Instance.DeleteWorkspace(Workspace);
 		}
 
 		protected override void OnSetUpTest()

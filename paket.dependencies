@@ -102,6 +102,7 @@ group Tests
 	nuget Relativity.Testing.Framework 1.0.0
 	nuget Relativity.Testing.Framework.Api 1.0.0
 	nuget Relativity.Testing.Framework.Web 1.0.0
+	nuget Relativity.Testing.Framework.RingSetup 0.7.0
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
 
 group Sync
