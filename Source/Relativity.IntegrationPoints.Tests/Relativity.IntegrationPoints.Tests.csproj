@@ -179,6 +179,10 @@
     <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj">
       <Project>{bfa5641b-aa6f-4fa5-a20d-6f42b484cae4}</Project>
       <Name>kCura.IntegrationPoints.Agent</Name>

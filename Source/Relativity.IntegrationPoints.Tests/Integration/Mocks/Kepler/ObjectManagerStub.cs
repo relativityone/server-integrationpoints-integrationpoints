@@ -14,12 +14,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub : KeplerStubBase<IObjectManager>
     {
-        private RelativityInstanceTest _relativity;
-
-        public void SetupCreateRequests(RelativityInstanceTest relativity)
+        public void SetupCreateRequests()
         {
-            _relativity = relativity;
-
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()))
                 .Returns((int workspaceId, CreateRequest request) =>
                 {
@@ -70,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private void AddObjectToDatabase(ObjectCreationInfo objectCreationInfo)
         {
-            var workspace = _relativity.Workspaces.First(x => x.ArtifactId == objectCreationInfo.WorkspaceId);
+            var workspace = Relativity.Workspaces.First(x => x.ArtifactId == objectCreationInfo.WorkspaceId);
 
             void Add<T>(IList<T> collection) where T : RdoTestBase, new()
             {
@@ -99,11 +95,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                         RdoTestBase foundRdo;
                         if (workspaceId == -1)
                         {
-                            foundRdo = _relativity.Workspaces.First(x => x.ArtifactId == request.Object.ArtifactID);
+                            foundRdo = Relativity.Workspaces.First(x => x.ArtifactId == request.Object.ArtifactID);
                         }
                         else
                         {
-                            WorkspaceTest workspace = _relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
                             foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
                         }
 
@@ -118,7 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
             QueryRequest request, int length) where T : RdoTestBase
         {
-            WorkspaceTest workspace = _relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
             List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
 
@@ -132,7 +128,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
             QueryRequest request, int length) where T : RdoTestBase
         {
-            WorkspaceTest workspace = _relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
             var foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
 

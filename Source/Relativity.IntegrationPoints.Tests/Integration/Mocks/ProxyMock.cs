@@ -1,4 +1,5 @@
 ﻿using Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -21,6 +22,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			PermissionManager = new PermissionManagerStub();
 			InstanceSettingManager = new InstanceSettingManagerStub(context);
 			GroupManager = new GroupManagerStub(context.User);
+		}
+
+		public void Setup(RelativityInstanceTest relativity)
+		{
+			ObjectManager.Setup(relativity);
+			WorkspaceManager.Setup(relativity);
 
 			SetupFixedMocks();
 		}
@@ -28,8 +35,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		private void SetupFixedMocks()
 		{
 			PermissionManager.SetupPermissionsCheck();
+			WorkspaceManager.SetupWorkspaceMock();
 			InstanceSettingManager.SetupInstanceSetting();
 			GroupManager.SetupGroupManager();
+			ObjectManager.SetupCreateRequests();
 		}
 	}
 }

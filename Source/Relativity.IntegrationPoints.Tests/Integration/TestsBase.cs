@@ -108,7 +108,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Serializer = Container.Resolve<ISerializer>();
 			
 			FakeRelativityInstance = new RelativityInstanceTest(Proxy, Context, Serializer);
-			Proxy.ObjectManager.SetupCreateRequests(FakeRelativityInstance);
+
+			Proxy.Setup(FakeRelativityInstance);
 			
 			SourceWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(sourceWorkspaceArtifactId);
 

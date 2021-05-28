@@ -5,12 +5,15 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ResourceServer;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
 	public class WorkspaceTest : RdoTestBase
     {
         public string Name { get; set; }
+
+        public FileShareResourceServer FileShareServer { get; set; }
 
         public IList<IntegrationPointTest> IntegrationPoints { get; } = new List<IntegrationPointTest>();
 
@@ -53,6 +56,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public WorkspaceTest(ISerializer serializer, int? workspaceArtifactId = null) : base("Workspace", workspaceArtifactId)
         {
             Name = $"Workspace - {Guid.NewGuid()}";
+
+            FileShareServer = new FileShareResourceServer
+            {
+                UNCPath = $@"\\emttest\DefaultFileRepository"
+            };
 
             Helpers = new WorkspaceHelpers(this, serializer);
         }

@@ -288,5 +288,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             FakeRelativityInstance.JobsInQueue.All(x => x.StopState == StopState.Stopping).Should().BeTrue();
         }
+
+        [IdentifiedTest("610B7F40-F951-4FBC-A70F-C5AA4EBC65C4")]
+        public async Task Run_ShouldScheduleImportLoadFileJobWithLoadFileInfo()
+        {
+            // Arrange
+            const string loadFile = "DataTransfer\\Import\\SaltPepper\\saltvpepper-no_errors.dat";
+
+            IntegrationPointTest integrationPoint =
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
+
+            JobController.Payload payload = new JobController.Payload
+            {
+                ArtifactId = integrationPoint.ArtifactId,
+                AppId = SourceWorkspace.ArtifactId
+            };
+
+            // Act
+            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/run");
+            var response = await _sut.Run(payload).ConfigureAwait(false);
+
+            // Assert
+            response.IsSuccessStatusCode.Should().BeTrue();
+
+            JobTest job = FakeRelativityInstance.JobsInQueue.Single(x => x.RelatedObjectArtifactID == integrationPoint.ArtifactId);
+        }
     }
 }

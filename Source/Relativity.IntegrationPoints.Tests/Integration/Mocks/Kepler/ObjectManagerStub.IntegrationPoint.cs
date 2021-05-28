@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 					It.IsAny<FieldRef>()))
 				.Returns((int workspaceId, RelativityObjectRef objectRef, FieldRef fieldRef) =>
 				{
-					var workspace = _relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+					var workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 						
 						RelativityObject obj = workspace.IntegrationPoints
 							.First(x => x.ArtifactId == objectRef.ArtifactID)

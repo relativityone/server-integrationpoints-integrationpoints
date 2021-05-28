@@ -5,7 +5,7 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
-using IWorkspaceManager = Relativity.Services.Interfaces.Workspace.IWorkspaceManager;
+using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
