@@ -43,13 +43,16 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     $LogPath = Join-Path $LogsDir "UnitTestResults.xml"
     Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit" -OutputFile $LogPath -WithCoverage
 
-    $LogPath = Join-Path $LogsDir "IntegrationTestResults.xml"
+    $LogPath = Join-Path $LogsDir "CI_IntegrationTestResults.xml"
     Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
     Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+
+    $LogPath = Join-Path $LogsDir "CI_FunctionalTestResults.xml"
+    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath -WithCoverage
 }
 
 Task Sign -Description "Sign all files" {
