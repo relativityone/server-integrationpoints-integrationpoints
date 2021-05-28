@@ -8,6 +8,8 @@ using NSubstitute;
 using System;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Data;
+using SystemWrapper;
+using Moq;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -24,6 +26,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private const string _LOAD_FILE_LOCATION =
 			@"\\example.host.name\fileshare\EDDS-example-app-id\DataTransfer\Import\example-load-file.csv";
 
+		private const int _LOAD_FILE_SIZE = 1000;
+		private readonly DateTime _LOAD_FILE_LAST_MODIFIED_DATE = new DateTime(2020, 1, 1);
+
 		private IDataTransferLocationService _locationService;
 		private ISerializer _serializer;
 		private IDirectory _directoryHelper;
@@ -31,6 +36,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private ImportProviderSettings _providerSettings;
 
 		private Data.IntegrationPoint _integrationPoint;
+		private Mock<IFileInfo> _loadFileInfo;
 
 		[SetUp]
 		public override void SetUp()
@@ -51,6 +57,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_serializer = Substitute.For<ISerializer>();
 			_directoryHelper = Substitute.For<IDirectory>();
 			_fileInfoFactory = Substitute.For<IFileInfoFactory>();
+
+			_loadFileInfo = new Mock<IFileInfo>();
+			_loadFileInfo.SetupGet(x => x.Length).Returns(_LOAD_FILE_SIZE);
+			_loadFileInfo.SetupGet(x => x.LastWriteTimeUtc)
+				.Returns(new DateTimeWrap(_LOAD_FILE_LAST_MODIFIED_DATE));
+
+			_fileInfoFactory.Create(_LOAD_FILE_LOCATION).Returns(_loadFileInfo.Object);
 
 			_serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
 			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(importApiSettings);
@@ -77,7 +90,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		}
 
 		[Test]
-		public void ItShouldReturnTheCorrectLoadFileFullPath()
+		public void ItShouldReturnTheCorrectLoadFileInfo()
 		{
 			//Arrange
 			ImportFileLocationService locationService = new ImportFileLocationService(
@@ -91,6 +104,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 			//Assert
 			Assert.AreEqual(_LOAD_FILE_LOCATION, loadFile.FullPath);
+			Assert.AreEqual(_LOAD_FILE_SIZE, loadFile.Size);
+			Assert.AreEqual(_LOAD_FILE_LAST_MODIFIED_DATE, loadFile.LastModifiedDate);
 		}
 
 		[Test]

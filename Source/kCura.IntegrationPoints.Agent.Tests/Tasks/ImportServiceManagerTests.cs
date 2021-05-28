@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private Data.IntegrationPoint _integrationPoint;
 		private IDataSynchronizer _synchronizer;
 		private IJobHistoryErrorService _jobHistoryErrorService;
+		private IImportFileLocationService _importFileLocationService;
 
 		private ImportServiceManager _instance;
 
@@ -123,10 +124,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
+			_importFileLocationService = Substitute.For<IImportFileLocationService>();
+			_importFileLocationService.ErrorFilePath(Arg.Any<Data.IntegrationPoint>()).Returns(_ERROR_FILE_PATH);
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>()).Returns(_loadFile);
+
 			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
 			_synchronizer = Substitute.For<IDataSynchronizer>();
 			IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
-			IImportFileLocationService importFileLocationService = Substitute.For<IImportFileLocationService>();
+			
 			IDataReader loadFileReader = Substitute.For<IDataReader, IArtifactReader>();
 			IDataReader opticonFileReader = Substitute.For<IDataReader, IOpticonDataReader>();
 			IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
@@ -137,9 +142,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC).Returns(loadFileReader);
 			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE).Returns(opticonFileReader);
-
-			importFileLocationService.ErrorFilePath(Arg.Any<Data.IntegrationPoint>()).Returns(_ERROR_FILE_PATH);
-			importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>()).Returns(_loadFile);
 
 			object syncRootLock = new object();
 			_integrationPoint = new Data.IntegrationPoint()
@@ -213,7 +215,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_jobHistoryErrorService,
 				jobStatisticsService,
 				dataReaderFactory,
-				importFileLocationService,
+				_importFileLocationService,
 				agentValidator,
 				integrationPointRepository,
 				_jobStatusUpdater);
@@ -411,9 +413,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void Execute_ShouldNotTriggerRaw_WhenRunValidating()
 		{
 			// ARRANGE
-			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
-			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
-
 			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryValidating);
 
 			// ACT
@@ -435,6 +434,47 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+		[Test]
+		public void Execute_ShouldThrowValidationFailed_WhenLoadFileSizeHasChanged()
+		{
+			// Arrange
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			const int sizeChanged = 10;
+
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>())
+				.Returns(new LoadFileInfo
+				{
+					FullPath = _LOAD_FILE_PATH,
+					Size = _LOAD_FILE_SIZE + sizeChanged
+				});
+
+			// Act & Assert
+			Assert.Throws<IntegrationPointValidationException>(() => _instance.Execute(_job));
+		}
+
+		[Test]
+		public void Execute_ShouldThrowValidationFailed_WhenLoadFileModifiedDateHasChanged()
+		{
+			// Arrange
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			const int modifiedMinutesLater = 10;
+
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>())
+				.Returns(new LoadFileInfo
+				{
+					FullPath = _LOAD_FILE_PATH,
+					Size = _LOAD_FILE_SIZE,
+					LastModifiedDate = _LOAD_FILE_MODIFIED_DATE.AddMinutes(modifiedMinutesLater)
+				});
+
+			// Act & Assert
+			Assert.Throws<IntegrationPointValidationException>(() => _instance.Execute(_job));
 		}
 	}
 }
