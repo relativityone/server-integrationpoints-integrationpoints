@@ -1,4 +1,4 @@
-﻿var SavedSearchService = function() {
+var SavedSearchService = function() {
 	var self = this;
 
 	var formatChildrenDirectory = function (parent) {
