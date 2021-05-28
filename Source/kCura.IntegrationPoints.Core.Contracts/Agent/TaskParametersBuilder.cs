@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
 using System;
-using FileInfo = System.IO.FileInfo;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {
