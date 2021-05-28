@@ -6,20 +6,17 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.ScheduleQueue.Core.Core;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
-    [IdentifiedTestFixture("4FDA6BE8-7BA6-4755-A7AD-9C48FEB26877")]
+	[IdentifiedTestFixture("4FDA6BE8-7BA6-4755-A7AD-9C48FEB26877")]
     public class JobControllerTests : TestsBase
     {
         private JobController _sut;

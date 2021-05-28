@@ -33,6 +33,7 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using SystemWrapper.IO;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -145,7 +146,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				integrationPointTypeService, new LongPathDirectory(), new CryptographyHelper());
 
 			IImportFileLocationService importFileLocationService = new ImportFileLocationService(dataTransferLocationService,
-				new JSONSerializer(), new LongPathDirectory());
+				new JSONSerializer(), new LongPathDirectory(), new FileInfoFactory());
 			ITaskParametersBuilder taskParametersBuilder = new TaskParametersBuilder(importFileLocationService);
 
 			_integrationPointService = new IntegrationPointService(

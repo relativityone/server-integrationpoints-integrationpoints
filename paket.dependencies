@@ -102,6 +102,7 @@ group Tests
 	nuget Relativity.Testing.Framework.Web ~> 0.22
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
     nuget Relativity.Sync 0.8.0-pre.7
+	nuget SystemWrapper.Wrappers 0.25.0.186
 
 group Sync
 	framework: auto-detect

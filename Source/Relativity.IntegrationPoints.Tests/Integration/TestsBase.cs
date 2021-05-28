@@ -20,6 +20,8 @@ using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -59,7 +61,8 @@ using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Telemetry.APM;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
-
+using SystemInterface.IO;
+using SystemWrapper.IO;
 using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
@@ -221,6 +224,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>());
 
 			Container.Register(Component.For<ITaskParametersBuilder>().ImplementedBy<TaskParametersBuilder>().LifestyleTransient());
+			Container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
+			Container.Register(Component.For<IDirectory>().ImplementedBy<LongPathDirectory>().LifestyleTransient());
+			Container.Register(Component.For<IIntegrationPointTypeService>().ImplementedBy<IntegrationPointTypeService>().LifestyleTransient());
+			Container.Register(Component.For<ICryptographyHelper>().ImplementedBy<CryptographyHelper>().LifestyleTransient());
+			Container.Register(Component.For<IFileInfoFactory>().ImplementedBy<FileInfoFactory>().LifestyleTransient());
 
 			Container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>().LifestyleSingleton());
 			Container.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());

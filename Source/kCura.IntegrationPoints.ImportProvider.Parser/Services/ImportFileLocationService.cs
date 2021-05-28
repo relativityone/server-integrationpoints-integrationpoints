@@ -21,15 +21,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private readonly IDataTransferLocationService _locationService;
 		private readonly ISerializer _serializer;
 		private readonly IDirectory _directoryHelper;
+		private readonly IFileInfoFactory _fileInfoFactory;
 
 		public ImportFileLocationService(
 			IDataTransferLocationService locationService,
 			ISerializer serializer,
-			IDirectory directoryHelper)
+			IDirectory directoryHelper,
+			IFileInfoFactory fileInfoFactory)
 		{
 			_locationService = locationService;
 			_serializer = serializer;
 			_directoryHelper = directoryHelper;
+			_fileInfoFactory = fileInfoFactory;
 		}
 
 		public string ErrorFilePath(IntegrationPoint integrationPoint)
@@ -66,14 +69,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				throw new System.Exception("Invalid Load File Location");
 			}
-			
-			FileInfo fileInfo = new FileInfo(loadFileFullPath);
+
+			IFileInfo fileInfo = _fileInfoFactory.Create(loadFileFullPath);
 
 			return new LoadFileInfo
 			{
 				FullPath = loadFileFullPath,
 				Size = fileInfo.Length,
-				LastModifiedDate = fileInfo.LastWriteTimeUtc
+				LastModifiedDate = fileInfo.LastWriteTimeUtc.DateTimeInstance
 			};
 		}
 

@@ -57,6 +57,7 @@ using Relativity.IntegrationPoints.Contracts;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
+using SystemWrapper.IO;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -146,6 +147,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ISavedSearchesTreeCreator>().ImplementedBy<SavedSearchesTreeCreator>());
 			container.Register(Component.For<IWorkspaceManager>().ImplementedBy<WorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<IDirectory>().ImplementedBy<LongPathDirectory>().LifestyleTransient());
+			container.Register(Component.For<IFileInfoFactory>().ImplementedBy<FileInfoFactory>().LifestyleTransient());
 			container.Register(Component.For<IFile>().ImplementedBy<LongPathFile>().LifestyleTransient());
 			container.Register(Component.For<IStreamFactory>().ImplementedBy<StreamFactory>().LifestyleTransient());
 			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifestyleTransient());

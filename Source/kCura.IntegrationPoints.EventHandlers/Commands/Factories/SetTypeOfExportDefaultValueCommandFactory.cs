@@ -31,6 +31,8 @@ using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
+using SystemInterface.IO;
+using SystemWrapper.IO;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -97,7 +99,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				integrationPointTypeService, new LongPathDirectory(), new CryptographyHelper());
 
 			IImportFileLocationService importFileLocationService = new ImportFileLocationService(dataTransferLocationService,
-				new JSONSerializer(), new LongPathDirectory());
+				new JSONSerializer(), new LongPathDirectory(), new FileInfoFactory());
 			ITaskParametersBuilder taskParametersBuilder = new TaskParametersBuilder(importFileLocationService);
 
 			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper, integrationPointRepository);
