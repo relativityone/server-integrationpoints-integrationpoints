@@ -148,7 +148,7 @@
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
 		};
 
-		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
+		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId === 0 ? null : state.SavedSearchArtifactId).extend({
 			required: {
 				onlyIf: function () {
 					return self.IsSavedSearchSelected();
