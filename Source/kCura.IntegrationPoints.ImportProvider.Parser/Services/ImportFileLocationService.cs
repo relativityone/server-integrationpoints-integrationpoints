@@ -8,8 +8,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 
 using SystemInterface.IO;
 
-using FileInfo = System.IO.FileInfo;
-
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class ImportFileLocationService : IImportFileLocationService
