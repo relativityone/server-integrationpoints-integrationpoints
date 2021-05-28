@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
@@ -69,6 +71,57 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 			{
 				throw new Exception($"IDocumentService.ImportNativesFromCsv timeout ({documentImportTimeout}) exceeded.");
 			}
+		}
+
+		public static void ProduceProduction(this IRelativityFacade instance, Workspace workspace, Testing.Framework.Models.Production production)
+		{
+			IProductionService productionService = instance.Resolve<IProductionService>();
+			IProductionDataSourceService productionDataSourceService = RelativityFacade.Instance.Resolve<IProductionDataSourceService>();
+
+			var productionToProduce = productionService.Create(workspace.ArtifactID, production);
+
+			if (production.DataSources.Count != 0)
+			{
+				foreach (var dataSource in production.DataSources)
+				{
+					dataSource.ProductionId = productionToProduce.ArtifactID;
+					productionDataSourceService.Create(workspace.ArtifactID, productionToProduce.ArtifactID, dataSource);
+				}
+			}
+
+			productionService.Stage(workspace.ArtifactID, productionToProduce.ArtifactID);
+			productionService.Run(workspace.ArtifactID, productionToProduce.ArtifactID);
+
+			Stopwatch productionRunTimeoutStopwatch = Stopwatch.StartNew();
+
+			// You are looking at this and probably wondering why he didn't make it properly async.
+			// Well, he did...
+			// Apparently when you make RTF based UI test async all hell breaks loose, Atata looses context, and Being throws NullReferenceException.
+			// So Thread.Sleep it is.
+			ProductionStatus productionStatus;
+			do
+			{
+				string status = productionService.GetStatus(workspace.ArtifactID, productionToProduce.ArtifactID).ToString().ToLower();
+
+				if (!Enum.TryParse(status, true, out productionStatus))
+				{
+					Thread.Sleep(1000);
+					continue;
+				}
+
+				if (status.Contains("error"))
+				{
+					throw new Exception("Production returns an unexpected error");
+				}
+
+				if (productionRunTimeoutStopwatch.Elapsed.TotalMinutes > 5)
+				{
+					throw new TaskCanceledException($"Production hasn't finished running in the 5 minute window. Check RelativityLogs or Errors for more information.");
+				}
+
+				Thread.Sleep(1000);
+			}
+			while (productionStatus != ProductionStatus.Produced);
 		}
 
 		private static void SetImportMode()

@@ -1,18 +1,7 @@
-﻿using Atata;
-using System;
-using System.Collections.Generic;
-using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Models;
-using Relativity.Testing.Framework.Api.Services;
-using Relativity.Testing.Framework.Web.Models;
-using Relativity.Testing.Framework.Web.Navigation;
-using Relativity.Testing.Framework.Web.Extensions;
+﻿using System.Threading.Tasks;
 using Relativity.Testing.Identification;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers;
-using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
-using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
-using FluentAssertions;
+
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -46,6 +35,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		public void SavedSearch_NativesAndMetadata_GoldFlow()
 		{
 			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
+		}
+
+		[IdentifiedTest("26b72aab-a7ef-44ed-8338-81f91523388c")]
+		public void Production_Images_GoldFlow()
+		{
+			_testsImplementation.ProductionImagesGoldFlow();
 		}
 	}
 }

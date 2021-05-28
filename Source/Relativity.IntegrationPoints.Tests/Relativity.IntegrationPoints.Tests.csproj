@@ -52,6 +52,9 @@
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Functional\Helpers\DataFiles\kcura.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Functional\Helpers\LoadFiles\UwsNativesLoadFile.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -70,6 +73,9 @@
     <None Update="Integration\Tests\LDAP\TestData\TestData.ldif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Functional\Helpers\DataFiles\" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
