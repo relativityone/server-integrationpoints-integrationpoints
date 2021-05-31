@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
@@ -8,14 +7,12 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
-using Relativity.Sync;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
@@ -25,23 +22,25 @@ using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	public sealed class IntegrationPointToSyncConverter
+	public sealed class IntegrationPointToSyncConverter : IIntegrationPointToSyncConverter
 	{
 		private readonly ISerializer _serializer;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IJobHistorySyncService _jobHistorySyncService;
 		private readonly IAPILog _logger;
+		private readonly ISyncOperationsWrapper _syncOperations;
 
 		public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService, 
-			IJobHistorySyncService jobHistorySyncService, IAPILog logger)
+			IJobHistorySyncService jobHistorySyncService, IAPILog logger, ISyncOperationsWrapper syncOperations)
 		{
 			_serializer = serializer;
 			_jobHistoryService = jobHistoryService;
 			_jobHistorySyncService = jobHistorySyncService;
 			_logger = logger;
+			_syncOperations = syncOperations;
 		}
 
-		public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job, ISyncServiceManager servicesMgr)
+		public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job)
 		{
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
 			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
@@ -50,7 +49,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId, 
 				Core.Constants.IntegrationPoints.APPLICATION_NAME, typeof(IntegrationPointToSyncConverter).Assembly.GetName().Version);
 
-			SyncConfigurationBuilder builder = new SyncConfigurationBuilder(syncContext, servicesMgr);
+			ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
 			if (importSettings.ImageImport)
 			{
@@ -64,7 +63,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task<int> CreateImageSyncConfigurationAsync(SyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
 			var syncConfigurationRoot = builder
@@ -103,7 +102,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
 		}
 
-		private async Task<int> CreateDocumentSyncConfigurationAsync(SyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
 		{
 			var syncConfigurationRoot = builder
@@ -189,6 +188,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			List<string> emailsList = job.IntegrationPointModel
 				.EmailNotificationRecipients
 				.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
+				.Select(x => x.Trim())
 				.ToList();
 
 			return new EmailNotificationsOptions(emailsList);

@@ -15,7 +15,7 @@ nuget kCura.EventHandler 15.1.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
 nuget Relativity.DataExchange.Client.SDK 1.14.3
-nuget Relativity.Telemetry.DataContracts.Shared 3000.0
+nuget Relativity.Telemetry.DataContracts.Shared 3000.0.1
 nuget Relativity.API 15.1.0
 nuget Relativity ~> 15.1
 
@@ -104,12 +104,13 @@ group Tests
 	nuget Relativity.Testing.Framework.Web 1.0.0
 	nuget Relativity.Testing.Framework.RingSetup 0.7.0
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
+    nuget Relativity.Sync 0.8.0-pre.7
 
 group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-    nuget Relativity.Sync 0.8.0-pre.2
+    nuget Relativity.Sync 0.8.0-pre.7
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9

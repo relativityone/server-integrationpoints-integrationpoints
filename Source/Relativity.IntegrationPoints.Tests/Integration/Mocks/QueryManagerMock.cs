@@ -49,7 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var nextJob = _db.JobsInQueue.Where(x =>
 					x.AgentTypeID == agentTypeId &&
 					x.NextRunTime <= _context.CurrentDateTime &&
-					(x.StopState == StopState.None || x.StopState == StopState.DrainStopped))
+					(x.StopState.HasFlag(StopState.None) || x.StopState.HasFlag(StopState.DrainStopped)))
 				.OrderByDescending(x => x.StopState)
 				.FirstOrDefault();
 
@@ -146,8 +146,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			return new ActionCommand(() =>
 			{
-				_db.JobsInQueue.Where(x => _db.Agents.Exists(a => a.ArtifactId == x.LockedByAgentID))
-					.ForEach(x => x.LockedByAgentID = null);
+				var jobs = _db.JobsInQueue.Where(
+					x => _db.Agents.Exists(a => a.ArtifactId == x.LockedByAgentID));
+				foreach (var job in jobs)
+				{
+					job.LockedByAgentID = null;
+				}
 
 				_db.JobsInQueue.RemoveAll(x => x.LockedByAgentID == null && 
 				                               _db.Workspaces.FirstOrDefault(w => w.ArtifactId == x.WorkspaceID) == null);
@@ -166,13 +170,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
 		{
 			int affectedRows = 0;
-			_db.JobsInQueue
-				.Where(x => jobIds.Contains(x.JobId))
-				.ForEach(x =>
-				{
-					++affectedRows;
-					x.StopState = state;
-				});
+			var jobs = _db.JobsInQueue.Where(x => jobIds.Contains(x.JobId));
+			foreach(var job in jobs)
+			{
+				++affectedRows;
+				job.StopState = state;
+			}
 
 			return new ValueReturnQuery<int>(affectedRows);
 		}
@@ -185,7 +188,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 				taskTypes.Contains(x.TaskType));
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
+
+			foreach(var job in jobs)
+			{
+				dataTable.ImportRow(job.AsDataRow());
+			}
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
@@ -195,7 +202,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var jobs = _db.JobsInQueue.Where(x => x.RelatedObjectArtifactID == integrationPointId);
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
+
+			foreach(var job in jobs)
+			{
+				dataTable.ImportRow(job.AsDataRow());
+			}
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
@@ -205,7 +216,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			var jobs = _db.JobsInQueue.Where(x => x.JobId == jobId);
 
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
-			jobs.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
+
+			foreach (var job in jobs)
+			{
+				dataTable.ImportRow(job.AsDataRow());
+			}
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}

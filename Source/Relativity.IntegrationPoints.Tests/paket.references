@@ -2,12 +2,14 @@
 kCura.Agent
 kCura.Apps.Common.Config
 Relativity
+Relativity.Toggles
 Relativity.API
 Relativity.Kepler.Client
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
+Relativity.OutsideIn
 
 Moq
 FluentAssertions
@@ -24,3 +26,4 @@ group Tests
 	Relativity.Testing.Framework.Web
 	Relativity.Testing.Framework.RingSetup
 	IntegrationPoints.MyFirstProvider
+	Relativity.Sync

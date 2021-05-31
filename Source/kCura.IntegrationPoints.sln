@@ -158,8 +158,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Rel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.RelativitySync.Tests", "kCura.IntegrationPoints.RelativitySync.Tests\kCura.IntegrationPoints.RelativitySync.Tests.csproj", "{B5ED99A1-318E-4A34-9C2C-89564B04E493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.RelativitySync.Tests.Integration", "kCura.IntegrationPoints.RelativitySync.Tests.Integration\kCura.IntegrationPoints.RelativitySync.Tests.Integration.csproj", "{A2964AA8-8B79-4842-874B-30E1C015A3D2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.AgentBase.Tests", "kCura.ScheduleQueue.AgentBase.Tests\kCura.ScheduleQueue.AgentBase.Tests.csproj", "{B98DF39A-AD93-4A78-8B26-26170D9F3C6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Tests", "Relativity.IntegrationPoints.Tests\Relativity.IntegrationPoints.Tests.csproj", "{9D87DE97-6533-4034-9B3E-FACCE4F1A9E4}"
@@ -422,10 +420,6 @@ Global
 		{B5ED99A1-318E-4A34-9C2C-89564B04E493}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5ED99A1-318E-4A34-9C2C-89564B04E493}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5ED99A1-318E-4A34-9C2C-89564B04E493}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2964AA8-8B79-4842-874B-30E1C015A3D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2964AA8-8B79-4842-874B-30E1C015A3D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2964AA8-8B79-4842-874B-30E1C015A3D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2964AA8-8B79-4842-874B-30E1C015A3D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B98DF39A-AD93-4A78-8B26-26170D9F3C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B98DF39A-AD93-4A78-8B26-26170D9F3C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B98DF39A-AD93-4A78-8B26-26170D9F3C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -486,7 +480,6 @@ Global
 		{C06A564D-5A92-4E12-AE32-ABBD197A45AD} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{94473025-8D25-4B5A-928B-A8208C0C79B7} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{B5ED99A1-318E-4A34-9C2C-89564B04E493} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
-		{A2964AA8-8B79-4842-874B-30E1C015A3D2} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{B98DF39A-AD93-4A78-8B26-26170D9F3C6D} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{9D87DE97-6533-4034-9B3E-FACCE4F1A9E4} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 	EndGlobalSection

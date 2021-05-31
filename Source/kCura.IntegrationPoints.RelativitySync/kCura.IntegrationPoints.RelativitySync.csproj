@@ -51,9 +51,13 @@
     <Compile Include="ExtendedJob.cs" />
     <Compile Include="FieldMapHelper.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="ICancellationAdapter.cs" />
     <Compile Include="IExtendedJob.cs" />
+    <Compile Include="IIntegrationPointToSyncConverter.cs" />
     <Compile Include="IJobHistorySyncService.cs" />
     <Compile Include="IntegrationPointToSyncConverter.cs" />
+    <Compile Include="ISyncConfigurationService.cs" />
+    <Compile Include="ISyncOperationsWrapper.cs" />
     <Compile Include="JobHistorySyncService.cs" />
     <Compile Include="Metrics\EmptyMetric.cs" />
     <Compile Include="Metrics\ISyncJobMetric.cs" />
@@ -83,8 +87,11 @@
     <Compile Include="RipOverride\SyncServiceManagerForRip.cs" />
     <Compile Include="StepResult.cs" />
     <Compile Include="SyncConfiguration.cs" />
+    <Compile Include="SyncConfigurationService.cs" />
+    <Compile Include="RelativitySyncInstaller.cs" />
     <Compile Include="SyncLog.cs" />
     <Compile Include="SyncMetrics.cs" />
+    <Compile Include="SyncOperationsWrapper.cs" />
     <Compile Include="Utils\EnumConvertExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,6 @@ using FluentAssertions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -30,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
 			PrepareJob(rule);
 
-			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -55,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
 			JobTest job = PrepareJob(rule);
 
-			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -82,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateWeeklyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, dayOfWeek);
 			JobTest job = PrepareJob(rule);
 
-			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -108,7 +107,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 				TimeZoneInfo.Utc, dayOfMonth: 1);
 			JobTest job = PrepareJob(rule);
 
-			FakeAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
 
 			// Act
 			sut.Execute();
@@ -117,9 +116,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			FakeRelativityInstance.Helpers.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
-		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		private FakeScheduleAgent PrepareSutWithMockedQueryManager(AgentTest agent)
 		{
-			FakeAgent fakeAgent = new FakeAgent(agent,
+			FakeScheduleAgent fakeAgent = new FakeScheduleAgent(agent,
 				Container.Resolve<IAgentHelper>(),
 				scheduleRuleFactory: Container.Resolve<IScheduleRuleFactory>(),
 				queryManager: Container.Resolve<IQueryManager>());

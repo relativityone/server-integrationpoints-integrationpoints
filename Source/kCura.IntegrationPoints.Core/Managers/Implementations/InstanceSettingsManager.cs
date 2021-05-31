@@ -1,10 +1,11 @@
+using System;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class InstanceSettingsManager : IInstanceSettingsManager 
+	public class InstanceSettingsManager : IInstanceSettingsManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
@@ -50,6 +51,22 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			string blockedIPs = instanceSettingRepository.GetConfigurationValue(
 				Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, Constants.InstanceSettings.BLOCKED_HOSTS);
 			return blockedIPs;
+		}
+
+		public TimeSpan GetDrainStopTimeout()
+		{
+			IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
+			string drainStopTimeout = instanceSettingRepository.GetConfigurationValue(
+				Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, Constants.InstanceSettings.DRAIN_STOP_TIMEOUT);
+
+			if (int.TryParse(drainStopTimeout, out int drainStopTimeoutParsed))
+			{
+				return TimeSpan.FromSeconds(drainStopTimeoutParsed);
+			}
+			else
+			{
+				return TimeSpan.FromMinutes(3);
+			}
 		}
 	}
 }

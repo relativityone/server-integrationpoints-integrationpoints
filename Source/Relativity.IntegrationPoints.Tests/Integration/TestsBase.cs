@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Security.Claims;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -41,7 +41,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
-using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -54,8 +54,11 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Telemetry.APM;
 using Relativity.Testing.Identification;
+using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
@@ -121,21 +124,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
 			Container.Register(Component.For<RelativityInstanceTest>().UsingFactoryMethod(() => FakeRelativityInstance).LifestyleSingleton());
 
+			Container.Install(new ValidationInstaller());
+			Container.Install(new LdapProviderInstaller());
+			Container.Install(new RelativitySyncInstaller());
+
+			OverrideRelativitySyncInstaller();
+
 			RegisterRelativityApiServices();
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
 			RegisterRipAgentTasks();
 			RegisterAuthentication();
+		}
 
-			Container.Install(new ValidationInstaller());
-			Container.Install(new LdapProviderInstaller());
+		private void OverrideRelativitySyncInstaller()
+		{
+			Container.Register(Component.For<ISyncOperationsWrapper, IExtendedFakeSyncOperations>()
+				.ImplementedBy<FakeSyncOperationsWrapper>()
+				.LifestyleSingleton().IsDefault());
 		}
 
 		private void RegisterRelativityApiServices()
 		{
 			Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
 			Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
+			Container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleTransient());
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetServicesManager()));
+			Container.Register(Component.For<IToggleProvider>().ImplementedBy<FakeToggleProviderWithDefaultValue>());
 		}
 
 		private void RegisterRipServices(int sourceWorkspaceId)
@@ -153,6 +168,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				return factory.CreateRelativityObjectManager(sourceWorkspaceId);
 			}).LifestyleTransient());
 
+			Container.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
 			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
 			Container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>());
@@ -213,20 +229,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
 			Container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>().LifestyleSingleton());
 
-			Container.Register(Component.For<JobContextProvider>().UsingFactoryMethod(k =>
+			Container.Register(Component.For<IJobContextProvider>().UsingFactoryMethod(k =>
 			{
 				JobTest job = new JobBuilder()
+					.WithSubmittedBy(User.ArtifactId)
+					.WithWorkspace(SourceWorkspace)
 					.Build();
 
-				JobContextProvider jobContextProvider = new JobContextProvider();
+				IJobContextProvider jobContextProvider = new FakeJobContextProvider();
 				jobContextProvider.StartJobContext(new Job(job.AsDataRow()));
 
 				return jobContextProvider;
-			}));
+			}).LifestyleSingleton());
 
 			Container.Register(Component.For<CurrentUser>().UsingFactoryMethod(k =>
 			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return new CurrentUser(userID: jobContextProvider.Job.SubmittedBy);
 			}).LifestyleTransient());
 		}
