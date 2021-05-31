@@ -510,5 +510,29 @@
 	{
 		"Jira": "REL-556105",
 		"Exception": "*Relativity.Sync.SyncException: Could not find folders with IDs * in workspace*"
+	},
+	{
+		"Jira": "REL-561739",
+		"Exception": "*Relativity.Services.Exceptions.NotFoundException*Relativity.Sync.Executors.PermissionCheck.DestinationPermissionCheck.<ValidateUserCanCreateTagInDestinationWorkspaceAsync>*"
+	},
+	{
+		"Jira": "REL-559317",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'*FK_File_Document*"
+	},
+	{
+		"Jira": "REL-558402",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'*Violation of PRIMARY KEY constraint*"
+	},
+	{
+		"Jira": "REL-558396",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'*The target table 'AuditRecord_PrimaryPartition' of the OUTPUT INTO clause cannot have any enabled check constraints or any enabled rules.*"
+	},
+	{
+		"Jira": "REL-561754",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'*The query processor ran out of stack space during query optimization. Please simplify the query*"
+	},
+	{
+		"Jira": "REL-561754",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'* Server stack limit has been reached. Please look for potentially deep nesting in your query, and try to simplify it.*"
 	}
 ]
