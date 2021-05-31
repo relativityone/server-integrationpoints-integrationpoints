@@ -78,8 +78,10 @@
     <Compile Include="Integration\Mocks\FakeQueueRepository.cs" />
     <Compile Include="Integration\Mocks\FakeScheduleAgent.cs" />
     <Compile Include="Integration\Mocks\FakeUser.cs" />
+    <Compile Include="Integration\Mocks\FileShare\FakeFileInfoFactory.cs" />
     <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPointType.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Artifact.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistoryError.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="Integration\Models\SourceProviderTest.cs" />
     <Compile Include="Integration\Models\SyncConfigurationTest.cs" />
     <Compile Include="Integration\Models\TaskParametersTest.cs" />
+    <Compile Include="Integration\Tests\Agent\ImportServiceManagerTests.cs" />
     <Compile Include="Integration\Tests\Agent\SyncManagerTests.cs" />
     <Compile Include="Integration\Tests\Controllers\JobControllerTests.cs" />
     <Compile Include="Integration\Tests\Controllers\LdapControllerTests.cs" />

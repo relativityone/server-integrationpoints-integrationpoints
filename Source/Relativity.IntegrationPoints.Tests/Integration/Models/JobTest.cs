@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 
@@ -70,6 +71,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			dt.Rows.Add(row);
 
 			return dt;
+		}
+
+		public Job AsJob()
+		{
+			return new Job(this.AsDataRow());
 		}
 	}
 }

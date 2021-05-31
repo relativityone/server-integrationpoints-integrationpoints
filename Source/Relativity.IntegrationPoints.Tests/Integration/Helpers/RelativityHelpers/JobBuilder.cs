@@ -1,4 +1,6 @@
-﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
+﻿using kCura.IntegrationPoints.Core.Contracts.Import;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
+using System;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
@@ -41,6 +43,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 		{
 			_job.ScheduleRuleType = kCura.ScheduleQueue.Core.Const._PERIODIC_SCHEDULE_RULE_TYPE;
 			_job.SerializedScheduleRule = rule.Serialize();
+
+			return this;
+		}
+
+		public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate)
+		{
+			var loadFileParameters = new LoadFileTaskParameters
+			{
+				Size = loadFileSize,
+				LastModifiedDate = loadFileModifiedDate
+			};
+
+			_job.JobDetailsHelper.BatchParameters = loadFileParameters;
 
 			return this;
 		}

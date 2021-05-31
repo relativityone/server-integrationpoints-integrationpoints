@@ -62,6 +62,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupObjectType();
             SetupSyncConfiguration();
             SetupJobHistoryError();
+            SetupIntegrationPointType();
         }
 
         private void AddObjectToDatabase(ObjectCreationInfo objectCreationInfo)

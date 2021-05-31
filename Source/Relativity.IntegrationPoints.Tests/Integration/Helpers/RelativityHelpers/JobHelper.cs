@@ -44,6 +44,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			JobTest job = CreateBasicJob(workspace, integrationPoint).Build();
 			return ScheduleJob(job);
 		}
+
+		public JobTest ScheduleImportIntegrationPointRun(WorkspaceTest workspace, 
+			IntegrationPointTest integrationPoint, long loadFileSize, DateTime loadFileModifiedDate)
+		{
+			JobTest job = CreateBasicJob(workspace, integrationPoint)
+				.WithImportDetails(loadFileSize, loadFileModifiedDate)
+				.Build();
+
+			return ScheduleJob(job);
+		}
 		
 		private JobBuilder CreateBasicJob(WorkspaceTest workspace)
 		{

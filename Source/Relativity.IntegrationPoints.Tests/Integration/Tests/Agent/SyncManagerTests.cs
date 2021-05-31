@@ -82,7 +82,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
 			// Act
-			Thread thread = new Thread(() => sut.Execute(new Job(job.AsDataRow())));
+			Thread thread = new Thread(() => sut.Execute(job.AsJob()));
 			thread.Start();
 			agent.ToBeRemoved = true;
 			Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -103,7 +103,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			SyncManager sut = PrepareSut();
 
 			// Act
-			sut.Execute(new Job(job.AsDataRow()));
+			sut.Execute(job.AsJob());
 
 			// Assert
 			List<JobTest> syncWorkerJobs = FakeRelativityInstance.JobsInQueue.Where(x => x.TaskType == "SyncWorker").ToList();
