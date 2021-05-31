@@ -529,10 +529,10 @@
 	},
 	{
 		"Jira": "REL-561754",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'*The query processor ran out of stack space during query optimization. Please simplify the query*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'ImportNativesStage'*'SQL Statement Failed'*The query processor ran out of stack space during query optimization. Please simplify the query*"
 	},
 	{
 		"Jira": "REL-561754",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'* Server stack limit has been reached. Please look for potentially deep nesting in your query, and try to simplify it.*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'ImportNativesStage'*'SQL Statement Failed'* Server stack limit has been reached. Please look for potentially deep nesting in your query, and try to simplify it.*"
 	}
 ]
