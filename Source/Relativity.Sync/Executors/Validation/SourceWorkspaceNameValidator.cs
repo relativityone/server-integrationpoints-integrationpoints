@@ -41,9 +41,9 @@ namespace Relativity.Sync.Executors.Validation
 			}
 			catch (Exception ex)
 			{
-				string message = "Error occurred while querying for workspace artifact ID: {0}";
+				string message = "Error occurred while validating source workspace name ID: {0}";
 				_logger.LogError(ex, message, configuration.SourceWorkspaceArtifactId);
-				result.Add(string.Format(CultureInfo.InvariantCulture, message, configuration.SourceWorkspaceArtifactId));
+				throw;
 			}
 			return result;
 		}
