@@ -55,7 +55,34 @@
     <None Update="Functional\Helpers\DataFiles\kcura.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Functional\Helpers\LoadFiles\UwsNativesLoadFile.csv">
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007291.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007293.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007299.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007300.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007491.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007494.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007495.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007746.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007747.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007748.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Integration\Tests\LDAP\TestData\AdministrativeTestData.csv">
@@ -76,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Functional\Helpers\DataFiles\" />
+    <Folder Include="Functional\Helpers\LoadFiles\Natives\" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

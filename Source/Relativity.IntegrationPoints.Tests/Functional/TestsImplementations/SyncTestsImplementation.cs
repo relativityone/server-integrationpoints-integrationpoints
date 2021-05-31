@@ -13,6 +13,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using FluentAssertions;
+using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -28,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void OnSetUpFixture()
 		{
-			RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFiles.UWS_NATIVES_LOAD_FILE_PATH);
+			RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
 
 			_destinationWorkspaces.Add(nameof(SavedSearchNativesAndMetadataGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow)));
 			_destinationWorkspaces.Add(nameof(ProductionImagesGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(ProductionImagesGoldFlow)));
@@ -49,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			Workspace destinationWorkspace = _destinationWorkspaces[nameof(SavedSearchNativesAndMetadataGoldFlow)];
 
-			const int keywordSearchDocumentsCount = 50;
+			const int keywordSearchDocumentsCount = 5;
 			KeywordSearch keywordSearch = new KeywordSearch
 			{
 				Name = nameof(SavedSearchNativesAndMetadataGoldFlow),
@@ -63,7 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 						},
 						new Criteria
 						{
-							Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0011361")
+							Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007491")
 						}
 					}
 				}
@@ -115,11 +116,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 						},
 						new Criteria
 						{
-							Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0011363")
+							Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007494")
 						},
 						new Criteria
 						{
-							Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0011430")
+							Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007748")
 						}
 					}
 				}
@@ -134,7 +135,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			};
 			RelativityFacade.Instance.Resolve<IProductionPlaceholderService>().Create(_testsImplementationTestFixture.Workspace.ArtifactID, productionPlaceholder);
 
-			const int productionDocumentsCount = 50;
+			const int productionDocumentsCount = 5;
 			var production = new Testing.Framework.Models.Production
 			{
 				Name = nameof(ProductionImagesGoldFlow),
