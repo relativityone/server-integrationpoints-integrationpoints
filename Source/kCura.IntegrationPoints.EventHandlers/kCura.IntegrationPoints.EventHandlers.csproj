@@ -229,10 +229,6 @@
       <Project>{8a61be46-3c1d-4d31-91f0-2731a01860fc}</Project>
       <Name>kCura.IntegrationPoints.FtpProvider</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
-      <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
-      <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398B06F-3716-4834-9593-A017F2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>

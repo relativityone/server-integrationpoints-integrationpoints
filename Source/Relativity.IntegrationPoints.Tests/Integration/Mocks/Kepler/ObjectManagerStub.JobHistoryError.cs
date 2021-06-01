@@ -13,8 +13,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 	{
 		private void SetupJobHistoryError()
 		{
-			//const string jobHistoryErrorItemLevelPattern = @"\('Job History' IN OBJECT \[(.*)\]\) AND \('Error Type' == CHOICE 9ddc4914-fef3-401f-89b7-2967cd76714b\)";
-
 			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(
 					q => q.ObjectType.Guid == ObjectTypeGuids.JobHistoryErrorGuid), It.IsAny<int>(), It.IsAny<int>()))
 				.Returns((int workspaceId, QueryRequest request, int start, int length) =>
@@ -25,24 +23,43 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 				});
 		}
 
-		private bool IsSingleJobHistoryErrorJobLevelCondition(string condition, out int jobHistory)
+		private bool IsSingleJobHistoryErrorJobLevelCondition(string condition, out int jobHistoryId)
 		{
 			System.Text.RegularExpressions.Match match = Regex.Match(condition,
 				@"'Job History' == OBJECT (.*) AND 'Error Type' IN CHOICE \[(.*)\]");
 
 			if (match.Success)
 			{
-				jobHistory = int.Parse(match.Groups[1].Value);
+				jobHistoryId = int.Parse(match.Groups[1].Value);
 				return true;
 			}
 
-			jobHistory = 0;
+			jobHistoryId = 0;
+			return false;
+		}
+
+		private bool IsMultiJobHistoryErrorItemLevelCondition(string condition, out List<int> jobHistoryIds)
+		{
+			System.Text.RegularExpressions.Match match = Regex.Match(condition,
+				@"\('Job History' IN OBJECT \[(.*)\]\) AND \('Error Type' == CHOICE 9ddc4914-fef3-401f-89b7-2967cd76714b\)");
+
+			if (match.Success)
+			{
+				jobHistoryIds = match.Groups[1].Value.Split(',').Select(x => int.Parse(x)).ToList();
+				return true;
+			}
+
+			jobHistoryIds = new List<int>();
 			return false;
 		}
 
 		private IList<JobHistoryErrorTest> JobHistoryErrorsFilter(QueryRequest request, IList<JobHistoryErrorTest> list)
 		{
-			if (IsSingleJobHistoryErrorJobLevelCondition(request.Condition, out int jobHistory))
+			if(IsMultiJobHistoryErrorItemLevelCondition(request.Condition, out List<int> jobHistoryIds))
+			{
+				return list.Where(x => jobHistoryIds.Contains(x.JobHistory.Value)).ToList();
+			}
+			else if (IsSingleJobHistoryErrorJobLevelCondition(request.Condition, out int jobHistory))
 			{
 				return list.Where(x => x.JobHistory == jobHistory).ToList();
 			}
