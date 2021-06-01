@@ -34,6 +34,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -209,7 +210,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
+			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
 		}
 
 		[Test]

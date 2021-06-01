@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core.Managers
+namespace kCura.IntegrationPoints.Domain.Managers
 {
 	public interface IJobStopManager : IDisposable
 	{
@@ -19,6 +19,12 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// Indicates whether the job should be drain stopped (i.e. the Agent is marked to be removed and the current job supports drain stop)
 		/// </summary>
 		bool ShouldDrainStop { get; }
+
+		/// <summary>
+		/// Gets whether drain stop or cancel (stop) is requested
+		/// </summary>
+		/// <returns></returns>
+		bool IsStopOrDrainStopRequested();
 
 		/// <summary>
 		///     Throws an <see cref="OperationCanceledException" /> if the task has been stopped.

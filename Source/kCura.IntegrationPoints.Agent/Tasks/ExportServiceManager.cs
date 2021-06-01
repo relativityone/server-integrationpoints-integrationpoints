@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					Logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
 
-					synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings);
+					synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings, JobStopManager);
 				}
 				LogPushingDocumentsSuccessfulEnd(job);
 			}

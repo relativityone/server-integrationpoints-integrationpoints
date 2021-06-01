@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -138,6 +139,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public bool IsStopRequested()
 		{
 			return _token.IsCancellationRequested;
+		}
+
+		public bool IsStopOrDrainStopRequested()
+		{
+			return _token.IsCancellationRequested || _isDrainStopping;
 		}
 
 		public void ThrowIfStopRequested()

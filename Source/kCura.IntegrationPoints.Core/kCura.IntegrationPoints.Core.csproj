@@ -237,7 +237,6 @@
     <Compile Include="Managers\IProductionManager.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
-    <Compile Include="Managers\IJobStopManager.cs" />
     <Compile Include="Managers\IErrorManager.cs" />
     <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />

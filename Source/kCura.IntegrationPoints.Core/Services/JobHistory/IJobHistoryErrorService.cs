@@ -1,5 +1,6 @@
 using System;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory

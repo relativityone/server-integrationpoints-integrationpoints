@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Domain.Readers;
 using Moq;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Internals;
@@ -620,7 +621,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			//ACT 
-			rdoSynchronizer.SyncData(data.Object, fieldMap, JsonConvert.SerializeObject(new ImportSettings()));
+			rdoSynchronizer.SyncData(data.Object, fieldMap, JsonConvert.SerializeObject(new ImportSettings()), null);
 
 			//ASSERT 
 			Assert.AreEqual(1, receivedEvents.Count);

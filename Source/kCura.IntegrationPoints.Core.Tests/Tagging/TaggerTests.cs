@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			_instance.TagDocuments(tagsContainer, scratchTableRepository);
 
 			//assert
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig, null);
 		}
 
 		[Test]
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 			_instance.TagDocuments(tagsContainer, scratchTableRepository);
 
 			//assert
-			_dataSynchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig);
+			_dataSynchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig, null);
 		}
 	}
 }

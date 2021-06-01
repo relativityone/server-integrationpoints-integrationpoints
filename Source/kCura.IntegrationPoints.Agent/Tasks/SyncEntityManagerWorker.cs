@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -177,7 +178,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					x.SourceField.FieldIdentifier.Equals(fieldEntryEntityIdentifier.FieldIdentifier) ||
 					x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier));
 
-				LinkManagers(job, newDestinationConfiguration, sourceData, managerLinkMap);
+				LinkManagers(job, newDestinationConfiguration, sourceData, managerLinkMap, JobStopManager);
 				AddMissingManagersErrors(managersLookup, managerArtifactIDs);
 				LogExecuteTaskSuccessfulEnd(job);
 
@@ -402,15 +403,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return newDestinationConfiguration;
 		}
 
-		private void LinkManagers(Job job, string newDestinationConfiguration, IEnumerable<IDictionary<FieldEntry, object>> sourceData,
-			IEnumerable<FieldMap> managerLinkMap)
+		private void LinkManagers(Job job, string newDestinationConfiguration,
+			IEnumerable<IDictionary<FieldEntry, object>> sourceData,
+			IEnumerable<FieldMap> managerLinkMap, IJobStopManager jobStopManager)
 		{
 			IDataSynchronizer dataSynchronizer = GetDestinationProvider(DestinationProvider, newDestinationConfiguration, job);
 
 			SetupJobHistoryErrorSubscriptions(dataSynchronizer);
 
 #pragma warning disable 612
-			dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
+			dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration, jobStopManager);
 #pragma warning restore 612
 		}
 

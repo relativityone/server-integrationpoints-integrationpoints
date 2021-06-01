@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using Newtonsoft.Json;
@@ -27,12 +27,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return _rdoSynchronizer.GetFields(providerConfiguration);
 		}
 
-		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
+		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap,
+			string options, IJobStopManager jobStopManager)
 		{
 			try
 			{
 				string updatedOptions = UpdateImportSettingsForTagging(options);
-				_rdoSynchronizer.SyncData(data, fieldMap, updatedOptions);
+				_rdoSynchronizer.SyncData(data, fieldMap, updatedOptions, jobStopManager);
 			}
 			catch (System.Exception ex)
 			{
@@ -40,17 +41,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options)
+		public void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options,
+			IJobStopManager jobStopManager)
 		{
 			try { 
 				string updatedOptions = UpdateImportSettingsForTagging(options);
-				_rdoSynchronizer.SyncData(data, fieldMap, updatedOptions);
+				_rdoSynchronizer.SyncData(data, fieldMap, updatedOptions, jobStopManager);
 			}
 			catch (System.Exception ex)
 			{
 				LogAndThrowSyncDataException(ex);
 			}
 		}
+
+		public int ProcessedItemCount => _rdoSynchronizer.ProcessedItemCount;
 
 		private string UpdateImportSettingsForTagging(string currentOptions)
 		{

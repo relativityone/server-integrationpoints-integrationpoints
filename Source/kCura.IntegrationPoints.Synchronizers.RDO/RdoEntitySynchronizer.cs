@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.API;
@@ -221,11 +222,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogError("There was a problem with record: {rowId}.{errorMessage}", rowId, errorMessage);
 		}
 
-		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data,
+			IEnumerable<FieldMap> fieldMap, ImportSettings settings, IJobStopManager jobStopManager)
 		{
 			try
 			{
-				base.FinalizeSyncData(data, fieldMap, settings);
+				base.FinalizeSyncData(data, fieldMap, settings, jobStopManager);
 				SubmitLinkManagersJob(fieldMap);
 			}
 			catch (Exception ex)

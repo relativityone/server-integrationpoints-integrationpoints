@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -18,7 +19,9 @@ namespace kCura.IntegrationPoints.Domain.Synchronizer
 		/// <param name="data">The records to insert into the system.</param>
 		/// <param name="fieldMap">The field mapping used to import data into the system.</param>
 		/// <param name="options">The option settings used to synchronize the source data with the destination.</param>
-		void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options);
+		/// <param name="jobStopManager"></param>
+		void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options,
+			IJobStopManager jobStopManager);
 
 		/// <summary>
 		/// Synchronizes data from the data source provider and imports it into Relativity.
@@ -26,6 +29,13 @@ namespace kCura.IntegrationPoints.Domain.Synchronizer
 		/// <param name="data">The reader used to read the records to insert into the system.</param>
 		/// <param name="fieldMap">The field mapping used to import data into the system.</param>
 		/// <param name="options">The option settings used to synchronize the source data with the destination.</param>
-		void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options);
+		/// <param name="jobStopManager"></param>
+		void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options,
+			IJobStopManager jobStopManager);
+		
+		/// <summary>
+		/// Return total number of records processed (transferred + item level errors) in this SyncWorker job
+		/// </summary>
+		int ProcessedItemCount { get; }
 	}
 }

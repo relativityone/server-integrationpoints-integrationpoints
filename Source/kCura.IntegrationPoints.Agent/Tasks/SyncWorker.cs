@@ -20,6 +20,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -133,10 +135,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(dataSynchronizer, job);
 				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
 				JobStopManager?.ThrowIfStopRequested();
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
+			}
+
+			if (JobStopManager?.ShouldDrainStop ?? false)
+			{
+				job.JobDetails = SkipProcessedItems(job.JobDetails, dataSynchronizer.ProcessedItemCount);
+				JobHistory.JobStatus.Guids[0] = JobStatusChoices.JobHistorySuspendedGuid;
+				JobHistoryService.UpdateRdo(JobHistory);
 			}
 
 			LogExecuteImportSuccesfulEnd(job);
+		}
+
+		private string SkipProcessedItems(string jobDetails, int processedItemCount)
+		{
+			List<int> list = Serializer.Deserialize < List<int>>(jobDetails);
+
+			return Serializer.Serialize(list.Skip(processedItemCount));
 		}
 
 		protected virtual void ExecuteTask(Job job)

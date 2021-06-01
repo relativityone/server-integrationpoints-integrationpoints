@@ -4,9 +4,11 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Relativity.API;
@@ -26,15 +28,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private readonly Dictionary<string, int> _inputMappings;
 		private readonly IAPILog _logger;
 		private readonly IHelper _helper;
+		private readonly IJobStopManager _jobStopManager;
 		private readonly IImportApiFactory _factory;
 		private readonly IImportJobFactory _jobFactory;
 		private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
 		private readonly NativeFileImportService _nativeFileImportService;
 
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService,
-			IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
+			IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IJobStopManager jobStopManager)
 		{
 			_helper = helper;
+			_jobStopManager = jobStopManager;
 			Settings = settings;
 			_batchManager = batchManager;
 			_inputMappings = fieldMappings;
@@ -59,6 +63,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public event RowError OnDocumentError;
 
 		public ImportSettings Settings { get; }
+		public int ProcessedItems => _jobProgressInfo.NumberOfItemsErrored + _jobProgressInfo.NumberOfItemsTransferred;
 
 		public virtual void Initialize()
 		{
@@ -105,7 +110,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 					if (sourceData != null)
 					{
 
-						KickOffImport(new DefaultTransferContext(sourceData));
+						KickOffImport(new DefaultTransferContext(new PausableDataReader(sourceData, _jobStopManager)));
 					}
 					else
 					{

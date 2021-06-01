@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields))
 					{
-						synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings));
+						synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings), JobStopManager);
 					}
 				}
 				LogExecuteSuccesfulEnd(job);
