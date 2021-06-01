@@ -44,6 +44,7 @@ using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
 	[TestExecutionCategory.CI, TestLevel.L1]
+	[Feature.DataTransfer.IntegrationPoints]
 	public abstract class TestsBase
 	{
 		public RelativityInstanceTest FakeRelativityInstance { get; set; }

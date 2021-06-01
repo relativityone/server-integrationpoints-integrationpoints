@@ -1,10 +1,10 @@
 ﻿kCura
+kCura.Agent
 kCura.Apps.Common.Config
 Relativity
 Relativity.Toggles
 Relativity.API
 Relativity.Kepler.Client
-	alias Relativity.Services.ServiceProxy.dll ServiceProxy
 Relativity.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataTransfer.MessageService
@@ -20,9 +20,11 @@ Microsoft.Web.Infrastructure
 
 group Tests
 	NUnit
+	NUnit3TestAdapter
 	Relativity.Testing.Framework
 	Relativity.Testing.Framework.Api content: none // avoid including OutsideIn binaries
 	Relativity.Testing.Framework.Web
+	Relativity.Testing.Framework.RingSetup
 	IntegrationPoints.MyFirstProvider
 	Relativity.Sync
 	SystemWrapper.Wrappers
