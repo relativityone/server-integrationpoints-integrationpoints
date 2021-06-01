@@ -1527,6 +1527,12 @@
       <Notes />
     </Assembly>
     <Assembly>
+      <ArtifactId>1016770</ArtifactId>
+      <Keywords />
+      <Name>SystemWrapper.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
       <ArtifactId>1016769</ArtifactId>
       <Keywords />
       <Name>kCura.Apps.Common.Utils.dll</Name>
