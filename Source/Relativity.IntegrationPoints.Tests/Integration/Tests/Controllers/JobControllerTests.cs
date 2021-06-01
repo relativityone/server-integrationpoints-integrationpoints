@@ -1,10 +1,10 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Contracts.Import;
@@ -15,13 +15,13 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Extensions;
 using Relativity.Testing.Identification;
 using SystemInterface.IO;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
-	[IdentifiedTestFixture("4FDA6BE8-7BA6-4755-A7AD-9C48FEB26877")]
+    [IdentifiedTestFixture("4FDA6BE8-7BA6-4755-A7AD-9C48FEB26877")]
     public class JobControllerTests : TestsBase
     {
         private WorkspaceTest _destinationWorkspace;
