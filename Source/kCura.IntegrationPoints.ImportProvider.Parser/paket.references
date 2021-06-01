@@ -6,7 +6,6 @@ Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.Logging
 SystemWrapper.Interfaces
-SystemWrapper.Wrappers
 Relativity.DataTransfer.MessageService
 iTextSharp
 
