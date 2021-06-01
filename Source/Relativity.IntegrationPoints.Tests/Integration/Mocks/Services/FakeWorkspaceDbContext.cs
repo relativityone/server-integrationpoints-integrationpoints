@@ -18,17 +18,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public void BeginTransaction()
 		{
-			throw new System.NotImplementedException();
 		}
 
 		public void CommitTransaction()
 		{
-			throw new System.NotImplementedException();
 		}
 
 		public int ExecuteNonQuerySQLStatement(string sqlStatement)
 		{
-			throw new System.NotImplementedException();
+			return 1; 
 		}
 
 		public int ExecuteNonQuerySQLStatement(string sqlStatement, IEnumerable<SqlParameter> parameters)
@@ -48,7 +46,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement, IEnumerable<SqlParameter> parameters)
 		{
-			throw new System.NotImplementedException();
+			return default(T);
 		}
 
 		public object ExecuteSqlStatementAsScalar(string sqlStatement, params SqlParameter[] parameters)

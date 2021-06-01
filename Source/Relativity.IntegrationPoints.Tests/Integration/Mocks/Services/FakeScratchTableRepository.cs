@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public string GetSchemalessResourceDataBasePrepend()
 		{
-			throw new System.NotImplementedException();
+			return "RIP_ScratchTable";
 		}
 
 		public string GetResourceDBPrepend()

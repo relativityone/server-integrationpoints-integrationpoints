@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private bool? _disableNativeLocationValidation;
 		private bool? _disableNativeValidation;
 		private HashSet<string> _ignoredList;
-		private IImportAPI _api;
 		private IImportService _importService;
 		private string _webApiPath;
 		private readonly IAPILog _logger;
@@ -269,24 +268,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return emailBody.ToString();
 		}
-
-		protected IImportAPI GetImportApi(ImportSettings settings)
-		{
-			if (_api == null)
-			{
-				LogCreatingImportApi();
-			}
-			return _api ?? (_api = _factory.GetImportAPI(settings));
-		}
-
+		
 		protected List<RelativityObject> GetRelativityFields(ImportSettings settings)
 		{
 			try
 			{
 				List<RelativityObject> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
-				HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApi(settings)
-					.GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId)
-					.Select(x => x.ArtifactID));
+				HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApiFacade(settings)
+					.GetWorkspaceFieldsNames(settings.CaseArtifactId, settings.ArtifactTypeId)
+					.Keys);
 				List<RelativityObject> mappableFields = fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
 				LogNumbersOfFieldAndMappableFields(fields.Count, mappableFields.Count);
 				return mappableFields;
@@ -296,6 +286,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				LogRetrievingRelativityFieldsError(e);
 				throw;
 			}
+		}
+
+		private IImportApiFacade GetImportApiFacade(ImportSettings settings)
+		{
+			return _factory.GetImportApiFacade(settings);
 		}
 
 		private IEnumerable<FieldEntry> GetFieldsInternal(string options)
@@ -633,11 +628,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			try
 			{
 				WorkspaceRef workspaceRef = null;
-				Workspace workspace = GetImportApi(settings).Workspaces().FirstOrDefault(x => x.ArtifactID == settings.CaseArtifactId);
-				if (workspace != null)
+				Dictionary<int, string> workspaces = GetImportApiFacade(settings).GetWorkspaces();
+				if (workspaces.ContainsKey(settings.CaseArtifactId))
 				{
+					
 					LogNullWorkspaceReturnedByIAPI();
-					workspaceRef = new WorkspaceRef { Id = workspace.ArtifactID, Name = workspace.Name };
+					workspaceRef = new WorkspaceRef { Id = settings.CaseArtifactId, Name = workspaces[settings.CaseArtifactId] };
 				}
 				return workspaceRef;
 			}

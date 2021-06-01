@@ -8,6 +8,7 @@ using kCura.WinEDDS.Exceptions;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -67,6 +68,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				LogCreatingImportApiError(ex, settings.WebServiceURL);
 				throw;
 			}
+		}
+
+		public IImportApiFacade GetImportApiFacade(ImportSettings settings)
+		{
+			return new ImportApiFacade(this, settings, _logger);
 		}
 
 		protected virtual IImportAPI CreateImportAPIForSettings(ImportSettings settings)

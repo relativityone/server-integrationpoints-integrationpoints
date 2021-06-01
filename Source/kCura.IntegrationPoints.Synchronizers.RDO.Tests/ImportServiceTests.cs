@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.Relativity.ImportAPI.Data;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -39,15 +39,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField5",fieldValue5}
 			};
 
-			Dictionary<string, Field> mapping = new Dictionary<string, Field>()
+			Dictionary<string, string> mapping = new Dictionary<string, string>()
 			{
-				{"sourceField1",GetFieldObject(1,"F1")},
-				{"sourceField2",GetFieldObject(2,"F2")},
-				{"sourceField3",GetFieldObject(3,"F3")},
-				{"sourceField4",GetFieldObject(4,"F4")},
-				{"sourceField5",GetFieldObject(5,"F5")},
-				{"sourceField6",GetFieldObject(6,"F6")},
-				{"sourceField7",GetFieldObject(7,"F7")},
+				{"sourceField1","F1"},
+				{"sourceField2","F2"},
+				{"sourceField3","F3"},
+				{"sourceField4","F4"},
+				{"sourceField5","F5"},
+				{"sourceField6","F6"},
+				{"sourceField7","F7"},
 			};
 
 			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
@@ -81,21 +81,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField4",4},
 				{"sourceField5",5}
 			};
-			Dictionary<int, Field> rdoAllFields = new Dictionary<int, Field>()			{
-				{1,GetFieldObject(1,"F1")},
-				{2,GetFieldObject(2,"F2")},
-				{3,GetFieldObject(3,"F3")},
-				{4,GetFieldObject(4,"F4")},
-				{5,GetFieldObject(5,"F5")},
-				{6,GetFieldObject(6,"F6")},
-				{7,GetFieldObject(7,"F7")},
+			Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()			{
+				{1,"F1"},
+				{2,"F2"},
+				{3,"F3"},
+				{4,"F4"},
+				{5,"F5"},
+				{6,"F6"},
+				{7,"F7"},
 			};
 
 			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
 
 
 			//ACT
-			Dictionary<string, Field> fieldMap = importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields);
+			Dictionary<string, string> fieldMap = importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields);
 
 
 			//ASSERT
@@ -104,10 +104,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.IsTrue(fieldMap.Keys.Contains("sourceField3"));
 			Assert.IsTrue(fieldMap.Keys.Contains("sourceField4"));
 			Assert.IsTrue(fieldMap.Keys.Contains("sourceField5"));
-			Assert.AreEqual(2, fieldMap["sourceField2"].ArtifactID);
-			Assert.AreEqual(3, fieldMap["sourceField3"].ArtifactID);
-			Assert.AreEqual(4, fieldMap["sourceField4"].ArtifactID);
-			Assert.AreEqual(5, fieldMap["sourceField5"].ArtifactID);
+			fieldMap["sourceField2"].Should().Be("F2");
+			
+			// Assert.AreEqual(2, fieldMap["sourceField2"].ArtifactID);
+			// Assert.AreEqual(3, fieldMap["sourceField3"].ArtifactID);
+			// Assert.AreEqual(4, fieldMap["sourceField4"].ArtifactID);
+			// Assert.AreEqual(5, fieldMap["sourceField5"].ArtifactID);
 		}
 
 		[Test]
@@ -120,14 +122,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField4",14},
 				{"sourceField5",15}
 			};
-			Dictionary<int, Field> rdoAllFields = new Dictionary<int, Field>()			{
-				{1,GetFieldObject(1,"F1")},
-				{2,GetFieldObject(2,"F2")},
-				{3,GetFieldObject(3,"F3")},
-				{4,GetFieldObject(4,"F4")},
-				{5,GetFieldObject(5,"F5")},
-				{6,GetFieldObject(6,"F6")},
-				{7,GetFieldObject(7,"F7")},
+			Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()			{
+				{1,"F1"},
+				{2,"F2"},
+				{3,"F3"},
+				{4,"F4"},
+				{5,"F5"},
+				{6,"F6"},
+				{7,"F7"},
 			};
 
 			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
@@ -149,14 +151,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField4",14},
 				{"sourceField5",15}
 			};
-			Dictionary<int, Field> rdoAllFields = new Dictionary<int, Field>()			{
-				{1,GetFieldObject(1,"F1")},
-				{2,GetFieldObject(2,"F2")},
-				{3,GetFieldObject(3,"F3")},
-				{4,GetFieldObject(4,"F4")},
-				{5,GetFieldObject(5,"F5")},
-				{6,GetFieldObject(6,"F6")},
-				{7,GetFieldObject(7,"F7")},
+			Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()			{
+				{1,"F1"},
+				{2,"F2"},
+				{3,"F3"},
+				{4,"F4"},
+				{5,"F5"},
+				{6,"F6"},
+				{7,"F7"},
 			};
 
 			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
@@ -183,10 +185,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField4", true},
 				{"MyPath", "\\\\Server1\\path1\\file1"}
 			};
-			Dictionary<string, Field> mapping = new Dictionary<string, Field>()			{
-				{"sourceField1",GetFieldObject(111,"F1")},
-				{"sourceField2",GetFieldObject(222,"F2")},
-				{"sourceField4",GetFieldObject(444,"F4")}
+			Dictionary<string, string> mapping = new Dictionary<string, string>()			{
+				{"sourceField1","F1"},
+				{"sourceField2","F2"},
+				{"sourceField4","F4"}
 			};
 			NativeFileImportService nativeFileImportService = null;
 
@@ -214,10 +216,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField4", true},
 				{"MyPath", "\\\\Server1\\path1\\file1"}
 			};
-			Dictionary<string, Field> mapping = new Dictionary<string, Field>()			{
-				{"sourceField1",GetFieldObject(111,"F1")},
-				{"sourceField2",GetFieldObject(222,"F2")},
-				{"sourceField4",GetFieldObject(444,"F4")}
+			Dictionary<string, string> mapping = new Dictionary<string, string>()			{
+				{"sourceField1","F1"},
+				{"sourceField2","F2"},
+				{"sourceField4","F4"}
 			};
 			NativeFileImportService nativeFileImportService = new NativeFileImportService()
 			{
@@ -248,10 +250,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 				{"sourceField4", true},
 				{"MyPath", "\\\\Server1\\path1\\file1"}
 			};
-			Dictionary<string, Field> mapping = new Dictionary<string, Field>()			{
-				{"sourceField1",GetFieldObject(111,"F1")},
-				{"sourceField2",GetFieldObject(222,"F2")},
-				{"sourceField4",GetFieldObject(444,"F4")}
+			Dictionary<string, string> mapping = new Dictionary<string, string>()			{
+				{"sourceField1","F1"},
+				{"sourceField2","F2"},
+				{"sourceField4","F4"}
 			};
 			NativeFileImportService nativeFileImportService = new NativeFileImportService()
 			{
@@ -303,15 +305,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		}
 
 		#endregion
-
-		private Field GetFieldObject(int artifactID, string name, Guid? guid = null)
-		{
-			Field f = new Field();
-			f.GetType().GetProperty("ArtifactID").SetValue(f, artifactID, null);
-			f.GetType().GetProperty("Name").SetValue(f, name, null);
-			if (guid.HasValue) f.GetType().GetProperty("Guid").SetValue(f, new List<Guid>() { guid.Value }, null);
-
-			return f;
-		}
 	}
 }

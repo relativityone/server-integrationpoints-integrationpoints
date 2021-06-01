@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	public class ImportService : IImportService, IBatchReporter
 	{
-		private Dictionary<int, Field> _idToFieldDictionary;
+		private Dictionary<int, string> _idToFieldNameDictionary;
 		private IImportAPI _importApi;
 		private int _lastJobStatusUpdate;
 		private int _totalRowsImported;
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 		}
 
-		private Dictionary<string, Field> FieldMappings { get; set; }
+		private Dictionary<string, string> FieldMappings { get; set; }
 
 		public event StatusUpdate OnStatusUpdate;
 		public event BatchCompleted OnBatchComplete;
@@ -71,15 +71,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				LogInitializingImportApi();
 				Connect(Settings);
-				SetupFieldDictionary(_importApi);
+				SetupFieldDictionary();
 				Dictionary<string, int> fieldMapping = _inputMappings;
-				FieldMappings = ValidateAllMappedFieldsAreInWorkspace(fieldMapping, _idToFieldDictionary);
+				FieldMappings = ValidateAllMappedFieldsAreInWorkspace(fieldMapping, _idToFieldNameDictionary);
 				HashSet<string> columnNames = new HashSet<string>();
 				FieldMappings.Values.ToList().ForEach(x =>
 				{
-					if (!columnNames.Contains(x.Name))
+					if (!columnNames.Contains(x))
 					{
-						columnNames.Add(x.Name);
+						columnNames.Add(x);
 					}
 				});
 
@@ -148,17 +148,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			_importApi = _factory.GetImportAPI(settings);
 		}
 
-		internal void SetupFieldDictionary(IImportAPI api)
+		internal void SetupFieldDictionary()
 		{
 			try
 			{
-				_idToFieldDictionary = new Dictionary<int, Field>();
-
-				IEnumerable<Field> workspaceFields = api.GetWorkspaceFields(Settings.CaseArtifactId, Settings.ArtifactTypeId);
-				foreach (Field field in workspaceFields)
-				{
-					_idToFieldDictionary.Add(field.ArtifactID, field);
-				}
+				IImportApiFacade facade = _factory.GetImportApiFacade(Settings);
+				_idToFieldNameDictionary = facade.GetWorkspaceFieldsNames(Settings.CaseArtifactId, Settings.ArtifactTypeId);
 			}
 			catch (Exception e)
 			{
@@ -167,9 +162,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 		}
 
-		public Dictionary<string, Field> ValidateAllMappedFieldsAreInWorkspace(Dictionary<string, int> fieldMapping, Dictionary<int, Field> rdoAllFields)
+		public Dictionary<string, string> ValidateAllMappedFieldsAreInWorkspace(Dictionary<string, int> fieldMapping, Dictionary<int, string> rdoAllFields)
 		{
-			Dictionary<string, Field> mapping = new Dictionary<string, Field>();
+			Dictionary<string, string> mapping = new Dictionary<string, string>();
 
 			List<int> missingFields = new List<int>();
 			foreach (string mapSourceFieldName in fieldMapping.Keys)
@@ -183,8 +178,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				{
 					if (!mapping.ContainsKey(mapSourceFieldName))
 					{
-						Field destinationField = rdoAllFields[mapRdoFieldId];
-						mapping.Add(mapSourceFieldName, destinationField);
+						mapping.Add(mapSourceFieldName, rdoAllFields[mapRdoFieldId]);
 					}
 				}
 			}
@@ -198,7 +192,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return mapping;
 		}
 
-		internal Dictionary<string, object> GenerateImportFields(Dictionary<string, object> sourceFields, Dictionary<string, Field> mapping)
+		internal Dictionary<string, object> GenerateImportFields(Dictionary<string, object> sourceFields, Dictionary<string, string> mapping)
 		{
 			Dictionary<string, object> importFields = new Dictionary<string, object>();
 
@@ -206,11 +200,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				if (mapping.ContainsKey(sourceFieldId))
 				{
-					Field rdoField = mapping[sourceFieldId];
+					string rdoFieldName = mapping[sourceFieldId];
 
-					if (!importFields.ContainsKey(rdoField.Name))
+					if (!importFields.ContainsKey(rdoFieldName))
 					{
-						importFields.Add(rdoField.Name, sourceFields[sourceFieldId]);
+						importFields.Add(rdoFieldName, sourceFields[sourceFieldId]);
 					}
 				}
 			}

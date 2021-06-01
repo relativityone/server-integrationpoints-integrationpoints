@@ -23,7 +23,12 @@ namespace kCura.IntegrationPoints.Data.Queries
         }
     }
 
-    public class JobStatisticsQuery
+    public interface IJobStatisticsQuery
+    {
+        JobStatistics UpdateAndRetrieveStats(string tableName, long jobId, JobStatistics stats, int workspaceID);
+    }
+
+    public class JobStatisticsQuery : IJobStatisticsQuery
     {
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IWorkspaceDBContext _context;

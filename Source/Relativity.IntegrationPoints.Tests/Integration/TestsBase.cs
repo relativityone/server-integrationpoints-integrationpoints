@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -29,19 +30,25 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.SecretStore;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.DocumentTransferProvider.Installers;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.Relativity.ImportAPI;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -53,12 +60,15 @@ using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Telemetry.APM;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
+using IImportApiFactory = kCura.IntegrationPoints.DocumentTransferProvider.IImportApiFactory;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
@@ -126,6 +136,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Install(new ValidationInstaller());
 			Container.Install(new LdapProviderInstaller());
 			Container.Install(new RelativitySyncInstaller());
+			Container.Install(new QueryInstallers());
 
 			OverrideRelativitySyncInstaller();
 
@@ -196,8 +207,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>());
 
 			Container.Register(Component.For<IJobTracker>().ImplementedBy<JobTracker>());
-			Container.Register(Component.For<IJobResourceTracker>().ImplementedBy<JobResourceTracker>());
-			Container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>());
+			Container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
+			Container.Register(Component.For<IFileSizesStatisticsService>().ImplementedBy<FileSizesStatisticsService>().LifestyleTransient());
+			Container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeUtcHelper>());
+			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
+			Container.Register(Component.For<IJobStatisticsService>().ImplementedBy<JobStatisticsService>().LifestyleTransient().IsDefault());
+
+			Container.Register(Component.For<IIntegrationPointProviderTypeService>()
+				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
+				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
+			
+			Container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
+
+
 
 			Container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>());
 			Container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>());
@@ -227,6 +249,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IConfig>().Instance(Config.Instance).LifestyleSingleton());
 			Container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
 			Container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>().LifestyleSingleton());
+			Container.Register(Component.For<ISynchronizerFactory>().ImplementedBy<GeneralWithEntityRdoSynchronizerFactory>().LifestyleTransient());
 
 			Container.Register(Component.For<IJobContextProvider>().UsingFactoryMethod(k =>
 			{
@@ -259,11 +282,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))));
 
 			Container.Register(Component.For<IBatchStatus>().ImplementedBy<FakeBatchStatus>());
+			
+			// IAPI
+			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleSingleton());
+			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>());
 		}
 
 		private void RegisterRipAgentTasks()
 		{
 			Container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
+			Container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 		}
 
 		private void RegisterAuthentication()

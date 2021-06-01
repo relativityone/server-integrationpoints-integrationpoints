@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IAPILog _logger;
-		private readonly JobStatisticsService _statisticsService;
+		private readonly IJobStatisticsService _statisticsService;
 
 		public SyncWorker(
 			ICaseServiceContext caseServiceContext,
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService,
+			IJobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
 			IJobService jobService,
 			IProviderTypeService providerTypeService,
