@@ -43,7 +43,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				string message = "Error occurred while querying for workspace artifact ID: {0}";
 				_logger.LogError(ex, message, configuration.DestinationWorkspaceArtifactId);
-				result.Add(string.Format(CultureInfo.InvariantCulture, message, configuration.DestinationWorkspaceArtifactId));
+				throw;
 			}
 
 			return result;

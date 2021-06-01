@@ -46,7 +46,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				const string message = "Exception occurred when validating destination folder";
 				_logger.LogError(ex, message);
-				validationResult.Add(message);
+				throw;
 			}
 
 			return validationResult;

@@ -60,7 +60,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				const string message = "Failed to validate notification emails format.";
 				_logger.LogError(ex, message);
-				validationResult.Add(message);
+				throw;
 			}
 
 			return Task.FromResult(validationResult);

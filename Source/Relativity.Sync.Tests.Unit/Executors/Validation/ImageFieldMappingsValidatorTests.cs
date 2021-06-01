@@ -137,17 +137,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldDeserializeThrowsException()
+		public void ValidateAsync_ShouldDeserializeThrowsException_WhenGetFieldMappingsFails()
 		{
 			// Arrange
 			_validationConfiguration.Setup(x => x.GetFieldMappings()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -232,43 +231,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandleSourceObjectQuery_ThrowsException()
+		public void ValidateAsync_ShouldThrowException_WhenObjectManagerFails()
 		{
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
 				It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during image field mappings validation. See logs for more details.");
-
-			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration);
+			func.Should().Throw<InvalidOperationException>();
 		}
-
-		[Test]
-		public async Task ValidateAsync_ShouldHandleDestinationObjectQuery_ThrowsException()
-		{
-			// Arrange
-			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
-				It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
-
-			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
-
-			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during image field mappings validation. See logs for more details.");
-
-			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration);
-		}
-
+		
 		[TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
 		public async Task ValidateAsync_ShouldHandleUniqueIdentifierInvalid(string testInvalidFieldMap, string expectedErrorMessage)
 		{

@@ -119,23 +119,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandleCreateProxy_ThrowsException()
+		public void ValidateAsync_ShouldThrow_WhenCreateProxyFails()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			actualResult.IsValid.Should().BeFalse();
-			actualResult.Messages.Should().HaveCount(1);
-
-			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandle_QueryAsync_ThrowsException()
+		public void ValidateAsync_ShouldHandle_QueryAsync_ThrowsException()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
@@ -144,18 +141,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			actualResult.IsValid.Should().BeFalse();
-			actualResult.Messages.Should().HaveCount(1);
-
-			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
-			_objectManager.Verify(x => x.Dispose(), Times.Once);
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandle_ObjectManager_ReturnsMoreThanOneResult()
+		public void ValidateAsync_ShouldHandle_ObjectManager_ReturnsMoreThanOneResult()
 		{
 			// Arrange
 			QueryResult queryResult = BuildQueryResult("Different Field Value", _TEST_FOLDER_NAME);
@@ -166,14 +159,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 					.ReturnsAsync(queryResult);
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			actualResult.IsValid.Should().BeFalse();
-			actualResult.Messages.Should().Contain(m => m.ShortMessage == "Exception occurred when validating folder structure behavior");
-
-			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
-			_objectManager.Verify(x => x.Dispose(), Times.Once);
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]

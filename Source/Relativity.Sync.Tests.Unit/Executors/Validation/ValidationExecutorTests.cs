@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public void ExecuteAsync_ShouldChangeAnyExceptionToValidationException()
+		public void ExecuteAsync_ShouldThrowExceptionWrappingInnerException()
 		{
 			// Arrange
 			_validatorMock.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).Throws<InvalidOperationException>();
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			Func<Task> action = () => _sut.ExecuteAsync(Mock.Of<IValidationConfiguration>(), CompositeCancellationToken.None);
 
 			// Assert
-			action.Should().Throw<ValidationException>();
+			action.Should().Throw<Exception>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
 		}
 
 		[Test]

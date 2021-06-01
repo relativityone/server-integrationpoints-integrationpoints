@@ -43,6 +43,7 @@ namespace Relativity.Sync
 				IProgress<SyncJobState> combinedProgress = progressReporters.Combine();
 				IExecutionContext<SyncExecutionContext> executionContext = _executionContextFactory.Create(combinedProgress, token);
 				executionResult = await _pipeline.ExecuteAsync(executionContext).ConfigureAwait(false);
+				_logger.LogInformation("Sync job completed with execution result: {result}", executionResult.Status);
 			}
 			catch (OperationCanceledException e)
 			{
@@ -71,10 +72,13 @@ namespace Relativity.Sync
 				ValidationException validationException = failingExceptions.OfType<ValidationException>().FirstOrDefault();
 				if (validationException != null)
 				{
+					_logger.LogWarning(validationException, "Sync job validation failed.");
 					throw new ValidationException(validationException.Message, new AggregateException(failingExceptions), validationException.ValidationResult);
 				}
 
-				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(failingExceptions), _syncJobParameters.WorkflowId);
+				const string errorMessage = "Sync job failed. See inner exceptions for more details.";
+				_logger.LogError(errorMessage);
+				throw new SyncException(errorMessage, new AggregateException(failingExceptions), _syncJobParameters.WorkflowId);
 			}
 		}
 	}

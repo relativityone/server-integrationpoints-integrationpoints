@@ -60,7 +60,7 @@ namespace Relativity.Sync.Executors.Validation
 				{
 					string message = "Failed to validate JobHistoryToRetry (ArtifactId = {artifactID})";
 					_logger.LogError(e, message, configuration.JobHistoryToRetryId.Value);
-					validationResult.Add(string.Format($"Failed to validate JobHistoryToRetry (ArtifactId = {configuration.JobHistoryToRetryId.Value}"));
+					throw;
 				}
 			}
 			else
