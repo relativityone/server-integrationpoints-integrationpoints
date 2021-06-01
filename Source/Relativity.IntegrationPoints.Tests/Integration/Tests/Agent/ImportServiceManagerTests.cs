@@ -5,8 +5,10 @@ using kCura.IntegrationPoints.Core.Validation;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using System;
+using System.Linq;
 using SystemInterface.IO;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
@@ -15,11 +17,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ImportServiceManagerTests : TestsBase
 	{
-		ImportServiceManager _sut;
+		private ImportServiceManager _sut;
+
+		private FakeFileInfoFactory _fakeFileInfoFactory;
 
 		public override void SetUp()
 		{
-			base.SetUp();	
+			base.SetUp();
+
+			_fakeFileInfoFactory = new FakeFileInfoFactory();
+
+			Container.Register(Component.For<IFileInfoFactory>().UsingFactoryMethod(c => _fakeFileInfoFactory)
+				.LifestyleTransient().Named(nameof(FakeFileInfoFactory)).IsDefault());
 
 			_sut = Container.Resolve<ImportServiceManager>();
 		}
@@ -35,12 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			const long newSize = size + 10;
 			DateTime newModifiedDate = modifiedDate.AddMinutes(5);
 
-			FakeFileInfoFactory fileInfoFactory = new FakeFileInfoFactory();
-
-			Container.Register(Component.For<IFileInfoFactory>().UsingFactoryMethod(c => fileInfoFactory)
-				.LifestyleTransient().Named(nameof(FakeFileInfoFactory)).IsDefault());
-
-			fileInfoFactory.SetupFile(loadFile, newSize, newModifiedDate);
+			_fakeFileInfoFactory.SetupFile(loadFile, newSize, newModifiedDate);
 
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
 				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);

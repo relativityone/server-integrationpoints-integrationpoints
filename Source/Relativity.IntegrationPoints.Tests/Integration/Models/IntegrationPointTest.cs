@@ -51,6 +51,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			Name = $"Integration Point (Artifact ID {ArtifactId})";
 		}
 
+		public override List<Guid> Guids => new List<Guid>();
+
 		public override RelativityObject ToRelativityObject()
 		{
 			return new RelativityObject()

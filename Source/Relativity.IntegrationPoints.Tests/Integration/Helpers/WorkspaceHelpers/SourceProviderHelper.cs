@@ -1,4 +1,5 @@
 ﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
+using System;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
@@ -67,6 +68,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			
 			Workspace.SourceProviders.Add(myFirstProvider);
 			return myFirstProvider;
+		}
+
+		public SourceProviderTest CreateCustomProvider(string name, Guid identifier)
+		{
+			var customProvider = new SourceProviderTest
+			{
+				Name = name,
+				Identifier = identifier.ToString(),
+				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
+			};
+
+			Workspace.SourceProviders.Add(customProvider);
+			return customProvider;
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public IDBContext GetDBContext(int caseID)
 		{
-			throw new NotImplementedException();
+			return new Mock<IDBContext>().Object;
 		}
 
 		public IUrlHelper GetUrlHelper()

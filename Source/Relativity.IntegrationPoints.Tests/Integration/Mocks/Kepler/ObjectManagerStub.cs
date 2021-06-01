@@ -63,23 +63,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupSyncConfiguration();
             SetupJobHistoryError();
             SetupIntegrationPointType();
+            SetupApplications();
         }
 
         private void AddObjectToDatabase(ObjectCreationInfo objectCreationInfo)
         {
             var workspace = Relativity.Workspaces.First(x => x.ArtifactId == objectCreationInfo.WorkspaceId);
 
-            void Add<T>(IList<T> collection) where T : RdoTestBase, new()
-            {
-                var newRdo = new T();
-                newRdo.LoadRelativityObject<T>(objectCreationInfo.CreatedObject);
-                collection.Add(newRdo);
-            }
-
             if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.JobHistoryGuid)
             {
-                Add(workspace.JobHistory);
+                var newRdo = new JobHistoryTest();
+                newRdo.LoadRelativityObjectByName<JobHistoryTest>(objectCreationInfo.CreatedObject);
+                workspace.JobHistory.Add(newRdo);
             }
+            else if(objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.JobHistoryErrorGuid)
+            {
+                var newRdo = new JobHistoryErrorTest();
+                newRdo.LoadRelativityObjectByGuid<JobHistoryErrorTest>(objectCreationInfo.CreatedObject);
+                workspace.JobHistoryErrors.Add(newRdo);
+			}
             else
             {
                 Debugger.Break();
@@ -225,7 +227,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 {
                     Field = new Field
                     {
-                        Name = request.Fields[i].Name
+                        Name = request.Fields[i].Name,
+                        Guids = new List<Guid> { request.Fields[i].Guid.Value }
                     },
                     Value = v
                 }).ToList(),

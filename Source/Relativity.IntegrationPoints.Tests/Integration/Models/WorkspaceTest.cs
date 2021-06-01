@@ -20,7 +20,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public IList<IntegrationPointTypeTest> IntegrationPointTypes { get; } = new List<IntegrationPointTypeTest>();
 
         public IList<JobHistoryTest> JobHistory { get; } = new List<JobHistoryTest>();
-        
+
+        public IList<JobHistoryErrorTest> JobHistoryErrors { get; } = new List<JobHistoryErrorTest>();
+
         public IList<SourceProviderTest> SourceProviders { get; } = new List<SourceProviderTest>();
 
         public IList<DestinationProviderTest> DestinationProviders { get; } = new List<DestinationProviderTest>();
@@ -42,6 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             return GetArtifacts(IntegrationPoints)
                 .Concat(GetArtifacts(IntegrationPointTypes))
                 .Concat(GetArtifacts(JobHistory))
+                .Concat(GetArtifacts(JobHistoryErrors))
                 .Concat(GetArtifacts(SourceProviders))
                 .Concat(GetArtifacts(DestinationProviders))
                 .Concat(GetArtifacts(Folders))
@@ -78,6 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             return TryFind(IntegrationPoints)
                    ?? TryFind(IntegrationPointTypes)
                    ?? TryFind(JobHistory)
+                   ?? TryFind(JobHistoryErrors)
                    ?? TryFind(SourceProviders)
                    ?? TryFind(DestinationProviders)
                    ?? TryFind(Folders)
@@ -85,6 +89,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                    ?? TryFind(Fields)
                    ?? TryFind(SyncConfigurations);
         }
+
+        public override List<Guid> Guids => new List<Guid>();
 
         public override RelativityObject ToRelativityObject()
         {

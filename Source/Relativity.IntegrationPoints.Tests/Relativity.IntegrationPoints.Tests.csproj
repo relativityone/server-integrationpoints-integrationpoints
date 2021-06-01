@@ -81,6 +81,7 @@
     <Compile Include="Integration\Mocks\FileShare\FakeFileInfoFactory.cs" />
     <Compile Include="Integration\Mocks\Kepler\GroupManagerStub.cs" />
     <Compile Include="Integration\Mocks\Kepler\InstanceSettingManagerStub.cs" />
+    <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Applications.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.IntegrationPointType.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.Artifact.cs" />
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.JobHistory.cs" />
@@ -88,8 +89,7 @@
     <Compile Include="Integration\Mocks\Kepler\ObjectManagerStub.ObjectType.cs" />
     <Compile Include="Integration\Mocks\Kepler\PermissionManagerStub.cs" />
     <Compile Include="Integration\Mocks\Services\FakeAuditRepository.cs" />
-    <Compile Include="Integration\Mocks\Services\FakeBatchStatus.cs" />
-    <Compile Include="Integration\Mocks\Services\FakeDataReader.cs" />
+    <Compile Include="Integration\Mocks\Services\FakeDataProviderFactory.cs" />
     <Compile Include="Integration\Mocks\Services\FakeDataSourceProvider.cs" />
     <Compile Include="Integration\Mocks\Services\FakeInstanceSettingsProvider.cs" />
     <Compile Include="Integration\Mocks\Services\FakeJobContextProvider.cs" />
@@ -111,6 +111,7 @@
     <Compile Include="Integration\Models\IntegrationPointTypeTest.cs" />
     <Compile Include="Integration\Models\IRelativityHelpers.cs" />
     <Compile Include="Integration\Models\IWorkspaceHelpers.cs" />
+    <Compile Include="Integration\Models\JobHistoryErrorTest.cs" />
     <Compile Include="Integration\Models\JobHistoryTest.cs" />
     <Compile Include="Integration\Models\RdoTestBase.cs" />
     <Compile Include="Integration\Models\RelativityInstanceTest.cs" />

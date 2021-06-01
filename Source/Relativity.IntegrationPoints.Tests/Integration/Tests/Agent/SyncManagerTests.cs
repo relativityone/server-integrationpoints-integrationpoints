@@ -16,6 +16,7 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
+using static Relativity.IntegrationPoints.Tests.Integration.Const;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -23,32 +24,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncManagerTests : TestsBase
 	{
-		private class CustomProvider : IDataSourceProvider
-		{
-			public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
-			{
-				throw new System.NotImplementedException();
-			}
-
-			public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
-			{
-				throw new System.NotImplementedException();
-			}
-
-			public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
-			{
-				Thread.Sleep(TimeSpan.FromSeconds(10));
-				return null;
-			}
-
-		}
-
-		private JobTest PrepareJob(string xmlPath, out JobHistoryTest jobHistory)
+		private JobTest PrepareJob(string xmlPath, SourceProviderTest provider, out JobHistoryTest jobHistory)
 		{
 			FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
-			SourceProviderTest provider =
-				SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
 			IntegrationPointTest integrationPoint =
 				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider, identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
@@ -63,7 +41,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		
 		private SyncManager PrepareSut()
 		{
-			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>().IsDefault());
+			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>().Named(Provider._MY_FIRST_PROVIDER));
 			SyncManager sut = Container.Resolve<SyncManager>();
 			return sut;
 		}
@@ -72,12 +50,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void Execute_GetUnbatchedIDs_ShouldAbortThread_WhenDrainStopTimeoutExceeded()
 		{
 			// Arrange
+			Guid customProviderId = Guid.NewGuid();
+
+			SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(CustomProvider), customProviderId);
+
 			Context.InstanceSettings.DrainStopTimeout = TimeSpan.FromSeconds(1);
 			const int numberOfRecords = 1500;
 			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+			JobTest job = PrepareJob(xmlPath, provider, out JobHistoryTest jobHistory);
 
-			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<CustomProvider>().IsDefault());
+			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<CustomProvider>().Named(customProviderId.ToString()));
 			SyncManager sut = Container.Resolve<SyncManager>();
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
@@ -98,8 +80,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			// Arrange
 			const int numberOfRecords = 1500;
 			const int expectedNumberOfSyncWorkersJobs = 2;
-			string xmlPath = PrepareRecords(numberOfRecords); 
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+			string xmlPath = PrepareRecords(numberOfRecords);
+
+			SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+
+			JobTest job = PrepareJob(xmlPath, provider, out JobHistoryTest jobHistory);
 			SyncManager sut = PrepareSut();
 
 			// Act
@@ -124,6 +109,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		{
 			JArray records = JArray.FromObject(JObject.Parse(job.JobDetails)["BatchParameters"]);
 			records.Count.Should().Be(numberOfRecords);
+		}
+
+		private class CustomProvider : IDataSourceProvider
+		{
+			public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
+			{
+				Thread.Sleep(TimeSpan.FromSeconds(10));
+				return null;
+			}
+
 		}
 	}
 }

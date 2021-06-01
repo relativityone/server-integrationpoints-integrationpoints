@@ -81,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 });
 
             Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(),
-                    It.Is<UpdateRequest>(u => u.FieldValues.Any(f => JobHistoryTest.Guids.Contains(f.Field.Guid.Value)))))
+                    It.Is<UpdateRequest>(u => u.FieldValues.Any(f => Const.RdoGuids.JobHistory.Guids.Contains(f.Field.Guid.Value)))))
                 .Returns((int workspaceId, UpdateRequest request) =>
                 {
                     JobHistoryTest jobHistory = Relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
