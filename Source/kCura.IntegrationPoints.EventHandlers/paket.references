@@ -7,7 +7,6 @@ Relativity
 Relativity.Data
 Relativity.Services.Interfaces
 SystemWrapper.Interfaces
-SystemWrapper.Wrappers
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.SDK
 Relativity.Services.Interfaces.Private

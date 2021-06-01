@@ -2,38 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Common.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Import;
-using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Core.Helpers;
-using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.ImportProvider.Parser;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
-using Relativity.DataTransfer.MessageService;
-using SystemWrapper.IO;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
@@ -43,18 +23,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[RunOnce(true)]
 	public class SetHasErrorsField : PostInstallEventHandlerBase
 	{
-		private readonly Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
-
-		private IIntegrationPointService _integrationPointService;
+		private IIntegrationPointRepository _integrationPointRepository;
 		private IJobHistoryService _jobHistoryService;
 
 		public SetHasErrorsField()
 		{
 		}
 
-		internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService)
+		internal SetHasErrorsField(IIntegrationPointRepository integrationPointRepository, IJobHistoryService jobHistoryService)
 		{
-			_integrationPointService = integrationPointService;
+			_integrationPointRepository = integrationPointRepository;
 			_jobHistoryService = jobHistoryService;
 		}
 
@@ -79,8 +57,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		internal void ExecuteInstanced()
 		{
-
-			IList<Data.IntegrationPoint> integrationPoints = GetIntegrationPoints();
+			IList<Data.IntegrationPoint> integrationPoints = _integrationPointRepository.GetIntegrationPointsWithAllFields();
 
 			foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
 			{
@@ -97,22 +74,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID());
 			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-			IChoiceQuery choiceQuery = new ChoiceQuery(Helper.GetServicesManager());
-			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
-			IQueryManager queryManager = new QueryManager(Helper, _agentGuid);
-			IAgentService agentService = new AgentService(Helper, queryManager, _agentGuid);
-			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			IJobService jobService = new JobService(agentService, jobServiceDataProvider, Helper);
-			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
-			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
-			IJobResourceTracker jobResourceTracker = new JobResourceTracker(repositoryFactory, workspaceDbContext);
-			IJobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(Logger);
-			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, Helper, integrationPointSerializer, jobTracker);
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
-			IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, caseServiceContext.WorkspaceID));
-			IMessageService messageService = new MessageService();
 
 			_jobHistoryService = new JobHistoryService(
 				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
@@ -122,53 +86,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				integrationPointSerializer
 				);
 
-			IManagerFactory managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
-
-			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
-			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
-			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, Helper);
-
 			ISecretsRepository secretsRepository = new SecretsRepository(
 				SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger),
 				Logger
 			);
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+			_integrationPointRepository = new IntegrationPointRepository(
 				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
 				integrationPointSerializer,
 				secretsRepository,
 				Logger);
-
-			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, Helper, integrationPointRepository);
-
-			IIntegrationPointTypeService integrationPointTypeService = new IntegrationPointTypeService(Helper, caseServiceContext);
-
-			IDataTransferLocationService dataTransferLocationService = new DataTransferLocationService(Helper,
-				integrationPointTypeService, new LongPathDirectory(), new CryptographyHelper());
-
-			IImportFileLocationService importFileLocationService = new ImportFileLocationService(dataTransferLocationService,
-				new JSONSerializer(), new LongPathDirectory(), new FileInfoFactory());
-			ITaskParametersBuilder taskParametersBuilder = new TaskParametersBuilder(importFileLocationService);
-
-			_integrationPointService = new IntegrationPointService(
-				Helper, 
-				caseServiceContext,
-				integrationPointSerializer, 
-				choiceQuery, 
-				jobManager, 
-				_jobHistoryService, 
-				jobHistoryErrorService, 
-				managerFactory,
-				validationExecutor, 
-				providerTypeService, 
-				messageService, 
-				integrationPointRepository,
-				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
-				taskParametersBuilder);
-		}
-
-		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceID)
-		{
-			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceID);
 		}
 
 		internal void UpdateIntegrationPointHasErrorsField(IntegrationPoint integrationPoint)
@@ -190,13 +116,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				}
 			}
 
-			_integrationPointService.UpdateIntegrationPoint(integrationPoint);
-		}
-
-		internal IList<Data.IntegrationPoint> GetIntegrationPoints()
-		{
-			IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOsWithAllFields();
-			return integrationPoints;
+			_integrationPointRepository.Update(integrationPoint);
 		}
 	}
 }

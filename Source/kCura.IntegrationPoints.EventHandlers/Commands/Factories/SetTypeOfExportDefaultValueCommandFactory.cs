@@ -26,12 +26,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.ImportProvider.Parser;
-using kCura.IntegrationPoints.Core.Helpers.Implementations;
-using kCura.IntegrationPoints.Core.Helpers;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Import;
-using SystemWrapper.IO;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -92,21 +86,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				secretsRepository,
 				logger);
 
-			IIntegrationPointTypeService integrationPointTypeService = new IntegrationPointTypeService(helper, caseServiceContext);
-
-			IDataTransferLocationService dataTransferLocationService = new DataTransferLocationService(helper,
-				integrationPointTypeService, new LongPathDirectory(), new CryptographyHelper());
-
-			IImportFileLocationService importFileLocationService = new ImportFileLocationService(dataTransferLocationService,
-				new JSONSerializer(), new LongPathDirectory(), new FileInfoFactory());
-			ITaskParametersBuilder taskParametersBuilder = new TaskParametersBuilder(importFileLocationService);
-
-			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper, integrationPointRepository);
-			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
-				integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
-				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository,
-				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager, taskParametersBuilder);
-
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
 				helper,
 				caseServiceContext, 
@@ -119,7 +98,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 
 			return new SetTypeOfExportDefaultValueCommand(
-				integrationPointService, 
+				integrationPointRepository, 
 				integrationPointProfileService,
 				objectManager, 
 				sourceConfigurationTypeOfExpertUpdater
