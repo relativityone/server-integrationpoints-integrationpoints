@@ -2,13 +2,10 @@
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Validation;
-using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using System;
-using System.Linq;
 using SystemInterface.IO;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
