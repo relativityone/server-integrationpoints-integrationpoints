@@ -25,5 +25,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			public static readonly Guid FakeProviderGuid = new Guid(_FAKE_PROVIDER);
 		}
+
+		public static class RdoGuids
+		{
+			public static class SyncConfiguration
+			{
+				public const string JobHistoryId = "Job History ID";
+				public static readonly Guid JobHistoryIdGuid = new Guid("FF793525-29AB-40B2-A8AE-88E574EAD0DE");
+				public const string Resuming = "Resuming";
+				public static readonly Guid ResumingGuid = new Guid("A5B0959D-96CE-4CA0-9E4A-576132F29165");
+			}
+		}
 	}
 }

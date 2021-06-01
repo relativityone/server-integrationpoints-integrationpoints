@@ -85,9 +85,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			sut.VerifyJobWasProcessedAtFirst(job2.JobId);
 		}
 
-		private FakeAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		private FakeScheduleAgent PrepareSutWithMockedQueryManager(AgentTest agent)
 		{
-			return new FakeAgent(agent,
+			return new FakeScheduleAgent(agent,
 				Container.Resolve<IAgentHelper>(),
 				queryManager: Container.Resolve<IQueryManager>());
 		}

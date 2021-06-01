@@ -51,7 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			}
 		}
 
-		private object Sanitize(object value)
+		protected object Sanitize(object value)
 		{
 			if (value is Relativity.Services.Objects.DataContracts.ChoiceRef choiceRef)
 			{

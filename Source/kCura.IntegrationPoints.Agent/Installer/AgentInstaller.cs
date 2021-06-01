@@ -59,41 +59,43 @@ namespace kCura.IntegrationPoints.Agent.Installer
 		{
 			ConfigureContainer(container);
 
-			container.Register(Component.For<JobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
+			container.Register(Component.For<IJobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
+
+			container.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
 			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				d.InsertTyped(jobContextProvider.Job.WorkspaceID);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
 			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return new WorkspaceDBContext(_agentHelper.GetDBContext(jobContextProvider.Job.WorkspaceID));
 			}).LifestyleTransient());
 
 			container.Register(Component.For<Job>().UsingFactoryMethod(k =>
 			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return jobContextProvider.Job;
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IRelativityObjectManagerService>().UsingFactoryMethod(k =>
 			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return new RelativityObjectManagerService(container.Resolve<IHelper>(), jobContextProvider.Job.WorkspaceID);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod(k =>
 			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return k.Resolve<IHelper>().GetDBContext(jobContextProvider.Job.WorkspaceID);
 			}).LifestyleTransient());
 
 			container.Register(Component.For<CurrentUser>().UsingFactoryMethod(k =>
 			{
-				JobContextProvider jobContextProvider = k.Resolve<JobContextProvider>();
+				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return new CurrentUser(userID: jobContextProvider.Job.SubmittedBy);
 			}).LifestyleTransient());
 
