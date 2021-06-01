@@ -57,7 +57,6 @@ using Relativity.IntegrationPoints.Contracts;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
-using SystemWrapper.IO;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {

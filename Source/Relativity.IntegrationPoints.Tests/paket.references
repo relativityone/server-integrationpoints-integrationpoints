@@ -27,4 +27,3 @@ group Tests
 	Relativity.Testing.Framework.RingSetup
 	IntegrationPoints.MyFirstProvider
 	Relativity.Sync
-	SystemWrapper.Wrappers

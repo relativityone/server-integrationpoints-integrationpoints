@@ -8,8 +8,8 @@ using NSubstitute;
 using System;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Data;
-using SystemWrapper;
 using Moq;
+using kCura.IntegrationPoints.Core.Helpers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {

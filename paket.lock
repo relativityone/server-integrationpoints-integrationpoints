@@ -562,5 +562,3 @@ NUGET
       System.Reactive (>= 4.0)
     System.Runtime.CompilerServices.Unsafe (4.5.3)
     SystemWrapper.Interfaces (0.25.0.186)
-    SystemWrapper.Wrappers (0.25.0.186)
-      SystemWrapper.Interfaces (0.25.0.186)

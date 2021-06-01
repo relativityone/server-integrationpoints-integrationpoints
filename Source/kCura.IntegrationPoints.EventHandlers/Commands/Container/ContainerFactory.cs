@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Install(new QueryInstallers());
 			container.Install(new SharedAgentInstaller());
 			container.Install(new ServicesInstaller());
+			container.Install(new ImportProvider.Parser.Installers.ServicesInstaller());
 
 			return container;
 		}
