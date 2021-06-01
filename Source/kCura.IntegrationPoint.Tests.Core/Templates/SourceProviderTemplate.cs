@@ -38,6 +38,7 @@ using kCura.IntegrationPoints.Common.Agent;
 using Relativity.Services.Objects;
 using MassCreateResult = Relativity.Services.Objects.DataContracts.MassCreateResult;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using kCura.IntegrationPoints.ImportProvider.Parser.Installers;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -166,8 +167,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				new QueryInstallers(),
 				new KeywordInstaller(),
 				new SharedAgentInstaller(),
-				new ServicesInstaller(),
-				new ValidationInstaller()
+				new IntegrationPoints.Core.Installers.ServicesInstaller(),
+				new ValidationInstaller(),
+				new IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
 			};
 #pragma warning restore 618
 
