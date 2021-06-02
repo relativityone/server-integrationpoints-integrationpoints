@@ -224,6 +224,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
 
+		public ICommand UpdateJobDetails(long jobId, string jobDetails)
+		{
+			return new ActionCommand(() =>
+			{
+				var job = _db.JobsInQueue.FirstOrDefault(x => x.JobId == jobId);
+
+				if (job != null)
+				{
+					job.JobDetails = jobDetails;
+				}
+			});
+		}
+
 		#region Test Verification
 
 		public void ShouldCreateQueueTable()

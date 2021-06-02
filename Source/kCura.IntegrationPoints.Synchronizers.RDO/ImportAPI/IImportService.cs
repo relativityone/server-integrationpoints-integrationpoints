@@ -12,10 +12,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		void Initialize();
 		void KickOffImport(IDataTransferContext dataSource);
 		ImportSettings Settings { get; }
-		
-		/// <summary>
-		/// Returns total amount of processed items (transferred + item level error)
-		/// </summary>
-		int ProcessedItems { get; }
 	}
 }

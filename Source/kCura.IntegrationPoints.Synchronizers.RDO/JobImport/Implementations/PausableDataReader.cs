@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
                 return false;
             }
 
-            Thread.Sleep(10000);
             return _dataReaderImplementation.Read();
         }
         

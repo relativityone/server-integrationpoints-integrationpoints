@@ -105,5 +105,10 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			return new GetJob(_queueDbContext, jobId);
 		}
+
+		public ICommand UpdateJobDetails(long jobId, string jobDetails)
+		{
+			return new UpdateJobDetails(_queueDbContext, jobId, jobDetails);
+		}
 	}
 }

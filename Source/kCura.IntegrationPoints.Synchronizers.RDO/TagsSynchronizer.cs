@@ -54,8 +54,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public int ProcessedItemCount => _rdoSynchronizer.ProcessedItemCount;
-
 		private string UpdateImportSettingsForTagging(string currentOptions)
 		{
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(currentOptions);

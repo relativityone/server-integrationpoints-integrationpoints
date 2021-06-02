@@ -63,7 +63,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public event RowError OnDocumentError;
 
 		public ImportSettings Settings { get; }
-		public int ProcessedItems => _jobProgressInfo.NumberOfItemsErrored + _jobProgressInfo.NumberOfItemsTransferred;
 
 		public virtual void Initialize()
 		{

@@ -284,6 +284,18 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 		}
 
+		public void UpdateJobDetails(Job job)
+		{
+			if(job == null)
+			{
+				throw new ArgumentNullException(nameof(job));
+			}
+
+			LogUpdateJobDetails(job.JobId);
+			DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
+		}
+
+		
 		public void CleanupJobQueueTable()
 		{
 			LogOnCleanJobQueTable();
@@ -291,6 +303,11 @@ namespace kCura.ScheduleQueue.Core.Services
 		}
 
 		#region Logging
+		private void LogUpdateJobDetails(long jobId)
+		{
+			_log.LogInformation("Attempting to update JobDetails for job with ID: ({jobId})", jobId);
+		}
+
 
 		public void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
 		{

@@ -80,6 +80,48 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             return job;
         }
 
+        /// <summary>
+        /// Creates <see cref="numberOfBatches"/> jobs in queue for the same IntegrationPoint and returns one of them
+        /// </summary>
+        private JobTest PrepareJobs(string xmlPath, int numberOfBatches)
+        {
+	        FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
+
+	        SourceProviderTest provider =
+		        SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+
+	        IntegrationPointTest integrationPoint =
+		        SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider,
+			        identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
+
+	        integrationPoint.SourceProvider = provider.ArtifactId;
+	        integrationPoint.SourceConfiguration = xmlPath;
+	        JobTest job =
+		        FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace,
+			        integrationPoint);
+
+	        SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+
+	        TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+	        string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("//Name").Select(x => x.Value)
+		        .ToArray();
+
+	        taskParameters.BatchParameters = recordsIds;
+
+	        job.JobDetails = Serializer.Serialize(taskParameters);
+
+	        for (int i = 1; i < numberOfBatches; i++)
+	        {
+		        JobTest newJob =
+			        FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace,
+				        integrationPoint);
+
+		        newJob.JobDetails = job.JobDetails; // link all jobs together with BatchInstance
+	        }
+
+	        return job;
+        }
+
         private string PrepareRecords(int numberOfRecords)
         {
             string xml = new MyFirstProviderXmlGenerator().GenerateRecords(numberOfRecords);
@@ -130,21 +172,55 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             });
 
             // Act
-            var syncManagerJob = new Job(job.AsDataRow());
-            sut.Execute(syncManagerJob);
+            sut.Execute(new Job(job.AsDataRow()));
             
 
             // Assert
-            List<string> remainingItems = GetRemainingItems(syncManagerJob);
+            List<string> remainingItems = GetRemainingItems(job);
 
             remainingItems.Count.Should().Be(numberOfRecords - drainStopAfterImporting);
             remainingItems.Should().BeEquivalentTo(Enumerable.Range(drainStopAfterImporting, numberOfRecords - drainStopAfterImporting).Select(x => x.ToString()));
             
             jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
             jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
+            job.StopState.Should().Be(StopState.DrainStopped);
         }
 
-        private List<string> GetRemainingItems(Job job)
+        [IdentifiedTest("4D867717-3C3D-4763-9E29-63AAAA435885")]
+        public void SyncWorker_ShouldNotDrainStopOtherBatches()
+        {
+	        // Arrange
+	        const int numberOfRecords = 100;
+	        const int drainStopAfterImporting = 50;
+	        const int numberOfBatches = 3;
+
+	        string xmlPath = PrepareRecords(numberOfRecords);
+	        JobTest job = PrepareJobs(xmlPath, numberOfBatches);
+	        FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
+
+            IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
+
+	        SyncWorker sut = PrepareSut((importJob) =>
+	        {
+		        importJob.Complete(drainStopAfterImporting);
+
+		        agent.ToBeRemoved = true;
+
+		        Task.Run(async () => await Task.Delay(1000)).GetAwaiter().GetResult();
+	        });
+
+	        // Act
+	        var syncManagerJob = new Job(job.AsDataRow());
+	        sut.Execute(syncManagerJob);
+
+	        // Assert
+	        job.StopState.Should().Be(StopState.DrainStopped);
+	        FakeRelativityInstance.JobsInQueue.Where(x => x.JobId != job.JobId).All(x => x.StopState == StopState.None).Should().BeTrue();
+        }
+
+       
+
+        private List<string> GetRemainingItems(JobTest job)
         {
             TaskParameters paramaters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
             List<string> remainingItems = (paramaters.BatchParameters as JArray).ToObject<List<string>>();

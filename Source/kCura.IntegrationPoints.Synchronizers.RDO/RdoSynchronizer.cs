@@ -250,7 +250,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public int ProcessedItemCount => _importService?.ProcessedItems ?? 0;
 
 		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
 		{
