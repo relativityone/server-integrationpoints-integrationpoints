@@ -139,15 +139,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
 			}
 
-			if (JobStopManager?.ShouldDrainStop ?? false)
+			int processedItemCount = JobHistory.ItemsTransferred ?? 0 + JobHistory.ItemsWithErrors ?? 0;
+			
+			if ((JobStopManager?.ShouldDrainStop ?? false) && processedItemCount < (JobHistory.TotalItems ?? 0))
 			{
 				Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
 				JobHistory = JobHistoryService.GetRdo(batchInstance);
-				job.JobDetails = SkipProcessedItems(job.JobDetails, JobHistory.ItemsTransferred ?? 0 + JobHistory.ItemsWithErrors ?? 0);
+				
+				job.JobDetails = SkipProcessedItems(job.JobDetails, processedItemCount);
 				JobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
 				JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
-
-				var updatedJobHistory = JobHistoryService.GetRdoWithoutDocuments(batchInstance);
 
 				job.StopState = StopState.DrainStopped;
 				JobService.UpdateStopState(new List<long>{job.JobId}, job.StopState);
