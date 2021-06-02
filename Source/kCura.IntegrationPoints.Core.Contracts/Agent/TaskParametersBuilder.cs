@@ -26,8 +26,6 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 				case TaskType.ImportService:
 					parameters.BatchParameters = BuildLoadFileParameters(integrationPoint);
 					break;
-				default:
-					break;
 			}
 
 			return parameters;
