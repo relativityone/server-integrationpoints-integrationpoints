@@ -79,43 +79,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     QueryResultSlim result = GetQuerySlimsForRequest(x=>x.JobHistory, JobHistoryFilter, workspaceId, request, length);
                     return Task.FromResult(result);
                 });
-
-            Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(),
-                    It.Is<UpdateRequest>(u => u.FieldValues.Any(f => JobHistoryTest.Guids.Contains(f.Field.Guid.Value)))))
-                .Returns((int workspaceId, UpdateRequest request) =>
-                {
-                    JobHistoryTest jobHistory = _relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
-                        .JobHistory.Single(x => x.ArtifactId == request.Object.ArtifactID);
-
-                    foreach (var field in request.FieldValues)
-                    {
-                        jobHistory.Values[field.Field.Guid.Value] = field.Value;
-                    }
-
-                    return Task.FromResult(new UpdateResult());
-                });
-	            
-            Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(),   
-                    It.Is<UpdateRequest>(r => IsJobHistoryUpdateJobStatusRequest(r))))
-	            .Returns((int workspaceId, UpdateRequest request) =>
-	            {
-		            JobHistoryTest jobHistory = _relativity
-			            .Workspaces
-			            .Single(x => x.ArtifactId == workspaceId)
-			            .JobHistory
-			            .Single(x => x.ArtifactId == request.Object.ArtifactID);
-
-		            FieldRefValuePair jobStatusFieldValuePair = request.FieldValues.Single(x => x.Field.Guid == JobHistoryFieldGuids.JobStatusGuid);
-		            Relativity.Services.Objects.DataContracts.ChoiceRef jobStatus = jobStatusFieldValuePair.Value as Relativity.Services.Objects.DataContracts.ChoiceRef;
-                    
-		            jobHistory.JobStatus = new ChoiceRef(new List<Guid>() { jobStatus.Guid.Value });
-
-		            UpdateResult result = new UpdateResult()
-		            {
-                        EventHandlerStatuses = new List<EventHandlerStatus>()
-		            };
-		            return Task.FromResult(result);
-	            });
         }
 
         private bool IsJobHistoryQueryRequest(QueryRequest x)

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -36,6 +37,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
         internal void Complete(int numberOfDocuments)
         {
+            for (long i = 0; i < numberOfDocuments; i++)
+            {
+                OnProgress?.Invoke(i);
+            }
+            
             ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
             JobReport jobReport = (JobReport) constructorInfos.First().Invoke(new object[0]);
 
@@ -44,7 +50,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
                 .SetMethod;
 
             totalRecordsSetter.Invoke(jobReport, new object[] {numberOfDocuments});
-
+            
+            // to make sure that all OnProgress are processed
+            Task.Delay(500).GetAwaiter().GetResult();
             OnComplete?.Invoke(jobReport);
         }
 
@@ -54,6 +62,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
         public void Execute()
         {
+            // IAPI always starts with 1
+            OnProgress?.Invoke(1);
             _executeAction?.Invoke(this);
         }
     }

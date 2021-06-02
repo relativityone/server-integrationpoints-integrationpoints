@@ -31,6 +31,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -140,7 +141,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (JobStopManager?.ShouldDrainStop ?? false)
 			{
-				job.JobDetails = SkipProcessedItems(job.JobDetails, dataSynchronizer.ProcessedItemCount);
+				JobHistory = JobHistoryService.GetRdo(Guid.Parse(JobHistory.BatchInstance));
+				job.JobDetails = SkipProcessedItems(job.JobDetails, JobHistory.ItemsTransferred.Value + JobHistory.ItemsWithErrors.Value);
 				JobHistory.JobStatus.Guids[0] = JobStatusChoices.JobHistorySuspendedGuid;
 				JobHistoryService.UpdateRdo(JobHistory);
 			}
@@ -150,9 +152,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private string SkipProcessedItems(string jobDetails, int processedItemCount)
 		{
-			List<int> list = Serializer.Deserialize < List<int>>(jobDetails);
+			TaskParameters parameters = Serializer.Deserialize < TaskParameters>(jobDetails);
 
-			return Serializer.Serialize(list.Skip(processedItemCount));
+			List<string> list = (parameters.BatchParameters as JArray).ToObject<List<string>>();
+			parameters.BatchParameters = list.Skip(processedItemCount);
+			
+			return Serializer.Serialize(parameters);
 		}
 
 		protected virtual void ExecuteTask(Job job)
@@ -168,7 +173,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
-				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: false);
+				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true);
 				JobHistoryErrorService.JobStopManager = JobStopManager;
 
 				if (!IntegrationPoint.SourceProvider.HasValue)

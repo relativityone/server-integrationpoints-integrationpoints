@@ -1,10 +1,15 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider;
@@ -16,6 +21,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
+using Newtonsoft.Json.Linq;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers;
@@ -29,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
     [TestExecutionCategory.CI, TestLevel.L1]
     public class SyncWorkerTests : TestsBase
     {
-        private SyncWorker PrepareSut(int numberOfRecords)
+        private SyncWorker PrepareSut(Action<FakeJobImport> importAction)
         {
             Container.Register(Component.For<IDataSourceProvider>()
                 .ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>().IsDefault());
@@ -39,10 +45,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                     Container.Resolve<IHelper>(), Container.Resolve<IRelativityObjectManager>())));
 
             Container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoSynchronizer>().Named(typeof(RdoSynchronizer).AssemblyQualifiedName).LifestyleTransient());
-            Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) =>
-            {
-                importJob.Complete(numberOfRecords);
-            })).LifestyleSingleton());
+            Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport(importAction)).LifestyleSingleton());
             Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI.IImportApiFacade>().ImplementedBy<FakeImportApiFacade>());
             
             SyncWorker sut = Container.Resolve<SyncWorker>();
@@ -93,13 +96,59 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             const int numberOfRecords = 100;
             string xmlPath = PrepareRecords(numberOfRecords);
             JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-            SyncWorker sut = PrepareSut(numberOfRecords);
+            SyncWorker sut = PrepareSut((importJob) =>
+            {
+                importJob.Complete(numberOfRecords);
+            });
 
             // Act
             sut.Execute(new Job(job.AsDataRow()));
 
             // Assert
             jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
+        }
+        
+        [IdentifiedTest("72118579-91DB-4018-8EF9-A4EB3FC2CD51")]
+        public void SyncWorker_ShouldDrainStop()
+        {
+            // Arrange
+            const int numberOfRecords = 100;
+            const int drainStopAfterImporting = 50;
+            
+            string xmlPath = PrepareRecords(numberOfRecords);
+            JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+            
+            IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
+            
+            SyncWorker sut = PrepareSut((importJob) =>
+            {
+                importJob.Complete(drainStopAfterImporting);
+
+                agent.ToBeRemoved = true;
+                
+                Task.Run(async () => await Task.Delay(1000)).GetAwaiter().GetResult();
+            });
+
+            // Act
+            var syncManagerJob = new Job(job.AsDataRow());
+            sut.Execute(syncManagerJob);
+            
+
+            // Assert
+            List<string> remainingItems = GetRemainingItems(syncManagerJob);
+
+            remainingItems.Count.Should().Be(numberOfRecords - drainStopAfterImporting);
+            remainingItems.Should().BeEquivalentTo(Enumerable.Range(drainStopAfterImporting, numberOfRecords - drainStopAfterImporting).Select(x => x.ToString()));
+            
+            jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
+            jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
+        }
+
+        private List<string> GetRemainingItems(Job job)
+        {
+            TaskParameters paramaters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+            List<string> remainingItems = (paramaters.BatchParameters as JArray).ToObject<List<string>>();
+            return remainingItems;
         }
     }
 }
