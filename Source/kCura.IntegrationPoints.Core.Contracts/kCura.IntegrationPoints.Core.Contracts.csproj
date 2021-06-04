@@ -55,6 +55,8 @@
     </Compile>
     <Compile Include="Agent\IJobManager.cs" />
     <Compile Include="Agent\ITaskJobSubmitter.cs" />
+    <Compile Include="Agent\ITaskParametersBuilder.cs" />
+    <Compile Include="Agent\TaskParametersBuilder.cs" />
     <Compile Include="Agent\TaskType.cs" />
     <Compile Include="Configuration\DestinationConfiguration.cs" />
     <Compile Include="Configuration\SourceConfigurationForLogging.cs" />
@@ -62,8 +64,14 @@
     <Compile Include="Entity\EntityConstants.cs" />
     <Compile Include="BatchReporter\IBatchReporter.cs" />
     <Compile Include="Helpers\TaskTypeHelper.cs" />
+    <Compile Include="Import\IImportFileLocationService.cs" />
+    <Compile Include="Import\LoadFileTaskParameters.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>

@@ -17,6 +17,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		{
 		}
 
+		public override List<Guid> Guids => new List<Guid>();
+
 		public override RelativityObject ToRelativityObject()
 		{
 			return new RelativityObject()

@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IValidationExecutor _validationExecutor;
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IMessageService _messageService;
+		private readonly ITaskParametersBuilder _taskParametersBuilder;
 
 		public ServiceFactory(ICaseServiceContext caseServiceContext,
 			IIntegrationPointSerializer serializer,
@@ -31,7 +32,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IManagerFactory managerFactory,
 			IValidationExecutor validationExecutor,
 			IProviderTypeService providerTypeService,
-			IMessageService messageService)
+			IMessageService messageService,
+			ITaskParametersBuilder taskParametersBuilder)
 		{
 			_managerFactory = managerFactory;
 			_validationExecutor = validationExecutor;
@@ -41,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_choiceQuery = choiceQuery;
 			_serializer = serializer;
 			_caseServiceContext = caseServiceContext;
+			_taskParametersBuilder = taskParametersBuilder;
 		}
 
 		public IIntegrationPointService CreateIntegrationPointService(IHelper helper)
@@ -75,7 +78,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 				_providerTypeService,
 				_messageService,
 				integrationPointRepository,
-				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
+				_caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
+				_taskParametersBuilder);
 		}
 		
 		public IJobHistoryService CreateJobHistoryService(IAPILog logger)

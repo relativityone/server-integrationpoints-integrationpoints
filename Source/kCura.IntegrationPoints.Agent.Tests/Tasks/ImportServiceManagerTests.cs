@@ -36,6 +36,7 @@ using kCura.IntegrationPoints.Common.Handlers;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -46,10 +47,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private Data.IntegrationPoint _integrationPoint;
 		private IDataSynchronizer _synchronizer;
 		private IJobHistoryErrorService _jobHistoryErrorService;
+		private IImportFileLocationService _importFileLocationService;
 
 		private ImportServiceManager _instance;
 
 		private Job _job;
+		private LoadFileInfo _loadFile;
 		private TaskParameters _taskParameters;
 		private IHelper _helper;
 		private IRetryHandler _retryHandler;
@@ -63,7 +66,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private const string _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE = "ImageImport";
 		private const string _IMPORTSETTINGS_FOR_DOC = "DocumentImport";
 		private const string _IMPORTSETTINGS_FOR_IMAGE = "ImageImport";
+		
 		private const string _LOAD_FILE_PATH = "LoadFilePath";
+		private const long _LOAD_FILE_SIZE = 1000;
+		private readonly DateTime _LOAD_FILE_MODIFIED_DATE = new DateTime(2020, 1, 1);
 
 		private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
 		private const string _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION = "'Name' == 'Automated Workflows'";
@@ -79,8 +85,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private void SetUp(Job job)
 		{
 			_job = job;
+
+			_loadFile = new LoadFileInfo
+			{
+				FullPath = _LOAD_FILE_PATH,
+				Size = _LOAD_FILE_SIZE,
+				LastModifiedDate = _LOAD_FILE_MODIFIED_DATE
+			};
+
 			_helper = Substitute.For<IHelper>();
-			
+
 			_retryHandler = Substitute.For<IRetryHandler>();
 			_retryHandler.ExecuteWithRetriesAsync(Arg.Any<Func<Task>>(), Arg.Any<string>()).Returns(callInfo => ((Func<Task>)callInfo[0])());
 
@@ -102,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			IBatchStatus sendingEmailNotification = Substitute.For<IBatchStatus>();
 			IBatchStatus updateJobHistoryStatus = Substitute.For<IBatchStatus>();
-			IEnumerable<IBatchStatus>  batchStatuses = new List<IBatchStatus>() {sendingEmailNotification, updateJobHistoryStatus};
+			IEnumerable<IBatchStatus> batchStatuses = new List<IBatchStatus>() { sendingEmailNotification, updateJobHistoryStatus };
 			ISerializer serializer = Substitute.For<ISerializer>();
 			IJobService jobService = Substitute.For<IJobService>();
 
@@ -110,10 +124,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
+			_importFileLocationService = Substitute.For<IImportFileLocationService>();
+			_importFileLocationService.ErrorFilePath(Arg.Any<Data.IntegrationPoint>()).Returns(_ERROR_FILE_PATH);
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>()).Returns(_loadFile);
+
 			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
 			_synchronizer = Substitute.For<IDataSynchronizer>();
 			IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
-			IImportFileLocationService importFileLocationService = Substitute.For<IImportFileLocationService>();
+			
 			IDataReader loadFileReader = Substitute.For<IDataReader, IArtifactReader>();
 			IDataReader opticonFileReader = Substitute.For<IDataReader, IOpticonDataReader>();
 			IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
@@ -124,9 +142,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC).Returns(loadFileReader);
 			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE).Returns(opticonFileReader);
-
-			importFileLocationService.LoadFileFullPath(Arg.Any<int>()).Returns(_LOAD_FILE_PATH);
-			importFileLocationService.ErrorFilePath(Arg.Any<int>()).Returns(_ERROR_FILE_PATH);
 
 			object syncRootLock = new object();
 			_integrationPoint = new Data.IntegrationPoint()
@@ -143,8 +158,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				SavedSearchArtifactId = 987654
 			};
 
-			_taskParameters = new TaskParameters() {BatchInstance = Guid.NewGuid() };
-			JobHistory jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0};
+			_taskParameters = new TaskParameters 
+			{ 
+				BatchInstance = Guid.NewGuid(),
+				BatchParameters = new LoadFileTaskParameters
+				{
+					LastModifiedDate = _LOAD_FILE_MODIFIED_DATE,
+					Size = _LOAD_FILE_SIZE
+				}
+			};
+			JobHistory jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0 };
 			SourceProvider sourceProvider = new SourceProvider();
 			List<FieldMap> mappings = new List<FieldMap>();
 
@@ -177,27 +200,27 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			jobStopManager.SyncRoot.Returns(syncRootLock);
 			serializer.Deserialize<TaskParameters>(job.JobDetails)
 				.Returns(_taskParameters);
-			jobHistoryService.GetRdo(Arg.Is<Guid>( guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
+			jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
 			_instance = new ImportServiceManager(
 				_helper,
 				_retryHandlerFactory,
 				caseContext,
 				synchronizerFactory,
-				managerFactory, 
-				batchStatuses, 
-				serializer, 
-				jobService, 
+				managerFactory,
+				batchStatuses,
+				serializer,
+				jobService,
 				scheduleRuleFactory,
-				jobHistoryService, 
-				_jobHistoryErrorService, 
-				jobStatisticsService, 
-				dataReaderFactory, 
-				importFileLocationService,
-				agentValidator, 
+				jobHistoryService,
+				_jobHistoryErrorService,
+				jobStatisticsService,
+				dataReaderFactory,
+				_importFileLocationService,
+				agentValidator,
 				integrationPointRepository,
 				_jobStatusUpdater);
 		}
-		
+
 		[Test]
 		public void Execute_GoldFlow_CreateDataReaderAndPassItToSynchronizer()
 		{
@@ -234,17 +257,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
 
 			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
-            _objectManager.QuerySlimAsync(
-	            Arg.Any<int>(), 
-	            Arg.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID && qr.Condition == _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION),
-	            Arg.Is(0), 
-	            Arg.Is(0)
-	        ).Returns(Task.FromResult(new QueryResultSlim { TotalCount = 1 }));
+			_objectManager.QuerySlimAsync(
+				Arg.Any<int>(),
+				Arg.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID && qr.Condition == _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION),
+				Arg.Is(0),
+				Arg.Is(0)
+			).Returns(Task.FromResult(new QueryResultSlim { TotalCount = 1 }));
 
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>( stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE));
+			_automatedWorkflowsService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE));
 		}
 
 		[Test]
@@ -390,9 +413,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		public void Execute_ShouldNotTriggerRaw_WhenRunValidating()
 		{
 			// ARRANGE
-			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
-			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
-
 			_jobStatusUpdater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryValidating);
 
 			// ACT
@@ -414,6 +434,47 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+		}
+
+		[Test]
+		public void Execute_ShouldThrowValidationFailed_WhenLoadFileSizeHasChanged()
+		{
+			// Arrange
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			const int sizeChanged = 10;
+
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>())
+				.Returns(new LoadFileInfo
+				{
+					FullPath = _LOAD_FILE_PATH,
+					Size = _LOAD_FILE_SIZE + sizeChanged
+				});
+
+			// Act & Assert
+			Assert.Throws<IntegrationPointValidationException>(() => _instance.Execute(_job));
+		}
+
+		[Test]
+		public void Execute_ShouldThrowValidationFailed_WhenLoadFileModifiedDateHasChanged()
+		{
+			// Arrange
+			_integrationPoint.DestinationConfiguration = _IMPORTSETTINGS_FOR_DOC;
+			_integrationPoint.SourceConfiguration = _IMPORT_PROVIDER_SETTINGS_FOR_DOC;
+
+			const int modifiedMinutesLater = 10;
+
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>())
+				.Returns(new LoadFileInfo
+				{
+					FullPath = _LOAD_FILE_PATH,
+					Size = _LOAD_FILE_SIZE,
+					LastModifiedDate = _LOAD_FILE_MODIFIED_DATE.AddMinutes(modifiedMinutesLater)
+				});
+
+			// Act & Assert
+			Assert.Throws<IntegrationPointValidationException>(() => _instance.Execute(_job));
 		}
 	}
 }

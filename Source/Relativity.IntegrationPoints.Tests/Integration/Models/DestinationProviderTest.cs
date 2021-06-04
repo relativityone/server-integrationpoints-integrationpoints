@@ -20,6 +20,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID;
 		}
 
+		public override List<Guid> Guids => new List<Guid>();
+
 		public override RelativityObject ToRelativityObject()
 		{
 			return new RelativityObject()

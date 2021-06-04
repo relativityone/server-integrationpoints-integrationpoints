@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
@@ -14,6 +15,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public FieldTest() : base("Field")
 		{
 		}
+
+		public override List<Guid> Guids => new List<Guid>();
 
 		public override RelativityObject ToRelativityObject()
 		{

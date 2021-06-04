@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -74,7 +75,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
-
 		public IntegrationPointTest CreateImportIntegrationPoint(SourceProviderTest sourceProvider, string identifierFieldName, string sourceProviderConfiguration)
 		{
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
@@ -113,6 +113,68 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			integrationPoint.Type = integrationPointType.ArtifactId;
 
 			return integrationPoint;
+		}
+
+		public IntegrationPointTest CreateImportDocumentLoadFileIntegrationPoint(string loadFile)
+		{
+			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+
+			integrationPoint.Name = $"Import LoadFile - {Guid.NewGuid()}";
+			List<FieldMap> fieldsMapping =
+				Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForImport("Control Number");
+
+			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+
+			SourceProviderTest sourceProvider = Workspace.SourceProviders.Single(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE);
+
+			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+
+			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.Single(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+
+			integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
+
+			integrationPoint.Type = Workspace.IntegrationPointTypes.Single(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes
+					.ImportGuid.ToString()).ArtifactId;
+
+			FolderTest destinationFolder = Workspace.Folders.First();
+
+			ImportProviderSettings sourceConfiguration = new ImportProviderSettings
+			{
+				EncodingType = "utf-8",
+				AsciiColumn = 124,
+				AsciiQuote = 94,
+				AsciiNewLine = 174,
+				AsciiMultiLine = 59,
+				AsciiNestedValue = 92,
+				WorkspaceId = Workspace.ArtifactId,
+				ImportType = ((int)ImportType.DocumentLoadFile).ToString(),
+				LoadFile = loadFile,
+				LineNumber = "0",
+				DestinationFolderArtifactId = destinationFolder.ArtifactId
+			};
+
+			integrationPoint.SourceConfiguration = _serializer.Serialize(sourceConfiguration);
+
+			ImportSettings destinationConfiguration = new ImportSettings
+			{
+				ArtifactTypeId = (int)ArtifactType.Document,
+				DestinationProviderType = destinationProvider.Identifier,
+				CaseArtifactId = Workspace.ArtifactId,
+				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+				ImportNativeFile = false,
+				ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
+				UseDynamicFolderPath = false,
+				DestinationFolderArtifactId = destinationFolder.ArtifactId,
+				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+			};
+
+			integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);
+
+			return integrationPoint;
+
 		}
 
 		public void RemoveIntegrationPoint(int integrationPointId)

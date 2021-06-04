@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -9,36 +8,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
 	public class JobHistoryTest : RdoTestBase
 	{
-		public static List<Guid> Guids = new List<Guid>
-		{
-			JobHistoryFieldGuids.DocumentsGuid,
-			JobHistoryFieldGuids.IntegrationPointGuid,
-			JobHistoryFieldGuids.JobStatusGuid,
-			JobHistoryFieldGuids.ItemsTransferredGuid,
-			JobHistoryFieldGuids.ItemsWithErrorsGuid,
-			JobHistoryFieldGuids.StartTimeUTCGuid,
-			JobHistoryFieldGuids.EndTimeUTCGuid,
-			JobHistoryFieldGuids.BatchInstanceGuid,
-			JobHistoryFieldGuids.DestinationWorkspaceGuid,
-			JobHistoryFieldGuids.TotalItemsGuid,
-			JobHistoryFieldGuids.DestinationWorkspaceInformationGuid,
-			JobHistoryFieldGuids.JobTypeGuid,
-			JobHistoryFieldGuids.DestinationInstanceGuid,
-			JobHistoryFieldGuids.FilesSizeGuid,
-			JobHistoryFieldGuids.OverwriteGuid,
-			JobHistoryFieldGuids.JobIDGuid,
-			JobHistoryFieldGuids.NameGuid,
-		};
+		public override List<Guid> Guids => Const.RdoGuids.JobHistory.Guids;
 
 		public JobHistoryTest() : base("JobHistory")
 		{
-			Values = Guids.ToDictionary(g => g, g => (object)null);
-
 			Name = $"Job History";
 		}
-
-		public Dictionary<Guid, object> Values { get; }
-		
+			
 		public int[] Documents
 		{
 			get => GetField(JobHistoryFieldGuids.DocumentsGuid) as int[];
@@ -359,15 +335,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 					},
 				}
 			};
-		}
-
-		private void SetField(Guid guid, object value) => Values[guid] = value;
-
-		private object GetField(Guid guid)
-		{
-			object value = Values[guid];
-
-			return Sanitize(value);
 		}
 	}
 }

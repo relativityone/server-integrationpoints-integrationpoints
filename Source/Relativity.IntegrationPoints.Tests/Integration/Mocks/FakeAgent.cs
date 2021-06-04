@@ -1,4 +1,5 @@
-﻿using Castle.Windsor;
+﻿using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Agent;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -6,6 +7,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -44,6 +46,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		protected override IWindsorContainer CreateAgentLevelContainer()
 		{
 			return _container;
+		}
+
+		protected override TaskResult ProcessJob(Job job)
+		{
+			_container.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named(Guid.NewGuid().ToString()).IsDefault());
+
+			return base.ProcessJob(job);
 		}
 
 		public void MarkAgentToBeRemoved()

@@ -17,6 +17,9 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.API;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Data;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -31,6 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IStreamFactory _streamFactory;
 		private readonly IAPILog _logger;
 		private readonly ICryptographyHelper _cryptographyHelper;
+		private readonly IIntegrationPointRepository _integrationPointRepository;
 
 		public ImportProviderDocumentController(IFieldParserFactory fieldParserFactory,
 			IImportTypeService importTypeService,
@@ -40,7 +44,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IFile fileIo,
 			IStreamFactory streamFactory,
 			ICPHelper helper,
-			ICryptographyHelper cryptographyHelper)
+			ICryptographyHelper cryptographyHelper,
+			IIntegrationPointRepository integrationPointRepository)
 		{
 			_fieldParserFactory = fieldParserFactory;
 			_importTypeService = importTypeService;
@@ -52,6 +57,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			_logger = helper.GetLoggerFactory().GetLogger();
 			_cryptographyHelper = cryptographyHelper;
+			_integrationPointRepository = integrationPointRepository;
 		}
 
 		[HttpGet]
@@ -122,9 +128,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to check error file location.")]
-		public IHttpActionResult CheckErrorFile(int artifactId, int workspaceId)
+		public async Task<IHttpActionResult> CheckErrorFile(int artifactId, int workspaceId)
 		{
-			string errorFilePath = _importFileLocationService.ErrorFilePath(artifactId);
+			IntegrationPoint integrationPoint = await _integrationPointRepository.ReadAsync(artifactId).ConfigureAwait(false);
+			string errorFilePath = _importFileLocationService.ErrorFilePath(integrationPoint);
 			if (_fileIo.Exists(errorFilePath))
 			{
 				return StatusCode(HttpStatusCode.NoContent);
@@ -140,9 +147,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve error file for download.")]
-		public IHttpActionResult DownloadErrorFile(int artifactId, int workspaceId)
+		public async Task<IHttpActionResult> DownloadErrorFile(int artifactId, int workspaceId)
 		{
-			string errorFilePath = _importFileLocationService.ErrorFilePath(artifactId);
+			IntegrationPoint integrationPoint = await _integrationPointRepository.ReadAsync(artifactId).ConfigureAwait(false);
+			string errorFilePath = _importFileLocationService.ErrorFilePath(integrationPoint);
 
 			byte[] trimmedBuffer = GetTrimmedBuffer(errorFilePath);
 
@@ -150,7 +158,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				Content = new ByteArrayContent(trimmedBuffer)
 			};
-			result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
+			result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
 			{
 				FileName = string.Concat("Error_file", Path.GetExtension(errorFilePath))
 			};

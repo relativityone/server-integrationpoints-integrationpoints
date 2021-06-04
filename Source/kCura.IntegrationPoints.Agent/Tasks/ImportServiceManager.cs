@@ -33,6 +33,8 @@ using kCura.IntegrationPoints.Common.Handlers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using kCura.IntegrationPoints.Core.Contracts.Import;
+using Newtonsoft.Json.Linq;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -149,6 +151,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		protected override void RunValidation(Job job)
+		{
+			base.RunValidation(job);
+
+			ValidateLoadFile(job);
+		}
+
 		private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
@@ -232,7 +241,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			importSettings.JobID = ImportSettings.JobID;
 			importSettings.Provider = nameof(ProviderType.ImportLoadFile);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
-			importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(IntegrationPointDto.ArtifactId);
+			importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(IntegrationPointDto);
 
 			//For LoadFile imports, correct an off-by-one error introduced by WinEDDS.LoadFileReader interacting with
 			//ImportAPI process. This is introduced by the fact that the first record is the column header row.
@@ -281,8 +290,31 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private string UpdatedProviderSettingsLoadFile()
 		{
 			ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-			providerSettings.LoadFile = _importFileLocationService.LoadFileFullPath(IntegrationPointDto.ArtifactId);
+			providerSettings.LoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto).FullPath;
 			return Serializer.Serialize(providerSettings);
+		}
+
+		private void ValidateLoadFile(Job job)
+		{
+			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+
+			LoadFileTaskParameters loadFileParameters;
+			if (parameters.BatchParameters is JObject)
+			{
+				loadFileParameters = ((JObject)parameters.BatchParameters).ToObject<LoadFileTaskParameters>();
+			}
+			else
+			{
+				loadFileParameters = (LoadFileTaskParameters)parameters.BatchParameters;
+			}
+
+			LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
+
+			if(loadFile.Size != loadFileParameters.Size || loadFile.LastModifiedDate != loadFileParameters.LastModifiedDate)
+			{
+				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
+				throw new IntegrationPointValidationException(result);
+			}
 		}
 
 		#region Logging

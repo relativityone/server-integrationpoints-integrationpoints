@@ -48,14 +48,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 			if (IsArtifactIdCondition(request.Condition, out int artifactId))
 			{
 				AddRelativityObjectsToResult(
-					_relativity.Workspaces.Where(
+					Relativity.Workspaces.Where(
 						x => x.ArtifactId == artifactId)
 					, foundObjects);
 			}
 			else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
 			{
 				AddRelativityObjectsToResult(
-					_relativity.Workspaces.Where(
+					Relativity.Workspaces.Where(
 						x => artifactIds.Contains(x.ArtifactId))
 					, foundObjects);
 			}

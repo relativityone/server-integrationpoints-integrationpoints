@@ -1,6 +1,5 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoint.Tests.Core;
@@ -8,6 +7,9 @@ using NUnit.Framework;
 using NSubstitute;
 using System;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Data;
+using Moq;
+using kCura.IntegrationPoints.Core.Helpers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -24,32 +26,45 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private const string _LOAD_FILE_LOCATION =
 			@"\\example.host.name\fileshare\EDDS-example-app-id\DataTransfer\Import\example-load-file.csv";
 
-		IIntegrationPointService _integrationPointReader;
-		IDataTransferLocationService _locationService;
-		ISerializer _serializer;
-		IDirectory _directoryHelper;
-		ImportProviderSettings _providerSettings;
+		private const int _LOAD_FILE_SIZE = 1000;
+		private readonly DateTime _LOAD_FILE_LAST_MODIFIED_DATE = new DateTime(2020, 1, 1);
 
+		private IDataTransferLocationService _locationService;
+		private ISerializer _serializer;
+		private IDirectory _directoryHelper;
+		private IFileInfoFactory _fileInfoFactory;
+		private ImportProviderSettings _providerSettings;
+
+		private Data.IntegrationPoint _integrationPoint;
+		private Mock<IFileInfo> _loadFileInfo;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			Data.IntegrationPoint ip = new Data.IntegrationPoint();
+			_integrationPoint = new Data.IntegrationPoint();
+			_integrationPoint.Name = _IP_NAME;
+			_integrationPoint.ArtifactId = _IP_ARTIFACT_ID;
+			_integrationPoint.SourceConfiguration = string.Empty;
+			_integrationPoint.DestinationConfiguration = string.Empty;
+
 			_providerSettings = new ImportProviderSettings();
 			ImportSettings importApiSettings = new ImportSettings();
 
-			ip.Name = _IP_NAME;
-			ip.SourceConfiguration = string.Empty;
-			ip.DestinationConfiguration = string.Empty;
 			importApiSettings.CaseArtifactId = -1;
 			_providerSettings.LoadFile = _LOAD_FILE_PATH;
 
-			_integrationPointReader = Substitute.For<IIntegrationPointService>();
 			_locationService = Substitute.For<IDataTransferLocationService>();
 			_serializer = Substitute.For<ISerializer>();
 			_directoryHelper = Substitute.For<IDirectory>();
+			_fileInfoFactory = Substitute.For<IFileInfoFactory>();
 
-			_integrationPointReader.ReadIntegrationPoint(Arg.Any<int>()).ReturnsForAnyArgs(ip);
+			_loadFileInfo = new Mock<IFileInfo>();
+			_loadFileInfo.SetupGet(x => x.Length).Returns(_LOAD_FILE_SIZE);
+			_loadFileInfo.SetupGet(x => x.LastWriteTimeUtc)
+				.Returns(new DateTimeWrap(_LOAD_FILE_LAST_MODIFIED_DATE));
+
+			_fileInfoFactory.Create(_LOAD_FILE_LOCATION).Returns(_loadFileInfo.Object);
+
 			_serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
 			_serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(importApiSettings);
 			_locationService.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).ReturnsForAnyArgs(_WORKSPACE_ROOT_LOCATION);
@@ -61,32 +76,36 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			//Arrange
 			_directoryHelper.Exists(Arg.Any<string>()).ReturnsForAnyArgs(true);
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
+			ImportFileLocationService locationService = new ImportFileLocationService(
 				_locationService,
 				_serializer,
-				_directoryHelper);
+				_directoryHelper,
+				_fileInfoFactory);
 
 			//Act
-			string generatedErrorFilePath = locationService.ErrorFilePath(_IP_ARTIFACT_ID);
+			string generatedErrorFilePath = locationService.ErrorFilePath(_integrationPoint);
 
 			//Assert
 			Assert.AreEqual(_ERROR_FILE_LOCATION, generatedErrorFilePath);
 		}
 
 		[Test]
-		public void ItShouldReturnTheCorrectLoadFileFullPath()
+		public void ItShouldReturnTheCorrectLoadFileInfo()
 		{
 			//Arrange
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
+			ImportFileLocationService locationService = new ImportFileLocationService(
 				_locationService,
 				_serializer,
-				_directoryHelper);
+				_directoryHelper,
+				_fileInfoFactory);
 
 			//Act
-			string generatedLoadFilePath = locationService.LoadFileFullPath(_IP_ARTIFACT_ID);
+			LoadFileInfo loadFile = locationService.LoadFileInfo(_integrationPoint);
 
 			//Assert
-			Assert.AreEqual(_LOAD_FILE_LOCATION, generatedLoadFilePath);
+			Assert.AreEqual(_LOAD_FILE_LOCATION, loadFile.FullPath);
+			Assert.AreEqual(_LOAD_FILE_SIZE, loadFile.Size);
+			Assert.AreEqual(_LOAD_FILE_LAST_MODIFIED_DATE, loadFile.LastModifiedDate);
 		}
 
 		[Test]
@@ -94,14 +113,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			_providerSettings.LoadFile = @"\\badshare\badpath\badfile.csv";
 			//Arrange
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
+			ImportFileLocationService locationService = new ImportFileLocationService(
 				_locationService,
 				_serializer,
-				_directoryHelper);
+				_directoryHelper,
+				_fileInfoFactory);
 
 			//Assert that it throws because we should not have a rooted load file path in the settings object
 			//This would be a security vulnerability
-			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_IP_ARTIFACT_ID));
+			Assert.Throws<Exception>(() => locationService.LoadFileInfo(_integrationPoint));
 		}
 
 		[Test]
@@ -109,13 +129,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			_providerSettings.LoadFile = @"badshare\..\..\..\..\badpath\badfile.csv";
 			//Arrange
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
+			ImportFileLocationService locationService = new ImportFileLocationService(
 				_locationService,
 				_serializer,
-				_directoryHelper);
+				_directoryHelper,
+				_fileInfoFactory);
 
 			//Assert that it throws because we should not have a load file path that doesn't point to the DataTransfer\Import path
-			Assert.Throws<Exception>(() => locationService.LoadFileFullPath(_IP_ARTIFACT_ID));
+			Assert.Throws<Exception>(() => locationService.LoadFileInfo(_integrationPoint));
 		}
 
 		[TestCase(false)]
@@ -124,13 +145,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			//Arrange
 			_directoryHelper.Exists(Arg.Any<string>()).ReturnsForAnyArgs(directoryExists);
-			ImportFileLocationService locationService = new ImportFileLocationService(_integrationPointReader,
+			ImportFileLocationService locationService = new ImportFileLocationService(
 				_locationService,
 				_serializer,
-				_directoryHelper);
+				_directoryHelper,
+				_fileInfoFactory);
 
 			//Act
-			locationService.ErrorFilePath(_IP_ARTIFACT_ID);
+			locationService.ErrorFilePath(_integrationPoint);
 
 			//Assert
 			_directoryHelper.Received(directoryExists ? 0 : 1).CreateDirectory(Arg.Any<string>());

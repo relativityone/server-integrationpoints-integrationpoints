@@ -81,10 +81,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 });
 
             Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(),
-                    It.Is<UpdateRequest>(u => u.FieldValues.Any(f => JobHistoryTest.Guids.Contains(f.Field.Guid.Value)))))
+                    It.Is<UpdateRequest>(u => u.FieldValues.Any(f => Const.RdoGuids.JobHistory.Guids.Contains(f.Field.Guid.Value)))))
                 .Returns((int workspaceId, UpdateRequest request) =>
                 {
-                    JobHistoryTest jobHistory = _relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
+                    JobHistoryTest jobHistory = Relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
                         .JobHistory.Single(x => x.ArtifactId == request.Object.ArtifactID);
 
                     foreach (var field in request.FieldValues)
@@ -99,7 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     It.Is<UpdateRequest>(r => IsJobHistoryUpdateJobStatusRequest(r))))
 	            .Returns((int workspaceId, UpdateRequest request) =>
 	            {
-		            JobHistoryTest jobHistory = _relativity
+		            JobHistoryTest jobHistory = Relativity
 			            .Workspaces
 			            .Single(x => x.ArtifactId == workspaceId)
 			            .JobHistory
@@ -126,7 +126,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsJobHistoryUpdateJobStatusRequest(UpdateRequest request)
         {
-	        bool isJobHistoryArtifactId = _relativity.Workspaces.Any(x => x.JobHistory.Any(y => y.ArtifactId == request.Object.ArtifactID));
+	        bool isJobHistoryArtifactId = Relativity.Workspaces.Any(x => x.JobHistory.Any(y => y.ArtifactId == request.Object.ArtifactID));
 	        bool hasJobStatusField = request.FieldValues.SingleOrDefault(x => x.Field.Guid == JobHistoryFieldGuids.JobStatusGuid)?.Value != null;
 
             return isJobHistoryArtifactId && hasJobStatusField;

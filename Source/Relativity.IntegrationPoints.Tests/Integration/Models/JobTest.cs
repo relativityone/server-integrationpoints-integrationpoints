@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 
@@ -7,6 +8,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
 	public class JobTest
 	{
+		private string _jobDetails;
+
 		public long JobId { get; set; }
 		public long? RootJobId { get; set; }
 		public long? ParentJobId { get; set; }
@@ -19,12 +22,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public DateTime? LastRunTime { get; set; }
 		public string ScheduleRuleType { get; set; }
 		public string SerializedScheduleRule { get; set; }
-		public string JobDetails { get; set; }
 		public int JobFlags { get; set; }
 		public DateTime SubmittedDate { get; set; }
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
+		
+		
+		public string JobDetails
+		{
+			get
+			{
+				if(string.IsNullOrEmpty(_jobDetails))
+				{
+					_jobDetails = JsonConvert.SerializeObject(JobDetailsHelper);
+				}
 
+				return _jobDetails;
+			}
+			set { _jobDetails = value; }
+		}
 		public TaskParametersTest JobDetailsHelper { get; }
 
 		public JobTest()
@@ -35,7 +51,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			{
 				BatchInstance = Guid.NewGuid()
 			};
-			JobDetails = JsonConvert.SerializeObject(JobDetailsHelper);
 		}
 
 		public DataRow AsDataRow()
@@ -70,6 +85,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			dt.Rows.Add(row);
 
 			return dt;
+		}
+
+		public Job AsJob()
+		{
+			return new Job(this.AsDataRow());
 		}
 	}
 }

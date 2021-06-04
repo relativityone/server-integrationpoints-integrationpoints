@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
 	public class SetTypeOfExportDefaultValueCommand : ICommand
     {
-	    private readonly IIntegrationPointService _integrationPointService;
+	    private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IIntegrationPointProfileService _integrationPointProfileService;
         private readonly IRelativityObjectManager _objectManager;
 	    private readonly ISourceConfigurationTypeOfExportUpdater _sourceConfigurationTypeOfExpertUpdater;
@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 	    public string SuccessMessage => "Type of Export field default value was set succesfully.";
 	    public string FailureMessage => "Failed to set Type of Export field default value.";
 
-		public SetTypeOfExportDefaultValueCommand(IIntegrationPointService integrationPointService,
+		public SetTypeOfExportDefaultValueCommand(IIntegrationPointRepository integrationPointRepository,
 		    IIntegrationPointProfileService integrationPointProfileService,
 		    IRelativityObjectManager objectManager,
 		    ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater)
 	    {
-		    _integrationPointService = integrationPointService;
+			_integrationPointRepository = integrationPointRepository;
 		    _integrationPointProfileService = integrationPointProfileService;
 		    _objectManager = objectManager;
 		    _sourceConfigurationTypeOfExpertUpdater = sourceConfigurationTypeOfExpertUpdater;
@@ -33,14 +33,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetTypeOfExportForIntegrationPoints()
         {
-			foreach (IntegrationPoint point in _integrationPointService.GetAllRDOsWithAllFields())
+			foreach (IntegrationPoint point in _integrationPointRepository.GetIntegrationPointsWithAllFields())
 			{
 				string resultConf = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(point.SourceProvider,
 					point.DestinationProvider, point.SourceConfiguration);
 				if (resultConf != null)
 				{
 					point.SourceConfiguration = resultConf;
-					_integrationPointService.UpdateIntegrationPoint(point);
+					_integrationPointRepository.Update(point);
 				}
 			}
 		}

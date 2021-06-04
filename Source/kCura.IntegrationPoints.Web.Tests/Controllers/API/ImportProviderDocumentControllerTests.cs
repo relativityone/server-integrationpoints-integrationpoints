@@ -8,7 +8,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Data.Factories;
@@ -18,6 +17,7 @@ using NUnit.Framework;
 using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.API;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -45,6 +45,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private ILogFactory _logFactory;
 		private IAPILog _logger;
 		private ICryptographyHelper _cryptographyHelper;
+		private IIntegrationPointRepository _integrationPointRepository;
 
 		[SetUp]
 		public override void SetUp()
@@ -70,6 +71,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_logFactory.GetLogger().Returns(_logger);
 			_cryptographyHelper = Substitute.For<ICryptographyHelper>();
 
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+
 			_controller = new ImportProviderDocumentController(_fieldParserFactory,
 				_importTypeService,
 				_serializer,
@@ -78,7 +81,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				_fileIo,
 				_streamFactory,
 				_helper,
-				_cryptographyHelper);
+				_cryptographyHelper,
+				_integrationPointRepository);
 		}
 
 		[Test]
@@ -135,7 +139,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				_fileIo,
 				_streamFactory,
 				_helper,
-				_cryptographyHelper);
+				_cryptographyHelper,
+				_integrationPointRepository);
 
 			JsonResult<string> result = _controller.IsCloudInstance() as JsonResult<string>;
 			string isCloudInstance = result.Content;
@@ -155,12 +160,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		}
 
 		[Test]
-		public void ItShouldReturnNoContentResultIfErrorFileExists()
+		public async Task ItShouldReturnNoContentResultIfErrorFileExists()
 		{
-			_importLocationService.ErrorFilePath(Arg.Any<int>()).Returns(string.Empty);
+			_importLocationService.ErrorFilePath(Arg.Any<Data.IntegrationPoint>()).Returns(string.Empty);
 			_fileIo.Exists(Arg.Any<string>()).Returns(true);
 
-			IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
+			IHttpActionResult result = await _controller.CheckErrorFile(-1, -1).ConfigureAwait(false);
 
 			Assert.IsInstanceOf(typeof(StatusCodeResult), result);
 			StatusCodeResult statusCodeResult = result as StatusCodeResult;
@@ -168,23 +173,23 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		}
 
 		[Test]
-		public void ItShouldReturnBadRequestResultIfErrorFileMissing()
+		public async Task ItShouldReturnBadRequestResultIfErrorFileMissing()
 		{
-			_importLocationService.ErrorFilePath(Arg.Any<int>()).Returns(string.Empty);
+			_importLocationService.ErrorFilePath(Arg.Any<Data.IntegrationPoint>()).Returns(string.Empty);
 			_fileIo.Exists(Arg.Any<string>()).Returns(false);
 
-			IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
+			IHttpActionResult result = await _controller.CheckErrorFile(-1, -1).ConfigureAwait(false);
 
 			Assert.IsInstanceOf(typeof(BadRequestResult), result);
 		}
 
 		[Test]
-		public void ItShouldReturnCorrectResponseMessageResultForDownload()
+		public async Task ItShouldReturnCorrectResponseMessageResultForDownload()
 		{
-			_importLocationService.ErrorFilePath(Arg.Any<int>()).Returns(string.Empty);
+			_importLocationService.ErrorFilePath(Arg.Any<Data.IntegrationPoint>()).Returns(string.Empty);
 			_memoryStream.GetBuffer().Returns(_FILE_CONTENT_MEM_STREAM_BYTES);
 
-			IHttpActionResult result = _controller.DownloadErrorFile(-1, -1);
+			IHttpActionResult result = await _controller.DownloadErrorFile(-1, -1).ConfigureAwait(false);
 			ResponseMessageResult responseResult = (ResponseMessageResult)result;
 			Task<byte[]> t = responseResult.Response.Content.ReadAsByteArrayAsync();
 			t.Wait();

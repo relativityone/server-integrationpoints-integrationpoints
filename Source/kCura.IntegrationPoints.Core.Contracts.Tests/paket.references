@@ -2,5 +2,7 @@ CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Utils
 
+FluentAssertions
 NUnit
 NSubstitute
+Moq

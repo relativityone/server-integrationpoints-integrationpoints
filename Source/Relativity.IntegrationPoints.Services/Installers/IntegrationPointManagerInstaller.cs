@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Data.Installers;
 using Relativity.IntegrationPoints.Services.Installers.Context;
 using Relativity.API;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Common.Agent;
 using Relativity.IntegrationPoints.Services.Installers.Authentication;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories;
@@ -14,7 +13,7 @@ using Relativity.IntegrationPoints.Services.Repositories.Implementations;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
-    public class IntegrationPointManagerInstaller : Installer
+	public class IntegrationPointManagerInstaller : Installer
     {
         private readonly List<IWindsorInstaller> _dependencies;
 
@@ -26,7 +25,8 @@ namespace Relativity.IntegrationPoints.Services.Installers
                 new KeywordInstaller(),
                 new SharedAgentInstaller(),
                 new ServicesInstaller(),
-                new ValidationInstaller()
+                new ValidationInstaller(),
+                new kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
             };
         }
 
