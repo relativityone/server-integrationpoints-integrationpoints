@@ -97,7 +97,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 				new KeywordInstaller(),
 				new SharedAgentInstaller(),
 				new ServicesInstaller(),
-				new ValidationInstaller()
+				new ValidationInstaller(),
+				new kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
 			};
 
 			foreach (IWindsorInstaller dependency in dependencies)

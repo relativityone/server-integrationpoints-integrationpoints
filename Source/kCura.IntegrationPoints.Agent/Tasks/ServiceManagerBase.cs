@@ -360,7 +360,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			AgentExceptionHelper.HandleException(JobHistoryErrorService, JobHistoryService, Logger, ex, job, Result, JobHistory);
 		}
 
-		private void RunValidation(Job job)
+		protected virtual void RunValidation(Job job)
 		{
 			UpdateJobStatus(JobStatusChoices.JobHistoryValidating);
 			_agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);

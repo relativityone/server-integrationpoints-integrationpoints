@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 	[TestFixture, Category("Unit")]
 	public class SetHasErrorsFieldTests : TestBase
 	{
-		private IIntegrationPointService _integrationPointService;
+		private IIntegrationPointRepository _integrationPointRepository;
 		private IJobHistoryService _jobHistoryService;
 
 		private SetHasErrorsField _instance;
@@ -26,31 +27,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		[SetUp]
 		public override void SetUp()
 		{
-			_integrationPointService = Substitute.For<IIntegrationPointService>();
+			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 
-			_instance = new SetHasErrorsField(_integrationPointService, _jobHistoryService);
+			_instance = new SetHasErrorsField(_integrationPointRepository, _jobHistoryService);
 			_instance.Helper = Substitute.For<IEHHelper>();
-		}
-
-		[Test]
-		public void GetIntegrationPoints_Test()
-		{
-			// Arrange
-			var integrationPointOne = new Data.IntegrationPoint { ArtifactId = 1 };
-			var integrationPointTwo = new Data.IntegrationPoint { ArtifactId = 2 };
-			IList<Data.IntegrationPoint> expectedIntegrationPoints = new[] { integrationPointTwo, integrationPointOne };
-
-			_integrationPointService.GetAllRDOsWithAllFields().Returns(expectedIntegrationPoints);
-
-			// Act
-			List<Data.IntegrationPoint> actualIntegrationPoints = _instance.GetIntegrationPoints().ToList();
-
-			// Assert
-			Assert.IsNotEmpty(actualIntegrationPoints);
-			Assert.AreEqual(expectedIntegrationPoints, actualIntegrationPoints);
-
-			_integrationPointService.Received(1).GetAllRDOsWithAllFields();
 		}
 
 		[Test]
@@ -66,9 +47,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			_instance.UpdateIntegrationPointHasErrorsField(integrationPoint);
 
 			// Assert
-			_integrationPointService.Received(1)
-				.UpdateIntegrationPoint(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
-			_integrationPointService.Received(0).SaveIntegration(null);
+			_integrationPointRepository.Received(1)
+				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
 			_jobHistoryService.Received(0).GetJobHistory(null);
 		}
 
@@ -156,18 +136,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories.Select(x => x.ArtifactId).ToArray());
 			IList<Data.IntegrationPoint> integrationPoints = new[] { integrationPoint };
 
-			_integrationPointService.GetAllRDOsWithAllFields().Returns(integrationPoints);
+			_integrationPointRepository.GetIntegrationPointsWithAllFields().Returns(integrationPoints);
 			_jobHistoryService.GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory))).Returns(jobHistories);
-			_integrationPointService.SaveIntegration(Arg.Is<IntegrationPointModel>(x => x.ArtifactID == integrationPoint.ArtifactId)).Returns(1);
 
 			// Act
 			_instance.ExecuteInstanced();
 
 			// Assert
-			_integrationPointService.Received(1).GetAllRDOsWithAllFields();
+			_integrationPointRepository.Received(1).GetIntegrationPointsWithAllFields();
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-			_integrationPointService.Received(1)
-				.UpdateIntegrationPoint(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
+			_integrationPointRepository.Received(1)
+				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
 		}
 
 		[Test]
@@ -175,16 +154,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 		{
 			// Arrange
 			Exception e = new Exception("Query failed");
-			_integrationPointService.GetAllRDOsWithAllFields().Throws(e);
+			_integrationPointRepository.GetIntegrationPointsWithAllFields().Throws(e);
 
 			// Act
 			Assert.Throws<Exception>(() => _instance.ExecuteInstanced());
 
 			// Assert
 
-			_integrationPointService.Received(1).GetAllRDOsWithAllFields();
+			_integrationPointRepository.Received(1).GetIntegrationPointsWithAllFields();
 			_jobHistoryService.Received(0).GetJobHistory(null);
-			_integrationPointService.Received(0).SaveIntegration(null);
+			_integrationPointRepository.Received(0).Update(null);
 		}
 
 		private void UpdateIntegrationPointHasErrorsField_HasJobHistories_TestsHelper(JobHistory[] jobHistories, bool hasErrorsExpectation)
@@ -199,9 +178,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
 			// Assert
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-			_integrationPointService.Received(1)
-				.UpdateIntegrationPoint(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == hasErrorsExpectation && x.ArtifactId == integrationPoint.ArtifactId));
-			_integrationPointService.Received(0).SaveIntegration(null);
+			_integrationPointRepository.Received(1)
+				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == hasErrorsExpectation && x.ArtifactId == integrationPoint.ArtifactId));
 		}
 
 		private bool CompareLists(int[] actualValues, int[] expectedValues)

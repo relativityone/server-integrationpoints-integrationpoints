@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 
@@ -13,6 +14,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public SavedSearchTest() : base("SavedSearch")
 		{
 		}
+
+		public override List<Guid> Guids => new List<Guid>();
 
 		public override RelativityObject ToRelativityObject()
 		{

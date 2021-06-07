@@ -1,4 +1,6 @@
 ﻿using Relativity.Services.Objects.DataContracts;
+using System;
+using System.Collections.Generic;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -9,6 +11,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public FolderTest() : base("Folder")
 		{
 		}
+
+		public override List<Guid> Guids => new List<Guid>();
 
 		public override RelativityObject ToRelativityObject()
 		{

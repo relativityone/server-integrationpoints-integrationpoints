@@ -264,6 +264,10 @@
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj">
+      <Project>{180650d2-1eea-4242-949d-7bde78eeccb4}</Project>
+      <Name>kCura.IntegrationPoints.ImportProvider.Parser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>

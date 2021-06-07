@@ -82,7 +82,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 
 			Container
 				.Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)
-				.LifestyleTransient()
 				.Named(Guid.NewGuid().ToString())
 				.IsDefault());
 

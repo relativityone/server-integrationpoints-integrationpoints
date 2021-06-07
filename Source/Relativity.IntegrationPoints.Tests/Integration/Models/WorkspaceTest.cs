@@ -5,6 +5,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ResourceServer;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -12,12 +13,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     {
         public string Name { get; set; }
 
+        public FileShareResourceServer FileShareServer { get; set; }
+
         public IList<IntegrationPointTest> IntegrationPoints { get; } = new List<IntegrationPointTest>();
 
         public IList<IntegrationPointTypeTest> IntegrationPointTypes { get; } = new List<IntegrationPointTypeTest>();
 
         public IList<JobHistoryTest> JobHistory { get; } = new List<JobHistoryTest>();
-        
+
+        public IList<JobHistoryErrorTest> JobHistoryErrors { get; } = new List<JobHistoryErrorTest>();
+
         public IList<SourceProviderTest> SourceProviders { get; } = new List<SourceProviderTest>();
 
         public IList<DestinationProviderTest> DestinationProviders { get; } = new List<DestinationProviderTest>();
@@ -39,6 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             return GetArtifacts(IntegrationPoints)
                 .Concat(GetArtifacts(IntegrationPointTypes))
                 .Concat(GetArtifacts(JobHistory))
+                .Concat(GetArtifacts(JobHistoryErrors))
                 .Concat(GetArtifacts(SourceProviders))
                 .Concat(GetArtifacts(DestinationProviders))
                 .Concat(GetArtifacts(Folders))
@@ -53,6 +59,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public WorkspaceTest(ISerializer serializer, int? workspaceArtifactId = null) : base("Workspace", workspaceArtifactId)
         {
             Name = $"Workspace - {Guid.NewGuid()}";
+
+            FileShareServer = new FileShareResourceServer
+            {
+                UNCPath = $@"\\emttest\DefaultFileRepository"
+            };
 
             Helpers = new WorkspaceHelpers(this, serializer);
         }
@@ -70,6 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             return TryFind(IntegrationPoints)
                    ?? TryFind(IntegrationPointTypes)
                    ?? TryFind(JobHistory)
+                   ?? TryFind(JobHistoryErrors)
                    ?? TryFind(SourceProviders)
                    ?? TryFind(DestinationProviders)
                    ?? TryFind(Folders)
@@ -77,6 +89,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                    ?? TryFind(Fields)
                    ?? TryFind(SyncConfigurations);
         }
+
+        public override List<Guid> Guids => new List<Guid>();
 
         public override RelativityObject ToRelativityObject()
         {

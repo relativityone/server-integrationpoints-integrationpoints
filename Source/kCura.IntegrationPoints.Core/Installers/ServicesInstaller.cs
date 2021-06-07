@@ -146,6 +146,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ISavedSearchesTreeCreator>().ImplementedBy<SavedSearchesTreeCreator>());
 			container.Register(Component.For<IWorkspaceManager>().ImplementedBy<WorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<IDirectory>().ImplementedBy<LongPathDirectory>().LifestyleTransient());
+			container.Register(Component.For<IFileInfoFactory>().ImplementedBy<FileInfoFactory>().LifestyleTransient().Named(nameof(FileInfoFactory)));
 			container.Register(Component.For<IFile>().ImplementedBy<LongPathFile>().LifestyleTransient());
 			container.Register(Component.For<IStreamFactory>().ImplementedBy<StreamFactory>().LifestyleTransient());
 			container.Register(Component.For<IJobStatisticsService>().ImplementedBy<JobStatisticsService>().LifestyleTransient());
@@ -160,6 +161,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
+
+			container.Register(Component.For<ITaskParametersBuilder>().ImplementedBy<TaskParametersBuilder>().LifestyleTransient());
 
 			container.Register(Component.For<IIntegrationPointProviderTypeService>()
 				.ImplementedBy<CachedIntegrationPointProviderTypeService>()

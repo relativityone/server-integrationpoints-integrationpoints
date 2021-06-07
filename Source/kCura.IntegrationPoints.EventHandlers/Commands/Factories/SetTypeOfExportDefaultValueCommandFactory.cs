@@ -85,11 +85,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 				integrationPointSerializer,
 				secretsRepository,
 				logger);
-			IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext, helper, integrationPointRepository);
-			IIntegrationPointService integrationPointService = new IntegrationPointService(helper, caseServiceContext,
-				integrationPointSerializer, choiceQuery, jobManager, jobHistoryService,
-				jobHistoryErrorService, managerFactory, validationExecutor, providerTypeService, messageService, integrationPointRepository,
-				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager);
 
 			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
 				helper,
@@ -103,7 +98,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 
 			return new SetTypeOfExportDefaultValueCommand(
-				integrationPointService, 
+				integrationPointRepository, 
 				integrationPointProfileService,
 				objectManager, 
 				sourceConfigurationTypeOfExpertUpdater

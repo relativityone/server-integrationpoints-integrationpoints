@@ -97,6 +97,7 @@
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
+    <Compile Include="LoadFileInfo.cs" />
     <Compile Include="Installers\HelpersRegistration.cs" />
     <Compile Include="Installers\RepositoryRegistration.cs" />
     <Compile Include="Installers\RetryingMechanismRegistration.cs" />

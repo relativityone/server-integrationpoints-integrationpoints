@@ -89,7 +89,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsJobHistoryUpdateJobStatusRequest(UpdateRequest request)
         {
-	        bool isJobHistoryArtifactId = _relativity.Workspaces.Any(x => x.JobHistory.Any(y => y.ArtifactId == request.Object.ArtifactID));
+	        bool isJobHistoryArtifactId = Relativity.Workspaces.Any(x => x.JobHistory.Any(y => y.ArtifactId == request.Object.ArtifactID));
 	        bool hasJobStatusField = request.FieldValues.SingleOrDefault(x => x.Field.Guid == JobHistoryFieldGuids.JobStatusGuid)?.Value != null;
 
             return isJobHistoryArtifactId && hasJobStatusField;

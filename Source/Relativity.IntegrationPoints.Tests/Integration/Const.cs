@@ -22,6 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public static class Provider
 		{
 			public const string _FAKE_PROVIDER = "9A33EBEA-B4F9-4427-8AD4-5D4F35F0405A";
+			public const string _MY_FIRST_PROVIDER = "C9DE331D-2DCA-4F78-85BD-91493D0B9B37";
 
 			public static readonly Guid FakeProviderGuid = new Guid(_FAKE_PROVIDER);
 		}
@@ -34,6 +35,40 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				public static readonly Guid JobHistoryIdGuid = new Guid("FF793525-29AB-40B2-A8AE-88E574EAD0DE");
 				public const string Resuming = "Resuming";
 				public static readonly Guid ResumingGuid = new Guid("A5B0959D-96CE-4CA0-9E4A-576132F29165");
+			}
+
+			public static class JobHistory
+			{
+				public static readonly List<Guid> Guids = new List<Guid>
+				{
+					JobHistoryFieldGuids.DocumentsGuid,
+					JobHistoryFieldGuids.IntegrationPointGuid,
+					JobHistoryFieldGuids.JobStatusGuid,
+					JobHistoryFieldGuids.ItemsTransferredGuid,
+					JobHistoryFieldGuids.ItemsWithErrorsGuid,
+					JobHistoryFieldGuids.StartTimeUTCGuid,
+					JobHistoryFieldGuids.EndTimeUTCGuid,
+					JobHistoryFieldGuids.BatchInstanceGuid,
+					JobHistoryFieldGuids.DestinationWorkspaceGuid,
+					JobHistoryFieldGuids.TotalItemsGuid,
+					JobHistoryFieldGuids.DestinationWorkspaceInformationGuid,
+					JobHistoryFieldGuids.JobTypeGuid,
+					JobHistoryFieldGuids.DestinationInstanceGuid,
+					JobHistoryFieldGuids.FilesSizeGuid,
+					JobHistoryFieldGuids.OverwriteGuid,
+					JobHistoryFieldGuids.JobIDGuid,
+					JobHistoryFieldGuids.NameGuid,
+				};
+			}
+
+			public static class JobHistoryError
+			{
+				public static readonly List<Guid> Guids = new List<Guid>
+				{
+					JobHistoryErrorFieldGuids.JobHistoryGuid,
+					JobHistoryErrorFieldGuids.ErrorTypeGuid,
+					JobHistoryErrorFieldGuids.NameGuid
+				};
 			}
 		}
 	}

@@ -35,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		private readonly IMessageService _messageService;
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
+		private readonly ITaskParametersBuilder _taskParametersBuilder;
 
 		public IntegrationPointService(
 			IHelper helper,
@@ -49,7 +50,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			IProviderTypeService providerTypeService,
 			IMessageService messageService,
 			IIntegrationPointRepository integrationPointRepository,
-			IRelativityObjectManager objectManager)
+			IRelativityObjectManager objectManager,
+			ITaskParametersBuilder taskParametersBuilder)
 			: base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
@@ -60,6 +62,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_messageService = messageService;
 			_validationExecutor = validationExecutor;
 			_integrationPointRepository = integrationPointRepository;
+			_taskParametersBuilder = taskParametersBuilder;
 		}
 
 		protected override string UnableToSaveFormat
@@ -207,12 +210,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE);
 			}
 
-			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
-			Data.JobHistory jobHistory = CreateJobHistory(integrationPoint, jobDetails, JobTypeChoices.JobHistoryRun);
+			Guid jobRunId = Guid.NewGuid();
+
+			Data.JobHistory jobHistory = CreateJobHistory(integrationPoint, jobRunId, JobTypeChoices.JobHistoryRun);
 
 			ValidateIntegrationPointBeforeRun(integrationPointArtifactId, userId, integrationPoint, sourceProvider, destinationProvider, jobHistory);
 
-			CreateJob(integrationPoint, sourceProvider, destinationProvider, jobDetails, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
 
 			_logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
 		}
@@ -242,12 +246,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			ValidateIntegrationPointBeforeRetryErrors(workspaceArtifactId, integrationPointArtifactId, integrationPoint, sourceProvider);
 
-			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
-			Data.JobHistory jobHistory = CreateJobHistory(integrationPoint, jobDetails, JobTypeChoices.JobHistoryRetryErrors);
+			Guid jobRunId = Guid.NewGuid();
+
+			Data.JobHistory jobHistory = CreateJobHistory(integrationPoint, jobRunId, JobTypeChoices.JobHistoryRetryErrors);
 
 			ValidateIntegrationPointBeforeRun(integrationPointArtifactId, userId, integrationPoint, sourceProvider, destinationProvider, jobHistory);
 			
-			CreateJob(integrationPoint, sourceProvider, destinationProvider, jobDetails, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
 
 			_logger.LogInformation("Retry request was completed successfully and job has been added to Schedule Queue.");
 		}
@@ -409,7 +414,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			Data.IntegrationPoint integrationPoint, 
 			SourceProvider sourceProvider, 
 			DestinationProvider destinationProvider, 
-			TaskParameters jobDetails, 
+			Guid jobRunId, 
 			int workspaceArtifactId, 
 			int userId)
 		{
@@ -422,18 +427,21 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 				TaskType jobTaskType = GetJobTaskType(sourceProvider, destinationProvider);
 
 				CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
+
+				TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, jobRunId, integrationPoint);
+
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 			}
 
 			_logger.LogInformation("Job was successfully created.");
 		}
 
-		private Data.JobHistory CreateJobHistory(Data.IntegrationPoint integrationPoint, TaskParameters taskParameters, ChoiceRef jobType)
+		private Data.JobHistory CreateJobHistory(Data.IntegrationPoint integrationPoint, Guid jobRunId, ChoiceRef jobType)
 		{
 			_logger.LogInformation("Creating Job History for Integration Point {integrationPointId} with BatchInstance {batchInstance}...", 
-				integrationPoint.ArtifactId, taskParameters.BatchInstance);
+				integrationPoint.ArtifactId, jobRunId);
 
-			Data.JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, taskParameters.BatchInstance, jobType, null);
+			Data.JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, jobRunId, jobType, null);
 
 			if (jobHistory == null)
 			{

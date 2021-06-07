@@ -34,6 +34,8 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Core.Contracts.Import;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -53,7 +55,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 		public ImportServiceManagerTests()
 			: base($"{nameof(ImportServiceManagerTests)} {DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}")
 		{
-			
+
 		}
 
 		public override void SuiteSetup()
@@ -187,9 +189,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			_ip.DestinationConfiguration = _serializer.Serialize(settingsObjects.ImportSettings);
 			_ip.FieldMappings = _serializer.Serialize(settingsObjects.FieldMaps);
 
-			_importFileLocationService.LoadFileFullPath(Arg.Any<int>()).Returns(Path.Combine(_testDataDirectory, settingsObjects.ImportProviderSettings.LoadFile));
+			System.IO.FileInfo fileInfo = new System.IO.FileInfo(
+				Path.Combine(_testDataDirectory, settingsObjects.ImportProviderSettings.LoadFile));
 
-			_instanceUnderTest.Execute(JobExtensions.CreateJob());
+			_importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>())
+				.Returns(new LoadFileInfo { FullPath = fileInfo.FullName, Size = fileInfo.Length, LastModifiedDate = fileInfo.LastWriteTimeUtc });
+
+			Job job = PrepareImportJob(fileInfo);
+
+			_instanceUnderTest.Execute(job);
 
 			testCase.Verify(WorkspaceArtifactId);
 		}
@@ -200,7 +208,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			return _windsorContainer
 				.ResolveAll<IImportTestCase>();
 		}
-		
+
 		private static void InitContainer()
 		{
 			if (_windsorContainer == null)
@@ -225,6 +233,21 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			(new Computer()).FileSystem.CopyDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, _TEST_DATA_PATH), inputPath);
 
 			return inputPath;
+		}
+
+		private static Job PrepareImportJob(System.IO.FileInfo fileInfo)
+		{
+			return new JobBuilder()
+				.WithJobDetails(new ScheduleQueue.Core.Core.TaskParameters
+				{
+					BatchInstance = Guid.NewGuid(),
+					BatchParameters = new LoadFileTaskParameters
+					{
+						Size = fileInfo.Length,
+						LastModifiedDate = fileInfo.LastWriteTimeUtc
+					}
+				})
+				.Build();
 		}
 	}
 }

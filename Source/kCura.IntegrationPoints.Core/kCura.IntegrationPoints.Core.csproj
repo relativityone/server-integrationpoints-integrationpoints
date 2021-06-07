@@ -83,6 +83,9 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Helpers\DateTimeWrap.cs" />
+    <Compile Include="Helpers\FileInfoFactory.cs" />
+    <Compile Include="Helpers\FileInfoWrap.cs" />
     <Compile Include="Helpers\ICryptographyHelper.cs" />
     <Compile Include="Helpers\Implementations\CryptographyHelper.cs" />
     <Compile Include="Helpers\Implementations\UrlVersionDecorator.cs" />

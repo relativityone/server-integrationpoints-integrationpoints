@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -6,23 +7,23 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
-using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.ScheduleQueue.Core.Core;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Relativity.API;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Extensions;
 using Relativity.Testing.Identification;
+using SystemInterface.IO;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
     [IdentifiedTestFixture("4FDA6BE8-7BA6-4755-A7AD-9C48FEB26877")]
     public class JobControllerTests : TestsBase
     {
-        private JobController _sut;
         private WorkspaceTest _destinationWorkspace;
 
         protected override WindsorContainer GetContainer()
@@ -39,9 +40,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
             FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
-            _sut = Container.Resolve<JobController>();
-            _sut.User = GetUserClaimsPrincipal();
         }
 
         protected ClaimsPrincipal GetUserClaimsPrincipal() => new ClaimsPrincipal(new[]
@@ -60,9 +58,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/run");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/run");
-            var response = await _sut.Run(payload).ConfigureAwait(false);
+            var response = await sut.Run(payload).ConfigureAwait(false);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -83,10 +82,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/run");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/run");
-            var response = await _sut.Run(payload).ConfigureAwait(false);
-            var response2 = await _sut.Run(payload).ConfigureAwait(false);
+            var response = await sut.Run(payload).ConfigureAwait(false);
+            var response2 = await sut.Run(payload).ConfigureAwait(false);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -111,9 +111,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/retry");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/retry");
-            var response = _sut.Retry(payload);
+            var response = sut.Retry(payload);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -136,9 +137,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/retry");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/retry");
-            var response = _sut.Retry(payload);
+            var response = sut.Retry(payload);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeFalse();
@@ -169,9 +171,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/stop");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/stop");
-            var result = _sut.Stop(payload);
+            var result = sut.Stop(payload);
 
             // Assert
             result.IsSuccessStatusCode.Should().BeTrue();
@@ -202,9 +205,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/stop");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/stop");
-            var result = _sut.Stop(payload);
+            var result = sut.Stop(payload);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -236,9 +240,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/stop");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/stop");
-            var result = _sut.Stop(payload);
+            var result = sut.Stop(payload);
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -282,14 +287,66 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 AppId = SourceWorkspace.ArtifactId
             };
 
+            JobController sut = PrepareSut(HttpMethod.Post, "/stop");
+
             // Act
-            _sut.Request = new HttpRequestMessage(HttpMethod.Post, "/stop");
-            var result = _sut.Stop(payload);
+            var result = sut.Stop(payload);
 
             // Assert
             result.IsSuccessStatusCode.Should().BeTrue();
 
             FakeRelativityInstance.JobsInQueue.All(x => x.StopState == StopState.Stopping).Should().BeTrue();
+        }
+
+        [IdentifiedTest("610B7F40-F951-4FBC-A70F-C5AA4EBC65C4")]
+        public async Task Run_ShouldScheduleImportLoadFileJobWithLoadFileInfo()
+        {
+            // Arrange
+            const string loadFile = "DataTransfer\\Import\\SaltPepper\\saltvpepper-no_errors.dat";
+            const long size = 1000;
+            DateTime modifiedDate = new DateTime(2020, 1, 1);
+
+            FakeFileInfoFactory fileInfoFactory = new FakeFileInfoFactory();
+
+            fileInfoFactory.SetupFile(loadFile, size, modifiedDate);
+
+            Container.Register(Component.For<IFileInfoFactory>().UsingFactoryMethod(c => fileInfoFactory)
+                .LifestyleTransient().Named(nameof(FakeFileInfoFactory)).IsDefault());
+
+            IntegrationPointTest integrationPoint =
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
+
+            JobController.Payload payload = new JobController.Payload
+            {
+                ArtifactId = integrationPoint.ArtifactId,
+                AppId = SourceWorkspace.ArtifactId
+            };
+
+            JobController sut = PrepareSut(HttpMethod.Post, "/run");
+
+            // Act
+            var response = await sut.Run(payload).ConfigureAwait(false);
+
+            // Assert
+            response.IsSuccessStatusCode.Should().BeTrue();
+
+            JobTest job = FakeRelativityInstance.JobsInQueue.Single(x => x.RelatedObjectArtifactID == integrationPoint.ArtifactId);
+
+            TaskParameters jobParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+
+            LoadFileTaskParameters loadFileParameters = ((JObject)jobParameters.BatchParameters).ToObject<LoadFileTaskParameters>();
+
+            loadFileParameters.Size.Should().Be(size);
+            loadFileParameters.LastModifiedDate.Should().Be(modifiedDate);
+        }
+
+        private JobController PrepareSut(HttpMethod method, string requestUri)
+        {
+            JobController sut = Container.Resolve<JobController>();
+            sut.User = GetUserClaimsPrincipal();
+            sut.Request = new HttpRequestMessage(method, requestUri);
+
+            return sut;
         }
     }
 }

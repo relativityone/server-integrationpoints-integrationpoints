@@ -75,7 +75,6 @@
     <Compile Include="LoadFileFieldParser.cs" />
     <Compile Include="ImportDataReader.cs" />
     <Compile Include="Services\ImportPreviewService.cs" />
-    <Compile Include="Services\Interfaces\IImportFileLocationService.cs" />
     <Compile Include="Services\Interfaces\IImportPreviewService.cs" />
     <Compile Include="WinEddsFileReaderFactory.cs" />
     <Compile Include="WinEddsLoadFileFactory.cs" />
@@ -88,6 +87,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
       <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
       <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>

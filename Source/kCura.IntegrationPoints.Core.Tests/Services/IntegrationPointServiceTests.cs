@@ -64,6 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		private IValidationExecutor _validationExecutor;
 		private SourceProvider _sourceProvider;
 		private ValidationResult _stopPermissionChecksResults;
+		private ITaskParametersBuilder _taskParametersBuilder;
 
 		private readonly int _destinationProviderId = 424;
 		private readonly int _integrationPointArtifactId = 741;
@@ -97,6 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_providerTypeService = Substitute.For<IProviderTypeService>();
 			_messageService = Substitute.For<IMessageService>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			_taskParametersBuilder = Substitute.For<ITaskParametersBuilder>();
 
 			_validationExecutor = Substitute.For<IValidationExecutor>();
 
@@ -113,7 +115,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				_providerTypeService,
 				_messageService,
 				_integrationPointRepository,
-				_objectManager
+				_objectManager,
+				_taskParametersBuilder
 			);
 
 			_caseServiceContext.RelativityObjectManagerService = Substitute.For<IRelativityObjectManagerService>();

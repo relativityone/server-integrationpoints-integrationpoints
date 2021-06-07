@@ -16,7 +16,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 					It.IsAny<int>(), It.IsAny<int>()))
 				.Returns((int workspaceId, QueryRequest request, int start, int length) =>
 					{
-						WorkspaceTest workspace = _relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+						WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 						List<RelativityObject> foundObjects = new List<RelativityObject>();
                       
 						if (IsArtifactIdCondition(request.Condition, out int artifactId))
