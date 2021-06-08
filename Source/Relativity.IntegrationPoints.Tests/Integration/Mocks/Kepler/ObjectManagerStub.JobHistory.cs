@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.Choice;
 using Relativity.Services.Objects.DataContracts;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using Match = System.Text.RegularExpressions.Match;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
@@ -31,7 +28,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 integrationPointId = -1;
                 return false;
             }
-
 
             bool IsBatchInstanceCondition(string condition, out string batchInstance)
             {
@@ -85,14 +81,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
 	        return x.ObjectType.Guid.HasValue &&
 	               x.ObjectType.Guid.Value.Equals(ObjectTypeGuids.JobHistoryGuid);
-        }
-
-        private bool IsJobHistoryUpdateJobStatusRequest(UpdateRequest request)
-        {
-	        bool isJobHistoryArtifactId = Relativity.Workspaces.Any(x => x.JobHistory.Any(y => y.ArtifactId == request.Object.ArtifactID));
-	        bool hasJobStatusField = request.FieldValues.SingleOrDefault(x => x.Field.Guid == JobHistoryFieldGuids.JobStatusGuid)?.Value != null;
-
-            return isJobHistoryArtifactId && hasJobStatusField;
         }
     }
 }

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{9D87DE97-6533-4034-9B3E-FACCE4F1A9E4}</ProjectGuid>
     <TargetFramework>net462</TargetFramework>
+    <DependsOnNETStandard>false</DependsOnNETStandard>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

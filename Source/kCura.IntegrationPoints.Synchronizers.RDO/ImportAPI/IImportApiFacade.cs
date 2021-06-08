@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using kCura.Relativity.ImportAPI.Data;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {

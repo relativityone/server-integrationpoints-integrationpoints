@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Threading;
 using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         
         public bool Read()
         {
-            if (_stopManager?.IsStopOrDrainStopRequested() ?? false)
+            if (_stopManager?.ShouldDrainStop ?? false)
             {
                 Close();
                 return false;

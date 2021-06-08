@@ -14,8 +14,6 @@ using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
-using kCura.Relativity.ImportAPI;
-using kCura.Relativity.ImportAPI.Data;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
@@ -189,7 +187,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					}
 				} while (rowProcessed);
 
-				if (!jobStopManager?.IsStopOrDrainStopRequested() ?? true)
+				if (!jobStopManager?.ShouldDrainStop ?? true)
 				{
 					_importService.PushBatchIfFull(true);
 				}

@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Domain.Readers;
 using Moq;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Internals;
@@ -649,6 +648,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			relativityFieldQuery.Setup(x => x.GetFieldsForRdo(artifactTypeId)).Returns(new List<RelativityObject>());
 			importApi.Setup(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId)).Returns(new List<kCura.Relativity.ImportAPI.Data.Field>());
 			importApiFactory.Setup(x => x.GetImportAPI(It.IsAny<ImportSettings>())).Returns(importApi.Object);
+
+			importApiFactory.Setup(x => x.GetImportApiFacade(It.IsAny<ImportSettings>()))
+				.Returns(new ImportApiFacade(importApiFactory.Object, new ImportSettings(), new Mock<IAPILog>().Object));
 
 			var sut = new RdoSynchronizer(relativityFieldQuery.Object, importApiFactory.Object, jobFactory.Object, _helper.Object);
 

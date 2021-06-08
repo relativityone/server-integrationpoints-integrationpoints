@@ -10,7 +10,6 @@ using kCura.Relativity.DataReaderClient;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.ImportAPI;
-using kCura.Relativity.ImportAPI.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI

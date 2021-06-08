@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IScheduleRuleFactory scheduleRuleFactory,
 			IJobHistoryService jobHistoryService,
 			IJobHistoryErrorService jobHistoryErrorService,
-			JobStatisticsService statisticsService,
+			IJobStatisticsService statisticsService,
 			IToggleProvider toggleProvider,
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository,

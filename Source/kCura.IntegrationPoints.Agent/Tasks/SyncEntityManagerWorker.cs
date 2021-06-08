@@ -19,7 +19,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -61,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService, 
 			IJobManager jobManager,
 			IManagerQueueService managerQueueService, 
-			JobStatisticsService statisticsService, 
+			IJobStatisticsService statisticsService, 
 			IManagerFactory managerFactory,
 			IJobService jobService, 
 			IRepositoryFactory repositoryFactory, 

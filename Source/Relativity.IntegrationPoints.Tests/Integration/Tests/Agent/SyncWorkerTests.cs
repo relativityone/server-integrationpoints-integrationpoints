@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Castle.MicroKernel.Registration;
@@ -10,19 +9,10 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.Relativity.ImportAPI;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
-using Moq;
 using Newtonsoft.Json.Linq;
-using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
@@ -37,17 +27,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
     {
         private SyncWorker PrepareSut(Action<FakeJobImport> importAction)
         {
-            Container.Register(Component.For<IDataSourceProvider>()
-                .ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>().IsDefault());
-
-            Container.Register(Component.For<IObjectTypeRepository>().Instance(
-                new ObjectTypeRepository(SourceWorkspace.ArtifactId, Container.Resolve<IServicesMgr>(),
-                    Container.Resolve<IHelper>(), Container.Resolve<IRelativityObjectManager>())));
-
-            Container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoSynchronizer>().Named(typeof(RdoSynchronizer).AssemblyQualifiedName).LifestyleTransient());
+	        Container.Register(Component.For<IDataSourceProvider>()
+		        .ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>()
+		        .Named(MyFirstProvider.Provider.GlobalConstants.FIRST_PROVIDER_GUID));
+        
             Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport(importAction)).LifestyleSingleton());
-            Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI.IImportApiFacade>().ImplementedBy<FakeImportApiFacade>());
-            
+
             SyncWorker sut = Container.Resolve<SyncWorker>();
             return sut;
         }
@@ -129,8 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             File.WriteAllText(tmpPath, xml);
             return tmpPath;
         }
-
-
+        
         [IdentifiedTest("BCF72894-224F-4DB7-985F-0C53C93D153D")]
         public void SyncWorker_ShouldImportData()
         {
@@ -159,7 +143,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             
             string xmlPath = PrepareRecords(numberOfRecords);
             JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-            
+
             IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
             
             SyncWorker sut = PrepareSut((importJob) =>
@@ -167,14 +151,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 importJob.Complete(drainStopAfterImporting);
 
                 agent.ToBeRemoved = true;
-                
-                Task.Run(async () => await Task.Delay(1000)).GetAwaiter().GetResult();
             });
 
             // Act
             sut.Execute(new Job(job.AsDataRow()));
             
-
             // Assert
             List<string> remainingItems = GetRemainingItems(job);
 
@@ -205,8 +186,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		        importJob.Complete(drainStopAfterImporting);
 
 		        agent.ToBeRemoved = true;
-
-		        Task.Run(async () => await Task.Delay(1000)).GetAwaiter().GetResult();
 	        });
 
 	        // Act
@@ -217,9 +196,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	        job.StopState.Should().Be(StopState.DrainStopped);
 	        FakeRelativityInstance.JobsInQueue.Where(x => x.JobId != job.JobId).All(x => x.StopState == StopState.None).Should().BeTrue();
         }
-
-       
-
+        
         private List<string> GetRemainingItems(JobTest job)
         {
             TaskParameters paramaters = Serializer.Deserialize<TaskParameters>(job.JobDetails);

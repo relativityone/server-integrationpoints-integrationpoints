@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Domain.Managers;
+﻿using kCura.IntegrationPoints.Domain.Managers;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Relativity.DataExchange.Export;

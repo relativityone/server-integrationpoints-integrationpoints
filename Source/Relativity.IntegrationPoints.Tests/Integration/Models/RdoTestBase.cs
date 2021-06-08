@@ -41,7 +41,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public abstract RelativityObject ToRelativityObject();
 
-        public void LoadRelativityObject(Type type, RelativityObject relativityObject)
+        public void LoadRelativityObjectByName<T>(RelativityObject relativityObject)
+        {
+            LoadRelativityObjectByName(typeof(T), relativityObject);
+        }
+
+        public void LoadRelativityObjectByName(Type type, RelativityObject relativityObject)
         {
             if (!type.IsAssignableTo<RdoTestBase>())
             {
@@ -94,11 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public void LoadRelativityObjectByGuid<T>(RelativityObject relativityObject) where T : RdoTestBase
 		{
-			var type = typeof(T);
-			Dictionary<string, PropertyInfo> propertiesDictionary = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanWrite)
-				.ToDictionary(x => x.Name, x => x);
-
-			Artifact.ArtifactId = relativityObject.ArtifactID;
+            Artifact.ArtifactId = relativityObject.ArtifactID;
 
 			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)
 			{

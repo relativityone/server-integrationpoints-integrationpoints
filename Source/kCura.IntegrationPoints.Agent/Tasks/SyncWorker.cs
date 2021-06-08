@@ -21,7 +21,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -139,13 +138,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
 			}
 
+			Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
+			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int processedItemCount = JobHistory.ItemsTransferred ?? 0 + JobHistory.ItemsWithErrors ?? 0;
 			
-			if ((JobStopManager?.ShouldDrainStop ?? false) && processedItemCount < (JobHistory.TotalItems ?? 0))
+			if ((JobStopManager?.ShouldDrainStop ?? false) && processedItemCount < (JobHistory.TotalItems ?? int.MaxValue))
 			{
-				Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
-				JobHistory = JobHistoryService.GetRdo(batchInstance);
-				
 				job.JobDetails = SkipProcessedItems(job.JobDetails, processedItemCount);
 				JobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
 				JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);

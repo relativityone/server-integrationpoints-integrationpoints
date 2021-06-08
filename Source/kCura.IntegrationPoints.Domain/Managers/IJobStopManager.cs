@@ -21,12 +21,6 @@ namespace kCura.IntegrationPoints.Domain.Managers
 		bool ShouldDrainStop { get; }
 
 		/// <summary>
-		/// Gets whether drain stop or cancel (stop) is requested
-		/// </summary>
-		/// <returns></returns>
-		bool IsStopOrDrainStopRequested();
-
-		/// <summary>
 		///     Throws an <see cref="OperationCanceledException" /> if the task has been stopped.
 		/// </summary>
 		void ThrowIfStopRequested();

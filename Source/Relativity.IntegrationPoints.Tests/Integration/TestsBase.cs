@@ -12,24 +12,20 @@ using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
-using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Installers;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.Relativity.ImportAPI;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -47,7 +43,6 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
-using IImportApiFactory = kCura.IntegrationPoints.DocumentTransferProvider.IImportApiFactory;
 using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
@@ -123,7 +118,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Install(new ValidationInstaller());
 			Container.Install(new LdapProviderInstaller());
 			Container.Install(new RelativitySyncInstaller());
-			Container.Install(new QueryInstallers());
 			Container.Install(new ImportInstaller());
 
 			OverrideRipServicesInstaller();
@@ -176,26 +170,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>());
 
 			Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()).Named(Guid.NewGuid().ToString()).IsDefault());
-			Container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
-			Container.Register(Component.For<IFileSizesStatisticsService>().ImplementedBy<FileSizesStatisticsService>().LifestyleTransient());
-			Container.Register(Component.For<IJobResourceTracker>().ImplementedBy<JobResourceTracker>());
-			Container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>());
-			Container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeUtcHelper>());
-			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
-			Container.Register(Component.For<IJobStatisticsService>().ImplementedBy<JobStatisticsService>().LifestyleTransient().IsDefault());
-
-			Container.Register(Component.For<IIntegrationPointProviderTypeService>()
-				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
-				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
-			
-			Container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
-
-
 			Container.Register(Component.For<Lazy<ISecretStore>>().UsingFactoryMethod(c =>
 				new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())).Named(Guid.NewGuid().ToString()).IsDefault());
 
 			Container.Register(Component.For<IExternalServiceInstrumentationProvider>().ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>().LifestyleSingleton());
-			Container.Register(Component.For<ISynchronizerFactory>().ImplementedBy<GeneralWithEntityRdoSynchronizerFactory>().LifestyleTransient());
 
 			Container.Register(Component.For<Job>().UsingFactoryMethod(k =>
 			{
@@ -239,10 +217,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>().IsDefault());
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
+			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
 			
 			// IAPI
-			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleSingleton());
-			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>());
+			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleSingleton().IsDefault());
+			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>().IsDefault());
+			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI.IImportApiFacade>().ImplementedBy<FakeImportApiFacade>().IsDefault());
 		}
 
 		private void RegisterRipAgentTasks()

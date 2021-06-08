@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Moq;
@@ -42,6 +43,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 			Mock<IImportApiFactory> mock = new Mock<IImportApiFactory>();
 			mock.Setup(x => x.GetImportAPI(It.IsAny<ImportSettings>())).Returns(import.Object);
+
+			mock.Setup(x => x.GetImportApiFacade(It.IsAny<ImportSettings>()))
+				.Returns(new ImportApiFacade(mock.Object, new ImportSettings(), new Mock<IAPILog>().Object));
+
 			return mock.Object;
 		}
 

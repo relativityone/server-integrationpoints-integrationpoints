@@ -1,14 +1,11 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.DataReaderClient;
-using kCura.Utility.Extensions;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi
 {
@@ -32,7 +29,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         public event IImportNotifier.OnProcessProgressEventHandler OnProcessProgress;
         public event OnErrorEventHandler OnError;
         public event OnMessageEventHandler OnMessage;
-        
 #pragma warning restore CS0067
 
         internal void Complete(int numberOfDocuments)
@@ -41,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
             {
                 OnProgress?.Invoke(i);
             }
-            
+            OnProgress?.Invoke(1);
             ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
             JobReport jobReport = (JobReport) constructorInfos.First().Invoke(new object[0]);
 
@@ -51,8 +47,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
             totalRecordsSetter.Invoke(jobReport, new object[] {numberOfDocuments});
             
-            // to make sure that all OnProgress are processed
-            Task.Delay(500).GetAwaiter().GetResult();
             OnComplete?.Invoke(jobReport);
         }
 
@@ -62,7 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
         public void Execute()
         {
-            // IAPI always starts with 1
+            // IAPI always starts with 1 row progress
             OnProgress?.Invoke(1);
             _executeAction?.Invoke(this);
         }

@@ -15,9 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     public partial class ObjectManagerStub : KeplerStubBase<IObjectManager>
     {
         public void SetupCreateRequests()
-       
-
-        {
+       {
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()))
                 .Returns((int workspaceId, CreateRequest request) =>
                 {
@@ -51,12 +49,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     {
                         try
                         {
-                            WorkspaceTest workspace = _relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
                             RdoTestBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
 
                             if (foundRdo != null)
                             {
-                                foundRdo.LoadRelativityObject(foundRdo.GetType(),
+                                foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
                                     GetRelativityObject(request, foundRdo));
                             }
 

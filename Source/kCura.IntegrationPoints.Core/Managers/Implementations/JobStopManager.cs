@@ -141,11 +141,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return _token.IsCancellationRequested;
 		}
 
-		public bool IsStopOrDrainStopRequested()
-		{
-			return _token.IsCancellationRequested || _isDrainStopping;
-		}
-
 		public void ThrowIfStopRequested()
 		{
 			// Will throw OperationCanceledException if task is canceled.
