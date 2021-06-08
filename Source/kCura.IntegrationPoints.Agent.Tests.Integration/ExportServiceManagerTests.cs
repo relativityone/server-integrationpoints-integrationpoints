@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IScheduleRuleFactory scheduleRuleFactory = new DefaultScheduleRuleFactory();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IJobHistoryErrorService jobHistoryErrorService = Container.Resolve<IJobHistoryErrorService>();
-			JobStatisticsService jobStatisticsService = Container.Resolve<JobStatisticsService>();
+			IJobStatisticsService jobStatisticsService = Container.Resolve<IJobStatisticsService>();
 			IAgentValidator agentValidator = Container.Resolve<IAgentValidator>();
 			IJobStatusUpdater jobStatusUpdater = Container.Resolve<IJobStatusUpdater>();
 			IAPILog logger = Container.Resolve<IAPILog>();
