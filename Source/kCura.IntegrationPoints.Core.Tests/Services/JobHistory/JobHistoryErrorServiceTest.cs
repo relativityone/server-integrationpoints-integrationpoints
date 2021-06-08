@@ -5,13 +5,13 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 		private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
 		private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
 		private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
-		private readonly Guid _errorStatusNew = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
 
 		[SetUp]
 		public override void SetUp()

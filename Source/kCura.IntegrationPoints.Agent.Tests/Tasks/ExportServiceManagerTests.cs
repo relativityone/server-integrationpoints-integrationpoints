@@ -26,6 +26,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -647,7 +648,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
+			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
 		}
 
 		[Test]

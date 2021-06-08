@@ -45,5 +45,6 @@ namespace kCura.ScheduleQueue.Core.Data
 
 		IQuery<DataTable> GetJob(long jobId);
 
+		ICommand UpdateJobDetails(long jobId, string jobDetails);
 	}
 }

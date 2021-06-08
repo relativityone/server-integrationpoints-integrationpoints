@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -29,6 +30,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -38,7 +40,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IAPILog _logger;
-		private readonly JobStatisticsService _statisticsService;
+		private readonly IJobStatisticsService _statisticsService;
 
 		public SyncWorker(
 			ICaseServiceContext caseServiceContext,
@@ -50,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService,
+			IJobStatisticsService statisticsService,
 			IManagerFactory managerFactory,
 			IJobService jobService,
 			IProviderTypeService providerTypeService,
@@ -133,10 +135,51 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(dataSynchronizer, job);
 				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
 				JobStopManager?.ThrowIfStopRequested();
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
+			}
+
+			Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
+			JobHistory = JobHistoryService.GetRdo(batchInstance);
+			int processedItemCount = GetProcessedItemsCount(JobHistory);
+
+			if ((JobStopManager?.ShouldDrainStop ?? false) && ShouldItemsBeSkipped(processedItemCount, JobHistory))
+			{
+				MarkJobAsDrainStopped(job, processedItemCount);
 			}
 
 			LogExecuteImportSuccesfulEnd(job);
+		}
+
+		private void MarkJobAsDrainStopped(Job job, int processedItemCount)
+		{
+			job.JobDetails = SkipProcessedItems(job.JobDetails, processedItemCount);
+			JobHistory.JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistorySuspendedGuid});
+			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
+
+			job.StopState = StopState.DrainStopped;
+			JobService.UpdateStopState(new List<long> {job.JobId}, job.StopState);
+			JobService.UpdateJobDetails(job);
+		}
+
+		private static bool ShouldItemsBeSkipped(int processedItemCount, JobHistory jobHistory)
+		{
+			// if all of the items were processed there is no need to drain stop
+			return processedItemCount < (jobHistory.TotalItems ?? int.MaxValue);
+		}
+
+		private static int GetProcessedItemsCount(JobHistory jobHistory)
+		{
+			return jobHistory.ItemsTransferred ?? 0 + jobHistory.ItemsWithErrors ?? 0;
+		}
+
+		private string SkipProcessedItems(string jobDetails, int processedItemCount)
+		{
+			TaskParameters parameters = Serializer.Deserialize < TaskParameters>(jobDetails);
+			List<string> list = Serializer.Deserialize<List<string>>(parameters.BatchParameters.ToString());
+
+			parameters.BatchParameters = list.Skip(processedItemCount);
+			
+			return Serializer.Serialize(parameters);
 		}
 
 		protected virtual void ExecuteTask(Job job)
@@ -152,7 +195,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
-				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: false);
+				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true);
 				JobHistoryErrorService.JobStopManager = JobStopManager;
 
 				if (!IntegrationPoint.SourceProvider.HasValue)
@@ -223,7 +266,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				LogPostExecuteStart(job);
-				JobStopManager?.Dispose();
 				JobHistoryErrorService.CommitErrors();
 
 				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString());
@@ -245,6 +287,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				JobHistoryErrorService.CommitErrors();
 				LogPostExecuteFinalize(job);
+				JobStopManager?.Dispose();
 			}
 		}
 
@@ -260,7 +303,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						List<long> ids = jobs.Select(agentJob => agentJob.JobId).ToList();
 
 						LogUpdateStopStateToUnstoppable(ids);
-						JobService.UpdateStopState(jobs.Select(agentJob => agentJob.JobId).ToList(), StopState.Unstoppable);
+						JobService.UpdateStopState(jobs.Select(agentJob => agentJob.JobId).ToList(),
+							StopState.Unstoppable);
 					}
 				}
 			}
@@ -288,14 +332,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					}
 				}
 			}
+			
+			List<long> jobsToUpdate =
+				JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance)
+					.Where(x => x.StopState != StopState.DrainStopped && x.StopState != StopState.DrainStopping)
+					.Select(agentJob => agentJob.JobId)
+					.ToList(); 
 
-			IList<Job> jobsToUpdate = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
 			if (jobsToUpdate.Any())
 			{
-				List<long> ids = jobsToUpdate.Select(agentJob => agentJob.JobId).ToList();
-
-				LogUpdateStopStateToNone(ids);
-				JobService.UpdateStopState(ids, StopState.None);
+				LogUpdateStopStateToNone(jobsToUpdate);
+				JobService.UpdateStopState(jobsToUpdate, StopState.None);
 			}
 		}
 

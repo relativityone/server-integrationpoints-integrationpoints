@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent
@@ -122,7 +123,9 @@ namespace kCura.IntegrationPoints.Agent
 					_agentNotifier.NotifyAgent(LogCategory.Info, msg);
 					LogFinishingExecuteTask(job);
 
-					return new TaskResult { Status = TaskStatusEnum.Success, Exceptions = null };
+					TaskStatusEnum jobStatus = GetJobStatus(job.StopState);
+					
+					return new TaskResult { Status = jobStatus, Exceptions = null };
 				}
 				catch (Exception ex)
 				{
@@ -133,6 +136,17 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					_taskProvider.ReleaseTask(task);
 				}
+			}
+		}
+
+		private TaskStatusEnum GetJobStatus(StopState jobStopState)
+		{
+			switch (jobStopState)
+			{
+				case StopState.DrainStopped:
+					return TaskStatusEnum.DrainStopped;
+				default:
+					return TaskStatusEnum.Success;
 			}
 		}
 

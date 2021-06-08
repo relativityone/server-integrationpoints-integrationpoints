@@ -1,11 +1,9 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using Relativity.DataExchange.Process;
-using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {

@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			List<Dictionary<FieldEntry, object>> importData = CreateImportData();
 
 			//Act
-			rdoSynchronizer.SyncData(importData, sourceFields, settings);
+			rdoSynchronizer.SyncData(importData, sourceFields, settings, null);
 
 			//Assert
 			List<RelativityObject> documents = await GetAllDocumentsAsync().ConfigureAwait(false);

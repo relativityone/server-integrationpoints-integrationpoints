@@ -23,13 +23,14 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<GetJobsCount>().ImplementedBy<GetJobsCount>().LifestyleTransient());
 			container.Register(Component.For<IJobResourceTracker>().ImplementedBy<JobResourceTracker>().LifestyleTransient());
 			container.Register(Component.For<JobStatistics>().ImplementedBy<JobStatistics>().LifestyleTransient());
-			container.Register(Component.For<JobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifestyleTransient());
+			container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());
 
 			container.Register(Component.For<IObjectTypeQuery>().ImplementedBy<SqlObjectTypeQuery>().LifestyleTransient());
 			container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>().LifestyleTransient());
 			container.Register(Component.For<IInstanceSettingRepository>().ImplementedBy<KeplerInstanceSettingRepository>().LifestyleSingleton());
-			container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = k.Resolve<IHelper>().GetDBContext(-1)).LifestyleTransient());
+			container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>()
+				.DynamicParameters((k, d) => d["eddsDBcontext"] = k.Resolve<IHelper>().GetDBContext(-1)).LifestyleTransient());
 			container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
 			container.Register(Component.For<ISystemEventLoggingService>().ImplementedBy<SystemEventLoggingService>().LifestyleTransient());
 

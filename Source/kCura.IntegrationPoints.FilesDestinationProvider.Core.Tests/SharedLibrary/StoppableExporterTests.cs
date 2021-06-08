@@ -1,6 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;
 using NUnit.Framework;

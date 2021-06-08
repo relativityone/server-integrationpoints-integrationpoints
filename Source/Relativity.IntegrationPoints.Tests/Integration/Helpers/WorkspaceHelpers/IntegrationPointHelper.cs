@@ -62,7 +62,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
 				ArtifactTypeId = (int) ArtifactType.Document,
 				DestinationFolderArtifactId = destinationFolder.ArtifactId,
-				CaseArtifactId = destinationWorkspace.ArtifactId
+				CaseArtifactId = destinationWorkspace.ArtifactId,
+				WebServiceURL = @"//some/service/url/relativity"
 			});
 			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
 			integrationPoint.EnableScheduler = true;
@@ -101,7 +102,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
 				ArtifactTypeId = (int) ArtifactType.Document,
 				DestinationFolderArtifactId = destinationFolder.ArtifactId,
-				CaseArtifactId = Workspace.ArtifactId
+				CaseArtifactId = Workspace.ArtifactId,
+				WebServiceURL = @"//some/service/url/relativity"
 			});
 
 			integrationPoint.SourceProvider = sourceProvider.ArtifactId;

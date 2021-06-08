@@ -48,6 +48,13 @@ namespace kCura.ScheduleQueue.Core.Data
 				.Execute();
 		}
 
+		public void UpdateJobDetails(long jobId, string jobDetails)
+		{
+			_queryManager
+				.UpdateJobDetails(jobId, jobDetails)
+				.Execute();
+		}
+
 		public void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)

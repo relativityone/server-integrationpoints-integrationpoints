@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Services.Exporter.Images;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.WinEDDS.Service.Export;

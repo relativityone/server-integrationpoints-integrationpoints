@@ -7,7 +7,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -17,6 +16,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -240,7 +240,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>());
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), null);
 			_jobHistoryErrorService.Received().CommitErrors();
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -262,7 +262,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>());
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), null);
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
 		}
