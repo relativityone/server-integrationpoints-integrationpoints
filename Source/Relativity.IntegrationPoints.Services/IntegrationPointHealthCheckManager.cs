@@ -14,54 +14,18 @@ namespace Relativity.IntegrationPoints.Services
 
 		internal IntegrationPointHealthCheckManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
 		: base(logger, permissionRepositoryFactory, container)
-		{
-		}
+		{ }
 
 		public IntegrationPointHealthCheckManager(ILog logger) : base(logger)
+		{ }
+
+		public Task<HealthCheckOperationResult> RunHealthChecksAsync()
 		{
-			
-		}
+			HealthCheckOperationResult healthCheckOperationResult = new HealthCheckOperationResult(isHealthy: true, message: "Integration Points application is healthy!");
+			Client.APMClient.HealthCheckOperation(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => healthCheckOperationResult)
+				.Write();
 
-		public async Task<HealthCheckOperationResult> RunHealthChecksAsync()
-		{
-			IWindsorContainer container = GetDependenciesContainer(kCura.IntegrationPoints.Data.Constants.ADMIN_CASE_ID);
-
-			List<IHealthCheck> healthChecks = new List<IHealthCheck>();
-
-			var instanceSettingHealthCheck = new InstanceSettingHealthCheck(container);
-			healthChecks.Add(instanceSettingHealthCheck);
-			healthChecks.Add(new RelativityManagerSoapHealthCheck(container, () => instanceSettingHealthCheck.WebApiPath));
-			healthChecks.Add(new SuccessHealthCheck());
-
-			HealthCheckOperationResult result = null;
-			foreach (var healthCheck in healthChecks)
-			{
-				result = await healthCheck.Check().ConfigureAwait(false);
-
-				LogResult(result);
-
-				if (!result.IsHealthy)
-				{
-					HealthCheckOperationResult localResultCopyForLambdaEvaluation = result;
-					IHealthMeasure healthMeasure = Client.APMClient.HealthCheckOperation(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => localResultCopyForLambdaEvaluation);
-					healthMeasure.Write();
-					break;
-				}
-			}
-
-			return result;
-		}
-
-		private void LogResult(HealthCheckOperationResult result)
-		{
-			if (result.IsHealthy)
-			{
-				Logger.LogVerbose(result.Message);
-			}
-			else
-			{
-				Logger.LogError(result.Message);
-			}
+			return Task.FromResult(healthCheckOperationResult);
 		}
 
 		protected override Installer Installer => _installer ?? (_installer = new HealthCheckInstaller());

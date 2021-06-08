@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Services.Helpers;
-using Relativity.IntegrationPoints.Services.RelativityWebApi;
 using Relativity.Logging;
 using Relativity.Telemetry.APM;
 using Constants = kCura.IntegrationPoints.Core.Constants;
@@ -24,7 +20,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		private IWindsorContainer _container;
 		private IAPM _apmClient;
 
-		private const string _WEB_API_PATH_VALUE = "http://apimock.corp";
 		private const int _WORKSPACE_ID = 819434;
 
 		public override void SetUp()
@@ -43,91 +38,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		}
 
 		[Test]
-		public void ItShouldCheckIfSettingExist()
-		{
-			// Arrange
-			SubstitureWebApiPath(string.Empty);
-
-			// Act
-			HealthCheckOperationResult result = _integrationPointHealthCheckManager.RunHealthChecksAsync().Result;
-
-			// Assert
-			Assert.IsFalse(result.IsHealthy);
-			Assert.AreEqual("WebApiPath InstanceSetting is null or empty", result.Message);
-		}
-
-		[Test]
-		public void ShouldReturnExceptionIfWebApiCallFails()
-		{
-			// Arrange
-			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
-			RelativityManagerSoap relativityManagerSoap = SubstituteRelativityManagerSoap();
-			relativityManagerSoap.GetRelativityUrlAsync().Throws(new Exception("the reason"));
-
-			// Act
-			HealthCheckOperationResult result = _integrationPointHealthCheckManager.RunHealthChecksAsync().Result;
-
-			// Assert
-			Assert.IsFalse(result.IsHealthy);
-			relativityManagerSoap.Received().GetRelativityUrlAsync();
-			Assert.NotNull(result.Exception);
-			Assert.AreEqual($"Relativity WebApi call to '{_WEB_API_PATH_VALUE}' failed", result.Message);
-			Assert.AreEqual("the reason", result.Exception.Message);
-		}
-
-		[Test]
-		public void ItShouldCallWebApi()
-		{
-			// Arrange
-			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
-			RelativityManagerSoap relativityManagerSoap = SubstituteRelativityManagerSoap();
-			relativityManagerSoap.GetRelativityUrlAsync().Returns(Task.FromResult("mock"));
-
-			// Act
-			HealthCheckOperationResult result = _integrationPointHealthCheckManager.RunHealthChecksAsync().Result;
-
-			// Assert
-			Assert.IsTrue(result.IsHealthy);
-			relativityManagerSoap.Received().GetRelativityUrlAsync();
-		}
-
-		[Test]
-		public void ShouldLogSuccess()
-		{
-			// Arrange
-			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
-			SubstituteRelativityManagerSoap().GetRelativityUrlAsync().Returns(Task.FromResult("mock"));
-
-			// Act
-			_integrationPointHealthCheckManager.RunHealthChecksAsync().Wait();
-
-			// Assert
-			_logger.Received().LogVerbose(Arg.Any<string>());
-		}
-
-		[Test]
-		public void ShouldLogError()
-		{
-			// Arrange
-			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
-			SubstituteRelativityManagerSoap().GetRelativityUrlAsync().Throws(new Exception("the reason"));
-
-			// Act
-			_integrationPointHealthCheckManager.RunHealthChecksAsync().Wait();
-
-			// Assert
-			string expectedErrorMessage = $"Relativity WebApi call to '{_WEB_API_PATH_VALUE}' failed";
-			_logger.Received().LogError(Arg.Is<string>(msg => msg.Equals(expectedErrorMessage)));
-		}
-
-		[Test]
 		public void ShouldWriteHealthMeasure()
 		{
-			// Arrange
-			SubstitureWebApiPath(_WEB_API_PATH_VALUE);
-
-			SubstituteRelativityManagerSoap().GetRelativityUrlAsync().Throws(new Exception("the reason"));
-
 			IHealthMeasure healthMeasure = Substitute.For<IHealthMeasure>();
 			_apmClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, Arg.Any<Func<HealthCheckOperationResult>>()).Returns(healthMeasure);
 
@@ -136,30 +48,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
 			// Assert
 			healthMeasure.Received().Write();
-		}
-
-		private RelativityManagerSoap SubstituteRelativityManagerSoap()
-		{
-			RelativityManagerSoap relativityManagerSoap = Substitute.For<RelativityManagerSoap>();
-
-			IRelativityManagerSoapFactory relativityManagerSoapFactory = Substitute.For<IRelativityManagerSoapFactory>();
-			relativityManagerSoapFactory.Create(Arg.Any<string>()).Returns(relativityManagerSoap);
-
-			_container.Resolve<IRelativityManagerSoapFactory>().Returns(relativityManagerSoapFactory);
-			return relativityManagerSoap;
-		}
-
-		private void SubstitureWebApiPath(string webApiPath)
-		{
-			IInstanceSettingRepository instanceSettingRepository = Substitute.For<IInstanceSettingRepository>();
-
-			instanceSettingRepository.GetConfigurationValue(kCura.IntegrationPoints.Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION,
-				kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH).Returns(webApiPath);
-
-			IRepositoryFactory repositoryFactory = Substitute.For<IRepositoryFactory>();
-			repositoryFactory.GetInstanceSettingRepository().Returns(instanceSettingRepository);
-
-			_container.Resolve<IRepositoryFactory>().Returns(repositoryFactory);
 		}
 	}
 }
