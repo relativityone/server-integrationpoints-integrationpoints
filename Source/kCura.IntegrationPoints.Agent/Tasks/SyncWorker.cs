@@ -140,27 +140,43 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
-			int processedItemCount = JobHistory.ItemsTransferred ?? 0 + JobHistory.ItemsWithErrors ?? 0;
-			
-			if ((JobStopManager?.ShouldDrainStop ?? false) && processedItemCount < (JobHistory.TotalItems ?? int.MaxValue))
-			{
-				job.JobDetails = SkipProcessedItems(job.JobDetails, processedItemCount);
-				JobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
-				JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
+			int processedItemCount = GetProcessedItemsCount(JobHistory);
 
-				job.StopState = StopState.DrainStopped;
-				JobService.UpdateStopState(new List<long>{job.JobId}, job.StopState);
-				JobService.UpdateJobDetails(job);
+			if ((JobStopManager?.ShouldDrainStop ?? false) && ShouldItemsBeSkipped(processedItemCount, JobHistory))
+			{
+				MarkJobAsDrainStopped(job, processedItemCount);
 			}
 
 			LogExecuteImportSuccesfulEnd(job);
 		}
 
+		private void MarkJobAsDrainStopped(Job job, int processedItemCount)
+		{
+			job.JobDetails = SkipProcessedItems(job.JobDetails, processedItemCount);
+			JobHistory.JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistorySuspendedGuid});
+			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
+
+			job.StopState = StopState.DrainStopped;
+			JobService.UpdateStopState(new List<long> {job.JobId}, job.StopState);
+			JobService.UpdateJobDetails(job);
+		}
+
+		private static bool ShouldItemsBeSkipped(int processedItemCount, JobHistory jobHistory)
+		{
+			// if all of the items were processed there is no need to drain stop
+			return processedItemCount < (jobHistory.TotalItems ?? int.MaxValue);
+		}
+
+		private static int GetProcessedItemsCount(JobHistory jobHistory)
+		{
+			return jobHistory.ItemsTransferred ?? 0 + jobHistory.ItemsWithErrors ?? 0;
+		}
+
 		private string SkipProcessedItems(string jobDetails, int processedItemCount)
 		{
 			TaskParameters parameters = Serializer.Deserialize < TaskParameters>(jobDetails);
+			List<string> list = Serializer.Deserialize<List<string>>(parameters.BatchParameters.ToString());
 
-			List<string> list = (parameters.BatchParameters as JArray).ToObject<List<string>>();
 			parameters.BatchParameters = list.Skip(processedItemCount);
 			
 			return Serializer.Serialize(parameters);
