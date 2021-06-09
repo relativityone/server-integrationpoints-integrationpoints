@@ -625,7 +625,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			try
 			{
 				WorkspaceRef workspaceRef = null;
-				Dictionary<int, string> workspaces = GetImportApiFacade(settings).GetWorkspaces();
+				Dictionary<int, string> workspaces = GetImportApiFacade(settings).GetWorkspaceNames();
 				if (workspaces.ContainsKey(settings.CaseArtifactId))
 				{
 					

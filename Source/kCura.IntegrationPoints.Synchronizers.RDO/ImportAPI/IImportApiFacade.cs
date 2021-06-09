@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	{
 		HashSet<int> GetMappableArtifactIdsWithNotIdentifierFieldCategory(int workspaceArtifactID, int artifactTypeID);
 		Dictionary<int, string> GetWorkspaceFieldsNames(int workspaceArtifactId, int artifactTypeId);
-		Dictionary<int, string> GetWorkspaces();
+		Dictionary<int, string> GetWorkspaceNames();
 	}
 }
