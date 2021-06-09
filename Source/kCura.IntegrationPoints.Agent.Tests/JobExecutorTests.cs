@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Interfaces;
-using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
@@ -29,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			_subjectUnderTest = new JobExecutor(taskProvider, agentNotifier, _logger);
 		}
-
+		
 		[Test]
 		public void ItShouldPushJobIdToLogContext()
 		{

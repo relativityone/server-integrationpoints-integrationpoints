@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				LogExecuteStart(job);
-				InitializeService(job);
+				InitializeService(job, supportsDrainStop: false);
 				JobStopManager.ThrowIfStopRequested();
 
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;

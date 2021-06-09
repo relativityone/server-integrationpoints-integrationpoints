@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogExecuteStart(job);
 
-				InitializeService(job);
+				InitializeService(job, supportsDrainStop: true);
 
 				JobStopManager.ThrowIfStopRequested();
 
@@ -126,6 +126,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings), JobStopManager);
 					}
 				}
+
+				MarkJobAsDrainStoppedIfNeeded(job);
+				
 				LogExecuteSuccesfulEnd(job);
 			}
 			catch (OperationCanceledException e)
@@ -156,6 +159,57 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			base.RunValidation(job);
 
 			ValidateLoadFile(job);
+		}
+
+		private void MarkJobAsDrainStoppedIfNeeded(Job job)
+		{
+			Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
+			JobHistory = JobHistoryService.GetRdo(batchInstance);
+			int processedItemsCount = GetProcessedItemsCount(JobHistory);
+			
+			if (IsDrainStopped() && AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
+			{
+				MarkJobAsDrainStopped(job, processedItemsCount);
+			}
+		}
+
+		private void MarkJobAsDrainStopped(Job job, int processedItemsCount)
+		{
+			TaskParameters updatedTaskParameters = UpdateJobDetails(job, processedItemsCount);
+			job.JobDetails = Serializer.Serialize(updatedTaskParameters);
+			JobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
+			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
+
+			job.StopState = StopState.DrainStopped;
+			JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
+			JobService.UpdateJobDetails(job);
+		}
+
+		private TaskParameters UpdateJobDetails(Job job, int processedItemCount)
+		{
+			TaskParameters taskParameters = GetTaskParameters(job);
+
+			LoadFileTaskParameters loadFileTaskParameters = GetLoadFileTaskParameters(taskParameters);
+			loadFileTaskParameters.ProcessedItemsCount = processedItemCount;
+
+			taskParameters.BatchParameters = loadFileTaskParameters;
+
+			return taskParameters;
+		}
+
+		private bool IsDrainStopped()
+		{
+			return JobStopManager?.ShouldDrainStop == true;
+		}
+
+		private static int GetProcessedItemsCount(JobHistory jobHistory)
+		{
+			return jobHistory.ItemsTransferred ?? 0 + jobHistory.ItemsWithErrors ?? 0;
+		}
+
+		private static bool AnyItemsLeftToBeProcessed(int processedItemCount, JobHistory jobHistory)
+		{
+			return processedItemCount < (jobHistory.TotalItems ?? int.MaxValue);
 		}
 
 		private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
@@ -248,11 +302,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			//Opticon files have no column header row
 			if (importSettings.ImageImport)
 			{
-				importSettings.StartRecordNumber = Int32.Parse(providerSettings.LineNumber);
+				importSettings.StartRecordNumber = int.Parse(providerSettings.LineNumber);
 			}
 			else
 			{
-				importSettings.StartRecordNumber = Int32.Parse(providerSettings.LineNumber) + 1;
+				importSettings.StartRecordNumber = int.Parse(providerSettings.LineNumber) + 1;
 			}
 
 			importSettings.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
@@ -296,8 +350,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ValidateLoadFile(Job job)
 		{
-			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+			LoadFileTaskParameters storedLoadFileParameters = GetLoadFileTaskParameters(GetTaskParameters(job));
+			LoadFileInfo currentLoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
 
+			if(currentLoadFile.Size != storedLoadFileParameters.Size || currentLoadFile.LastModifiedDate != storedLoadFileParameters.LastModifiedDate)
+			{
+				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
+				throw new IntegrationPointValidationException(result);
+			}
+		}
+
+		private TaskParameters GetTaskParameters(Job job)
+		{
+			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+			return parameters;
+		}
+
+		private LoadFileTaskParameters GetLoadFileTaskParameters(TaskParameters parameters)
+		{
 			LoadFileTaskParameters loadFileParameters;
 			if (parameters.BatchParameters is JObject)
 			{
@@ -308,13 +378,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				loadFileParameters = (LoadFileTaskParameters)parameters.BatchParameters;
 			}
 
-			LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
-
-			if(loadFile.Size != loadFileParameters.Size || loadFile.LastModifiedDate != loadFileParameters.LastModifiedDate)
-			{
-				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
-				throw new IntegrationPointValidationException(result);
-			}
+			return loadFileParameters;
 		}
 
 		#region Logging
