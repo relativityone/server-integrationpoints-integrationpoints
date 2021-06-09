@@ -42,7 +42,7 @@
   </ItemGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
-    <PackageReference Include="Relativity.API" Version="[15.1.0]" />
+    <PackageReference Include="Relativity.API" Version="[17.1.0]" />
     <PackageReference Include="Relativity.Kepler.Client" Version="[2.14.3,3.0)" />
     <PackageReference Include="Relativity.OAuth2Client" Version="[1.0.27,1.5.2]" />
     <PackageReference Include="Relativity.Telemetry.APM" Version="[2019.1.1,2019.2.0)" />
