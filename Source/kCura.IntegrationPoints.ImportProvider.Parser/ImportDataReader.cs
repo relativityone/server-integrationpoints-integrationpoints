@@ -47,7 +47,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 							sourceOrdinal,
 							curColIdx++);
 					}
-				} else if(cur.FieldMapType == FieldMapTypeEnum.NativeFilePath)
+				}
+				else if (cur.FieldMapType == FieldMapTypeEnum.NativeFilePath)
 				{
 					//Add special native file path column
 					AddColumn(
@@ -116,9 +117,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				return false;
 			}
-			
+
 			return _sourceDataReader.Read();
-			
+
 		}
 		public override string GetDataTypeName(int i)
 		{
