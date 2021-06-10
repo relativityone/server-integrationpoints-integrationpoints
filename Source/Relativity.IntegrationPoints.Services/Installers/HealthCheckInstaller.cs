@@ -25,8 +25,6 @@ namespace Relativity.IntegrationPoints.Services.Installers
 		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
 
 		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
-		{
-			container.Register(Component.For<IRelativityManagerSoapFactory>().ImplementedBy<RelativityManagerSoapFactory>().LifestyleTransient());
-		}
+		{ }
 	}
 }

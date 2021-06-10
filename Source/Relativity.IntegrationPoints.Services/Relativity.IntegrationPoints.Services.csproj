@@ -46,26 +46,17 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Connected Services\RelativityWebApi\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="Converters\InstallProviderDtoExtensions.cs" />
     <Compile Include="DocumentManager.cs" />
     <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="Extensions\IntegrationPointModelExtensions.cs" />
-    <Compile Include="HealthChecks\SuccessHealthCheck.cs" />
     <Compile Include="Helpers\BackwardCompatibility.cs" />
     <Compile Include="Helpers\IBackwardCompatibility.cs" />
     <Compile Include="Helpers\IIntegrationPointRuntimeServiceFactory.cs" />
     <Compile Include="Helpers\IntegrationPointRuntimeServiceFactory.cs" />
     <Compile Include="Helpers\IPermissionRepositoryFactory.cs" />
-    <Compile Include="Helpers\IRelativityManagerSoapFactory.cs" />
     <Compile Include="Helpers\PermissionModel.cs" />
     <Compile Include="Helpers\PermissionRepositoryFactory.cs" />
-    <Compile Include="Helpers\RelativityManagerSoapFactory.cs" />
-    <Compile Include="HealthChecks\IHealthCheck.cs" />
     <Compile Include="Installers\Authentication\AuthTokenRegistration.cs" />
     <Compile Include="Installers\Context\WorkspaceContextRegistration.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
@@ -77,7 +68,6 @@
     <Compile Include="Installers\JobHistoryManagerInstaller.cs" />
     <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />
     <Compile Include="Installers\ProviderManagerInstaller.cs" />
-    <Compile Include="HealthChecks\InstanceSettingHealthCheck.cs" />
     <Compile Include="IntegrationPointHealthCheckManager.cs" />
     <Compile Include="IntegrationPointManager.cs" />
     <Compile Include="IntegrationPointProfileManager.cs" />
@@ -96,7 +86,6 @@
     <Compile Include="Models\RelativityProviderDestinationConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\RelativityProviderSourceConfigurationBackwardCompatibility.cs" />
     <Compile Include="Models\TotalItemsCountSearchDto.cs" />
-    <Compile Include="HealthChecks\RelativityManagerSoapHealthCheck.cs" />
     <Compile Include="Repositories\IIntegrationPointProfileRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\DocumentRepository.cs" />
@@ -144,7 +133,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Connected Services\RelativityWebApi\RelativityManager.wsdl" />
     <None Include="paket.references" />
     <None Include="Properties\DataSources\System.Data.DataSet.datasource" />
   </ItemGroup>
@@ -159,24 +147,6 @@
   <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Connected Services\RelativityWebApi\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\RelativityWebApi\RelativityManager.disco" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\RelativityWebApi\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\RelativityWebApi\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\RelativityWebApi\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

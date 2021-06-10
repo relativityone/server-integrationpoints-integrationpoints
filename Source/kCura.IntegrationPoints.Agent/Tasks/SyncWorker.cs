@@ -142,12 +142,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int processedItemCount = GetProcessedItemsCount(JobHistory);
 
-			if ((JobStopManager?.ShouldDrainStop ?? false) && ShouldItemsBeSkipped(processedItemCount, JobHistory))
+			if (ShouldDrainStop(processedItemCount))
 			{
 				MarkJobAsDrainStopped(job, processedItemCount);
 			}
 
 			LogExecuteImportSuccesfulEnd(job);
+		}
+
+		private bool ShouldDrainStop(int processedItemCount)
+		{
+			bool notAllItemsProcessed = processedItemCount < (JobHistory.TotalItems ?? long.MaxValue);
+			bool shouldDrainStop = JobStopManager?.ShouldDrainStop == true;
+
+			return shouldDrainStop && notAllItemsProcessed;
 		}
 
 		private void MarkJobAsDrainStopped(Job job, int processedItemCount)
@@ -161,20 +169,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobService.UpdateJobDetails(job);
 		}
 
-		private static bool ShouldItemsBeSkipped(int processedItemCount, JobHistory jobHistory)
-		{
-			// if all of the items were processed there is no need to drain stop
-			return processedItemCount < (jobHistory.TotalItems ?? int.MaxValue);
-		}
-
 		private static int GetProcessedItemsCount(JobHistory jobHistory)
 		{
-			return jobHistory.ItemsTransferred ?? 0 + jobHistory.ItemsWithErrors ?? 0;
+			return (jobHistory.ItemsTransferred ?? 0) + (jobHistory.ItemsWithErrors ?? 0);
 		}
 
 		private string SkipProcessedItems(string jobDetails, int processedItemCount)
 		{
-			TaskParameters parameters = Serializer.Deserialize < TaskParameters>(jobDetails);
+			TaskParameters parameters = Serializer.Deserialize <TaskParameters>(jobDetails);
 			List<string> list = Serializer.Deserialize<List<string>>(parameters.BatchParameters.ToString());
 
 			parameters.BatchParameters = list.Skip(processedItemCount);

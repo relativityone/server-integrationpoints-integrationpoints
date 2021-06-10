@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub : KeplerStubBase<IObjectManager>
     {
-        public void SetupCreateRequests()
+        public void Setup()
        {
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()))
                 .Returns((int workspaceId, CreateRequest request) =>
@@ -54,8 +54,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
                             if (foundRdo != null)
                             {
-                                foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
-                                    GetRelativityObject(request, foundRdo));
+	                            RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
+
+	                            if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
+	                            {
+                                    foundRdo.LoadRelativityObjectByGuid(foundRdo.GetType(), relativityObject);
+								}
+	                            else
+	                            {
+		                            foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
+			                            relativityObject);
+                                }
                             }
 
                             return Task.FromResult(new UpdateResult()
