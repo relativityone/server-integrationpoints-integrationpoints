@@ -38,7 +38,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			WorkspaceManager.SetupWorkspaceMock();
 			InstanceSettingManager.SetupInstanceSetting();
 			GroupManager.SetupGroupManager();
-			ObjectManager.SetupCreateRequests();
+			ObjectManager.Setup();
 		}
 	}
 }

@@ -46,5 +46,7 @@ namespace kCura.ScheduleQueue.Core
 		/// <param name="integrationPointId">An artifact id of integration point object.</param>
 		/// <returns>A list of job DTOs</returns>
 		IList<Job> GetJobs(long integrationPointId);
+
+		void UpdateJobDetails(Job job);
 	}
 }

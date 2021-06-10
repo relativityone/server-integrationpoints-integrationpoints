@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -34,6 +33,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using kCura.IntegrationPoints.Core.Contracts.Import;
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance.Execute(_job);
 
 			// ASSERT
-			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>());
+			_synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
 		}
 
 		[Test]

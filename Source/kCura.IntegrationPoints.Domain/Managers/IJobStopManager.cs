@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core.Managers
+namespace kCura.IntegrationPoints.Domain.Managers
 {
 	public interface IJobStopManager : IDisposable
 	{

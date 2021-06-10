@@ -24,6 +24,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			_importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(new ImportSettings { WebServiceURL = config.WebApiPath }));
 			_logger = logger.ForContext<ImportApiFacade>();
 		}
+		
+		public ImportApiFacade(IImportApiFactory importApiFactory, ImportSettings importSettings, IAPILog logger)
+		{
+			_importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(importSettings));
+			_logger = logger.ForContext<ImportApiFacade>();
+		}
 
 		public HashSet<int> GetMappableArtifactIdsWithNotIdentifierFieldCategory(int workspaceArtifactID, int artifactTypeID)
 		{
@@ -31,6 +37,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				.Where(y => y.FieldCategory != FieldCategoryEnum.Identifier)
 				.Select(x => x.ArtifactID);
 			return new HashSet<int>(fields);
+		}
+
+		public Dictionary<int, string> GetWorkspaceFieldsNames(int workspaceArtifactId, int artifactTypeId)
+		{
+			return GetWorkspaceFields(workspaceArtifactId, artifactTypeId)
+				.ToDictionary(x => x.ArtifactID, x => x.Name);
+		}
+
+		public Dictionary<int, string> GetWorkspaceNames()
+		{
+			return _importApi.Value.Workspaces().ToDictionary(x => x.ArtifactID, x => x.Name);
 		}
 
 		private IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)

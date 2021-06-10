@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;

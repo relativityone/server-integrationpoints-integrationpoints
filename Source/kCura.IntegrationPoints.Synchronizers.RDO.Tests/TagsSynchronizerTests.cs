@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using Newtonsoft.Json;
@@ -47,10 +47,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			// ACT
-			_instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings));
+			_instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings), null);
 
 			// ASSERT
-			_dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)));
+			_dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
 		}
 
 		[Test]
@@ -66,10 +66,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			};
 
 			// ACT
-			_instance.SyncData(_records, _fieldMap, JsonConvert.SerializeObject(importSettings));
+			_instance.SyncData(_records, _fieldMap, JsonConvert.SerializeObject(importSettings), (IJobStopManager)null);
 
 			// ASSERT
-			_dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<string>(x => AssertOptions(x)));
+			_dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
 		}
 
 		[Test]

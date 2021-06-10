@@ -20,10 +20,12 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -34,7 +36,9 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
@@ -213,11 +217,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>().IsDefault());
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
+			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
+			
+			// IAPI
+			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleSingleton().IsDefault());
+			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>().IsDefault());
+			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI.IImportApiFacade>().ImplementedBy<FakeImportApiFacade>().IsDefault());
 		}
 
 		private void RegisterRipAgentTasks()
 		{
 			Container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
+			Container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifestyleTransient());
 			Container.Register(Component.For<ImportServiceManager>().ImplementedBy<ImportServiceManager>().LifestyleTransient());
 		}
 

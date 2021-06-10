@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider,
 			IJobManager jobManager,
 			IEnumerable<IBatchStatus> statuses,
-			JobStatisticsService statisticsService,
+			IJobStatisticsService statisticsService,
 			ExportProcessRunner exportProcessRunner,
 			IManagerFactory managerFactory,
 			IJobService jobService,

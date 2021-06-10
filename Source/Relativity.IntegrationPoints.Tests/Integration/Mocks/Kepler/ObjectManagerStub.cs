@@ -14,8 +14,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub : KeplerStubBase<IObjectManager>
     {
-        public void SetupCreateRequests()
-        {
+        public void Setup()
+       {
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()))
                 .Returns((int workspaceId, CreateRequest request) =>
                 {
@@ -45,10 +45,38 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 });
 
             Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
-                .ReturnsAsync(
-                    new UpdateResult()
+                .Returns((int workspaceId, UpdateRequest request) =>
                     {
-                        EventHandlerStatuses = new List<EventHandlerStatus>()
+                        try
+                        {
+                            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                            RdoTestBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
+
+                            if (foundRdo != null)
+                            {
+	                            RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
+
+	                            if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
+	                            {
+                                    foundRdo.LoadRelativityObjectByGuid(foundRdo.GetType(), relativityObject);
+								}
+	                            else
+	                            {
+		                            foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
+			                            relativityObject);
+                                }
+                            }
+
+                            return Task.FromResult(new UpdateResult()
+                            {
+                                EventHandlerStatuses = new List<EventHandlerStatus>()
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            Debugger.Break();
+                            return null;
+                        }
                     }
                 );
 
@@ -251,6 +279,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     Value = x.Value
                 }).ToList(),
                 ParentObject = request.ParentObject
+            };
+        }
+        
+        private RelativityObject GetRelativityObject(UpdateRequest request, RdoTestBase rdo)
+        {
+            return new RelativityObject()
+            {
+                ArtifactID = rdo.ArtifactId,
+                FieldValues = request.FieldValues.Select(x => new FieldValuePair
+                {
+                    Field = new Field
+                    {
+                        Name = x.Field.Name,
+                        Guids = x.Field.Guid.HasValue ? new List<Guid>{x.Field.Guid.Value} : new List<Guid>()
+                    },
+                    Value = x.Value
+                }).ToList(),
+                ParentObject = new RelativityObjectRef {ArtifactID = rdo.ParenObjectArtifactId}
             };
         }
 

@@ -33,6 +33,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 

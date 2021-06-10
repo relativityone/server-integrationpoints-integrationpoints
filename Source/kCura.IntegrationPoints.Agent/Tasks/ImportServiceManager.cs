@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IScheduleRuleFactory scheduleRuleFactory,
 			IJobHistoryService jobHistoryService,
 			IJobHistoryErrorService jobHistoryErrorService,
-			JobStatisticsService statisticsService,
+			IJobStatisticsService statisticsService,
 			IDataReaderFactory dataReaderFactory,
 			IImportFileLocationService importFileLocationService,
 			IAgentValidator agentValidator,
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields))
 					{
-						synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings));
+						synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings), JobStopManager);
 					}
 				}
 				LogExecuteSuccesfulEnd(job);

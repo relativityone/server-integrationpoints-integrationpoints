@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected List<IBatchStatus> BatchStatus { get; }
 		protected ICaseServiceContext CaseServiceContext { get; }
 		protected IIntegrationPointRepository IntegrationPointRepository { get; }
-		protected JobStatisticsService StatisticsService { get; }
+		protected IJobStatisticsService StatisticsService { get; }
 		protected ISynchronizerFactory SynchronizerFactory { get; }
 		protected IJobStopManager JobStopManager { get; set; }
 		protected SourceConfiguration SourceConfiguration { get; set; }
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
 			ICaseServiceContext caseServiceContext,
-			JobStatisticsService statisticsService,
+			IJobStatisticsService statisticsService,
 			ISynchronizerFactory synchronizerFactory,
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository)

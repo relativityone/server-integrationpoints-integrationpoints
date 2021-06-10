@@ -382,7 +382,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///FROM 
         ///				[eddsdbo].[{0}] WITH (UPDLOCK, ROWLOCK)
         ///WHERE
-        ///				[LockedByAgentID] = @AgentID.
+        ///				[JobID] = @JobID.
         /// </summary>
         internal static string UnlockJob {
             get {
@@ -403,6 +403,20 @@ namespace kCura.ScheduleQueue.Core.Properties {
         internal static string UnlockScheduledJob {
             get {
                 return ResourceManager.GetString("UnlockScheduledJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE 
+        ///				[eddsdbo].[{0}]
+        ///SET
+        ///				[JobDetails] = @JobDetails
+        ///WHERE
+        ///				[JobId] = @JobId.
+        /// </summary>
+        internal static string UpdateJobDetails {
+            get {
+                return ResourceManager.GetString("UpdateJobDetails", resourceCulture);
             }
         }
         

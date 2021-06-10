@@ -121,6 +121,7 @@
     <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizer.cs" />
     <Compile Include="Services\Exporter\Sanitization\UserFieldSanitizer.cs" />
     <Compile Include="Services\ISecretStoreMigrationService.cs" />
+    <Compile Include="Services\JobHistory\IJobStatisticsService.cs" />
     <Compile Include="Services\Keywords\IEmailFormatter.cs" />
     <Compile Include="Services\SecretStoreMigrationService.cs" />
     <Compile Include="Services\SourceTypes\SourceType.cs" />
@@ -240,7 +241,6 @@
     <Compile Include="Managers\IProductionManager.cs" />
     <Compile Include="Managers\Implementations\AuditManager.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
-    <Compile Include="Managers\IJobStopManager.cs" />
     <Compile Include="Managers\IErrorManager.cs" />
     <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />

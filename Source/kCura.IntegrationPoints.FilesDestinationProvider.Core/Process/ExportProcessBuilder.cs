@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IWebApiLoginService _credentialProvider;
 		private readonly IExtendedExporterFactory _extendedExporterFactory;
 		private readonly IExportFileBuilder _exportFileBuilder;
-		private readonly JobStatisticsService _jobStatisticsService;
+		private readonly IJobStatisticsService _jobStatisticsService;
 		private readonly IJobInfoFactory _jobHistoryFactory;
 		private readonly IDirectory _directory;
 		private readonly IAPILog _logger;
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IExtendedExporterFactory extendedExporterFactory,
 			IExportFileBuilder exportFileBuilder, 
 			IHelper helper, 
-			JobStatisticsService jobStatisticsService,
+			IJobStatisticsService jobStatisticsService,
 			IJobInfoFactory jobHistoryFactory,
 			IDirectory directoryWrap,
 			IExportServiceFactory exportServiceFactory,

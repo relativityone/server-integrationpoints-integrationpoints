@@ -82,6 +82,7 @@
     <Compile Include="Data\Queries\DeleteJob.cs" />
     <Compile Include="Data\Queries\GetJob.cs" />
     <Compile Include="Data\Queries\CreateNewAndDeleteOldScheduledJob.cs" />
+    <Compile Include="Data\Queries\UpdateJobDetails.cs" />
     <Compile Include="Data\Queries\UpdateScheduledJob.cs" />
     <Compile Include="Data\Queries\GetAgentTypeInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />
@@ -136,6 +137,7 @@
     <Content Include="Data\Resources\GetJobByID.sql" />
     <Content Include="Data\Resources\CreateScheduledJob.sql" />
     <Content Include="Data\Resources\UnlockJob.sql" />
+    <Content Include="Data\Resources\UpdateJobDetails.sql" />
     <Content Include="Data\Resources\UpdateStopState.sql" />
     <Content Include="Data\Resources\UpdateScheduledJob.sql" />
     <Content Include="Data\Resources\GetAgentTypeInformation.sql" />

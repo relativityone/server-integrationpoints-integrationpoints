@@ -14,7 +14,7 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
-	public class JobStatisticsService
+	public class JobStatisticsService : IJobStatisticsService
 	{
 		private Job _job;
 		private int _rowErrors;
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
 		private readonly IWorkspaceDBContext _context;
 		private readonly TaskParameterHelper _helper;
-		private readonly JobStatisticsQuery _query;
+		private readonly IJobStatisticsQuery _query;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IAPILog _logger;
 
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
 		private ImportSettings IntegrationPointImportSettings { get; set; }
 
-		public JobStatisticsService(JobStatisticsQuery query,
+		public JobStatisticsService(IJobStatisticsQuery query,
 			TaskParameterHelper taskParameterHelper,
 			IJobHistoryService jobHistoryService,
 			IWorkspaceDBContext context,

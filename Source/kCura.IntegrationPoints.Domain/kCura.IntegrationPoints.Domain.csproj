@@ -87,6 +87,7 @@
     <Compile Include="Logging\WebCorrelationContext.cs" />
     <Compile Include="Managers\IFederatedInstanceManager.cs" />
     <Compile Include="Managers\IInstanceSettingsManager.cs" />
+    <Compile Include="Managers\IJobStopManager.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\BaseDTO.cs" />

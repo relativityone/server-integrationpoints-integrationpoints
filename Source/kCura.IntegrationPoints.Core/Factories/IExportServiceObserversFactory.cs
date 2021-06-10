@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
