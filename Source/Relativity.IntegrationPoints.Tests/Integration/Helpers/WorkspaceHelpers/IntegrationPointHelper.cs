@@ -171,6 +171,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				UseDynamicFolderPath = false,
 				DestinationFolderArtifactId = destinationFolder.ArtifactId,
 				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+				WebServiceURL = "https://fake.uri"
 			};
 
 			integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);

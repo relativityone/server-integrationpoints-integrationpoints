@@ -50,8 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		protected SourceConfiguration SourceConfiguration { get; set; }
 		protected ImportSettings ImportSettings { get; set; }
 		protected Guid Identifier { get; set; }
-
-		public TaskResult Result { get; set; }
+		protected TaskResult Result { get; set; }
 
 		protected ServiceManagerBase(
 			IHelper helper,

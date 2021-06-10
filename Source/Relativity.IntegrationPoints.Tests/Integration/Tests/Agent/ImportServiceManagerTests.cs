@@ -6,14 +6,15 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using System;
+using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.ScheduleQueue.Core;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.LoadFile;
@@ -65,8 +66,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				.LifestyleTransient().Named(nameof(FakeLoginHelperFacade)).IsDefault());
 			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory())
 				.LifestyleTransient().Named(nameof(FakeWinEddsBasicLoadFileFactory)).IsDefault());
-			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory())
-				.LifestyleTransient().Named(nameof(FakeLoadFileArtifactReader)).IsDefault());
 		}
 
 		[IdentifiedTest("F08E46B0-CA04-4D37-9666-1CDEBFF48244")]
@@ -100,21 +99,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		{
 			// Arrange
 			const string loadFile = @"DataTransfer\Import\SaltPepper\saltvpepper-no_errors.dat";
-			const long size = 100;
+			const int numberOfRecords = 10;
+			const int drainStopAfterImporting = 3;
+			const long size = 1024;
 			DateTime modifiedDate = new DateTime(2020, 1, 1);
-			
+
+			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory(numberOfRecords))
+				.LifestyleTransient().Named(nameof(FakeWinEddsFileReaderFactory)).IsDefault());
 			_fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
 
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
 				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
 			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate);
-
+			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
 			ImportServiceManager sut = PrepareSut((importJob) =>
 			{
-				importJob.Complete(50);
+				importJob.Complete(drainStopAfterImporting);
 
 				agent.ToBeRemoved = true;
 			});
@@ -123,7 +126,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			sut.Execute(job.AsJob());
 
 			// Assert
-			sut.Result.Status.Should().Be(TaskStatusEnum.Success); // TODO .DrainStopped
+			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
+			jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
+			//job.StopState.Should().Be(StopState.DrainStopped);
 		}
 	}
 }

@@ -57,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 					SourceField =new FieldEntry
 					{
 						DisplayName = identifierFieldName,
-						FieldIdentifier = identifierFieldName,
+						FieldIdentifier = "0",
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,

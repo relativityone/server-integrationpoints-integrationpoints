@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.WinEDDS.Api;
 using Relativity.DataExchange.Io;
 
@@ -6,6 +7,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 {
 	public class FakeLoadFileArtifactReader : IArtifactReader
 	{
+		private readonly int _numberOfRecords;
+
+		public FakeLoadFileArtifactReader(int numberOfRecords)
+		{
+			_numberOfRecords = numberOfRecords;
+		}
+
 		public ArtifactFieldCollection ReadArtifact()
 		{
 			throw new NotImplementedException();
@@ -23,7 +31,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
 		public long? CountRecords()
 		{
-			throw new NotImplementedException();
+			return _numberOfRecords;
 		}
 
 		public string SourceIdentifierValue()
@@ -38,7 +46,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
 		public void Close()
 		{
-			throw new NotImplementedException();
 		}
 
 		public string ManageErrorRecords(string errorMessageFileLocation, string prePushErrorLineNumbersFileName)
