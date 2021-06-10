@@ -1,8 +1,10 @@
 Castle.Windsor
 CSharpGuidelineAnalyzer
+kCura
 kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
+Relativity.Toggles
 Relativity.OutsideIn
 Relativity.DataExchange.Client.SDK
 Relativity.Data

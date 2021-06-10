@@ -1,24 +1,25 @@
-﻿kCura
-kCura.Agent
-kCura.Apps.Common.Config
-Relativity
-Relativity.Toggles
-Relativity.API
-Relativity.Kepler.Client
-Relativity.Services.Interfaces
-Relativity.Services.Interfaces.Private
-Relativity.DataTransfer.MessageService
-Relativity.IntegrationPoints.Contracts
-Relativity.OutsideIn
+﻿group Tests
+	kCura
+	kCura.Agent
+	kCura.Apps.Common.Config
+	Relativity
+	Relativity.Toggles
+	Relativity.API
+	Relativity.Kepler.Client
+	Relativity.Services.Interfaces
+	Relativity.Services.Interfaces.Private
+	Relativity.DataTransfer.MessageService
+	Relativity.IntegrationPoints.Contracts
+	Relativity.OutsideIn
 
-Moq
-FluentAssertions
-Relativity.Testing.Identification
-System.Reactive
-Microsoft.AspNet.WebApi.Core
-Microsoft.Web.Infrastructure
+	Moq
+	FluentAssertions
+	Relativity.Testing.Identification
+	System.Reactive
+	Microsoft.AspNet.WebApi.Core
+	Microsoft.Web.Infrastructure
 
-group Tests
+	Newtonsoft.Json
 	NUnit
 	NUnit3TestAdapter
 	Relativity.Testing.Framework
@@ -27,3 +28,4 @@ group Tests
 	Relativity.Testing.Framework.RingSetup
 	IntegrationPoints.MyFirstProvider
 	Relativity.Sync
+	

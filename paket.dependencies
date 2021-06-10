@@ -5,18 +5,18 @@ source https://proget.kcura.corp/nuget/NuGet
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.0.5
-nuget Relativity.IntegrationPoints.Contracts 1.0.8
-nuget Relativity.IntegrationPoints.SDK 1.0.8
+nuget Relativity.IntegrationPoints.Contracts 1.0.8-pre.3
+nuget Relativity.IntegrationPoints.SDK 1.0.8-pre.3
 
 //Main Relativity packages
 nuget kCura 13.1.0
-nuget kCura.Agent ~> 14.0 
+nuget kCura.Agent ~> 17.1
 nuget kCura.EventHandler 15.1.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
 nuget Relativity.DataExchange.Client.SDK 1.14.3
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0.1
-nuget Relativity.API 15.1.0
+nuget Relativity.API 17.1
 nuget Relativity ~> 15.1
 
 //Relativity Services packages
@@ -49,6 +49,7 @@ nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchang
 nuget Relativity.OutsideIn 2021.3.1 content: none 			//Relativity.DataExchange.Client.SDK
 
 //Other packages
+nuget Newtonsoft.Json 6.0.8 redirects: force
 nuget AutoMapper 4.2.1
 nuget Castle.Windsor 3.3.0 // don't change this version - Agent Framework always loads version 3.3, no matter which version is in resource files
 nuget LanguageExt.Core 3.1.15
@@ -91,7 +92,23 @@ group Tests
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-	nuget Newtonsoft.Json 12.0.3
+	nuget kCura 13.1.0
+	nuget kCura.Agent ~> 17.1
+	nuget kCura.Apps.Common.Config 2.1.9
+	nuget Relativity.API 17.1
+	nuget Relativity ~> 15.1
+	nuget Relativity.Toggles 1.0.1
+	nuget Relativity.Services.Interfaces.Private 13.1.4
+	nuget Relativity.DataTransfer.MessageService ~> 10.2.0
+	nuget Relativity.IntegrationPoints.Contracts 1.0.8-pre.3
+	nuget Relativity.OutsideIn 2021.3.1 content: none 			//Relativity.DataExchange.Client.SDK
+	nuget FluentAssertions 4.19.4
+	nuget Moq 4.5.3
+	nuget Relativity.Testing.Identification 3.5.0
+	nuget System.Reactive 4.0.0
+	nuget Microsoft.AspNet.Web.Optimization 1.1.3 strategy: max
+	nuget Microsoft.AspNet.WebApi 5.2.3
+	nuget Newtonsoft.Json 12.0.3 redirects: force
 	nuget NUnit 3.11 redirects: force
 	nuget NUnit3TestAdapter 3.13
 	nuget Relativity.Kepler 2.14.3
@@ -104,13 +121,14 @@ group Tests
 	nuget Relativity.Testing.Framework.Web 1.0.0
 	nuget Relativity.Testing.Framework.RingSetup 0.7.0
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
-    nuget Relativity.Sync 0.8.0-pre.7
+	nuget Relativity.Sync 0.8.0-pre.11
 
 group Sync
 	framework: auto-detect
 	strategy: min
 	source https://proget.kcura.corp/nuget/NuGet
-    nuget Relativity.Sync 0.8.0-pre.7
+    nuget Relativity.Sync 0.8.0-pre.11
+	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
