@@ -210,12 +210,12 @@ namespace Relativity.Sync.KeplerFactory
 			AsyncFunction
 		}
 
-		private static bool HasInInnerExceptions<T>(Exception ex) where T: Exception
+		private static bool HasInInnerExceptions<T>(Exception ex) where T : Exception
 		{
 			Exception currentEx = ex;
 			while (currentEx.InnerException != null)
 			{
-				if (currentEx.InnerException is SocketException)
+				if (currentEx.InnerException is T)
 				{
 					return true;
 				}
