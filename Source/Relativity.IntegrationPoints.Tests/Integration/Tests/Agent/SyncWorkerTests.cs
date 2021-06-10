@@ -17,6 +17,7 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
@@ -188,6 +189,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		        agent.ToBeRemoved = true;
 	        });
 
+
 	        // Act
 	        var syncManagerJob = new Job(job.AsDataRow());
 	        sut.Execute(syncManagerJob);
@@ -196,7 +198,35 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	        job.StopState.Should().Be(StopState.DrainStopped);
 	        FakeRelativityInstance.JobsInQueue.Where(x => x.JobId != job.JobId).All(x => x.StopState == StopState.None).Should().BeTrue();
         }
-        
+
+        [IdentifiedTest("")]
+        public void SyncWorker_ShouldResumeDrainStoppedJob()
+        {
+	        // Arrange
+	        const int numberOfRecords = 100;
+
+	        string xmlPath = PrepareRecords(numberOfRecords);
+	        JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+	        FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
+
+            jobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
+            job.StopState = StopState.DrainStopped;
+
+            SyncWorker sut = PrepareSut((importJob) =>
+            {
+	            importJob.Complete(numberOfRecords);
+            });
+
+            // Act
+            var syncManagerJob = new Job(job.AsDataRow());
+	        sut.Execute(syncManagerJob);
+
+	        // Assert
+	        FakeRelativityInstance.JobsInQueue.Single(x => x.JobId != job.JobId).StopState.Should().Be(StopState.None);
+	        jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryCompletedGuid);
+	        jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
+        }
+
         private List<string> GetRemainingItems(JobTest job)
         {
             TaskParameters paramaters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
