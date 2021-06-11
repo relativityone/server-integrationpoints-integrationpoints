@@ -199,22 +199,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	        FakeRelativityInstance.JobsInQueue.Where(x => x.JobId != job.JobId).All(x => x.StopState == StopState.None).Should().BeTrue();
         }
 
-        [IdentifiedTest("")]
+        [IdentifiedTest("A36C3183-BC7D-422A-AF55-F57814897E83")]
         public void SyncWorker_ShouldResumeDrainStoppedJob()
         {
 	        // Arrange
 	        const int numberOfRecords = 100;
+	        const int numberOfErrors= 10;
+	        const int initialTransferredItems = 50;
+	        const int initialErroredItems = 50;
 
 	        string xmlPath = PrepareRecords(numberOfRecords);
 	        JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
 	        FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 
             jobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
+            jobHistory.ItemsTransferred = initialTransferredItems;
+            jobHistory.ItemsWithErrors = initialErroredItems;
+
+            jobHistory.TotalItems = numberOfErrors + numberOfRecords + initialErroredItems + initialTransferredItems;
+
             job.StopState = StopState.DrainStopped;
 
             SyncWorker sut = PrepareSut((importJob) =>
             {
-	            importJob.Complete(numberOfRecords);
+	            importJob.Complete(numberOfRecords, numberOfErrors);
             });
 
             // Act
@@ -223,8 +231,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 	        // Assert
 	        FakeRelativityInstance.JobsInQueue.Single(x => x.JobId != job.JobId).StopState.Should().Be(StopState.None);
-	        jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryCompletedGuid);
-	        jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
+	        jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
+	        jobHistory.ItemsTransferred.Should().Be(initialTransferredItems + numberOfRecords);
+	        jobHistory.ItemsWithErrors.Should().Be(initialErroredItems + numberOfErrors);
         }
 
         private List<string> GetRemainingItems(JobTest job)

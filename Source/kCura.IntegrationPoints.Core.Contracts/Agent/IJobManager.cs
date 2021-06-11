@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		void DeleteJob(long jobID);
 		Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);
 		void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T : class;
-		bool CheckBatchOnJobComplete(Job job, string batchId);
+		bool CheckBatchOnJobComplete(Job job, string batchId, bool isBatchFinished = true);
 
 		/// <summary>
 		/// Stops the scheduled queue jobs.

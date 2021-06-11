@@ -35,11 +35,11 @@ namespace kCura.IntegrationPoints.Core.Services
             _tracker.CreateTrackingEntry(jobTrackerTempTableName, job.JobId, job.WorkspaceID);
         }
 
-        public bool CheckEntries(Job job, string batchId)
+        public bool CheckEntries(Job job, string batchId, bool batchIsFinished)
         {
 	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
 
-            return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID) == 0;
+            return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID, batchIsFinished) == 0;
         }
     }
 }

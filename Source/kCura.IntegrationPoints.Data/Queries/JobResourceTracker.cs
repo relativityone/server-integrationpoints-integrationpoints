@@ -30,23 +30,32 @@ namespace kCura.IntegrationPoints.Data.Queries
 	        }
         }
 
-        public int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId)
+        public int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId, bool batchIsFinished)
         {
 	        lock (_syncRoot)
 	        {
 		        IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceId, string.Empty, string.Empty);
 
 		        string sql = string.Format(Resources.Resource.RemoveEntryAndCheckBatchStatus, scratchTableRepository.GetResourceDBPrepend(), scratchTableRepository.GetSchemalessResourceDataBasePrepend(), tableName);
-		        IList<SqlParameter> sqlParams = GetSqlParameters(jobId);
+		        IList<SqlParameter> sqlParams = GetSqlParametersForRemoveAndCheck(jobId, batchIsFinished);
 		        return _context.ExecuteSqlStatementAsScalar<int>(sql, sqlParams);
 	        }
         }
 
         private IList<SqlParameter> GetSqlParameters(long jobId)
         {
+	        return new List<SqlParameter>
+	        {
+		        new SqlParameter("@jobID", jobId)
+	        };
+        }
+
+        private IList<SqlParameter> GetSqlParametersForRemoveAndCheck(long jobId, bool batchIsFinished)
+        {
             return new List<SqlParameter>
             {
-                new SqlParameter("@jobID", jobId)
+                new SqlParameter("@jobID", jobId),
+                new SqlParameter("@batchIsFinished", batchIsFinished ? 1 : 0) 
             };
         }
     }

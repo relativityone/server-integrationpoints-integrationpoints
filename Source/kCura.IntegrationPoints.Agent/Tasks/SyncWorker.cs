@@ -270,7 +270,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogPostExecuteStart(job);
 				JobHistoryErrorService.CommitErrors();
 
-				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString());
+				// if there is no StopManager, batch should finish
+				bool isBatchFinished = (!JobStopManager?.ShouldDrainStop) ?? true;
+				
+				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString(), isBatchFinished);
 				if (isJobComplete)
 				{
 					OnJobComplete(job);

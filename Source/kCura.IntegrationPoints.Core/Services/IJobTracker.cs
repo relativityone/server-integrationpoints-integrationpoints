@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Core.Services
     {
         void CreateTrackingEntry(Job job, string batchId);
 
-        bool CheckEntries(Job job, string batchId);
+        bool CheckEntries(Job job, string batchId, bool batchIsFinished);
     }
 }

@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
-using NSubstitute;
+using Moq;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private string _goldFlowExpectedTempTableName;
         private string _goldFlowBatchId;
         private IJobResourceTracker _jobResourceTracker;
+        private Mock<IJobResourceTracker> _jobResourceTrackerMock;
 
         public override void FixtureSetUp()
         {
@@ -23,12 +24,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _goldFlowBatchId = "batchID";
             _goldFlowJob = GetJob(11, 22, 33);
             _goldFlowExpectedTempTableName = "RIP_JobTracker_22_33_batchID";
-            _jobResourceTracker = Substitute.For<IJobResourceTracker>();
-            _jobResourceTracker.RemoveEntryAndCheckStatus(Arg.Any<string>(), Arg.Any<long>(), Arg.Any<int>()).Returns(
-                x => string.Equals((string) x[0], _goldFlowExpectedTempTableName) && (long) x[1] == _goldFlowJob.JobId &&
-                     (int) x[2] == _goldFlowJob.WorkspaceID
-                    ? 0
-                    : 1);
+            _jobResourceTrackerMock = new Mock<IJobResourceTracker>();
+            _jobResourceTracker = _jobResourceTrackerMock.Object;
+            _jobResourceTrackerMock
+                .Setup(x => x.RemoveEntryAndCheckStatus(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<bool>()))
+                .Returns<string, long, int, bool>(
+                    (tableName, jobId, workspaceId, batchIsFinished) =>
+            {
+                if (string.Equals(tableName, _goldFlowExpectedTempTableName) && jobId == _goldFlowJob.JobId && workspaceId == _goldFlowJob.WorkspaceID)
+                {
+                    return batchIsFinished ? 0 : 1;
+                }
+
+                return 1;
+            });
         }
 
         [SetUp]
@@ -57,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
             jobTracker.CreateTrackingEntry(_goldFlowJob, _goldFlowBatchId);
 
-            _jobResourceTracker.ReceivedWithAnyArgs().CreateTrackingEntry(string.Empty, 0, 0);
+            _jobResourceTrackerMock.Verify(x => x.CreateTrackingEntry(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<int>()));
         }
 
         [Test]
@@ -73,9 +82,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             var jobTracker = new JobTracker(_jobResourceTracker);
 
-            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId);
+            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, true);
 
             Assert.IsTrue(checkResult);
+        }
+
+        [Test]
+        public void CheckEntries_ExistingJob_False_BatchNotFinished()
+        {
+	        var jobTracker = new JobTracker(_jobResourceTracker);
+
+	        bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, false);
+
+	        Assert.IsFalse(checkResult);
         }
 
         [Test]
@@ -84,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Job nonExistingJob = GetJob(1, 1, 1);
             var jobTracker = new JobTracker(_jobResourceTracker);
 
-            bool checkResult = jobTracker.CheckEntries(nonExistingJob, _goldFlowBatchId);
+            bool checkResult = jobTracker.CheckEntries(nonExistingJob, _goldFlowBatchId, true);
 
             Assert.IsFalse(checkResult);
         }
@@ -94,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             var jobTracker = new JobTracker(_jobResourceTracker);
 
-            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, "wrong batch id");
+            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, "wrong batch id", true);
 
             Assert.IsFalse(checkResult);
         }

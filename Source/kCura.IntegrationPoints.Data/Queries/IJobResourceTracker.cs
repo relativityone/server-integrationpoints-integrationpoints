@@ -4,6 +4,6 @@
     {
         void CreateTrackingEntry(string tableName, long jobId, int workspaceId);
 
-        int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId);
+        int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId, bool batchIsFinished);
     }
 }

@@ -1,8 +1,8 @@
 ﻿UPDATE {0}.[{1}]
 	SET
-		[TotalRecords] = @total,
-		[ErrorRecords] = @errored,
-		[ImportApiErrors] = @importApiErrors
+		[TotalRecords] += @total,
+		[ErrorRecords] += @errored,
+		[ImportApiErrors] += @importApiErrors
 	WHERE
 		[JobId] = @jobID
 

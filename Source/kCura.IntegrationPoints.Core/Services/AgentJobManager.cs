@@ -64,9 +64,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			_tracker.CreateTrackingEntry(job, batchId);
 		}
 
-		public bool CheckBatchOnJobComplete(Job job, string batchId)
+		public bool CheckBatchOnJobComplete(Job job, string batchId, bool isBatchFinished = true)
 		{
-			return _tracker.CheckEntries(job, batchId);
+			return _tracker.CheckEntries(job, batchId, isBatchFinished);
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class
