@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal sealed class JobResumeMetric : MetricBase<JobStartMetric>
+	internal sealed class JobResumeMetric : MetricBase<JobResumeMetric>
 	{
 		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_RESUME_TYPE)]
 		public string Type { get; set; }
