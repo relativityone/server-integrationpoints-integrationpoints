@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using Castle.DynamicProxy;
 using Castle.DynamicProxy.Internal;
 using FluentAssertions;
@@ -459,6 +460,7 @@ namespace Relativity.Sync.Tests.Unit
 			yield return new TemporarilyUnavailableException();
 			yield return new ServiceException("Failed to determine route");
 			yield return new TimeoutException();
+			yield return new Exception("Socket exception", new SocketException());
 		}
 
 		private static string GetMetricName(string methodName)

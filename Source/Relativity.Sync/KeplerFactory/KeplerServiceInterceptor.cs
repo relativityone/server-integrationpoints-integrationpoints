@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Net.Sockets;
 using Polly;
 using Polly.Wrap;
 using Polly.Retry;
@@ -94,6 +95,7 @@ namespace Relativity.Sync.KeplerFactory
 					.Or<TemporarilyUnavailableException>()                                          // Thrown when the service is temporarily unavailable.
 					.Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route"))   // Thrown when there are bad routing entries.
 					.Or<TimeoutException>()                                                         // Thrown when there is an infrastructure level timeout.
+					.Or<Exception>(HasInInnerExceptions<Exception>)									// Thrown when there is an issue on networking layer
 					.WaitAndRetryAsync(_MAX_NUMBER_OF_HTTP_RETRIES, retryAttempt =>
 				{
 					const int maxJitterMs = 100;
@@ -206,6 +208,22 @@ namespace Relativity.Sync.KeplerFactory
 			Synchronous,
 			AsyncAction,
 			AsyncFunction
+		}
+
+		private static bool HasInInnerExceptions<T>(Exception ex) where T : Exception
+		{
+			Exception currentEx = ex;
+			while (currentEx.InnerException != null)
+			{
+				if (currentEx.InnerException is T)
+				{
+					return true;
+				}
+
+				currentEx = currentEx.InnerException;
+			}
+
+			return false;
 		}
 
 		private void LogIfExecutionSuccessfullyRetried(string invocationKepler, ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
