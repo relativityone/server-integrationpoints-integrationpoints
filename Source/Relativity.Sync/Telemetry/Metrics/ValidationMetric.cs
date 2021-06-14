@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class ValidationMetric : MetricBase<ValidationMetric>
+	internal sealed class ValidationMetric : MetricBase<ValidationMetric>
 	{
 		public ExecutionStatus? ExecutionStatus { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class KeplerMetric : MetricBase<KeplerMetric>
+	internal sealed class KeplerMetric : MetricBase<KeplerMetric>
 	{
 		public ExecutionStatus? ExecutionStatus { get; set; }
 

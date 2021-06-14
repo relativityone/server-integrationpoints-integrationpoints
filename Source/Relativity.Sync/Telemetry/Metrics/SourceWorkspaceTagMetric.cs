@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry.Metrics
 {
-	internal class SourceWorkspaceTagMetric : MetricBase<SourceWorkspaceTagMetric>
+	internal sealed class SourceWorkspaceTagMetric : MetricBase<SourceWorkspaceTagMetric>
 	{
 		[Metric(MetricType.TimedOperation, TelemetryConstants.MetricIdentifiers.TAG_DOCUMENTS_DESTINATION_UPDATE_TIME)]
 		public double? DestinationUpdateTime { get; set; }

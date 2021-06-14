@@ -42,14 +42,18 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		public void MetricBaseImplementingClasses_ShouldHaveUniqueGenericArgumentType_Guard()
 		{
 			// Act
-			List<Type> metricBaseImplementersGenericArgumentTypes = AppDomain.CurrentDomain.GetAssemblies()
-				.Where(a => a.GetName().Name.StartsWith(_APPLICATION_NAME) && !a.GetName().Name.StartsWith(_APPLICATION_TESTS_NAME))
-				.SelectMany(a => a.GetTypes())
-				.Where(t => !t.IsGenericType && t.BaseType != null && t.BaseType.IsGenericType && (t.BaseType.GetGenericTypeDefinition() == typeof(MetricBase<>) || t.BaseType.GetGenericTypeDefinition() == typeof(BatchEndMetric<>)))
+			List<Type> metricBaseImplementersGenericArgumentTypes = MetricBaseImplementersTestCases
 				.Select(t => t.BaseType.GetGenericArguments()[0]).ToList();
 
 			// Assert
 			metricBaseImplementersGenericArgumentTypes.Should().OnlyHaveUniqueItems();
+		}
+
+		[TestCaseSource(nameof(MetricBaseImplementersTestCases))]
+		public void MetricBaseImplementingClasses_ShouldBeSealed_Guard(Type type)
+		{
+			// Assert
+			type.IsSealed.Should().BeTrue();
 		}
 
 		[Test]
@@ -169,5 +173,11 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				.Where(x => x.GetName().Name.StartsWith(_APPLICATION_NAME))
 				.SelectMany(s => s.GetTypes())
 				.Where(p => typeof(IMetric).IsAssignableFrom(p)).ToList();
+
+		public static IEnumerable<Type> MetricBaseImplementersTestCases =>
+			AppDomain.CurrentDomain.GetAssemblies()
+				.Where(a => a.GetName().Name.StartsWith(_APPLICATION_NAME) && !a.GetName().Name.StartsWith(_APPLICATION_TESTS_NAME))
+				.SelectMany(a => a.GetTypes())
+				.Where(t => !t.IsGenericType && t.BaseType != null && t.BaseType.IsGenericType && (t.BaseType.GetGenericTypeDefinition() == typeof(MetricBase<>) || t.BaseType.GetGenericTypeDefinition() == typeof(BatchEndMetric<>)));
 	}
 }
