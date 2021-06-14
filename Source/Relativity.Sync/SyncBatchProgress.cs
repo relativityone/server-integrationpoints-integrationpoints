@@ -28,9 +28,11 @@
 		{
 			BatchId = batchId;
 			TotalItems = totalItems;
-			ItemsFailed = failedItemsCount;
-			ItemsProcessed = transferredItemsCount;
+			ItemsAlreadyFailed = failedItemsCount;
+			ItemsAlreadyProcessed = transferredItemsCount;
 		}
+
+		public int ItemsAlreadyProcessed { get; }
 
 		public int ItemsProcessed
 		{
@@ -46,6 +48,8 @@
 				}
 			}
 		}
+
+		public int ItemsAlreadyFailed { get; }
 
 		public int ItemsFailed
 		{

@@ -24,9 +24,19 @@ namespace Relativity.Sync
 		private readonly IDisposable _changeSubjectBufferSubscription;
 		private readonly IDictionary<int, SyncBatchProgress> _batchProgresses = new ConcurrentDictionary<int, SyncBatchProgress>();
 
-		public JobProgressHandler(IJobProgressUpdater jobProgressUpdater, IScheduler timerScheduler = null)
+		public JobProgressHandler(IJobProgressUpdater jobProgressUpdater, IEnumerable<IBatch> alreadyExecutedBatches, IScheduler timerScheduler = null)
 		{
 			_jobProgressUpdater = jobProgressUpdater;
+
+			foreach (IBatch alreadyExecutedBatch in alreadyExecutedBatches)
+			{
+				_batchProgresses[alreadyExecutedBatch.ArtifactId] = new SyncBatchProgress(
+					alreadyExecutedBatch.ArtifactId, totalItems: 
+					alreadyExecutedBatch.TotalItemsCount,
+					alreadyExecutedBatch.FailedItemsCount,
+					alreadyExecutedBatch.TransferredItemsCount
+				) { Completed = true };
+			}
 
 			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_THOTTHLE_FOR_SECONDS), timerScheduler ?? Scheduler.Default)
 				.Where(changesInTimeWindow => changesInTimeWindow.Any())
@@ -115,8 +125,8 @@ namespace Relativity.Sync
 
 		private Task UpdateProgressAsync()
 		{
-			int totalProcessedItems = _batchProgresses.Values.Sum(x => x.ItemsProcessed);
-			int totalFailedItems = _batchProgresses.Values.Sum(x => x.ItemsFailed);
+			int totalProcessedItems = _batchProgresses.Values.Sum(x => x.ItemsAlreadyProcessed + x.ItemsProcessed);
+			int totalFailedItems = _batchProgresses.Values.Sum(x => x.ItemsAlreadyFailed + x.ItemsFailed);
 
 			return _jobProgressUpdater.UpdateJobProgressAsync(totalProcessedItems, totalFailedItems);
 		}
