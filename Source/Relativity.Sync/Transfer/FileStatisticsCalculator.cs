@@ -63,30 +63,42 @@ namespace Relativity.Sync.Transfer
 
 				_logger.LogInformation("Calculation has been initialized - {documentsRequested} documents requested.",
 					syncStatistics.DocumentsRequested);
+
 				try
 				{
-					int batchIndex = 1;
-
-					IList<int> batch;
-					while ((batch = await GetNextBatchAsync(workspaceId, syncStatistics).ConfigureAwait(false)) != null)
+					// If we have already performed the calculation for all documents, we want to short circuit.
+					// First of all, that way we are skipping unnecessary Kepler calls.
+					// But, what is more important, we are protecting from situation when RetrieveResultsBlockFromExportAsync has been already called with block size 0 which has deleted the snapshot table.
+					if (syncStatistics.DocumentsRequested != syncStatistics.DocumentsCalculated)
 					{
-						_logger.LogInformation("Calculating total files size for {documentsCount} in chunk {batchIndex}.",
-							batch.Count, batchIndex);
+						int batchIndex = 1;
 
-						FileSizeResult result = await filesCalculationFunc(batch).ConfigureAwait(false);
-
-						syncStatistics.FilesSizeCalculated += result.FilesSize;
-						syncStatistics.FilesCountCalculated += result.FilesCount;
-						syncStatistics.DocumentsCalculated += batch.Count;
-
-						_logger.LogInformation("Calculated total files size for {documentsCount} in chunk {batchIndex}.",
-							batch.Count, batchIndex++);
-
-						if (token.IsDrainStopRequested)
+						IList<int> batch;
+						while ((batch = await GetNextBatchAsync(workspaceId, syncStatistics).ConfigureAwait(false)) !=
+						       null)
 						{
-							_logger.LogInformation("Files size calculation has been drain-stopped on {batchIndex} " +
-							                       "and {documentsCount} was calculated", batchIndex, syncStatistics.DocumentsCalculated);
-							return syncStatistics;
+							_logger.LogInformation(
+								"Calculating total files size for {documentsCount} in chunk {batchIndex}.",
+								batch.Count, batchIndex);
+
+							FileSizeResult result = await filesCalculationFunc(batch).ConfigureAwait(false);
+
+							syncStatistics.FilesSizeCalculated += result.FilesSize;
+							syncStatistics.FilesCountCalculated += result.FilesCount;
+							syncStatistics.DocumentsCalculated += batch.Count;
+
+							_logger.LogInformation(
+								"Calculated total files size for {documentsCount} in chunk {batchIndex}.",
+								batch.Count, batchIndex++);
+
+							if (token.IsDrainStopRequested)
+							{
+								_logger.LogInformation(
+									"Files size calculation has been drain-stopped on {batchIndex} " +
+									"and {documentsCount} was calculated", batchIndex,
+									syncStatistics.DocumentsCalculated);
+								return syncStatistics;
+							}
 						}
 					}
 				}

@@ -138,13 +138,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			CompositeCancellationToken token = CreateDrainStopAlwaysCancellationToken();
 
 			// Act
-			long result = await _sut
-				.CalculateNativesTotalSizeAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), token)
+			ImagesStatistics result = await _sut
+				.CalculateImagesStatisticsAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<QueryImagesOptions>(), token)
 				.ConfigureAwait(false);
 
 			// Assert
 			List<File> expectedCalculatedFiles = files.GetRange(0, _BATCH_SIZE_FOR_FILES_QUERIES).ToList();
-			result.Should().Be(expectedCalculatedFiles.Sum(x => x.Size));
+			result.TotalSize.Should().Be(expectedCalculatedFiles.Sum(x => x.Size));
+			result.TotalCount.Should().Be(expectedCalculatedFiles.Count);
 
 			VerifyCalculatedResultsWasSaved(expectedCalculatedFiles);
 		}
@@ -181,6 +182,98 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			int expectedBatchesCount = (int)Math.Ceiling((double)(files.Count - calculatedFilesCount) / _BATCH_SIZE_FOR_FILES_QUERIES);
 			VerifyBatchesWasRetrieved(expectedBatchesCount + 1); //Last run returns null
+		}
+
+		[Test]
+		public async Task CalculateImagesTotalSizeAsync_ShouldCalculateNativesSize_WhenResuming()
+		{
+			// Arrange
+			const int calculatedFilesCount = 3;
+
+			List<File> files = PrepareFiles(10);
+
+			SetupDocuments(files);
+
+			List<File> alreadyCalculatedFiles = files.GetRange(0, calculatedFilesCount).ToList();
+			SetupSyncStatistics(new SyncStatisticsRdo
+			{
+				DocumentsCalculated = alreadyCalculatedFiles.Count,
+				DocumentsRequested = files.Count,
+				FilesSizeCalculated = alreadyCalculatedFiles.Sum(x => x.Size),
+				FilesCountCalculated = alreadyCalculatedFiles.Count,
+				RunId = _EXPORT_RUN_ID
+			});
+
+			// Act
+			ImagesStatistics result = await _sut
+				.CalculateImagesStatisticsAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<QueryImagesOptions>(), CompositeCancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			result.TotalCount.Should().Be(files.Count);
+			result.TotalSize.Should().Be(files.Sum(x => x.Size));
+
+			VerifyCalculatedResultsWasSaved(files);
+
+			int expectedBatchesCount = (int)Math.Ceiling((double)(files.Count - calculatedFilesCount) / _BATCH_SIZE_FOR_FILES_QUERIES);
+			VerifyBatchesWasRetrieved(expectedBatchesCount + 1); //Last run returns null
+		}
+
+		[Test]
+		public async Task CalculateNativesTotalSizeAsync_ShouldReturnSavedCalculation_WhenResumingAndPreviouslyCalculationCompleted()
+		{
+			// Arrange
+			List<File> files = PrepareFiles(10);
+
+			SetupSyncStatistics(new SyncStatisticsRdo
+			{
+				DocumentsCalculated = files.Count,
+				DocumentsRequested = files.Count,
+				FilesSizeCalculated = files.Sum(x => x.Size),
+				FilesCountCalculated = files.Count,
+				RunId = _EXPORT_RUN_ID
+			});
+
+			// Act
+			long result = await _sut
+				.CalculateNativesTotalSizeAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), CompositeCancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			result.Should().Be(files.Sum(x => x.Size));
+
+			VerifyCalculatedResultsWasSaved(files);
+
+			VerifyBatchesWasRetrieved(0);
+		}
+
+		[Test]
+		public async Task CalculateImagesTotalSizeAsync_ShouldReturnSavedCalculation_WhenResumingAndPreviouslyCalculationCompleted()
+		{
+			// Arrange
+			List<File> files = PrepareFiles(10);
+
+			SetupSyncStatistics(new SyncStatisticsRdo
+			{
+				DocumentsCalculated = files.Count,
+				DocumentsRequested = files.Count,
+				FilesSizeCalculated = files.Sum(x => x.Size),
+				FilesCountCalculated = files.Count,
+				RunId = _EXPORT_RUN_ID
+			});
+
+			// Act
+			ImagesStatistics result = await _sut
+				.CalculateImagesStatisticsAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<QueryImagesOptions>(), CompositeCancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			result.TotalCount.Should().Be(files.Count);
+			result.TotalSize.Should().Be(files.Sum(x => x.Size));
+
+			VerifyCalculatedResultsWasSaved(files);
+
+			VerifyBatchesWasRetrieved(0);
 		}
 
 		[Test]
