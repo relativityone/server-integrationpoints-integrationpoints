@@ -71,17 +71,6 @@
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="BCrypt.Net-Core">
-          <HintPath>..\..\packages\BCrypt.Net-Core\lib\net452\BCrypt.Net-Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
@@ -106,17 +95,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura">
-          <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="kCura.Agent">
           <HintPath>..\..\packages\kCura.Agent\lib\net462\kCura.Agent.dll</HintPath>
           <Private>True</Private>
@@ -128,8 +106,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="kCura.Injection">
-          <HintPath>..\..\packages\kCura.Injection\lib\net462\kCura.Injection.dll</HintPath>
+        <Reference Include="kCura.Apps.Common.Utils">
+          <HintPath>..\..\packages\kCura.Apps.Common.Utils\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -172,110 +150,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.AmbientData">
-          <HintPath>..\..\packages\Relativity.AmbientData\lib\net462\Relativity.AmbientData.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Relativity.API">
           <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Platform">
-          <HintPath>..\..\packages\Relativity.Platform\lib\net462\Relativity.Platform.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.ServiceBus">
-          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.ServiceBus.Contracts">
-          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Contracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.ServiceBus.Providers.Configuration">
-          <HintPath>..\..\packages\Relativity.ServiceBus\lib\net462\Relativity.ServiceBus.Providers.Configuration.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.ServiceBus.Patterns">
-          <HintPath>..\..\packages\Relativity.ServiceBus.Patterns\lib\net462\Relativity.ServiceBus.Patterns.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.ServiceBus.LegacyWindowsProvider">
-          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.LegacyWindowsProvider.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.ServiceBus.Provider.Windows1_1">
-          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.Provider.Windows1_1.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.ServiceBus.WindowsProvider">
-          <HintPath>..\..\packages\Relativity.ServiceBus.Provider.Windows1_1\lib\net462\Relativity.ServiceBus.WindowsProvider.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Toggles">
-          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Data.SqlClient">
-          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\System.Data.SqlClient.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

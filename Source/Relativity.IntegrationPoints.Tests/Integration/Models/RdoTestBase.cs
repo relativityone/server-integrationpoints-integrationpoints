@@ -12,13 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public abstract class RdoTestBase
     {
-        private static readonly Dictionary<Guid, string> KNOWN_GUIDS_TO_NAMES = new Dictionary<Guid, string>
-        {
-            {JobHistoryFieldGuids.JobStatusGuid, nameof(JobHistoryTest.JobStatus)},
-            {JobHistoryFieldGuids.EndTimeUTCGuid, nameof(JobHistoryTest.EndTimeUTC)},
-        };
-
-        public ArtifactTest Artifact { get; }
+	    public ArtifactTest Artifact { get; }
 
         public int ArtifactId => Artifact.ArtifactId;
 
@@ -60,21 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
-            foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues.Where(x => x.Field.Name == null))
-            {
-                Guid existingGuid =
-                    fieldValuePair.Field.Guids.FirstOrDefault(g => KNOWN_GUIDS_TO_NAMES.ContainsKey(g));
-
-                if (existingGuid == Guid.Empty)
-                {
-                    throw new Exception(
-                        $"There is no known property name for these guids: {string.Join(",", fieldValuePair.Field.Guids)}");
-                }
-
-                fieldValuePair.Field.Name = KNOWN_GUIDS_TO_NAMES[existingGuid];
-            }
-
-            foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues
+			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues
                 .Where(x => propertiesDictionary.ContainsKey(x.Field.Name.Replace(" ", ""))))
             {
                 try
@@ -97,8 +77,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             }
         }
 
-		public void LoadRelativityObjectByGuid<T>(RelativityObject relativityObject) where T : RdoTestBase
-		{
+        public void LoadRelativityObjectByGuid<T>(RelativityObject relativityObject) where T : RdoTestBase
+        {
+            LoadRelativityObjectByGuid(typeof(T), relativityObject);
+        }
+
+		public void LoadRelativityObjectByGuid(Type type, RelativityObject relativityObject)
+        {
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
 			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)

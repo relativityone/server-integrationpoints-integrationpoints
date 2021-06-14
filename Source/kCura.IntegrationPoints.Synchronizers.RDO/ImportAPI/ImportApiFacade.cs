@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				.ToDictionary(x => x.ArtifactID, x => x.Name);
 		}
 
-		public Dictionary<int, string> GetWorkspaces()
+		public Dictionary<int, string> GetWorkspaceNames()
 		{
 			return _importApi.Value.Workspaces().ToDictionary(x => x.ArtifactID, x => x.Name);
 		}

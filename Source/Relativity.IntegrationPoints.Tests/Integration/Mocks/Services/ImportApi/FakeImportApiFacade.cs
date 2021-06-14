@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
                 .ToDictionary(x => x.ArtifactId, x => x.Name);
         }
 
-        public Dictionary<int, string> GetWorkspaces()
+        public Dictionary<int, string> GetWorkspaceNames()
         {
             return _instance.Workspaces.ToDictionary(x => x.ArtifactId, x => x.Name);
         }

@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			IUserMessageNotification exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			LoggingMediatorForTestsFactory loggingMediatorFactory = _windsorContainer.Resolve<LoggingMediatorForTestsFactory>();
 			ICompositeLoggingMediator loggingMediator = loggingMediatorFactory.Create();
-			JobStatisticsService jobStats = Substitute.For<JobStatisticsService>();
+			IJobStatisticsService jobStats = Substitute.For<JobStatisticsService>();
 			IConfig configMock = Substitute.For<IConfig>();
 			configMock.WebApiPath.Returns(SharedVariables.RelativityWebApiUrl);
 
