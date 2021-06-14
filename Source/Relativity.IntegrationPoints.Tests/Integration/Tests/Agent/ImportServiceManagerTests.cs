@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.LoadFile;
@@ -128,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			// Assert
 			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
 			jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
-			//job.StopState.Should().Be(StopState.DrainStopped);
+			job.StopState.Should().Be(StopState.DrainStopped);
 		}
 	}
 }

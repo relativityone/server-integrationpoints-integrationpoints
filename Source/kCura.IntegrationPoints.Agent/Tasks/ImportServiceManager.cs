@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				SetJobStateAsUnstoppable(job);
+				SetJobStateAsUnstoppableIfNeeded(job);
 				JobHistoryErrorService.CommitErrors();
 				FinalizeService(job);
 				LogExecuteFinalize(job);

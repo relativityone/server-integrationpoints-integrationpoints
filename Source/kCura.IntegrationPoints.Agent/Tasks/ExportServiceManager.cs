@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				SetJobStateAsUnstoppable(job);
+				SetJobStateAsUnstoppableIfNeeded(job);
 				JobHistoryErrorService.CommitErrors();
 				FinalizeExportService(job);
 				FinalizeService(job);
@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void FinalizeExportServiceObservers(Job job)
 		{
 			LogFinalizeExportServiceObserversStart(job);
-			SetJobStateAsUnstoppable(job);
+			SetJobStateAsUnstoppableIfNeeded(job);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, jobObserver =>

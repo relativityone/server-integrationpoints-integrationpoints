@@ -232,8 +232,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 
-		protected void SetJobStateAsUnstoppable(Job job)
+		protected void SetJobStateAsUnstoppableIfNeeded(Job job)
 		{
+			if (JobStopManager?.ShouldDrainStop == true)
+			{
+				return;
+			}
+
 			try
 			{
 				JobStopManager?.Dispose();
