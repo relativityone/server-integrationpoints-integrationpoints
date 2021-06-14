@@ -23,6 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		}
 		
 		private const string _APPLICATION_NAME = "Relativity.Sync";
+		private const string _APPLICATION_TESTS_NAME = "Relativity.Sync.Tests";
 
 		[TestCaseSource(nameof(IMetricImplementersTestCases))]
 		public void IMetricImplementingClasses_ShouldHaveOnlyNullableProperties_Guard(Type type)
@@ -35,6 +36,24 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 			// Assert
 			properties.Should().OnlyContain(x => GetDefaultValue(x.PropertyType) == null, $"metric of type '{type.FullName}' should have only nullable properties");
+		}
+
+		[Test]
+		public void MetricBaseImplementingClasses_ShouldHaveUniqueGenericArgumentType_Guard()
+		{
+			// Act
+			List<Type> metricBaseImplementersGenericArgumentTypes = MetricBaseImplementersTestCases
+				.Select(t => t.BaseType.GetGenericArguments()[0]).ToList();
+
+			// Assert
+			metricBaseImplementersGenericArgumentTypes.Should().OnlyHaveUniqueItems();
+		}
+
+		[TestCaseSource(nameof(MetricBaseImplementersTestCases))]
+		public void MetricBaseImplementingClasses_ShouldBeSealed_Guard(Type type)
+		{
+			// Assert
+			type.IsSealed.Should().BeTrue();
 		}
 
 		[Test]
@@ -154,5 +173,11 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				.Where(x => x.GetName().Name.StartsWith(_APPLICATION_NAME))
 				.SelectMany(s => s.GetTypes())
 				.Where(p => typeof(IMetric).IsAssignableFrom(p)).ToList();
+
+		public static IEnumerable<Type> MetricBaseImplementersTestCases =>
+			AppDomain.CurrentDomain.GetAssemblies()
+				.Where(a => a.GetName().Name.StartsWith(_APPLICATION_NAME) && !a.GetName().Name.StartsWith(_APPLICATION_TESTS_NAME))
+				.SelectMany(a => a.GetTypes())
+				.Where(t => !t.IsGenericType && t.BaseType != null && t.BaseType.IsGenericType && (t.BaseType.GetGenericTypeDefinition() == typeof(MetricBase<>) || t.BaseType.GetGenericTypeDefinition() == typeof(BatchEndMetric<>)));
 	}
 }

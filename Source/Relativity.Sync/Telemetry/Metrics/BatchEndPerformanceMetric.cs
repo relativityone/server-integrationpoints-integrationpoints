@@ -2,7 +2,7 @@ using Relativity.Sync.Executors;
 
 namespace Relativity.Sync.Telemetry.Metrics
 {
-    internal class BatchEndPerformanceMetric : MetricBase<BatchEndPerformanceMetric>
+    internal sealed class BatchEndPerformanceMetric : MetricBase<BatchEndPerformanceMetric>
     {
         public string WorkflowName => "Relativity.Sync";
         public string StageName => "Transfer";
