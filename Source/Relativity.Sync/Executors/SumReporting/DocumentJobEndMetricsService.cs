@@ -64,11 +64,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		private async Task WriteBytesStatisticsAsync(DocumentJobEndMetric metric)
 		{
-			long? allNativesSize = _jobStatisticsContainer.NativesBytesRequested is null
-				? (long?)null
-				: await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
-
-			metric.BytesNativesRequested = allNativesSize;
+			metric.BytesNativesRequested = await GetAllNativesSizeAsync(); ;
 
 			// If IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.
 			if (_jobStatisticsContainer.MetadataBytesTransferred != 0)
@@ -86,6 +82,24 @@ namespace Relativity.Sync.Executors.SumReporting
 				metric.BytesTransferred = _jobStatisticsContainer.TotalBytesTransferred;
 			}
 		}
+
+        private async Task<long?> GetAllNativesSizeAsync()
+        {
+            long? allNativesSize = null;
+
+            try
+            {
+                allNativesSize = _jobStatisticsContainer.NativesBytesRequested is null
+                    ? (long?)null
+                    : await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Unable to get all natives bytes for statistics job");
+            }
+
+            return allNativesSize;
+        } 
 
 	}
 }

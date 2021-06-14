@@ -192,5 +192,24 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
 		}
+
+        [Test]
+        public async Task ExecuteAsync_ShouldSendJobEndStatusMetric_WhenNativesBytesRequestedThrowsException()
+        {
+            // Arrange
+            const string expectedStatusDescription = "Completed with Errors";
+            const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
+            Exception exception = new Exception();
+
+            _jobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Throws(exception);
+
+            // Act
+            ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
+
+            // Assert
+            actualResult.Should().NotBeNull();
+            actualResult.Status.Should().Be(ExecutionStatus.Completed);
+            _syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
+        }
 	}
 }
