@@ -124,6 +124,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManagerFake.Setup(x => x.GetImageSpecialFields()).Returns(_specialFields);
 			_userContextConfigurationStub = new Mock<IUserContextConfiguration>();
 
+			_batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecuteBatchesAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(Enumerable.Empty<IBatch>());
 
 			_sut = new ImageSynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
 				_jobProgressHandlerFactoryStub.Object,
