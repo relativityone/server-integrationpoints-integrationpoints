@@ -1,5 +1,6 @@
-﻿using System.Reactive.Concurrency;
-using System.Reactive.Linq;
+﻿using Relativity.Sync.Storage;
+using System.Collections.Generic;
+using System.Reactive.Concurrency;
 
 namespace Relativity.Sync
 {
@@ -12,9 +13,9 @@ namespace Relativity.Sync
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 		}
 
-		public IJobProgressHandler CreateJobProgressHandler(IScheduler scheduler = null)
+		public IJobProgressHandler CreateJobProgressHandler(IEnumerable<IBatch> alreadyExecutedBatches, IScheduler scheduler = null)
 		{
-			return new JobProgressHandler(_jobProgressUpdaterFactory.CreateJobProgressUpdater(), scheduler);
+			return new JobProgressHandler(_jobProgressUpdaterFactory.CreateJobProgressUpdater(), alreadyExecutedBatches, scheduler);
 		}
 	}
 }

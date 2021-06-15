@@ -119,7 +119,12 @@ namespace Relativity.Sync.Executors
 						configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
-				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler())
+				IEnumerable<IBatch> executedBatches = await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
+					configuration.SourceWorkspaceArtifactId,
+					configuration.SyncConfigurationArtifactId)
+				.ConfigureAwait(false);
+				
+				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
 				{
 					foreach (int batchId in batchesIds)
 					{
@@ -231,7 +236,7 @@ namespace Relativity.Sync.Executors
 
 			if (batchProcessResult.ExecutionResult.Status == ExecutionStatus.Paused)
 			{
-				batchProcessResult.ExecutionResult = await HandleBatchPausedAsync(batch).ConfigureAwait(false);
+				batchProcessResult.ExecutionResult = await HandleBatchPausedAsync(batch, failedItemsCount, processedItemsCount).ConfigureAwait(false);
 			}
 			else
 			{
@@ -245,7 +250,7 @@ namespace Relativity.Sync.Executors
 			return batchProcessResult;
 		}
 
-		private async Task<ExecutionResult> HandleBatchPausedAsync(IBatch batch)
+		private async Task<ExecutionResult> HandleBatchPausedAsync(IBatch batch, int failedItemsCount, int transferredItemsCount)
 		{
 			if(batch.TransferredItemsCount == batch.TotalItemsCount)
 			{
@@ -259,7 +264,7 @@ namespace Relativity.Sync.Executors
 			}
 			else
 			{
-				await batch.SetStartingIndexAsync(batch.TransferredItemsCount + batch.FailedItemsCount).ConfigureAwait(false);
+				await batch.SetStartingIndexAsync(batch.StartingIndex + transferredItemsCount + failedItemsCount).ConfigureAwait(false);
 				await SetBatchStatusAsync(batch, ExecutionStatus.Paused).ConfigureAwait(false);
 				return ExecutionResult.Paused();
 			}

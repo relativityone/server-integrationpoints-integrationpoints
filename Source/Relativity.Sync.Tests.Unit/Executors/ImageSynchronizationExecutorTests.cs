@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressHandlerFake = new Mock<IJobProgressHandler>();
 			_jobProgressUpdaterFake = new Mock<IJobProgressUpdater>();
 
-			_jobProgressHandlerFactoryStub.Setup(x => x.CreateJobProgressHandler(It.IsAny<IScheduler>()))
+			_jobProgressHandlerFactoryStub.Setup(x => x.CreateJobProgressHandler(Enumerable.Empty<IBatch>(), It.IsAny<IScheduler>()))
 				.Returns(_jobProgressHandlerFake.Object);
 
 			_jobProgressUpdaterFactoryStub.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdaterFake.Object);
@@ -124,6 +124,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManagerFake.Setup(x => x.GetImageSpecialFields()).Returns(_specialFields);
 			_userContextConfigurationStub = new Mock<IUserContextConfiguration>();
 
+			_batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecutedBatchesAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(Enumerable.Empty<IBatch>());
 
 			_sut = new ImageSynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
 				_jobProgressHandlerFactoryStub.Object,
@@ -771,11 +773,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			batch.TransferredItemsCount.Should().Be(expectedTransferredItemsCount);
 		}
 
+		[TestCase(0, 2, 3, 10, 0, 5, ExecutionStatus.CompletedWithErrors, BatchStatus.CompletedWithErrors, 0)]
 		[TestCase(0, 0, 0, 10, 2, 3, ExecutionStatus.Paused, BatchStatus.Paused, 5)]
-		[TestCase(0, 1, 2, 10, 2, 3, ExecutionStatus.Paused, BatchStatus.Paused, 8)]
 		[TestCase(3, 1, 2, 10, 2, 3, ExecutionStatus.Paused, BatchStatus.Paused, 8)]
 		[TestCase(0, 0, 0, 10, 0, 10, ExecutionStatus.Completed, BatchStatus.Completed, 0)]
 		[TestCase(0, 2, 3, 10, 0, 5, ExecutionStatus.CompletedWithErrors, BatchStatus.CompletedWithErrors, 0)]
+		[TestCase(1500, 0, 0, 500, 0, 108, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
+		[TestCase(1608, 0, 108, 500, 0, 0, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
 		public async Task Execute_ShouldHandlePausedBatch(
 			int initialStartingIndex, int initialFailedCount, int initialTransferredCount, int totalCount,
 			int failedCount, int transferredCount, ExecutionStatus expectedStatus, BatchStatus expectedBatchStatus, int expectedStartingIndex)
