@@ -36,6 +36,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
         internal void Complete(int numberOfDocuments, int numberOfItemLevelErrors = 0)
         {
+	        ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
+	        JobReport jobReport = (JobReport)constructorInfos.First().Invoke(new object[0]);
+
             for (long i = 1; i < numberOfDocuments; i++)
             {
                 OnProgress?.Invoke(i);
@@ -43,18 +46,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
             for (long i = 0; i < numberOfItemLevelErrors; i++)
             {
-	            OnError?.Invoke(Mock.Of<IDictionary>());
+	            OnProgress?.Invoke(i);
+                OnError?.Invoke(Mock.Of<IDictionary>());
+                jobReport.ErrorRows.Add(new JobReport.RowError(i, "", i.ToString()));
             }
 
             OnProgress?.Invoke(1);
-            ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
-            JobReport jobReport = (JobReport) constructorInfos.First().Invoke(new object[0]);
+      
 
             MethodInfo totalRecordsSetter = typeof(JobReport).Properties()
                 .First(x => x.Name == nameof(JobReport.TotalRows))
                 .SetMethod;
 
-            totalRecordsSetter.Invoke(jobReport, new object[] {numberOfDocuments});
+            totalRecordsSetter.Invoke(jobReport, new object[] {numberOfDocuments + numberOfItemLevelErrors});
             
             OnComplete?.Invoke(jobReport);
         }

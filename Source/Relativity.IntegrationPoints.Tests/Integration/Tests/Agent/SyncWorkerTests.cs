@@ -9,12 +9,14 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json.Linq;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Choice;
@@ -207,6 +209,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	        const int numberOfErrors= 10;
 	        const int initialTransferredItems = 50;
 	        const int initialErroredItems = 50;
+
+	        FakeJobStatisticsQuery statisticsQuery = Container.Resolve<IJobStatisticsQuery>() as FakeJobStatisticsQuery;
+	        statisticsQuery.AlreadyFailedItems = initialErroredItems;
+	        statisticsQuery.AlreadyTransferredItems = initialTransferredItems;
 
 	        string xmlPath = PrepareRecords(numberOfRecords);
 	        JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);

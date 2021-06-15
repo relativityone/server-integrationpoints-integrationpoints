@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -42,6 +41,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public void LoadRelativityObjectByName(Type type, RelativityObject relativityObject)
         {
+            string SanitizeFieldName(string name)
+            {
+                return name.Replace(" ", "").ToLowerInvariant();
+            }
+            
             if (!type.IsAssignableTo<RdoTestBase>())
             {
                 Debugger.Break();
@@ -50,16 +54,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
             Dictionary<string, PropertyInfo> propertiesDictionary = type
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanWrite)
-                .ToDictionary(x => x.Name, x => x);
+                .ToDictionary(x => SanitizeFieldName(x.Name), x => x);
 
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
+            foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)
+            {
+                fieldValuePair.Field.Name = SanitizeFieldName(fieldValuePair.Field.Name);
+            }
+
 			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues
-                .Where(x => propertiesDictionary.ContainsKey(x.Field.Name.Replace(" ", ""))))
+                .Where(x => propertiesDictionary.ContainsKey(x.Field.Name)))
             {
                 try
                 {
-                    var prop = propertiesDictionary[fieldValuePair.Field.Name.Replace(" ", "")];
+                    var prop = propertiesDictionary[fieldValuePair.Field.Name];
 
                     if (prop.GetValue(this) == null && fieldValuePair.Value == null)
                     {
