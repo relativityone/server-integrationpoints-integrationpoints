@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using System;
+using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -171,5 +172,24 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 			_syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
 		}
+
+        [Test]
+        public async Task ExecuteAsync_ShouldSendJobEndStatusMetric_WhenImagesStatisticsThrowsException()
+        {
+            // Arrange
+            const string expectedStatusDescription = "Completed with Errors";
+            const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
+            Exception exception = new Exception();
+
+            _jobStatisticsContainerFake.SetupGet(x => x.ImagesStatistics).Throws(exception);
+
+            // Act
+            ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
+
+            // Assert
+            actualResult.Should().NotBeNull();
+            actualResult.Status.Should().Be(ExecutionStatus.Completed);
+            _syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
+        }
 	}
 }

@@ -37,7 +37,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 				await WriteRecordsStatisticsAsync(metric).ConfigureAwait(false);
 
-				await WriteBytesStatistics(metric).ConfigureAwait(false);
+				await WriteBytesStatisticsAsync(metric).ConfigureAwait(false);
 
 				_syncMetrics.Send(metric);
 
@@ -50,11 +50,9 @@ namespace Relativity.Sync.Executors.SumReporting
 			return ExecutionResult.Success();
 		}
 
-		private async Task WriteBytesStatistics(ImageJobEndMetric metric)
-		{
-			ImagesStatistics? imagesStatistics = _jobStatisticsContainer.ImagesStatistics is null
-				? (ImagesStatistics?)null
-				: await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false);
+		private async Task WriteBytesStatisticsAsync(ImageJobEndMetric metric)
+        {
+            ImagesStatistics? imagesStatistics = await GetImagesStatisticsAsync();
 
 			if (imagesStatistics.HasValue)
 			{
@@ -72,5 +70,24 @@ namespace Relativity.Sync.Executors.SumReporting
 				metric.BytesTransferred = _jobStatisticsContainer.TotalBytesTransferred;
 			}
 		}
+
+        private async Task<ImagesStatistics?> GetImagesStatisticsAsync()
+        {
+            ImagesStatistics? imagesStatistics = null;
+
+            try
+            {
+                imagesStatistics = _jobStatisticsContainer.ImagesStatistics is null
+                    ? (ImagesStatistics?)null
+                    : await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Unable to get images statistics for statistics job");
+            }
+
+            return imagesStatistics;
+
+        } 
 	}
 }
