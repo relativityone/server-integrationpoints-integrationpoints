@@ -271,7 +271,7 @@ namespace Relativity.Sync.Storage
 			return allBatches.SelectMany(x => x);
 		}
 
-		private async Task<IEnumerable<IBatch>> GetAllSuccessfullyExecuteBatchesAsync(int syncConfigurationArtifactId)
+		private async Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(int syncConfigurationArtifactId)
 		{
 			Task<IEnumerable<IBatch>> getCompletedBatches = ReadBatchesWithStatusAsync(syncConfigurationArtifactId, BatchStatus.Completed);
 
@@ -463,10 +463,10 @@ namespace Relativity.Sync.Storage
 			return batchIds;
 		}
 
-		public static async Task<IEnumerable<IBatch>> GetAllSuccessfullyExecuteBatchesAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationId)
+		public static async Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationId)
 		{
 			var batch = new Batch(serviceFactory, workspaceArtifactId);
-			IEnumerable<IBatch> batches = await batch.GetAllSuccessfullyExecuteBatchesAsync(syncConfigurationId).ConfigureAwait(false);
+			IEnumerable<IBatch> batches = await batch.GetAllSuccessfullyExecutedBatchesAsync(syncConfigurationId).ConfigureAwait(false);
 			return batches;
 		}
 

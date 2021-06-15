@@ -44,7 +44,7 @@ namespace Relativity.Sync.Storage
 		/// <summary>
 		/// Returns all batches that have successfully execute - first Completed, then Completed with Errors.
 		/// </summary>
-		Task<IEnumerable<IBatch>> GetAllSuccessfullyExecuteBatchesAsync(int workspaceArtifactId, int syncConfigurationId);
+		Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(int workspaceArtifactId, int syncConfigurationId);
 
 		/// <summary>
 		/// Returns batch with lowest starting index higher than given one. Null if no such batch found.
