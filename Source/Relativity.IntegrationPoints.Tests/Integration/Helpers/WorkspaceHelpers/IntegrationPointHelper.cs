@@ -123,7 +123,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			integrationPoint.Name = $"Import LoadFile - {Guid.NewGuid()}";
 			List<FieldMap> fieldsMapping =
-				Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForImport("Control Number");
+				Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForLoadFileImport("Control Number");
 
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
