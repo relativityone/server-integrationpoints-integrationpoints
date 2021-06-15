@@ -2,6 +2,7 @@
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -23,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 				});
 		}
 
-		private bool IsSingleJobHistoryErrorJobLevelCondition(string condition, out int jobHistoryId)
+		private bool IsSingleJobHistoryErrorJobLevelCondition(string condition, out int jobHistoryId, out Guid[] errorTypes)
 		{
 			System.Text.RegularExpressions.Match match = Regex.Match(condition,
 				@"'Job History' == OBJECT (.*) AND 'Error Type' IN CHOICE \[(.*)\]");
@@ -31,10 +32,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 			if (match.Success)
 			{
 				jobHistoryId = int.Parse(match.Groups[1].Value);
+				errorTypes = match.Groups[2].Value.Split(',').Select(x => Guid.Parse(x)).ToArray();
 				return true;
 			}
 
 			jobHistoryId = 0;
+			errorTypes = Array.Empty<Guid>();
 			return false;
 		}
 
@@ -59,9 +62,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 			{
 				return list.Where(x => jobHistoryIds.Contains(x.JobHistory.Value)).ToList();
 			}
-			else if (IsSingleJobHistoryErrorJobLevelCondition(request.Condition, out int jobHistory))
+			else if (IsSingleJobHistoryErrorJobLevelCondition(request.Condition, out int jobHistory, out Guid[] errorTypes))
 			{
-				return list.Where(x => x.JobHistory == jobHistory).ToList();
+				return list.Where(x => x.JobHistory == jobHistory && errorTypes.Contains(x.ErrorType.Guids.Single())).ToList();
 			}
 
 			return new List<JobHistoryErrorTest>();

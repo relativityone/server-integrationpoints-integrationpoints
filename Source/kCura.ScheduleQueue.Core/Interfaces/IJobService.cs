@@ -48,5 +48,7 @@ namespace kCura.ScheduleQueue.Core
 		IList<Job> GetJobs(long integrationPointId);
 
 		void UpdateJobDetails(Job job);
+
+		void FinalizeDrainStoppedJob(Job job);
 	}
 }
