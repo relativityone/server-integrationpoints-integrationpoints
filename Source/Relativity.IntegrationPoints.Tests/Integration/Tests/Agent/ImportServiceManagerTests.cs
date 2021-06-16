@@ -9,17 +9,13 @@ using System;
 using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Common.Agent;
-using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.LoadFile;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.WebApi;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -58,15 +54,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				.LifestyleTransient().Named(nameof(FakeFileInfoFactory)).IsDefault());
 			Container.Register(Component.For<IDirectory>().UsingFactoryMethod(c => _fakeDirectory)
 				.LifestyleTransient().Named(nameof(FakeDirectory)).IsDefault());
-
-			Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig())
-				.LifestyleTransient().Named(nameof(FakeWebApiConfig)).IsDefault());
-			Container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(c => new FakeAuthTokenGenerator())
-				.LifestyleTransient().Named(nameof(FakeAuthTokenGenerator)).IsDefault());
-			Container.Register(Component.For<ILoginHelperFacade>().UsingFactoryMethod(c => new FakeLoginHelperFacade())
-				.LifestyleTransient().Named(nameof(FakeLoginHelperFacade)).IsDefault());
-			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory())
-				.LifestyleTransient().Named(nameof(FakeWinEddsBasicLoadFileFactory)).IsDefault());
 		}
 
 		[IdentifiedTest("F08E46B0-CA04-4D37-9666-1CDEBFF48244")]
