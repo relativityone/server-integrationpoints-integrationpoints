@@ -67,7 +67,8 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public void ItShouldCreateServiceFactoryOnSecondTryIfFirstOneFailed()
 		{
-			_tokenGenerator.SetupSequence(x => x.GetAuthTokenAsync(_USER_ID)).Throws<Exception>().ReturnsAsync("token");
+            _tokenGenerator.SetupSequence(x => x.GetAuthTokenAsync(_USER_ID))
+                .Throws<Exception>().Throws<Exception>().Throws<Exception>().ReturnsAsync("token");
 
 			// ACT
 			Func<Task> firstTry = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
@@ -76,8 +77,21 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			firstTry.Should().Throw<Exception>();
 			secondTry.Should().NotThrow();
-			const int twice = 2;
-			_tokenGenerator.Verify(x => x.GetAuthTokenAsync(_USER_ID), Times.Exactly(twice));
+			const int times = 4;
+			_tokenGenerator.Verify(x => x.GetAuthTokenAsync(_USER_ID), Times.Exactly(times));
 		}
+
+        [Test]
+        public void ItShouldThrowExceptionWhenAllRetriesFailed()
+        {
+            _tokenGenerator.SetupSequence(x => x.GetAuthTokenAsync(_USER_ID))
+                .Throws<Exception>().Throws<Exception>().Throws<Exception>();
+
+            // ACT
+            Func<Task> proxy = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+			// ASSERT
+            proxy.Should().Throw<Exception>();
+        }
 	}
 }

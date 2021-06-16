@@ -40,17 +40,40 @@ namespace Relativity.Sync.KeplerFactory
 
 		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
 		{
-			if (_serviceFactory == null)
-			{
-				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
-			}
+            int retriesCounter = 0;
+            const int retriesLimit = 3;
+            Exception proxyException;
+            do
+            {
+                retriesCounter++;
+                try
+                {
+                    return await GetKeplerServiceWrapperAsync<T>().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    proxyException = ex;
+                    await Task.Delay(50);
+                }
 
-			return _dynamicProxyFactory.WrapKeplerService(_serviceFactory.CreateProxy<T>(), async () =>
-			{
-				_serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
-				return _serviceFactory.CreateProxy<T>();
-			});
+            } while (retriesCounter < retriesLimit);
+
+            throw proxyException;
 		}
+
+        private async Task<T> GetKeplerServiceWrapperAsync<T>() where T : class, IDisposable
+        {
+			if (_serviceFactory == null)
+            {
+                _serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
+            }
+
+            return _dynamicProxyFactory.WrapKeplerService(_serviceFactory.CreateProxy<T>(), async() =>
+            {
+                _serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
+                return _serviceFactory.CreateProxy<T>();
+            });
+        }
 
 		private async Task<IServiceFactory> CreateServiceFactoryAsync()
 		{

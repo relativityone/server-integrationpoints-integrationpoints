@@ -20,7 +20,8 @@ namespace Relativity.Sync.KeplerFactory
         {
             int retriesCounter = 0;
             const int retriesLimit = 3;
-            while (true)
+            Exception proxyException;
+            do
             {
                 retriesCounter++;
                 try
@@ -29,15 +30,13 @@ namespace Relativity.Sync.KeplerFactory
                 }
                 catch (Exception ex)
                 {
-                    if (retriesCounter >= retriesLimit)
-                    {
-                        throw ex;
-                    }
-
-                    Thread.Sleep(50);
+                    proxyException =  ex;
+                    await Task.Delay(50);
                 }
 
-            }
+            } while (retriesCounter < retriesLimit);
+
+            throw proxyException;
         }
 
         private async Task<T> GetKeplerServiceWrapperAsync<T>(ExecutionIdentity executionIdentity) where T : class, IDisposable
