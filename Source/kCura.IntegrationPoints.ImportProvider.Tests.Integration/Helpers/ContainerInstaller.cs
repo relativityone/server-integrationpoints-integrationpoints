@@ -104,6 +104,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 		{
 			windsorContainer.Register(Component.For<IFieldParserFactory>().ImplementedBy<FieldParserFactory>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IWinEddsLoadFileFactory>().ImplementedBy<WinEddsLoadFileFactory>().LifestyleTransient());
+			windsorContainer.Register(Component.For<IWinEddsBasicLoadFileFactory>().ImplementedBy<WinEddsBasicLoadFileFactory>().LifestyleTransient());
 			windsorContainer.Register(Component.For<IWinEddsFileReaderFactory>().ImplementedBy<WinEddsFileReaderFactory>());
 			windsorContainer.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleTransient());
 		}

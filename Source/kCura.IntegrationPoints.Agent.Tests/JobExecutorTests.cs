@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _logMock.Object);
 		}
-
+		
 		[Test]
 		public void ProcessJob_ShouldPushEmptyRootJobIdToLogContext_WhenRootJobIdIsNull()
 		{

@@ -38,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 			return new LoadFileTaskParameters
 			{
 				Size = loadFile.Size,
-				LastModifiedDate = loadFile.LastModifiedDate
+				LastModifiedDate = loadFile.LastModifiedDate,
+				ProcessedItemsCount = 0
 			};
 		}
 	}

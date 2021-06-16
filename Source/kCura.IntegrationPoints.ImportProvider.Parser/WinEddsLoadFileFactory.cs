@@ -6,33 +6,29 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
 	public class WinEddsLoadFileFactory : IWinEddsLoadFileFactory
 	{
-		private IWebApiLoginService _credentialProvider;
-		private IDataTransferLocationServiceFactory _locationServiceFactory;
-		private IWebApiConfig _webApiConfig;
+		private readonly IDataTransferLocationServiceFactory _locationServiceFactory;
+		private readonly IWebApiConfig _webApiConfig;
+		private readonly IWinEddsBasicLoadFileFactory _basicLoadFileFactory;
 
-		public WinEddsLoadFileFactory(IWebApiLoginService credentialProvider, IDataTransferLocationServiceFactory locationServiceFactory, IWebApiConfig webApiConfig)
+		public WinEddsLoadFileFactory(IDataTransferLocationServiceFactory locationServiceFactory, IWebApiConfig webApiConfig, IWinEddsBasicLoadFileFactory basicLoadFileFactory)
 		{
-			_credentialProvider = credentialProvider;
 			_locationServiceFactory = locationServiceFactory;
 			_webApiConfig = webApiConfig;
+			_basicLoadFileFactory = basicLoadFileFactory;
 		}
 
 		public LoadFile GetLoadFile(ImportSettingsBase settings)
 		{
 			WinEDDS.Config.WebServiceURL = _webApiConfig.GetWebApiUrl;
-			NetworkCredential cred = _credentialProvider.Authenticate(new System.Net.CookieContainer());
-
-			NativeSettingsFactory factory = new NativeSettingsFactory(cred, settings.WorkspaceId);
-			LoadFile loadFile = factory.ToLoadFile();
 
 			IDataTransferLocationService locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
+			LoadFile loadFile = _basicLoadFileFactory.GetLoadFile(settings.WorkspaceId);
 
 			loadFile.RecordDelimiter = (char)settings.AsciiColumn;
 			loadFile.QuoteDelimiter = (char)settings.AsciiQuote;
