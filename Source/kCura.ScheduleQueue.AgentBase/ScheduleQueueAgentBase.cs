@@ -170,6 +170,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					if (jobResult.Status == TaskStatusEnum.DrainStopped)
 					{
 						Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
+						_jobService.FinalizeDrainStoppedJob(nextJob);
 						nextJob = null;
 					}
 					else

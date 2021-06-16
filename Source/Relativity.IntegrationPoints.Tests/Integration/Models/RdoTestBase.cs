@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -52,6 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanWrite)
                 .ToDictionary(x => x.Name, x => x);
 
+            ParenObjectArtifactId = relativityObject?.ParentObject?.ArtifactID ?? 0;
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
 			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues
@@ -84,6 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public void LoadRelativityObjectByGuid(Type type, RelativityObject relativityObject)
         {
+            ParenObjectArtifactId = relativityObject?.ParentObject?.ArtifactID ?? 0;
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
 			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)

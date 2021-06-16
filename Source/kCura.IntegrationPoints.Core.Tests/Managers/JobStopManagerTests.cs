@@ -126,25 +126,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void TerminateIfRequested_ShouldUpdateStopStateAndUnlockJob_WhenJobIsDrainStopped()
-		{
-			// Arrange
-			_agentFake.SetupGet(x => x.ToBeRemoved).Returns(true);
-			Job job = PrepareJob(StopState.DrainStopping);
-			_jobHistory.JobStatus = JobStatusChoices.JobHistorySuspended;
-			JobStopManager sut = PrepareSut(true);
-
-			// Act
-			sut.TerminateIfRequested(job);
-
-			// Assert
-			_jobServiceMock.Verify(x => x.UpdateStopState(
-				It.Is<IList<long>>(jobs => jobs.Single() == _jobId),
-				It.Is<StopState>(stopState => stopState == StopState.DrainStopped)));
-			_jobServiceDataProviderMock.Verify(x => x.UnlockJob(_jobId), Times.Once);
-		}
-
-		[Test]
 		public void IsStopRequested_UnableToFindTheJob()
 		{
 			// arrange

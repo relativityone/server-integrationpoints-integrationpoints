@@ -96,11 +96,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					_drainStopCancellationTokenSource.Cancel();
 					UpdateStopState(StopState.DrainStopping);
 					SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistorySuspending);
-				}
-				else if (jobHistory != null && jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended))
-				{
-					UpdateStopState(StopState.DrainStopped);
-					_jobServiceDataProvider.UnlockJob(job.JobId);
 					_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 				}
 			}
