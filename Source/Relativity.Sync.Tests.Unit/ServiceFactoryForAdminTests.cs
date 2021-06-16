@@ -55,5 +55,17 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			action.Should().NotThrow();
 		}
+
+        [Test]
+        public void ItShouldThrowExceptionWhenRetriesLimitReached()
+        {
+            _servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Throws<Exception>();
+
+            // act
+            Func<Task> action = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+            // assert
+            action.Should().Throw<Exception>();
+        }
 	}
 }
