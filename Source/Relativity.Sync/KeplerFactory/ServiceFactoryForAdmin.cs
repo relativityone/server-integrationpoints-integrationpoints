@@ -30,8 +30,8 @@ namespace Relativity.Sync.KeplerFactory
                 }
                 catch (Exception ex)
                 {
-                    proxyException =  ex;
-                    await Task.Delay(50);
+                    proxyException = ex;
+                    await Task.Delay(50).ConfigureAwait(false);
                 }
 
             } while (retriesCounter < retriesLimit);
