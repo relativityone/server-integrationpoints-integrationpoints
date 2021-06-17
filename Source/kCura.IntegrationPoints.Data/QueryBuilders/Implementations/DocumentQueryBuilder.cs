@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 
 		public DocumentQueryBuilder AddHasImagesCondition()
 		{
-			string condition = $"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE {DocumentFieldsConstants.HAS_IMAGES_YES_ARTIFACT_ID}";
+			string condition = $"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE {DocumentFieldsConstants.HasImagesYesGuid}";
 			Conditions.Add(condition);
 
 			return this;

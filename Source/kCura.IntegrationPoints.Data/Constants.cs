@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public const string EDIT_FIELD_NAME = "Edit";
 
-		public const int HAS_IMAGES_YES_ARTIFACT_ID = 1034243;
+		public static Guid HasImagesYesGuid = new Guid("5002224A-59F9-4C19-AA57-3765BDBFB676");
 
 		public const string POPUP_FILTER_TYPE_NAME = "Popup";
 	}
