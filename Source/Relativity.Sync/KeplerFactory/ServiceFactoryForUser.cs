@@ -5,6 +5,7 @@ using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Extensions;
 
 namespace Relativity.Sync.KeplerFactory
 {
@@ -40,28 +41,13 @@ namespace Relativity.Sync.KeplerFactory
 
 		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
 		{
-            int retriesCounter = 0;
-            const int retriesLimit = 3;
-            Exception proxyException;
-            do
-            {
-                retriesCounter++;
-                try
-                {
-                    return await GetKeplerServiceWrapperAsync<T>().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    proxyException = ex;
-                    await Task.Delay(50).ConfigureAwait(false);
-                }
+            T proxy = await this.CreateProxyWithRetriesAsync(null, executionIdentity =>
+                GetKeplerServiceWrapperAsync<T>(null))
+                .ConfigureAwait(false);
+            return proxy;
+        }
 
-            } while (retriesCounter < retriesLimit);
-
-            throw proxyException;
-		}
-
-        private async Task<T> GetKeplerServiceWrapperAsync<T>() where T : class, IDisposable
+        private async Task<T> GetKeplerServiceWrapperAsync<T>(ExecutionIdentity? executionIdentity) where T : class, IDisposable
         {
 			if (_serviceFactory == null)
             {
