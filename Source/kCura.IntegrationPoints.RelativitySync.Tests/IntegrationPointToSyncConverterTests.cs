@@ -236,6 +236,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			// Arrange
 			_destinationConfiguration = CreateImageDestinationConfiguration(
 				includeOriginalImages: includeOriginalImages,
+				productionPrecedence: "1",
 				imagePrecedence: imagePrecedence.Select(x => new ProductionDTO { ArtifactID = x.ToString() }));
 			_sourceConfiguration = CreateSourceConfiguration();
 
@@ -256,6 +257,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			// Arrange
 			_destinationConfiguration = CreateImageDestinationConfiguration(
 				includeOriginalImages: true,
+				productionPrecedence: "0",
 				imagePrecedence: new[] {new ProductionDTO {ArtifactID = "1"}, new ProductionDTO {ArtifactID = "2"}});
 			_sourceConfiguration = CreateSourceConfiguration();
 
@@ -285,6 +287,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		private static ExtendedImportSettings CreateImageDestinationConfiguration(
 			ImportNativeFileCopyModeEnum importFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks,
 			bool includeOriginalImages = true,
+			string productionPrecedence = "0",
 			IEnumerable<ProductionDTO> imagePrecedence = null)
 		{
 			ImportSettings settings = new ImportSettings
@@ -296,7 +299,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				ImageImport = true,
 				IncludeOriginalImages = includeOriginalImages,
 				ImagePrecedence = imagePrecedence ?? Array.Empty<ProductionDTO>(),
-				ProductionPrecedence = imagePrecedence?.Any() == true ? "1" : "0"
+				ProductionPrecedence = productionPrecedence
 			};
 
 			return new ExtendedImportSettings(settings);
