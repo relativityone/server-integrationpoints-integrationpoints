@@ -21,6 +21,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using Relativity.API;
+using Relativity.Testing.Identification;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using FieldMap = Relativity.IntegrationPoints.Services.FieldMap;
 
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			_syncServicesMgr = new SyncServiceManagerForRip(Helper.GetServicesManager());
 		}
 
-		[Test]
+		[IdentifiedTest("251679FD-D739-4479-AE2A-351BEB1A6D58")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenDefaultIntegrationPoint()
 		{
 			// Arrange
@@ -70,10 +71,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("4D43F811-B649-4CD0-86B2-DFA9013D51DA")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithEmailNotifications()
 		{
 			// Arrange
@@ -98,12 +99,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[TestCase(ImportOverwriteModeEnum.AppendOnly, "Use Field Settings", "AppendOnly")]
-		[TestCase(ImportOverwriteModeEnum.AppendOverlay, "Merge Values", "AppendOverlay")]
-		[TestCase(ImportOverwriteModeEnum.OverlayOnly, "Replace Values", "OverlayOnly")]
+		[IdentifiedTestCase("1811F5ED-A05D-4000-A877-7DAFC07FC7E5", ImportOverwriteModeEnum.AppendOnly, "Use Field Settings", "AppendOnly")]
+		[IdentifiedTestCase("72D08758-A4BB-4D15-9AE2-CC1898B7A1EE", ImportOverwriteModeEnum.AppendOverlay, "Merge Values", "AppendOverlay")]
+		[IdentifiedTestCase("BC7B75F2-9BAB-461B-8434-6226C479EDC5", ImportOverwriteModeEnum.OverlayOnly, "Replace Values", "OverlayOnly")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithOverlayBehavior(
 			ImportOverwriteModeEnum importOverwriteMode, string fieldOverlayBehavior, string syncOverwriteMode)
 		{
@@ -129,12 +130,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[TestCase(false, false, 0, false, "None", null)]
-		[TestCase(true, false, 0, true, "RetainSourceWorkspaceStructure", null)]
-		[TestCase(false, true, 1038081, true, "ReadFromField", "Document Folder Path")]
+		[IdentifiedTestCase("BE874772-F860-42FD-ACA7-2B584642FDB2", false, false, 0, false, "None", null)]
+		[IdentifiedTestCase("8679144F-8EBF-4F54-A5AC-005FA81DA775", true, false, 0, true, "RetainSourceWorkspaceStructure", null)]
+		[IdentifiedTestCase("FDB75908-3712-4ABB-9757-94A88D78CD5B", false, true, 1038081, true, "ReadFromField", "Document Folder Path")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithFolderStructureBehavior(
 			bool useDynamicFolderPath, bool useFolderPathInformation, int folderPathSourceFieldId,
 			bool moveExistingDocuments, string syncFolderStructureBehavior, string syncFolderFieldName)
@@ -170,12 +171,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles, "Copy")]
-		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks, "Link")]
-		[TestCase(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, "None")]
+		[IdentifiedTestCase("4C68E4F4-BD37-44A8-A9F8-9E78B9E2715D", ImportNativeFileCopyModeEnum.CopyFiles, "Copy")]
+		[IdentifiedTestCase("E21F3341-4195-4EC1-A6E5-3F30F8C3E82C", ImportNativeFileCopyModeEnum.SetFileLinks, "Link")]
+		[IdentifiedTestCase("4FE0309E-2B31-4C47-8656-CA540B110795", ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, "None")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenDefaultIntegrationPointWithCopyNativesBehavior(
 			ImportNativeFileCopyModeEnum nativeCopyMode, string expectedNativeCopyMode)
 		{
@@ -200,13 +201,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[TestCase(ImportNativeFileCopyModeEnum.CopyFiles, "Copy")]
-		[TestCase(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, "Link")]
-		[TestCase(ImportNativeFileCopyModeEnum.SetFileLinks, "Link")]
-
+		[IdentifiedTestCase("A747F687-0F17-4AAC-8B2C-3EE7A7A6F691", ImportNativeFileCopyModeEnum.CopyFiles, "Copy")]
+		[IdentifiedTestCase("A5E73F2E-AFC6-4213-BB99-EB2BF89318EA", ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, "Link")]
+		[IdentifiedTestCase("C73EDC5E-EB5F-42C9-9282-026EE8E1DA66", ImportNativeFileCopyModeEnum.SetFileLinks, "Link")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithCopyImageModeSync( 
 			ImportNativeFileCopyModeEnum imageCopyMode, string syncImageCopyMode)
 		{
@@ -237,11 +237,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[TestCase(true,"[1,2]")]
-		[TestCase(false, "[1,2]")]
+		[IdentifiedTestCase("53F333C2-DDD4-46CE-9A01-40C8BB1E0514", true, "[1,2]")]
+		[IdentifiedTestCase("54DA4D85-6CE6-45E3-B2AE-942877DB3E9B", false, "[1,2]")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithImageProductionPrecedenceModeSync(
 			bool includeOriginalImages, string syncProductionImagePrecedence)
 		{
@@ -250,7 +250,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			destinationConfiguration.ImageImport = true;
 			destinationConfiguration.IncludeOriginalImages = includeOriginalImages;
 			destinationConfiguration.ImagePrecedence =
-				new[] {new ProductionDTO {ArtifactID = "1"}, new ProductionDTO {ArtifactID = "2"}};
+				new[] { new ProductionDTO { ArtifactID = "1" }, new ProductionDTO { ArtifactID = "2" } };
+			destinationConfiguration.ProductionPrecedence = "1";
 
 			SourceConfiguration sourceConfiguration = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
 
@@ -272,10 +273,44 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+		}
+		
+		[IdentifiedTestCase("03FC30D8-854A-41B9-A144-DF622AD0A3F8")]
+		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithOriginalImagesAndImagesPrecedenceSelected()
+		{
+			// Arrange
+			ImportSettings destinationConfiguration = CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum.AppendOnly, TargetWorkspaceArtifactID);
+			destinationConfiguration.ImageImport = true;
+			destinationConfiguration.IncludeOriginalImages = true;
+			destinationConfiguration.ImagePrecedence =
+				new[] { new ProductionDTO { ArtifactID = "1" }, new ProductionDTO { ArtifactID = "2" } };
+			destinationConfiguration.ProductionPrecedence = "0";
+
+			SourceConfiguration sourceConfiguration = CreateSourceConfigWithTargetWorkspace(TargetWorkspaceArtifactID);
+
+			IntegrationPointModel integrationPoint =
+				CreateDefaultIntegrationPointModel(sourceConfiguration, destinationConfiguration, GetDefaultFieldMap(false));
+
+			SyncConfigurationRDO expectedSyncConfigurationRdo = SyncConfigurationRDO.CreateDefaultImageSyncConfiguration(
+				Serializer, Logger, integrationPoint, sourceConfiguration, destinationConfiguration);
+			expectedSyncConfigurationRdo.ImageImport = true;
+			expectedSyncConfigurationRdo.IncludeOriginalImages = true;
+			expectedSyncConfigurationRdo.ImageFileCopyMode = "Link";
+			expectedSyncConfigurationRdo.ProductionImagePrecedence = "[]";
+
+			IExtendedJob extendedJob = CreateExtendedJob(integrationPoint);
+
+			var sut = GetSut();
+
+			// Act
+			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
+
+			// Assert
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
-		[Test]
+		[IdentifiedTest("5B14D16A-3E9A-47DD-878B-7BDFF24CB457")]
 		public async Task SyncConfiguration_ShouldBeCreated_WhenRetryDefaultIntegrationPoint()
 		{
 			// Arrange
@@ -296,7 +331,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 			int configurationId = await sut.CreateSyncConfigurationAsync(extendedJob, _syncServicesMgr).ConfigureAwait(false);
 
 			// Assert
-			await AssertCreatedConfiguration(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
+			await AssertCreatedConfigurationAsync(configurationId, expectedSyncConfigurationRdo).ConfigureAwait(false);
 		}
 
 		private IntegrationPointToSyncConverter GetSut()
@@ -305,7 +340,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Integration
 				Serializer, _jobHistoryService, _jobHistorySyncService, Logger);
 		}
 
-		private async Task AssertCreatedConfiguration(int createdConfigurationId, SyncConfigurationRDO expectedConfiguration)
+		private async Task AssertCreatedConfigurationAsync(int createdConfigurationId, SyncConfigurationRDO expectedConfiguration)
 		{
 			var createdSyncConfiguration = await ReadSyncConfigurationAsync(createdConfigurationId).ConfigureAwait(false);
 
