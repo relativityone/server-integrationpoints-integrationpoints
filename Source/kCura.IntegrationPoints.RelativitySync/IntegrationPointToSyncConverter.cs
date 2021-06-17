@@ -14,7 +14,6 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
