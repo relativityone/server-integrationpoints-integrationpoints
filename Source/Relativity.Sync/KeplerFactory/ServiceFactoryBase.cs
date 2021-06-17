@@ -6,7 +6,7 @@ namespace Relativity.Sync.KeplerFactory
 {
     internal abstract class ServiceFactoryBase
     {
-        internal abstract Task<T> CreateProxyInternalAsync<T>() where T : class, IDisposable;
+        protected abstract Task<T> CreateProxyInternalAsync<T>() where T : class, IDisposable;
 
         public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
         {
