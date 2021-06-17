@@ -37,8 +37,7 @@ namespace Relativity.Sync.KeplerFactory
 			_dynamicProxyFactory = dynamicProxyFactory;
 		}
 
-
-        internal override async Task<T> CreateProxyInternalAsync<T>()
+        protected override async Task<T> CreateProxyInternalAsync<T>()
         {
 			if (_serviceFactory == null)
             {

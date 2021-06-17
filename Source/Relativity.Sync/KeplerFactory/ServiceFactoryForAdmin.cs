@@ -14,9 +14,9 @@ namespace Relativity.Sync.KeplerFactory
 			_proxyFactory = proxyFactory;
 		}
 
-        internal override async Task<T> CreateProxyInternalAsync<T>()
+        protected override async Task<T> CreateProxyInternalAsync<T>()
         {
-            Task<T> KeplerServiceFactory() => Task.FromResult(_servicesMgr.CreateProxy<T>(ExecutionIdentity));
+            Task<T> KeplerServiceFactory() => Task.FromResult(_servicesMgr.CreateProxy<T>(ExecutionIdentity.System));
             T keplerService = await KeplerServiceFactory().ConfigureAwait(false);
             return _proxyFactory.WrapKeplerService(keplerService, KeplerServiceFactory);
         }
