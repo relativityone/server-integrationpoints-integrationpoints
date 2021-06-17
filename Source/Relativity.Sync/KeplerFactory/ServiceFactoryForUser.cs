@@ -1,15 +1,13 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Extensions;
 
 namespace Relativity.Sync.KeplerFactory
 {
-	internal sealed class ServiceFactoryForUser : ISourceServiceFactoryForUser, IDestinationServiceFactoryForUser
+	internal sealed class ServiceFactoryForUser : ServiceFactoryBase, ISourceServiceFactoryForUser, IDestinationServiceFactoryForUser
 	{
 		private IServiceFactory _serviceFactory;
 
@@ -39,15 +37,8 @@ namespace Relativity.Sync.KeplerFactory
 			_dynamicProxyFactory = dynamicProxyFactory;
 		}
 
-		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
-		{
-            T proxy = await this.CreateProxyWithRetriesAsync(null, executionIdentity =>
-                GetKeplerServiceWrapperAsync<T>(null))
-                .ConfigureAwait(false);
-            return proxy;
-        }
 
-        private async Task<T> GetKeplerServiceWrapperAsync<T>(ExecutionIdentity? executionIdentity) where T : class, IDisposable
+        internal override async Task<T> CreateProxyInternalAsync<T>()
         {
 			if (_serviceFactory == null)
             {

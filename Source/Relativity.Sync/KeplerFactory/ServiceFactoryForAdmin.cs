@@ -1,12 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Sync.Extensions;
 
 namespace Relativity.Sync.KeplerFactory
 {
-	internal sealed class ServiceFactoryForAdmin : ISourceServiceFactoryForAdmin, IDestinationServiceFactoryForAdmin
+	internal sealed class ServiceFactoryForAdmin : ServiceFactoryBase, ISourceServiceFactoryForAdmin, IDestinationServiceFactoryForAdmin
 	{
 		private readonly ISyncServiceManager _servicesMgr;
 		private readonly IDynamicProxyFactory _proxyFactory;
@@ -17,21 +14,12 @@ namespace Relativity.Sync.KeplerFactory
 			_proxyFactory = proxyFactory;
 		}
 
-		public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
+        internal override async Task<T> CreateProxyInternalAsync<T>()
         {
-            T proxy = await this.CreateProxyWithRetriesAsync(ExecutionIdentity.System, executionIdentity =>
-                    GetKeplerServiceWrapperAsync<T>(ExecutionIdentity.System))
-                .ConfigureAwait(false);
-            return proxy;
-        }
-
-        private async Task<T> GetKeplerServiceWrapperAsync<T>(ExecutionIdentity executionIdentity) where T : class, IDisposable
-        {
-            Task<T> KeplerServiceFactory() => Task.FromResult(_servicesMgr.CreateProxy<T>(executionIdentity));
+            Task<T> KeplerServiceFactory() => Task.FromResult(_servicesMgr.CreateProxy<T>(ExecutionIdentity));
             T keplerService = await KeplerServiceFactory().ConfigureAwait(false);
             return _proxyFactory.WrapKeplerService(keplerService, KeplerServiceFactory);
         }
-
-
+		
     }
 }

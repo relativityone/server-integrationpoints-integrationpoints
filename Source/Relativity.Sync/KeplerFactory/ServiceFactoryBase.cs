@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Extensions
+namespace Relativity.Sync.KeplerFactory
 {
-    internal static class ServiceFactoryExtension
+    internal abstract class ServiceFactoryBase
     {
-        public static async Task<T> CreateProxyWithRetriesAsync<T>(this IProxyFactory proxyFactory
-                , ExecutionIdentity? executionIdentity
-                , Func<ExecutionIdentity?, Task<T>> getKeplerServiceWrapper ) where T: class, IDisposable
+        internal ExecutionIdentity ExecutionIdentity  = ExecutionIdentity.System;
+        internal abstract Task<T> CreateProxyInternalAsync<T>() where T : class, IDisposable;
 
+        public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
         {
             int retriesCounter = 0;
             const int retriesLimit = 3;
@@ -24,7 +19,7 @@ namespace Relativity.Sync.Extensions
                 retriesCounter++;
                 try
                 {
-                    return await getKeplerServiceWrapper(executionIdentity);
+                    return await CreateProxyInternalAsync<T>().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -36,7 +31,5 @@ namespace Relativity.Sync.Extensions
 
             throw proxyException;
         }
-
-
     }
 }
