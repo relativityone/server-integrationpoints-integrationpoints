@@ -143,7 +143,7 @@ namespace Relativity.Sync.Transfer
 
 		private static string DocumentsWithProducedImages => "('Production::Image Count' > 0)";
 
-		private static string DocumentsWithOriginalImages => "('Has Images' == CHOICE 1034243)";
+		private static string DocumentsWithOriginalImages => "('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)"; // "Has Images" == "Yes"
 
 		private string DocumentsInSavedSearch() => $"('ArtifactId' IN SAVEDSEARCH {_configuration.DataSourceArtifactId})";
 
