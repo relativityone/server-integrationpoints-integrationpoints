@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 {
 	internal sealed class ImageGoldFlowMultipleProductionsPrecedenceSetTests : SystemTest
 	{
-		private const int _HAS_IMAGES_YES_CHOICE = 1034243;
+		private const string _HAS_IMAGES_YES_CHOICE = "5002224A-59F9-4C19-AA57-3765BDBFB676";
 
 		private GoldFlowTestSuite _goldFlowTestSuite;
 

@@ -100,10 +100,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			VerifyQueryRequest(request, expectedDocumentRetryCondition, expectedFieldRefs);
 		}
 
-		[TestCase(10, new [] {1}, true, "('ArtifactId' IN SAVEDSEARCH 10) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 1034243))")]
-		[TestCase(10, new int[0], true, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 1034243)")]
+		[TestCase(10, new [] {1}, true, "('ArtifactId' IN SAVEDSEARCH 10) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676))")]
+		[TestCase(10, new int[0], true, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)")]
 		[TestCase(10, new [] {1}, false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Production::Image Count' > 0)")]
-		[TestCase(10, new int[0], false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 1034243)")]
+		[TestCase(10, new int[0], false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)")]
 		public async Task GetRequestForCurrentPipelineAsync_ShouldPrepareQueryRequest_WhenImageFlowIsSelected(
 			int dataSourceArtifactId, int[] productionImagePrecedence, bool includeOriginalImages, string expectedCondition)
 		{
@@ -140,7 +140,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.Returns((ISyncPipeline)Activator.CreateInstance(typeof(SyncImageRetryPipeline)));
 
 			string expectedImageRetryCondition = $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{jobHistoryToRetryArtifactId}])) AND " +
-			                                     $"('ArtifactId' IN SAVEDSEARCH {dataSourceArtifactId}) AND ('Has Images' == CHOICE 1034243)";
+			                                     $"('ArtifactId' IN SAVEDSEARCH {dataSourceArtifactId}) AND ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)";
 
 			IEnumerable<FieldRef> expectedFieldRefs =
 				new[] { _expectedIdentifierField }.Select(x => new FieldRef { Name = x.SourceFieldName });
