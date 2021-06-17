@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 		}
 
 		[IdentifiedTest("80594D76-2B49-4AB7-AA12-1586E6F15CA1")]
-		public virtual void OpenLDAP_GetBatchableIds_ShouldReturnAllIds()
+		public virtual void JumpCloud_GetBatchableIds_ShouldReturnAllIds()
 		{
 			// Arrange
 			const string uid = "uid";
@@ -86,20 +86,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 
 		private DataSourceProviderConfiguration PrepareJumpCloudLDAPConfiguration(AuthenticationTypesEnum authType, int? port = null)
 		{
-			string connectionPath = port == null
-				? "ldap.jumpcloud.com/ou=Users,o=609287decb206e4f6ef9beb5,dc=jumpcloud,dc=com"
-				: $"ldap.jumpcloud.com:{port}/ou=Users,o=609287decb206e4f6ef9beb5,dc=jumpcloud,dc=com";
-
 			LDAPSettings settings = new LDAPSettings
 			{
-				ConnectionPath = connectionPath,
+				ConnectionPath = Const.LDAP._JUMP_CLOUD_CONNECTION_PATH(port),
 				ConnectionAuthenticationType = authType,
 			};
 
 			LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
 			{
-				UserName = "uid=admin,ou=Users,o=609287decb206e4f6ef9beb5,dc=jumpcloud,dc=com",
-				Password = "Test1234!"
+				UserName = Const.LDAP._JUMP_CLOUD_USER,
+				Password = Const.LDAP._JUMP_CLOUD_PASSWORD
 			};
 
 			return new DataSourceProviderConfiguration(

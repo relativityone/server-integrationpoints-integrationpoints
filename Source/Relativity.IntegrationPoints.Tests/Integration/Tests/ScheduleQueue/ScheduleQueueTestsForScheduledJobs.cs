@@ -21,15 +21,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime;
 
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
 			PrepareJob(rule);
 
-			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -44,8 +42,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddYears(1);
 
@@ -54,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
 			JobTest job = PrepareJob(rule);
 
-			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -69,8 +65,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			DaysOfWeek dayOfWeek = ConvertToInternalDaysOfWeek(Context.CurrentDateTime.DayOfWeek);
 
 			DateTime startDateTime = Context.CurrentDateTime;
@@ -81,7 +75,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			ScheduleRuleTest rule = ScheduleRuleTest.CreateWeeklyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, dayOfWeek);
 			JobTest job = PrepareJob(rule);
 
-			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -96,8 +90,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			Context.SetDateTime(_FIXED_DATE_TIME);
 
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			DateTime startDateTime = Context.CurrentDateTime;
 			DateTime endDateTime = startDateTime.AddYears(1);
 
@@ -107,7 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 				TimeZoneInfo.Utc, dayOfMonth: 1);
 			JobTest job = PrepareJob(rule);
 
-			FakeScheduleAgent sut = PrepareSutWithMockedQueryManager(agent);
+			FakeAgent sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -116,9 +108,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			FakeRelativityInstance.Helpers.JobHelper.VerifyScheduledJobWasReScheduled(job, expectedNextRunTime);
 		}
 
-		private FakeScheduleAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		private FakeAgent PrepareSut()
 		{
-			FakeScheduleAgent fakeAgent = new FakeScheduleAgent(agent,
+			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
+
+			FakeAgent fakeAgent = new FakeAgent(Container, agent,
 				Container.Resolve<IAgentHelper>(),
 				scheduleRuleFactory: Container.Resolve<IScheduleRuleFactory>(),
 				queryManager: Container.Resolve<IQueryManager>());

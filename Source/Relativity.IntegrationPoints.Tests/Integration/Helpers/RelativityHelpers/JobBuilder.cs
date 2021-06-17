@@ -1,6 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Import;
+﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using System;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
@@ -39,6 +38,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			return this;
 		}
 
+		public JobBuilder WithTaskType(TaskType taskType)
+		{
+			_job.TaskType = taskType.ToString();
+
+			return this;
+		}
+
 		public JobBuilder WithScheduleRule(ScheduleRuleTest rule)
 		{
 			_job.ScheduleRuleType = kCura.ScheduleQueue.Core.Const._PERIODIC_SCHEDULE_RULE_TYPE;
@@ -47,15 +53,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			return this;
 		}
 
-		public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate)
+		public JobBuilder WithJobDetails(object parameters)
 		{
-			var loadFileParameters = new LoadFileTaskParameters
-			{
-				Size = loadFileSize,
-				LastModifiedDate = loadFileModifiedDate
-			};
-
-			_job.JobDetailsHelper.BatchParameters = loadFileParameters;
+			_job.JobDetailsHelper.BatchParameters = parameters;
 
 			return this;
 		}

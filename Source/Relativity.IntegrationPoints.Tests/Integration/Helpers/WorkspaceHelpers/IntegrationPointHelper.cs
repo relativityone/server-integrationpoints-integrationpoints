@@ -5,6 +5,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -177,6 +178,61 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			return integrationPoint;
 
+		}
+
+		public IntegrationPointTest CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false)
+		{
+			const string ou = "Management";
+
+			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+
+			integrationPoint.Name = $"Import Entity LDAP - {Guid.NewGuid()}";
+
+			SourceProviderTest sourceProvider = Workspace.SourceProviders.Single(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP);
+
+			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+
+			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.Single(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+
+			integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
+
+			integrationPoint.Type = Workspace.IntegrationPointTypes.Single(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes
+					.ImportGuid.ToString()).ArtifactId;
+
+			LDAPSettings sourceConfiguration = new LDAPSettings
+			{
+				ConnectionPath = Const.LDAP._OPEN_LDAP_CONNECTION_PATH(ou),
+				ConnectionAuthenticationType = AuthenticationTypesEnum.FastBind,
+				ImportNested = false
+			};
+
+			integrationPoint.SourceConfiguration = _serializer.Serialize(sourceConfiguration);
+
+			ImportSettings destinationConfiguration = new ImportSettings
+			{
+				ArtifactTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				DestinationProviderType = destinationProvider.Identifier,
+				EntityManagerFieldContainsLink = linkEntityManagers,
+				CaseArtifactId = Workspace.ArtifactId,
+				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+			};
+
+			integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);
+
+			LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
+			{
+				UserName = Const.LDAP._OPEN_LDAP_USER,
+				Password = Const.LDAP._OPEN_LDAP_PASSWORD
+			};
+
+			integrationPoint.SecuredConfiguration = Guid.NewGuid().ToString();
+
+			integrationPoint.SecuredConfigurationDecrypted = _serializer.Serialize(securedConfiguration);
+
+			return integrationPoint;
 		}
 
 		public void RemoveIntegrationPoint(int integrationPointId)

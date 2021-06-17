@@ -1,6 +1,9 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using FluentAssertions;
 using kCura.IntegrationPoints.Agent;
+using kCura.IntegrationPoints.Agent.Installer;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -9,6 +12,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
@@ -16,6 +20,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 	public class FakeAgent : Agent
 	{
 		private readonly IWindsorContainer _container;
+
+		public Func<Job, TaskResult> ProcessJobMockFunc { get; set; }
+		public List<long> ProcessedJobIds { get; } = new List<long>();
 
 		public FakeAgent(IWindsorContainer container, AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
@@ -38,6 +45,31 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 				.SetValue(this, true);
 		}
 
+		public static FakeAgent Create(RelativityInstanceTest instance, IWindsorContainer container)
+		{
+			var agent = instance.Helpers.AgentHelper.CreateIntegrationPointAgent();
+
+			var fakeAgent = new FakeAgent(container, agent,
+				container.Resolve<IAgentHelper>(),
+				queryManager: container.Resolve<IQueryManager>());
+
+			container
+				.Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)
+				.Named(Guid.NewGuid().ToString())
+				.IsDefault());
+
+			return fakeAgent;
+		}
+
+		public static FakeAgent CreateWithEmptyProcessJob(RelativityInstanceTest instance, IWindsorContainer container)
+		{
+			FakeAgent agent = Create(instance, container);
+			
+			agent.ProcessJobMockFunc = (Job job) => new TaskResult { Status = TaskStatusEnum.Success };
+
+			return agent;
+		}
+
 		protected override IEnumerable<int> GetListOfResourceGroupIDs()
 		{
 			return Const.Agent.RESOURCE_GROUP_IDS;
@@ -50,6 +82,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		protected override TaskResult ProcessJob(Job job)
 		{
+			ProcessedJobIds.Add(job.JobId);
+
+			if (ProcessJobMockFunc != null)
+			{
+				return ProcessJobMockFunc(job);
+			}
+
 			_container.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named(Guid.NewGuid().ToString()).IsDefault());
 
 			return base.ProcessJob(job);
@@ -59,5 +98,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			ToBeRemoved = true;
 		}
+
+		#region Verification
+
+		public void VerifyJobsWereProcessed(IEnumerable<long> jobs)
+		{
+			ProcessedJobIds.Should().Contain(jobs);
+		}
+
+		public void VerifyJobsWereNotProcessed(IEnumerable<long> jobs)
+		{
+			ProcessedJobIds.Should().NotContain(jobs);
+		}
+
+		public void VerifyJobWasProcessedAtFirst(long jobId)
+		{
+			ProcessedJobIds.First().Should().Be(jobId);
+		}
+
+		#endregion
 	}
 }

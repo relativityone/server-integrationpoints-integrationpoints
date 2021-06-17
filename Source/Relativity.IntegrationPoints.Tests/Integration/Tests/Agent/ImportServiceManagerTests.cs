@@ -14,8 +14,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ImportServiceManagerTests : TestsBase
 	{
-		private ImportServiceManager _sut;
-
 		private FakeFileInfoFactory _fakeFileInfoFactory;
 
 		public override void SetUp()
@@ -26,8 +24,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			Container.Register(Component.For<IFileInfoFactory>().UsingFactoryMethod(c => _fakeFileInfoFactory)
 				.LifestyleTransient().Named(nameof(FakeFileInfoFactory)).IsDefault());
-
-			_sut = Container.Resolve<ImportServiceManager>();
 		}
 
 		[IdentifiedTest("F08E46B0-CA04-4D37-9666-1CDEBFF48244")]
@@ -48,8 +44,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate);
 
+			RegisterJobContext(job);
+
+			ImportServiceManager sut = Container.Resolve<ImportServiceManager>();
+
 			// Act
-			Action action = () => _sut.Execute(job.AsJob());
+			Action action = () => sut.Execute(job.AsJob());
 
 			// Assert
 			action.ShouldThrow<IntegrationPointValidationException>();

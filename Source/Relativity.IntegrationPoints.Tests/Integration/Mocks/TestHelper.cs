@@ -13,8 +13,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
 
+		public FakeSecretStore SecretStore { get; }
+
 		public TestHelper(ProxyMock proxy)
 		{
+			SecretStore = new FakeSecretStore();
+
 			_serviceManager = new Mock<IServicesMgr>();
 
 			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
@@ -44,12 +48,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			return _serviceManager.Object;
 		}
 
-		#region Not Implemented
+		public ISecretStore GetSecretStore()
+		{
+			return SecretStore;
+		}
 
 		public void Dispose()
 		{
-			throw new NotImplementedException();
+			SecretStore.Clear();
 		}
+
+		#region Not Implemented
 
 		public IDBContext GetDBContext(int caseID)
 		{
@@ -77,11 +86,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		}
 
 		public Guid GetGuid(int workspaceID, int artifactID)
-		{
-			throw new NotImplementedException();
-		}
-
-		public ISecretStore GetSecretStore()
 		{
 			throw new NotImplementedException();
 		}

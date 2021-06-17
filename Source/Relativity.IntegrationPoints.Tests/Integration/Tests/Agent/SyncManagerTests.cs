@@ -36,6 +36,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 			jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+
+			RegisterJobContext(job);
+
 			return job;
 		}
 		

@@ -15,13 +15,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldNotPickUpTheJob_WhenHasBeenMarkedToBeRemoved()
 		{
 			// Arrange
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			JobTest job = PrepareJob();
 
 			var jobsInQueue = new[] {job.JobId};
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			sut.MarkAgentToBeRemoved();
@@ -38,14 +36,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldNotPickupNextJob_WhenActuallyJobWasDrainStopped()
 		{
 			// Arrange
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			JobTest job1 = PrepareJob();
 			JobTest job2 = PrepareJob();
 
 			var jobsInQueue = new[] {job1.JobId, job2.JobId};
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			sut.ProcessJobMockFunc = _ => new TaskResult() {Status = TaskStatusEnum.DrainStopped};
@@ -59,15 +55,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsAreInQueue(jobsInQueue);
 
-			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsAreNotLockedByAgent(agent, jobsInQueue);
+			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsAreNotLockedByAgent(sut.AgentID, jobsInQueue);
 		}
 
 		[IdentifiedTest("A21344C7-1CB6-439B-8478-B346B702CD3A")]
 		public void Agent_ShouldPickUpDrainStoppedJobAtFirst()
 		{
 			// Arrange
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			JobTest job1 = PrepareJob();
 			JobTest job2 = FakeRelativityInstance.Helpers.JobHelper.ScheduleJob(new JobTest()
 			{
@@ -76,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 				StopState = StopState.DrainStopped
 			});
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -85,11 +79,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			sut.VerifyJobWasProcessedAtFirst(job2.JobId);
 		}
 
-		private FakeScheduleAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		private FakeAgent PrepareSut()
 		{
-			return new FakeScheduleAgent(agent,
-				Container.Resolve<IAgentHelper>(),
-				queryManager: Container.Resolve<IQueryManager>());
+			return FakeAgent.CreateWithEmptyProcessJob(FakeRelativityInstance, Container);
 		}
 
 		private JobTest PrepareJob()

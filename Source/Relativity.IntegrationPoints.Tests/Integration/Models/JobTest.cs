@@ -27,7 +27,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
 		
-		
 		public string JobDetails
 		{
 			get
