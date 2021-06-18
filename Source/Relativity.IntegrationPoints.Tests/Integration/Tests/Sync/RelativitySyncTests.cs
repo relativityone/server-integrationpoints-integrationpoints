@@ -50,8 +50,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 
 			agentMarkedToBeRemoved.Execute();
 
-			WaitForFullyStoppedJob();
-
 			VerifyJobHasBeenDrainStopped();
 
 			// (2) Act & Assert
@@ -105,24 +103,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 			VerifyJobHasBeenCompleted();
 		}
 
-		private void WaitForFullyStoppedJob()
-		{
-			SpinWait.SpinUntil(() =>
-					JobInQueueHasFlag(StopState.DrainStopped) &&
-					JobHistoryHasStatus(JobStatusChoices.JobHistorySuspendedGuid),
-				TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT));
-		}
-
 		private Func<FakeAgent, CompositeCancellationToken, Task> SyncJobGracefullyDrainStoppedAction =>
-			async (agent, token) =>
+			(agent, token) =>
 			{
-				const int _PAUSE_AFTER_AGENT_MARKED_TO_BE_REMOVED = 1000;
-
 				agent.MarkAgentToBeRemoved();
-				await Task.Delay(_PAUSE_AFTER_AGENT_MARKED_TO_BE_REMOVED).ConfigureAwait(false);
 				SpinWait.SpinUntil(() =>
 						token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
 					TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT));
+				return Task.CompletedTask;
 			};
 
 		private bool JobInQueueHasFlag(StopState stopState) => 

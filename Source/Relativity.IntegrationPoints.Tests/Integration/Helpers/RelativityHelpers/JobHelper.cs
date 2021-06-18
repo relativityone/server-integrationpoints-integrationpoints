@@ -9,7 +9,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 {
 	public class JobHelper : RelativityHelperBase
 	{
-
 		public JobHelper(RelativityInstanceTest relativity) : base(relativity)
 		{
 		}

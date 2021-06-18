@@ -294,12 +294,18 @@ namespace kCura.ScheduleQueue.Core.Services
 			LogUpdateJobDetails(job.JobId);
 			DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
 		}
-
 		
 		public void CleanupJobQueueTable()
 		{
 			LogOnCleanJobQueTable();
 			DataProvider.CleanupJobQueueTable();
+		}
+
+		public void FinalizeDrainStoppedJob(Job job)
+		{
+			UpdateStopState(new List<long>() { job.JobId }, StopState.DrainStopped);
+			DataProvider.UnlockJob(job.JobId);
+			_log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId}", job.JobId);
 		}
 
 		#region Logging

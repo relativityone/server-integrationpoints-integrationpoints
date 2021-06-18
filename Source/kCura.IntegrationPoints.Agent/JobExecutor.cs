@@ -14,6 +14,8 @@ namespace kCura.IntegrationPoints.Agent
 {
 	public delegate void ExceptionEventHandler(Job job, ITask task, Exception exception);
 
+	public delegate TaskResult JobPostExecuteEventHandler(Job job);
+
 	internal class JobExecutor : IJobExecutor
 	{
 		private const string PROCESSING_JOB_MESSAGE_TEMPLATE = "Processing Job ID : {0} : Workspace ID {1} : Job Type {2}";
@@ -25,6 +27,8 @@ namespace kCura.IntegrationPoints.Agent
 		private IAPILog _logger { get; }
 
 		public event ExceptionEventHandler JobExecutionError;
+
+		public event JobPostExecuteEventHandler JobPostExecute;
 
 		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IAPILog logger)
 		{
@@ -123,9 +127,7 @@ namespace kCura.IntegrationPoints.Agent
 					_agentNotifier.NotifyAgent(LogCategory.Info, msg);
 					LogFinishingExecuteTask(job);
 
-					TaskStatusEnum jobStatus = GetJobStatus(job.StopState);
-					
-					return new TaskResult { Status = jobStatus, Exceptions = null };
+					return RaiseJobPostExecuteEvent(job);
 				}
 				catch (Exception ex)
 				{
@@ -136,17 +138,6 @@ namespace kCura.IntegrationPoints.Agent
 				{
 					_taskProvider.ReleaseTask(task);
 				}
-			}
-		}
-
-		private TaskStatusEnum GetJobStatus(StopState jobStopState)
-		{
-			switch (jobStopState)
-			{
-				case StopState.DrainStopped:
-					return TaskStatusEnum.DrainStopped;
-				default:
-					return TaskStatusEnum.Success;
 			}
 		}
 
@@ -161,6 +152,11 @@ namespace kCura.IntegrationPoints.Agent
 		private void RaiseJobExecutionErrorEvent(Job job, ITask task, Exception exception)
 		{
 			JobExecutionError?.Invoke(job, task, exception);
+		}
+
+		private TaskResult RaiseJobPostExecuteEvent(Job job)
+		{
+			return JobPostExecute?.Invoke(job) ?? new TaskResult { Status = TaskStatusEnum.Success, Exceptions = null };
 		}
 
 		#region Logging

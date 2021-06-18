@@ -5,26 +5,27 @@ using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.TaskFactory;
-using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.RelativitySync;
-using kCura.IntegrationPoints.RelativitySync.Metrics;
-using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
@@ -96,6 +97,7 @@ namespace kCura.IntegrationPoints.Agent
 			base.Initialize();
 			_jobExecutor = new JobExecutor(this, this, Logger);
 			_jobExecutor.JobExecutionError += OnJobExecutionError;
+			_jobExecutor.JobPostExecute += OnJobPostExecute;
 		}
 
 		protected override TaskResult ProcessJob(Job job)
@@ -267,6 +269,22 @@ namespace kCura.IntegrationPoints.Agent
 			}
 
 			JobExecutionError?.Invoke(job, task, exception);
+		}
+
+		protected TaskResult OnJobPostExecute(Job job)
+		{
+			IWindsorContainer container = _agentLevelContainer.Value;
+			ISerializer serializer = container.Resolve<ISerializer>();
+			IJobHistoryService jobHistoryService = container.Resolve<IJobHistoryService>();
+
+			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
+			JobHistory jobHistory = jobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
+			if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended))
+			{
+				return new TaskResult { Status = TaskStatusEnum.DrainStopped, Exceptions = null };
+			}
+
+			return new TaskResult { Status = TaskStatusEnum.Success, Exceptions = null };
 		}
 
 		protected IJobContextProvider JobContextProvider

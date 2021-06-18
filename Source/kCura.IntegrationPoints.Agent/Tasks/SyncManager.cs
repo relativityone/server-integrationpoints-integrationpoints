@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				JobStopManager?.ThrowIfStopRequested();
 
-				IDataReader idReader = GetBatchableIdsWithDrainStopTimeout(provider, GetDrainStopTimeout());
+				IDataReader idReader = GetBatchableIdsWithDrainStopTimeout(job, provider, GetDrainStopTimeout());
 				
 				JobStopManager?.ThrowIfStopRequested();
 				return new ReaderEnumerable(idReader, JobStopManager);
@@ -157,16 +157,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return new List<string>();
 		}
 		
-		private IDataReader GetBatchableIdsWithDrainStopTimeout(IDataSourceProvider provider, TimeSpan drainStopTimeout)
+		private IDataReader GetBatchableIdsWithDrainStopTimeout(Job job, IDataSourceProvider provider, TimeSpan drainStopTimeout)
 		{
+			_logger.LogInformation("GetBatchableIds was called with DrainStop timeout {timeout}", drainStopTimeout.TotalSeconds);
+
 			IDataReader reader = null;
 			bool workerThreadCompleted = false;
+			Exception workedThreadException = null;
 			Thread workerThread = new Thread(() =>
 			{
 				try
 				{
 					FieldEntry idField = IntegrationPointService.GetIdentifierFieldEntry(IntegrationPoint.FieldMappings);
 					reader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration));
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Error occurred during GetBatchableIds operation");
+					workedThreadException = ex;
 				}
 				finally
 				{
@@ -183,11 +191,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				if (JobStopManager?.ShouldDrainStop == true)
 				{
+					_logger.LogInformation("Drain-Stop was triggered...");
 					TimeSpan timeElapsedSinceDrainStopRequested = TimeSpan.Zero;
 					while (timeElapsedSinceDrainStopRequested < drainStopTimeout)
 					{
 						if (workerThreadCompleted)
 						{
+							_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
 							break;
 						}
 
@@ -197,12 +207,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 					if (!workerThreadCompleted && timeElapsedSinceDrainStopRequested >= drainStopTimeout)
 					{
+						_logger.LogInformation("Drain-Stop timeout exceeded. SyncManager task will be aborted.");
 						workerThread.Abort();
 						JobHistory.JobStatus = JobStatusChoices.JobHistorySuspended;
 						_jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
 						throw new OperationCanceledException();
 					}
 				}
+			}
+
+			if (workedThreadException != null)
+			{
+				throw workedThreadException;
 			}
 
 			return reader;
