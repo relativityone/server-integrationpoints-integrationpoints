@@ -2,6 +2,7 @@
 using Moq;
 using Relativity.Services.Objects.DataContracts;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -25,7 +26,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     {
                         new RelativityObject
                         {
-                            Guids = new List<Guid>(), FieldValues = new List<FieldValuePair>(),
+                            Guids = new List<Guid>(),
+                            FieldValues = new List<FieldValuePair>(),
+                            ParentObject = new RelativityObjectRef(),
+                            Name = ""
+                        }
+                    },
+                    TotalCount = 1
+                });
+
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(
+                    q => IsObjectTypeQuery(q) && q.Condition == $"'DescriptorArtifactTypeID' IN [{Const.LDAP._ENTITY_TYPE_ARTIFACT_ID}]"), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new QueryResult
+                {
+                    Objects = new List<RelativityObject>()
+                    {
+                        new RelativityObject
+                        {
+                            Guids = new List<Guid>() { ObjectTypeGuids.Entity },
+                            FieldValues = new List<FieldValuePair>(),
                             ParentObject = new RelativityObjectRef(),
                             Name = ""
                         }

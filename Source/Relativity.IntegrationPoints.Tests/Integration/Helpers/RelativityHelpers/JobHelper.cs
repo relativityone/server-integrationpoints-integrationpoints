@@ -70,6 +70,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				.WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)
 				.Build();
 
+			workspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+
 			return ScheduleJob(job);
 		}
 		

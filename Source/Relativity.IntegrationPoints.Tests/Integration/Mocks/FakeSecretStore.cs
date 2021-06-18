@@ -21,6 +21,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			_secrets[key] = new Dictionary<string, string> { { "SecuredConfiguration", integrationPoint.SecuredConfigurationDecrypted } };
 		}
 
+		public Task<Secret> GetAsync(string path)
+		{
+			Secret secret = new Secret
+			{
+				Data = _secrets[path]
+			};
+
+			return Task.FromResult(secret);
+		}
+
+		public Task SetAsync(string path, Secret secret)
+		{
+			_secrets[path] = secret.Data;
+
+			return Task.CompletedTask;
+		}
+
+		#region Not Implemented
+
 		public void Delete(string path)
 		{
 			throw new NotImplementedException();
@@ -36,18 +55,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			throw new NotImplementedException();
 		}
 
-		public Task<Secret> GetAsync(string path)
-		{
-			Secret secret = new Secret
-			{
-				Data = _secrets[path]
-			};
-
-			return Task.FromResult(secret);
-		}
-
-		#region Not Implemented
-
 		public List<string> List(string path)
 		{
 			throw new NotImplementedException();
@@ -59,11 +66,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		}
 
 		public void Set(string path, Secret secret)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task SetAsync(string path, Secret secret)
 		{
 			throw new NotImplementedException();
 		}

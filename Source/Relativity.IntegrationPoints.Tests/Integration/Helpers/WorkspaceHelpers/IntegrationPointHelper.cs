@@ -183,11 +183,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public IntegrationPointTest CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false)
 		{
-			const string ou = "Management";
+			const string ou = "ou=Management";
 
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
 
 			integrationPoint.Name = $"Import Entity LDAP - {Guid.NewGuid()}";
+
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForLDAPEntityImport();
+			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+
 
 			SourceProviderTest sourceProvider = Workspace.SourceProviders.Single(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP);
@@ -219,6 +223,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				EntityManagerFieldContainsLink = linkEntityManagers,
 				CaseArtifactId = Workspace.ArtifactId,
 				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+				WebServiceURL = @"//some/service/url/relativity"
 			};
 
 			integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);
