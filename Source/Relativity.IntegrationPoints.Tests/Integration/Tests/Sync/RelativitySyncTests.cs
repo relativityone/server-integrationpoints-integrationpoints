@@ -120,13 +120,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 		}
 
 		private Func<FakeAgent, CompositeCancellationToken, Task> SyncJobGracefullyDrainStoppedAction =>
-			(agent, token) =>
+			async (agent, token) =>
 			{
 				agent.MarkAgentToBeRemoved();
-				SpinWait.SpinUntil(() =>
-						token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
-					TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT));
-				return Task.CompletedTask;
+				SpinWait.SpinUntil(
+					() =>token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
+					TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT)
+				);
+
+				await Task.Delay(100);
 			};
 
 		private bool JobInQueueHasFlag(StopState stopState) => 
