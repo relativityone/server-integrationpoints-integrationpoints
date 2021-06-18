@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -23,8 +24,15 @@ namespace Relativity.Sync.Tests.Unit
 			_servicesMgr = new Mock<ISyncServiceManager>();
 			_proxyFactory = new Mock<IDynamicProxyFactory>();
 
-			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object);
-		}
+            Mock<IRandom> randomFake = new Mock<IRandom>();
+            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+
+
+			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object,
+                randomFake.Object, syncLogMock.Object);
+
+            _instance.SecondsBetweenRetries = 0.5;
+        }
 
 		[Test]
 		public async Task ItShouldWrapKeplerServiceWithProxy()
@@ -55,5 +63,32 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			action.Should().NotThrow();
 		}
+
+        [Test]
+		public void ItShouldCreateServiceFactoryAfterTwoFailures()
+		{
+            IObjectManager objectManager = Mock.Of<IObjectManager>();
+			IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
+			_proxyFactory.SetupSequence(x => x.WrapKeplerService(objectManager, It.IsAny<Func<Task<IObjectManager>>>()))
+                .Throws<Exception>().Throws<Exception>().Returns(wrappedObjectManager);
+
+            // act
+            Func<Task> action = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+			// assert
+            action.Should().NotThrow();
+        }
+
+		[Test]
+        public void ItShouldThrowExceptionWhenRetriesLimitReached()
+        {
+            _servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Throws<Exception>();
+
+            // act
+            Func<Task> action = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+            // assert
+            action.Should().Throw<Exception>();
+        }
 	}
 }

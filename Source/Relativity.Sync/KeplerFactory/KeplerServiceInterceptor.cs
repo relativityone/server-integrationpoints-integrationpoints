@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Net.Sockets;
 using Polly;
 using Polly.Wrap;
 using Polly.Retry;

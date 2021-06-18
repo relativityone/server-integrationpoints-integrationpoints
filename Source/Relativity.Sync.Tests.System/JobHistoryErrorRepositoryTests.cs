@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -38,8 +39,12 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
+            Mock<IRandom> randomFake = new Mock<IRandom>();
+            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			_serviceFactory = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub());
+			_serviceFactory = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(), 
+                randomFake.Object, syncLogMock.Object);
 			_dateTime = new DateTimeWrapper();
 			_logger = new EmptyLogger();
 		}
