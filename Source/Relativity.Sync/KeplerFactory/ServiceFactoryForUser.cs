@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;

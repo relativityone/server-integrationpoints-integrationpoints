@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Relativity.API;
+using Polly;
+using Polly.Retry;
+using Relativity.Services.Exceptions;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
 {
@@ -10,25 +13,43 @@ namespace Relativity.Sync.KeplerFactory
 
         public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
         {
-            int retriesCounter = 0;
-            const int retriesLimit = 3;
-            Exception proxyException;
-            do
-            {
-                retriesCounter++;
-                try
-                {
-                    return await CreateProxyInternalAsync<T>().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    proxyException = ex;
-                    await Task.Delay(50).ConfigureAwait(false);
-                }
+            const int retryCount = 2;
+            const int authTokenRetriesCount = 2;
+            const double secondsBetweenRetries = 2;
 
-            } while (retriesCounter < retriesLimit);
+            RetryPolicy errorsPolicy = GetErrorsPolicy(retryCount, secondsBetweenRetries);
+            RetryPolicy authTokenPolicy = GetAuthenticationTokenPolicy(authTokenRetriesCount);
+            Policy.WrapAsync(errorsPolicy, authTokenPolicy);
 
-            throw proxyException;
+            return await errorsPolicy.ExecuteAsync(
+                async () => await CreateProxyInternalAsync<T>().ConfigureAwait(false));
+
+        }
+
+        private RetryPolicy GetErrorsPolicy(int retryCount, double secondsBetweenRetries)
+        {
+            IRandom random = new WrapperForRandom();
+
+            RetryPolicy errorsPolicy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(retryCount, retryAttempt =>
+                {
+                    const int maxJitterMs = 100;
+                    TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(secondsBetweenRetries, retryAttempt));
+                    TimeSpan jitter = TimeSpan.FromMilliseconds(random.Next(0, maxJitterMs));
+                    return delay + jitter;
+                });
+
+            return errorsPolicy;
+        }
+
+        private RetryPolicy GetAuthenticationTokenPolicy(int authTokenRetriesCount)
+        {
+            RetryPolicy authTokenPolicy = Policy
+                .Handle<NotAuthorizedException>() // Thrown when token expired
+                .RetryAsync(authTokenRetriesCount);
+
+            return authTokenPolicy;
         }
     }
 }
