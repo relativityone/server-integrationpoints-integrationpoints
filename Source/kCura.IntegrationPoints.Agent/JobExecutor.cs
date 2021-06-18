@@ -29,8 +29,6 @@ namespace kCura.IntegrationPoints.Agent
 
 		public event ExceptionEventHandler JobExecutionError;
 
-		//public event JobPostExecuteEventHandler JobPostExecute;
-
 		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, IAPILog logger)
 		{
 			if (taskProvider == null)
