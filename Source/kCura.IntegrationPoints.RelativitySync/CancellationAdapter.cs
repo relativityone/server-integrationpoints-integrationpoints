@@ -28,14 +28,19 @@ namespace kCura.IntegrationPoints.RelativitySync
 			_jobHistoryService = jobHistoryService;
 		}
 
-		public CompositeCancellationToken GetCancellationToken()
+		public CompositeCancellationToken GetCancellationToken(Action drainStopTokenCallback = null)
 		{
 			CancellationTokenSource stopTokenSource = new CancellationTokenSource();
 			CancellationTokenSource drainStopTokenSource = new CancellationTokenSource();
 			IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _job.JobIdentifier, _job.JobId,
 				supportsDrainStop: true, stopCancellationTokenSource: stopTokenSource, drainStopCancellationTokenSource: drainStopTokenSource);
 			_container.Register(Component.For<IJobStopManager>().Instance(jobStopManager).Named($"{nameof(jobStopManager)}-{Guid.NewGuid()}"));
-			
+
+			if (drainStopTokenCallback != null)
+			{
+				drainStopTokenSource.Token.Register(drainStopTokenCallback);
+			}
+
 			return new CompositeCancellationToken(stopTokenSource.Token, drainStopTokenSource.Token);
 		}
 	}

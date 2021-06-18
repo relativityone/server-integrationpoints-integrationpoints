@@ -24,22 +24,30 @@ namespace kCura.IntegrationPoints.Agent
 
 		private readonly ITaskProvider _taskProvider;
 		private readonly IAgentNotifier _agentNotifier;
+		private readonly IJobService _jobService;
 		private IAPILog _logger { get; }
 
 		public event ExceptionEventHandler JobExecutionError;
 
-		public event JobPostExecuteEventHandler JobPostExecute;
+		//public event JobPostExecuteEventHandler JobPostExecute;
 
-		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IAPILog logger)
+		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, IAPILog logger)
 		{
 			if (taskProvider == null)
 			{
 				throw new ArgumentNullException(nameof(taskProvider));
 			}
+
 			if (agentNotifier == null)
 			{
 				throw new ArgumentNullException(nameof(agentNotifier));
 			}
+
+			if (jobService == null)
+			{
+				throw new ArgumentNullException(nameof(jobService));
+			}
+
 			if (logger == null)
 			{
 				throw new ArgumentNullException(nameof(logger));
@@ -47,6 +55,7 @@ namespace kCura.IntegrationPoints.Agent
 
 			_taskProvider = taskProvider;
 			_agentNotifier = agentNotifier;
+			_jobService = jobService;
 			_logger = logger;
 		}
 
@@ -127,7 +136,7 @@ namespace kCura.IntegrationPoints.Agent
 					_agentNotifier.NotifyAgent(LogCategory.Info, msg);
 					LogFinishingExecuteTask(job);
 
-					return RaiseJobPostExecuteEvent(job);
+					return GetTaskResult(job.JobId);
 				}
 				catch (Exception ex)
 				{
@@ -154,9 +163,15 @@ namespace kCura.IntegrationPoints.Agent
 			JobExecutionError?.Invoke(job, task, exception);
 		}
 
-		private TaskResult RaiseJobPostExecuteEvent(Job job)
+		protected TaskResult GetTaskResult(long jobId)
 		{
-			return JobPostExecute?.Invoke(job) ?? new TaskResult { Status = TaskStatusEnum.Success, Exceptions = null };
+			Job job = _jobService.GetJob(jobId);
+			if (job.StopState.HasFlag(StopState.DrainStopping) || job.StopState.HasFlag(StopState.DrainStopped))
+			{
+				return new TaskResult { Status = TaskStatusEnum.DrainStopped, Exceptions = null };
+			}
+
+			return new TaskResult { Status = TaskStatusEnum.Success, Exceptions = null };
 		}
 
 		#region Logging

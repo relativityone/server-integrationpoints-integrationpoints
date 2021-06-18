@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
 			try
 			{
-				CompositeCancellationToken compositeCancellationToken = _cancellationAdapter.GetCancellationToken();
+				CompositeCancellationToken compositeCancellationToken = _cancellationAdapter.GetCancellationToken(drainStopTokenCallback: MarkJobAsSuspending);
 				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
 				using (IContainer container = InitializeSyncContainer(syncConfiguration))
 				{
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					}
 					else if (compositeCancellationToken.DrainStopCancellationToken.IsCancellationRequested)
 					{
-						await MarkJobAsDrainStoppedAsync().ConfigureAwait(false);
+						await MarkJobAsSuspendedAsync().ConfigureAwait(false);
 						taskResult = new TaskResult { Status = TaskStatusEnum.DrainStopped };
 					}
 					else
@@ -174,15 +174,27 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task MarkJobAsDrainStoppedAsync()
+		private void MarkJobAsSuspending()
 		{
 			try
 			{
-				await _jobHistorySyncService.MarkJobAsDrainStoppedAsync(_job).ConfigureAwait(false);
+				_jobHistorySyncService.MarkJobAsSuspendingAsync(_job).Wait();
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Failed to mark job as drain-stopped.");
+				_logger.LogError(e, "Failed to mark job as suspending.");
+			}
+		}
+
+		private async Task MarkJobAsSuspendedAsync()
+		{
+			try
+			{
+				await _jobHistorySyncService.MarkJobAsSuspendedAsync(_job).ConfigureAwait(false);
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e, "Failed to mark job as suspended.");
 			}
 		}
 

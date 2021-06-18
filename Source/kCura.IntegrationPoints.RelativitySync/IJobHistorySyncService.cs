@@ -15,7 +15,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		Task MarkJobAsStoppedAsync(IExtendedJob job);
 
-		Task MarkJobAsDrainStoppedAsync(IExtendedJob job);
+		Task MarkJobAsSuspendingAsync(IExtendedJob job);
+
+		Task MarkJobAsSuspendedAsync(IExtendedJob job);
 
 		Task MarkJobAsFailedAsync(IExtendedJob job, Exception e);
 

@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NSubstitute;
 using NUnit.Framework;
@@ -21,6 +22,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 		private Mock<IAPILog> _logMock;
 		private Mock<ITaskProvider> _taskProviderFake;
+		private Mock<IJobService> _jobServiceFake;
 
 		private const string _RIP_PREFIX = "RIP.";
 
@@ -36,8 +38,9 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				.Returns(task.Object);
 
 			Mock<IAgentNotifier> agentNotifier = new Mock<IAgentNotifier>();
+			_jobServiceFake = new Mock<IJobService>();
 
-			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _logMock.Object);
+			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _logMock.Object);
 		}
 		
 		[Test]
@@ -84,33 +87,35 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		}
 
 		[Test]
-		public void ProcessJob_ShouldReturnStatusSameAsAssignedJobPostExecuteEvent()
+		public void ProcessJob_ShouldReturnedDrainStoppedStatus_WhenJobStopStateIsDrainStopping()
 		{
 			// Arrange
-			TaskStatusEnum expectedStatus = TaskStatusEnum.DrainStopped;
-
-			_sut.JobPostExecute += (Job j) => new TaskResult { Status = expectedStatus };
-
 			Job job = new JobBuilder().Build();
+
+			_jobServiceFake.Setup(x => x.GetJob(job.JobId))
+			.Returns((long jobId) => new JobBuilder().WithJob(job).WithStopState(StopState.DrainStopping).Build());
 
 			// Act
 			TaskResult result = _sut.ProcessJob(job);
 
 			// Assert
-			result.Status.Should().Be(expectedStatus);
+			result.Status.Should().Be(TaskStatusEnum.DrainStopped);
 		}
 
 		[Test]
-		public void ProcessJob_ShouldReturnSuccessStatus_WhenThereIsNoJobPostExecuteEventAssigned()
+		public void ProcessJob_ShouldReturnedDrainStoppedStatus_WhenJobStopStateIsDrainStopped()
 		{
 			// Arrange
 			Job job = new JobBuilder().Build();
+
+			_jobServiceFake.Setup(x => x.GetJob(job.JobId))
+				.Returns((long jobId) => new JobBuilder().WithJob(job).WithStopState(StopState.DrainStopped).Build());
 
 			// Act
 			TaskResult result = _sut.ProcessJob(job);
 
 			// Assert
-			result.Status.Should().Be(TaskStatusEnum.Success);
+			result.Status.Should().Be(TaskStatusEnum.DrainStopped);
 		}
 
 		[Test]

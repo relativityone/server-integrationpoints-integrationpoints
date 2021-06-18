@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Agent.Interfaces
 	{
 		event ExceptionEventHandler JobExecutionError;
 
-		event JobPostExecuteEventHandler JobPostExecute;
+		//event JobPostExecuteEventHandler JobPostExecute;
 
 		TaskResult ProcessJob(Job job);
 	}
