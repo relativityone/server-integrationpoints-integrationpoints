@@ -10,6 +10,7 @@ using Relativity.Services.ServiceProxy;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -29,10 +30,14 @@ namespace Relativity.Sync.Tests.Integration
 			var servicesMgr = new Mock<ISyncServiceManager>();
 			var serviceFactory = new Mock<IServiceFactory>();
 			var dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
+			Mock<IRandom> randomFake = new Mock<IRandom>();
+            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
 
 			containerBuilder.RegisterInstance(servicesMgr.Object).As<ISyncServiceManager>();
-			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object)).As<ISourceServiceFactoryForUser>();
-			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object)).As<IDestinationServiceFactoryForUser>();
+			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object
+                , randomFake.Object, syncLogMock.Object)).As<ISourceServiceFactoryForUser>();
+			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object
+                , randomFake.Object, syncLogMock.Object)).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(dynamicProxyFactory.Object).As<IDynamicProxyFactory>();
 
 			_container = containerBuilder.Build();

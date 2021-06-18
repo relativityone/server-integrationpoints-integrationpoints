@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
 {
@@ -16,21 +17,25 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly IDynamicProxyFactory _dynamicProxyFactory;
 		private readonly IServiceFactoryFactory _serviceFactoryFactory;
 
+
 		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, ISyncServiceManager servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory,
-			IServiceFactoryFactory serviceFactoryFactory)
+			IServiceFactoryFactory serviceFactoryFactory, IRandom random, ISyncLog logger)
+		    : base (random, logger)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_servicesMgr = servicesMgr;
 			_tokenGenerator = tokenGenerator;
 			_dynamicProxyFactory = dynamicProxyFactory;
 			_serviceFactoryFactory = serviceFactoryFactory;
-		}
+        }
 
 		/// <summary>
 		///     For testing purposes
 		/// </summary>
 		[ExcludeFromCodeCoverage]
-		internal ServiceFactoryForUser(IServiceFactory serviceFactory, IDynamicProxyFactory dynamicProxyFactory)
+		internal ServiceFactoryForUser(IServiceFactory serviceFactory, IDynamicProxyFactory dynamicProxyFactory
+            , IRandom random, ISyncLog logger)
+			: base(random, logger)
 		{
 			_serviceFactory = serviceFactory;
 			_dynamicProxyFactory = dynamicProxyFactory;

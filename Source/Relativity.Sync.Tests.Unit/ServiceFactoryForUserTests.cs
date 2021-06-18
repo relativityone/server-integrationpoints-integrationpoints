@@ -8,6 +8,7 @@ using Relativity.Services.Objects;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IAuthTokenGenerator> _tokenGenerator;
 		private Mock<IDynamicProxyFactory> _dynamicProxyFactory;
 
-		private const int _USER_ID = 139156;
+        private const int _USER_ID = 139156;
 
 		[SetUp]
 		public void SetUp()
@@ -35,7 +36,14 @@ namespace Relativity.Sync.Tests.Unit
 
 			_dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 
-			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object, _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory());
+            Mock<IRandom> randomFake = new Mock<IRandom>();
+			Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+
+			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object
+                , _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory()
+                , randomFake.Object, syncLogMock.Object);
+
+            _instance.SecondsBetweenRetries = 0.5;
 		}
 
 		[Test]

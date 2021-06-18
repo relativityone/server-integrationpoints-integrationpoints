@@ -9,16 +9,26 @@ namespace Relativity.Sync.KeplerFactory
 {
     internal abstract class ServiceFactoryBase
     {
+
+        protected readonly IRandom Random;
+        protected readonly ISyncLog Logger;
+        protected int RetryMaxCount = 2;
+        protected int AuthTokenRetriesMaxCount = 2;
+        public double SecondsBetweenRetries = 2;
+
+        protected ServiceFactoryBase(IRandom random, ISyncLog logger)
+        {
+            Random = random;
+            Logger = logger;
+        }
+
         protected abstract Task<T> CreateProxyInternalAsync<T>() where T : class, IDisposable;
 
         public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
         {
-            const int retryCount = 2;
-            const int authTokenRetriesCount = 2;
-            const int secondsBetweenRetries = 2;
 
-            RetryPolicy errorsPolicy = GetErrorsPolicy(retryCount, secondsBetweenRetries);
-            RetryPolicy authTokenPolicy = GetAuthenticationTokenPolicy(authTokenRetriesCount);
+            RetryPolicy errorsPolicy = GetErrorsPolicy();
+            RetryPolicy authTokenPolicy = GetAuthenticationTokenPolicy();
             Policy.WrapAsync(errorsPolicy, authTokenPolicy);
             T proxy = await errorsPolicy.ExecuteAsync(
                     async () => await CreateProxyInternalAsync<T>().ConfigureAwait(false))
@@ -28,28 +38,35 @@ namespace Relativity.Sync.KeplerFactory
 
         }
 
-        private RetryPolicy GetErrorsPolicy(int retryCount, int secondsBetweenRetries)
+        private RetryPolicy GetErrorsPolicy()
         {
-            IRandom random = new WrapperForRandom();
-
             RetryPolicy errorsPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(retryCount, retryAttempt =>
+                .WaitAndRetryAsync(RetryMaxCount, retryAttempt =>
                 {
                     const int maxJitterMs = 100;
-                    TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(secondsBetweenRetries, retryAttempt));
-                    TimeSpan jitter = TimeSpan.FromMilliseconds(random.Next(0, maxJitterMs));
+                    TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(SecondsBetweenRetries, retryAttempt));
+                    TimeSpan jitter = TimeSpan.FromMilliseconds(Random.Next(0, maxJitterMs));
                     return delay + jitter;
+                },
+                (ex, waitTime, retryCount, context) =>
+                {
+                    Logger.LogWarning(ex,
+                        $"Encountered error for {nameof(CreateProxyInternalAsync)}, attempting retry. Retry count: {retryCount} Wait time: {waitTime.TotalMilliseconds} (ms)");
                 });
 
             return errorsPolicy;
         }
 
-        private RetryPolicy GetAuthenticationTokenPolicy(int authTokenRetriesCount)
+        private RetryPolicy GetAuthenticationTokenPolicy()
         {
             RetryPolicy authTokenPolicy = Policy
                 .Handle<NotAuthorizedException>() // Thrown when token expired
-                .RetryAsync(authTokenRetriesCount);
+                .RetryAsync(AuthTokenRetriesMaxCount
+                    , (ex, retryCount, context) =>
+                {
+                    Logger.LogWarning(ex, $"Auth token has expired for {nameof(CreateProxyInternalAsync)}, attempting to generate new token and retry. Retry count: {retryCount}");
+                });
 
             return authTokenPolicy;
         }

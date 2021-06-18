@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -23,8 +24,15 @@ namespace Relativity.Sync.Tests.Unit
 			_servicesMgr = new Mock<ISyncServiceManager>();
 			_proxyFactory = new Mock<IDynamicProxyFactory>();
 
-			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object);
-		}
+            Mock<IRandom> randomFake = new Mock<IRandom>();
+            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+
+
+			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object
+                , randomFake.Object, syncLogMock.Object);
+
+            _instance.SecondsBetweenRetries = 0.5;
+        }
 
 		[Test]
 		public async Task ItShouldWrapKeplerServiceWithProxy()
