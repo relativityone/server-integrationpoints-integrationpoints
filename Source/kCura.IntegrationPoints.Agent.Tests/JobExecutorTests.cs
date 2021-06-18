@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -93,7 +94,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			Job job = new JobBuilder().Build();
 
 			_jobServiceFake.Setup(x => x.GetJob(job.JobId))
-			.Returns((long jobId) => new JobBuilder().WithJob(job).WithStopState(StopState.DrainStopping).Build());
+			.Returns(job.CopyJobWithStopState(StopState.DrainStopping));
 
 			// Act
 			TaskResult result = _sut.ProcessJob(job);
@@ -108,8 +109,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			// Arrange
 			Job job = new JobBuilder().Build();
 
-			_jobServiceFake.Setup(x => x.GetJob(job.JobId))
-				.Returns((long jobId) => new JobBuilder().WithJob(job).WithStopState(StopState.DrainStopped).Build());
+			_jobServiceFake.Setup(x => x.GetJob(job.JobId)).Returns(job.CopyJobWithStopState(StopState.DrainStopped));
 
 			// Act
 			TaskResult result = _sut.ProcessJob(job);
