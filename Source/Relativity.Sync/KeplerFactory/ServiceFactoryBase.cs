@@ -15,18 +15,20 @@ namespace Relativity.Sync.KeplerFactory
         {
             const int retryCount = 2;
             const int authTokenRetriesCount = 2;
-            const double secondsBetweenRetries = 2;
+            const int secondsBetweenRetries = 2;
 
             RetryPolicy errorsPolicy = GetErrorsPolicy(retryCount, secondsBetweenRetries);
             RetryPolicy authTokenPolicy = GetAuthenticationTokenPolicy(authTokenRetriesCount);
             Policy.WrapAsync(errorsPolicy, authTokenPolicy);
+            T proxy = await errorsPolicy.ExecuteAsync(
+                    async () => await CreateProxyInternalAsync<T>().ConfigureAwait(false))
+                .ConfigureAwait(false);
 
-            return await errorsPolicy.ExecuteAsync(
-                async () => await CreateProxyInternalAsync<T>().ConfigureAwait(false));
+            return proxy;
 
         }
 
-        private RetryPolicy GetErrorsPolicy(int retryCount, double secondsBetweenRetries)
+        private RetryPolicy GetErrorsPolicy(int retryCount, int secondsBetweenRetries)
         {
             IRandom random = new WrapperForRandom();
 
