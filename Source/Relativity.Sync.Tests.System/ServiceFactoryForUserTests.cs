@@ -13,6 +13,7 @@ using Relativity.Sync.Authentication;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Identification;
@@ -74,8 +75,13 @@ namespace Relativity.Sync.Tests.System
 				PermissionType = PermissionType.Edit
 			};
 
+            Mock<IRandom> randomFake = new Mock<IRandom>();
+            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
-			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager, authTokenGenerator, dynamicProxyFactory, new ServiceFactoryFactory());
+			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager,
+                authTokenGenerator, dynamicProxyFactory, new ServiceFactoryFactory(),
+                randomFake.Object, syncLogMock.Object);
 			List<PermissionValue> permissionValues;
 			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
 			{

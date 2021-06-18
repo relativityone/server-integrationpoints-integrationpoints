@@ -33,8 +33,8 @@ namespace Relativity.Sync.KeplerFactory
 		///     For testing purposes
 		/// </summary>
 		[ExcludeFromCodeCoverage]
-		internal ServiceFactoryForUser(IServiceFactory serviceFactory, IDynamicProxyFactory dynamicProxyFactory
-            , IRandom random, ISyncLog logger)
+		internal ServiceFactoryForUser(IServiceFactory serviceFactory, IDynamicProxyFactory dynamicProxyFactory,
+            IRandom random, ISyncLog logger)
 			: base(random, logger)
 		{
 			_serviceFactory = serviceFactory;

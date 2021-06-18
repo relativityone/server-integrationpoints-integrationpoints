@@ -28,8 +28,8 @@ namespace Relativity.Sync.Tests.Unit
             Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
 
 
-			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object
-                , randomFake.Object, syncLogMock.Object);
+			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object,
+                randomFake.Object, syncLogMock.Object);
 
             _instance.SecondsBetweenRetries = 0.5;
         }
@@ -65,6 +65,21 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
         [Test]
+		public void ItShouldCreateServiceFactoryAfterTwoFailures()
+		{
+            IObjectManager objectManager = Mock.Of<IObjectManager>();
+			IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
+			_proxyFactory.SetupSequence(x => x.WrapKeplerService(objectManager, It.IsAny<Func<Task<IObjectManager>>>()))
+                .Throws<Exception>().Throws<Exception>().Returns(wrappedObjectManager);
+
+            // act
+            Func<Task> action = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+
+			// assert
+            action.Should().NotThrow();
+        }
+
+		[Test]
         public void ItShouldThrowExceptionWhenRetriesLimitReached()
         {
             _servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Throws<Exception>();

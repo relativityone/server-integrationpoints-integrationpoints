@@ -39,9 +39,9 @@ namespace Relativity.Sync.Tests.Unit
             Mock<IRandom> randomFake = new Mock<IRandom>();
 			Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
 
-			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object
-                , _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory()
-                , randomFake.Object, syncLogMock.Object);
+			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object,
+                _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory(), 
+                randomFake.Object, syncLogMock.Object);
 
             _instance.SecondsBetweenRetries = 0.5;
 		}

@@ -34,10 +34,10 @@ namespace Relativity.Sync.Tests.Integration
             Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
 
 			containerBuilder.RegisterInstance(servicesMgr.Object).As<ISyncServiceManager>();
-			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object
-                , randomFake.Object, syncLogMock.Object)).As<ISourceServiceFactoryForUser>();
-			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object
-                , randomFake.Object, syncLogMock.Object)).As<IDestinationServiceFactoryForUser>();
+			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object,
+                randomFake.Object, syncLogMock.Object)).As<ISourceServiceFactoryForUser>();
+			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object,
+                randomFake.Object, syncLogMock.Object)).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(dynamicProxyFactory.Object).As<IDynamicProxyFactory>();
 
 			_container = containerBuilder.Build();
