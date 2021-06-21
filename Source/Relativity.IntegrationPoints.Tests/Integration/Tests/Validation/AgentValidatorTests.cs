@@ -7,7 +7,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 {
-	[IdentifiedTestFixture("26D4A411-D812-41B0-85A6-83847E942F45")]
 	public class AgentValidatorTests : TestsBase
 	{
 		[IdentifiedTest("0895F31D-E64B-46C7-ABAC-52ECF904CD79")]

@@ -21,7 +21,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-    [IdentifiedTestFixture("BA0C4AD6-6236-4235-BEBB-CB1084A978E9")]
     [TestExecutionCategory.CI, TestLevel.L1]
     public class SyncWorkerTests : TestsBase
     {

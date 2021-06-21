@@ -3,7 +3,6 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CD
 {
-	[IdentifiedTestFixture("647f466f-a5fb-4693-917d-743b3aaad46d", Description = "RIP SYNC CD GOLD FLOWS")]
 	[TestType.UI, TestType.MainFlow]
 	public class SyncTests : TestsBase
 	{

@@ -19,7 +19,6 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.Lo
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-	[IdentifiedTestFixture("DF85E997-C5E0-4B77-B687-E88545CC9F7B")]
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class ImportServiceManagerTests : TestsBase
 	{

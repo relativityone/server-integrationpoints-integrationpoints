@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 {
-	[IdentifiedTestFixture("A08151D7-91BF-4E7B-A65E-BBE5E9DFD4F0")]
 	public class RelativitySyncTests : TestsBase
 	{
 		private const int _STOP_MANAGER_TIMEOUT = 10;

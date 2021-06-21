@@ -13,7 +13,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 {
-	[IdentifiedTestFixture("7D567FE8-720D-43B7-81A2-8200C6F10FAB")]
 	[TestExecutionCategory.CI, TestLevel.L2]
 	public class LDAPProviderTests_OpenLDAP : TestsBase
 	{
