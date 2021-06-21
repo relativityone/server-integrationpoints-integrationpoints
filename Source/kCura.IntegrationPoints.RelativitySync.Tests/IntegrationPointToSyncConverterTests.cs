@@ -228,14 +228,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 					 o.CopyImagesMode == expectedCopyMode)));
 		}
 
-		[TestCase(new int[2]{ 1, 2 }, true, "[1,2]")]
-		[TestCase(new int[2]{ 1, 2 }, false, "[1,2]")]
+		[TestCase(new int[] { 1, 2 }, true)]
+		[TestCase(new int[] { 1, 2 }, false)]
 		public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenIntegrationPointWithImageProductionPrecedenceModeSync(
-			int[] imagePrecedence, bool includeOriginalImages, string syncProductionImagePrecedence)
+			int[] imagePrecedence, bool includeOriginalImages)
 		{
 			// Arrange
 			_destinationConfiguration = CreateImageDestinationConfiguration(
 				includeOriginalImages: includeOriginalImages,
+				productionPrecedence: "1",
 				imagePrecedence: imagePrecedence.Select(x => new ProductionDTO { ArtifactID = x.ToString() }));
 			_sourceConfiguration = CreateSourceConfiguration();
 
@@ -247,9 +248,29 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			// Assert
 			_imageSyncConfigurationBuilderMock.Verify(x => x.ProductionImagePrecedence(It.Is<ProductionImagePrecedenceOptions>(
 				o => o.IncludeOriginalImagesIfNotFoundInProductions == includeOriginalImages &&
-					 o.ProductionImagePrecedenceIds.SequenceEqual(imagePrecedence))));
+				     o.ProductionImagePrecedenceIds.SequenceEqual(imagePrecedence))));
 		}
+		
+		[Test]
+		public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithOriginalImagesAndImagesPrecedenceSelected()
+		{
+			// Arrange
+			_destinationConfiguration = CreateImageDestinationConfiguration(
+				includeOriginalImages: true,
+				productionPrecedence: "0",
+				imagePrecedence: new[] {new ProductionDTO {ArtifactID = "1"}, new ProductionDTO {ArtifactID = "2"}});
+			_sourceConfiguration = CreateSourceConfiguration();
 
+			IExtendedJob job = SetupExtendedJob();
+
+			// Act
+			await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+			// Assert
+			_imageSyncConfigurationBuilderMock.Verify(x => x.ProductionImagePrecedence(It.Is<ProductionImagePrecedenceOptions>(
+				o => o.IncludeOriginalImagesIfNotFoundInProductions &&
+				     o.ProductionImagePrecedenceIds.ToList().Count == 0)));
+		}
 		private static ExtendedImportSettings CreateNativeDestinationConfiguration()
 		{
 			ImportSettings settings = new ImportSettings
@@ -266,6 +287,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		private static ExtendedImportSettings CreateImageDestinationConfiguration(
 			ImportNativeFileCopyModeEnum importFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks,
 			bool includeOriginalImages = true,
+			string productionPrecedence = "0",
 			IEnumerable<ProductionDTO> imagePrecedence = null)
 		{
 			ImportSettings settings = new ImportSettings
@@ -276,7 +298,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				FieldOverlayBehavior = "Use Field Settings",
 				ImageImport = true,
 				IncludeOriginalImages = includeOriginalImages,
-				ImagePrecedence = imagePrecedence ?? Array.Empty<ProductionDTO>()
+				ImagePrecedence = imagePrecedence ?? Array.Empty<ProductionDTO>(),
+				ProductionPrecedence = productionPrecedence
 			};
 
 			return new ExtendedImportSettings(settings);
@@ -409,6 +432,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				ImageImport = baseSettings.ImageImport;
 				IncludeOriginalImages = baseSettings.IncludeOriginalImages;
 				ImagePrecedence = baseSettings.ImagePrecedence;
+				ProductionPrecedence = baseSettings.ProductionPrecedence;
 			}
 		}
 	}
