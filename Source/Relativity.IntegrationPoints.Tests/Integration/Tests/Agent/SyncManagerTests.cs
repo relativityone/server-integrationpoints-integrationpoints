@@ -20,7 +20,6 @@ using static Relativity.IntegrationPoints.Tests.Integration.Const;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-	[IdentifiedTestFixture("9D111D3B-2E16-4652-82C9-6F8B7A8F2AD5")]
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncManagerTests : TestsBase
 	{
