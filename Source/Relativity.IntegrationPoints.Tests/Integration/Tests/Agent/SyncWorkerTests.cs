@@ -132,7 +132,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(numberOfRecords); });
 
 			// Act
-			sut.Execute(new Job(job.AsDataRow()));
+			sut.Execute(job.AsJob());
 
 			// Assert
 			jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
@@ -158,7 +158,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			});
 
 			// Act
-			sut.Execute(new Job(job.AsDataRow()));
+			sut.Execute(job.AsJob());
 
 			// Assert
 			List<string> remainingItems = GetRemainingItems(job);
@@ -195,7 +195,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			});
 
 			// Act
-			sut.Execute(new Job(job.AsDataRow()));
+			sut.Execute(job.AsJob());
 
 			// Assert
 			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistoryProcessingGuid);
@@ -222,9 +222,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				agent.ToBeRemoved = true;
 			});
 
-
 			// Act
-			var syncManagerJob = new Job(job.AsDataRow());
+			var syncManagerJob = job.AsJob();
 			sut.Execute(syncManagerJob);
 
 			// Assert
@@ -261,7 +260,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(numberOfRecords, numberOfErrors); });
 
 			// Act
-			var syncManagerJob = new Job(job.AsDataRow());
+			var syncManagerJob = job.AsJob();
 			sut.Execute(syncManagerJob);
 
 			// Assert
