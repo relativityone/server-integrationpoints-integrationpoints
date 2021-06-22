@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
@@ -66,7 +67,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
-			var syncConfigurationRoot = builder
+			IEnumerable<int> productionImagePrecedenceIds = importSettings.ProductionPrecedence == "1" ?
+				importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)) :
+				Enumerable.Empty<int>();
+
+			IImageSyncConfigurationBuilder syncConfigurationRoot = builder
 				.ConfigureRdos(RdoConfiguration.GetRdoOptions())
 				.ConfigureImageSync(
 					new ImageSyncOptions(
@@ -77,7 +82,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					})
 				.ProductionImagePrecedence(
 					new ProductionImagePrecedenceOptions(
-						importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)),
+						productionImagePrecedenceIds,
 						importSettings.IncludeOriginalImages))
 				.EmailNotifications(
 					GetEmailOptions(job))
@@ -93,7 +98,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (IsRetryingErrors(job.Job))
 			{
-				var jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
+				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
 					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
@@ -105,7 +110,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
 		{
-			var syncConfigurationRoot = builder
+			IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
 				.ConfigureRdos(RdoConfiguration.GetRdoOptions())
 				.ConfigureDocumentSync(
 					new DocumentSyncOptions(
@@ -132,7 +137,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (IsRetryingErrors(job.Job))
 			{
-				var jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
+				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
 					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
@@ -143,7 +148,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		private void PrepareFieldsMappingAction(string integrationPointsFieldsMapping, IFieldsMappingBuilder mappingBuilder)
 		{
-			var fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _serializer, _logger);
+			List<FieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _serializer, _logger);
 
 			SyncFieldMap identifier = fieldsMapping.FirstOrDefault(x => x.FieldMapType == FieldMapType.Identifier);
 			if (identifier != null)
@@ -151,7 +156,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				mappingBuilder.WithIdentifier();
 			}
 
-			foreach (var fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
+			foreach (FieldMap fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
 			{
 				mappingBuilder.WithField(fieldsMap.SourceField.FieldIdentifier, fieldsMap.DestinationField.FieldIdentifier);
 			}
@@ -161,7 +166,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			if (folderConf.UseFolderPathInformation)
 			{
-				var folderOptions = DestinationFolderStructureOptions.ReadFromField(folderConf.FolderPathSourceField);
+				DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.ReadFromField(folderConf.FolderPathSourceField);
 				folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;
 
 				return folderOptions;
@@ -169,7 +174,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (folderConf.UseDynamicFolderPath)
 			{
-				var folderOptions = DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
+				DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
 				folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;
 
 				return folderOptions;

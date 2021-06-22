@@ -21,7 +21,6 @@ using SystemInterface.IO;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
-    [IdentifiedTestFixture("4FDA6BE8-7BA6-4755-A7AD-9C48FEB26877")]
     public class JobControllerTests : TestsBase
     {
         private WorkspaceTest _destinationWorkspace;
