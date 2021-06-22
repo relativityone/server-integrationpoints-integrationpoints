@@ -41,5 +41,12 @@ namespace kCura.IntegrationPoints.Core.Services
 
             return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID, batchIsFinished) == 0;
         }
+
+        public int GetProcessingBatchesCount(Job job, string batchId)
+        {
+	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+
+	        return _tracker.GetProcessingBatchesCount(jobTrackerTempTableName, job.RootJobId.Value, job.WorkspaceID);
+        }
     }
 }

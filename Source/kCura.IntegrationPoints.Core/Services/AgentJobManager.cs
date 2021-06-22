@@ -69,6 +69,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			return _tracker.CheckEntries(job, batchId, isBatchFinished);
 		}
 
+		public int GetProcessingBatchesCount(Job job, string batchId)
+		{
+			return _tracker.GetProcessingBatchesCount(job, batchId);
+		}
+
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class
 		{
 			CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);

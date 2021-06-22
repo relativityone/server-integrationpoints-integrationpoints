@@ -36,12 +36,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
 		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement)
 		{
-			throw new System.NotImplementedException();
+			return new DataTable();
 		}
 
 		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement, IEnumerable<SqlParameter> parameters)
 		{
-			throw new System.NotImplementedException();
+			return new DataTable();
 		}
 
 		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement, IEnumerable<SqlParameter> parameters)

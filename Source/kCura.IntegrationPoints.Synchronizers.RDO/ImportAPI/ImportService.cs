@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -32,6 +33,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private readonly IImportJobFactory _jobFactory;
 		private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
 		private readonly NativeFileImportService _nativeFileImportService;
+
 
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService,
 			IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IJobStopManager jobStopManager)
@@ -190,6 +192,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return mapping;
 		}
 
+		public int TotalRowsProcessed => _totalRowsImported;
+
 		internal Dictionary<string, object> GenerateImportFields(Dictionary<string, object> sourceFields, Dictionary<string, string> mapping)
 		{
 			Dictionary<string, object> importFields = new Dictionary<string, object>();
@@ -268,8 +272,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private void CompleteBatch(DateTime start, DateTime end, int totalRows, int errorRows)
 		{
 			LogBatchCompleted(start, end, totalRows, errorRows);
-			_totalRowsImported += totalRows;
-			_totalRowsWithErrors += errorRows;
+			
+			Interlocked.Add(ref  _totalRowsImported, totalRows);
+			Interlocked.Add(ref  _totalRowsWithErrors, errorRows);
+			
 			OnBatchComplete?.Invoke(start, end, _totalRowsImported, _totalRowsWithErrors);
 		}
 

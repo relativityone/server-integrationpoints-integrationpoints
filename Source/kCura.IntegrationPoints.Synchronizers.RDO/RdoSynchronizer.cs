@@ -41,8 +41,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected readonly IRelativityFieldQuery FieldQuery;
 
 		public Data.SourceProvider SourceProvider { get; set; }
-		private ImportSettings ImportSettings { get; set; }
 
+		public int TotalRowsProcessed => _importService.TotalRowsProcessed;
+
+		private ImportSettings ImportSettings { get; set; }
+		
 		private NativeFileImportService NativeFileImportService { get; set; }
 
 		private HashSet<string> IgnoredList => _ignoredList ?? (_ignoredList = new HashSet<string>

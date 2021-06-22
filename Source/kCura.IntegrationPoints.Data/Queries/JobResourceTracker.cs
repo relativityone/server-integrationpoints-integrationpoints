@@ -42,6 +42,19 @@ namespace kCura.IntegrationPoints.Data.Queries
 	        }
         }
 
+        public int GetProcessingBatchesCount(string tableName, long rootJobId, int workspaceId)
+        {
+	        lock (_syncRoot)
+	        {
+		        IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceId, string.Empty, string.Empty);
+		        string scratchTableFullName = string.Format("{0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), tableName);
+                
+                string sql = string.Format(Resources.Resource.GetProcessingSyncWorkerBatches, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME, scratchTableFullName);
+		        IList<SqlParameter> sqlParams = GetSqlParameters(rootJobId);
+		        return _context.ExecuteSqlStatementAsDataTable(sql, sqlParams).Rows.Count;
+	        }
+        }
+
         private IList<SqlParameter> GetSqlParameters(long jobId)
         {
 	        return new List<SqlParameter>

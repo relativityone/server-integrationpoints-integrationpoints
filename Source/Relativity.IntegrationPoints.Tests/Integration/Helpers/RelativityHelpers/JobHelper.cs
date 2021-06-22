@@ -42,6 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 		public JobTest ScheduleIntegrationPointRun(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
 		{
 			JobTest job = CreateBasicJob(workspace, integrationPoint).Build();
+			job.RootJobId = job.JobId;
 			return ScheduleJob(job);
 		}
 

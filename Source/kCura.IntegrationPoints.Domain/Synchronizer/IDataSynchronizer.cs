@@ -31,5 +31,11 @@ namespace kCura.IntegrationPoints.Domain.Synchronizer
 		/// <param name="jobStopManager"></param>
 		void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options,
 			IJobStopManager jobStopManager);
+
+
+		/// <summary>
+		/// Returns total rows processed during last SyncData call
+		/// </summary>
+		int TotalRowsProcessed { get; }
 	}
 }

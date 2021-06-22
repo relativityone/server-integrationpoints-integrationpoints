@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -30,6 +31,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.ServiceBus.Patterns.RefreshableBus;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -56,7 +58,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerFactory managerFactory,
 			IJobService jobService,
 			IProviderTypeService providerTypeService,
-			IIntegrationPointRepository integrationPointRepository) :
+			IIntegrationPointRepository integrationPointRepository
+			) :
 			base(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -140,27 +143,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
-			int processedItemCount = GetProcessedItemsCount(JobHistory);
+			int totalRowsCountInBatch = GetRowsCountForBatch(job.JobDetails);
 
-			if (ShouldDrainStop(processedItemCount))
+			if (ShouldSkipItemsInJobDetails(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch))
 			{
-				MarkJobAsDrainStopped(job, processedItemCount);
+				job.JobDetails = SkipProcessedItems(job.JobDetails, dataSynchronizer.TotalRowsProcessed);
 			}
-
+		
 			LogExecuteImportSuccesfulEnd(job);
 		}
 
-		private bool ShouldDrainStop(int processedItemCount)
+		private bool ShouldSkipItemsInJobDetails(int processedItemCount, int totalRowsCountInBatch)
 		{
-			bool notAllItemsProcessed = processedItemCount < (JobHistory.TotalItems ?? long.MaxValue);
-			bool shouldDrainStop = JobStopManager?.ShouldDrainStop == true;
+			bool notAllItemsProcessed = processedItemCount < totalRowsCountInBatch;
+			bool drainStopRequested = JobStopManager?.ShouldDrainStop == true;
 
-			return shouldDrainStop && notAllItemsProcessed;
+			return drainStopRequested && notAllItemsProcessed;
 		}
 
-		private void MarkJobAsDrainStopped(Job job, int processedItemCount)
+		private void MarkJobAsDrainStopped(Job job)
 		{
-			job.JobDetails = SkipProcessedItems(job.JobDetails, processedItemCount);
+			
 			JobHistory.JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistorySuspendedGuid});
 			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
 
@@ -169,19 +172,25 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobService.UpdateJobDetails(job);
 		}
 
-		private static int GetProcessedItemsCount(JobHistory jobHistory)
+		private int GetRowsCountForBatch(string jobDetails)
 		{
-			return (jobHistory.ItemsTransferred ?? 0) + (jobHistory.ItemsWithErrors ?? 0);
+			return GetRecordsIds(Serializer.Deserialize<TaskParameters>(jobDetails)).Count;
 		}
 
 		private string SkipProcessedItems(string jobDetails, int processedItemCount)
 		{
-			TaskParameters parameters = Serializer.Deserialize <TaskParameters>(jobDetails);
-			List<string> list = Serializer.Deserialize<List<string>>(parameters.BatchParameters.ToString());
+			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(jobDetails);
+
+			List<string> list = GetRecordsIds(parameters);
 
 			parameters.BatchParameters = list.Skip(processedItemCount);
 			
 			return Serializer.Serialize(parameters);
+		}
+
+		private List<string> GetRecordsIds(TaskParameters taskParameters)
+		{
+			return Serializer.Deserialize<List<string>>(taskParameters.BatchParameters.ToString());
 		}
 
 		protected virtual void ExecuteTask(Job job)
@@ -321,6 +330,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SetErrorStatusesToExpiredIfStopped(job);
 
+			UpdateJobHistoryStopState(job);
+
 			foreach (IBatchStatus completedItem in BatchStatus)
 			{
 				try
@@ -348,6 +359,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogUpdateStopStateToNone(jobsToUpdate);
 				JobService.UpdateStopState(jobsToUpdate, StopState.None);
+			}
+		}
+
+		private void UpdateJobHistoryStopState(Job job)
+		{
+			if (JobManager.GetProcessingBatchesCount(job, BatchInstance.ToString()) == 0)
+			{
+				MarkJobAsDrainStopped(job);
 			}
 		}
 

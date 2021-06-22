@@ -332,6 +332,7 @@
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
+    <Content Include="Resources\GetProcessingSyncWorkerBatches.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />

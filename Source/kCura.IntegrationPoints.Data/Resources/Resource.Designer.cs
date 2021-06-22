@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///
         ///IF (NOT EXISTS (SELECT * FROM {0}.[{1}] WHERE JobID = @jobID))
         ///BEGIN
-        ///	insert into {0}.[{1}] ([JobID],[Com [rest of string was truncated]&quot;;.
+        ///	insert into {0}.[{1}] ([JobID] ,[To [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateJobTrackingEntry {
             get {
@@ -248,6 +248,15 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string GetProcessingSyncWorkerBatches {
+            get {
+                return ResourceManager.GetString("GetProcessingSyncWorkerBatches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SET ANSI_NULLS ON
         ///SET QUOTED_IDENTIFIER ON
         ///
@@ -287,9 +296,9 @@ namespace kCura.IntegrationPoints.Data.Resources {
         /// <summary>
         ///   Looks up a localized string similar to UPDATE {0}.[{1}]
         ///	SET
-        ///		[TotalRecords] = @total,
-        ///		[ErrorRecords] = @errored,
-        ///		[ImportApiErrors] = @importApiErrors
+        ///		[TotalRecords] += @total,
+        ///		[ErrorRecords] += @errored,
+        ///		[ImportApiErrors] += @importApiErrors
         ///	WHERE
         ///		[JobId] = @jobID
         ///
