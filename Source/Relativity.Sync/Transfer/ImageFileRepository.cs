@@ -102,6 +102,11 @@ namespace Relativity.Sync.Transfer
 				}
 
 				documentsWithoutImages = documentsWithoutImages.Where(x => !result.ContainsKey(x)).ToArray();
+
+				if (documentsWithoutImages.Length == 0)
+				{
+					break;
+				}
 			}
 
 			return (result.Values.SelectMany(x => x).ToArray(), documentsWithoutImages);
