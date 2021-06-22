@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -31,7 +30,6 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.ServiceBus.Patterns.RefreshableBus;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -174,7 +172,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private int GetRowsCountForBatch(string jobDetails)
 		{
-			return GetRecordsIds(Serializer.Deserialize<TaskParameters>(jobDetails)).Count;
+			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(jobDetails);
+			return GetRecordsIds(taskParameters).Count;
 		}
 
 		private string SkipProcessedItems(string jobDetails, int processedItemCount)
@@ -287,6 +286,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					OnJobComplete(job);
 				}
+
+				UpdateJobHistoryStopState(job);
 			}
 			catch (Exception e)
 			{
@@ -330,8 +331,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SetErrorStatusesToExpiredIfStopped(job);
 
-			UpdateJobHistoryStopState(job);
-
 			foreach (IBatchStatus completedItem in BatchStatus)
 			{
 				try
@@ -364,7 +363,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void UpdateJobHistoryStopState(Job job)
 		{
-			if (JobManager.GetProcessingBatchesCount(job, BatchInstance.ToString()) == 0)
+			bool stopRequested = JobStopManager?.ShouldDrainStop == true;
+			if (stopRequested && JobManager.GetProcessingBatchesCount(job, BatchInstance.ToString()) == 0)
 			{
 				MarkJobAsDrainStopped(job);
 			}

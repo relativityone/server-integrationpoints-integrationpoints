@@ -5,7 +5,6 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-	[IdentifiedTestFixture("74f17f40-697f-42b7-bad5-f83b8eeaa86a", Description = "RIP SYNC CI GOLD FLOWS")]
 	[TestType.UI, TestType.MainFlow]
 	public class SyncTests : TestsBase
 	{

@@ -4,6 +4,7 @@ kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
 LanguageExt.Core
+Relativity.Toggles
 Relativity.Data
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService

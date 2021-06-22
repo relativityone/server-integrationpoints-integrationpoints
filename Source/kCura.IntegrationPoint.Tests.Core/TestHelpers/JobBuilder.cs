@@ -51,9 +51,9 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return this;
 		}
 
-		public JobBuilder WithRootJobId(long rootJobId)
+		public JobBuilder WithRootJobId(long? rootJobId)
 		{
-			_jobData[_ROOT_JOB_ID] = rootJobId;
+			_jobData[_ROOT_JOB_ID] = (object)rootJobId ?? DBNull.Value;
 			return this;
 		}
 

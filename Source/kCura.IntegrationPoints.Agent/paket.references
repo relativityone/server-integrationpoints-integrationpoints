@@ -3,6 +3,7 @@ CSharpGuidelineAnalyzer
 kCura.Agent
 kCura.Apps.Common.Config
 Relativity
+Relativity.Toggles
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection

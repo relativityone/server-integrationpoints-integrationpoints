@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		protected virtual void JobHistoryErrorManagerSetup(Job job) { } //No-op for ImportServiceManager, Overridden in ExportServiceManager
 
-		protected void InitializeService(Job job)
+		protected void InitializeService(Job job, bool supportsDrainStop)
 		{
 			LogInitializeServiceStart(job);
 			LoadIntegrationPointData(job);
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			RunValidation(job);
 			SanitizeMappedFields();
 			JobHistoryErrorManagerSetup(job);
-			ConfigureJobStopManager(job);
+			ConfigureJobStopManager(job, supportsDrainStop);
 			ConfigureBatchExceptions(job);
 			LogInitializeServiceEnd(job);
 		}
@@ -232,8 +232,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 
-		protected void SetJobStateAsUnstoppable(Job job)
+		protected void SetJobStateAsUnstoppableIfNeeded(Job job)
 		{
+			if (JobStopManager?.ShouldDrainStop == true)
+			{
+				return;
+			}
+
 			try
 			{
 				JobStopManager?.Dispose();
@@ -326,9 +331,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
 		}
 
-		private void ConfigureJobStopManager(Job job)
+		private void ConfigureJobStopManager(Job job, bool supportsDrainStop)
 		{
-			JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop: false);
+			JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop);
 			JobHistoryErrorService.JobStopManager = JobStopManager;
 		}
 

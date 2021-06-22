@@ -2,6 +2,7 @@
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -15,7 +16,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public int? JobHistory
 		{
-			get => GetField(JobHistoryErrorFieldGuids.JobHistoryGuid) as int?;
+			get => GetField(JobHistoryErrorFieldGuids.JobHistoryGuid) as int? 
+						?? (ParenObjectArtifactId == 0 ? null : (int?)ParenObjectArtifactId);
 			set => SetField(JobHistoryErrorFieldGuids.JobHistoryGuid, value);
 		}
 

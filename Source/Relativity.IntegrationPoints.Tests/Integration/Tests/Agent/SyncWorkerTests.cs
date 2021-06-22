@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -284,6 +285,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			dbContextMock.Setup(_ =>
 					_.ExecuteNonQuerySQLStatement(It.IsAny<string>(), It.IsAny<IEnumerable<SqlParameter>>()))
 				.Returns(0);
+
+
+			DataTable dataTable = new DataTable();
+			dataTable.Columns.Add("");
+			dataTable.Rows.Add(new object());
+			dbContextMock.Setup(x =>
+				x.ExecuteSqlStatementAsDataTable(It.IsAny<string>(), It.IsAny<IEnumerable<SqlParameter>>()))
+				.Returns(dataTable);
 
 			dbContextMock.Setup(_ => _.ExecuteSqlStatementAsScalar<int>(It.IsAny<string>(),
 					It.IsAny<IEnumerable<SqlParameter>>()))

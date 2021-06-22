@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Interfaces;
-using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
+using Moq;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -15,92 +17,142 @@ namespace kCura.IntegrationPoints.Agent.Tests
 	[TestFixture, Category("Unit")]
 	public class JobExecutorTests
 	{
-		private IAPILog _logger;
-		private IJobExecutor _subjectUnderTest;
-		private const string _RIP_PREFIX = "RIP.";
+		private IJobExecutor _sut;
 
+		private Mock<IAPILog> _logMock;
+		private Mock<ITaskProvider> _taskProviderFake;
+
+		private const string _RIP_PREFIX = "RIP.";
 
 		[SetUp]
 		public void SetUp()
 		{
-			_logger = Substitute.For<IAPILog>();
-			ITaskProvider taskProvider = Substitute.For<ITaskProvider>();
-			IAgentNotifier agentNotifier = Substitute.For<IAgentNotifier>();
+			_logMock = new Mock<IAPILog>();
 
-			_subjectUnderTest = new JobExecutor(taskProvider, agentNotifier, _logger);
+			Mock<ITask> task = new Mock<ITask>();
+			
+			_taskProviderFake = new Mock<ITaskProvider>();
+			_taskProviderFake.Setup(x => x.GetTask(It.IsAny<Job>()))
+				.Returns(task.Object);
+
+			Mock<IAgentNotifier> agentNotifier = new Mock<IAgentNotifier>();
+
+			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _logMock.Object);
+		}
+		
+		[Test]
+		public void ProcessJob_ShouldPushEmptyRootJobIdToLogContext_WhenRootJobIdIsNull()
+		{
+			// Arrange
+			Job job = new JobBuilder()
+				.WithRootJobId(null)
+				.Build();
+
+			// Act
+			_sut.ProcessJob(job);
+
+			// Assert
+			_logMock.Verify(x => x.LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.RootJobId)}", string.Empty));
 		}
 
 		[Test]
-		public void ItShouldPushJobIdToLogContext()
+		public void ProcessJob_ShouldRegisterProperLogContext()
 		{
-			long jobId = 123;
-
-			ExecuteJob(jobId, 0, 0, 0);
-
-			string expectedJobId = jobId.ToString();
-			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.JobId)}", expectedJobId);
-		}
-
-		[Test]
-		public void JobExecutor_ShouldPushApplicationVersionToLogContext()
-		{
+			// Arrange
 			string expectedVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+			const long expectedJobId = 123;
+			const long expectedRootJobId = 879;
+			const int expectedUserId = 9;
+			const int expectedWorkspaceId = 11;
 
-			ExecuteJob(0, 0, 0, 0);
+			Job job = new JobBuilder()
+				.WithJobId(expectedJobId)
+				.WithRootJobId(expectedRootJobId)
+				.WithSubmittedBy(expectedUserId)
+				.WithWorkspaceId(expectedWorkspaceId)
+				.Build();
 
-			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.ApplicationBuildVersion)}", expectedVersion);
+			// Act
+			_sut.ProcessJob(job);
 
+			// Assert
+			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.JobId), expectedJobId);
+			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.ApplicationBuildVersion), expectedVersion);
+			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.RootJobId), expectedRootJobId);
+			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.UserId), expectedUserId);
+			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.WorkspaceId), expectedWorkspaceId);
 		}
 
 		[Test]
-		public void ItShouldPushRootJobIdToLogContext()
+		public void ProcessJob_ShouldReturnStatusSameAsAssignedJobPostExecuteEvent()
 		{
-			long? rootJobId = 879;
+			// Arrange
+			TaskStatusEnum expectedStatus = TaskStatusEnum.DrainStopped;
 
-			ExecuteJob(0, rootJobId, 0, 0);
+			_sut.JobPostExecute += (Job j) => new TaskResult { Status = expectedStatus };
 
-			string expectedRootJobId = rootJobId.ToString();
-			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.RootJobId)}", expectedRootJobId);
+			Job job = new JobBuilder().Build();
+
+			// Act
+			TaskResult result = _sut.ProcessJob(job);
+
+			// Assert
+			result.Status.Should().Be(expectedStatus);
 		}
 
 		[Test]
-		public void ItShouldPushEmptyRootJobIdToLogContextIfRootJobIdIsNull()
+		public void ProcessJob_ShouldReturnSuccessStatus_WhenThereIsNoJobPostExecuteEventAssigned()
 		{
-			long? rootJobId = null;
+			// Arrange
+			Job job = new JobBuilder().Build();
 
-			ExecuteJob(0, rootJobId, 0, 0);
+			// Act
+			TaskResult result = _sut.ProcessJob(job);
 
-			object expectedRootJobId = string.Empty;
-			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.RootJobId)}", expectedRootJobId);
+			// Assert
+			result.Status.Should().Be(TaskStatusEnum.Success);
 		}
 
 		[Test]
-		public void ItShouldPushUserIdToLogContext()
+		public void ProcessJob_ShouldReturnFailedStatus_WhenGetTaskThrowsException()
 		{
-			int userId = 9;
+			// Arrange
+			Job job = new JobBuilder().Build();
 
-			ExecuteJob(0, 0, 0, userId);
+			_taskProviderFake.Setup(x => x.GetTask(job))
+				.Throws<Exception>();
 
-			string expectedUserId = userId.ToString();
-			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.UserId)}", expectedUserId);
+			// Act
+			TaskResult result = _sut.ProcessJob(job);
+
+			// Assert
+			result.Status.Should().Be(TaskStatusEnum.Fail);
 		}
 
 		[Test]
-		public void ItShouldPushWorkspaceIdToLogContext()
+		public void ProcessJob_ShouldReturnFailedStatus_WhenTaskExecuteThrowsException()
 		{
-			int workspaceId = 9;
+			// Arrange
+			Job job = new JobBuilder().Build();
 
-			ExecuteJob(0, 0, workspaceId, 0);
+			Mock<ITask> task = new Mock<ITask>();
+			task.Setup(x => x.Execute(job))
+				.Throws<Exception>();
 
-			string expectedWorkspaceId = workspaceId.ToString();
-			_logger.Received().LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.WorkspaceId)}", expectedWorkspaceId);
+			_taskProviderFake.Setup(x => x.GetTask(job))
+				.Returns(task.Object);
+
+			// Act
+			TaskResult result = _sut.ProcessJob(job);
+
+			// Assert
+			result.Status.Should().Be(TaskStatusEnum.Fail);
 		}
 
-		private void ExecuteJob(long jobId, long? rootJobId, int workspaceId, int submittedBy)
+		private void VerifyLoggerJobContextProperty(string name, object value)
 		{
-			Job job = JobHelper.GetJob(jobId, rootJobId, null, 0, 0, workspaceId, 0, 0, DateTime.Now, null, null, 0, DateTime.Now, submittedBy, null, null);
-
-			_subjectUnderTest.ProcessJob(job);
+			string contextFormat = $"{_RIP_PREFIX}{name}";
+			_logMock.Verify(x => x.LogContextPushProperty(contextFormat, value.ToString()));
 		}
 	}
 }
