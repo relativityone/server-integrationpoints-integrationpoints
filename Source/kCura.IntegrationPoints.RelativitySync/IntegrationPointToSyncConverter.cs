@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
@@ -8,13 +7,13 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
@@ -23,7 +22,6 @@ using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
-using SyncFieldEntry = Relativity.Sync.Storage.FieldEntry;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -55,20 +53,24 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (importSettings.ImageImport)
 			{
-				return await CreateImageSyncConfiguration(builder,
+				return await CreateImageSyncConfigurationAsync(builder,
 					job, sourceConfiguration, importSettings).ConfigureAwait(false);
 			}
 			else
 			{
-				return await CreateDocumentSyncConfiguration(builder,
+				return await CreateDocumentSyncConfigurationAsync(builder,
 					job, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
 			}
 		}
 
-		private async Task<int> CreateImageSyncConfiguration(ISyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
-			var syncConfigurationRoot = builder
+			IEnumerable<int> productionImagePrecedenceIds = importSettings.ProductionPrecedence == "1" ?
+				importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)) :
+				Enumerable.Empty<int>();
+
+			IImageSyncConfigurationBuilder syncConfigurationRoot = builder
 				.ConfigureImageSync(
 					new ImageSyncOptions(
 						DataSourceType.SavedSearch, sourceConfiguration.SavedSearchArtifactId,
@@ -78,7 +80,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 					})
 				.ProductionImagePrecedence(
 					new ProductionImagePrecedenceOptions(
-						importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)),
+						productionImagePrecedenceIds,
 						importSettings.IncludeOriginalImages))
 				.EmailNotifications(
 					GetEmailOptions(job))
@@ -94,19 +96,19 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (IsRetryingErrors(job.Job))
 			{
-				var jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
+				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
 					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry));
 			}
 
-			return await syncConfigurationRoot.SaveAsync();
+			return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
 		}
 
-		private async Task<int> CreateDocumentSyncConfiguration(ISyncConfigurationBuilder builder, IExtendedJob job,
+		private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
 			SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
 		{
-			var syncConfigurationRoot = builder
+			IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
 				.ConfigureDocumentSync(
 					new DocumentSyncOptions(
 						sourceConfiguration.SavedSearchArtifactId,
@@ -132,18 +134,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (IsRetryingErrors(job.Job))
 			{
-				var jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
+				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
 					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry));
 			}
 
-			return await syncConfigurationRoot.SaveAsync();
+			return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
 		}
 
 		private void PrepareFieldsMappingAction(string integrationPointsFieldsMapping, IFieldsMappingBuilder mappingBuilder)
 		{
-			var fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _serializer, _logger);
+			List<FieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _serializer, _logger);
 
 			SyncFieldMap identifier = fieldsMapping.FirstOrDefault(x => x.FieldMapType == FieldMapType.Identifier);
 			if (identifier != null)
@@ -151,7 +153,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				mappingBuilder.WithIdentifier();
 			}
 
-			foreach (var fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
+			foreach (FieldMap fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
 			{
 				mappingBuilder.WithField(fieldsMap.SourceField.FieldIdentifier, fieldsMap.DestinationField.FieldIdentifier);
 			}
@@ -161,7 +163,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			if (folderConf.UseFolderPathInformation)
 			{
-				var folderOptions = DestinationFolderStructureOptions.ReadFromField(folderConf.FolderPathSourceField);
+				DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.ReadFromField(folderConf.FolderPathSourceField);
 				folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;
 
 				return folderOptions;
@@ -169,7 +171,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			if (folderConf.UseDynamicFolderPath)
 			{
-				var folderOptions = DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
+				DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
 				folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;
 
 				return folderOptions;
