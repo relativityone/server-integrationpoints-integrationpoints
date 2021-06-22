@@ -217,6 +217,29 @@ namespace Relativity.Sync.Tests.Unit
 				.BeEquivalentTo(Enumerable.Range(1, 5));
 		}
 
+		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldStopSearchForProducedDocumentImages_WhenAllImagesFound()
+		{
+			// Arrange
+			var data = Enumerable.Range(1, 10)
+				.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 1 })
+				.Concat(Enumerable.Range(1, 5)
+					.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 2 }))
+				.ToList();
+
+			MockProductions(data);
+			
+
+			// Act
+			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToArray(),
+				new QueryImagesOptions { ProductionIds = new[] { 1, 2 } }).ConfigureAwait(false);
+
+			// Assert
+			_searchManagerMock.Verify(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),1), Times.Once);
+			_searchManagerMock.Verify(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),2), Times.Never);
+		}
+
+
 		private void MockProductions(IEnumerable<DocumentImageData> data)
 		{
 			foreach (var productionSet in data.GroupBy(x => x.ProductionId).Where(x => x.Key != null))
