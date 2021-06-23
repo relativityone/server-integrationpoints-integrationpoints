@@ -19,9 +19,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<IntegrationPointTypeTest> IntegrationPointTypes { get; } = new List<IntegrationPointTypeTest>();
 
-        public IList<JobHistoryTest> JobHistory { get; } = new List<JobHistoryTest>();
+		public IList<JobHistoryTest> JobHistory { get; } = new List<JobHistoryTest>();
 
-        public IList<JobHistoryErrorTest> JobHistoryErrors { get; } = new List<JobHistoryErrorTest>();
+		public IList<JobHistoryErrorTest> JobHistoryErrors { get; } = new List<JobHistoryErrorTest>();
 
         public IList<SourceProviderTest> SourceProviders { get; } = new List<SourceProviderTest>();
 

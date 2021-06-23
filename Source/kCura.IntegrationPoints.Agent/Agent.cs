@@ -95,9 +95,8 @@ namespace kCura.IntegrationPoints.Agent
 		protected override void Initialize()
 		{
 			base.Initialize();
-			_jobExecutor = new JobExecutor(this, this, Logger);
+			_jobExecutor = new JobExecutor(this, this, JobService, Logger);
 			_jobExecutor.JobExecutionError += OnJobExecutionError;
-			_jobExecutor.JobPostExecute += OnJobPostExecute;
 		}
 
 		protected override TaskResult ProcessJob(Job job)
@@ -269,22 +268,6 @@ namespace kCura.IntegrationPoints.Agent
 			}
 
 			JobExecutionError?.Invoke(job, task, exception);
-		}
-
-		protected TaskResult OnJobPostExecute(Job job)
-		{
-			IWindsorContainer container = _agentLevelContainer.Value;
-			ISerializer serializer = container.Resolve<ISerializer>();
-			IJobHistoryService jobHistoryService = container.Resolve<IJobHistoryService>();
-
-			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-			JobHistory jobHistory = jobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
-			if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended))
-			{
-				return new TaskResult { Status = TaskStatusEnum.DrainStopped, Exceptions = null };
-			}
-
-			return new TaskResult { Status = TaskStatusEnum.Success, Exceptions = null };
 		}
 
 		protected IJobContextProvider JobContextProvider

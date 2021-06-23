@@ -102,8 +102,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_jobServiceMock.Verify(x => x.UpdateStopState(
 				It.Is<IList<long>>(jobs=> jobs.Single() == _jobId),
 				It.Is<StopState>(stopState => stopState == StopState.DrainStopping)), Times.Once);
-			_jobHistoryServiceMock.Verify(x => x.UpdateRdoWithoutDocuments(It.Is<JobHistory>(jobHistory =>
-				jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspending))), Times.Once);
 		}
 
 		[Test]

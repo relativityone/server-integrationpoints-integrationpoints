@@ -88,14 +88,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			if (_supportsDrainStop && _agent.ToBeRemoved)
 			{
 				_isDrainStopping = true;
-				JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
 
-				if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped)
-				                                                    && jobHistory.JobStatus != JobStatusChoices.JobHistorySuspended)
+				if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
 				{
-					_drainStopCancellationTokenSource.Cancel();
 					UpdateStopState(StopState.DrainStopping);
-					SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistorySuspending);
+					_drainStopCancellationTokenSource.Cancel();
 					_timerThread.Change(Timeout.Infinite, Timeout.Infinite);
 				}
 			}
