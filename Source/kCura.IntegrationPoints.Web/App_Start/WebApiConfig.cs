@@ -380,7 +380,7 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/ToggleAPI/{toggleName}",
 				defaults: new {controller = "ToggleAPI", action = "Get"}
 			);
-
+			
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",

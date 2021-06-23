@@ -85,6 +85,7 @@
     </Compile>
     <Compile Include="Attributes\ApiActionExecutionTimeMetricsFilterAttribute.cs" />
     <Compile Include="Controllers\API\EntityController.cs" />
+    <Compile Include="Controllers\ReadinessController.cs" />
     <Compile Include="Metrics\ControllerActionExecutionTimeMetrics.cs" />
     <Compile Include="Attributes\MvcActionExecutionTimeMetricsFilterAttribute.cs" />
     <Compile Include="Metrics\IControllerActionExecutionTimeMetrics.cs" />
