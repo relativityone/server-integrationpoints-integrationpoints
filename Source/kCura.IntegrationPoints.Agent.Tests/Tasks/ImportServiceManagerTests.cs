@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 					Size = _LOAD_FILE_SIZE
 				}
 			};
-			JobHistory jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0 };
+			JobHistory jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, ItemsTransferred = 0, ItemsWithErrors = 0};
 			SourceProvider sourceProvider = new SourceProvider();
 			List<FieldMap> mappings = new List<FieldMap>();
 

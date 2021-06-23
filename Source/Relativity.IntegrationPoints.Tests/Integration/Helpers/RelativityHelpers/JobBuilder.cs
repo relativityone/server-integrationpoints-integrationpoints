@@ -47,12 +47,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			return this;
 		}
 
-		public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate)
+		public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
 		{
 			var loadFileParameters = new LoadFileTaskParameters
 			{
 				Size = loadFileSize,
-				LastModifiedDate = loadFileModifiedDate
+				LastModifiedDate = loadFileModifiedDate,
+				ProcessedItemsCount = processedItemsCount
 			};
 
 			_job.JobDetailsHelper.BatchParameters = loadFileParameters;

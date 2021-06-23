@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			_jobHistorySyncServiceMock = new Mock<IJobHistorySyncService>();
 
 			_cancellationAdapterFake = new Mock<ICancellationAdapter>();
-			_cancellationAdapterFake.Setup(x => x.GetCancellationToken())
+			_cancellationAdapterFake.Setup(x => x.GetCancellationToken(It.IsAny<Action>()))
 				.Returns(new CompositeCancellationToken(It.IsAny<CancellationToken>(), It.IsAny<CancellationToken>()));
 
 			_syncJobFake = new Mock<ISyncJob>();
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			// Assert
 			result.Status.Should().Be(TaskStatusEnum.DrainStopped);
 
-			_jobHistorySyncServiceMock.Verify(x => x.MarkJobAsDrainStoppedAsync(It.IsAny<IExtendedJob>()));
+			_jobHistorySyncServiceMock.Verify(x => x.MarkJobAsSuspendedAsync(It.IsAny<IExtendedJob>()));
 		}
 
 		[Test]
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			CancellationToken stopToken = new CancellationToken(isCanceled);
 			CancellationToken drainStopToken = new CancellationToken(isDrainStopped);
 
-			_cancellationAdapterFake.Setup(x => x.GetCancellationToken())
+			_cancellationAdapterFake.Setup(x => x.GetCancellationToken(It.IsAny<Action>()))
 				.Returns(new CompositeCancellationToken(stopToken, drainStopToken));
 		}
 	}

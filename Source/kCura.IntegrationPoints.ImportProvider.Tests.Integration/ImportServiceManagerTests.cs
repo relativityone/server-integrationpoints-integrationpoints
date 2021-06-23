@@ -126,7 +126,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(stopManager);
 
 			//Job History Service
-			JobHistory jobHistoryDto = new JobHistory();
+			JobHistory jobHistoryDto = new JobHistory()
+			{
+				BatchInstance = Guid.NewGuid().ToString(),
+				ItemsTransferred = 0,
+				ItemsWithErrors = 0
+			};
 			jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
 				.Returns(jobHistoryDto);
 			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);

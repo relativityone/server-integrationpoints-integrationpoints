@@ -71,7 +71,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
 				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate);
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: 0);
 			ImportServiceManager sut = PrepareSut();
 
 			// Act
@@ -98,7 +98,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
 				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate);
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: 0);
 			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
@@ -116,6 +116,42 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
 			jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
 			job.StopState.Should().Be(StopState.DrainStopped);
+		}
+
+		[IdentifiedTest("7179C321-11C6-4DEE-A252-6970F7441EF6")]
+		public void Execute_ShouldResumeDrainStoppedJob()
+		{
+			// Arrange
+			const string loadFile = @"DataTransfer\Import\drain-stop.dat";
+			const int numberOfRecords = 10;
+			const int itemsTransferred = 3;
+			const int itemsWithErrors = 1;
+			const long size = 1024;
+			DateTime modifiedDate = new DateTime(2020, 1, 1);
+
+			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory(numberOfRecords))
+				.LifestyleTransient().Named(nameof(FakeWinEddsFileReaderFactory)).IsDefault());
+			_fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
+
+			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
+
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: itemsTransferred + itemsWithErrors);
+			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+			jobHistory.ItemsTransferred = itemsTransferred;
+			jobHistory.ItemsWithErrors = itemsWithErrors;
+
+			ImportServiceManager sut = PrepareSut(importJob =>
+			{
+				importJob.Complete(numberOfRecords - (itemsTransferred + itemsWithErrors) + itemsWithErrors);
+			});
+
+			// Act
+			sut.Execute(job.AsJob());
+
+			// Assert
+			jobHistory.ItemsTransferred.Should().Be(numberOfRecords - itemsWithErrors);
+			jobHistory.ItemsWithErrors.Should().Be(itemsWithErrors);
 		}
 	}
 }

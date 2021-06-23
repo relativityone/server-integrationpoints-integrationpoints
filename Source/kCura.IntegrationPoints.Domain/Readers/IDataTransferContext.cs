@@ -6,6 +6,8 @@ namespace kCura.IntegrationPoints.Domain.Readers
 	{
 		IDataReader DataReader { get; set; }
 		int? TotalItemsFound { get; set; }
+		int TransferredItemsCount { get; set; }
+		int FailedItemsCount { get; set; }
 		void UpdateTransferStatus();
 	}
 }

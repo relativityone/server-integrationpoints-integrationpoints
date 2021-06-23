@@ -15,6 +15,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		
 		public IDataReader DataReader { get; set; }
 		public int? TotalItemsFound { get; set; }
+		public int TransferredItemsCount { get; set; }
+		public int FailedItemsCount { get; set; }
 
 		public void UpdateTransferStatus()
 		{
