@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -143,15 +144,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int totalRowsCountInBatch = GetRowsCountForBatch(job.JobDetails);
 
-			if (ShouldSkipItemsInJobDetails(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch))
+			if (ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch))
 			{
 				job.JobDetails = SkipProcessedItems(job.JobDetails, dataSynchronizer.TotalRowsProcessed);
+				JobService.UpdateJobDetails(job);
+
+				job.StopState = StopState.DrainStopped;
+				JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
 			}
-		
+
 			LogExecuteImportSuccesfulEnd(job);
 		}
 
-		private bool ShouldSkipItemsInJobDetails(int processedItemCount, int totalRowsCountInBatch)
+		private bool ShouldDrainStopBatch(int processedItemCount, int totalRowsCountInBatch)
 		{
 			bool notAllItemsProcessed = processedItemCount < totalRowsCountInBatch;
 			bool drainStopRequested = JobStopManager?.ShouldDrainStop == true;
@@ -159,15 +164,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return drainStopRequested && notAllItemsProcessed;
 		}
 
-		private void MarkJobAsDrainStopped(Job job)
+		private void MarkJobAsDrainStopped()
 		{
-			
 			JobHistory.JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistorySuspendedGuid});
 			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
-
-			job.StopState = StopState.DrainStopped;
-			JobService.UpdateStopState(new List<long> {job.JobId}, job.StopState);
-			JobService.UpdateJobDetails(job);
 		}
 
 		private int GetRowsCountForBatch(string jobDetails)
@@ -282,12 +282,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				bool isBatchFinished = (!JobStopManager?.ShouldDrainStop) ?? true;
 				
 				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString(), isBatchFinished);
+
+				UpdateJobHistoryStopState(job);
+				
 				if (isJobComplete)
 				{
 					OnJobComplete(job);
 				}
-
-				UpdateJobHistoryStopState(job);
 			}
 			catch (Exception e)
 			{
@@ -364,9 +365,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void UpdateJobHistoryStopState(Job job)
 		{
 			bool stopRequested = JobStopManager?.ShouldDrainStop == true;
-			if (stopRequested && JobManager.GetProcessingBatchesCount(job, BatchInstance.ToString()) == 0)
+			BatchStatusQueryResult batchesStatuses = JobManager.GetBatchesStatuses(job, BatchInstance.ToString());
+
+			bool noneOtherBatchProcessing = batchesStatuses.ProcessingCount < 2;
+			bool atLeastOneSuspended = batchesStatuses.SuspendedCount > 0;
+			bool otherBatchesPending = batchesStatuses.PendingCount > 0;
+			bool notLastBatch = batchesStatuses.BatchTotal > 1;
+
+			if (noneOtherBatchProcessing)
 			{
-				MarkJobAsDrainStopped(job);
+				if (atLeastOneSuspended || (stopRequested ))
+				{
+					MarkJobAsDrainStopped();
+				}
 			}
 		}
 

@@ -143,7 +143,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			ImportServiceManager sut = PrepareSut(importJob =>
 			{
-				importJob.Complete(numberOfRecords - (itemsTransferred + itemsWithErrors) + itemsWithErrors);
+				importJob.Complete(numberOfRecords - itemsTransferred);
 			});
 
 			// Act

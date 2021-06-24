@@ -1,4 +1,4 @@
-select q.LockedByAgentID, q.StopState, s.Completed
+select q.LockedByAgentID, q.StopState
 from {0} as q
 inner join {1} as s
 on q.JobID = s.JobID

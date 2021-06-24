@@ -17,6 +17,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
@@ -31,6 +32,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncWorkerTests : TestsBase
 	{
+		private const int ROOT_JOB_ID = 5;
+
 		private SyncWorker PrepareSut(Action<FakeJobImport> importAction)
 		{
 			Container.Register(Component.For<IDataSourceProvider>()
@@ -68,6 +71,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			taskParameters.BatchParameters = recordsIds;
 
 			job.JobDetails = Serializer.Serialize(taskParameters);
+			job.LockedByAgentID = 1;
+			job.RootJobId = ROOT_JOB_ID;
 
 			return job;
 		}
@@ -232,7 +237,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				.Should().BeTrue();
 		}
 
-		[IdentifiedTest("A36C3183-BC7D-422A-AF55-F57814897E83")]
+		[IdentifiedTest("6D4ED0EA-DDAA-442D-AEED-0C7C805A3FB4")]
 		public void SyncWorker_ShouldResumeDrainStoppedJob()
 		{
 			// Arrange
@@ -247,16 +252,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			string xmlPath = PrepareRecords(numberOfRecords);
 			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-			FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 
-			jobHistory.JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistorySuspendedGuid});
+			jobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
 			jobHistory.ItemsTransferred = initialTransferredItems;
 			jobHistory.ItemsWithErrors = initialErroredItems;
-
-			jobHistory.TotalItems = 5000; // this is not the last batch
-
-			job.StopState = StopState.DrainStopped;
-
+			
 			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(numberOfRecords, numberOfErrors); });
 
 			// Act
@@ -264,10 +264,108 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			sut.Execute(syncManagerJob);
 
 			// Assert
-			FakeRelativityInstance.JobsInQueue.Single(x => x.JobId != job.JobId).StopState.Should().Be(StopState.None);
+			FakeRelativityInstance.JobsInQueue.Single(x => x.JobId == job.JobId).StopState.Should().Be(StopState.None);
 			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
 			jobHistory.ItemsTransferred.Should().Be(initialTransferredItems + numberOfRecords);
 			jobHistory.ItemsWithErrors.Should().Be(initialErroredItems + numberOfErrors);
+		}
+
+		public static IEnumerable<TestCaseData> FinalJobHistoryStatusTestCases()
+		{
+			yield return new TestCaseData(
+				new[] {new JobTest{StopState = StopState.None, LockedByAgentID = 1}, new JobTest{StopState = StopState.DrainStopped}},
+					TOTAL_NUMBER_OF_RECORDS,
+					0,
+					false,
+					JobStatusChoices.JobHistoryProcessingGuid,
+					StopState.None
+				)
+			{
+				TestName = "If there are other batches processing, JobHistory should end up in Processing"
+			}.WithId("7591EA8C-CF54-482C-B096-C9C4437D3F11");
+			
+			yield return new TestCaseData(
+				new[] {new JobTest{StopState = StopState.None, LockedByAgentID = 1}, new JobTest{StopState = StopState.DrainStopped}},
+				50,
+				0,
+				true,
+				JobStatusChoices.JobHistoryProcessingGuid,
+				StopState.DrainStopped
+			)
+			{
+				TestName = "If there are other batches processing, JobHistory should end up in Processing (DrainStop)"
+			}.WithId("1E0AD09D-2DF1-41B4-BC1F-188FB83CCFEA");
+			
+			yield return new TestCaseData(
+				new[] {new JobTest{StopState = StopState.DrainStopped}},
+				TOTAL_NUMBER_OF_RECORDS,
+				0,
+				false,
+				JobStatusChoices.JobHistorySuspendedGuid,
+				StopState.None
+			)
+			{
+				TestName = "If other batches are suspended, JobHistory should end up Suspended"
+			}.WithId("AB60A230-3B1C-49E1-8F5A-94B7793C24BF");
+			
+			yield return new TestCaseData(
+				new[] {new JobTest{StopState = StopState.None}},
+				TOTAL_NUMBER_OF_RECORDS,
+				0,
+				false,
+				JobStatusChoices.JobHistoryProcessingGuid,
+				StopState.None
+			)
+			{
+				TestName = "If other batches are pending, JobHistory should end up Processing"
+			}.WithId("FF78BD63-841D-46DD-8762-845DC2110055");
+			
+			yield return new TestCaseData(
+				new[] {new JobTest{StopState = StopState.None}},
+				50,
+				0,
+				true,
+				JobStatusChoices.JobHistorySuspendedGuid,
+				StopState.DrainStopped
+			)
+			{
+				TestName = "If other batches are pending, JobHistory should end up Suspended after drain stop"
+			}.WithId("326EA29D-E5DB-4A9C-A0CF-8FA71A7EDA3A");
+		}
+
+		private const int TOTAL_NUMBER_OF_RECORDS = 100;
+
+		[TestCaseSource(nameof(FinalJobHistoryStatusTestCases))]
+		public void SyncWorker_ShouldSetCorrectJobHistoryStatus(JobTest[] otherJobs, 
+			int transferredItems, int itemLevelErrors, bool drainStopRequested, Guid expectedJobHistoryStatus, StopState expectedStopState)
+		{
+			// Arrange
+			string xmlPath = PrepareRecords(TOTAL_NUMBER_OF_RECORDS);
+			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+			jobHistory.TotalItems = 5000;
+
+			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
+			FakeRelativityInstance.JobsInQueue.AddRange(otherJobs);
+			
+			SyncWorker sut = PrepareSut((importJob) =>
+			{
+				importJob.Complete(transferredItems, itemLevelErrors);
+
+				if (drainStopRequested)
+				{
+					agent.ToBeRemoved = true;
+				}
+			});
+
+			// Act
+			var syncManagerJob = job.AsJob();
+			sut.Execute(syncManagerJob);
+
+			// Assert
+			FakeRelativityInstance.JobsInQueue.First(x => x.JobId == job.JobId).StopState.Should().Be(expectedStopState);
+			jobHistory.JobStatus.Guids.First().Should().Be(expectedJobHistoryStatus);
+			jobHistory.ItemsTransferred.Should().Be(transferredItems);
+			jobHistory.ItemsWithErrors.Should().Be(itemLevelErrors);
 		}
 
 		private List<string> GetRemainingItems(JobTest job)

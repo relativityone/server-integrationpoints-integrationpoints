@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
 
@@ -42,11 +43,11 @@ namespace kCura.IntegrationPoints.Core.Services
             return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID, batchIsFinished) == 0;
         }
 
-        public int GetProcessingBatchesCount(Job job, string batchId)
+        public BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId)
         {
 	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
 
-	        return _tracker.GetProcessingBatchesCount(jobTrackerTempTableName, job.RootJobId.Value, job.WorkspaceID);
+	        return _tracker.GetBatchesStatuses(jobTrackerTempTableName, job.RootJobId.Value, job.WorkspaceID);
         }
     }
 }

@@ -1,3 +1,4 @@
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services
@@ -8,6 +9,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
         bool CheckEntries(Job job, string batchId, bool batchIsFinished);
 
-        int GetProcessingBatchesCount(Job job, string batchId);
+        BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId);
     }
 }

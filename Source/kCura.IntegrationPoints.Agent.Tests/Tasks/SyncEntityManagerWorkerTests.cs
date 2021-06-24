@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
@@ -230,6 +231,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			jobManager.CheckBatchOnJobComplete(_job, taskParams.BatchInstance.ToString()).Returns(true);
 			jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, taskParams.BatchInstance)
 				.Returns(associatedJobs);
+			jobManager.GetBatchesStatuses(_job, taskParams.BatchInstance.ToString())
+				.Returns(new BatchStatusQueryResult {ProcessingCount = 1});
 		}
 
 		[Test]

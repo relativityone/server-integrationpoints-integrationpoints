@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T : class;
 		bool CheckBatchOnJobComplete(Job job, string batchId, bool isBatchFinished = true);
 
-		int GetProcessingBatchesCount(Job job, string batchId);
+		BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId);
 
 		/// <summary>
 		/// Stops the scheduled queue jobs.
