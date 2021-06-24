@@ -369,9 +369,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			bool noneOtherBatchProcessing = batchesStatuses.ProcessingCount < 2;
 			bool atLeastOneSuspended = batchesStatuses.SuspendedCount > 0;
-			bool otherBatchesPending = batchesStatuses.PendingCount > 0;
-			bool notLastBatch = batchesStatuses.BatchTotal > 1;
-
+		
 			if (noneOtherBatchProcessing)
 			{
 				if (atLeastOneSuspended || (stopRequested ))

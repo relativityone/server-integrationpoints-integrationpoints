@@ -23,6 +23,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.IntegrationPoints.Tests.Integration.Utils;
 using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
 
@@ -268,6 +269,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
 			jobHistory.ItemsTransferred.Should().Be(initialTransferredItems + numberOfRecords);
 			jobHistory.ItemsWithErrors.Should().Be(initialErroredItems + numberOfErrors);
+			
+			jobHistory.ShouldHaveCorrectItemsTransferredUpdateHistory(initialTransferredItems, initialTransferredItems + numberOfRecords);
+			jobHistory.ShouldHaveCorrectItemsWithErrorsUpdateHistory(initialErroredItems, initialErroredItems + numberOfErrors);
 		}
 
 		public static IEnumerable<TestCaseData> FinalJobHistoryStatusTestCases()

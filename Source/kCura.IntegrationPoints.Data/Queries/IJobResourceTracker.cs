@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Data.Queries
+﻿using kCura.IntegrationPoints.Data.DTO;
+
+namespace kCura.IntegrationPoints.Data.Queries
 {
     public interface IJobResourceTracker
     {
@@ -6,6 +8,6 @@
 
         int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId, bool batchIsFinished);
 
-        int GetProcessingBatchesCount(string tableName, long rootJobId, int workspaceId);
+        BatchStatusQueryResult GetBatchesStatuses(string tableName, long rootJobId, int workspaceId);
     }
 }

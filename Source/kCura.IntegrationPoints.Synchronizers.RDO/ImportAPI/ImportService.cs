@@ -130,9 +130,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			LogSettingUpImportJob();
 			IJobImport importJob = _jobFactory.Create(_importApi, Settings, context, _helper);
 
-			_jobProgressInfo.NumberOfItemsTransferred = context.TransferredItemsCount;
-			_jobProgressInfo.NumberOfItemsErrored = context.FailedItemsCount;
-
 			_totalRowsImported = context.TransferredItemsCount;
 			_totalRowsWithErrors = context.FailedItemsCount;
 			

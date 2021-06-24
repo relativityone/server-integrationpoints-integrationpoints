@@ -137,7 +137,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             return value;
 		}
 
-		protected void SetField(Guid guid, object value) => Values[guid] = Sanitize(value);
+		protected virtual void SetField(Guid guid, object value) => Values[guid] = Sanitize(value);
 
 		protected object GetField(Guid guid)
 		{

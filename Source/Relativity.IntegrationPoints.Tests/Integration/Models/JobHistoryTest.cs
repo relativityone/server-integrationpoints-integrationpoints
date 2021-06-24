@@ -10,11 +10,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 	{
 		public override List<Guid> Guids => Const.RdoGuids.JobHistory.Guids;
 
+		public List<int> ItemsTransferredHistory { get; } = new List<int>();
+		public List<int> ItemsWithErrorsHistory { get; } = new List<int>();
 		public JobHistoryTest() : base("JobHistory")
 		{
 			Name = $"Job History";
 		}
+
+		protected override void SetField(Guid guid, object value)
+		{
+			if (guid == JobHistoryFieldGuids.ItemsWithErrorsGuid && value != null)
+			{
+				ItemsWithErrorsHistory.Add((int)value);
+			}
 			
+			if (guid == JobHistoryFieldGuids.ItemsTransferredGuid && value != null)
+			{
+				ItemsTransferredHistory.Add((int)value);
+			}
+			
+			base.SetField(guid, value);
+		}
+
 		public int[] Documents
 		{
 			get => GetField(JobHistoryFieldGuids.DocumentsGuid) as int[];

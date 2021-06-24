@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -38,11 +42,11 @@ namespace kCura.IntegrationPoints.Data.Queries
 
 		        string sql = string.Format(Resources.Resource.RemoveEntryAndCheckBatchStatus, scratchTableRepository.GetResourceDBPrepend(), scratchTableRepository.GetSchemalessResourceDataBasePrepend(), tableName);
 		        IList<SqlParameter> sqlParams = GetSqlParametersForRemoveAndCheck(jobId, batchIsFinished);
-		        return _context.ExecuteSqlStatementAsScalar<int>(sql, sqlParams);
+		        return (int)_context.ExecuteSqlStatementAsScalar(sql, sqlParams.ToArray());
 	        }
         }
 
-        public int GetProcessingBatchesCount(string tableName, long rootJobId, int workspaceId)
+        public BatchStatusQueryResult GetBatchesStatuses(string tableName, long rootJobId, int workspaceId)
         {
 	        lock (_syncRoot)
 	        {
@@ -51,8 +55,49 @@ namespace kCura.IntegrationPoints.Data.Queries
                 
                 string sql = string.Format(Resources.Resource.GetProcessingSyncWorkerBatches, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME, scratchTableFullName);
 		        IList<SqlParameter> sqlParams = GetSqlParameters(rootJobId);
-		        return _context.ExecuteSqlStatementAsDataTable(sql, sqlParams).Rows.Count;
+
+				DataTable dataTable = _context.ExecuteSqlStatementAsDataTable(sql, sqlParams);
+
+				BatchStatusQueryResult result = new BatchStatusQueryResult
+		        {
+					ProcessingCount = CountProcessingBatches(dataTable),
+					SuspendedCount = CountSuspendedBatches(dataTable)
+		        };
+				
+				return result;
 	        }
+        }
+
+        private int CountSuspendedBatches(DataTable dataTable)
+        {
+	        const int stopStateSuspended = 8;
+			int result = 0;
+			
+			foreach (DataRow row in dataTable.Rows)
+	        {
+		        
+		        if (row[0] == DBNull.Value && (int)row[1] == stopStateSuspended)
+		        {
+			        ++result;
+		        }
+	        }
+
+	        return result;
+        }
+
+        private int CountProcessingBatches(DataTable dataTable)
+        {
+	        int result = 0;
+
+	        foreach (DataRow row in dataTable.Rows)
+	        {
+		        if (row[0] != DBNull.Value)
+		        {
+			        ++result;
+		        }
+	        }
+
+	        return result;
         }
 
         private IList<SqlParameter> GetSqlParameters(long jobId)
