@@ -277,13 +277,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogPostExecuteStart(job);
 				JobHistoryErrorService.CommitErrors();
+				UpdateJobHistoryStopState(job);
 
 				// if there is no StopManager, batch should finish
 				bool isBatchFinished = (!JobStopManager?.ShouldDrainStop) ?? true;
-				
 				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString(), isBatchFinished);
-
-				UpdateJobHistoryStopState(job);
 				
 				if (isJobComplete)
 				{
@@ -364,7 +362,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void UpdateJobHistoryStopState(Job job)
 		{
-			bool stopRequested = JobStopManager?.ShouldDrainStop == true;
 			BatchStatusQueryResult batchesStatuses = JobManager.GetBatchesStatuses(job, BatchInstance.ToString());
 
 			bool noneOtherBatchProcessing = batchesStatuses.ProcessingCount < 2;
@@ -372,7 +369,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		
 			if (noneOtherBatchProcessing)
 			{
-				if (atLeastOneSuspended || (stopRequested ))
+				if (atLeastOneSuspended || (job.StopState == StopState.DrainStopped))
 				{
 					MarkJobAsDrainStopped();
 				}

@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-    public interface IJobResourceTracker
+	public interface IJobResourceTracker
     {
         void CreateTrackingEntry(string tableName, long jobId, int workspaceId);
 

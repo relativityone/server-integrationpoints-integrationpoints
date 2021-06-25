@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-    public class JobResourceTracker : IJobResourceTracker
+	public class JobResourceTracker : IJobResourceTracker
     {
 	    private static readonly object _syncRoot = new object();
 

@@ -4,7 +4,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Utils
 {
-    public static class Extensions
+	public static class Extensions
     {
         public static void ShouldHaveCorrectItemsTransferredUpdateHistory(this JobHistoryTest jobHistoryTest, int from, int to)
         {

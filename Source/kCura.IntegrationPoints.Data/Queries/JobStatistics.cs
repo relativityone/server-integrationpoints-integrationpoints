@@ -2,7 +2,7 @@ using System.Data;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-    public class JobStatistics
+	public class JobStatistics
     {
         public int Completed { get; set; }
         

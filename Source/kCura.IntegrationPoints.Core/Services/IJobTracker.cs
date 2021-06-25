@@ -3,7 +3,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-    public interface IJobTracker
+	public interface IJobTracker
     {
         void CreateTrackingEntry(Job job, string batchId);
 

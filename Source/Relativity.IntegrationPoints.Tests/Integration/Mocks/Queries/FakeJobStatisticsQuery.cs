@@ -2,7 +2,7 @@ using kCura.IntegrationPoints.Data.Queries;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 {
-    public class FakeJobStatisticsQuery : IJobStatisticsQuery
+	public class FakeJobStatisticsQuery : IJobStatisticsQuery
     {
         public int AlreadyTransferredItems { get; set; }
         public int AlreadyFailedItems { get; set; }

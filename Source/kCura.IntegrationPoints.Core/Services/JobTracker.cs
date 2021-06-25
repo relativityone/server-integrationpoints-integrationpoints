@@ -5,7 +5,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-    public class JobTracker : IJobTracker
+	public class JobTracker : IJobTracker
     {
         private readonly IJobResourceTracker _tracker;
 

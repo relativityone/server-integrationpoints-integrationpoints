@@ -8,12 +8,12 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
+using FluentAssertions.Common;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -370,6 +370,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus.Guids.First().Should().Be(expectedJobHistoryStatus);
 			jobHistory.ItemsTransferred.Should().Be(transferredItems);
 			jobHistory.ItemsWithErrors.Should().Be(itemLevelErrors);
+		}
+
+		[IdentifiedTest("5C618B8A-D8F5-4BD8-B83A-CC9A289093BF")]
+		public void SyncWorker_ShouldMarkJobAsFailedOnIAPIException()
+		{
+			// Arrange
+			string xmlPath = PrepareRecords(TOTAL_NUMBER_OF_RECORDS);
+			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+
+			SyncWorker sut = PrepareSut((importJob) => { throw new Exception(); });
+
+			// Act & Assert
+			Action act = () => sut.Execute(job.AsJob());
+
+			act.ShouldThrow<Exception>();
+			
+			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryErrorJobFailedGuid);
 		}
 
 		private List<string> GetRemainingItems(JobTest job)

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
-using kCura.Config;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -12,7 +11,7 @@ using Moq;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi
 {
-    public class FakeJobImport : IJobImport
+	public class FakeJobImport : IJobImport
     {
         private readonly Action<FakeJobImport> _executeAction;
 
