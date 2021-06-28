@@ -147,6 +147,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
 		}
 
+		[IdentifiedTest("A1350299-3F8E-4215-9773-82EB6185079C")]
+		public void SyncWorker_ShouldDrainStop_WhenStopRequestedBeforeIAPI()
+		{
+			// Arrange
+			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
+			agent.ToBeRemoved = true;
+
+			const int numberOfRecords = 1000;
+			string xmlPath = PrepareRecords(numberOfRecords);
+			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+			SyncWorker sut = PrepareSut((importJob) => { throw new Exception("IAPI should not be run"); });
+
+			jobHistory.TotalItems = 2000;
+
+			// Act
+			sut.Execute(job.AsJob());
+
+			// Assert
+			jobHistory.ItemsTransferred.Should().Be(null);
+			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
+		}
+
 		[IdentifiedTest("BCF72894-224F-4DB7-985F-0C53C93D153D")]
 		public void SyncWorker_ShouldImportData_NotFullBatch()
 		{

@@ -107,7 +107,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			ImportServiceManager sut = PrepareSut((importJob) =>
 			{
-				importJob.Complete(drainStopAfterImporting);
+				importJob.Complete(drainStopAfterImporting, useDataReader:false);
 
 				agent.ToBeRemoved = true;
 			});
@@ -155,7 +155,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			ImportServiceManager sut = PrepareSut(importJob =>
 			{
-				importJob.Complete(itemsToTransfer, itemLevelErrorsToTransfer);
+				importJob.Complete(itemsToTransfer, itemLevelErrorsToTransfer, useDataReader:false);
 			});
 
 			// Act

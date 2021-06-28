@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Security.Authentication;
+using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Agent;
@@ -131,13 +132,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			//Extract source fields from field map
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
-
-			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
+			if (JobStopManager?.ShouldDrainStop != true)
 			{
-				SetupSubscriptions(dataSynchronizer, job);
-				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-				JobStopManager?.ThrowIfStopRequested();
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
+				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
+				{
+					SetupSubscriptions(dataSynchronizer, job);
+					IEnumerable<IDictionary<FieldEntry, object>> sourceData =
+						GetSourceData(sourceFields, sourceDataReader);
+					JobStopManager?.ThrowIfStopRequested();
+					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
+				}
+			}
+			else
+			{
+				_logger.LogInformation("Skipping synchronizer setup because DrainStop was requested");
 			}
 
 			Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
@@ -366,12 +374,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			BatchStatusQueryResult batchesStatuses = JobManager.GetBatchesStatuses(job, BatchInstance.ToString());
 
-			bool noneOtherBatchProcessing = batchesStatuses.ProcessingCount < 2;
+			bool otherBatchesProcessing = batchesStatuses.ProcessingCount > 1; // one is the current batch, so if there are other batches it means at least 2
 			bool atLeastOneSuspended = batchesStatuses.SuspendedCount > 0;
 		
-			if (noneOtherBatchProcessing)
+			if (!otherBatchesProcessing)
 			{
-				if (atLeastOneSuspended || (job.StopState == StopState.DrainStopped))
+				if (atLeastOneSuspended || (job.StopState == StopState.DrainStopped || job.StopState == StopState.DrainStopping))
 				{
 					MarkJobAsDrainStopped();
 				}

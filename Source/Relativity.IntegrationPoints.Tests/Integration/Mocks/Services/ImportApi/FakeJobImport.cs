@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         public event OnMessageEventHandler OnMessage;
 #pragma warning restore CS0067
 
-        internal void Complete(long maxTransferredItems = Int64.MaxValue, long numberOfItemLevelErrors = 0)
+        internal void Complete(long maxTransferredItems = Int64.MaxValue, long numberOfItemLevelErrors = 0, bool useDataReader = true)
         {
 	        ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
 	        JobReport jobReport = (JobReport)constructorInfos.First().Invoke(new object[0]);
@@ -48,13 +48,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 		        OnError?.Invoke(Mock.Of<IDictionary>());
 		        jobReport.ErrorRows.Add(new JobReport.RowError(i, "", i.ToString()));
 		        
-		        if (!Context.DataReader.Read())
+		        if (useDataReader && !Context.DataReader.Read())
 		        {
 			        break;
 		        }
             }
 
-	        while (Context.DataReader.Read() && i < maxTransferredItems)
+	        while ((!useDataReader || Context.DataReader.Read()) && i < maxTransferredItems)
 	        {
 		        OnProgress?.Invoke(i++);
 	        }
