@@ -2,7 +2,7 @@
   <RAPBuilder>
     <Applications>
       <Application name="kCura.IntegrationPoints" generatenuspec="true">
-        <Destination>Artifacts\RelativityIntegrationPoints.Auto.rap</Destination>
+        <Destination>Artifacts\kCura.IntegrationPoints.rap</Destination>
         <ApplicationSchema>ApplicationsXML/application.xml</ApplicationSchema>
 		<TestDirectory>Source\Relativity.IntegrationPoints.Tests\bin\</TestDirectory>
         <Assemblies>
@@ -64,7 +64,7 @@
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\itextsharp.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Reactive.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.AutomatedWorkflows.Services.Interfaces.dll</Assembly>
-      <Assembly>Source\Relativity.IntegrationPoints.FieldsMapping\bin\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.FieldsMapping\bin\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
