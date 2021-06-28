@@ -151,6 +151,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				job.StopState = StopState.DrainStopped;
 				JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
+				_logger.LogInformation("Drain stopping batch with id = {id} of job {jobId}", job.JobId, job.RootJobId );
 			}
 
 			LogExecuteImportSuccesfulEnd(job);
@@ -168,6 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			JobHistory.JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistorySuspendedGuid});
 			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
+			_logger.LogInformation("Marking job history with id = {id} as Suspended", JobHistory.ArtifactId);
 		}
 
 		private int GetRowsCountForBatch(string jobDetails)

@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			{
 				Data.JobHistory historyRdo = _jobHistoryService.GetRdo(batchInstance);
 				historyRdo.ItemsTransferred = stats.Imported > 0 ? stats.Imported : 0;
-				historyRdo.ItemsWithErrors = stats.Errored;
+				historyRdo.ItemsWithErrors = stats.ImportApiErrors;
 				historyRdo.FilesSize = FileSizeUtils.FormatFileSize(totalSize);
 				_jobHistoryService.UpdateRdo(historyRdo);
 			}

@@ -7,10 +7,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         public int AlreadyTransferredItems { get; set; }
         public int AlreadyFailedItems { get; set; }
 
+        public int TotalProcessedItems => AlreadyFailedItems + AlreadyTransferredItems;
+
+
         public JobStatistics UpdateAndRetrieveStats(string tableName, long jobId, JobStatistics stats, int workspaceID)
         {
-	        stats.Completed += AlreadyFailedItems;
-	        stats.Errored += AlreadyFailedItems;
+	        AlreadyTransferredItems += stats.Completed;
+	        AlreadyFailedItems += stats.ImportApiErrors;
+
+	        stats.Errored = AlreadyFailedItems;
+	        stats.ImportApiErrors = AlreadyFailedItems;
+            stats.Completed = TotalProcessedItems;
+
             return stats;
         }
     }

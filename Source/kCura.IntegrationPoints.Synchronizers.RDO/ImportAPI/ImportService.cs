@@ -272,14 +272,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 		}
 
-		private void CompleteBatch(DateTime start, DateTime end, int totalRows, int errorRows)
+		private void CompleteBatch(DateTime start, DateTime end, int processedRows, int errorRows)
 		{
-			LogBatchCompleted(start, end, totalRows, errorRows);
+			LogBatchCompleted(start, end, processedRows, errorRows);
 			
-			Interlocked.Add(ref  _totalRowsImported, totalRows);
+			Interlocked.Add(ref  _totalRowsImported, processedRows);
 			Interlocked.Add(ref  _totalRowsWithErrors, errorRows);
 			
-			OnBatchComplete?.Invoke(start, end, _totalRowsImported, _totalRowsWithErrors);
+			OnBatchComplete?.Invoke(start, end, processedRows, errorRows);
 		}
 
 		private void ImportJob_OnMessage(Status status)

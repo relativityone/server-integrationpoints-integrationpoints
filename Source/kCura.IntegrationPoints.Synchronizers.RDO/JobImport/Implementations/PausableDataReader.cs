@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         {
             if (_stopManager?.ShouldDrainStop ?? false)
             {
-                Close();
                 return false;
             }
 

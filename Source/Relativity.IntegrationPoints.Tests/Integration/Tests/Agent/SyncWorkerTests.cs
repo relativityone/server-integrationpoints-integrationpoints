@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Castle.MicroKernel.Registration;
@@ -132,10 +133,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void SyncWorker_ShouldImportData()
 		{
 			// Arrange
-			const int numberOfRecords = 100;
+			const int numberOfRecords = 1000;
 			string xmlPath = PrepareRecords(numberOfRecords);
 			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(numberOfRecords); });
+			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(); });
+
+			jobHistory.TotalItems = 2000;
+
+			// Act
+			sut.Execute(job.AsJob());
+
+			// Assert
+			jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
+		}
+
+		[IdentifiedTest("BCF72894-224F-4DB7-985F-0C53C93D153D")]
+		public void SyncWorker_ShouldImportData_NotFullBatch()
+		{
+			// Arrange
+			const int numberOfRecords = 420;
+			string xmlPath = PrepareRecords(numberOfRecords);
+			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(); });
+
+			jobHistory.TotalItems = 2000;
 
 			// Act
 			sut.Execute(job.AsJob());
@@ -153,12 +174,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			string xmlPath = PrepareRecords(numberOfRecords);
 			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+		
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
 			SyncWorker sut = PrepareSut((importJob) =>
 			{
-				importJob.Complete(drainStopAfterImporting);
+				importJob.Complete(maxTransferredItems: drainStopAfterImporting);
 
 				agent.ToBeRemoved = true;
 			});
@@ -195,7 +217,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			SyncWorker sut = PrepareSut((importJob) =>
 			{
-				importJob.Complete(numberOfRecords, numberOfErrors);
+				importJob.Complete(numberOfItemLevelErrors: numberOfErrors);
 
 				agent.ToBeRemoved = true;
 			});
@@ -223,7 +245,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			SyncWorker sut = PrepareSut((importJob) =>
 			{
-				importJob.Complete(drainStopAfterImporting);
+				importJob.Complete(maxTransferredItems: drainStopAfterImporting);
 
 				agent.ToBeRemoved = true;
 			});
@@ -258,7 +280,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.ItemsTransferred = initialTransferredItems;
 			jobHistory.ItemsWithErrors = initialErroredItems;
 			
-			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(numberOfRecords, numberOfErrors); });
+			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(maxTransferredItems:numberOfRecords + numberOfErrors, numberOfItemLevelErrors: numberOfErrors); });
 
 			// Act
 			var syncManagerJob = job.AsJob();
