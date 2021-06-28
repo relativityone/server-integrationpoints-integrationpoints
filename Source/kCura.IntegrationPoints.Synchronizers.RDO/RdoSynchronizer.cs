@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public Data.SourceProvider SourceProvider { get; set; }
 
-		public int TotalRowsProcessed => _importService.TotalRowsProcessed;
+		public int TotalRowsProcessed => _importService?.TotalRowsProcessed ?? 0;
 
 		private ImportSettings ImportSettings { get; set; }
 		
