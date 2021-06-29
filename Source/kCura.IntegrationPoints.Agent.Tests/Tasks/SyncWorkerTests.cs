@@ -13,13 +13,11 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -75,9 +73,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_instance = new SyncWorker(_caseServiceContext, helper, dataProviderFactory, serializer, 
 				appDomainRdoSynchronizerFactory, jobHistoryService, _jobHistoryErrorService, _jobManager, new IBatchStatus[] { _batchStatus },
 				statisticsService, managerFactory, _jobService, providerTypeService, integrationPointRepository);
+			
 
 			_job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "detail",
 				0, new DateTime(), 1, null, null);
+			
+
 			_integrationPoint = new Data.IntegrationPoint()
 			{
 				SourceProvider = 852,
@@ -89,11 +90,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 			SourceProvider sourceProvider = new SourceProvider() {Identifier = Guid.NewGuid().ToString(), ApplicationIdentifier = Guid.NewGuid().ToString() };
 			DestinationProvider destinationProvider = new DestinationProvider() {Identifier = Guid.NewGuid().ToString()};
-			_jobHistory = new JobHistory() {ArtifactId = 9876546};
+			_jobHistory = new JobHistory() {ArtifactId = 9876546, BatchInstance = Guid.Empty.ToString()};
+			List<string> recordIds = new List<String>() { "1", "2" };
+			_dataSynchronizer.TotalRowsProcessed.Returns(recordIds.Count);
+
 			_taskParams = new TaskParameters()
 			{
 				BatchInstance = Guid.NewGuid(),
-				BatchParameters = new List<String>() { "1", "2" }
+				BatchParameters = recordIds
 			};
 			var associatedJobs = new List<Job>() {_job};
 			var fieldsMap = new List<FieldMap>();
@@ -104,17 +108,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
 			jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance, 
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
+
+			jobHistoryService.GetRdo(Guid.Empty).Returns(_jobHistory);
+
 			managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, Arg.Any<bool>())
 				.Returns(_jobStopManager);
 			serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
+
+			serializer.Deserialize<List<string>>(Arg.Is<string>(_taskParams.BatchParameters.ToString())).Returns(recordIds);
+
 			dataProviderFactory.GetDataProvider(new Guid(sourceProvider.ApplicationIdentifier),
 				new Guid(sourceProvider.Identifier)).Returns(dataSourceProvider);
-			dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), (List<string>) _taskParams.BatchParameters, new DataSourceProviderConfiguration(_integrationPoint.SourceConfiguration, _integrationPoint.SecuredConfiguration)).Returns(sourceDataReader);
+			dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), Arg.Any<List<string>>(), new DataSourceProviderConfiguration(_integrationPoint.SourceConfiguration, _integrationPoint.SecuredConfiguration)).Returns(sourceDataReader);
 			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
 				_integrationPoint.DestinationConfiguration).Returns(_dataSynchronizer);
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
 			_jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
 				.Returns(associatedJobs);
+			_jobManager.GetBatchesStatuses(_job, _taskParams.BatchInstance.ToString())
+				.Returns(new BatchStatusQueryResult {ProcessingCount = 1});
 		}
 
 		[Test]

@@ -65,6 +65,7 @@
     <Compile Include="Converters\RelativityObjectExtensions.cs" />
     <Compile Include="Converters\RelativityObjectSlimExtensions.cs" />
     <Compile Include="Converters\WorkspaceRefExtensions.cs" />
+    <Compile Include="DTO\BatchStatusQueryResult.cs" />
     <Compile Include="DTO\ImageFile.cs" />
     <Compile Include="DTO\ExportInitializationResultsDto.cs" />
     <Compile Include="DTO\RelativityObjectSlimDto.cs" />
@@ -332,6 +333,7 @@
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
+    <Content Include="Resources\GetProcessingSyncWorkerBatches.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />

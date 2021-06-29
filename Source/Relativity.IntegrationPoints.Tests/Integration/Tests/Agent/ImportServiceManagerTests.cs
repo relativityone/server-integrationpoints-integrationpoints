@@ -10,12 +10,15 @@ using System.Linq;
 using SystemInterface.IO;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.LoadFile;
+using Relativity.IntegrationPoints.Tests.Integration.Utils;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -104,7 +107,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			ImportServiceManager sut = PrepareSut((importJob) =>
 			{
-				importJob.Complete(drainStopAfterImporting);
+				importJob.Complete(drainStopAfterImporting, useDataReader:false);
 
 				agent.ToBeRemoved = true;
 			});
@@ -123,35 +126,47 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		{
 			// Arrange
 			const string loadFile = @"DataTransfer\Import\drain-stop.dat";
-			const int numberOfRecords = 10;
-			const int itemsTransferred = 3;
-			const int itemsWithErrors = 1;
+			const int itemsToTransfer = 10;
+			const int itemLevelErrorsToTransfer = 5;
+			const int initialItemsTransferred = 3;
+			const int initialItemLevelErrors = 1;
+
+			const int totalDocuments = itemsToTransfer + itemLevelErrorsToTransfer
+			                                + initialItemsTransferred + initialItemLevelErrors;
 			const long size = 1024;
 			DateTime modifiedDate = new DateTime(2020, 1, 1);
 
-			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory(numberOfRecords))
+			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory(totalDocuments))
 				.LifestyleTransient().Named(nameof(FakeWinEddsFileReaderFactory)).IsDefault());
 			_fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
-
+		
+			FakeJobStatisticsQuery fakeJobStatisticsQuery = Container.Resolve<IJobStatisticsQuery>() as FakeJobStatisticsQuery;
+			fakeJobStatisticsQuery.AlreadyTransferredItems = initialItemsTransferred;
+			fakeJobStatisticsQuery.AlreadyFailedItems = initialItemLevelErrors;
+			
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
 				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: itemsTransferred + itemsWithErrors);
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size,
+				modifiedDate, processedItemsCount: initialItemsTransferred + initialItemLevelErrors);
 			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
-			jobHistory.ItemsTransferred = itemsTransferred;
-			jobHistory.ItemsWithErrors = itemsWithErrors;
+			jobHistory.ItemsTransferred = initialItemsTransferred;
+			jobHistory.ItemsWithErrors = initialItemLevelErrors;
 
 			ImportServiceManager sut = PrepareSut(importJob =>
 			{
-				importJob.Complete(numberOfRecords - (itemsTransferred + itemsWithErrors) + itemsWithErrors);
+				importJob.Complete(itemsToTransfer, itemLevelErrorsToTransfer, useDataReader:false);
 			});
 
 			// Act
 			sut.Execute(job.AsJob());
 
 			// Assert
-			jobHistory.ItemsTransferred.Should().Be(numberOfRecords - itemsWithErrors);
-			jobHistory.ItemsWithErrors.Should().Be(itemsWithErrors);
+			jobHistory.ItemsTransferred.Should().Be(initialItemsTransferred + itemsToTransfer);
+			jobHistory.ItemsWithErrors.Should().Be(initialItemLevelErrors + itemLevelErrorsToTransfer);
+			
+			jobHistory.ShouldHaveCorrectItemsTransferredUpdateHistory(initialItemsTransferred, initialItemsTransferred + itemsToTransfer);
+			jobHistory.ShouldHaveCorrectItemsWithErrorsUpdateHistory(initialItemLevelErrors, initialItemLevelErrors + itemLevelErrorsToTransfer);
 		}
 	}
 }

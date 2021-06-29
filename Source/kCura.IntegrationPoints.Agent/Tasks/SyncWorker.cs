@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Security.Authentication;
+using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Agent;
@@ -17,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -56,7 +58,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IManagerFactory managerFactory,
 			IJobService jobService,
 			IProviderTypeService providerTypeService,
-			IIntegrationPointRepository integrationPointRepository) :
+			IIntegrationPointRepository integrationPointRepository
+			) :
 			base(caseServiceContext,
 				helper,
 				dataProviderFactory,
@@ -129,59 +132,74 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			//Extract source fields from field map
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
-
-			using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
+			if (JobStopManager?.ShouldDrainStop != true)
 			{
-				SetupSubscriptions(dataSynchronizer, job);
-				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
-				JobStopManager?.ThrowIfStopRequested();
-				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
+				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
+				{
+					SetupSubscriptions(dataSynchronizer, job);
+					IEnumerable<IDictionary<FieldEntry, object>> sourceData =
+						GetSourceData(sourceFields, sourceDataReader);
+					JobStopManager?.ThrowIfStopRequested();
+					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
+				}
+			}
+			else
+			{
+				_logger.LogInformation("Skipping synchronizer setup because DrainStop was requested");
 			}
 
 			Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
-			int processedItemCount = GetProcessedItemsCount(JobHistory);
+			int totalRowsCountInBatch = GetRowsCountForBatch(job.JobDetails);
 
-			if (ShouldDrainStop(processedItemCount))
+			if (ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch))
 			{
-				MarkJobAsDrainStopped(job, processedItemCount);
+				job.JobDetails = SkipProcessedItems(job.JobDetails, dataSynchronizer.TotalRowsProcessed);
+				JobService.UpdateJobDetails(job);
+
+				job.StopState = StopState.DrainStopped;
+				JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
+				_logger.LogInformation("Drain stopping batch with id = {id} of job {jobId}", job.JobId, job.RootJobId );
 			}
 
 			LogExecuteImportSuccesfulEnd(job);
 		}
 
-		private bool ShouldDrainStop(int processedItemCount)
+		private bool ShouldDrainStopBatch(int processedItemCount, int totalRowsCountInBatch)
 		{
-			bool notAllItemsProcessed = processedItemCount < (JobHistory.TotalItems ?? long.MaxValue);
-			bool shouldDrainStop = JobStopManager?.ShouldDrainStop == true;
+			bool notAllItemsProcessed = processedItemCount < totalRowsCountInBatch;
+			bool drainStopRequested = JobStopManager?.ShouldDrainStop == true;
 
-			return shouldDrainStop && notAllItemsProcessed;
+			return drainStopRequested && notAllItemsProcessed;
 		}
 
-		private void MarkJobAsDrainStopped(Job job, int processedItemCount)
+		private void MarkJobAsDrainStopped()
 		{
-			job.JobDetails = SkipProcessedItems(job.JobDetails, processedItemCount);
 			JobHistory.JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistorySuspendedGuid});
 			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
-
-			job.StopState = StopState.DrainStopped;
-			JobService.UpdateStopState(new List<long> {job.JobId}, job.StopState);
-			JobService.UpdateJobDetails(job);
+			_logger.LogInformation("Marking job history with id = {id} as Suspended", JobHistory.ArtifactId);
 		}
 
-		private static int GetProcessedItemsCount(JobHistory jobHistory)
+		private int GetRowsCountForBatch(string jobDetails)
 		{
-			return (jobHistory.ItemsTransferred ?? 0) + (jobHistory.ItemsWithErrors ?? 0);
+			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(jobDetails);
+			return GetRecordsIds(taskParameters).Count;
 		}
 
 		private string SkipProcessedItems(string jobDetails, int processedItemCount)
 		{
-			TaskParameters parameters = Serializer.Deserialize <TaskParameters>(jobDetails);
-			List<string> list = Serializer.Deserialize<List<string>>(parameters.BatchParameters.ToString());
+			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(jobDetails);
+
+			List<string> list = GetRecordsIds(parameters);
 
 			parameters.BatchParameters = list.Skip(processedItemCount);
 			
 			return Serializer.Serialize(parameters);
+		}
+
+		private List<string> GetRecordsIds(TaskParameters taskParameters)
+		{
+			return Serializer.Deserialize<List<string>>(taskParameters.BatchParameters.ToString());
 		}
 
 		protected virtual void ExecuteTask(Job job)
@@ -269,8 +287,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogPostExecuteStart(job);
 				JobHistoryErrorService.CommitErrors();
+				UpdateJobHistoryStopState(job);
 
-				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString());
+				// if there is no StopManager, batch should finish
+				bool isBatchFinished = (!JobStopManager?.ShouldDrainStop) ?? true;
+				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString(), isBatchFinished);
+				
 				if (isJobComplete)
 				{
 					OnJobComplete(job);
@@ -345,6 +367,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				LogUpdateStopStateToNone(jobsToUpdate);
 				JobService.UpdateStopState(jobsToUpdate, StopState.None);
+			}
+		}
+
+		private void UpdateJobHistoryStopState(Job job)
+		{
+			BatchStatusQueryResult batchesStatuses = JobManager.GetBatchesStatuses(job, BatchInstance.ToString());
+
+			bool otherBatchesProcessing = batchesStatuses.ProcessingCount > 1; // one is the current batch, so if there are other batches it means at least 2
+			bool atLeastOneSuspended = batchesStatuses.SuspendedCount > 0;
+		
+			if (!otherBatchesProcessing)
+			{
+				if (atLeastOneSuspended || (job.StopState == StopState.DrainStopped || job.StopState == StopState.DrainStopping))
+				{
+					MarkJobAsDrainStopped();
+				}
 			}
 		}
 

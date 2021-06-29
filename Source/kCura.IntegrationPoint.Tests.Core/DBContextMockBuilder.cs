@@ -2,7 +2,6 @@
 using System.Data.SqlClient;
 using kCura.Data.RowDataGateway;
 using NSubstitute;
-using NSubstitute.Extensions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -75,6 +74,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 						x.Arg<bool>()
 					)
 				);
+
+			context.ExecuteSqlStatementAsScalar(Arg.Any<string>(), Arg.Any<SqlParameter[]>())
+				.Returns(x => baseContext.ExecuteSqlStatementAsScalar(
+					x.ArgAt<string>(0),
+					x.ArgAt<SqlParameter[]>(1)
+				));
 
 			context.Database.Returns(baseContext.Database);
 

@@ -41,8 +41,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected readonly IRelativityFieldQuery FieldQuery;
 
 		public Data.SourceProvider SourceProvider { get; set; }
-		private ImportSettings ImportSettings { get; set; }
 
+		public int TotalRowsProcessed => _importService?.TotalRowsProcessed ?? 0;
+
+		private ImportSettings ImportSettings { get; set; }
+		
 		private NativeFileImportService NativeFileImportService { get; set; }
 
 		private HashSet<string> IgnoredList => _ignoredList ?? (_ignoredList = new HashSet<string>
@@ -168,32 +171,39 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 				bool rowProcessed = false;
 				IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
-
-				do
+				if (jobStopManager?.ShouldDrainStop != true)
 				{
-					try
+					do
 					{
-						rowProcessed = ProcessRowForImport(fieldMap, enumerator);
-					}
-					catch (ProviderReadDataException exception)
-					{
-						LogSyncDataError(exception);
-						ItemError(exception.Identifier, exception.Message);
-					}
-					catch (Exception ex)
-					{
-						LogSyncDataError(ex);
-						ItemError(string.Empty, ex.Message);
-					}
-				} while (rowProcessed);
+						try
+						{
+							rowProcessed = ProcessRowForImport(fieldMap, enumerator);
+						}
+						catch (ProviderReadDataException exception)
+						{
+							LogSyncDataError(exception);
+							ItemError(exception.Identifier, exception.Message);
+						}
+						catch (Exception ex)
+						{
+							LogSyncDataError(ex);
+							ItemError(string.Empty, ex.Message);
+						}
+					} while (rowProcessed);
 
-				if (!jobStopManager?.ShouldDrainStop ?? true)
-				{
-					_importService.PushBatchIfFull(true);
+					if (!jobStopManager?.ShouldDrainStop ?? true)
+					{
+						_importService.PushBatchIfFull(true);
+						rowProcessed = true;
+					}
+
+					WaitUntilTheJobIsDone(rowProcessed);
+					FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
 				}
-
-				WaitUntilTheJobIsDone();
-				FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
+				else
+				{
+					_logger.LogInformation("Skipping import because DrainStop was requested");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -240,7 +250,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					_importService.KickOffImport(context);
 				}
 
-				WaitUntilTheJobIsDone();
+				WaitUntilTheJobIsDone(true);
 			}
 			catch (Exception ex)
 			{
@@ -343,21 +353,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_logger.LogDebug("Initializing Import Job completed.");
 		}
 
-		protected virtual void WaitUntilTheJobIsDone()
+		protected virtual void WaitUntilTheJobIsDone(bool rowProcessed)
 		{
 			const int waitDuration = 1000;
 
 			bool isJobDone;
-			do
+			if (rowProcessed)
 			{
-				lock (_importService)
+				do
 				{
-					isJobDone = _isJobComplete;
-				}
-				_logger.LogInformation("Waiting until the job id done");
-				Thread.Sleep(waitDuration);
+					lock (_importService)
+					{
+						isJobDone = _isJobComplete;
+					}
+
+					_logger.LogInformation("Waiting until the job id done");
+					Thread.Sleep(waitDuration);
+				} while (!isJobDone);
 			}
-			while (!isJobDone);
 		}
 
 		protected internal virtual IImportService InitializeImportService(ImportSettings settings,

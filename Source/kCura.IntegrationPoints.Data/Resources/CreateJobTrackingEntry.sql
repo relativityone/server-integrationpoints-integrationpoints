@@ -15,6 +15,6 @@ END
 
 IF (NOT EXISTS (SELECT * FROM {0}.[{1}] WHERE JobID = @jobID))
 BEGIN
-	insert into {0}.[{1}] ([JobID],[Completed]) values (@jobID, 0)
+	insert into {0}.[{1}] ([JobID] ,[TotalRecords], [ErrorRecords] ,[ImportApiErrors],[Completed]) values (@jobID, 0, 0, 0, 0)
 END
 

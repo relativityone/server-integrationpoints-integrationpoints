@@ -10,5 +10,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		void Initialize();
 		void KickOffImport(IDataTransferContext dataSource);
 		ImportSettings Settings { get; }
+		int TotalRowsProcessed { get; }
 	}
 }

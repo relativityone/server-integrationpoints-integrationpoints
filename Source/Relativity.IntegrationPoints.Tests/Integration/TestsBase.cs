@@ -153,7 +153,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private void RegisterRipServices(int sourceWorkspaceId)
 		{
 			Container.Register(Component.For<IWorkspaceDBContext>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
-				new FakeWorkspaceDbContext(sourceWorkspaceId))
+				new FakeWorkspaceDbContext(sourceWorkspaceId, FakeRelativityInstance))
 			);
 
 			Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
