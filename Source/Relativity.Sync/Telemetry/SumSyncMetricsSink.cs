@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
@@ -30,8 +31,9 @@ namespace Relativity.Sync.Telemetry
 			using (IMetricsManager metricsManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
 			{
 				Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);
+                IEnumerable sumMetrics = metric.GetSumMetrics();
 
-				foreach (SumMetric sumMetric in metric.GetSumMetrics())
+                foreach (SumMetric sumMetric in sumMetrics)
 				{
 					try
 					{

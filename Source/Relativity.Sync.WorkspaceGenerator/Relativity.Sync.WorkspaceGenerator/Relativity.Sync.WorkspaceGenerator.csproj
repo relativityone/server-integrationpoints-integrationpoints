@@ -201,6 +201,9 @@
     <None Include="App.config" />
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
+    <None Include="Resources\TestCases\TestVm.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\TestCases\Nightly.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -27,6 +27,16 @@ namespace Relativity.Sync.Telemetry
 				Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES,
 				Description = "The end status of the Integration Points job for images flow."
 			},
+            new MetricIdentifier
+            {
+                Name = TelemetryConstants.MetricIdentifiers.JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA,
+                Description = "The suspended status of the Integration Points job for natives and metadata flow."
+            },
+            new MetricIdentifier
+            {
+                Name = TelemetryConstants.MetricIdentifiers.JOB_SUSPENDED_STATUS_IMAGES,
+                Description = "The suspended status of the Integration Points job for images flow."
+			},
 			new MetricIdentifier
 			{
 				Name = TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE,
