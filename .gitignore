@@ -354,5 +354,3 @@ coverage.cobertura.xml
 /FunctionalTestSettings
 Source/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator.csproj.DotSettings
 Source/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator/Resources/TestCases/TestVm.json
-Source/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator.csproj
-Source/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator.csproj
