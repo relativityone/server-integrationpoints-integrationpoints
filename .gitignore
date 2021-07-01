@@ -353,4 +353,3 @@ coverage.cobertura.xml
 /FunctionalTest.runsettings
 /FunctionalTestSettings
 Source/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator.csproj.DotSettings
-Source/Relativity.Sync.WorkspaceGenerator/Relativity.Sync.WorkspaceGenerator/Resources/TestCases/TestVm.json
