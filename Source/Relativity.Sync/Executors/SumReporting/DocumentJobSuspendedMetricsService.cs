@@ -14,8 +14,12 @@ namespace Relativity.Sync.Executors.SumReporting
 		}
 
 		public Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus)
-		{
-			_syncMetrics.Send(new DocumentJobSuspendedMetric());
+        {
+            DocumentJobSuspendedMetric documentJobSuspendedMetric = new DocumentJobSuspendedMetric
+            {
+                JobSuspendedStatus = jobExecutionStatus.ToString()
+            };
+			_syncMetrics.Send(documentJobSuspendedMetric);
 			return Task.FromResult(ExecutionResult.Success());
 		}
 	}
