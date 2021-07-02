@@ -107,5 +107,36 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				}
 			};
 		}
+
+		public List<FieldMap> PrepareIdentifierFieldsMappingForLDAPEntityImport()
+		{
+			FieldTest entityIdentifierId = Workspace.Fields.First(x => x.Name == "Unique ID");
+
+			return new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField =new FieldEntry
+					{
+						DisplayName = "uid",
+						FieldIdentifier = "uid",
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = null
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = entityIdentifierId.Name,
+						FieldIdentifier = entityIdentifierId.ArtifactId.ToString(),
+						FieldType = FieldType.String,
+						IsIdentifier = true,
+						IsRequired = true,
+						Type = "Fixed-Length Text"
+					},
+					FieldMapType = FieldMapTypeEnum.Identifier
+				}
+			};
+		}
 	}
 }

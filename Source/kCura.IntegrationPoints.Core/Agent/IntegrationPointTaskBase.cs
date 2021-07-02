@@ -122,9 +122,9 @@ namespace kCura.IntegrationPoints.Core.Agent
 				factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, job, TaskType.SyncEntityManagerWorker, BatchInstance);
 				factory.SourceProvider = SourceProvider;
 			}
-			IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
-			LogGetDestinationProviderSuccesfulEnd(job, sourceProvider);
-			return sourceProvider;
+			IDataSynchronizer destinationProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
+			LogGetDestinationProviderSuccesfulEnd(job, destinationProvider);
+			return destinationProvider;
 		}
 
 		protected virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)

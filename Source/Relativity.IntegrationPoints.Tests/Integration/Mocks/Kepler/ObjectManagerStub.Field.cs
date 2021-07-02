@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -11,16 +12,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupDocumentFields()
         {
-            bool IsDocumentFieldCondition(string condition)
+            IList<FieldTest> FieldsByObjectTypeFilter(QueryRequest request, IList<FieldTest> list)
             {
-                return condition == @"'Object Type Artifact Type Id' == OBJECT 10";
-            }
-
-            IList<FieldTest> DocumentFieldFilter(QueryRequest request, IList<FieldTest> list)
-            {
-                if (IsDocumentFieldCondition(request.Condition))
+                if(request.Condition == @"'Object Type Artifact Type Id' == OBJECT 10")
                 {
-                    return list.Where(x => x.IsDocumentField).ToList();
+                    return list.Where(x => x.ObjectTypeId == (int)ArtifactType.Document).ToList();
+                }
+                else if (IsRDOFieldTypeCondition(request.Condition, out int objectTypeId))
+                {
+                    return list.Where(x => x.ObjectTypeId == objectTypeId).ToList();
                 }
 
                 return new List<FieldTest>();
@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     It.Is<QueryRequest>(r => IsFieldQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                     {
-                        QueryResult result = GetRelativityObjectsForRequest(x => x.Fields, DocumentFieldFilter, workspaceId, request, length);
+                        QueryResult result = GetRelativityObjectsForRequest(x => x.Fields, FieldsByObjectTypeFilter, workspaceId, request, length);
                         return Task.FromResult(result);
                     }
                 );
@@ -39,9 +39,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     It.Is<QueryRequest>(r => IsFieldQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                 {
-                    QueryResultSlim result = GetQuerySlimsForRequest(x=>x.Fields, DocumentFieldFilter, workspaceId, request, length);
+                    QueryResultSlim result = GetQuerySlimsForRequest(x=>x.Fields, FieldsByObjectTypeFilter, workspaceId, request, length);
                     return Task.FromResult(result);
                 });
+        }
+
+        private bool IsRDOFieldTypeCondition(string condition, out int objectTypeId)
+        {
+            var match = Regex.Match(condition,
+                @"'Object Type Artifact Type ID' == (\d+)");
+
+            if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
+            {
+                objectTypeId = extractedArtifactId;
+                return true;
+            }
+
+            objectTypeId = -1;
+            return false;
         }
 
         private bool IsFieldQuery(QueryRequest r)

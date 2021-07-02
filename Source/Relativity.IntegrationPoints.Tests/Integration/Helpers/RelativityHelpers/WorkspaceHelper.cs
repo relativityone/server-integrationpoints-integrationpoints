@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
@@ -30,9 +32,44 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 			workspace.Fields.Add(new FieldTest
 			{
-				IsDocumentField = true,
+				ObjectTypeId = (int)ArtifactType.Document,
 				IsIdentifier = true,
 				Name = "Control Number"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				Guid = new Guid(EntityFieldGuids.UniqueID),
+				IsIdentifier = true,
+				Name = "Unique ID"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				Guid = new Guid(EntityFieldGuids.FirstName),
+				IsIdentifier = false,
+				Name = "First Name"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				Guid = new Guid(EntityFieldGuids.LastName),
+				IsIdentifier = false,
+				Name = "Last Name"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				Guid = new Guid(EntityFieldGuids.FullName),
+				IsIdentifier = false,
+				Name = "Full Name"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				Guid = new Guid(EntityFieldGuids.Manager),
+				IsIdentifier = false,
+				Name = "Manager"
 			});
 
 			workspace.SavedSearches.Add(new SavedSearchTest

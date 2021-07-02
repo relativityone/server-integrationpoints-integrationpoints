@@ -1,7 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using kCura.ScheduleQueue.Core.Data;
-using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
@@ -14,9 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldCompleteExecution_WhenScheduleQueueIsEmpty()
 		{
 			// Arrange
-			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			Action action = () => sut.Execute();
@@ -29,13 +25,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldPickUpJob_AndRemoveFromTheQueueAfterExecution()
 		{
 			// Arrange
-			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			JobTest job = PrepareJob();
 
 			var jobsInQueue = new[] {job.JobId};
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -50,14 +44,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldProcessTwoJobs_InOneExecutionTrigger()
 		{
 			// Arrange
-			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			JobTest job1 = PrepareJob();
 			JobTest job2 = PrepareJob();
 
 			var jobsInQueue = new[] {job1.JobId, job2.JobId};
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -80,7 +72,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 			var jobsInQueue = new[] { job.JobId };
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -95,15 +87,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		public void Agent_ShouldNotProcessAndDelete_WhenJobRelatedWorkspaceNotExist()
 		{
 			// Arrange
-			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
 			JobTest job = PrepareJob();
 
 			FakeRelativityInstance.Helpers.WorkspaceHelper.RemoveWorkspace(job.WorkspaceID);
 
 			var jobsInQueue = new[] { job.JobId };
 
-			var sut = PrepareSutWithMockedQueryManager(agent);
+			var sut = PrepareSut();
 
 			// Act
 			sut.Execute();
@@ -114,11 +104,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
 		}
 
-		private FakeScheduleAgent PrepareSutWithMockedQueryManager(AgentTest agent)
+		private FakeAgent PrepareSut()
 		{
-			return new FakeScheduleAgent(agent,
-				Container.Resolve<IAgentHelper>(),
-				queryManager: Container.Resolve<IQueryManager>());
+			return FakeAgent.CreateWithEmptyProcessJob(FakeRelativityInstance, Container);
 		}
 
 		private JobTest PrepareJob()

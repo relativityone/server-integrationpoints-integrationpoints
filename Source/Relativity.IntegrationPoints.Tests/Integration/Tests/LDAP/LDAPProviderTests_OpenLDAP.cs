@@ -274,7 +274,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 		{
 			LDAPSettings settings = new LDAPSettings
 			{
-				ConnectionPath = $"rip-openldap-cvnx78s.eastus.azurecontainer.io/{ou},dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io",
+				ConnectionPath = Const.LDAP._OPEN_LDAP_CONNECTION_PATH(ou),
 				ConnectionAuthenticationType = authType,
 				ImportNested = importNested,
 				MultiValueDelimiter = multiValueDelimiter
@@ -282,8 +282,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 
 			LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
 			{
-				UserName = "cn=admin,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io",
-				Password = "Test1234!"
+				UserName = Const.LDAP._OPEN_LDAP_USER,
+				Password = Const.LDAP._OPEN_LDAP_PASSWORD
 			};
 
 			return new DataSourceProviderConfiguration(

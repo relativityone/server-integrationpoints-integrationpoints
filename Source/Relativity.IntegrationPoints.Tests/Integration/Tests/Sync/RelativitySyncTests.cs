@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 			// Arrange
 			ScheduleSyncJob();
 
-			var sut = PrepareSutWithMockedQueryManager();
+			var sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
 			// Act
 
@@ -69,25 +69,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 			FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 		}
 
-		private FakeAgent PrepareSutWithMockedQueryManager()
-		{
-			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
-			var fakeAgent = new FakeAgent(Container, agent,
-				Container.Resolve<IAgentHelper>(),
-				queryManager: Container.Resolve<IQueryManager>());
-
-			Container
-				.Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)
-				.Named(Guid.NewGuid().ToString())
-				.IsDefault());
-
-			return fakeAgent;
-		}
-
 		private FakeAgent PrepareSutWithCustomSyncJob(Func<FakeAgent, CompositeCancellationToken, Task> action)
 		{
-			FakeAgent agent = PrepareSutWithMockedQueryManager();
+			FakeAgent agent = FakeAgent.Create(FakeRelativityInstance, Container);
 			
 			var syncOperations = Container.Resolve<IExtendedFakeSyncOperations>();
 

@@ -75,6 +75,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
 			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: 0);
+			RegisterJobContext(job);
+
 			ImportServiceManager sut = PrepareSut();
 
 			// Act
@@ -102,6 +104,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
 			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: 0);
+			RegisterJobContext(job);
+
 			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 

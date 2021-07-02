@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
@@ -48,9 +49,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 		public JobTest ScheduleImportIntegrationPointRun(WorkspaceTest workspace, 
 			IntegrationPointTest integrationPoint, long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
 		{
+			var loadFileParameters = new LoadFileTaskParameters
+			{
+				Size = loadFileSize,
+				LastModifiedDate = loadFileModifiedDate
+			};
+
 			JobTest job = CreateBasicJob(workspace, integrationPoint)
 				.WithImportDetails(loadFileSize, loadFileModifiedDate, processedItemsCount)
 				.Build();
+
+			return ScheduleJob(job);
+		}
+
+		public JobTest ScheduleSyncWorkerJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
+		{
+			List<string> parameters = new List<string> { "PasvarC", "ChaisupD", "CarlingD", "OzmizraD" };
+
+			JobTest job = CreateBasicJob(workspace, integrationPoint)
+				.WithJobDetails(parameters)
+				.WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)
+				.Build();
+
+			job.RootJobId = 0; // cannot be null in real scenarios, value does not matter for tests
+			workspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
 			return ScheduleJob(job);
 		}
@@ -68,6 +90,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				.WithIntegrationPoint(integrationPoint)
 				.WithSubmittedBy(Relativity.TestContext.User.ArtifactId);
 		}
+		
+	
 
 		#region Verification
 
@@ -81,10 +105,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			Relativity.JobsInQueue.Select(x => x.JobId).Should().NotContain(jobs);
 		}
 
-		public void VerifyJobsAreNotLockedByAgent(AgentTest agent, IEnumerable<long> jobs)
+		public void VerifyJobsAreNotLockedByAgent(int agentId, IEnumerable<long> jobs)
 		{
 			Relativity.JobsInQueue.Where(x => jobs.Contains(x.JobId))
-				.All(x => x.LockedByAgentID != agent.ArtifactId).Should().BeTrue();
+				.All(x => x.LockedByAgentID != agentId).Should().BeTrue();
 		}
 
 		public void VerifyScheduledJobWasReScheduled(JobTest job, DateTime expectedNextRunTime)

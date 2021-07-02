@@ -8,9 +8,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 	{
 		public string Name { get; set; }
 
-		public bool IsDocumentField { get; set; }
+		public int ObjectTypeId { get; set; }
 
 		public bool IsIdentifier { get; set; }
+
+		public Guid Guid { get; set; }
 
 		public FieldTest() : base("Field")
 		{
@@ -23,6 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			return new RelativityObject
 			{
 				ArtifactID = ArtifactId,
+				Guids = new List<Guid> { Guid },
 				ParentObject = new RelativityObjectRef
 				{
 					ArtifactID = ParenObjectArtifactId
