@@ -2,12 +2,18 @@ URL of web page: https://relativitysyncstorage.z19.web.core.windows.net/
 
 How to renew token:
 Open portal.azure.com
-Navtigate to: Home > Subscriptions > PD - RIP RDC - MSDN - 01 > relativitysyncstorage > Shared access signature
+Navitgate to: Home > Subscriptions > PD - RIP RDC - MSDN - 01 > Resources > relativitysyncstorage > Security + networking > Shared access signature
 
-Allowed Services: Table
-Allowes resource types: Object
+Allowed Services: Table\
+Allowes resource types: Object\
 Allowed permissions: Read
 
-In Visual Studio Code install extension: Azure Storage.
-Login into our account for that extension.
-Uplaod using following Procedure: "Deploy your Single Page App to Azure Storage"
+Copy SAS token and paste it into `basic.html:10 SAS_TOKEN`\
+In Visual Studio Code install extension: Azure Storage.\
+On Activity bar, click Azure icon.\
+Login into our account for that extension.\
+Hover Storage title bar > click Deploy to Static Website via Azure Storage\
+Navigate to `relativitysync\Source\Relativity.Sync.Dashboards\PerformanceChart\`\
+Pick PD - RIP RDC MSDN - 01 Subscription,\
+Storage Account: `relativtysyncstorage`\
+Confirm with `Delete and Deploy` button  
