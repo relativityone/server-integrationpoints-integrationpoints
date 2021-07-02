@@ -7,7 +7,7 @@
 <canvas id="myChart"></canvas>
 <script>
     var tableUri = 'https://' + 'relativitysyncstorage' + '.table.core.windows.net';
-    var SAS_TOKEN = 'sv=2019-12-12&ss=t&srt=o&sp=r&se=2021-06-30T21:56:20Z&st=2021-01-15T14:56:20Z&spr=https,http&sig=EbVQrQwixfF7oKb3vRYGA%2FDh1R68vK2MEoWr5uJAWak%3D';
+    var SAS_TOKEN = '?sv=2020-02-10&ss=t&srt=o&sp=r&se=2022-01-02T19:19:17Z&st=2021-07-02T10:19:17Z&spr=https&sig=So5Vw67%2F0KN2ViHwfBEmV%2Bw5VXB8FlKA6V7hyM8x58w%3D';
     var tableService = AzureStorage.Table.createTableServiceWithSas(tableUri, SAS_TOKEN);
     const days_range = 30;
 
