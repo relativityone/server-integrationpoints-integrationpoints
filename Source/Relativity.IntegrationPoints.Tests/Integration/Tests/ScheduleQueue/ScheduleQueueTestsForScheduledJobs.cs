@@ -115,7 +115,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			FakeAgent fakeAgent = new FakeAgent(Container, agent,
 				Container.Resolve<IAgentHelper>(),
 				scheduleRuleFactory: Container.Resolve<IScheduleRuleFactory>(),
-				queryManager: Container.Resolve<IQueryManager>());
+				queryManager: Container.Resolve<IQueueQueryManager>());
 
 			fakeAgent.ProcessJobMockFunc = (job) =>
 			{

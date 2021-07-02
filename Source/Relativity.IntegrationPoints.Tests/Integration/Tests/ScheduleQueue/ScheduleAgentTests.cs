@@ -107,7 +107,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
 		private FakeAgent PrepareSut()
 		{
-			return FakeAgent.CreateWithEmptyProcessJob(FakeRelativityInstance, Container);
+			return FakeAgent.CreateWithEmptyProcessJob(FakeRelativityInstance, Container, shouldRunOnce: false);
 		}
 
 		private JobTest PrepareJob()

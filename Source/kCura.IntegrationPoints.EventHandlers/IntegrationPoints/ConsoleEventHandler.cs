@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					IQueryManager queryManager = new QueryManager(Helper, _agentGuid);
+					IQueueQueryManager queryManager = new QueueQueryManager(Helper, _agentGuid);
 					IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 					_managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 				}

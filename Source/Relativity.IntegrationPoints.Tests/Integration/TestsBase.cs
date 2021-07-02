@@ -174,8 +174,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
 			Container.Register(Component.For<IJobService>().ImplementedBy<JobService>());
 
+			Container.Register(Component.For<IEntityManagerQueryManager>().ImplementedBy<FakeEntityManagerQueryManager>()
+				.Named(nameof(FakeEntityManagerQueryManager)).IsDefault());
+
 			Container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().UsingFactoryMethod(c =>
-				new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
+				new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueueQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
 			Container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>());
 			Container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>());
 		}
@@ -189,7 +192,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				.Named(nameof(FakeDataProviderFactory)).IsDefault());
 			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<FakeDataSourceProvider>().IsDefault()); //???
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>().IsDefault());
-			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>().IsDefault());
+			Container.Register(Component.For<IQueueQueryManager>().ImplementedBy<QueueQueryManagerMock>().IsDefault());
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
 			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());

@@ -110,7 +110,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public List<FieldMap> PrepareIdentifierFieldsMappingForLDAPEntityImport()
 		{
-			FieldTest entityIdentifierId = Workspace.Fields.First(x => x.Name == "Unique ID");
+			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == Const.LDAP._ENTITY_TYPE_ARTIFACT_ID)
+				.ToDictionary(x => x.Name, x => x);
 
 			return new List<FieldMap>
 			{
@@ -127,14 +128,80 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 					},
 					DestinationField = new FieldEntry
 					{
-						DisplayName = entityIdentifierId.Name,
-						FieldIdentifier = entityIdentifierId.ArtifactId.ToString(),
+						DisplayName = entityFields["Unique ID"].Name,
+						FieldIdentifier = entityFields["Unique ID"].ArtifactId.ToString(),
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,
 						Type = "Fixed-Length Text"
 					},
 					FieldMapType = FieldMapTypeEnum.Identifier
+				},
+				new FieldMap
+				{
+					SourceField =new FieldEntry
+					{
+						DisplayName = "sn",
+						FieldIdentifier = "sn",
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = null
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = entityFields["Last Name"].Name,
+						FieldIdentifier = entityFields["Last Name"].ArtifactId.ToString(),
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = "Fixed-Length Text"
+					},
+					FieldMapType = FieldMapTypeEnum.None
+				},
+				new FieldMap
+				{
+					SourceField =new FieldEntry
+					{
+						DisplayName = "givenname",
+						FieldIdentifier = "givenname",
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = null
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = entityFields["First Name"].Name,
+						FieldIdentifier = entityFields["First Name"].ArtifactId.ToString(),
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = "Fixed-Length Text"
+					},
+					FieldMapType = FieldMapTypeEnum.None
+				},
+				new FieldMap
+				{
+					SourceField =new FieldEntry
+					{
+						DisplayName = "manager",
+						FieldIdentifier = "manager",
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = null
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = entityFields["Manager"].Name,
+						FieldIdentifier = entityFields["Manager"].ArtifactId.ToString(),
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = "Single Object"
+					},
+					FieldMapType = FieldMapTypeEnum.None
 				}
 			};
 		}

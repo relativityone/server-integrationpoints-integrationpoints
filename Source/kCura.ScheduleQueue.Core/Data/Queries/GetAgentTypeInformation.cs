@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using kCura.ScheduleQueue.Core.Data.Interfaces;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Properties;
 using Relativity.API;
 

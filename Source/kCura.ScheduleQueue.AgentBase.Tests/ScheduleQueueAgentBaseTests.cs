@@ -19,7 +19,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 	{
 		private Mock<IJobService> _jobServiceMock;
 		private Mock<IQueueJobValidator> _queueJobValidatorFake;
-		private Mock<IQueryManager> _queryManager;
+		private Mock<IQueueQueryManager> _queryManager;
 
 		[Test]
 		public void Execute_ShouldProcessJobInQueue()
@@ -147,7 +147,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			_queueJobValidatorFake.Setup(x => x.ValidateAsync(It.IsAny<Job>()))
 				.ReturnsAsync(ValidationResult.Success);
 
-			_queryManager = new Mock<IQueryManager>();
+			_queryManager = new Mock<IQueueQueryManager>();
 
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
 				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, emptyLog.Object)
@@ -177,7 +177,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		{
 			public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueryManager queryManager = null, IAPILog log = null) 
+				IQueueQueryManager queryManager = null, IAPILog log = null) 
 				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, log)
 			{
 				//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue

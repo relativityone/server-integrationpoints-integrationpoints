@@ -94,9 +94,11 @@
     <Compile Include="Helpers\IMassUpdateHelper.cs" />
     <Compile Include="Helpers\MassUpdateHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="ICommand.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
+    <Compile Include="IQuery.cs" />
     <Compile Include="LoadFileInfo.cs" />
     <Compile Include="Installers\HelpersRegistration.cs" />
     <Compile Include="Installers\RepositoryRegistration.cs" />
@@ -109,7 +111,10 @@
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="Queries\IJobStatisticsQuery.cs" />
+    <Compile Include="Queries\InsertDataToEntityManagerResourceTable.cs" />
+    <Compile Include="Queries\IEntityManagerQueryManager.cs" />
     <Compile Include="Queries\JobStatistics.cs" />
+    <Compile Include="Queries\EntityManagerQueryManager.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IDestinationProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IIntegrationPointsCompletedJobsQueryBuilder.cs" />

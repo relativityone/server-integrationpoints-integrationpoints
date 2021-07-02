@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected Agent(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueryManager queryManager = null, IAPILog logger = null) 
+				IQueueQueryManager queryManager = null, IAPILog logger = null) 
 			: base(agentGuid, agentService, 
 				jobService, scheduleRuleFactory, queueJobValidator, queryManager, logger)
 		{

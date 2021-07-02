@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueue.AgentBase
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
 		private IAgentService _agentService;
-		private IQueryManager _queryManager;
+		private IQueueQueryManager _queryManager;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
@@ -32,7 +32,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueryManager queryManager = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
@@ -54,7 +54,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			if (_queryManager == null)
 			{
-				_queryManager = new QueryManager(Helper, _agentGuid);
+				_queryManager = new QueueQueryManager(Helper, _agentGuid);
 			}
 
 			if (_agentService == null)
