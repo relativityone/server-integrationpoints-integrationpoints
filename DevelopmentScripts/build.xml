@@ -1,7 +1,7 @@
 <BuildTools>
   <RAPBuilder>
     <Applications>
-      <Application name="MyFirstProvider" generatenuspec="true">
+      <Application name="MyFirstProvider" generatenuspec="false">
         <Destination>Artifacts\MyFirstProvider.rap</Destination>
         <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
         <Assemblies>

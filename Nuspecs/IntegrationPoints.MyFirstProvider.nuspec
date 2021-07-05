@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>IntegrationPoints.MyFirstProvider</id>
+    <version>1.0.0.0</version>
+    <authors>Relativity ODA LLC</authors>
+    <owners>Relativity ODA LLC</owners>
+    <licenseUrl>https://www.relativity.com/terms-of-use/</licenseUrl>
+    <projectUrl>https://platform.relativity.com/index.html</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Sample provider for IntegrationPoints</description>
+    <copyright>© Relativity</copyright>
+    <tags>MyFirstProvider</tags>
+     <dependencies>
+    <dependency id="kCura.Apps.Common.Config" version="2.1.9"/>
+    <dependency id="kCura.Apps.Common.Data" version="2.1.9"/>
+    <dependency id="kCura.Apps.Common.Utils" version="2.1.9"/>
+    <dependency id="kCura.EventHandler" version="11.0.105.1"/>
+    <dependency id="Newtonsoft.Json" version="6.0.1"/>
+    <dependency id="Relativity.API" version="12.0.0"/>
+    <dependency id="Relativity.DataTransfer.MessageService" version="10.2.0"/>
+    <dependency id="Relativity.IntegrationPoints.SDK" version="1.0.7"/>
+    <dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="11.1.0"/>
+    <dependency id="Relativity.Kepler" version="2.0.7"/>
+    <dependency id="Relativity.Kepler.Client" version="1.0.1.445"/>
+    <dependency id="Relativity.Telemetry.APM" version="2019.1.1"/>
+    <dependency id="Relativity.Telemetry.DataContracts.Shared" version="9.4.159"/>
+    <dependency id="Relativity.Telemetry.Services.Interface" version="9.6.88.61"/>
+    <dependency id="System.Data.SqlClient" version="4.6.0"/>
+    <dependency id="SystemWrapper.Interfaces" version="0.19.0.115"/>
+  </dependencies>
+  </metadata>
+  <files>
+    <file src="..\Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.MyFirstProvider.Provider.dll" target="lib\" />
+  </files>
+</package>
