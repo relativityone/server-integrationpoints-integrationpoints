@@ -58,6 +58,7 @@ using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFeder
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -122,6 +123,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IProviderFactory>().ImplementedBy<DefaultProviderFactory>().DependsOn(new { windsorContainer = container }).LifestyleTransient());
 			container.Register(Component.For<IManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 			container.Register(Component.For<IEntityManagerQueryManager>().ImplementedBy<EntityManagerQueryManager>().LifestyleTransient().Named(nameof(EntityManagerQueryManager)));
+			container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<EntityManagerLinksSanitizer>().LifestyleTransient().Named(nameof(EntityManagerLinksSanitizer)));
 			container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleSingleton());
 			container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
 			container.Register(Component.For<IDeleteHistoryService>().ImplementedBy<DeleteHistoryService>().LifestyleTransient());

@@ -128,6 +128,39 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			AssertData(HumanResourcesTestData.Data, result);
 		}
 
+		[IdentifiedTest("D7818545-AB77-487D-A032-CCEC57AEFF2A")]
+		public void OpenLDAP_GetData_ShouldReturnData_WhenLinkManagerIsRequested()
+		{
+			// Arrange
+			IDataSourceProvider sut = PrepareSut();
+
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Management", AuthenticationTypesEnum.FastBind);
+
+			IEnumerable<FieldEntry> fieldEntries = new List<FieldEntry>
+			{
+				new FieldEntry { FieldIdentifier = "uid" },
+				new FieldEntry { FieldIdentifier = "sn" },
+				new FieldEntry { FieldIdentifier = "givenname" },
+				new FieldEntry { FieldIdentifier = "manager" },
+				new FieldEntry { FieldIdentifier = "distinguishedName", IsIdentifier = true },
+			};
+
+			IEnumerable<string> entryIds = new List<string>
+			{
+				"cn=Delia Ozmizrak,ou=Management,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io",
+				"cn=Darrel Carling,ou=Management,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io",
+				"cn=Daisie Chaisupakosol,ou=Management,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io",
+			};
+
+			// Act
+			IDataReader reader = sut.GetData(fieldEntries, entryIds, sourceProviderConfiguration);
+
+			IList<IDictionary<string, object>> result = ReaderUtil.Read(reader);
+
+			// Assert
+			AssertData(HumanResourcesTestData.Data, result);
+		}
+
 		[IdentifiedTest("5078925F-29D3-4542-B3B4-52B770A36CB4")]
 		public void OpenLDAP_GetData_ShouldReturnData_WhenNestedImportIsRequested()
 		{

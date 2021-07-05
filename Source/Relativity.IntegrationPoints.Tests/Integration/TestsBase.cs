@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -190,12 +191,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			Container.Register(Component.For<IDataProviderFactory>().ImplementedBy<FakeDataProviderFactory>().DependsOn(new { container = Container })
 				.Named(nameof(FakeDataProviderFactory)).IsDefault());
-			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<FakeDataSourceProvider>().IsDefault()); //???
+			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<FakeDataSourceProvider>().IsDefault());
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>().IsDefault());
 			Container.Register(Component.For<IQueueQueryManager>().ImplementedBy<QueueQueryManagerMock>().IsDefault());
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
 			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
+
+			// LDAP Entity
+			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>().IsDefault());
 
 			// IAPI
 			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleSingleton().IsDefault());

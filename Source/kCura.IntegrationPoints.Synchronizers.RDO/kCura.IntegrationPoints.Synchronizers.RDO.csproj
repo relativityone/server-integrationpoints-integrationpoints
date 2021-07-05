@@ -53,6 +53,8 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="Entity\IEntityManagerLinksSanitizer.cs" />
+    <Compile Include="Entity\EntityManagerLinksSanitizer.cs" />
     <Compile Include="ImportAPI\IImportApiFacade.cs" />
     <Compile Include="ImportAPI\ImportApiFacade.cs" />
     <Compile Include="ImportAPI\JobProgressInfo.cs" />
