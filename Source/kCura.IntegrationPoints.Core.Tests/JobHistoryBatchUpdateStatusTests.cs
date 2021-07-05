@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.None));
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
 			_jobHistoryService.GetRdoWithoutDocuments(parameters.BatchInstance).Returns(history);
-			_updater.GenerateStatus(history).Returns(expectedStatus);
+			_updater.GenerateStatus(history, job.JobId).Returns(expectedStatus);
 			_dateTimeHelper.Now().Returns(expectedEndTimeUtc);
 		}
 	}

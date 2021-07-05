@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoint.Tests.Core.TestCategories;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Models;
@@ -81,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Assert
 			Assert.IsFalse(result);
 		}
-
+		
 		[IdentifiedTest("ef786e0e-59b0-417e-b563-8a8687c159e8")]
 		[SmokeTest]
 		public void VerifyCheckBatchOnCompleteTrue()
@@ -139,6 +138,35 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			//Act
 			bool result = _manager.CheckBatchOnJobComplete(job, batchInstance.ToString());
+
+			//Assert
+			Assert.IsFalse(result);
+		}
+		
+		[IdentifiedTest("E71A5440-0C2B-48ED-8A3B-6323307AA741")]
+		public void VerifyCheckBatchOnCompleteFalse_WhenNotFinished()
+		{
+			//Arrange
+			IntegrationPointModel integrationModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly, "CheckBatchOnCompleteFalse", "Append Only");
+			IntegrationPointModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+
+			int jobId = 10;
+			int rootJobId = 11;
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithRootJobId(rootJobId)
+				.WithRelatedObjectArtifactId(integrationPoint.ArtifactID)
+				.WithWorkspaceId(SourceWorkspaceArtifactID)
+				.WithSubmittedBy(_ADMIN_USER_ID)
+				.Build();
+
+			Guid batchInstance = Guid.NewGuid();
+			string scratchTableSuffix = $"{SourceWorkspaceArtifactID}_{rootJobId}_{batchInstance}";
+			_scratchTableRepository = _repositoryFactory.GetScratchTableRepository(SourceWorkspaceArtifactID, _JOB_TRACKER_TABLE_PREFIX, scratchTableSuffix);
+			_jobTracker.CreateTrackingEntry(job, batchInstance.ToString());
+
+			//Act
+			bool result = _manager.CheckBatchOnJobComplete(job, batchInstance.ToString(), false);
 
 			//Assert
 			Assert.IsFalse(result);

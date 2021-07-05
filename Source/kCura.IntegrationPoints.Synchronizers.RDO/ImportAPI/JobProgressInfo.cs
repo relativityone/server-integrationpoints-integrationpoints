@@ -2,8 +2,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	internal class JobProgressInfo
 	{
-		public int NumberOfItemsTransferred { get; private set; }
-		public int NumberOfItemsErrored { get; private set; }
+		public int NumberOfItemsTransferred { get; set; }
+		public int NumberOfItemsErrored { get; set; }
 
 		public void Reset()
 		{
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			NumberOfItemsTransferred++;
 		}
-
+		
 		public bool IsValid()
 		{
 			return NumberOfItemsTransferred >= 0 && NumberOfItemsErrored >= 0;

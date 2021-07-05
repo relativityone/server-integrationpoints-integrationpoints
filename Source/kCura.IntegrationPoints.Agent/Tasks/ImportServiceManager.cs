@@ -123,6 +123,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields))
 					{
+						context.TransferredItemsCount = JobHistory.ItemsTransferred ?? 0;
+						context.FailedItemsCount = JobHistory.ItemsWithErrors ?? 0;
+
 						synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings), JobStopManager);
 					}
 				}
@@ -309,6 +312,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				importSettings.StartRecordNumber = int.Parse(providerSettings.LineNumber) + 1;
 			}
 
+
+			int processedItemsCount = GetProcessedItemsCountFromJobDetails(job);
+			importSettings.StartRecordNumber += processedItemsCount;
+
 			importSettings.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
 
 			//Copy multi-value and nested delimiter settings chosen on configuration page to importAPI settings
@@ -379,6 +386,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			return loadFileParameters;
+		}
+
+		private int GetProcessedItemsCountFromJobDetails(Job job)
+		{
+			LoadFileTaskParameters loadFileTaskParameters = GetLoadFileTaskParameters(GetTaskParameters(job));
+			return loadFileTaskParameters.ProcessedItemsCount;
 		}
 
 		#region Logging

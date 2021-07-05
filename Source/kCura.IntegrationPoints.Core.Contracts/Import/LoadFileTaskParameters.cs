@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Import
 	[Serializable]
 	public class LoadFileTaskParameters
 	{
-		public long ProcessedItemsCount { get; set; }
+		public int ProcessedItemsCount { get; set; }
 
 		public long Size { get; set; }
 

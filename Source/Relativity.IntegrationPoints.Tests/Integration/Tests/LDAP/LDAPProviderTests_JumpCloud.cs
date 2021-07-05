@@ -11,7 +11,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 {
-	[IdentifiedTestFixture("DD5D19E4-7D3D-4696-B16F-7147FCB58852")]
 	[TestExecutionCategory.CI, TestLevel.L2]
 	public class LDAPProviderTests_JumpCloud : TestsBase
 	{

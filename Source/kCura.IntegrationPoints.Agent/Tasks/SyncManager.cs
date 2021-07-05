@@ -192,6 +192,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				if (JobStopManager?.ShouldDrainStop == true)
 				{
 					_logger.LogInformation("Drain-Stop was triggered...");
+
 					TimeSpan timeElapsedSinceDrainStopRequested = TimeSpan.Zero;
 					while (timeElapsedSinceDrainStopRequested < drainStopTimeout)
 					{

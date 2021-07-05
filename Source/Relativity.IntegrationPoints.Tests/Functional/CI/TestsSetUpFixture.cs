@@ -47,7 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 		private static void InstallIntegrationPointsToWorkspace(int workspaceId)
 		{
-			string rapFileLocation = Path.Combine(TestContext.Parameters["RAPDirectory"], "RelativityIntegrationPoints.Auto.rap");
+			string rapFileLocation = Path.Combine(TestContext.Parameters["RAPDirectory"], "kCura.IntegrationPoints.rap");
 
 			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 

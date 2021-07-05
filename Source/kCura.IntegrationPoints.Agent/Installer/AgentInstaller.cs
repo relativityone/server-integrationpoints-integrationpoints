@@ -73,19 +73,19 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			{
 				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return new WorkspaceDBContext(_agentHelper.GetDBContext(jobContextProvider.Job.WorkspaceID));
-			}).LifestyleTransient());
+			}).LifestyleTransient().IsFallback());
 
 			container.Register(Component.For<Job>().UsingFactoryMethod(k =>
 			{
 				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return jobContextProvider.Job;
-			}).LifestyleTransient());
+			}).LifestyleTransient().IsFallback());
 
 			container.Register(Component.For<IRelativityObjectManagerService>().UsingFactoryMethod(k =>
 			{
 				IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
 				return new RelativityObjectManagerService(container.Resolve<IHelper>(), jobContextProvider.Job.WorkspaceID);
-			}).LifestyleTransient());
+			}).LifestyleTransient().IsFallback());
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod(k =>
 			{

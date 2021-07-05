@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Services.Choice;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IJobHistoryService _jobHistoryService;
 		private IRelativityObjectManagerService _relativityObjectManager;
 		private JobHistoryErrorQuery _service;
+		private IJobService _jobService;
 		private JobStatusUpdater _instance;
 
 		[SetUp]
@@ -25,8 +27,9 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_relativityObjectManager = Substitute.For<IRelativityObjectManagerService>();
 			_service = Substitute.For<JobHistoryErrorQuery>(_relativityObjectManager);
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			_jobService = Substitute.For<IJobService>();
 
-			_instance = new JobStatusUpdater(_service, _jobHistoryService);
+			_instance = new JobStatusUpdater(_service, _jobHistoryService, _jobService);
 		}
 
 		[Test]

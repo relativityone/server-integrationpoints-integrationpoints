@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 {
-	[IdentifiedTestFixture("A08151D7-91BF-4E7B-A65E-BBE5E9DFD4F0")]
 	public class RelativitySyncTests : TestsBase
 	{
 		private const int _STOP_MANAGER_TIMEOUT = 10;
@@ -104,13 +103,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 		}
 
 		private Func<FakeAgent, CompositeCancellationToken, Task> SyncJobGracefullyDrainStoppedAction =>
-			(agent, token) =>
+			async (agent, token) =>
 			{
 				agent.MarkAgentToBeRemoved();
-				SpinWait.SpinUntil(() =>
-						token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
-					TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT));
-				return Task.CompletedTask;
+				SpinWait.SpinUntil(
+					() =>token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
+					TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT)
+				);
+
+				await Task.Delay(100);
 			};
 
 		private bool JobInQueueHasFlag(StopState stopState) => 

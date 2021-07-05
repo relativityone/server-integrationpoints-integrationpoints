@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Properties;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -64,9 +65,14 @@ namespace kCura.IntegrationPoints.Core.Services
 			_tracker.CreateTrackingEntry(job, batchId);
 		}
 
-		public bool CheckBatchOnJobComplete(Job job, string batchId)
+		public bool CheckBatchOnJobComplete(Job job, string batchId, bool isBatchFinished = true)
 		{
-			return _tracker.CheckEntries(job, batchId);
+			return _tracker.CheckEntries(job, batchId, isBatchFinished);
+		}
+
+		public BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId)
+		{
+			return _tracker.GetBatchesStatuses(job, batchId);
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class

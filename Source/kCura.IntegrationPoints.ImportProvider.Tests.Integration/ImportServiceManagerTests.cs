@@ -9,13 +9,11 @@ using NSubstitute;
 using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -126,7 +124,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(stopManager);
 
 			//Job History Service
-			JobHistory jobHistoryDto = new JobHistory();
+			JobHistory jobHistoryDto = new JobHistory()
+			{
+				BatchInstance = Guid.NewGuid().ToString(),
+				ItemsTransferred = 0,
+				ItemsWithErrors = 0
+			};
 			jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
 				.Returns(jobHistoryDto);
 			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);

@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			JobHistory jobHistory = GetHistory(job);
 
-			ChoiceRef newStatus = _updater.GenerateStatus(jobHistory);
+			ChoiceRef newStatus = _updater.GenerateStatus(jobHistory, job.JobId);
 			string oldStatusName = jobHistory.JobStatus.Name;
 
 			jobHistory.JobStatus = newStatus;

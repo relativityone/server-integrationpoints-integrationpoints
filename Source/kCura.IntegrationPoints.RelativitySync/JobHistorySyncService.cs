@@ -122,7 +122,16 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsDrainStoppedAsync(IExtendedJob job)
+		public async Task MarkJobAsSuspendingAsync(IExtendedJob job)
+		{
+			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			{
+				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				await UpdateFinishedJobAsync(job, JobSuspendingStateRef(), manager, hasErrors).ConfigureAwait(false);
+			}
+		}
+
+		public async Task MarkJobAsSuspendedAsync(IExtendedJob job)
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -337,6 +346,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return new ChoiceRef
 			{
 				Guid = JobStatusChoices.JobHistoryStopped.Guids[0]
+			};
+		}
+
+		private static ChoiceRef JobSuspendingStateRef()
+		{
+			return new ChoiceRef
+			{
+				Guid = JobStatusChoices.JobHistorySuspending.Guids[0]
 			};
 		}
 

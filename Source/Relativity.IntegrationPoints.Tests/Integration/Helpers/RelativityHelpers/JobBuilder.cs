@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
+﻿using System;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
@@ -53,6 +55,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			return this;
 		}
 
+		public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
+		{
+			_job.JobDetailsHelper.BatchParameters = new LoadFileTaskParameters
+			{
+				Size = loadFileSize,
+				LastModifiedDate = loadFileModifiedDate,
+				ProcessedItemsCount = processedItemsCount
+			};
+
+			return this;
+		}
+		
 		public JobBuilder WithJobDetails(object parameters)
 		{
 			_job.JobDetailsHelper.BatchParameters = parameters;

@@ -30,6 +30,8 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected IAPILog Logger => _loggerLazy.Value;
 
+		protected IJobService JobService => _jobService;
+
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
 			IQueueQueryManager queryManager = null, IAPILog logger = null)

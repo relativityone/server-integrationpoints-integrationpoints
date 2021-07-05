@@ -2,6 +2,7 @@
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent;
+using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;

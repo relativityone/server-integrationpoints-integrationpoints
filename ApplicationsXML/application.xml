@@ -1745,7 +1745,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2021-04-20T12:11:47.0358455Z</ExtractionDate>
+  <ExtractionDate>2021-06-22T13:33:11.151573Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11806,8 +11806,8 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.5</Version>
-  <SchemaVersion>12.6.0.0</SchemaVersion>
+  <Version>12.2.15.6</Version>
+  <SchemaVersion>11.3.10.13</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />
@@ -11816,12 +11816,10 @@
     <CustomPage>
       <ArtifactID>5377381</ArtifactID>
       <Guid>c2c93191-7b15-4a9b-aa56-6a8c2dac5494</Guid>
-      <ReadinessUrl />
+      <ReadinessUrl>/readiness/check</ReadinessUrl>
       <Name>Web</Name>
       <FileName>DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip</FileName>
       <Size>25118996</Size>
-      <Keywords />
-      <Notes />
       <Hash>A5-95-5D-1F-13-32-DF-97-3D-EB-7F-3A-28-93-60-8E-C9-CA-37-D6</Hash>
     </CustomPage>
   </CustomPages>

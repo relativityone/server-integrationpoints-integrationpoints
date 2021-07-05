@@ -42,11 +42,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 		public JobTest ScheduleIntegrationPointRun(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
 		{
 			JobTest job = CreateBasicJob(workspace, integrationPoint).Build();
+			job.RootJobId = job.JobId;
 			return ScheduleJob(job);
 		}
 
 		public JobTest ScheduleImportIntegrationPointRun(WorkspaceTest workspace, 
-			IntegrationPointTest integrationPoint, long loadFileSize, DateTime loadFileModifiedDate)
+			IntegrationPointTest integrationPoint, long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
 		{
 			var loadFileParameters = new LoadFileTaskParameters
 			{
@@ -55,7 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			};
 
 			JobTest job = CreateBasicJob(workspace, integrationPoint)
-				.WithJobDetails(loadFileParameters)
+				.WithImportDetails(loadFileSize, loadFileModifiedDate, processedItemsCount)
 				.Build();
 
 			return ScheduleJob(job);
@@ -70,6 +71,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				.WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)
 				.Build();
 
+			job.RootJobId = 0; // cannot be null in real scenarios, value does not matter for tests
 			workspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
 			return ScheduleJob(job);
@@ -88,6 +90,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				.WithIntegrationPoint(integrationPoint)
 				.WithSubmittedBy(Relativity.TestContext.User.ArtifactId);
 		}
+		
+	
 
 		#region Verification
 

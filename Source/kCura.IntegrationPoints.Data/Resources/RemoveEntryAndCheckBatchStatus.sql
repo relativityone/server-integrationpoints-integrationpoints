@@ -29,7 +29,10 @@ DEALLOCATE tableCursor
 
 IF OBJECT_ID(N'{0}.[{2}]',N'U') IS NOT NULL
 BEGIN
-	UPDATE {0}.[{2}] SET [Completed] = 1 WHERE [JobID] = @jobID
+	IF @batchIsFinished = 1
+	BEGIN
+		UPDATE {0}.[{2}] SET [Completed] = 1 WHERE [JobID] = @jobID
+	END
 	
 	IF EXISTS(select [JobID] FROM {0}.[{2}] WHERE [Completed] = 0)
 	BEGIN

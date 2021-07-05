@@ -7,7 +7,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
-	[IdentifiedTestFixture("E3F6E382-1680-41EA-9DA5-12003FD1988E")]
 	public class ScheduleQueueInitializationTests : TestsBase
 	{
 		[IdentifiedTest("544F7D10-F5FA-4848-AA50-2543FCB22A03")]
