@@ -35,6 +35,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<FieldTest> Fields { get; } = new List<FieldTest>();
 
+        public IList<EntityTest> Entities { get; } = new List<EntityTest>();
+
         public IList<ArtifactTest> Artifacts => GetAllArtifacts();
 
         private IList<ArtifactTest> GetAllArtifacts()

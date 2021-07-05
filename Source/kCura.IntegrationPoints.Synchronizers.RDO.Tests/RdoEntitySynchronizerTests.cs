@@ -71,7 +71,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			_helper = new Mock<IHelper>();
 			_helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
 			_fieldQuery = new Mock<IRelativityFieldQuery>();
-
 		}
 
 		[Test]

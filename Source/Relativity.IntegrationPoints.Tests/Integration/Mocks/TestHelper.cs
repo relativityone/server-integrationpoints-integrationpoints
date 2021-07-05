@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using Relativity.API;
+using Relativity.Services.ArtifactGuid;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
@@ -26,6 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			RegisterProxyInServiceManagerMock<IPermissionManager>(proxy.PermissionManager.Object);
 			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(proxy.InstanceSettingManager.Object);
 			RegisterProxyInServiceManagerMock<IGroupManager>(proxy.GroupManager.Object);
+			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(proxy.ArtifactGuidManager.Object);
 		}
 
 		private void RegisterProxyInServiceManagerMock<T>(T proxy) 

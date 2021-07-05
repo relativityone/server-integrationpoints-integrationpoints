@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Data;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
@@ -81,6 +82,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 					JobHistoryErrorFieldGuids.JobHistoryGuid,
 					JobHistoryErrorFieldGuids.ErrorTypeGuid,
 					JobHistoryErrorFieldGuids.NameGuid
+				};
+			}
+
+			public static class Entity
+			{
+				public static readonly List<Guid> Guids = new List<Guid>
+				{
+					EntityFieldGuids.UniqueIdGuid,
+					EntityFieldGuids.FirstNameGuid,
+					EntityFieldGuids.LastNameGuid,
+					EntityFieldGuids.FullNameGuid,
+					EntityFieldGuids.ManagerGuid
 				};
 			}
 		}

@@ -14,6 +14,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public InstanceSettingManagerStub InstanceSettingManager { get; set; }
 
 		public GroupManagerStub GroupManager { get; set; }
+
+		public ArtifactGuidManagerStub ArtifactGuidManager { get; set; }
 		
 		public ProxyMock(TestContext context)
 		{
@@ -22,12 +24,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			PermissionManager = new PermissionManagerStub();
 			InstanceSettingManager = new InstanceSettingManagerStub(context);
 			GroupManager = new GroupManagerStub(context.User);
+			ArtifactGuidManager = new ArtifactGuidManagerStub();
 		}
 
 		public void Setup(RelativityInstanceTest relativity)
 		{
 			ObjectManager.Setup(relativity);
 			WorkspaceManager.Setup(relativity);
+			ArtifactGuidManager.Setup(relativity);
 
 			SetupFixedMocks();
 		}
@@ -38,6 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			WorkspaceManager.SetupWorkspaceMock();
 			InstanceSettingManager.SetupInstanceSetting();
 			GroupManager.SetupGroupManager();
+			ArtifactGuidManager.SetupArtifactGuidManager();
 			ObjectManager.Setup();
 		}
 	}
