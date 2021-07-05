@@ -64,6 +64,10 @@ namespace Relativity.Sync.Transfer
 			return identifiers;
 		}
 
+		public int ProcessedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Succeed);
+
+		public int FailedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Failed);
+
 		private class ItemInfo
 		{
 			public int ArtifactId { get; }

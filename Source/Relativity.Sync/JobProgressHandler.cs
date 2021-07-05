@@ -17,7 +17,7 @@ namespace Relativity.Sync
 {
 	internal sealed class JobProgressHandler : IJobProgressHandler
 	{
-		private const int _THOTTHLE_FOR_SECONDS = 5;
+		private const int _THROTTHLE_FOR_SECONDS = 5;
 		private readonly IJobProgressUpdater _jobProgressUpdater;
 		private readonly Subject<Unit> _changeSignal = new Subject<Unit>();
 		private readonly Subject<Unit> _forceUpdateSignal = new Subject<Unit>();
@@ -38,7 +38,7 @@ namespace Relativity.Sync
 				) { Completed = true };
 			}
 
-			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_THOTTHLE_FOR_SECONDS), timerScheduler ?? Scheduler.Default)
+			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_THROTTHLE_FOR_SECONDS), timerScheduler ?? Scheduler.Default)
 				.Where(changesInTimeWindow => changesInTimeWindow.Any())
 				.Select(_ => Unit.Default)
 				.Merge(_forceUpdateSignal)
@@ -48,17 +48,7 @@ namespace Relativity.Sync
 			})
 				.Subscribe();
 		}
-
-		public int GetBatchItemsProcessedCount(int batchId)
-		{
-			return _batchProgresses.ContainsKey(batchId) ? _batchProgresses[batchId].ItemsProcessed : 0;
-		}
-
-		public int GetBatchItemsFailedCount(int batchId)
-		{
-			return _batchProgresses.ContainsKey(batchId) ? _batchProgresses[batchId].ItemsFailed : 0;
-		}
-
+		
 		public IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, IBatch batch)
 		{
 			SyncBatchProgress batchProgress = new SyncBatchProgress(batch.ArtifactId, totalItems: batch.TotalItemsCount, 

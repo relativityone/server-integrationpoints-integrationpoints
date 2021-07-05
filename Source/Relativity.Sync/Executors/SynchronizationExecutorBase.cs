@@ -142,7 +142,7 @@ namespace Relativity.Sync.Executors
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch))
 							{
 								IStopwatch importApiTimer = GetStartedTimer();
-								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, token).ConfigureAwait(false);
 								importApiTimer.Stop();
 
 								Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
@@ -224,14 +224,14 @@ namespace Relativity.Sync.Executors
 			return null;
 		}
 
-		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CompositeCancellationToken token)
+		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, CompositeCancellationToken token)
 		{
 			BatchProcessResult batchProcessResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
 		
-			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
+			int failedItemsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.FailedItemsCount;
 			await batch.SetFailedItemsCountAsync(batch.FailedItemsCount + failedItemsCount).ConfigureAwait(false);
 
-			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
+			int processedItemsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.ProcessedItemsCount;
 			await batch.SetTransferredItemsCountAsync(batch.TransferredItemsCount + processedItemsCount).ConfigureAwait(false);
 
 			if (batchProcessResult.ExecutionResult.Status == ExecutionStatus.Paused)
