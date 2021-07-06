@@ -1,8 +1,9 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Services.Interfaces.LibraryApplication.Models;
-using Relativity.Testing.Framework.Orchestrators;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Identification;
 
@@ -11,18 +12,17 @@ namespace Relativity.IntegrationPoints.JsonLoader.FunctionalTests
 	[TestFixture]
 	public class JsonLoaderInstallationTests
 	{
-		private IOrchestrateRelativityApplications _applicationOrchestrator;
-
 		private const string _JSON_LOADER_APP_NAME = "JsonLoader";
 		private const string _RIP_APP_NAME = "Integration Points";
+
+		private ILibraryApplicationService _libraryApplicationService;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
 		{
-			_applicationOrchestrator = SetUpFixture
-				.ApiComponent
-				.OrchestratorFactory
-				.Create<IOrchestrateRelativityApplications>();
+			_libraryApplicationService = SetUpFixture
+				.Relativity
+				.Resolve<ILibraryApplicationService>();
 		}
 
 		[Category("TestType.CI")]
@@ -32,39 +32,26 @@ namespace Relativity.IntegrationPoints.JsonLoader.FunctionalTests
 			//arrange
 			string jsonLoaderRapPath = $"{TestContext.Parameters.Get("RAPDirectory")}\\JsonLoader.rap";
 
-			LibraryApplicationResponse ripApplicationResponse = _applicationOrchestrator
-				.GetLibraryApplicationByName(_RIP_APP_NAME);
+			LibraryApplication ripApplicationResponse = _libraryApplicationService.Get(_RIP_APP_NAME);
 
-			_applicationOrchestrator.InstallRelativityApplicationToGivenWorkspaceFromLibrary(
-				new LibraryApplication
-				{
-					ArtifactID = ripApplicationResponse.ArtifactID
-				},
-				SetUpFixture.Workspace
+			_libraryApplicationService.InstallToWorkspace(
+				SetUpFixture.Workspace.ArtifactID,
+				ripApplicationResponse.ArtifactID
 			);
 
-			_applicationOrchestrator.InstallRelativityApplicationToLibrary(jsonLoaderRapPath);
+			_libraryApplicationService.InstallToLibrary(jsonLoaderRapPath);
 
-			LibraryApplicationResponse jsonLoaderApplicationResponse = _applicationOrchestrator
-				.GetLibraryApplicationByName(_JSON_LOADER_APP_NAME);
+			LibraryApplication jsonLoaderApplicationResponse = _libraryApplicationService
+				.Get(_JSON_LOADER_APP_NAME);
 
 			//act
-			Action action = () => _applicationOrchestrator.InstallRelativityApplicationToGivenWorkspaceFromLibrary(
-				new LibraryApplication
-				{
-					ArtifactID = jsonLoaderApplicationResponse.ArtifactID
-				},
-				SetUpFixture.Workspace
+			Action action = () => _libraryApplicationService.InstallToWorkspace(
+				SetUpFixture.Workspace.ArtifactID,
+				jsonLoaderApplicationResponse.ArtifactID
 			);
 
 			//assert
 			action.Should().NotThrow();
-		}
-
-		[OneTimeTearDown]
-		public void OneTimeTearDown()
-		{
-			_applicationOrchestrator.Dispose();
 		}
 	}
 }
