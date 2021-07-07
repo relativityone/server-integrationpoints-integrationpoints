@@ -11,8 +11,8 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class NativeBatchDataReaderBuilder : BatchDataReaderBuilderBase
 	{
-		public NativeBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
-			: base(fieldManager, exportDataSanitizer)
+		public NativeBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, ISyncLog logger)
+			: base(fieldManager, exportDataSanitizer, logger)
 		{
 		}
 
@@ -21,10 +21,10 @@ namespace Relativity.Sync.Transfer
 			return _fieldManager.GetNativeAllFieldsAsync(token);
 		}
 
-		protected override Task<IDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch,
+		protected override Task<IBatchDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch,
 			CancellationToken token)
 		{
-			return Task.FromResult((IDataReader)new NativeBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token));
+			return Task.FromResult((IBatchDataReader)new NativeBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token, _logger));
 		}
 	}
 }

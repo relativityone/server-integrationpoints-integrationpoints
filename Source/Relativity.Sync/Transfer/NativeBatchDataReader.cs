@@ -19,9 +19,10 @@ namespace Relativity.Sync.Transfer
 			IFieldManager fieldManager,
 			IExportDataSanitizer exportDataSanitizer,
 			Action<string, string> itemLevelErrorHandler,
-			CancellationToken cancellationToken)
+			CancellationToken cancellationToken,
+			ISyncLog logger)
 			: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer,
-				itemLevelErrorHandler, cancellationToken)
+				itemLevelErrorHandler, cancellationToken, logger)
 		{
 
 		}
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Transfer
 				}
 			}
 		}
-
+		
 		private IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> CreateSpecialFieldRowValuesBuilders()
 		{
 			// TODO REL-367580: [PERFORMANCE] It looks like we are creating this collection (Int32 x Batch Size) unnecessary.

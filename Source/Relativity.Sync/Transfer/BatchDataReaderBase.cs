@@ -6,7 +6,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
-	internal abstract class BatchDataReaderBase : IDataReader
+	internal abstract class BatchDataReaderBase : IBatchDataReader
 	{
 		private FieldInfoDto _identifierField;
 
@@ -20,6 +20,7 @@ namespace Relativity.Sync.Transfer
 		protected readonly IExportDataSanitizer _exportDataSanitizer;
 		protected readonly Action<string, string> _itemLevelErrorHandler;
 		protected readonly CancellationToken _cancellationToken;
+		protected readonly ISyncLog _logger;
 
 		protected static readonly Type _typeOfString = typeof(string);
 
@@ -56,7 +57,8 @@ namespace Relativity.Sync.Transfer
 			IFieldManager fieldManager,
 			IExportDataSanitizer exportDataSanitizer,
 			Action<string, string> itemLevelErrorHandler,
-			CancellationToken cancellationToken)
+			CancellationToken cancellationToken,
+			ISyncLog logger)
 		{
 			_templateDataTable = templateDataTable;
 
@@ -70,11 +72,14 @@ namespace Relativity.Sync.Transfer
 			_itemLevelErrorHandler = itemLevelErrorHandler;
 
 			_cancellationToken = cancellationToken;
+			_logger = logger;
 
 			_batchEnumerator = GetBatchEnumerable().GetEnumerator();
 		}
 
 		protected abstract IEnumerable<object[]> GetBatchEnumerable();
+
+		public bool CanCancel { get; protected set; }
 
 		public string GetDataTypeName(int i)
 		{
@@ -145,12 +150,7 @@ namespace Relativity.Sync.Transfer
 		public bool Read()
 		{
 			ThrowIfIsClosed();
-
-			if (_cancellationToken.IsCancellationRequested)
-			{
-				return false;
-			}
-
+			
 			return _batchEnumerator.MoveNext();
 		}
 

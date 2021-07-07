@@ -22,8 +22,9 @@ namespace Relativity.Sync.Transfer
 			IExportDataSanitizer exportDataSanitizer,
 			Action<string, string> itemLevelErrorHandler,
 			int identifierFieldIndex,
-			CancellationToken cancellationToken)
-		: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer, itemLevelErrorHandler, cancellationToken)
+			CancellationToken cancellationToken,
+			ISyncLog logger)
+		: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer, itemLevelErrorHandler, cancellationToken, logger)
 		{
 			_identifierFieldIndex = identifierFieldIndex;
 		}
@@ -48,8 +49,24 @@ namespace Relativity.Sync.Transfer
 						continue;
 					}
 
-					foreach (object[] row in rows)
+					bool isCancellationWarningLogged = false;
+					CanCancel = false;
+					
+					for (int i = 0; i < rows.Count; i++)
 					{
+						if (_cancellationToken.IsCancellationRequested && !isCancellationWarningLogged)
+						{
+							_logger.LogInformation("Transfer cancellation was requested, but image transfer for current document is still in progress. Document Artifact ID: {artifactID}  Remaining images: {remainingImagesCount}",
+								batchItem.ArtifactID, rows.Count - i);
+							isCancellationWarningLogged = true;
+						}
+
+						if (i == rows.Count - 1)
+						{
+							CanCancel = true;
+						}
+
+						object[] row = rows[i];
 						yield return row;
 					}
 				}
