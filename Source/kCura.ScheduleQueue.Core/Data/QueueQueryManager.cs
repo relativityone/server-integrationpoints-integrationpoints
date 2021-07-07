@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data.Interfaces;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
-	public class QueryManager : IQueryManager
+	public class QueueQueryManager : IQueueQueryManager
 	{
 		private readonly IQueueDBContext _queueDbContext;
 
-		public QueryManager(IHelper helper, Guid agentGuid)
+		public QueueQueryManager(IHelper helper, Guid agentGuid)
 		{
 			string queueTable = $"ScheduleAgentQueue_{agentGuid.ToString().ToUpperInvariant()}";
 

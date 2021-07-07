@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services.EntityManager
@@ -15,19 +13,25 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IEddsServiceContext _eddsServiceContext;
+		private readonly IEntityManagerQueryManager _entityQueryManager;
 
-		public ManagerQueueService(IRepositoryFactory repositoryFactory, ICaseServiceContext caseServiceContext, IEddsServiceContext eddsServiceContext)
+		public ManagerQueueService(IRepositoryFactory repositoryFactory, ICaseServiceContext caseServiceContext,
+			IEddsServiceContext eddsServiceContext, IEntityManagerQueryManager entityQueryManager)
 		{
 			_repositoryFactory = repositoryFactory;
 			_caseServiceContext = caseServiceContext;
 			_eddsServiceContext = eddsServiceContext;
+			_entityQueryManager = entityQueryManager;
 		}
 
 		public List<EntityManagerMap> GetEntityManagerLinksToProcess(Job job, Guid batchInstance, List<EntityManagerMap> entityManagerMap)
 		{
 			//Create temp table if does not exist and delete old links
 			string tableName = GetTempTableName(job, batchInstance);
-			new CreateEntityManagerResourceTable(_repositoryFactory, _caseServiceContext.SqlContext).Execute(tableName, _caseServiceContext.WorkspaceID);
+
+			_entityQueryManager.CreateEntityManagerResourceTable(_repositoryFactory, _caseServiceContext.SqlContext,
+					tableName, _caseServiceContext.WorkspaceID)
+				.Execute();
 
 			//insert job Entity Manager links
 			InsertData(tableName, entityManagerMap, _caseServiceContext.WorkspaceID);
@@ -41,7 +45,9 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 		public bool AreAllTasksOfTheBatchDone(Job job, string[] taskTypeExceptions)
 		{
 			bool result = true;
-			DataTable dt = new GetJobsCount(_eddsServiceContext.SqlContext).Execute(job.RootJobId ?? job.JobId, taskTypeExceptions);
+			DataTable dt = _entityQueryManager.GetRelatedJobsCountWithTaskTypeExceptions(_eddsServiceContext.SqlContext, 
+					job.RootJobId ?? job.JobId, taskTypeExceptions)
+				.Execute();
 			if (dt != null && dt.Rows != null && dt.Rows.Count > 0)
 			{
 				int count = int.Parse(dt.Rows[0][0].ToString());
@@ -53,8 +59,11 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 
 		private List<EntityManagerMap> GetLinksToProcess(string tableName, Job job)
 		{
+			DataTable dt = _entityQueryManager.GetJobEntityManagerLinks(_repositoryFactory,
+					_caseServiceContext.SqlContext, tableName, job.JobId, _caseServiceContext.WorkspaceID)
+				.Execute();
+
 			List<EntityManagerMap> newLinkMap = new List<EntityManagerMap>();
-			DataTable dt = new GetJobEntityManagerLinks(_repositoryFactory, _caseServiceContext.SqlContext).Execute(tableName, job.JobId, _caseServiceContext.WorkspaceID);
 			if (dt != null && dt.Rows != null)
 			{
 				foreach (DataRow row in dt.Rows)
@@ -82,21 +91,11 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 
 		private void InsertData(string tableName, List<EntityManagerMap> entityManagerMap, int workspaceID)
 		{
-			IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
 			DataTable dtInsertRows = GetDataTable(entityManagerMap);
-			using (SqlBulkCopy sbc = new SqlBulkCopy(_caseServiceContext.SqlContext.GetConnection()))
-			{
-				sbc.DestinationTableName = string.Format("{0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), tableName);
 
-				// Map the Source Column from DataTabel to the Destination Columns
-				sbc.ColumnMappings.Add("EntityID", "EntityID");
-				sbc.ColumnMappings.Add("ManagerID", "ManagerID");
-				sbc.ColumnMappings.Add("CreatedOn", "CreatedOn");
-
-				// Finally write to server
-				sbc.WriteToServer(dtInsertRows);
-				sbc.Close();
-			}
+			_entityQueryManager.InsertDataToEntityManagerResourceTable(_repositoryFactory, _caseServiceContext.SqlContext, tableName,
+					dtInsertRows, _caseServiceContext.WorkspaceID)
+				.Execute();
 		}
 
 		private DataTable GetDataTable(List<EntityManagerMap> entityManagerMap)

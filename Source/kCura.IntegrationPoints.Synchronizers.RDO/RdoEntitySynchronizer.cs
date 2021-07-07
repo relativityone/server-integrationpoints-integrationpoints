@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -23,11 +24,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private const string _LDAP_MAP_FULL_NAME_FIELD_NAME = "CustomFullName";
 
 		private readonly IAPILog _logger;
+		private readonly IEntityManagerLinksSanitizer _entityManagerLinksSanitizer;
 
-		public RdoEntitySynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
+		public RdoEntitySynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory,
+			IImportJobFactory jobFactory, IHelper helper, IEntityManagerLinksSanitizer entityManagerLinksSanitizer)
 			: base(fieldQuery, factory, jobFactory, helper)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
+			_entityManagerLinksSanitizer = entityManagerLinksSanitizer;
 		}
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
@@ -265,7 +269,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 								DisplayName = "CustodianIdentifier",
 								FieldIdentifier = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First()
 							},
-						DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = "distinguishedname"},
+						DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = _entityManagerLinksSanitizer.ManagerLinksFieldIdentifier},
 						FieldMapType = FieldMapTypeEnum.Identifier
 					}
 				},
@@ -307,6 +311,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					if (!string.IsNullOrWhiteSpace(uniqueIdentifier) &&
 						!_entityManagerMap.ContainsKey(uniqueIdentifier))
 					{
+						managerReferenceLink = _entityManagerLinksSanitizer.SanitizeManagerReferenceLink(managerReferenceLink);
+
 						_logger.LogDebug(
 							$"Add Manager Ref Link: '{managerReferenceLink}' for entity unique id field value: '{uniqueIdentifier}'");
 						_entityManagerMap.Add(uniqueIdentifier, managerReferenceLink);

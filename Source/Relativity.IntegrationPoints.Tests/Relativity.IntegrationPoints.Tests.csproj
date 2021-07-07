@@ -95,6 +95,9 @@
     <None Update="Integration\Tests\LDAP\TestData\JumpCloudUsersTestData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Integration\Tests\LDAP\TestData\ManagementTestData.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Integration\Tests\LDAP\TestData\ProductDevelopmentTestData.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

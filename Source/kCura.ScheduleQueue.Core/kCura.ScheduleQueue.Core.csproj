@@ -66,10 +66,8 @@
     <Compile Include="Core\StopState.cs" />
     <Compile Include="Core\TaskParameters.cs" />
     <Compile Include="Data\IJobServiceDataProvider.cs" />
-    <Compile Include="Data\Interfaces\ICommand.cs" />
-    <Compile Include="Data\Interfaces\IQuery.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
-    <Compile Include="Data\IQueryManager.cs" />
+    <Compile Include="Data\IQueueQueryManager.cs" />
     <Compile Include="Data\JobServiceDataProvider.cs" />
     <Compile Include="Data\Queries\AddStopStateColumnToQueueTable.cs" />
     <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
@@ -87,7 +85,7 @@
     <Compile Include="Data\Queries\GetAgentTypeInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />
     <Compile Include="Data\Queries\UpdateStopState.cs" />
-    <Compile Include="Data\QueryManager.cs" />
+    <Compile Include="Data\QueueQueryManager.cs" />
     <Compile Include="Data\QueueDBContext.cs" />
     <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
     <Compile Include="BatchProcess\IBatchableTask.cs" />

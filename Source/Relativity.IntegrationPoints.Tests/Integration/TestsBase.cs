@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -181,10 +182,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
 			Container.Register(Component.For<IJobService>().ImplementedBy<JobService>());
 			
-			Container.Register(Component.For<ITimeService>().UsingFactoryMethod(() => new FakeTimeService(Context)).Named(nameof(FakeTimeService)).IsDefault());
-			
+			Container.Register(Component.For<IEntityManagerQueryManager>().ImplementedBy<FakeEntityManagerQueryManager>()
+				.Named(nameof(FakeEntityManagerQueryManager)).IsDefault());
+
 			Container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().UsingFactoryMethod(c =>
-				new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
+				new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueueQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
 			
 			Container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>());
 			Container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>());
@@ -220,11 +222,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				.Named(nameof(FakeDataProviderFactory)).IsDefault());
 			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<FakeDataSourceProvider>().IsDefault());
 			Container.Register(Component.For<IMessageService>().ImplementedBy<FakeMessageService>().IsDefault());
-			Container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManagerMock>().IsDefault());
+			Container.Register(Component.For<IQueueQueryManager>().ImplementedBy<QueueQueryManagerMock>().IsDefault());
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
 			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
-			
+
+			// LDAP Entity
+			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>().IsDefault());
+
 			// IAPI
 			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleSingleton().IsDefault());
 			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>().IsDefault());

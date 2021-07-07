@@ -4,12 +4,10 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
-using FluentAssertions.Common;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data;
@@ -32,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
 	[IdentifiedTestFixture("BA0C4AD6-6236-4235-BEBB-CB1084A978E9")]
 	[TestExecutionCategory.CI, TestLevel.L1]
-    public class SyncWorkerMyFirstProviderTests : TestsBase
+	public class SyncWorkerMyFirstProviderTests : TestsBase
 	{
 		private const int ROOT_JOB_ID = 5;
 
@@ -76,8 +74,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			job.LockedByAgentID = 1;
 			job.RootJobId = ROOT_JOB_ID;
 
-            RegisterJobContext(job);
-            
+			RegisterJobContext(job);
+
 			return job;
 		}
 
@@ -120,7 +118,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				newJob.JobDetails = job.JobDetails; // link all jobs together with BatchInstance
 			}
 
-            RegisterJobContext(job);
+			RegisterJobContext(job);
 
 			return job;
 		}
@@ -200,7 +198,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			string xmlPath = PrepareRecords(numberOfRecords);
 			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-		
+
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
@@ -305,8 +303,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
 			jobHistory.ItemsTransferred = initialTransferredItems;
 			jobHistory.ItemsWithErrors = initialErroredItems;
-			
-			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(maxTransferredItems:numberOfRecords + numberOfErrors, numberOfItemLevelErrors: numberOfErrors); });
+
+			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(maxTransferredItems: numberOfRecords + numberOfErrors, numberOfItemLevelErrors: numberOfErrors); });
 
 			// Act
 			var syncManagerJob = job.AsJob();
@@ -317,7 +315,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
 			jobHistory.ItemsTransferred.Should().Be(initialTransferredItems + numberOfRecords);
 			jobHistory.ItemsWithErrors.Should().Be(initialErroredItems + numberOfErrors);
-			
+
 			jobHistory.ShouldHaveCorrectItemsTransferredUpdateHistory(initialTransferredItems, initialTransferredItems + numberOfRecords);
 			jobHistory.ShouldHaveCorrectItemsWithErrorsUpdateHistory(initialErroredItems, initialErroredItems + numberOfErrors);
 		}
@@ -325,7 +323,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public static IEnumerable<TestCaseData> FinalJobHistoryStatusTestCases()
 		{
 			yield return new TestCaseData(
-				new[] {new JobTest{StopState = StopState.None, LockedByAgentID = 1}, new JobTest{StopState = StopState.DrainStopped}},
+				new[] { new JobTest { StopState = StopState.None, LockedByAgentID = 1 }, new JobTest { StopState = StopState.DrainStopped } },
 					TOTAL_NUMBER_OF_RECORDS,
 					0,
 					false,
@@ -335,9 +333,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			{
 				TestName = "If there are other batches processing, JobHistory should end up in Processing"
 			}.WithId("7591EA8C-CF54-482C-B096-C9C4437D3F11");
-			
+
 			yield return new TestCaseData(
-				new[] {new JobTest{StopState = StopState.None, LockedByAgentID = 1}, new JobTest{StopState = StopState.DrainStopped}},
+				new[] { new JobTest { StopState = StopState.None, LockedByAgentID = 1 }, new JobTest { StopState = StopState.DrainStopped } },
 				50,
 				0,
 				true,
@@ -347,9 +345,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			{
 				TestName = "If there are other batches processing, JobHistory should end up in Processing (DrainStop)"
 			}.WithId("1E0AD09D-2DF1-41B4-BC1F-188FB83CCFEA");
-			
+
 			yield return new TestCaseData(
-				new[] {new JobTest{StopState = StopState.DrainStopped}},
+				new[] { new JobTest { StopState = StopState.DrainStopped } },
 				TOTAL_NUMBER_OF_RECORDS,
 				0,
 				false,
@@ -359,9 +357,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			{
 				TestName = "If other batches are suspended, JobHistory should end up Suspended"
 			}.WithId("AB60A230-3B1C-49E1-8F5A-94B7793C24BF");
-			
+
 			yield return new TestCaseData(
-				new[] {new JobTest{StopState = StopState.None}},
+				new[] { new JobTest { StopState = StopState.None } },
 				TOTAL_NUMBER_OF_RECORDS,
 				0,
 				false,
@@ -371,9 +369,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			{
 				TestName = "If other batches are pending, JobHistory should end up Processing"
 			}.WithId("FF78BD63-841D-46DD-8762-845DC2110055");
-			
+
 			yield return new TestCaseData(
-				new[] {new JobTest{StopState = StopState.None}},
+				new[] { new JobTest { StopState = StopState.None } },
 				50,
 				0,
 				true,
@@ -388,7 +386,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		private const int TOTAL_NUMBER_OF_RECORDS = 100;
 
 		[TestCaseSource(nameof(FinalJobHistoryStatusTestCases))]
-		public void SyncWorker_ShouldSetCorrectJobHistoryStatus(JobTest[] otherJobs, 
+		public void SyncWorker_ShouldSetCorrectJobHistoryStatus(JobTest[] otherJobs,
 			int transferredItems, int itemLevelErrors, bool drainStopRequested, Guid expectedJobHistoryStatus, StopState expectedStopState)
 		{
 			// Arrange
@@ -398,7 +396,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 			FakeRelativityInstance.JobsInQueue.AddRange(otherJobs);
-			
+
 			SyncWorker sut = PrepareSut((importJob) =>
 			{
 				importJob.Complete(transferredItems, itemLevelErrors);
@@ -433,7 +431,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			Action act = () => sut.Execute(job.AsJob());
 
 			act.ShouldThrow<Exception>();
-			
+
 			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryErrorJobFailedGuid);
 		}
 

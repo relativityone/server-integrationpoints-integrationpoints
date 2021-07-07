@@ -19,6 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
 	public class FakeAgent : Agent
 	{
+		private readonly bool _shouldRunOnce;
 		private readonly IWindsorContainer _container;
 
 		public Func<Job, TaskResult> ProcessJobMockFunc { get; set; }
@@ -26,10 +27,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public FakeAgent(IWindsorContainer container, AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueryManager queryManager = null, IAPILog logger = null)
+				IQueueQueryManager queryManager = null, IAPILog logger = null, bool shouldRunOnce = true)
 			: base(agent.AgentGuid, agentService, jobService, scheduleRuleFactory,
 				queueJobValidator, queryManager, logger)
 		{
+			_shouldRunOnce = shouldRunOnce;
 			_container = container;
 
 			//Agent ID setter is marked as private
@@ -45,13 +47,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 				.SetValue(this, true);
 		}
 
-		public static FakeAgent Create(RelativityInstanceTest instance, IWindsorContainer container)
+		public static FakeAgent Create(RelativityInstanceTest instance, IWindsorContainer container, bool shouldRunOnce = true)
 		{
 			var agent = instance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			var fakeAgent = new FakeAgent(container, agent,
 				container.Resolve<IAgentHelper>(),
-				queryManager: container.Resolve<IQueryManager>());
+				queryManager: container.Resolve<IQueueQueryManager>(),
+				shouldRunOnce: shouldRunOnce);
 
 			container
 				.Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)
@@ -61,9 +64,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			return fakeAgent;
 		}
 
-		public static FakeAgent CreateWithEmptyProcessJob(RelativityInstanceTest instance, IWindsorContainer container)
+		public static FakeAgent CreateWithEmptyProcessJob(RelativityInstanceTest instance, IWindsorContainer container, bool shouldRunOnce = true)
 		{
-			FakeAgent agent = Create(instance, container);
+			FakeAgent agent = Create(instance, container, shouldRunOnce);
 			
 			agent.ProcessJobMockFunc = (Job job) => new TaskResult { Status = TaskStatusEnum.Success };
 
@@ -83,6 +86,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		protected override TaskResult ProcessJob(Job job)
 		{
 			ProcessedJobIds.Add(job.JobId);
+
+			if (_shouldRunOnce)
+			{
+				Enabled = false;
+			}
 
 			if (ProcessJobMockFunc != null)
 			{

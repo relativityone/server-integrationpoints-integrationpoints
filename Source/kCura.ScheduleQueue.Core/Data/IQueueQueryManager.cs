@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data.Interfaces;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
-	public interface IQueryManager
+	public interface IQueueQueryManager
 	{
 		ICommand CreateScheduleQueueTable();
 

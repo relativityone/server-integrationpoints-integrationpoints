@@ -45,5 +45,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			
 			return dt;
 		}
+
+		public static DataTable EntityManagerSchema()
+		{
+			DataTable dt = new DataTable();
+
+			dt.Columns.AddRange(new DataColumn[]
+			{
+				new DataColumn("ID", typeof(int))
+				{
+					AutoIncrement = true,
+					AutoIncrementSeed = 1,
+					AutoIncrementStep = 1
+				},
+				new DataColumn("EntityID", typeof(string)),
+				new DataColumn("ManagerID", typeof(string)),
+				new DataColumn("LockedByJobID", typeof(long)) { AllowDBNull = true },
+				new DataColumn("CreatedOn", typeof(DateTime))
+			});
+
+			return dt;
+		}
 	}
 }

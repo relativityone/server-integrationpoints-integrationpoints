@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using FluentAssertions;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Data.Interfaces;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
+namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 {
-	class QueryManagerMock : IQueryManager
+	class QueueQueryManagerMock : IQueueQueryManager
 	{
 		private readonly RelativityInstanceTest _db;
 		private readonly TestContext _context;
 
 		private int _scheduleQueueCreateRequestCount;
 
-		public QueryManagerMock(RelativityInstanceTest database, TestContext context)
+		public QueueQueryManagerMock(RelativityInstanceTest database, TestContext context)
 		{
 			_db = database;
 			_context = context;
@@ -159,7 +159,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public IQuery<DataTable> GetAllJobs()
 		{
-			var dataTable = DatabaseSchema.AgentSchema();
+			var dataTable = DatabaseSchema.ScheduleQueueSchema();
 
 			_db.JobsInQueue.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
 
@@ -247,38 +247,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		#endregion
 
 		#region Implementation Details
-		private class ValueReturnQuery<T> : IQuery<T>
-		{
-			private readonly T _value;
-
-			public ValueReturnQuery(T value)
-			{
-				_value = value;
-			}
-
-			public T Execute()
-			{
-				return _value;
-			}
-		}
-
-		private class ActionCommand : ICommand
-		{
-			private readonly Action _action;
-
-			public ActionCommand(Action action)
-			{
-				_action = action;
-			}
-
-			public static ActionCommand Empty => new ActionCommand(() => { });
-
-			public void Execute()
-			{
-				_action();
-			}
-		}
-
 		private JobTest CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobId, long? parentJobId)

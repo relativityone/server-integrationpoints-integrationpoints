@@ -1,6 +1,7 @@
 ﻿using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 
@@ -14,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			// Arrange
 			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 			
-			QueryManagerMock queryManagerMock = (QueryManagerMock)Container.Resolve<IQueryManager>();
+			QueueQueryManagerMock queryManagerMock = (QueueQueryManagerMock)Container.Resolve<IQueueQueryManager>();
 			
 			FakeAgent sut = new FakeAgent(Container, agent,
 				Container.Resolve<IAgentHelper>(),

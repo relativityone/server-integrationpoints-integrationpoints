@@ -1,4 +1,4 @@
-﻿namespace kCura.ScheduleQueue.Core.Data.Interfaces
+﻿namespace kCura.IntegrationPoints.Data
 {
 	public interface IQuery<out T>
 	{
