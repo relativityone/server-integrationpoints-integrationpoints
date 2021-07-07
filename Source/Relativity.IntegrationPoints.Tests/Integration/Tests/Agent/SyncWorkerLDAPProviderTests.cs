@@ -91,6 +91,36 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 				.DeserializeDetails<EntityManagerJobParameters>()
 				.EntityManagerMap.Should()
 					.HaveCount(_managementTestData.Data.Count - processedItemsBeforeDrainStopped);
+
+			FakeRelativityInstance.EntityManagersResourceTables.Single()
+				.Value.Should().OnlyContain(x => x.LockedByJobId == null);
+		}
+
+		[IdentifiedTest("431049DF-B069-4570-AA5A-89FE4F329121")]
+		public void SyncWorker_SouldImportLDAPDataAndLinkManagersJob_WhenAllManagerLinksWereProcessed()
+		{
+			// Arrange
+			ScheduleImportEntityFromLdapJob(true);
+
+			FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, false);
+
+			Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
+			importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
+			importJobsQueue.Enqueue(new FakeJobImport(importJob =>
+			{
+				importJob.Complete(_managementTestData.Data.Count);
+				sut.MarkAgentToBeRemoved();
+			}));
+
+			Container.Register(Component.For<IJobImport>().UsingFactoryMethod(k => importJobsQueue.Dequeue()).LifestyleTransient());
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
+
+			FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
 		}
 
 		[IdentifiedTest("81359E78-08A3-4BF2-B0A1-7F8FD62DDFB9")]

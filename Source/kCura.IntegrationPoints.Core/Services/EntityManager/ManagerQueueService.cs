@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 				.Execute();
 
 			//insert job Entity Manager links
-			InsertData(tableName, entityManagerMap, _caseServiceContext.WorkspaceID);
+			InsertData(tableName, entityManagerMap);
 
 			//Get links to process
 			List<EntityManagerMap> newLinkMap = GetLinksToProcess(tableName, job);
@@ -55,6 +55,15 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 				result = count < 2;
 			}
 			return result;
+		}
+
+		public void UnlockEntityManagerLinksByJob(Job job, Guid batchInstance)
+		{
+			string tableName = GetTempTableName(job, batchInstance);
+
+			_entityQueryManager.UnlockEntityManagerLinks(_repositoryFactory, _caseServiceContext.SqlContext,
+					tableName, job.JobId, _caseServiceContext.WorkspaceID)
+				.Execute();
 		}
 
 		private List<EntityManagerMap> GetLinksToProcess(string tableName, Job job)
@@ -89,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 			return string.Format("RIP_EntityManager_{0}_{1}_{2}", workspaceID.ToString("D7"), relatedObjectArtifactID.ToString("D7"), batchInstance.ToString());
 		}
 
-		private void InsertData(string tableName, List<EntityManagerMap> entityManagerMap, int workspaceID)
+		private void InsertData(string tableName, List<EntityManagerMap> entityManagerMap)
 		{
 			DataTable dtInsertRows = GetDataTable(entityManagerMap);
 

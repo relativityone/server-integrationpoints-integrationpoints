@@ -80,5 +80,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 						entityManagerRows.AsEnumerable().Select(x => EntityManagerTest.FromRow(x)));
 			});
 		}
+
+		public ICommand UnlockEntityManagerLinks(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext, string tableName, long jobID, int workspaceID)
+		{
+			return new ActionCommand(() =>
+			{
+				foreach(var manager in _relativity.EntityManagersResourceTables[tableName].Where(x => x.LockedByJobId == jobID))
+				{
+					manager.LockedByJobId = null;
+				}
+			});
+		}
 	}
 }

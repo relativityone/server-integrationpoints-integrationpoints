@@ -16,5 +16,8 @@ namespace kCura.IntegrationPoints.Data.Queries
 			IDBContext caseDBcontext, string tableName, long jobID, int workspaceID);
 
 		IQuery<DataTable> GetRelatedJobsCountWithTaskTypeExceptions(IDBContext eddsDBcontext, long rootJobID, string[] taskTypeExceptions);
+
+		ICommand UnlockEntityManagerLinks(IRepositoryFactory repositoryFactory,
+			IDBContext caseDBcontext, string tableName, long jobID, int workspaceID);
 	}
 }
