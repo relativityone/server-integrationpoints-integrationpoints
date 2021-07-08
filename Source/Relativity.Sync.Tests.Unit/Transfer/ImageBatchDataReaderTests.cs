@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -71,7 +72,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				exportDataSanitizer.Object,
 				itemLevelErrorHandler,
 				0,
-				CancellationToken.None);
+				CancellationToken.None,
+				new EmptyLogger());
 
 			// Act & Assert
 			bool read;
@@ -135,7 +137,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				exportDataSanitizer.Object,
 				itemLevelErrorHandlerMock.Object,
 				0,
-				CancellationToken.None);
+				CancellationToken.None,
+				new EmptyLogger());
 
 			// Act
 			bool read = sut.Read();

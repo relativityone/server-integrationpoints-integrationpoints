@@ -28,15 +28,16 @@ namespace Relativity.Sync.Tests.Unit
 		private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-		
+
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
+		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
+		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
+		private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
+		private static readonly Guid TransferredDocumentsCountGuid = new Guid("A5618A97-48C5-441C-86DF-2867481D30AB");
+		private static readonly Guid FailedDocumentsCountGuid = new Guid("4FA1CF50-B261-4157-BD2D-50619F0347D6");
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
-		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
-		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
-		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
-		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
+		private static readonly Guid TaggedDocumentsCountGuid = new Guid("AF3C2398-AF49-4537-9BC3-D79AE1734A8C");
 
 		[SetUp]
 		public void SetUp()
@@ -53,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task CreateAsync_ShouldCreateBatch()
 		{
 			const int syncConfigurationArtifactId = 634;
-			const int totalItemsCount = 10000;
+			const int totalDocumentsCount = 10000;
 			const int startingIndex = 5000;
 			string defaultStatus = BatchStatus.New.GetDescription();
 
@@ -67,14 +68,14 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.CreateAsync(_WORKSPACE_ID, It.IsAny<CreateRequest>())).ReturnsAsync(result);
 
 			// ACT
-			IBatch batch = await _batchRepository.CreateAsync(_WORKSPACE_ID, syncConfigurationArtifactId, totalItemsCount, startingIndex).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.CreateAsync(_WORKSPACE_ID, syncConfigurationArtifactId, totalDocumentsCount, startingIndex).ConfigureAwait(false);
 
 			// ASSERT
-			batch.TotalItemsCount.Should().Be(totalItemsCount);
+			batch.TotalDocumentsCount.Should().Be(totalDocumentsCount);
 			batch.StartingIndex.Should().Be(startingIndex);
 			batch.ArtifactId.Should().Be(_ARTIFACT_ID);
 
-			_objectManager.Verify(x => x.CreateAsync(_WORKSPACE_ID, It.Is<CreateRequest>(cr => AssertCreateRequest(cr, totalItemsCount, startingIndex, syncConfigurationArtifactId, defaultStatus))), Times.Once);
+			_objectManager.Verify(x => x.CreateAsync(_WORKSPACE_ID, It.Is<CreateRequest>(cr => AssertCreateRequest(cr, totalDocumentsCount, startingIndex, syncConfigurationArtifactId, defaultStatus))), Times.Once);
 		}
 
 		private bool AssertCreateRequest(CreateRequest createRequest, int totalItemsCount, int startingIndex, int syncConfigurationArtifactId, string batchStatus)
@@ -85,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit
 			createRequest.FieldValues.Count().Should().Be(expectedNumberOfFields);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Name == _NAME_FIELD_NAME);
 			createRequest.FieldValues.First(x => x.Field.Name == _NAME_FIELD_NAME).Value.ToString().Should().NotBeNullOrWhiteSpace();
-			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == TotalItemsCountGuid);
+			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == TotalDocumentsCountGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == TotalItemsCountGuid).Value.Should().Be(totalItemsCount);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StartingIndexGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == StartingIndexGuid).Value.Should().Be(startingIndex);
@@ -103,11 +104,11 @@ namespace Relativity.Sync.Tests.Unit
 			const BatchStatus status = BatchStatus.CompletedWithErrors;
 			const int failedItemsCount = 111;
 			const int transferredItemsCount = 222;
-			const double progress = 3.1;
-			const string lockedBy = "id 2";
-			const int taggedItemsCount = 333;
+			const int failedDocumentsCount = 333;
+			const int transferredDocumentsCount = 444;
+			const int taggedDocumentsCount = 555;
 
-			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy, taggedItemsCount);
+			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, failedDocumentsCount, transferredDocumentsCount, taggedDocumentsCount);
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// ACT
@@ -115,14 +116,14 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			batch.ArtifactId.Should().Be(_ARTIFACT_ID);
-			batch.TotalItemsCount.Should().Be(totalItemsCount);
+			batch.TotalDocumentsCount.Should().Be(totalItemsCount);
 			batch.StartingIndex.Should().Be(startingIndex);
 			batch.Status.Should().Be(status);
 			batch.FailedItemsCount.Should().Be(failedItemsCount);
 			batch.TransferredItemsCount.Should().Be(transferredItemsCount);
-			batch.Progress.Should().Be(progress);
-			batch.LockedBy.Should().Be(lockedBy);
-			batch.TaggedDocumentsCount.Should().Be(taggedItemsCount);
+			batch.FailedDocumentsCount.Should().Be(failedDocumentsCount);
+			batch.TransferredDocumentsCount.Should().Be(transferredDocumentsCount);
+			batch.TaggedDocumentsCount.Should().Be(taggedDocumentsCount);
 
 			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(queryRequest => AssertQueryRequest(queryRequest)), 0, 1), Times.Once);
 		}
@@ -150,11 +151,12 @@ namespace Relativity.Sync.Tests.Unit
 			const BatchStatus status = BatchStatus.Started;
 			int? failedItemsCount = null;
 			int? transferredItemsCount = null;
-			decimal? progress = null;
-			const string lockedBy = null;
+			int? failedDocumentsCount = null;
+			int? transferredDocumentsCount = null;
 			int? taggedItemsCount = null;
 
-			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy, taggedItemsCount: taggedItemsCount);
+			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount,
+				failedDocumentsCount: failedDocumentsCount, transferredDocumentsCount: transferredDocumentsCount, taggedItemsCount: taggedItemsCount);
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
@@ -164,20 +166,20 @@ namespace Relativity.Sync.Tests.Unit
 			batch.Status.Should().Be(status);
 			batch.FailedItemsCount.Should().Be(0);
 			batch.TransferredItemsCount.Should().Be(0);
-			batch.Progress.Should().Be(0);
-			batch.LockedBy.Should().Be(lockedBy);
+			batch.FailedDocumentsCount.Should().Be(0);
+			batch.TransferredDocumentsCount.Should().Be(0);
 			batch.TaggedDocumentsCount.Should().Be(0);
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-		private static QueryResult PrepareQueryResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? artifactId = null)
+		private static QueryResult PrepareQueryResult(int totalDocumentsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+			int? failedDocumentsCount = 1, int? transferredDocumentsCount = 1, int? taggedItemsCount = 1, int? artifactId = null)
 		{
 			QueryResult readResult = new QueryResult
 			{
 				Objects = new List<RelativityObject>()
 				{
-					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy, taggedItemsCount, artifactId)
+					PrepareObject(totalDocumentsCount, startingIndex, status, failedItemsCount, transferredItemsCount, failedDocumentsCount, transferredDocumentsCount, taggedItemsCount, artifactId)
 				}
 			};
 
@@ -197,8 +199,8 @@ namespace Relativity.Sync.Tests.Unit
 			};
 		}
 
-		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "New", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? artifactId = null)
+		private static RelativityObject PrepareObject(int totalDocumentsCount = 1, int startingIndex = 1, string status = "New", int? failedItemsCount = 1, int? transferredItemsCount = 1,
+			int? failedDocumentsCount = 1, int? transferredDocumentsCount = 1, int? taggedItemsCount = 1, int? artifactId = null)
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
 			return new RelativityObject
@@ -212,7 +214,7 @@ namespace Relativity.Sync.Tests.Unit
 						{
 							Guids = new List<Guid> {TotalItemsCountGuid}
 						},
-						Value = totalItemsCount
+						Value = totalDocumentsCount
 					},
 					new FieldValuePair
 					{
@@ -250,23 +252,23 @@ namespace Relativity.Sync.Tests.Unit
 					{
 						Field = new Field
 						{
-							Guids = new List<Guid> {ProgressGuid}
+							Guids = new List<Guid> {FailedDocumentsCountGuid}
 						},
-						Value = progress
+						Value = failedDocumentsCount
 					},
 					new FieldValuePair
 					{
 						Field = new Field
 						{
-							Guids = new List<Guid> {LockedByGuid}
+							Guids = new List<Guid> {TransferredDocumentsCountGuid}
 						},
-						Value = lockedBy
+						Value = transferredDocumentsCount
 					},
 					new FieldValuePair
 					{
 						Field = new Field
 						{
-							Guids = new List<Guid> {TaggedItemsCountGuid}
+							Guids = new List<Guid> {TaggedDocumentsCountGuid}
 						},
 						Value = taggedItemsCount
 					}
@@ -299,9 +301,9 @@ namespace Relativity.Sync.Tests.Unit
 			fields.Should().Contain(x => x.Guid == StatusGuid);
 			fields.Should().Contain(x => x.Guid == FailedItemsCountGuid);
 			fields.Should().Contain(x => x.Guid == TransferredItemsCountGuid);
-			fields.Should().Contain(x => x.Guid == ProgressGuid);
-			fields.Should().Contain(x => x.Guid == LockedByGuid);
-			fields.Should().Contain(x => x.Guid == TaggedItemsCountGuid);
+			fields.Should().Contain(x => x.Guid == FailedDocumentsCountGuid);
+			fields.Should().Contain(x => x.Guid == TransferredDocumentsCountGuid);
+			fields.Should().Contain(x => x.Guid == TaggedDocumentsCountGuid);
 		}
 
 		[Test]
@@ -343,9 +345,9 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task SetLockedByAsync_ShouldUpdateLockedBy()
+		public async Task SetFailedDocumentsCountAsync_ShouldUpdateFailedDocumentsCount()
 		{
-			const string lockedBy = "worker 1";
+			const int failedDocumentsCount = 111;
 
 			QueryResult queryResult = PrepareQueryResult();
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
@@ -353,18 +355,18 @@ namespace Relativity.Sync.Tests.Unit
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			// ACT
-			await batch.SetLockedByAsync(lockedBy).ConfigureAwait(false);
+			await batch.SetFailedDocumentsCountAsync(failedDocumentsCount).ConfigureAwait(false);
 
 			// ASSERT
-			batch.LockedBy.Should().Be(lockedBy);
+			batch.FailedDocumentsCount.Should().Be(failedDocumentsCount);
 
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, LockedByGuid, lockedBy))));
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, FailedDocumentsCountGuid, failedDocumentsCount))));
 		}
 
 		[Test]
-		public async Task SetProgressAsync_ShouldUpdateProgress()
+		public async Task SetTransferredDocumentsCountAsync_ShouldUpdateTransferredDocumentsCount()
 		{
-			const double progress = 55.5;
+			const int transferredDocumentsCount = 222;
 
 			QueryResult queryResult = PrepareQueryResult();
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
@@ -372,12 +374,12 @@ namespace Relativity.Sync.Tests.Unit
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			// ACT
-			await batch.SetProgressAsync(progress).ConfigureAwait(false);
+			await batch.SetTransferredDocumentsCountAsync(transferredDocumentsCount).ConfigureAwait(false);
 
 			// ASSERT
-			batch.Progress.Should().Be(progress);
+			batch.TransferredDocumentsCount.Should().Be(transferredDocumentsCount);
 
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, ProgressGuid, progress))));
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, TransferredDocumentsCountGuid, transferredDocumentsCount))));
 		}
 
 		[Test]
@@ -401,9 +403,9 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task SetTaggedItemsCountAsync_ShouldUpdateTaggedItemsCount()
+		public async Task SetTaggedDocumentsCountAsync_ShouldUpdateTaggedDocumentsCount()
 		{
-			const int taggedItemsCount = 849170;
+			const int taggedDocumentsCount = 849170;
 
 			QueryResult queryResult = PrepareQueryResult();
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
@@ -411,12 +413,12 @@ namespace Relativity.Sync.Tests.Unit
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			// ACT
-			await batch.SetTaggedItemsCountAsync(taggedItemsCount).ConfigureAwait(false);
+			await batch.SetTaggedDocumentsCountAsync(taggedDocumentsCount).ConfigureAwait(false);
 
 			// ASSERT
-			batch.TaggedDocumentsCount.Should().Be(taggedItemsCount);
+			batch.TaggedDocumentsCount.Should().Be(taggedDocumentsCount);
 
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, TaggedItemsCountGuid, taggedItemsCount))));
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, TaggedDocumentsCountGuid, taggedDocumentsCount))));
 		}
 
 		[Test]
@@ -458,22 +460,40 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task SetLockedByAsync_ShouldNotSetLockedBy_WhenUpdateFails()
+		public async Task SetFailedDocumentsCountAsync_ShouldNotChangeValue_WhenUpdateFails()
 		{
-			const string newValue = "worker 2";
+			const int newValue = 4444;
 
 			SetupObjectManagerForUpdatingBatchFields();
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
-			string oldValue = batch.LockedBy;
+			int oldValue = batch.FailedDocumentsCount;
 
 			// ACT
-			Func<Task> action = () => batch.SetLockedByAsync(newValue);
+			Func<Task> action = () => batch.SetFailedDocumentsCountAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
-			batch.LockedBy.Should().Be(oldValue);
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == LockedByGuid))));
+			batch.FailedDocumentsCount.Should().Be(oldValue);
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == FailedDocumentsCountGuid))));
+		}
+
+		[Test]
+		public async Task SetTransferredDocumentsCountAsync_ShouldNotChangeValue_WhenUpdateFails()
+		{
+			const int newValue = 5555;
+			SetupObjectManagerForUpdatingBatchFields();
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			int oldValue = batch.TransferredDocumentsCount;
+
+			// ACT
+			Func<Task> action = () => batch.SetTransferredDocumentsCountAsync(newValue);
+
+			// ASSERT
+			action.Should().Throw<ArgumentNullException>();
+			batch.TransferredDocumentsCount.Should().Be(oldValue);
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == TransferredDocumentsCountGuid))));
 		}
 
 		[Test]
@@ -496,24 +516,6 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		[Test]
-		public async Task SetProgressAsync_ShouldNotSetProgress_WhenUpdateFails()
-		{
-			const double newValue = 99.9;
-			SetupObjectManagerForUpdatingBatchFields();
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
-
-			double oldValue = batch.Progress;
-
-			// ACT
-			Func<Task> action = () => batch.SetProgressAsync(newValue);
-
-			// ASSERT
-			action.Should().Throw<ArgumentNullException>();
-			batch.Progress.Should().Be(oldValue);
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == ProgressGuid))));
-		}
-
-		[Test]
 		public async Task SetTaggedItemsCountAsync_ShouldNotSetTaggedItemsCount_WhenUpdateFails()
 		{
 			const int newValue = 85743;
@@ -524,12 +526,12 @@ namespace Relativity.Sync.Tests.Unit
 			int oldValue = batch.TaggedDocumentsCount;
 
 			// ACT
-			Func<Task> action = () => batch.SetTaggedItemsCountAsync(newValue);
+			Func<Task> action = () => batch.SetTaggedDocumentsCountAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
 			batch.TaggedDocumentsCount.Should().Be(oldValue);
-			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == TaggedItemsCountGuid))));
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == TaggedDocumentsCountGuid))));
 		}
 
 		private void SetupObjectManagerForUpdatingBatchFields()

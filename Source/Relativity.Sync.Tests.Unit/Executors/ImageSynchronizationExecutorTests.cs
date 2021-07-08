@@ -162,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			BatchStub batchStub = new BatchStub
 			{
 				ArtifactId = 1,
-				TotalItemsCount = totalRecordsRequested,
+				TotalDocumentsCount = totalRecordsRequested,
 				StartingIndex = 0
 			};
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchStub);
@@ -214,7 +214,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			BatchStub batchStub = new BatchStub
 			{
 				ArtifactId = 1,
-				TotalItemsCount = totalRecordsRequested,
+				TotalDocumentsCount = totalRecordsRequested,
 				StartingIndex = 0
 			};
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchStub);
@@ -790,7 +790,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				StartingIndex = initialStartingIndex,
 				FailedItemsCount = initialFailedCount,
 				TransferredItemsCount = initialTransferredCount,
-				TotalItemsCount = totalCount
+				TotalDocumentsCount = totalCount
 			};
 
 			SetupBatch(batch);
@@ -830,7 +830,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchesStubs = Enumerable.Range(1, numberOfBatches).Select(x => new BatchStub
 			{
 				ArtifactId = x,
-				TotalItemsCount = itemsPerBatch,
+				TotalDocumentsCount = itemsPerBatch,
 				StartingIndex = x * itemsPerBatch
 			}).ToArray();
 			

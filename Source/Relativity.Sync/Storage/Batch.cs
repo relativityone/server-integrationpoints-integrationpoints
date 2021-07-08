@@ -84,7 +84,7 @@ namespace Relativity.Sync.Storage
 			Status = status;
 		}
 
-		public async Task SetTaggedItemsCountAsync(int taggedDocumentsCount)
+		public async Task SetTaggedDocumentsCountAsync(int taggedDocumentsCount)
 		{
 			await UpdateFieldValueAsync(TaggedDocumentsCountGuid, taggedDocumentsCount).ConfigureAwait(false);
 			TaggedDocumentsCount = taggedDocumentsCount;

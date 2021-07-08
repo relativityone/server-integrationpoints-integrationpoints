@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				var dataReaderMock = new Mock<IDataReader>();
 				dataReaderMock.Setup(x => x.Dispose()).Callback(() => previousReaderWasDisposed = true);
 				mocks.Add(dataReaderMock);
-				return dataReaderMock.Object;
+				return new SimpleBatchDataReader(dataReaderMock.Object);
 			});
 
 			SourceWorkspaceDataReader instance = BuildInstanceUnderTest(dataReaderBuilder.Object);

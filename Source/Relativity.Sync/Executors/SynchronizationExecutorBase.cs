@@ -152,7 +152,7 @@ namespace Relativity.Sync.Executors
 								TaggingExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
 
 								int documentsTaggedCount = Math.Min(sourceTaggingResult.TaggedDocumentsCount, destinationTaggingResult.TaggedDocumentsCount);
-								await batch.SetTaggedItemsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
+								await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
 								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
 
 								if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
