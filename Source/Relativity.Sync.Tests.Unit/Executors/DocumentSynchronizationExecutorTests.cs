@@ -474,7 +474,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			batch.TaggedItemsCount.Should().Be(alreadyTaggedItems + taggedAfterResume);
+			batch.TaggedDocumentsCount.Should().Be(alreadyTaggedItems + taggedAfterResume);
 		}
 
 		[Test]

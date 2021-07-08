@@ -107,8 +107,8 @@ namespace Relativity.Sync.Transfer
 					await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
 				}
 
-				_logger.LogInformation("Finished calculating total files size (in chunks of {batchSize} ",
-					_configuration.BatchSizeForFileQueries);
+				_logger.LogInformation("Finished calculating total files size (in chunks of {batchSize}). Sync statistics: {@statistics} ",
+					_configuration.BatchSizeForFileQueries, syncStatistics);
 			}
 			catch (Exception ex)
 			{

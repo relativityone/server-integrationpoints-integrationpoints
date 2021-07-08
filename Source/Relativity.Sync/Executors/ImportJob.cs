@@ -181,14 +181,16 @@ namespace Relativity.Sync.Executors
 				var syncException = new ImportFailedException(fatalExceptionMessage, _importApiException);
 				executionResult = ExecutionResult.Failure(fatalExceptionMessage, syncException);
 			}
-			else if (_itemLevelErrorExists)
-			{
-				const string completedWithErrors = "Import completed with item level errors.";
-				executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
-			}
 			else if (token.IsDrainStopRequested)
 			{
+				_logger.LogInformation("IAPI job has finished due to drain-stop. Returning Paused execution result.");
 				executionResult = ExecutionResult.Paused();
+			}
+			else if (_itemLevelErrorExists)
+			{
+				_logger.LogInformation("IAPI job has finished with item level errors.");
+				const string completedWithErrors = "Import completed with item level errors.";
+				executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
 			}
 
 			return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());

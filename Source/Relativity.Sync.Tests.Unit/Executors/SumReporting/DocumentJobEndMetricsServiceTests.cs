@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			var batch = new Mock<IBatch>();
 			batch.SetupGet(x => x.TransferredItemsCount).Returns(completedItemsPerBatch);
-			batch.SetupGet(x => x.TaggedItemsCount).Returns(taggedItemsPerBatch);
+			batch.SetupGet(x => x.TaggedDocumentsCount).Returns(taggedItemsPerBatch);
 			batch.SetupGet(x => x.FailedItemsCount).Returns(failedItemsPerBatch);
 			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCountPerBatch);
 			var testBatches = new List<IBatch> { batch.Object, batch.Object };

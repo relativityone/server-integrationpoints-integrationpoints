@@ -56,7 +56,7 @@ namespace Relativity.Sync.Transfer
 					{
 						if (_cancellationToken.IsCancellationRequested && !isCancellationWarningLogged)
 						{
-							_logger.LogInformation("Transfer cancellation was requested, but image transfer for current document is still in progress. Document Artifact ID: {artifactID}  Remaining images: {remainingImagesCount}",
+							_logger.LogWarning("Transfer cancellation was requested, but image transfer for current document is still in progress. Document Artifact ID: {artifactID}  Remaining images: {remainingImagesCount}",
 								batchItem.ArtifactID, rows.Count - i);
 							isCancellationWarningLogged = true;
 						}

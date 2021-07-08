@@ -122,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit
 			batch.TransferredItemsCount.Should().Be(transferredItemsCount);
 			batch.Progress.Should().Be(progress);
 			batch.LockedBy.Should().Be(lockedBy);
-			batch.TaggedItemsCount.Should().Be(taggedItemsCount);
+			batch.TaggedDocumentsCount.Should().Be(taggedItemsCount);
 
 			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(queryRequest => AssertQueryRequest(queryRequest)), 0, 1), Times.Once);
 		}
@@ -166,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit
 			batch.TransferredItemsCount.Should().Be(0);
 			batch.Progress.Should().Be(0);
 			batch.LockedBy.Should().Be(lockedBy);
-			batch.TaggedItemsCount.Should().Be(0);
+			batch.TaggedDocumentsCount.Should().Be(0);
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
@@ -414,7 +414,7 @@ namespace Relativity.Sync.Tests.Unit
 			await batch.SetTaggedItemsCountAsync(taggedItemsCount).ConfigureAwait(false);
 
 			// ASSERT
-			batch.TaggedItemsCount.Should().Be(taggedItemsCount);
+			batch.TaggedDocumentsCount.Should().Be(taggedItemsCount);
 
 			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, TaggedItemsCountGuid, taggedItemsCount))));
 		}
@@ -521,14 +521,14 @@ namespace Relativity.Sync.Tests.Unit
 			SetupObjectManagerForUpdatingBatchFields();
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
-			int oldValue = batch.TaggedItemsCount;
+			int oldValue = batch.TaggedDocumentsCount;
 
 			// ACT
 			Func<Task> action = () => batch.SetTaggedItemsCountAsync(newValue);
 
 			// ASSERT
 			action.Should().Throw<ArgumentNullException>();
-			batch.TaggedItemsCount.Should().Be(oldValue);
+			batch.TaggedDocumentsCount.Should().Be(oldValue);
 			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => up.FieldValues.Any(f => f.Field.Guid == TaggedItemsCountGuid))));
 		}
 

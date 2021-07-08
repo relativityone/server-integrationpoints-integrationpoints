@@ -35,7 +35,7 @@ namespace Relativity.Sync.Executors
 			int numberOfRecordsIncludedInBatches = 0;
 			if (batch != null)
 			{
-				numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalItemsCount;
+				numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalDocumentsCount;
 			}
 
 			Snapshot snapshot = new Snapshot(configuration.TotalRecordsCount, configuration.BatchSize, numberOfRecordsIncludedInBatches);

@@ -23,7 +23,7 @@ namespace Relativity.Sync.Transfer
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 
 			_batchCurrentIndex = batch.StartingIndex;
-			_remainingItems = batch.TotalItemsCount - batch.TransferredItemsCount;
+			_remainingItems = batch.TotalDocumentsCount - batch.TransferredDocumentsCount;
 		}
 
 		public async Task<RelativityObjectSlim[]> GetNextItemsFromBatchAsync()

@@ -63,7 +63,7 @@ namespace Relativity.Sync.Executors
 				return (int)(await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false)).TotalCount;
 			}
 
-			return batches.Sum(batch => batch.TotalItemsCount);
+			return batches.Sum(batch => batch.TotalDocumentsCount);
 		}
 
 		private static string CreateEventHandlersFailureMessage(UpdateResult updateResult)

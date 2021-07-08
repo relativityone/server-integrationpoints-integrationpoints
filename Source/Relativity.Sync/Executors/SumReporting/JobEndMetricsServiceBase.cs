@@ -44,9 +44,9 @@ namespace Relativity.Sync.Executors.SumReporting
 			foreach (IBatch batch in batches)
 			{
 				jobEndMetric.TotalRecordsTransferred += batch.TransferredItemsCount;
-				jobEndMetric.TotalRecordsTagged += batch.TaggedItemsCount;
+				jobEndMetric.TotalRecordsTagged += batch.TaggedDocumentsCount;
 				jobEndMetric.TotalRecordsFailed += batch.FailedItemsCount;
-				jobEndMetric.TotalRecordsRequested += batch.TotalItemsCount;
+				jobEndMetric.TotalRecordsRequested += batch.TotalDocumentsCount;
 			}
 		}
 	}

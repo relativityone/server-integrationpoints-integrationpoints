@@ -15,14 +15,16 @@ namespace Relativity.Sync.Storage
 		private readonly int _workspaceArtifactId;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		
-		private static readonly Guid TotalItemsCountGuid = new Guid(SyncBatchGuids.TotalItemsCountGuid);
+		private static readonly Guid TransferredItemsCountGuid = new Guid(SyncBatchGuids.TransferredItemsCountGuid);
+		private static readonly Guid FailedItemsCountGuid = new Guid(SyncBatchGuids.FailedItemsCountGuid);
+
+		private static readonly Guid TotalDocumentsCountGuid = new Guid(SyncBatchGuids.TotalDocumentsCountGuid);
+		private static readonly Guid TransferredDocumentsCountGuid = new Guid(SyncBatchGuids.TransferredDocumentsCountGuid);
+		private static readonly Guid FailedDocumentsCountGuid = new Guid(SyncBatchGuids.FailedDocumentsCountGuid);
+
 		private static readonly Guid StartingIndexGuid = new Guid(SyncBatchGuids.StartingIndexGuid);
 		private static readonly Guid StatusGuid = new Guid(SyncBatchGuids.StatusGuid);
-		private static readonly Guid FailedItemsCountGuid = new Guid(SyncBatchGuids.FailedItemsCountGuid);
-		private static readonly Guid TransferredItemsCountGuid = new Guid(SyncBatchGuids.TransferredItemsCountGuid);
-		private static readonly Guid TaggedItemsCountGuid = new Guid(SyncBatchGuids.TaggedItemsCountGuid);
-		private static readonly Guid ProgressGuid = new Guid(SyncBatchGuids.ProgressGuid);
-		private static readonly Guid LockedByGuid = new Guid(SyncBatchGuids.LockedByGuid);
+		private static readonly Guid TaggedDocumentsCountGuid = new Guid(SyncBatchGuids.TaggedDocumentsCountGuid);
 
 		internal const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
 		internal static readonly Guid BatchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
@@ -35,7 +37,21 @@ namespace Relativity.Sync.Storage
 
 		public int ArtifactId { get; private set; }
 
+		public int TotalDocumentsCount { get; private set; }
+
+		public int TransferredDocumentsCount { get; private set; }
+
+		public int FailedDocumentsCount { get; private set; }
+
+		public int TransferredItemsCount { get; private set; }
+
 		public int FailedItemsCount { get; private set; }
+
+		public int TaggedDocumentsCount { get; private set; }
+
+		public int StartingIndex { get; private set; }
+
+		public BatchStatus Status { get; private set; }
 
 		public async Task SetFailedItemsCountAsync(int failedItemsCount)
 		{
@@ -43,35 +59,23 @@ namespace Relativity.Sync.Storage
 			FailedItemsCount = failedItemsCount;
 		}
 
-		public int TransferredItemsCount { get; private set; }
-
 		public async Task SetTransferredItemsCountAsync(int transferredItemsCount)
 		{
 			await UpdateFieldValueAsync(TransferredItemsCountGuid, transferredItemsCount).ConfigureAwait(false);
 			TransferredItemsCount = transferredItemsCount;
 		}
 
-		public int TotalItemsCount { get; private set; }
-
-		public int StartingIndex { get; private set; }
-
-		public string LockedBy { get; private set; }
-
-		public async Task SetLockedByAsync(string lockedBy)
+		public async Task SetTransferredDocumentsCountAsync(int transferredDocumentsCount)
 		{
-			await UpdateFieldValueAsync(LockedByGuid, lockedBy).ConfigureAwait(false);
-			LockedBy = lockedBy;
+			await UpdateFieldValueAsync(TransferredDocumentsCountGuid, transferredDocumentsCount).ConfigureAwait(false);
+			TransferredDocumentsCount = transferredDocumentsCount;
 		}
 
-		public double Progress { get; private set; }
-
-		public async Task SetProgressAsync(double progress)
+		public async Task SetFailedDocumentsCountAsync(int failedDocumentsCount)
 		{
-			await UpdateFieldValueAsync(ProgressGuid, progress).ConfigureAwait(false);
-			Progress = progress;
+			await UpdateFieldValueAsync(FailedDocumentsCountGuid, failedDocumentsCount).ConfigureAwait(false);
+			FailedDocumentsCount = failedDocumentsCount;
 		}
-
-		public BatchStatus Status { get; private set; }
 
 		public async Task SetStatusAsync(BatchStatus status)
 		{
@@ -80,12 +84,10 @@ namespace Relativity.Sync.Storage
 			Status = status;
 		}
 
-		public int TaggedItemsCount { get; private set; }
-
-		public async Task SetTaggedItemsCountAsync(int taggedItemsCount)
+		public async Task SetTaggedItemsCountAsync(int taggedDocumentsCount)
 		{
-			await UpdateFieldValueAsync(TaggedItemsCountGuid, taggedItemsCount).ConfigureAwait(false);
-			TaggedItemsCount = taggedItemsCount;
+			await UpdateFieldValueAsync(TaggedDocumentsCountGuid, taggedDocumentsCount).ConfigureAwait(false);
+			TaggedDocumentsCount = taggedDocumentsCount;
 		}
 
 		public async Task SetStartingIndexAsync(int newStartIndex)
@@ -95,9 +97,9 @@ namespace Relativity.Sync.Storage
 			StartingIndex = newStartIndex;
 		}
 
-		private async Task CreateAsync(int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
+		private async Task CreateAsync(int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex)
 		{
-			TotalItemsCount = totalItemsCount;
+			TotalDocumentsCount = totalDocumentsCount;
 			StartingIndex = startingIndex;
 
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
@@ -126,9 +128,9 @@ namespace Relativity.Sync.Storage
 						{
 							Field = new FieldRef
 							{
-								Guid = TotalItemsCountGuid
+								Guid = TotalDocumentsCountGuid
 							},
-							Value = TotalItemsCount
+							Value = TotalDocumentsCount
 						},
 						new FieldRefValuePair
 						{
@@ -374,7 +376,23 @@ namespace Relativity.Sync.Storage
 			{
 				new FieldRef
 				{
-					Guid = TotalItemsCountGuid
+					Guid = TotalDocumentsCountGuid
+				},
+				new FieldRef
+				{
+					Guid = TransferredDocumentsCountGuid
+				},
+				new FieldRef
+				{
+					Guid = FailedDocumentsCountGuid
+				},
+				new FieldRef
+				{
+					Guid = TransferredItemsCountGuid
+				},
+				new FieldRef
+				{
+					Guid = FailedItemsCountGuid
 				},
 				new FieldRef
 				{
@@ -386,37 +404,24 @@ namespace Relativity.Sync.Storage
 				},
 				new FieldRef
 				{
-					Guid = FailedItemsCountGuid
-				},
-				new FieldRef
-				{
-					Guid = TransferredItemsCountGuid
-				},
-				new FieldRef
-				{
-					Guid = ProgressGuid
-				},
-				new FieldRef
-				{
-					Guid = LockedByGuid
-				},
-				new FieldRef
-				{
-					Guid = TaggedItemsCountGuid
+					Guid = TaggedDocumentsCountGuid
 				}
 			};
 		}
 
 		private void PopulateBatchProperties(RelativityObject relativityObject)
 		{
-			TotalItemsCount = (int) relativityObject[TotalItemsCountGuid].Value;
+			TotalDocumentsCount = (int) relativityObject[TotalDocumentsCountGuid].Value;
+
+			TransferredItemsCount = (int)(relativityObject[TransferredItemsCountGuid].Value ?? default(int));
+			FailedItemsCount = (int)(relativityObject[FailedItemsCountGuid].Value ?? default(int));
+
+			TransferredDocumentsCount = (int) (relativityObject[TransferredDocumentsCountGuid].Value ?? default(int));
+			FailedDocumentsCount = (int) (relativityObject[FailedDocumentsCountGuid].Value ?? default(int));
+
 			StartingIndex = (int) relativityObject[StartingIndexGuid].Value;
 			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
-			FailedItemsCount = (int) (relativityObject[FailedItemsCountGuid].Value ?? default(int));
-			TransferredItemsCount = (int) (relativityObject[TransferredItemsCountGuid].Value ?? default(int));
-			TaggedItemsCount = (int) (relativityObject[TaggedItemsCountGuid].Value ?? default(int));
-			Progress = decimal.ToDouble((decimal?) relativityObject[ProgressGuid].Value ?? default(decimal));
-			LockedBy = (string) relativityObject[LockedByGuid].Value;
+			TaggedDocumentsCount = (int) (relativityObject[TaggedDocumentsCountGuid].Value ?? default(int));
 		}
 
 		private async Task UpdateFieldValueAsync<T>(Guid fieldGuid, T value)
@@ -428,10 +433,10 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public static async Task<IBatch> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
+		public static async Task<IBatch> CreateAsync(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex)
 		{
 			Batch batch = new Batch(serviceFactory, workspaceArtifactId);
-			await batch.CreateAsync(syncConfigurationArtifactId, totalItemsCount, startingIndex).ConfigureAwait(false);
+			await batch.CreateAsync(syncConfigurationArtifactId, totalDocumentsCount, startingIndex).ConfigureAwait(false);
 			return batch;
 		}
 

@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
 		public BatchStatus Status { get; set; }
 
-		public int TaggedItemsCount { get; set; }
+		public int TaggedDocumentsCount { get; set; }
 
 		public Task SetFailedItemsCountAsync(int failedItemsCount)
 		{
@@ -47,9 +47,9 @@ namespace Relativity.Sync.Tests.Common.Stubs
 			return Task.CompletedTask;
 		}
 
-		public Task SetTaggedItemsCountAsync(int taggedItemsCount)
+		public Task SetTaggedItemsCountAsync(int taggedDocumentsCount)
 		{
-			TaggedItemsCount = taggedItemsCount;
+			TaggedDocumentsCount = taggedDocumentsCount;
 			return Task.CompletedTask;
 		}
 
