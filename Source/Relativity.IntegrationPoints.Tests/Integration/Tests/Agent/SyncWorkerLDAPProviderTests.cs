@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		private readonly ManagementTestData _managementTestData = new ManagementTestData();
 
 		[IdentifiedTest("46988B61-878E-4F9F-95BA-3775E13F492E")]
-		public void SyncWorker_SouldImportLDAPData()
+		public void SyncWorker_ShouldImportLDAPData()
 		{
 			// Arrange
 			ScheduleImportEntityFromLdapJob(false);
@@ -41,7 +41,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		}
 
 		[IdentifiedTest("F83AF76A-50C5-4F4E-A097-74C5FB57350A")]
-		public void SyncWorker_SouldImportLDAPDataAndSubmitLinkManagersJob_WhenLinkManagersWasEnabled()
+		public void SyncWorker_ShouldImportLDAPDataAndSubmitLinkManagersJob_WhenLinkManagersWasEnabled()
 		{
 			// Arrange
 			ScheduleImportEntityFromLdapJob(true);
@@ -62,7 +62,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		}
 
 		[IdentifiedTest("3BDAF07F-FC93-4A74-B60B-A47E404FA85D")]
-		public void SyncWorker_SouldImportLDAPDataAndReSubmitLinkManagersJob_WhenDrainStoppedOnManagerLinks()
+		public void SyncWorker_ShouldImportLDAPDataAndReSubmitLinkManagersJob_WhenDrainStoppedOnManagerLinks()
 		{
 			// Arrange
 			const int processedItemsBeforeDrainStopped = 3;
@@ -97,7 +97,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		}
 
 		[IdentifiedTest("431049DF-B069-4570-AA5A-89FE4F329121")]
-		public void SyncWorker_SouldImportLDAPDataAndLinkManagersJob_WhenAllManagerLinksWereProcessed()
+		public void SyncWorker_ShouldImportLDAPDataAndLinkManagersJob_WhenAllManagerLinksWereProcessed()
 		{
 			// Arrange
 			ScheduleImportEntityFromLdapJob(true);
@@ -124,7 +124,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		}
 
 		[IdentifiedTest("81359E78-08A3-4BF2-B0A1-7F8FD62DDFB9")]
-		public void SyncWorker_SouldImportLDAPDataAndLinkManagers_WhenJobWasDrainStoppedAndResumed()
+		public void SyncWorker_ShouldImportLDAPDataAndLinkManagers_WhenJobWasDrainStoppedAndResumed()
 		{
 			// Arrange
 			const int processedItemsBeforeDrainStopped = 3;
