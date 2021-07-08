@@ -12,6 +12,9 @@ namespace Relativity.Sync.Storage
 		BatchStatus Status { get; }
 		int TransferredItemsCount { get; }
 		int TaggedItemsCount { get; }
+		int MetadataBytesTransferred { get; }
+		int FilesBytesTransferred { get; }
+		int TotalBytesTransferred { get; }
 		int TotalItemsCount { get; }
 
 		Task SetFailedItemsCountAsync(int failedItemsCount);
@@ -20,6 +23,9 @@ namespace Relativity.Sync.Storage
 		Task SetStatusAsync(BatchStatus status);
 		Task SetTransferredItemsCountAsync(int transferredItemsCount);
 		Task SetTaggedItemsCountAsync(int taggedItemsCount);
+		Task SetMetadataBytesTransferredAsync(int metadataBytesTransferred);
+		Task SetFilesBytesTransferredAsync(int filesBytesTransferred);
+		Task SetTotalBytesTransferredAsync(int totalBytesTransferred);
 		Task SetStartingIndexAsync(int newStartIndex);
 	}
 }

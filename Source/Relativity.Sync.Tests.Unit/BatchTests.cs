@@ -35,6 +35,9 @@ namespace Relativity.Sync.Tests.Unit
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
+		private static readonly Guid MetadataBytesTransferredGuid = new Guid("2BE1C011-0A0C-4A10-B77A-74BB9405A68A");
+		private static readonly Guid FilesBytesTransferredGuid = new Guid("4A21D596-6961-4389-8210-8D2D8C56DBAD");
+		private static readonly Guid TotalBytesTransferredGuid = new Guid("511C4B49-2E05-4DFB-BB3E-771EC0BDEFED");
 		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
 
@@ -106,8 +109,11 @@ namespace Relativity.Sync.Tests.Unit
 			const double progress = 3.1;
 			const string lockedBy = "id 2";
 			const int taggedItemsCount = 333;
+			const int metadataBytesTransferred = 1024;
+			const int filesBytesTransferred = 5120;
+			const int totalBytesTransferred = 6144;
 
-			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy, taggedItemsCount);
+			QueryResult queryResult = PrepareQueryResult(totalItemsCount, startingIndex, statusDescription, failedItemsCount, transferredItemsCount, new decimal(progress), lockedBy, taggedItemsCount, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// ACT
@@ -123,6 +129,9 @@ namespace Relativity.Sync.Tests.Unit
 			batch.Progress.Should().Be(progress);
 			batch.LockedBy.Should().Be(lockedBy);
 			batch.TaggedItemsCount.Should().Be(taggedItemsCount);
+			batch.MetadataBytesTransferred.Should().Be(metadataBytesTransferred);
+			batch.FilesBytesTransferred.Should().Be(filesBytesTransferred);
+			batch.TotalBytesTransferred.Should().Be(totalBytesTransferred);
 
 			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(queryRequest => AssertQueryRequest(queryRequest)), 0, 1), Times.Once);
 		}
@@ -153,8 +162,11 @@ namespace Relativity.Sync.Tests.Unit
 			decimal? progress = null;
 			const string lockedBy = null;
 			int? taggedItemsCount = null;
+			int? metadataBytesTransferred = null;
+			int? filesBytesTransferred = null;
+			int? totalBytesTransferred = null;
 
-			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy, taggedItemsCount: taggedItemsCount);
+			QueryResult queryResult = PrepareQueryResult(failedItemsCount: failedItemsCount, transferredItemsCount: transferredItemsCount, progress: progress, lockedBy: lockedBy, taggedItemsCount: taggedItemsCount, metadataBytesTransferred: metadataBytesTransferred, filesBytesTransferred: filesBytesTransferred, totalBytesTransferred: totalBytesTransferred);
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
@@ -167,17 +179,20 @@ namespace Relativity.Sync.Tests.Unit
 			batch.Progress.Should().Be(0);
 			batch.LockedBy.Should().Be(lockedBy);
 			batch.TaggedItemsCount.Should().Be(0);
+			batch.MetadataBytesTransferred.Should().Be(0);
+			batch.FilesBytesTransferred.Should().Be(0);
+			batch.TotalBytesTransferred.Should().Be(0);
 		}
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
 		private static QueryResult PrepareQueryResult(int totalItemsCount = 1, int startingIndex = 1, string status = "Started", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? artifactId = null)
+			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? metadataBytesTransferred = 1024, int? filesBytesTransferred = 0, int? totalBytesTransferred = 1024, int? artifactId = null)
 		{
 			QueryResult readResult = new QueryResult
 			{
 				Objects = new List<RelativityObject>()
 				{
-					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy, taggedItemsCount, artifactId)
+					PrepareObject(totalItemsCount, startingIndex, status, failedItemsCount, transferredItemsCount, progress, lockedBy, taggedItemsCount, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred, artifactId)
 				}
 			};
 
@@ -198,7 +213,7 @@ namespace Relativity.Sync.Tests.Unit
 		}
 
 		private static RelativityObject PrepareObject(int totalItemsCount = 1, int startingIndex = 1, string status = "New", int? failedItemsCount = 1, int? transferredItemsCount = 1,
-			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? artifactId = null)
+			decimal? progress = 1, string lockedBy = "id", int? taggedItemsCount = 1, int? metadataBytesTransferred = 1024, int? filesBytesTransferred = 0, int? totalBytesTransferred = 1024, int? artifactId = null)
 #pragma warning restore RG2011 // Method Argument Count Analyzer
 		{
 			return new RelativityObject
@@ -269,6 +284,30 @@ namespace Relativity.Sync.Tests.Unit
 							Guids = new List<Guid> {TaggedItemsCountGuid}
 						},
 						Value = taggedItemsCount
+					},
+					new FieldValuePair
+					{
+						Field = new Field
+						{
+							Guids = new List<Guid> {MetadataBytesTransferredGuid}
+						},
+						Value = metadataBytesTransferred
+					},
+					new FieldValuePair
+					{
+						Field = new Field
+						{
+							Guids = new List<Guid> {FilesBytesTransferredGuid}
+						},
+						Value = filesBytesTransferred
+					},
+					new FieldValuePair
+					{
+						Field = new Field
+						{
+							Guids = new List<Guid> {TotalBytesTransferredGuid}
+						},
+						Value = totalBytesTransferred
 					}
 				}
 			};
@@ -340,6 +379,63 @@ namespace Relativity.Sync.Tests.Unit
 			batch.TransferredItemsCount.Should().Be(transferredItemsCount);
 
 			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, TransferredItemsCountGuid, transferredItemsCount))));
+		}
+
+		[Test]
+		public async Task SetMetadataBytesTransferredAsync_ShouldUpdateMetadataBytesTransferred()
+		{
+			const int metadataBytesTransferred = 1024;
+
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
+
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// ACT
+			await batch.SetMetadataBytesTransferredAsync(metadataBytesTransferred).ConfigureAwait(false);
+
+			// ASSERT
+			batch.MetadataBytesTransferred.Should().Be(metadataBytesTransferred);
+
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, MetadataBytesTransferredGuid, metadataBytesTransferred))));
+		}
+
+		[Test]
+		public async Task SetFilesBytesTransferredAsync_ShouldUpdateFilesBytesTransferredGuid()
+		{
+			const int filesBytesTransferred = 5120;
+
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
+
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// ACT
+			await batch.SetFilesBytesTransferredAsync(filesBytesTransferred).ConfigureAwait(false);
+
+			// ASSERT
+			batch.FilesBytesTransferred.Should().Be(filesBytesTransferred);
+
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, FilesBytesTransferredGuid, filesBytesTransferred))));
+		}
+
+		[Test]
+		public async Task SetTotalBytesTransferredAsync_ShouldUpdateTotalBytesTransferred()
+		{
+			const int totalBytesTransferred = 6144;
+
+			QueryResult queryResult = PrepareQueryResult();
+			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
+
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// ACT
+			await batch.SetTotalBytesTransferredAsync(totalBytesTransferred).ConfigureAwait(false);
+
+			// ASSERT
+			batch.TotalBytesTransferred.Should().Be(totalBytesTransferred);
+
+			_objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(up => AssertUpdateRequest(up, TotalBytesTransferredGuid, totalBytesTransferred))));
 		}
 
 		[Test]

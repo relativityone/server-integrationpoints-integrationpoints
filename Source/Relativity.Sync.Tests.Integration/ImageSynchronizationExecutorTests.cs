@@ -49,6 +49,9 @@ namespace Relativity.Sync.Tests.Integration
 		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
+		private static readonly Guid MetadataBytesTransferredGuid = new Guid("2BE1C011-0A0C-4A10-B77A-74BB9405A68A");
+		private static readonly Guid FilesBytesTransferredGuid = new Guid("4A21D596-6961-4389-8210-8D2D8C56DBAD");
+		private static readonly Guid TotalBytesTransferredGuid = new Guid("511C4B49-2E05-4DFB-BB3E-771EC0BDEFED");
 
 		private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 
@@ -430,6 +433,9 @@ namespace Relativity.Sync.Tests.Integration
 							CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
 							CreateFieldValuePair(FailedItemsCountGuid, 0),
 							CreateFieldValuePair(TransferredItemsCountGuid, 0),
+							CreateFieldValuePair(MetadataBytesTransferredGuid, 0),
+							CreateFieldValuePair(FilesBytesTransferredGuid, 0),
+							CreateFieldValuePair(TotalBytesTransferredGuid, 0),
 							CreateFieldValuePair(ProgressGuid, (decimal) 0),
 							CreateFieldValuePair(LockedByGuid, "locked by"),
 							CreateFieldValuePair(TaggedItemsCountGuid, 0)
