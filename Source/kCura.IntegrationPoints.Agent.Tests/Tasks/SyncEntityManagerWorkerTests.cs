@@ -147,17 +147,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 
 			const int entityManagerFieldArtifactId = 9876;
-			
+
+			IDictionary<string, string> entityManagerMap = new Dictionary<string, string>
+			{
+				{ "hello", "world" },
+				{ "merhaba", "dunya"}
+			};
+
 			TaskParameters taskParams = new TaskParameters
 			{
 				BatchInstance = Guid.NewGuid(),
 				BatchParameters = new EntityManagerJobParameters
 				{
-					EntityManagerMap = new Dictionary<string, string>
-					{
-						{ "hello", "world" },
-						{ "merhaba", "dunya"}
-					},
+					EntityManagerMap = entityManagerMap,
 					EntityManagerFieldMap = new[]
 					{
 						new FieldMap
@@ -228,6 +230,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			fieldQueryRepository.ReadArtifactID(Arg.Any<Guid>()).Returns(entityManagerFieldArtifactId);
 			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
 				Arg.Any<string>()).Returns(_dataSynchronizer);
+			_dataSynchronizer.TotalRowsProcessed.Returns(entityManagerMap.Count);
 			jobManager.CheckBatchOnJobComplete(_job, taskParams.BatchInstance.ToString()).Returns(true);
 			jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, taskParams.BatchInstance)
 				.Returns(associatedJobs);
@@ -243,7 +246,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), null);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
 			_jobHistoryErrorService.Received().CommitErrors();
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -265,7 +268,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// assert
 			EnsureToSetJobHistoryErrorServiceProperties();
-			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), null);
+			_dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), _jobStopManager);
 			Assert.DoesNotThrow(_jobStopManager.Dispose);
 			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
 		}

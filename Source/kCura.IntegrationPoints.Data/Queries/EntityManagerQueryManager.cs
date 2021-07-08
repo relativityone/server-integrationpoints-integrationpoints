@@ -26,6 +26,10 @@ namespace kCura.IntegrationPoints.Data.Queries
 			return new InsertDataToEntityManagerResourceTable(repositoryFactory, caseDBcontext, tableName, entityManagerRows, workspaceID);
 		}
 
+		public ICommand UnlockEntityManagerLinks(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext, string tableName, long jobID, int workspaceID)
+		{
+			return new UnlockEntityManagerLinks(repositoryFactory, caseDBcontext, tableName, jobID, workspaceID);
+		}
 
 	}
 }

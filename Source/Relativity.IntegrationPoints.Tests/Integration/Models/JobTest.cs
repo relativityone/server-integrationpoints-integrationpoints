@@ -3,6 +3,7 @@ using System.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -40,16 +41,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			}
 			set { _jobDetails = value; }
 		}
-		public TaskParametersTest JobDetailsHelper { get; }
+		public TaskParameters JobDetailsHelper { get; }
 
 		public JobTest()
 		{
 			JobId = Integration.JobId.Next;
 			AgentTypeID = Const.Agent.INTEGRATION_POINTS_AGENT_TYPE_ID;
-			JobDetailsHelper = new TaskParametersTest()
+			JobDetailsHelper = new TaskParameters()
 			{
 				BatchInstance = Guid.NewGuid()
 			};
+		}
+
+		public T DeserializeDetails<T>()
+		{
+			TaskParameters parameters = JsonConvert.DeserializeObject<TaskParameters>(JobDetails);
+
+			return parameters.BatchParameters is JObject
+				? ((JObject)parameters.BatchParameters).ToObject<T>()
+				: (T)parameters.BatchParameters;
 		}
 
 		public DataRow AsDataRow()

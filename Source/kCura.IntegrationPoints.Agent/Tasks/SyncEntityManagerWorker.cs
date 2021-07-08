@@ -100,6 +100,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetJobHistory();
 				_workspaceArtifactId = job.WorkspaceID;
 
+				ConfigureJobStopManager(job, true);
+
 				//check if all tasks are done for this batch yet
 				bool isPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
 				if (!isPrimaryBatchWorkComplete)
@@ -177,10 +179,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					x.SourceField.FieldIdentifier.Equals(fieldEntryEntityIdentifier.FieldIdentifier) ||
 					x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier));
 
-				LinkManagers(job, newDestinationConfiguration, sourceData, managerLinkMap, JobStopManager);
+				int totalLinkedManagers = LinkManagers(job, newDestinationConfiguration, sourceData, managerLinkMap, JobStopManager);
 				AddMissingManagersErrors(managersLookup, managerArtifactIDs);
 				LogExecuteTaskSuccessfulEnd(job);
 
+				HandleJobIfSomeManagersWerentProcessed(job, totalLinkedManagers);
 			}
 			catch (Exception ex)
 			{
@@ -200,6 +203,28 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		private void HandleJobIfSomeManagersWerentProcessed(Job job, int totalLinkedManagers)
+		{
+			EntityManagerJobParameters jobParameters = GetParameters(job);
+			if (totalLinkedManagers < jobParameters.EntityManagerMap.Count)
+			{
+				jobParameters.EntityManagerMap = jobParameters.EntityManagerMap.Skip(totalLinkedManagers).ToDictionary(x => x.Key, x => x.Value);
+				TaskParameters taskParameters = new TaskParameters()
+				{
+					BatchInstance = BatchInstance,
+					BatchParameters = jobParameters
+				};
+
+				job.JobDetails = Serializer.Serialize(taskParameters);
+				JobService.UpdateJobDetails(job);
+
+				_managerQueueService.UnlockEntityManagerLinksByJob(job, BatchInstance);
+			}
+			else
+			{
+				JobService.UpdateStopState(new long[] { job.JobId }, StopState.None); // All Entity Managers were linked
+			}
+		}
 
 		private EntityManagerJobParameters GetParameters(Job job)
 		{
@@ -402,7 +427,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return newDestinationConfiguration;
 		}
 
-		private void LinkManagers(Job job, string newDestinationConfiguration,
+		private int LinkManagers(Job job, string newDestinationConfiguration,
 			IEnumerable<IDictionary<FieldEntry, object>> sourceData,
 			IEnumerable<FieldMap> managerLinkMap, IJobStopManager jobStopManager)
 		{
@@ -413,6 +438,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 #pragma warning disable 612
 			dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration, jobStopManager);
 #pragma warning restore 612
+
+			return dataSynchronizer.TotalRowsProcessed;
 		}
 
 		private IEnumerable<string> GetNotImportedManagersIds(IDictionary<string, string> managersLookup,

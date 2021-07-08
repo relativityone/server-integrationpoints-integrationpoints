@@ -215,8 +215,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<string> entryIDs = GetEntryIDs(job);
 				SetJobHistory();
 
-				JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true);
-				JobHistoryErrorService.JobStopManager = JobStopManager;
+				ConfigureJobStopManager(job, true);
 
 				if (!IntegrationPoint.SourceProvider.HasValue)
 				{
@@ -261,6 +260,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				PostExecute(job);
 				LogExecuteTaskFinalize(job);
 			}
+		}
+
+		protected void ConfigureJobStopManager(Job job, bool supportsDrainStop)
+		{
+			JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: supportsDrainStop);
+			JobHistoryErrorService.JobStopManager = JobStopManager;
 		}
 
 		protected virtual List<string> GetEntryIDs(Job job)

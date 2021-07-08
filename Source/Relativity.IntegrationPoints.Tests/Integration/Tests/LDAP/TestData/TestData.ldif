@@ -1549,6 +1549,8 @@ homephone: +1 804 606-5097
 initials: D. O.
 l: San Francisco
 mail: OzmizraD@ns-mail9.com
+manager: cn=Daisie Chaisupakosol,ou=Management,dc=rip-openldap-cvnx78s,dc=ea
+ stus,dc=azurecontainer,dc=io
 mobile: +1 804 818-1458
 objectclass: top
 objectclass: person
