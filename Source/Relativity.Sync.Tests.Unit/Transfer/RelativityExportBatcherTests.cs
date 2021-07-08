@@ -33,14 +33,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task GetNextItemsFromBatchAsync_ShouldRespectAlreadyTransferredItems_WhenSetRemainingItems()
 		{
 			// Arrange
-			const int totalItemsCount = 10;
-			const int transferredItemsCount = 3;
+			const int totalDocumentsCount = 10;
+			const int transferredDocumentsCount = 3;
 
-			int expectedRemainingItemsCount = totalItemsCount - transferredItemsCount;
+			int expectedRemainingItemsCount = totalDocumentsCount - transferredDocumentsCount;
 
 			Mock<IBatch> batch = new Mock<IBatch>();
-			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
-			batch.SetupGet(x => x.TransferredItemsCount).Returns(transferredItemsCount);
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalDocumentsCount);
+			batch.SetupGet(x => x.TransferredDocumentsCount).Returns(transferredDocumentsCount);
 
 			RelativityExportBatcher sut = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, It.IsAny<Guid>(), It.IsAny<int>());
 
