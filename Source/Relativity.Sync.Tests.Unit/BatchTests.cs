@@ -28,8 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 		private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-
-		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
+		
 		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
 		private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
@@ -87,7 +86,7 @@ namespace Relativity.Sync.Tests.Unit
 			createRequest.FieldValues.Should().Contain(x => x.Field.Name == _NAME_FIELD_NAME);
 			createRequest.FieldValues.First(x => x.Field.Name == _NAME_FIELD_NAME).Value.ToString().Should().NotBeNullOrWhiteSpace();
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == TotalDocumentsCountGuid);
-			createRequest.FieldValues.First(x => x.Field.Guid == TotalItemsCountGuid).Value.Should().Be(totalItemsCount);
+			createRequest.FieldValues.First(x => x.Field.Guid == TotalDocumentsCountGuid).Value.Should().Be(totalItemsCount);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StartingIndexGuid);
 			createRequest.FieldValues.First(x => x.Field.Guid == StartingIndexGuid).Value.Should().Be(startingIndex);
 			createRequest.FieldValues.Should().Contain(x => x.Field.Guid == StatusGuid);
@@ -212,7 +211,7 @@ namespace Relativity.Sync.Tests.Unit
 					{
 						Field = new Field
 						{
-							Guids = new List<Guid> {TotalItemsCountGuid}
+							Guids = new List<Guid> {TotalDocumentsCountGuid}
 						},
 						Value = totalDocumentsCount
 					},
@@ -296,7 +295,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int expectedNumberOfFields = 8;
 			fields.Count().Should().Be(expectedNumberOfFields);
-			fields.Should().Contain(x => x.Guid == TotalItemsCountGuid);
+			fields.Should().Contain(x => x.Guid == TotalDocumentsCountGuid);
 			fields.Should().Contain(x => x.Guid == StartingIndexGuid);
 			fields.Should().Contain(x => x.Guid == StatusGuid);
 			fields.Should().Contain(x => x.Guid == FailedItemsCountGuid);
