@@ -126,6 +126,8 @@ namespace Relativity.Sync.Executors
 
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
 				{
+					_jobStatisticsContainer.RestoreJobStatistics(executedBatches);
+
 					foreach (int batchId in batchesIds)
 					{
 						if (token.StopCancellationToken.IsCancellationRequested)
@@ -241,6 +243,10 @@ namespace Relativity.Sync.Executors
 
 			int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
 			await batch.SetTransferredItemsCountAsync(batch.TransferredItemsCount + processedItemsCount).ConfigureAwait(false);
+
+			await batch.SetMetadataBytesTransferredAsync(batch.MetadataBytesTransferred + batchProcessResult.MetadataBytesTransferred).ConfigureAwait(false);
+			await batch.SetFilesBytesTransferredAsync(batch.FilesBytesTransferred + batchProcessResult.FilesBytesTransferred).ConfigureAwait(false);
+			await batch.SetTotalBytesTransferredAsync(batch.TotalBytesTransferred + batchProcessResult.BytesTransferred).ConfigureAwait(false);
 
 			_logger.LogInformation("Batch properties updated: {@batch}", batch);
 

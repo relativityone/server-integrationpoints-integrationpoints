@@ -454,6 +454,12 @@ namespace Relativity.Sync.Tests.Integration
 							CreateFieldValuePair(StartingIndexGuid, 0),
 							CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
 							CreateFieldValuePair(TaggedDocumentsCountGuid, 0)
+							CreateFieldValuePair(MetadataBytesTransferredGuid, 0),
+							CreateFieldValuePair(FilesBytesTransferredGuid, 0),
+							CreateFieldValuePair(TotalBytesTransferredGuid, 0),
+							CreateFieldValuePair(ProgressGuid, (decimal) 0),
+							CreateFieldValuePair(LockedByGuid, "locked by"),
+							CreateFieldValuePair(TaggedItemsCountGuid, 0)
 						}
 					}
 				}
