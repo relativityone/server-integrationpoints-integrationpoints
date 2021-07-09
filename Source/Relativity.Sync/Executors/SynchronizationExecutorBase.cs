@@ -250,7 +250,7 @@ namespace Relativity.Sync.Executors
 			}
 			else if (batchProcessResult.ExecutionResult.Status == ExecutionStatus.Completed && batch.FailedDocumentsCount > 0)
 			{
-				// this is going to happen when there were item-level errors in batch before drain-stop, but after resume new IAPI job completed without any errors
+				// this is going to happen when there were item-level errors in batch before drain-stop, but after resume new IAPI job completed without any new errors
 				await SetBatchStatusAsync(batch, ExecutionStatus.CompletedWithErrors);
 			}
 			else
