@@ -126,6 +126,8 @@ namespace Relativity.Sync.Executors
 				
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
 				{
+					_jobStatisticsContainer.RestoreJobStatistics(executedBatches);
+
 					foreach (int batchId in batchesIds)
 					{
 						if (token.StopCancellationToken.IsCancellationRequested)
