@@ -179,7 +179,7 @@ namespace Relativity.Sync.Tests.Integration
 			IList<int> documentIds = Enumerable.Range(startIndex, totalItemsCount).ToList();
 			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
 
-			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
 			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateImageSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
 			List<RelativityObjectSlim> failedDocuments = exportBlock.Take(numberOfErrors).ToList();
 			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(dataReader.ItemStatusMonitor);
@@ -375,7 +375,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IBatch> SetupNewBatch(int newBatchArtifactId, int totalItemsCount)
 		{
 			Mock<IBatch> batch = new Mock<IBatch>();
-			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
 
 			const int numberOfNewBatches = 1;
 			QueryResult queryResultForNewBatches = new QueryResult()

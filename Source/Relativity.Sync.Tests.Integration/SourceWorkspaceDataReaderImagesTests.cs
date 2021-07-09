@@ -5,6 +5,7 @@ using System.Linq;
 using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 
@@ -108,7 +109,7 @@ namespace Relativity.Sync.Tests.Integration
 		protected override IBatchDataReaderBuilder CreateBatchDataReaderBuilder()
 		{
 			return new ImageBatchDataReaderBuilder(_container.Resolve<IFieldManager>(),
-				_container.Resolve<IExportDataSanitizer>());
+				_container.Resolve<IExportDataSanitizer>(), new EmptyLogger());
 		}
 	}
 }
