@@ -987,13 +987,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupImportJob(ExecutionResult.Paused());
 
 			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
-
-			//_jobProgressHandlerFake.Setup(x => x.GetBatchItemsFailedCount(It.IsAny<int>()))
-			//	.Returns(failedCount);
-
-			//_jobProgressHandlerFake.Setup(x => x.GetBatchItemsProcessedCount(It.IsAny<int>()))
-			//	.Returns(transferredCount);
-
+			
 			_itemStatusMonitorFake.SetupGet(x => x.FailedItemsCount).Returns(failedCount);
 			_itemStatusMonitorFake.SetupGet(x => x.ProcessedItemsCount).Returns(transferredCount);
 
