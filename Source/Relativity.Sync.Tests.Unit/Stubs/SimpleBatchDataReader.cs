@@ -13,6 +13,10 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 			_dataReader = dataReader;
 		}
 
+		public object this[int i] => _dataReader[i];
+
+		public object this[string name] => _dataReader[name];
+
 		public bool Read()
 		{
 			return _dataReader.Read();
@@ -57,6 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 		public void Dispose()
 		{
 			Close();
+			_dataReader.Dispose();
 		}
 
 		public int GetOrdinal(string name)
@@ -140,10 +145,6 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 		}
 
 		public int FieldCount { get; }
-
-		public object this[int i] => throw new NotImplementedException();
-
-		public object this[string name] => throw new NotImplementedException();
 
 		public DataTable GetSchemaTable()
 		{
