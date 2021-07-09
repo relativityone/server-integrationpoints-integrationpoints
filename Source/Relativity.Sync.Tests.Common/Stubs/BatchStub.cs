@@ -15,11 +15,11 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
 		public int TransferredItemsCount { get; set; }
 
-		public int MetadataBytesTransferred { get; set; }
+		public long MetadataBytesTransferred { get; set; }
 
-		public int FilesBytesTransferred { get; set; }
+		public long FilesBytesTransferred { get; set; }
 
-		public int TotalBytesTransferred { get; set; }
+		public long TotalBytesTransferred { get; set; }
 
 		public string LockedBy { get; set; }
 
@@ -71,19 +71,19 @@ namespace Relativity.Sync.Tests.Common.Stubs
 			return Task.CompletedTask;
 		}
 
-		public Task SetMetadataBytesTransferredAsync(int metadataBytesTransferred)
+		public Task SetMetadataBytesTransferredAsync(long metadataBytesTransferred)
 		{
 			MetadataBytesTransferred = metadataBytesTransferred;
 			return Task.CompletedTask;
 		}
 
-		public Task SetFilesBytesTransferredAsync(int filesBytesTransferred)
+		public Task SetFilesBytesTransferredAsync(long filesBytesTransferred)
 		{
 			FilesBytesTransferred = filesBytesTransferred;
 			return Task.CompletedTask;
 		}
 
-		public Task SetTotalBytesTransferredAsync(int totalBytesTransferred)
+		public Task SetTotalBytesTransferredAsync(long totalBytesTransferred)
 		{
 			TotalBytesTransferred = totalBytesTransferred;
 			return Task.CompletedTask;

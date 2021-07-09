@@ -56,25 +56,25 @@ namespace Relativity.Sync.Storage
 
 		public int TotalItemsCount { get; private set; }
 
-		public int MetadataBytesTransferred { get; private set; }
+		public long MetadataBytesTransferred { get; private set; }
 
-		public async Task SetMetadataBytesTransferredAsync(int metadataBytesTransferred)
+		public async Task SetMetadataBytesTransferredAsync(long metadataBytesTransferred)
 		{
 			await UpdateFieldValueAsync(MetadataBytesTransferredGuid, metadataBytesTransferred).ConfigureAwait(false);
 			MetadataBytesTransferred = metadataBytesTransferred;
 		}
 
-		public int FilesBytesTransferred { get; private set; }
+		public long FilesBytesTransferred { get; private set; }
 
-		public async Task SetFilesBytesTransferredAsync(int filesBytesTransferred)
+		public async Task SetFilesBytesTransferredAsync(long filesBytesTransferred)
 		{
 			await UpdateFieldValueAsync(FilesBytesTransferredGuid, filesBytesTransferred).ConfigureAwait(false);
 			FilesBytesTransferred = filesBytesTransferred;
 		}
 
-		public int TotalBytesTransferred { get; private set; }
+		public long TotalBytesTransferred { get; private set; }
 
-		public async Task SetTotalBytesTransferredAsync(int totalBytesTransferred)
+		public async Task SetTotalBytesTransferredAsync(long totalBytesTransferred)
 		{
 			await UpdateFieldValueAsync(TotalBytesTransferredGuid, totalBytesTransferred).ConfigureAwait(false);
 			TotalBytesTransferred = totalBytesTransferred;
@@ -442,9 +442,9 @@ namespace Relativity.Sync.Storage
 			FailedItemsCount = (int) (relativityObject[FailedItemsCountGuid].Value ?? default(int));
 			TransferredItemsCount = (int) (relativityObject[TransferredItemsCountGuid].Value ?? default(int));
 			TaggedItemsCount = (int) (relativityObject[TaggedItemsCountGuid].Value ?? default(int));
-			MetadataBytesTransferred = (int)(relativityObject[MetadataBytesTransferredGuid].Value ?? default(int));
-			FilesBytesTransferred = (int)(relativityObject[FilesBytesTransferredGuid].Value ?? default(int));
-			TotalBytesTransferred = (int)(relativityObject[TotalBytesTransferredGuid].Value ?? default(int));
+			MetadataBytesTransferred = Convert.ToInt64(relativityObject[MetadataBytesTransferredGuid].Value ?? default(long));
+			FilesBytesTransferred = Convert.ToInt64(relativityObject[FilesBytesTransferredGuid].Value ?? default(long));
+			TotalBytesTransferred = Convert.ToInt64(relativityObject[TotalBytesTransferredGuid].Value ?? default(long));
 			Progress = decimal.ToDouble((decimal?) relativityObject[ProgressGuid].Value ?? default(decimal));
 			LockedBy = (string) relativityObject[LockedByGuid].Value;
 		}

@@ -384,7 +384,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task SetMetadataBytesTransferredAsync_ShouldUpdateMetadataBytesTransferred()
 		{
-			const int metadataBytesTransferred = 1024;
+			const long metadataBytesTransferred = 1024;
 
 			QueryResult queryResult = PrepareQueryResult();
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
@@ -403,7 +403,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task SetFilesBytesTransferredAsync_ShouldUpdateFilesBytesTransferredGuid()
 		{
-			const int filesBytesTransferred = 5120;
+			const long filesBytesTransferred = 5120;
 
 			QueryResult queryResult = PrepareQueryResult();
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
@@ -422,7 +422,7 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task SetTotalBytesTransferredAsync_ShouldUpdateTotalBytesTransferred()
 		{
-			const int totalBytesTransferred = 6144;
+			const long totalBytesTransferred = 6144;
 
 			QueryResult queryResult = PrepareQueryResult();
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
