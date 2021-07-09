@@ -14,6 +14,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
 		public int TotalDocumentsCount { get; set; }
 
 		public int TransferredDocumentsCount { get; set; }
+
 		public long MetadataBytesTransferred { get; set; }
 
 		public long FilesBytesTransferred { get; set; }

@@ -119,10 +119,10 @@ namespace Relativity.Sync.Executors
 						configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
-				IEnumerable<IBatch> executedBatches = await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
+				List<IBatch> executedBatches = (await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
 					configuration.SourceWorkspaceArtifactId,
 					configuration.SyncConfigurationArtifactId)
-				.ConfigureAwait(false);
+				.ConfigureAwait(false)).ToList();
 
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
 				{

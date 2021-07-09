@@ -22,6 +22,10 @@ namespace Relativity.Sync.Storage
 		private static readonly Guid TransferredDocumentsCountGuid = new Guid(SyncBatchGuids.TransferredDocumentsCountGuid);
 		private static readonly Guid FailedDocumentsCountGuid = new Guid(SyncBatchGuids.FailedDocumentsCountGuid);
 
+		private static readonly Guid MetadataBytesTransferredGuid = new Guid(SyncBatchGuids.MetadataBytesTransferredGuid);
+		private static readonly Guid FilesBytesTransferredGuid = new Guid(SyncBatchGuids.FilesBytesTransferredGuid);
+		private static readonly Guid TotalBytesTransferredGuid = new Guid(SyncBatchGuids.TotalBytesTransferredGuid);
+
 		private static readonly Guid StartingIndexGuid = new Guid(SyncBatchGuids.StartingIndexGuid);
 		private static readonly Guid StatusGuid = new Guid(SyncBatchGuids.StatusGuid);
 		private static readonly Guid TaggedDocumentsCountGuid = new Guid(SyncBatchGuids.TaggedDocumentsCountGuid);
@@ -46,6 +50,12 @@ namespace Relativity.Sync.Storage
 		public int TransferredItemsCount { get; private set; }
 
 		public int FailedItemsCount { get; private set; }
+
+		public long MetadataBytesTransferred { get; private set; }
+
+		public long FilesBytesTransferred { get; private set; }
+
+		public long TotalBytesTransferred { get; private set; }
 
 		public int TaggedDocumentsCount { get; private set; }
 
@@ -82,6 +92,24 @@ namespace Relativity.Sync.Storage
 			string statusDescription = status.GetDescription();
 			await UpdateFieldValueAsync(StatusGuid, statusDescription).ConfigureAwait(false);
 			Status = status;
+		}
+
+		public async Task SetMetadataBytesTransferredAsync(long metadataBytesTransferred)
+		{
+			await UpdateFieldValueAsync(MetadataBytesTransferredGuid, metadataBytesTransferred).ConfigureAwait(false);
+			MetadataBytesTransferred = metadataBytesTransferred;
+		}
+
+		public async Task SetFilesBytesTransferredAsync(long filesBytesTransferred)
+		{
+			await UpdateFieldValueAsync(FilesBytesTransferredGuid, filesBytesTransferred).ConfigureAwait(false);
+			FilesBytesTransferred = filesBytesTransferred;
+		}
+
+		public async Task SetTotalBytesTransferredAsync(long totalBytesTransferred)
+		{
+			await UpdateFieldValueAsync(TotalBytesTransferredGuid, totalBytesTransferred).ConfigureAwait(false);
+			TotalBytesTransferred = totalBytesTransferred;
 		}
 
 		public async Task SetTaggedDocumentsCountAsync(int taggedDocumentsCount)
@@ -418,6 +446,10 @@ namespace Relativity.Sync.Storage
 
 			TransferredDocumentsCount = (int) (relativityObject[TransferredDocumentsCountGuid].Value ?? default(int));
 			FailedDocumentsCount = (int) (relativityObject[FailedDocumentsCountGuid].Value ?? default(int));
+
+			MetadataBytesTransferred = Convert.ToInt64(relativityObject[MetadataBytesTransferredGuid].Value ?? default(long));
+			FilesBytesTransferred = Convert.ToInt64(relativityObject[FilesBytesTransferredGuid].Value ?? default(long));
+			TotalBytesTransferred = Convert.ToInt64(relativityObject[TotalBytesTransferredGuid].Value ?? default(long));
 
 			StartingIndex = (int) relativityObject[StartingIndexGuid].Value;
 			Status = ((string)relativityObject[StatusGuid].Value).GetEnumFromDescription<BatchStatus>();
