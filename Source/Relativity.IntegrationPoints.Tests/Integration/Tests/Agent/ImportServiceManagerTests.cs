@@ -90,28 +90,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void Execute_ShouldDrainStopAndStoreNumberOfProcessedItems()
 		{
 			// Arrange
-			const string loadFile = @"DataTransfer\Import\SaltPepper\saltvpepper-no_errors.dat";
 			const int numberOfRecords = 10;
 			const int drainStopAfterImporting = 3;
-			const long size = 1024;
-			DateTime modifiedDate = new DateTime(2020, 1, 1);
 
-			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory(numberOfRecords))
-				.LifestyleTransient().Named(nameof(FakeWinEddsFileReaderFactory)).IsDefault());
-			_fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
+			JobTest job = ScheduleIntegrationPointImportJob(numberOfRecords);
 
-			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
-				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
-
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: 0);
-			RegisterJobContext(job);
-
-			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
 			ImportServiceManager sut = PrepareSut((importJob) =>
 			{
-				importJob.Complete(drainStopAfterImporting, useDataReader:false);
+				importJob.Complete(drainStopAfterImporting, 0, useDataReader:false);
 
 				agent.ToBeRemoved = true;
 			});
@@ -120,16 +108,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			sut.Execute(job.AsJob());
 
 			// Assert
+			JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+
 			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
 			jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
-			job.StopState.Should().Be(StopState.DrainStopped);
+			
+			job.StopState.Should().Be(StopState.DrainStopping);
 		}
 
 		[IdentifiedTest("7179C321-11C6-4DEE-A252-6970F7441EF6")]
 		public void Execute_ShouldResumeDrainStoppedJob()
 		{
 			// Arrange
-			const string loadFile = @"DataTransfer\Import\drain-stop.dat";
 			const int itemsToTransfer = 10;
 			const int itemLevelErrorsToTransfer = 5;
 			const int initialItemsTransferred = 3;
@@ -137,23 +127,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			const int totalDocuments = itemsToTransfer + itemLevelErrorsToTransfer
 			                                + initialItemsTransferred + initialItemLevelErrors;
-			const long size = 1024;
-			DateTime modifiedDate = new DateTime(2020, 1, 1);
 
-			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory(totalDocuments))
-				.LifestyleTransient().Named(nameof(FakeWinEddsFileReaderFactory)).IsDefault());
-			_fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
-		
+			JobTest job = ScheduleIntegrationPointImportJob(totalDocuments, initialItemsTransferred + initialItemLevelErrors);
+
 			FakeJobStatisticsQuery fakeJobStatisticsQuery = Container.Resolve<IJobStatisticsQuery>() as FakeJobStatisticsQuery;
 			fakeJobStatisticsQuery.AlreadyTransferredItems = initialItemsTransferred;
 			fakeJobStatisticsQuery.AlreadyFailedItems = initialItemLevelErrors;
-			
-			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
-				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size,
-				modifiedDate, processedItemsCount: initialItemsTransferred + initialItemLevelErrors);
-			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+			JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
 			jobHistory.ItemsTransferred = initialItemsTransferred;
 			jobHistory.ItemsWithErrors = initialItemLevelErrors;
 
@@ -171,6 +152,57 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			
 			jobHistory.ShouldHaveCorrectItemsTransferredUpdateHistory(initialItemsTransferred, initialItemsTransferred + itemsToTransfer);
 			jobHistory.ShouldHaveCorrectItemsWithErrorsUpdateHistory(initialItemLevelErrors, initialItemLevelErrors + itemLevelErrorsToTransfer);
+		}
+
+		[IdentifiedTest("98287D79-8940-4DDB-90B1-4EE4604763A7")]
+		public void Execute_ShouldHandleDrainStop_WhenAllRecordsWereProcessed()
+		{
+			// Arrange
+			const int numberOfRecords = 10;
+			const int drainStopAfterImporting = 10;
+
+			JobTest job = ScheduleIntegrationPointImportJob(numberOfRecords);
+
+			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
+
+			ImportServiceManager sut = PrepareSut((importJob) =>
+			{
+				importJob.Complete(drainStopAfterImporting, 0, useDataReader: false);
+
+				agent.ToBeRemoved = true;
+			});
+
+			// Act
+			sut.Execute(job.AsJob());
+
+			// Assert
+			JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+
+			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistoryCompletedGuid);
+			jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
+
+			job.StopState.Should().Be(StopState.None);
+		}
+
+		private JobTest ScheduleIntegrationPointImportJob(int numberOfRecords, int processedItemsCount = 0)
+		{
+			const string loadFile = @"DataTransfer\Import\SaltPepper\saltvpepper-no_errors.dat";
+			const long size = 1024;
+			DateTime modifiedDate = new DateTime(2020, 1, 1);
+
+			Container.Register(Component.For<IWinEddsFileReaderFactory>().UsingFactoryMethod(c => new FakeWinEddsFileReaderFactory(numberOfRecords))
+				.LifestyleTransient().Named(nameof(FakeWinEddsFileReaderFactory)).IsDefault());
+			_fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
+
+			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
+
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: processedItemsCount);
+			RegisterJobContext(job);
+
+			SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+
+			return job;
 		}
 	}
 }
