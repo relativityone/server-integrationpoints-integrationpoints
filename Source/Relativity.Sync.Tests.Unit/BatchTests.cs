@@ -360,9 +360,7 @@ namespace Relativity.Sync.Tests.Unit
 			fields.Should().Contain(x => x.Guid == StatusGuid);
 			fields.Should().Contain(x => x.Guid == FailedItemsCountGuid);
 			fields.Should().Contain(x => x.Guid == TransferredItemsCountGuid);
-			fields.Should().Contain(x => x.Guid == ProgressGuid);
-			fields.Should().Contain(x => x.Guid == LockedByGuid);
-			fields.Should().Contain(x => x.Guid == TaggedItemsCountGuid);
+			fields.Should().Contain(x => x.Guid == TaggedDocumentsCountGuid);
 			fields.Should().Contain(x => x.Guid == MetadataBytesTransferredGuid);
 			fields.Should().Contain(x => x.Guid == FilesBytesTransferredGuid);
 			fields.Should().Contain(x => x.Guid == TotalBytesTransferredGuid);

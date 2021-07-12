@@ -432,7 +432,7 @@ namespace Relativity.Sync.Storage
 				},
 				new FieldRef
 				{
-					Guid = TaggedItemsCountGuid
+					Guid = TaggedDocumentsCountGuid
 				},
 				new FieldRef
 				{
