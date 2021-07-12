@@ -353,16 +353,19 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static void AssertReadFields(IList<FieldRef> fields)
 		{
-			const int expectedNumberOfFields = 8;
+			const int expectedNumberOfFields = 11;
 			fields.Count().Should().Be(expectedNumberOfFields);
 			fields.Should().Contain(x => x.Guid == TotalDocumentsCountGuid);
 			fields.Should().Contain(x => x.Guid == StartingIndexGuid);
 			fields.Should().Contain(x => x.Guid == StatusGuid);
 			fields.Should().Contain(x => x.Guid == FailedItemsCountGuid);
 			fields.Should().Contain(x => x.Guid == TransferredItemsCountGuid);
-			fields.Should().Contain(x => x.Guid == FailedDocumentsCountGuid);
-			fields.Should().Contain(x => x.Guid == TransferredDocumentsCountGuid);
-			fields.Should().Contain(x => x.Guid == TaggedDocumentsCountGuid);
+			fields.Should().Contain(x => x.Guid == ProgressGuid);
+			fields.Should().Contain(x => x.Guid == LockedByGuid);
+			fields.Should().Contain(x => x.Guid == TaggedItemsCountGuid);
+			fields.Should().Contain(x => x.Guid == MetadataBytesTransferredGuid);
+			fields.Should().Contain(x => x.Guid == FilesBytesTransferredGuid);
+			fields.Should().Contain(x => x.Guid == TotalBytesTransferredGuid);
 		}
 
 		[Test]

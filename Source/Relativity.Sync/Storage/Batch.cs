@@ -432,7 +432,19 @@ namespace Relativity.Sync.Storage
 				},
 				new FieldRef
 				{
-					Guid = TaggedDocumentsCountGuid
+					Guid = TaggedItemsCountGuid
+				},
+				new FieldRef
+				{
+					Guid = MetadataBytesTransferredGuid
+				},
+				new FieldRef
+				{
+					Guid = FilesBytesTransferredGuid
+				},
+				new FieldRef
+				{
+					Guid = TotalBytesTransferredGuid
 				}
 			};
 		}
