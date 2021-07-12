@@ -49,7 +49,9 @@ namespace Relativity.Sync.Tests.Integration
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
 		private static readonly Guid TaggedDocumentsCountGuid = new Guid("AF3C2398-AF49-4537-9BC3-D79AE1734A8C");
-
+		private static readonly Guid MetadataBytesTransferredGuid = new Guid("2BE1C011-0A0C-4A10-B77A-74BB9405A68A");
+		private static readonly Guid FilesBytesTransferredGuid = new Guid("4A21D596-6961-4389-8210-8D2D8C56DBAD");
+		private static readonly Guid TotalBytesTransferredGuid = new Guid("511C4B49-2E05-4DFB-BB3E-771EC0BDEFED");
 
 		[SetUp]
 		public void SetUp()
@@ -431,7 +433,10 @@ namespace Relativity.Sync.Tests.Integration
 							CreateFieldValuePair(TransferredItemsCountGuid, 0),
 							CreateFieldValuePair(StartingIndexGuid, 0),
 							CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
-							CreateFieldValuePair(TaggedDocumentsCountGuid, 0)
+							CreateFieldValuePair(TaggedDocumentsCountGuid, 0),
+							CreateFieldValuePair(MetadataBytesTransferredGuid, 0),
+							CreateFieldValuePair(FilesBytesTransferredGuid, 0),
+							CreateFieldValuePair(TotalBytesTransferredGuid, 0)
 						}
 					}
 				}
