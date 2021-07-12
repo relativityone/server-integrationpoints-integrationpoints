@@ -12,6 +12,8 @@ using Relativity.Testing.Identification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.ScheduleQueue.Core.Core;
+using Relativity.IntegrationPoints.Tests.Integration.Utils;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -127,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void SyncWorker_ShouldImportLDAPDataAndLinkManagers_WhenJobWasDrainStoppedAndResumed()
 		{
 			// Arrange
-			const int processedItemsBeforeDrainStopped = 3;
+			const int processedItemsBeforeDrainStopped = 1;
 			int totalItems = _managementTestData.Data.Count;
 			int processedItemsAfterResume = totalItems - processedItemsBeforeDrainStopped;
 
@@ -136,13 +138,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			FakeAgent drainStoppedAgent = FakeAgent.Create(FakeRelativityInstance, Container, false);
 
 			Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
+			
+			// SyncWorker for Entities
 			importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
+			
+			// SyncEntityManagerWorker (linking managers)
 			importJobsQueue.Enqueue(new FakeJobImport(importJob =>
 			{
 				importJob.Complete(processedItemsBeforeDrainStopped);
 				drainStoppedAgent.MarkAgentToBeRemoved();
 			}));
 
+			// resume SyncEntityManagerWorker (linking managers)
 			FakeJobImport resumedImportJob = new FakeJobImport(importJob => importJob.Complete(processedItemsAfterResume, useDataReader: false));
 			importJobsQueue.Enqueue(resumedImportJob);
 
@@ -170,13 +177,44 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			VerifyFollowingRecordsWereProcessed(resumedImportJob, _managementTestData.EntryIds.Skip(processedItemsBeforeDrainStopped));
 		}
 
-		private void ScheduleImportEntityFromLdapJob(bool linkEntityManagers)
+		[IdentifiedTest("C0D7BD33-F3B3-4B32-8F12-52E08F361875")]
+		public void SyncWorker_ShouldSubmitLinkManagerJob_OnlyForTransferredEntities()
+		{
+			// Arrange
+			JobTest syncWorkerJob = ScheduleImportEntityFromLdapJob(true);
+			const int drainStopAfter = 2;
+
+			FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
+
+			Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) =>
+			{
+				importJob.Complete(drainStopAfter);
+				sut.MarkAgentToBeRemoved();
+			})).LifestyleSingleton());
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			VerifyJobHistoryStatus(JobStatusChoices.JobHistorySuspendedGuid);
+
+			FakeRelativityInstance.JobsInQueue.Count.Should().Be(2);
+			syncWorkerJob.StopState.Should().Be(StopState.DrainStopped);
+			syncWorkerJob.DeserializeDetails<string[]>().Should().BeEquivalentTo(_managementTestData.EntryIds.Skip(drainStopAfter));
+
+			JobTest linkManagersJob = FakeRelativityInstance.JobsInQueue.Last();
+			linkManagersJob.ParentJobId.Should().Be(syncWorkerJob.JobId);
+			linkManagersJob.DeserializeDetails<EntityManagerJobParameters>().EntityManagerMap.Should()
+				.HaveCount(drainStopAfter).And.ContainKeys(_managementTestData.EntryIds.Take(drainStopAfter));
+		}
+
+		private JobTest ScheduleImportEntityFromLdapJob(bool linkEntityManagers)
 		{
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(linkEntityManagers);
 
 			Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
-			FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint);
+			return FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint);
 		}
 
 		private void VerifyJobHistoryStatus(Guid expectedStatusGuid)

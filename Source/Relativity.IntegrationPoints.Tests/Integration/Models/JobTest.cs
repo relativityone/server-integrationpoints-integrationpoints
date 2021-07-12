@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using Autofac;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
@@ -57,9 +59,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		{
 			TaskParameters parameters = JsonConvert.DeserializeObject<TaskParameters>(JobDetails);
 
-			return parameters.BatchParameters is JObject
-				? ((JObject)parameters.BatchParameters).ToObject<T>()
-				: (T)parameters.BatchParameters;
+			if (parameters.BatchParameters is T result)
+			{
+				return result;
+			}
+			
+			if (parameters.BatchParameters is JObject jObject)
+			{
+				return jObject.ToObject<T>();
+			}
+
+			return JsonConvert.DeserializeObject<T>(parameters.BatchParameters.ToString());
 		}
 
 		public DataRow AsDataRow()
