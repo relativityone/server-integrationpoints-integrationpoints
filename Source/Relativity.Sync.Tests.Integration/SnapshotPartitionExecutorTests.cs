@@ -35,6 +35,9 @@ namespace Relativity.Sync.Tests.Integration
 		private readonly Guid _totalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
 		private readonly Guid _transferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private readonly Guid _taggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
+		private readonly Guid _metadataBytesTransferredGuid = new Guid("2BE1C011-0A0C-4A10-B77A-74BB9405A68A");
+		private readonly Guid _filesBytesTransferredGuid = new Guid("4A21D596-6961-4389-8210-8D2D8C56DBAD");
+		private readonly Guid _totalBytesTransferredGuid = new Guid("511C4B49-2E05-4DFB-BB3E-771EC0BDEFED");
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -218,6 +221,18 @@ namespace Relativity.Sync.Tests.Integration
 							new FieldValuePair
 							{
 								Field = new Field{ Guids = new List<Guid>{_taggedItemsCountGuid}}
+							},
+							new FieldValuePair
+							{
+								Field = new Field{ Guids = new List<Guid>{_metadataBytesTransferredGuid}}
+							},
+							new FieldValuePair
+							{
+								Field = new Field{ Guids = new List<Guid>{_filesBytesTransferredGuid}}
+							},
+							new FieldValuePair
+							{
+								Field = new Field{ Guids = new List<Guid>{_totalBytesTransferredGuid}}
 							}
 						}
 					}

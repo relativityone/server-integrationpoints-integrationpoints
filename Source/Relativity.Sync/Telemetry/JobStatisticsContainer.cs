@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Telemetry
@@ -68,6 +69,17 @@ namespace Relativity.Sync.Telemetry
 			double averageSizeInMB = sizeAndTimeTuples.Select(x => x.Item1).Average();
 			double averageTimeInSeconds = sizeAndTimeTuples.Select(x => x.Item2).Average();
 			return new Tuple<double, double>(averageSizeInMB, averageTimeInSeconds);
+		}
+
+		public void RestoreJobStatistics(IEnumerable<IBatch> alreadyExecutedBatches)
+		{
+			MetadataBytesTransferred = FilesBytesTransferred = TotalBytesTransferred = 0;
+			foreach (IBatch alreadyExecutedBatch in alreadyExecutedBatches)
+			{
+				MetadataBytesTransferred += alreadyExecutedBatch.MetadataBytesTransferred;
+				FilesBytesTransferred += alreadyExecutedBatch.FilesBytesTransferred;
+				TotalBytesTransferred += alreadyExecutedBatch.TotalBytesTransferred;
+			}
 		}
 	}
 }

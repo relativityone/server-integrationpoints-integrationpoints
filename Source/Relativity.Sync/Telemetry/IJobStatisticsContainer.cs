@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Relativity.Sync.Storage;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -67,5 +68,7 @@ namespace Relativity.Sync.Telemetry
 		/// </summary>
 		/// <returns>Tuple of double values, where Item1 is the average size (in megabytes) and Item2 is the average time (in seconds).</returns>
 		Tuple<double, double> CalculateAverageLongTextStreamSizeAndTime(Func<long, bool> streamSizePredicate);
+
+		void RestoreJobStatistics(IEnumerable<IBatch> alreadyExecutedBatches);
 	}
 }

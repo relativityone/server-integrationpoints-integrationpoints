@@ -868,15 +868,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			batch.TransferredItemsCount.Should().Be(expectedTransferredItemsCount);
 		}
 
-		[TestCase(0, 0, 0, 10, 2, 3, ExecutionStatus.Paused, BatchStatus.Paused, 5)]
-		[TestCase(3, 1, 2, 10, 2, 3, ExecutionStatus.Paused, BatchStatus.Paused, 8)]
-		[TestCase(0, 0, 0, 10, 0, 10, ExecutionStatus.Completed, BatchStatus.Completed, 0)]
-		[TestCase(0, 2, 3, 10, 0, 5, ExecutionStatus.CompletedWithErrors, BatchStatus.CompletedWithErrors, 0)]
-		[TestCase(1500, 0, 0, 500, 0, 108, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
-		[TestCase(1608, 0, 108, 500, 0, 0, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
+		[TestCase(0, 0, 0, 0, 0, 0, 10, 2, 3024, 6144, 9168, 3, ExecutionStatus.Paused, BatchStatus.Paused, 5)]
+		[TestCase(3, 1, 2, 2048, 4096, 6144, 10, 2, 3024, 6144, 9168, 3, ExecutionStatus.Paused, BatchStatus.Paused, 8)]
+		[TestCase(0, 0, 0, 0, 0, 0, 10, 0, 10240, 20480, 30720, 10, ExecutionStatus.Completed, BatchStatus.Completed, 0)]
+		[TestCase(0, 2, 3, 3024, 6144, 9168, 10, 0, 5120, 10240, 15360, 5, ExecutionStatus.CompletedWithErrors, BatchStatus.CompletedWithErrors, 0)]
+		[TestCase(1500, 0, 0, 0, 0, 0, 500, 0, 41062078, 18705240, 59767318, 108, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
+		[TestCase(1608, 0, 108, 41062078, 18705240, 59767318, 500, 0, 0, 0, 0, 0, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
 		public async Task Execute_ShouldHandlePausedBatch(
-			int initialStartingIndex, int initialFailedCount, int initialTransferredCount, int totalCount,
-			int failedCount, int transferredCount, ExecutionStatus expectedStatus, BatchStatus expectedBatchStatus, int expectedStartingIndex)
+			int initialStartingIndex, int initialFailedCount, int initialTransferredCount, int initialMetadataBytesTransferred, int initialFilesBytesTransferred, int initialTotalBytesTransferred, int totalCount,
+			int failedCount, int metadataBytesTransferred, int filesBytesTransferred, int totalBytesTransferred, int transferredCount,
+			ExecutionStatus expectedStatus, BatchStatus expectedBatchStatus, int expectedStartingIndex)
 		{
 			// Arrange
 			IBatch batch = new BatchStub
@@ -884,12 +885,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				StartingIndex = initialStartingIndex,
 				FailedItemsCount = initialFailedCount,
 				TransferredItemsCount = initialTransferredCount,
+				MetadataBytesTransferred = initialMetadataBytesTransferred,
+				FilesBytesTransferred = initialFilesBytesTransferred,
+				TotalBytesTransferred = initialTotalBytesTransferred,
 				TotalItemsCount = totalCount
 			};
 
 			SetupBatch(batch);
 
-			SetupImportJob(ExecutionResult.Paused());
+			SetupImportJob(ExecutionResult.Paused(), metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
 
 			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
 
@@ -908,6 +912,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			batch.Status.Should().Be(expectedBatchStatus);
 			batch.StartingIndex.Should().Be(expectedStartingIndex);
+			batch.MetadataBytesTransferred.Should().Be(initialMetadataBytesTransferred + metadataBytesTransferred);
+			batch.FilesBytesTransferred.Should().Be(initialFilesBytesTransferred + filesBytesTransferred);
+			batch.TotalBytesTransferred.Should().Be(initialTotalBytesTransferred + totalBytesTransferred);
 			batch.TransferredItemsCount.Should().Be(initialTransferredCount + transferredCount);
 		}
 
@@ -934,12 +941,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((int workspaceId, int batchId) => _batchesStubs.First(x => x.ArtifactId == batchId));
 		}
 
-		private void SetupImportJob(ExecutionResult result = null)
+		private void SetupImportJob(ExecutionResult result = null, long metadataBytesTransferred = _METADATA_SIZE, long filesBytesTransferred = _FILES_SIZE, long totalBytesTransferred = _JOB_SIZE)
 		{
 			ExecutionResult jobResult = result ?? ExecutionResult.Success();
 
-			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult(jobResult));
-			ImportJobResult importJob = new ImportJobResult(jobResult, _METADATA_SIZE, _FILES_SIZE, _JOB_SIZE);
+			ImportJobResult importJob = new ImportJobResult(jobResult, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(importJob);
 		}
 
@@ -979,11 +985,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private static TaggingExecutionResult CastToTaggingResult(ExecutionResult result)
 			=> new TaggingExecutionResult(result.Status, result.Message, result.Exception);
 
-		private static ImportJobResult CreateJobResult(ExecutionResult result = null)
+		private static ImportJobResult CreateJobResult(ExecutionResult result = null, int metadataBytesTransferred = 1, int filesBytesTransferred = 0, int totalBytesTransferred = 1)
 		{
 			ExecutionResult jobResult = result ?? ExecutionResult.Success();
 
-			return new ImportJobResult(jobResult, 1, 0, 1);
+			return new ImportJobResult(jobResult, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
 		}
 		
 		private static ImportJobResult CreatePausedResult()

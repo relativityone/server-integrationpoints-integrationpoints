@@ -59,6 +59,9 @@ namespace Relativity.Sync.Tests.System
 			const string lockedBy = "locked by";
 			const double progress = 2.1;
 			const int transferredItemsCount = 45;
+			const int metadataBytesTransferred = 1024;
+			const int filesBytesTransferred = 5120;
+			const int totalBytesTransferred = 6144;
 
 			IBatch createdBatch = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, totalRecords, startingIndex).ConfigureAwait(false);
 
@@ -68,6 +71,9 @@ namespace Relativity.Sync.Tests.System
 			await createdBatch.SetLockedByAsync(lockedBy).ConfigureAwait(false);
 			await createdBatch.SetProgressAsync(progress).ConfigureAwait(false);
 			await createdBatch.SetTransferredItemsCountAsync(transferredItemsCount).ConfigureAwait(false);
+			await createdBatch.SetMetadataBytesTransferredAsync(metadataBytesTransferred).ConfigureAwait(false);
+			await createdBatch.SetFilesBytesTransferredAsync(filesBytesTransferred).ConfigureAwait(false);
+			await createdBatch.SetTotalBytesTransferredAsync(totalBytesTransferred).ConfigureAwait(false);
 
 			// ASSERT
 			IBatch readBatch = await _sut.GetAsync(_workspaceId, createdBatch.ArtifactId).ConfigureAwait(false);
@@ -77,6 +83,9 @@ namespace Relativity.Sync.Tests.System
 			readBatch.LockedBy.Should().Be(lockedBy);
 			readBatch.Progress.Should().Be(progress);
 			readBatch.TransferredItemsCount.Should().Be(transferredItemsCount);
+			readBatch.MetadataBytesTransferred.Should().Be(metadataBytesTransferred);
+			readBatch.FilesBytesTransferred.Should().Be(filesBytesTransferred);
+			readBatch.TotalBytesTransferred.Should().Be(totalBytesTransferred);
 		}
 
 		[IdentifiedTest("7e5348d7-dee0-4f20-9da7-888a62f7ee1a")]
