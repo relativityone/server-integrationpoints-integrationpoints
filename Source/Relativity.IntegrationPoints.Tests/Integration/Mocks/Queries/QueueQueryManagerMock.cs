@@ -250,28 +250,31 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 		private JobTest CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, string taskType,
 			DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
 			string jobDetails, int jobFlags, int submittedBy, long? rootJobId, long? parentJobId)
-		{
-			return new JobTest
-			{
-				JobId = jobId,
-				RootJobId = rootJobId,
-				ParentJobId = parentJobId,
-				AgentTypeID = agentTypeId,
-				LockedByAgentID = null,
-				WorkspaceID = workspaceId,
-				RelatedObjectArtifactID = relatedObjectArtifactId,
-				TaskType = taskType,
-				NextRunTime = nextRunTime,
-				LastRunTime = null,
-				ScheduleRuleType = scheduleRuleType,
-				SerializedScheduleRule = serializedScheduleRule,
-				JobDetails = jobDetails,
-				JobFlags = jobFlags,
-				SubmittedDate = _context.CurrentDateTime,
-				SubmittedBy = submittedBy,
-				StopState = _db.JobsInQueue.FirstOrDefault(x => x.ParentJobId > 0)?.StopState ?? StopState.None
-			};
-		}
+        {
+			JobTest jobTest = new JobTest
+            {
+                JobId = jobId,
+                RootJobId = rootJobId,
+                ParentJobId = parentJobId,
+                AgentTypeID = agentTypeId,
+                LockedByAgentID = null,
+                WorkspaceID = workspaceId,
+                RelatedObjectArtifactID = relatedObjectArtifactId,
+                TaskType = taskType,
+                NextRunTime = nextRunTime,
+                LastRunTime = null,
+                ScheduleRuleType = scheduleRuleType,
+                SerializedScheduleRule = serializedScheduleRule,
+                JobDetails = jobDetails,
+                JobFlags = jobFlags,
+                SubmittedDate = _context.CurrentDateTime,
+                SubmittedBy = submittedBy,
+                StopState = _db.JobsInQueue.FirstOrDefault(x => x.JobId == parentJobId)?.StopState ?? StopState.None
+		    };
+            
+            return jobTest;
+        }
+
 		#endregion
 	}
 }

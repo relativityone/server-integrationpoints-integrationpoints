@@ -173,7 +173,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					{
 						Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
 						_jobService.FinalizeDrainStoppedJob(nextJob);
-						nextJob = null;
+                        nextJob = null;
 					}
 					else
 					{
@@ -189,7 +189,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(ex, "Unhandled exception occured while processing queue jobs.");
+				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs.");
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				NotifyAgentTab(LogCategory.Warn, $"An error occured cleaning jobs queue. {ex.Message} {ex.StackTrace}");
+				NotifyAgentTab(LogCategory.Warn, $"An error occurred cleaning jobs queue. {ex.Message} {ex.StackTrace}");
 				LogCleanupError(ex);
 			}
 		}

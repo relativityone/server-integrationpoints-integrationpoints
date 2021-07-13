@@ -162,6 +162,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_logger.LogInformation("Drain stopping batch with id = {id} of job {jobId}", job.JobId, job.RootJobId );
 			}
 
+			JobStopManager?.StopCheckingDrainStop();
+
 			LogExecuteImportSuccesfulEnd(job);
 		}
 

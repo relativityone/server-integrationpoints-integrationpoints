@@ -64,11 +64,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				DocumentFields.JobHistory
 			};
 
-			_logger.LogDebug("Retriving fileds from Import API");
+			_logger.LogDebug("Retrieving fields from Import API");
 			HashSet<int> mappableArtifactIds =
 				_importApiFacade.GetMappableArtifactIdsExcludeFields(sourceWorkspaceId, rdoTypeId, ignoreFields);
 
-			_logger.LogDebug("Retriving fileds from Filed Repository");
+			_logger.LogDebug("Retrieving fields from Filed Repository");
 			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);
 
 			ArtifactDTO[] fieldArtifacts = fieldQueryRepository.RetrieveFields(

@@ -25,6 +25,11 @@ namespace kCura.IntegrationPoints.Domain.Managers
 		/// </summary>
 		void ThrowIfStopRequested();
 
+        /// <summary>
+        ///     Stop checking if DrainStop was invoked.
+        /// </summary>
+		void StopCheckingDrainStop();
+
 		/// <summary>
 		///     Rises when stopping has been requested for this job.
 		/// </summary>

@@ -143,7 +143,7 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 			else
 			{
-				throw new IntegrationPointsException($"Try to create new sceduled job without any rule specified. Previous Job Id: {oldJobId}");
+				throw new IntegrationPointsException($"Try to create new scheduled job without any rule specified. Previous Job Id: {oldJobId}");
 			}
 		}
 
@@ -303,8 +303,8 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void FinalizeDrainStoppedJob(Job job)
 		{
-			UpdateStopState(new List<long>() { job.JobId }, StopState.DrainStopped);
-			DataProvider.UnlockJob(job.JobId);
+            UpdateStopState(new List<long>() { job.JobId }, StopState.DrainStopped);
+            DataProvider.UnlockJob(job.JobId);
 			_log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId}", job.JobId);
 		}
 

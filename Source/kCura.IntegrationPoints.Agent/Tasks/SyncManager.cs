@@ -210,8 +210,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						_logger.LogInformation("Drain-Stop timeout exceeded. SyncManager task will be aborted.");
 						workerThread.Abort();
-						JobHistory.JobStatus = JobStatusChoices.JobHistorySuspended;
-						_jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
 						throw new OperationCanceledException();
 					}
 				}
@@ -222,6 +220,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw workedThreadException;
 			}
 
+			JobStopManager?.StopCheckingDrainStop();
+			
 			return reader;
 		}
 
