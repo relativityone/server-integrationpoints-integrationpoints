@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 			var sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@JobID", _jobID));
 
-			_caseDBcontext.ExecuteNonQuerySQLStatement(sql);
+			_caseDBcontext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
 		}
 	}
 }

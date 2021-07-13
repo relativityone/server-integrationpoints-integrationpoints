@@ -2,6 +2,6 @@
 SET
 				[LockedByJobID]	= NULL
 FROM 
-				{0}.[{1}] t1
+				{0}.[{1}] t1 WITH (UPDLOCK, ROWLOCK)
 WHERE
 				t1.[LockedByJobID] = @JobID
