@@ -170,21 +170,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int processedItemsCount = GetProcessedItemsCount(JobHistory);
 			
-			if (IsDrainStopped() && AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
+			if (IsDrainStopped())
 			{
-				MarkJobAsDrainStopped(job, processedItemsCount);
+				if(AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
+				{
+					UpdateJobWithProcessedItemsCount(job, processedItemsCount);
+					return;
+				}
+
+				JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
 			}
 		}
 
-		private void MarkJobAsDrainStopped(Job job, int processedItemsCount)
+		private void UpdateJobWithProcessedItemsCount(Job job, int processedItemsCount)
 		{
 			TaskParameters updatedTaskParameters = UpdateJobDetails(job, processedItemsCount);
 			job.JobDetails = Serializer.Serialize(updatedTaskParameters);
-			JobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
-			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
-
-			job.StopState = StopState.DrainStopped;
-			JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
 			JobService.UpdateJobDetails(job);
 		}
 
@@ -207,7 +208,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private static int GetProcessedItemsCount(JobHistory jobHistory)
 		{
-			return jobHistory.ItemsTransferred ?? 0 + jobHistory.ItemsWithErrors ?? 0;
+			return (jobHistory.ItemsTransferred ?? 0) + (jobHistory.ItemsWithErrors ?? 0);
 		}
 
 		private static bool AnyItemsLeftToBeProcessed(int processedItemCount, JobHistory jobHistory)
