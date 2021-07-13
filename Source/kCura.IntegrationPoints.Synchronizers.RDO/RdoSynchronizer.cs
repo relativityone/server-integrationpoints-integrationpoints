@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private bool? _disableNativeLocationValidation;
 		private bool? _disableNativeValidation;
 		private HashSet<string> _ignoredList;
-		private IImportService _importService;
+		protected IImportService ImportService;
 		private string _webApiPath;
 		private readonly IAPILog _logger;
 		private readonly IHelper _helper;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public Data.SourceProvider SourceProvider { get; set; }
 
-		public int TotalRowsProcessed => _importService?.TotalRowsProcessed ?? 0;
+		public int TotalRowsProcessed => ImportService?.TotalRowsProcessed ?? 0;
 
 		private ImportSettings ImportSettings { get; set; }
 		
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 					if (!jobStopManager?.ShouldDrainStop ?? true)
 					{
-						_importService.PushBatchIfFull(true);
+						ImportService.PushBatchIfFull(true);
 						rowProcessed = true;
 					}
 
@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
 			if (importRow != null)
 			{
-				_importService.AddRow(importRow);
+				ImportService.AddRow(importRow);
 			}
 
 			return true;
@@ -243,11 +243,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (fieldMaps.Length > 0)
 				{
 					context.DataReader = new RelativityReaderDecorator(new PausableDataReader(context.DataReader, jobStopManager), fieldMaps);
-					_importService.KickOffImport(context);
+					ImportService.KickOffImport(context);
 				}
 				else
 				{
-					_importService.KickOffImport(context);
+					ImportService.KickOffImport(context);
 				}
 
 				WaitUntilTheJobIsDone(true);
@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			Dictionary<string, int> importFieldMap = GetSyncDataImportFieldMap(fieldMap, ImportSettings);
 
-			_importService = InitializeImportService(ImportSettings, importFieldMap, NativeFileImportService, jobStopManager);
+			ImportService = InitializeImportService(ImportSettings, importFieldMap, NativeFileImportService, jobStopManager);
 
 			_isJobComplete = false;
 
@@ -362,7 +362,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				do
 				{
-					lock (_importService)
+					lock (ImportService)
 					{
 						isJobDone = _isJobComplete;
 					}
@@ -610,7 +610,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
 		{
 			LogLockingImportServiceInFinish();
-			lock (_importService)
+			lock (ImportService)
 			{
 				LogSettingJobCompleteInFinish();
 				_isJobComplete = true;
@@ -620,7 +620,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void JobError(Exception ex)
 		{
 			LogLockingImportServiceInJobError();
-			lock (_importService)
+			lock (ImportService)
 			{
 				LogSettingJobCompleteInJobError();
 				_isJobComplete = true;

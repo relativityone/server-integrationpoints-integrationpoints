@@ -247,7 +247,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
 		[Test]
-		public void Excute_EnsureToAlwaysDisposeJobStopManager()
+		public void Execute_EnsureToAlwaysDisposeJobStopManager()
 		{
 			// arrange
 			_jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(false);
