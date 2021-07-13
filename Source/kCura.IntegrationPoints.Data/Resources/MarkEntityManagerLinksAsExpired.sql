@@ -1,6 +1,6 @@
 ﻿UPDATE			{0}.[{1}]
 SET
-				[LockedByJobID]	= NULL
+				[LockedByJobID]	= -1
 FROM 
 				{0}.[{1}] t1 WITH (UPDLOCK, ROWLOCK)
 WHERE
