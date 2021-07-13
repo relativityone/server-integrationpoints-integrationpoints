@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Integration
 		private IRelativityExportBatcher CreateExporterForGivenBatchSize(int batchSize)
 		{
 			Mock<IBatch> batch = new Mock<IBatch>();
-			batch.SetupGet(x => x.TotalItemsCount).Returns(batchSize);
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(batchSize);
 			IRelativityExportBatcher batcher = _container.Resolve<IRelativityExportBatcherFactory>().CreateRelativityExportBatcher(batch.Object);
 			return batcher;
 		}

@@ -9,7 +9,7 @@ namespace Relativity.Sync.Storage
 		/// <summary>
 		/// Creates batch for given sync configuration.
 		/// </summary>
-		Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex);
+		Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex);
 
 		/// <summary>
 		/// Gets batch based on artifact ID.

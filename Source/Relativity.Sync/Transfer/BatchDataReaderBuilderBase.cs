@@ -15,20 +15,22 @@ namespace Relativity.Sync.Transfer
 		protected IReadOnlyList<FieldInfoDto> _allFields;
 		protected readonly IExportDataSanitizer _exportDataSanitizer;
 		protected readonly IFieldManager _fieldManager;
+		protected readonly ISyncLog _logger;
 
 		public Action<string, string> ItemLevelErrorHandler { get; set; }
 
-		internal BatchDataReaderBuilderBase(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
+		internal BatchDataReaderBuilderBase(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, ISyncLog logger)
 		{
 			_fieldManager = fieldManager;
 			_exportDataSanitizer = exportDataSanitizer;
+			_logger = logger;
 		}
 
-		public async Task<IDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		public async Task<IBatchDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
 			if (_allFields == null)
 			{
-				_allFields = await GetAllFieldsAsync(token).ConfigureAwait(false);
+				_allFields = await GetAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 			}
 
 			DataTable templateDataTable = GetTemplateDataTable(_allFields);
@@ -66,6 +68,6 @@ namespace Relativity.Sync.Transfer
 
 		protected abstract Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token);
 
-		protected abstract Task<IDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
+		protected abstract Task<IBatchDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
 	}
 }

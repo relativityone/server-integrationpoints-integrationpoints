@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			Mock<IBatch> lastBatch = new Mock<IBatch>();
 			lastBatch.Setup(x => x.StartingIndex).Returns(lastStartingIndex);
-			lastBatch.Setup(x => x.TotalItemsCount).Returns(lastBatchSize);
+			lastBatch.Setup(x => x.TotalDocumentsCount).Returns(lastBatchSize);
 
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(lastBatch.Object);
 
@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int ten = 10;
 			Mock<IBatch> lastBatch = new Mock<IBatch>();
 			lastBatch.Setup(x => x.StartingIndex).Returns(ten);
-			lastBatch.Setup(x => x.TotalItemsCount).Returns(ten);
+			lastBatch.Setup(x => x.TotalDocumentsCount).Returns(ten);
 
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(lastBatch.Object);
 

@@ -15,7 +15,7 @@ namespace Relativity.Sync.Transfer
 	internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
 	{
 		private FieldInfoDto _identifierField;
-		private IDataReader _currentReader;
+		private IBatchDataReader _currentReader;
 
 		private long _completedItem = 0;
 
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Transfer
 			ISynchronizationConfiguration configuration,
 			IRelativityExportBatcher exportBatcher,
 			IFieldManager fieldManager,
-			IItemStatusMonitor itemStatusMonitor, 
+			IItemStatusMonitor itemStatusMonitor,
 			ISyncLog logger,
 			CancellationToken cancellationToken)
 		{
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Transfer
 
 		public bool Read()
 		{
-			if (_cancellationToken.IsCancellationRequested)
+			if (_cancellationToken.IsCancellationRequested && _currentReader.CanCancel)
 			{
 				_currentReader.Dispose();
 				return false;
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Transfer
 			}
 
 			if (dataRead)
-			{ 
+			{
 				string itemIdentifier = _currentReader[IdentifierField.DestinationFieldName].ToString();
 				ItemStatusMonitor.MarkItemAsRead(itemIdentifier);
 				_completedItem++;
@@ -99,13 +99,13 @@ namespace Relativity.Sync.Transfer
 			Dispose(true);
 		}
 
-		private IDataReader EmptyDataReader()
+		private IBatchDataReader EmptyDataReader()
 		{
 			_logger.LogVerbose("Creating empty data reader.");
-			return new DataTable().CreateDataReader();
+			return new EmptyBatchDataReader();
 		}
 
-		private async Task<IDataReader> GetReaderForNextBatchAsync()
+		private async Task<IBatchDataReader> GetReaderForNextBatchAsync()
 		{
 			RelativityObjectSlim[] batch;
 			try
@@ -120,7 +120,7 @@ namespace Relativity.Sync.Transfer
 				throw new SourceDataReaderException(message, ex);
 			}
 
-			IDataReader nextBatchReader;
+			IBatchDataReader nextBatchReader;
 			if (batch == null || !batch.Any())
 			{
 				_logger.LogInformation("Batch returned from Export API is empty.");
@@ -131,7 +131,7 @@ namespace Relativity.Sync.Transfer
 				try
 				{
 					CreateItemStatusRecords(batch);
-					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, CancellationToken.None).ConfigureAwait(false);
+					nextBatchReader = await _readerBuilder.BuildAsync(_configuration.SourceWorkspaceArtifactId, batch, _cancellationToken).ConfigureAwait(false);
 					_logger.LogInformation("Created DataReader for next Export API batch.");
 				}
 				catch (Exception ex)
@@ -313,5 +313,6 @@ namespace Relativity.Sync.Transfer
 		public int RecordsAffected => _currentReader.RecordsAffected;
 
 		#endregion
+
 	}
 }

@@ -227,7 +227,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Returns(failed);
 
 			batch
-				.SetupGet(b => b.TotalItemsCount)
+				.SetupGet(b => b.TotalDocumentsCount)
 				.Returns(batchItemsCount ?? transferred + failed);
 
 			return batch.Object;

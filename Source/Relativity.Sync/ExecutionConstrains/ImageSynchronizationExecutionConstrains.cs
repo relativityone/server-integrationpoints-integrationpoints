@@ -22,11 +22,13 @@ namespace Relativity.Sync.ExecutionConstrains
 		public async Task<bool> CanExecuteAsync(IImageSynchronizationConfiguration configuration, CancellationToken token)
 		{
 			bool canExecute = true;
+
 			try
 			{
 				IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 				if (batchIds == null || !batchIds.Any())
 				{
+					_syncLog.LogInformation("No batches to execute has been found.");
 					canExecute = false;
 				}
 			}
@@ -35,6 +37,7 @@ namespace Relativity.Sync.ExecutionConstrains
 				_syncLog.LogError(exception, "Exception occurred when reviewing batches and batch status.");
 				throw;
 			}
+
 			return canExecute;
 		}
 	}

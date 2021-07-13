@@ -39,6 +39,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<ISyncMetrics> _syncMetricsMock;
 
 		private Mock<Sync.Executors.IImportJob> _importJobFake;
+		private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
+		private Mock<IItemStatusMonitor> _itemStatusMonitorFake;
 		private Mock<IImageSynchronizationConfiguration> _configFake;
 
 		private ImageSynchronizationExecutor _sut;
@@ -102,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressHandlerFake = new Mock<IJobProgressHandler>();
 			_jobProgressUpdaterFake = new Mock<IJobProgressUpdater>();
 
-			_jobProgressHandlerFactoryStub.Setup(x => x.CreateJobProgressHandler(Enumerable.Empty<IBatch>(), It.IsAny<IScheduler>()))
+			_jobProgressHandlerFactoryStub.Setup(x => x.CreateJobProgressHandler(It.IsAny<IEnumerable<IBatch>>(), It.IsAny<IScheduler>()))
 				.Returns(_jobProgressHandlerFake.Object);
 
 			_jobProgressUpdaterFactoryStub.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdaterFake.Object);
@@ -118,7 +120,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				}
 			});
 
+			_itemStatusMonitorFake = new Mock<IItemStatusMonitor>();
+
+			_syncImportBulkArtifactJobFake = new Mock<ISyncImportBulkArtifactJob>();
+			_syncImportBulkArtifactJobFake.SetupGet(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorFake.Object);
+
 			_importJobFake = new Mock<Sync.Executors.IImportJob>();
+			_importJobFake.SetupGet(x => x.SyncImportBulkArtifactJob).Returns(_syncImportBulkArtifactJobFake.Object);
 			_importJobFactoryFake.Setup(x => x.CreateImageImportJobAsync(It.IsAny<IImageSynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
 
 			_fieldManagerFake.Setup(x => x.GetImageSpecialFields()).Returns(_specialFields);
@@ -162,7 +170,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			BatchStub batchStub = new BatchStub
 			{
 				ArtifactId = 1,
-				TotalItemsCount = totalRecordsRequested,
+				TotalDocumentsCount = totalRecordsRequested,
 				StartingIndex = 0
 			};
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchStub);
@@ -214,7 +222,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			BatchStub batchStub = new BatchStub
 			{
 				ArtifactId = 1,
-				TotalItemsCount = totalRecordsRequested,
+				TotalDocumentsCount = totalRecordsRequested,
 				StartingIndex = 0
 			};
 			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchStub);
@@ -712,6 +720,66 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
+		public async Task ExecuteAsync_ShouldUpdateFailedDocumentsCountInAdditiveManner()
+		{
+			// Arrange
+			const int initialFailedDocumentsCount = 3;
+			const int failedDocumentsCountInRun = 2;
+
+			IBatch batch = new BatchStub
+			{
+				FailedDocumentsCount = initialFailedDocumentsCount
+			};
+
+			SetupBatch(batch);
+
+			SetupImportJob();
+
+			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
+
+			_itemStatusMonitorFake.SetupGet(x => x.FailedItemsCount).Returns(failedDocumentsCountInRun);
+
+			// Act
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			const int expectedFailedDocumentsCount = initialFailedDocumentsCount + failedDocumentsCountInRun;
+
+			batch.FailedDocumentsCount.Should().Be(expectedFailedDocumentsCount);
+		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldUpdateTransferredDocumentsCountInAdditiveManner()
+		{
+			// Arrange
+			const int initialTransferredDocumentsCount = 3;
+			const int transferredDocumentsCountInRun = 2;
+
+			IBatch batch = new BatchStub
+			{
+				TransferredDocumentsCount = initialTransferredDocumentsCount
+			};
+
+			SetupBatch(batch);
+
+			SetupImportJob();
+
+			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
+
+			_itemStatusMonitorFake.SetupGet(x => x.ProcessedItemsCount).Returns(transferredDocumentsCountInRun);
+
+			// Act
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			const int expectedTransferredDocumentsCount = initialTransferredDocumentsCount + transferredDocumentsCountInRun;
+
+			batch.TransferredDocumentsCount.Should().Be(expectedTransferredDocumentsCount);
+		}
+
+		[Test]
 		public async Task ExecuteAsync_ShouldUpdateFailedItemsCountInAdditiveManner()
 		{
 			// Arrange
@@ -773,6 +841,33 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			batch.TransferredItemsCount.Should().Be(expectedTransferredItemsCount);
 		}
 
+		[Test]
+		public async Task ExecuteAsync_ShouldReturnCompletedWithErrors_WhenBatchWithItemLevelErrorsCompletesWithoutAnyErrorsAfterResume()
+		{
+			// Arrange
+			const int initialFailedDocumentsCount = 1;
+
+			IBatch batch = new BatchStub
+			{
+				FailedDocumentsCount = initialFailedDocumentsCount
+			};
+
+			SetupBatch(batch);
+
+			SetupImportJob();
+
+			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
+
+			_itemStatusMonitorFake.SetupGet(x => x.FailedItemsCount).Returns(0);
+
+			// Act
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			batch.Status.Should().Be(BatchStatus.CompletedWithErrors);
+		}
+
 		[TestCase(0, 0, 0, 0, 0, 0, 10, 2, 3024, 6144, 9168, 3, ExecutionStatus.Paused, BatchStatus.Paused, 5)]
 		[TestCase(3, 1, 2, 2048, 4096, 6144, 10, 2, 3024, 6144, 9168, 3, ExecutionStatus.Paused, BatchStatus.Paused, 8)]
 		[TestCase(0, 0, 0, 0, 0, 0, 10, 0, 10240, 20480, 30720, 10, ExecutionStatus.Completed, BatchStatus.Completed, 0)]
@@ -788,12 +883,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			IBatch batch = new BatchStub
 			{
 				StartingIndex = initialStartingIndex,
+				FailedDocumentsCount = initialFailedCount,
+				TransferredDocumentsCount = initialTransferredCount,
+				TotalDocumentsCount = totalCount,
 				FailedItemsCount = initialFailedCount,
 				TransferredItemsCount = initialTransferredCount,
 				MetadataBytesTransferred = initialMetadataBytesTransferred,
 				FilesBytesTransferred = initialFilesBytesTransferred,
-				TotalBytesTransferred = initialTotalBytesTransferred,
-				TotalItemsCount = totalCount
+				TotalBytesTransferred = initialTotalBytesTransferred
 			};
 
 			SetupBatch(batch);
@@ -802,11 +899,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			SetUpDocumentsTagRepository(ReturnTaggingCompletedResultAsync());
 
-			_jobProgressHandlerFake.Setup(x => x.GetBatchItemsFailedCount(It.IsAny<int>()))
-				.Returns(failedCount);
-
-			_jobProgressHandlerFake.Setup(x => x.GetBatchItemsProcessedCount(It.IsAny<int>()))
-				.Returns(transferredCount);
+			_itemStatusMonitorFake.SetupGet(x => x.FailedItemsCount).Returns(failedCount);
+			_itemStatusMonitorFake.SetupGet(x => x.ProcessedItemsCount).Returns(transferredCount);
 
 			// Act
 			ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
@@ -836,7 +930,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchesStubs = Enumerable.Range(1, numberOfBatches).Select(x => new BatchStub
 			{
 				ArtifactId = x,
-				TotalItemsCount = itemsPerBatch,
+				TotalDocumentsCount = itemsPerBatch,
 				StartingIndex = x * itemsPerBatch
 			}).ToArray();
 			

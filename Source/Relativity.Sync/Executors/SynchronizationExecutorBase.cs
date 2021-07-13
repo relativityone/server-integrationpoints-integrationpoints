@@ -68,7 +68,7 @@ namespace Relativity.Sync.Executors
 		protected abstract void UpdateImportSettings(TConfiguration configuration);
 
 		protected abstract void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
-		
+
 		protected void ReportBatchMetrics(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
 			TimeSpan importApiTimer)
 		{
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Executors
 		{
 			var metric = new BatchEndPerformanceMetric
 			{
-				Elapsed = (long) importApiTimer.TotalSeconds,
+				Elapsed = (long)importApiTimer.TotalSeconds,
 				JobID = batchId,
 				WorkspaceID = _jobCleanupConfiguration.SourceWorkspaceArtifactId,
 				RecordNumber = batchProcessResult.TotalRecordsTransferred,
@@ -119,11 +119,11 @@ namespace Relativity.Sync.Executors
 						configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
-				IEnumerable<IBatch> executedBatches = await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
+				List<IBatch> executedBatches = (await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
 					configuration.SourceWorkspaceArtifactId,
 					configuration.SyncConfigurationArtifactId)
-				.ConfigureAwait(false);
-				
+				.ConfigureAwait(false)).ToList();
+
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
 				{
 					_jobStatisticsContainer.RestoreJobStatistics(executedBatches);
@@ -149,19 +149,19 @@ namespace Relativity.Sync.Executors
 
 								Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
 								Task<TaggingExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token.StopCancellationToken);
-								
+
 								TaggingExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
 								TaggingExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
 
 								int documentsTaggedCount = Math.Min(sourceTaggingResult.TaggedDocumentsCount, destinationTaggingResult.TaggedDocumentsCount);
-								await batch.SetTaggedItemsCountAsync(batch.TaggedItemsCount + documentsTaggedCount).ConfigureAwait(false);
+								await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
 								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
 
 								if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
 								{
 									batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult.ExecutionResult;
 								}
-								
+
 								batchTimer.Stop();
 								ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
 
@@ -173,7 +173,7 @@ namespace Relativity.Sync.Executors
 								}
 							}
 						}
-						
+
 						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batch.ArtifactId);
 					}
 
@@ -229,7 +229,15 @@ namespace Relativity.Sync.Executors
 		private async Task<BatchProcessResult> ProcessBatchAsync(IImportJob importJob, IBatch batch, IJobProgressHandler progressHandler, CompositeCancellationToken token)
 		{
 			BatchProcessResult batchProcessResult = await RunImportJobAsync(importJob, token).ConfigureAwait(false);
-		
+			_logger.LogInformation("Batch ID: {batchId} finished processing with status: {status}. Updating batch properties.",
+				batch.ArtifactId, batchProcessResult.ExecutionResult.Status.ToString());
+
+			int failedDocumentsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.FailedItemsCount;
+			await batch.SetFailedDocumentsCountAsync(batch.FailedDocumentsCount + failedDocumentsCount).ConfigureAwait(false);
+
+			int processedDocumentsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.ProcessedItemsCount;
+			await batch.SetTransferredDocumentsCountAsync(batch.TransferredDocumentsCount + processedDocumentsCount).ConfigureAwait(false);
+
 			int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
 			await batch.SetFailedItemsCountAsync(batch.FailedItemsCount + failedItemsCount).ConfigureAwait(false);
 
@@ -240,37 +248,52 @@ namespace Relativity.Sync.Executors
 			await batch.SetFilesBytesTransferredAsync(batch.FilesBytesTransferred + batchProcessResult.FilesBytesTransferred).ConfigureAwait(false);
 			await batch.SetTotalBytesTransferredAsync(batch.TotalBytesTransferred + batchProcessResult.BytesTransferred).ConfigureAwait(false);
 
+			_logger.LogInformation("Batch properties updated: {@batch}", batch);
+
 			if (batchProcessResult.ExecutionResult.Status == ExecutionStatus.Paused)
 			{
-				batchProcessResult.ExecutionResult = await HandleBatchPausedAsync(batch, failedItemsCount, processedItemsCount).ConfigureAwait(false);
+				batchProcessResult.ExecutionResult = await HandleBatchPausedAsync(batch, failedDocumentsCount, processedDocumentsCount).ConfigureAwait(false);
+			}
+			else if (batchProcessResult.ExecutionResult.Status == ExecutionStatus.Completed && batch.FailedDocumentsCount > 0)
+			{
+				// this is going to happen when there were item-level errors in batch before drain-stop, but after resume new IAPI job completed without any new errors
+				await SetBatchStatusAsync(batch, ExecutionStatus.CompletedWithErrors);
 			}
 			else
 			{
 				await SetBatchStatusAsync(batch, batchProcessResult.ExecutionResult.Status).ConfigureAwait(false);
 			}
 
-			batchProcessResult.TotalRecordsRequested = batch.TotalItemsCount;
+			batchProcessResult.TotalRecordsRequested = batch.TotalDocumentsCount;
 			batchProcessResult.TotalRecordsTransferred = batch.TransferredItemsCount;
 			batchProcessResult.TotalRecordsFailed = batch.FailedItemsCount;
 
 			return batchProcessResult;
 		}
 
-		private async Task<ExecutionResult> HandleBatchPausedAsync(IBatch batch, int failedItemsCount, int transferredItemsCount)
+		private async Task<ExecutionResult> HandleBatchPausedAsync(IBatch batch, int failedDocumentsCount, int transferredDocumentsCount)
 		{
-			if(batch.TransferredItemsCount == batch.TotalItemsCount)
+			_logger.LogInformation("Batch ID: {batchId} has been paused, determining final batch status. " +
+			                       "Failed documents count: {failedDocumentsCount} Transferred documents count: {transferedDocumentsCount}",
+				batch.ArtifactId, failedDocumentsCount, transferredDocumentsCount);
+
+			if (batch.TransferredDocumentsCount == batch.TotalDocumentsCount)
 			{
+				_logger.LogInformation("All documents in batch have been processed without errors, batch ID: {batchId} is completed.", batch.ArtifactId);
 				await SetBatchStatusAsync(batch, ExecutionStatus.Completed).ConfigureAwait(false);
 				return ExecutionResult.Success();
 			}
-			else if(batch.TransferredItemsCount + batch.FailedItemsCount == batch.TotalItemsCount)
+			else if (batch.TransferredDocumentsCount + batch.FailedDocumentsCount == batch.TotalDocumentsCount)
 			{
+				_logger.LogInformation("All documents in batch ID: {batchId} have been processed, but there are item-level errors, setting batch status to Completed With Errors.", batch.ArtifactId);
 				await SetBatchStatusAsync(batch, ExecutionStatus.CompletedWithErrors).ConfigureAwait(false);
 				return ExecutionResult.SuccessWithErrors();
 			}
 			else
 			{
-				await batch.SetStartingIndexAsync(batch.StartingIndex + transferredItemsCount + failedItemsCount).ConfigureAwait(false);
+				int newStartingIndex = batch.StartingIndex + transferredDocumentsCount + failedDocumentsCount;
+				_logger.LogInformation("Batch ID: {batchId} has been paused. New starting index: {startingIndex}", batch.ArtifactId, newStartingIndex);
+				await batch.SetStartingIndexAsync(newStartingIndex).ConfigureAwait(false);
 				await SetBatchStatusAsync(batch, ExecutionStatus.Paused).ConfigureAwait(false);
 				return ExecutionResult.Paused();
 			}
@@ -311,7 +334,7 @@ namespace Relativity.Sync.Executors
 			TaggingExecutionResult taggingResult =
 				await _documentsTagRepository.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(configuration, pushedDocumentIdentifiers, token).ConfigureAwait(false);
 
-			_logger.LogInformation("Documents tagging in destination workspace ArtifactID: {workspaceID} Result: {result}", configuration.DestinationWorkspaceArtifactId, 
+			_logger.LogInformation("Documents tagging in destination workspace ArtifactID: {workspaceID} Result: {result}", configuration.DestinationWorkspaceArtifactId,
 				taggingResult.Status);
 
 			return taggingResult;
@@ -328,7 +351,7 @@ namespace Relativity.Sync.Executors
 			TaggingExecutionResult taggingResult =
 				await _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token).ConfigureAwait(false);
 
-			_logger.LogInformation("Documents tagging in source workspace ArtifactID: {workspaceID} Result: {result}", configuration.DestinationWorkspaceArtifactId, 
+			_logger.LogInformation("Documents tagging in source workspace ArtifactID: {workspaceID} Result: {result}", configuration.DestinationWorkspaceArtifactId,
 				taggingResult.Status);
 
 			return taggingResult;

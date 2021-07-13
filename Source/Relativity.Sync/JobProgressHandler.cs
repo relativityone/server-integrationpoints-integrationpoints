@@ -17,7 +17,7 @@ namespace Relativity.Sync
 {
 	internal sealed class JobProgressHandler : IJobProgressHandler
 	{
-		private const int _THOTTHLE_FOR_SECONDS = 5;
+		private const int _THROTTHLE_FOR_SECONDS = 5;
 		private readonly IJobProgressUpdater _jobProgressUpdater;
 		private readonly Subject<Unit> _changeSignal = new Subject<Unit>();
 		private readonly Subject<Unit> _forceUpdateSignal = new Subject<Unit>();
@@ -31,21 +31,19 @@ namespace Relativity.Sync
 			foreach (IBatch alreadyExecutedBatch in alreadyExecutedBatches)
 			{
 				_batchProgresses[alreadyExecutedBatch.ArtifactId] = new SyncBatchProgress(
-					alreadyExecutedBatch.ArtifactId, totalItems: 
-					alreadyExecutedBatch.TotalItemsCount,
-					alreadyExecutedBatch.FailedItemsCount,
-					alreadyExecutedBatch.TransferredItemsCount
-				) { Completed = true };
+						alreadyExecutedBatch.ArtifactId, totalItems:
+						alreadyExecutedBatch.TotalDocumentsCount,
+						alreadyExecutedBatch.FailedItemsCount,
+						alreadyExecutedBatch.TransferredItemsCount
+					)
+					{Completed = true};
 			}
 
-			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_THOTTHLE_FOR_SECONDS), timerScheduler ?? Scheduler.Default)
+			_changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_THROTTHLE_FOR_SECONDS), timerScheduler ?? Scheduler.Default)
 				.Where(changesInTimeWindow => changesInTimeWindow.Any())
 				.Select(_ => Unit.Default)
 				.Merge(_forceUpdateSignal)
-				.Do(async (_) =>
-			{
-				await UpdateProgressAsync().ConfigureAwait(false);
-			})
+				.Do(async (_) => { await UpdateProgressAsync().ConfigureAwait(false); })
 				.Subscribe();
 		}
 
@@ -61,14 +59,14 @@ namespace Relativity.Sync
 
 		public IDisposable AttachToImportJob(ISyncImportBulkArtifactJob job, IBatch batch)
 		{
-			SyncBatchProgress batchProgress = new SyncBatchProgress(batch.ArtifactId, totalItems: batch.TotalItemsCount, 
+			SyncBatchProgress batchProgress = new SyncBatchProgress(batch.ArtifactId, totalItems: batch.TotalDocumentsCount,
 				failedItemsCount: batch.FailedItemsCount, transferredItemsCount: batch.TransferredItemsCount);
 
 			IDisposable itemProcessedSubscription = Observable
 				.FromEvent<SyncJobEventHandler<ImportApiJobProgress>, ImportApiJobProgress>(
 					handler => job.OnProgress += handler,
-					 handler => job.OnProgress -= handler)
-					.Do(_ =>
+					handler => job.OnProgress -= handler)
+				.Do(_ =>
 				{
 					batchProgress.ItemsProcessed++;
 					_changeSignal.OnNext(Unit.Default);
@@ -76,9 +74,9 @@ namespace Relativity.Sync
 
 			IDisposable itemFailedSubscription = Observable
 				.FromEvent<SyncJobEventHandler<ItemLevelError>, ItemLevelError>(
-					 handler => job.OnItemLevelError += handler,
-					 handler => job.OnItemLevelError -= handler)
-					.Do(_ =>
+					handler => job.OnItemLevelError += handler,
+					handler => job.OnItemLevelError -= handler)
+				.Do(_ =>
 				{
 					// Explanation of how IAPI works:
 					// IAPI processes items in batch one by one and fires OnProgress event after each item that was
@@ -87,7 +85,7 @@ namespace Relativity.Sync
 					// When IAPI completes processing of batch, it checks each item if it was successfully processed. If not, it fires OnError event for each of the items.
 					// That's why in HandleItemError method, we are decrementing number of successfully processed items and
 					// incrementing number of failed items.
-					
+
 					batchProgress.ItemsFailed++;
 					batchProgress.ItemsProcessed--;
 					_changeSignal.OnNext(Unit.Default);
@@ -96,25 +94,25 @@ namespace Relativity.Sync
 			IObservable<ImportApiJobStatistics> batchCompletedReports = Observable
 				.FromEvent<SyncJobEventHandler<ImportApiJobStatistics>, ImportApiJobStatistics>(
 					handler => job.OnComplete += handler,
-					 handler => job.OnComplete -= handler)
-					.Do(_ =>
-				{
-					batchProgress.Completed = true;
-				}
-					);
+					handler => job.OnComplete -= handler)
+				.Do(_ =>
+					{
+						batchProgress.Completed = true;
+					}
+				);
 
 			IDisposable jobReportsSubscription = Observable
 				.FromEvent<SyncJobEventHandler<ImportApiJobStatistics>, ImportApiJobStatistics>(
-					 handler => job.OnFatalException += handler,
-					 handler => job.OnFatalException -= handler)
-					.Merge(batchCompletedReports)
-					.Do(statistics =>
+					handler => job.OnFatalException += handler,
+					handler => job.OnFatalException -= handler)
+				.Merge(batchCompletedReports)
+				.Do(statistics =>
 				{
 					batchProgress.ItemsProcessed = statistics.CompletedItemsCount;
 					batchProgress.ItemsFailed = statistics.ErrorItemsCount;
 					_forceUpdateSignal.OnNext(Unit.Default);
 				})
-					.Subscribe();
+				.Subscribe();
 
 			_batchProgresses[batch.ArtifactId] = batchProgress;
 

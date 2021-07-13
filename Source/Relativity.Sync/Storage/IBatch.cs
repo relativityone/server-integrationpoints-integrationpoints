@@ -5,27 +5,34 @@ namespace Relativity.Sync.Storage
 	internal interface IBatch
 	{
 		int ArtifactId { get; }
-		int FailedItemsCount { get; }
-		string LockedBy { get; }
-		double Progress { get; }
 		int StartingIndex { get; }
 		BatchStatus Status { get; }
+		
 		int TransferredItemsCount { get; }
-		int TaggedItemsCount { get; }
+		int FailedItemsCount { get; }
+
+		int TotalDocumentsCount { get; }
+		int TransferredDocumentsCount { get; }
+		int FailedDocumentsCount { get; }
+
 		long MetadataBytesTransferred { get; }
 		long FilesBytesTransferred { get; }
 		long TotalBytesTransferred { get; }
-		int TotalItemsCount { get; }
 
-		Task SetFailedItemsCountAsync(int failedItemsCount);
-		Task SetLockedByAsync(string lockedBy);
-		Task SetProgressAsync(double progress);
-		Task SetStatusAsync(BatchStatus status);
+		int TaggedDocumentsCount { get; }
+
 		Task SetTransferredItemsCountAsync(int transferredItemsCount);
-		Task SetTaggedItemsCountAsync(int taggedItemsCount);
+		Task SetFailedItemsCountAsync(int failedItemsCount);
+
+		Task SetTransferredDocumentsCountAsync(int transferredDocumentsCount);
+		Task SetFailedDocumentsCountAsync(int failedDocumentsCount);
+
 		Task SetMetadataBytesTransferredAsync(long metadataBytesTransferred);
 		Task SetFilesBytesTransferredAsync(long filesBytesTransferred);
 		Task SetTotalBytesTransferredAsync(long totalBytesTransferred);
+
+		Task SetStatusAsync(BatchStatus status);
+		Task SetTaggedDocumentsCountAsync(int taggedDocumentsCount);
 		Task SetStartingIndexAsync(int newStartIndex);
 	}
 }

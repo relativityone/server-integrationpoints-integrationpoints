@@ -21,9 +21,9 @@ namespace Relativity.Sync.Storage
 			_dateTime = dateTime;
 		}
 
-		public Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex)
+		public Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex)
 		{
-			return Batch.CreateAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, totalItemsCount, startingIndex);
+			return Batch.CreateAsync(_serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, totalDocumentsCount, startingIndex);
 		}
 
 		public Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId)
