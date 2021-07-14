@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
     {
         private readonly IDataReader _dataReaderImplementation;
         private readonly IJobStopManager _stopManager;
-        private bool _firstReadDone = false;
 
         public PausableDataReader(IDataReader dataReaderImplementation, IJobStopManager stopManager)
         {
@@ -19,12 +18,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         
         public bool Read()
         {
-	        if (_firstReadDone && _stopManager?.ShouldDrainStop == true)
+	        if (_stopManager?.ShouldDrainStop ?? false)
             {
                 return false;
             }
-
-            _firstReadDone = true;
+            
             return _dataReaderImplementation.Read();
         }
         
