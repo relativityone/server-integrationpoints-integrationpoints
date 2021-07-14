@@ -261,6 +261,22 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UPDATE			{0}.[{1}]
+        ///SET
+        ///				[LockedByJobID]	= -1
+        ///FROM 
+        ///				{0}.[{1}] t1 WITH (UPDLOCK, ROWLOCK)
+        ///WHERE
+        ///				t1.[LockedByJobID] = @JobID
+        ///.
+        /// </summary>
+        internal static string MarkEntityManagerLinksAsExpired {
+            get {
+                return ResourceManager.GetString("MarkEntityManagerLinksAsExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SET ANSI_NULLS ON
         ///SET QUOTED_IDENTIFIER ON
         ///
@@ -294,22 +310,6 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string SetBlankLogErrorsToNo {
             get {
                 return ResourceManager.GetString("SetBlankLogErrorsToNo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to UPDATE			{0}.[{1}]
-        ///SET
-        ///				[LockedByJobID]	= NULL
-        ///FROM 
-        ///				{0}.[{1}] t1
-        ///WHERE
-        ///				t1.[LockedByJobID] = @JobID
-        ///.
-        /// </summary>
-        internal static string UnlockEntityManagerLinks {
-            get {
-                return ResourceManager.GetString("UnlockEntityManagerLinks", resourceCulture);
             }
         }
         

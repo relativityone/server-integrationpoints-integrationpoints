@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				job.JobDetails = Serializer.Serialize(taskParameters);
 				JobService.UpdateJobDetails(job);
 
-				_managerQueueService.UnlockEntityManagerLinksByJob(job, BatchInstance);
+				_managerQueueService.MarkEntityManagerLinksAsExpired(job, BatchInstance);
 			}
 			else
 			{

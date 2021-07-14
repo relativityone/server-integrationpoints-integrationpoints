@@ -24,6 +24,6 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 		/// <returns>True if associated batch jobs are complete, false otherwise</returns>
 		bool AreAllTasksOfTheBatchDone(Job job, string[] taskTypeExceptions);
 
-		void UnlockEntityManagerLinksByJob(Job job, Guid batchInstance);
+		void MarkEntityManagerLinksAsExpired(Job job, Guid batchInstance);
 	}
 }

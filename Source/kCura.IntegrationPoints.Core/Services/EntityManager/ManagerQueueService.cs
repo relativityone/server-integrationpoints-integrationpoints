@@ -57,11 +57,11 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 			return result;
 		}
 
-		public void UnlockEntityManagerLinksByJob(Job job, Guid batchInstance)
+		public void MarkEntityManagerLinksAsExpired(Job job, Guid batchInstance)
 		{
 			string tableName = GetTempTableName(job, batchInstance);
 
-			_entityQueryManager.UnlockEntityManagerLinks(_repositoryFactory, _caseServiceContext.SqlContext,
+			_entityQueryManager.MarkEntityManagerLinksAsExpired(_repositoryFactory, _caseServiceContext.SqlContext,
 					tableName, job.JobId, _caseServiceContext.WorkspaceID)
 				.Execute();
 		}
