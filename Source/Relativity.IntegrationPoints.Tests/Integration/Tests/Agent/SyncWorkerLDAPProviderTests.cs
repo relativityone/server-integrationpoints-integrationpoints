@@ -95,7 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 					.HaveCount(_managementTestData.Data.Count - processedItemsBeforeDrainStopped);
 
 			FakeRelativityInstance.EntityManagersResourceTables.Single()
-				.Value.Should().OnlyContain(x => x.LockedByJobId == null);
+				.Value.Should().OnlyContain(x => x.LockedByJobId == -1);
 		}
 
 		[IdentifiedTest("431049DF-B069-4570-AA5A-89FE4F329121")]
