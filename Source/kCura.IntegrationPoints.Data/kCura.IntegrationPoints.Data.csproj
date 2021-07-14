@@ -109,7 +109,7 @@
     <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
-    <Compile Include="Queries\UnlockEntityManagerLinks.cs" />
+    <Compile Include="Queries\MarkEntityManagerLinksAsExpired.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="Queries\IJobStatisticsQuery.cs" />
@@ -331,7 +331,7 @@
   <ItemGroup>
     <Content Include="Resources\AddReplaceWebAPIWithExportCoreSetting.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
-    <Content Include="Resources\UnlockEntityManagerLinks.sql" />
+    <Content Include="Resources\MarkEntityManagerLinksAsExpired.sql" />
     <Content Include="Resources\GetJobsCount.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />
     <Content Include="Resources\GetJobEntityManagerLinks.sql" />
