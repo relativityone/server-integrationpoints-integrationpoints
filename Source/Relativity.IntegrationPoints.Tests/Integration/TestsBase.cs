@@ -181,7 +181,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
 			Container.Register(Component.For<IJobService>().ImplementedBy<JobService>());
-			
+
+			Container.Register(Component.For<IJobTrackerQueryManager>().ImplementedBy<FakeJobTrackerQueryManager>()
+				.Named(nameof(FakeJobTrackerQueryManager)).IsDefault());
 			Container.Register(Component.For<IEntityManagerQueryManager>().ImplementedBy<FakeEntityManagerQueryManager>()
 				.Named(nameof(FakeEntityManagerQueryManager)).IsDefault());
 
