@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -152,7 +153,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int totalRowsCountInBatch = GetRowsCountForBatch(job.JobDetails);
 
-			if (ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch))
+            bool shouldDrainStopBatch = ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch);
+			if (shouldDrainStopBatch)
 			{
 				job.JobDetails = SkipProcessedItems(job.JobDetails, dataSynchronizer.TotalRowsProcessed);
 				JobService.UpdateJobDetails(job);
@@ -162,7 +164,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_logger.LogInformation("Drain stopping batch with id = {id} of job {jobId}", job.JobId, job.RootJobId );
 			}
 
-			JobStopManager?.StopCheckingDrainStop();
+			JobStopManager?.StopCheckingDrainStopAndUpdateStopState(job, shouldDrainStopBatch);
 
 			LogExecuteImportSuccesfulEnd(job);
 		}

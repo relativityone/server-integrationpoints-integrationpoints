@@ -251,7 +251,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			// Assert
 			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistoryProcessingGuid);
-		}
+            FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
+        }
 
 		[IdentifiedTest("4D867717-3C3D-4763-9E29-63AAAA435885")]
 		public void SyncWorker_ShouldNotDrainStopOtherBatches()
