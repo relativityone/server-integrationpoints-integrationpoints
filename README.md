@@ -1,8 +1,7 @@
-# Integration Points - A Relativity application that integrates 3rd party
-systems with Relativity
+# Integration Points - A Relativity application that integrates 3rd party systems with Relativity
 
 ## Overview
- 
+
 Developers can leverage the Integration Point framework to pull data from a
 third party system. Integration Points handles the scheduling, set up, field
 mapping, and actual import into Relativity. In addition to supporting
@@ -10,43 +9,41 @@ developer-built custom integrations, Integration Points also provides built-in
 integrations to the following:
 
 * Lightweight Directory Access Protocol (LDAP) enabled HR servers such as
-Microsoft Active Directory. 
+Microsoft Active Directory.
 * Relativity - Allowing documents to be pushed between workspaces.
-* File Transfer - Providing connection to an FTP server for upload.
- 
+* File Transfer - Providing connection to an FTP/SFTP server for upload.
+
 ## How to Build
-usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERSION]
-             [-apps] [-noapps] [-test] [-nuget] [-package]
-             [-deploy <workspaceId> <ip_address/localhost>] [help|?]
 
-options:
+Usage:
+> ./build.ps1
 
-    -e[ditor]                       opens Build Helper Project Editor to edit
-                                    the build.xml file
+For list of available build options, run:
+> ./build.ps1 Help
 
-    -v[ersion] VERSION              sets the version # for the build, default
-                                    is 1.0.0.0 (example: 1.3.3.7)
-    -ap[ps]                         skips the build step, continues to only
-                                    build apps
-    -no[apps]                       skips build apps step
-    -sk[ip]                         skips build and build apps step
-    -t[est]                         runs nunit test step
-    -nu[get]                        runs the nuget pack step
-    -p[ackage]                      runs the package step
-    -de[ploy] WORKSPACEID IPADDRESS uploads Integration Point binaries to a
-                                    given Relativity Instance
+Above command outputs the following:
 
-    -al[ert]                        show alert popup when build completes
-
-Common commands:
-    build /?
-    build
-    build -deploy 1234567 localhost
-    build -deploy 1234567 172.17.100.72
+    Name              Alias Depends On        Default Description
+    ----              ----- ----------        ------- -----------
+    Analyze                                      True Run build analysis
+    CIFunctionalTest                                  Run tests that require a deployed environment.
+    Clean                                             Delete build artifacts
+    Compile                 NugetRestore         True Compile code for this repo
+    FunctionalTest          OneTimeTestsSetup         Run tests that require a deployed environment.
+    Help              ?                               Display task information
+    MyTest                  OneTimeTestsSetup         Run custom tests based on specified filter
+    NugetRestore                                      Restore the packages needed for this build
+    OneTimeTestsSetup                                 Should be run always before running tests that require setup in deployed environment.
+    Package                                      True Package up the build artifacts
+    Rebuild                                           Do a rebuild
+    RegTest                                           Run custom tests based on specified filter on regression environment
+    Sign                                              Sign all files
+    Test                                         True Run tests that don't require a deployed environment.
 
 ## How to Test
 
-Running unit tests: ``build.ps1 Test``
+Running unit tests:
+> ./build.ps1 Test
 
 Running Custom Tests against Hopper Relativity environment:
 
@@ -58,15 +55,16 @@ Running Custom Tests against Hopper Relativity environment:
 4. Run build <https://trident.kcura.corp/dea/job/IntegrationPoints/job/IntegrationPoints-Jobs/job/IntegrationPoints-Custom-Test>
 
 ## Build artifacts
+
 * RAPs
-    * RelativityIntegrationPoints.Auto.rap
+  * kCura.IntegrationPoints.rap
 * DLLs
 * PDBs
 * Custom Pages
-    * IntegrationPoints
+  * IntegrationPoints
 * NuGet packages on gold build
-    * RelativityIntegrationPoints (Contains RelativityIntegrationPoints.Auto.rap)
-    * kCura.IntegrationPoints.Web
+  * RelativityIntegrationPoints (Contains kCura.IntegrationPoints.rap)
+  * kCura.IntegrationPoints.Web
 * SDK scripts
     frame-messaging.js
     jquery-3.4.1.js
@@ -74,10 +72,13 @@ Running Custom Tests against Hopper Relativity environment:
 * Workflow diagrams
 
 ## Maintainers
-* Codigo O Plomo team (codigooplomo@relativity.com)
+
+* Adler Sieben (adlersieben@relativity.com)
 
 ## Miscellaneous
+
 [Documentation](https://help.relativity.com/integrationpoints/Content/Relativity_Integration_Points/Integration_Points/Relativity_Integration_Points.htm)
+
 [Developer Documentation](https://platform.relativity.com/9.5/Content/Relativity_Integration_Points/Get_started_with_integration_points.htm)
 
 Integration Points hosts the following private Kepler services:
