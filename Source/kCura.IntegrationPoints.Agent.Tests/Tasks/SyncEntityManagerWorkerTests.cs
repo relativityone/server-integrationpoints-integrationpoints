@@ -209,6 +209,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			};
 
+			_jobService.GetJob(_job.JobId).Returns(_job);
+
 			var associatedJobs = new List<Job> { _job };
 			var fieldsMap = new List<FieldMap>();
 			_integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);

@@ -223,6 +223,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			else
 			{
 				JobService.UpdateStopState(new long[] { job.JobId }, StopState.None); // All Entity Managers were linked
+				JobStopManager.StopCheckingDrainStop();
 			}
 		}
 

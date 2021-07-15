@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -47,10 +48,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			foreach(var processingBatch in processingSyncWorkerBatches)
 			{
 				DataRow row = dt.NewRow();
-				row["LockedByAgentId"] = processingBatch.LockedByAgentId;
+				row["LockedByAgentId"] = (object)processingBatch.LockedByAgentId ?? DBNull.Value;
 				row["StopState"] = processingBatch.StopState;
 
-				dt.ImportRow(row);
+				dt.Rows.Add(row);
 			}
 
 			return new ValueReturnQuery<DataTable>(dt);

@@ -127,6 +127,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(associatedJobs);
 			_jobManager.GetBatchesStatuses(_job, _taskParams.BatchInstance.ToString())
 				.Returns(new BatchStatusQueryResult {ProcessingCount = 1});
+
+			_jobService.GetJob(_job.JobId).Returns(_job);
 		}
 
 		[Test]
@@ -241,7 +243,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			EnsureToSetJobHistroyErrorServiceProperties();
 			_dataSynchronizer.Received(1).SyncData( Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration, _jobStopManager);
 			_batchStatus.Received(1).OnJobComplete(_job);
-			_jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
+			_jobHistoryErrorService.Received(2).AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
 			_jobHistoryErrorService.Received().CommitErrors();
 			
 		}
@@ -270,7 +272,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private void EnsureToUpdateTheStopStateBackToNone()
 		{
 			_jobStopManager.Received(1).Dispose();
-			_jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
+			_jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
 		}
 	}
 }

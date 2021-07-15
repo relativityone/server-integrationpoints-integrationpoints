@@ -214,7 +214,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
-			return FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint);
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint);
+
+			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+
+			InsertBatchToJobTrackerTable(job, jobHistory);
+
+			return job;
+		}
+
+		private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
+		{
+			string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
+
+
+			if (!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
+			{
+				FakeRelativityInstance.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
+			}
+
+			FakeRelativityInstance.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = job.JobId });
 		}
 
 		private void VerifyJobHistoryStatus(Guid expectedStatusGuid)

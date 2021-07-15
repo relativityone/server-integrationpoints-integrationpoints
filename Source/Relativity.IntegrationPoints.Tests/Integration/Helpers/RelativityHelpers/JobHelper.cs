@@ -42,7 +42,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 		public JobTest ScheduleIntegrationPointRun(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
 		{
 			JobTest job = CreateBasicJob(workspace, integrationPoint).Build();
-			job.RootJobId = job.JobId;
 			return ScheduleJob(job);
 		}
 
@@ -71,8 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				.WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)
 				.Build();
 
-			job.RootJobId = 0; // cannot be null in real scenarios, value does not matter for tests
-			workspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+			job.RootJobId = JobId.Next; // cannot be null in real scenarios, value does not matter for tests
 
 			return ScheduleJob(job);
 		}
