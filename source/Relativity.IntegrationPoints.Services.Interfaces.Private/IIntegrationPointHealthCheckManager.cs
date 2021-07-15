@@ -15,6 +15,10 @@ namespace Relativity.IntegrationPoints.Services
 	[ServiceAudience(Audience.Private)]
 	public interface IIntegrationPointHealthCheckManager : IKeplerService, IDisposable
 	{
+		[HttpPost]
 		Task<HealthCheckOperationResult> RunHealthChecksAsync();
+		
+		[HttpGet]
+		Task<HealthCheckOperationResult> RunDeploymentHealthChecksAsync();
 	}
 }
