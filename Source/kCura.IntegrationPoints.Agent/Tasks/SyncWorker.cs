@@ -163,12 +163,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
 				_logger.LogInformation("Drain stopping batch with id = {id} of job {jobId}", job.JobId, job.RootJobId );
 			}
-			else
-			{
-				job.StopState = StopState.None;
-				JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
-				JobStopManager.StopCheckingDrainStop();
-			}
 
 			JobStopManager?.StopCheckingDrainStopAndUpdateStopState(job, shouldDrainStopBatch);
 

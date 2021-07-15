@@ -61,10 +61,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			return ScheduleJob(job);
 		}
 
-		public JobTest ScheduleSyncWorkerJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
+		public JobTest ScheduleSyncWorkerJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint, object parameters)
 		{
-			List<string> parameters = new List<string> { "PasvarC", "ChaisupD", "CarlingD", "OzmizraD" };
-
 			JobTest job = CreateBasicJob(workspace, integrationPoint)
 				.WithJobDetails(parameters)
 				.WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)

@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.ScheduleQueue.Core.Core;
-using Relativity.IntegrationPoints.Tests.Integration.Utils;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -214,7 +213,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint);
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, _managementTestData.EntryIds);
 
 			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 

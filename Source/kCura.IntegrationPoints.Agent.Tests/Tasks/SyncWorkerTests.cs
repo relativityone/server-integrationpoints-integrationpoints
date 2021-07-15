@@ -243,7 +243,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			EnsureToSetJobHistroyErrorServiceProperties();
 			_dataSynchronizer.Received(1).SyncData( Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration, _jobStopManager);
 			_batchStatus.Received(1).OnJobComplete(_job);
-			_jobHistoryErrorService.Received(2).AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
+			_jobHistoryErrorService.Received().AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
 			_jobHistoryErrorService.Received().CommitErrors();
 			
 		}

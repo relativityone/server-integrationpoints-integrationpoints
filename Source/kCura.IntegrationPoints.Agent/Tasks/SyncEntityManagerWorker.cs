@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
@@ -222,8 +223,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			else
 			{
-				JobService.UpdateStopState(new long[] { job.JobId }, StopState.None); // All Entity Managers were linked
-				JobStopManager.StopCheckingDrainStop();
+				JobStopManager.StopCheckingDrainStopAndUpdateStopState(job, false); // All Entity Managers were linked
 			}
 		}
 
