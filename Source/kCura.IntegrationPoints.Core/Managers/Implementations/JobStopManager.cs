@@ -165,13 +165,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			StopRequestedEvent?.Invoke(this, EventArgs.Empty);
 		}
 
-        public void StopCheckingDrainStop(bool shouldDrainStop)
+        public void StopCheckingDrainStop()
 		{
             _supportsDrainStop = false;
-            if (!shouldDrainStop)
-            {
-				_jobService.UpdateStopState(new List<long> { _jobId }, StopState.None);
-			}
+        }
+
+        public void CleanUpJobDrainStop()
+        {
+            UpdateStopState(StopState.None);
         }
 
 		#region Logging
