@@ -166,9 +166,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		}
 
         public void StopCheckingDrainStop()
-        {
+		{
             _supportsDrainStop = false;
 			_isDrainStopping = false;
+        }
+
+        public void CleanUpJobDrainStop()
+        {
+            UpdateStopState(StopState.None);
         }
 
 		#region Logging

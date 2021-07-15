@@ -34,5 +34,10 @@ namespace kCura.IntegrationPoints.Domain.Managers
 		///     Rises when stopping has been requested for this job.
 		/// </summary>
 		event EventHandler<EventArgs> StopRequestedEvent;
-	}
+
+        /// <summary>
+        ///     Cleans up Job Drain Stop by setting StopState to None
+        /// </summary>
+		void CleanUpJobDrainStop();
+    }
 }

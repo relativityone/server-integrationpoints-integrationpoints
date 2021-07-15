@@ -160,6 +160,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			// Assert
 			jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
+            FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
 		}
 
 		[IdentifiedTest("A1350299-3F8E-4215-9773-82EB6185079C")]
@@ -182,6 +183,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			// Assert
 			jobHistory.ItemsTransferred.Should().Be(null);
 			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
+            FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.DrainStopped);
 		}
 
 		[IdentifiedTest("BCF72894-224F-4DB7-985F-0C53C93D153D")]
@@ -200,6 +202,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			// Assert
 			jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
+            FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
 		}
 
 		[IdentifiedTest("72118579-91DB-4018-8EF9-A4EB3FC2CD51")]
@@ -264,6 +267,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			// Assert
 			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
+			FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
 		}
 
 		[IdentifiedTest("4D867717-3C3D-4763-9E29-63AAAA435885")]
@@ -460,6 +464,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			act.ShouldThrow<Exception>();
 
 			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryErrorJobFailedGuid);
+            FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
 		}
 
 		private List<string> GetRemainingItems(JobTest job)
