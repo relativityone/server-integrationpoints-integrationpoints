@@ -60,6 +60,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			JobTest linkManagersJob = FakeRelativityInstance.JobsInQueue.Single();
 			linkManagersJob.TaskType.Should().Be(TaskType.SyncEntityManagerWorker.ToString());
+			linkManagersJob.StopState.Should().Be(StopState.None);
 		}
 
 		[IdentifiedTest("3BDAF07F-FC93-4A74-B60B-A47E404FA85D")]
@@ -205,6 +206,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			linkManagersJob.ParentJobId.Should().Be(syncWorkerJob.JobId);
 			linkManagersJob.DeserializeDetails<EntityManagerJobParameters>().EntityManagerMap.Should()
 				.HaveCount(drainStopAfter).And.ContainKeys(_managementTestData.EntryIds.Take(drainStopAfter));
+			linkManagersJob.StopState.Should().Be(StopState.None);
 		}
 
 		private JobTest ScheduleImportEntityFromLdapJob(bool linkEntityManagers)
