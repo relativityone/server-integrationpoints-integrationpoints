@@ -132,6 +132,19 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 				Times.Once);
 		}
 
+		[Test]
+		public void Execute_ShouldSetDidWorkToTrue_WhenFinishedExecution()
+		{
+			// Arrange
+			TestAgent sut = GetSut();
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			sut.DidWork.Should().BeTrue();
+		}
+
 		private TestAgent GetSut(TaskStatusEnum jobStatus = TaskStatusEnum.Success)
 		{
 			var agentService = new Mock<IAgentService>();
