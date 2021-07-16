@@ -1,0 +1,33 @@
+using System.Threading.Tasks;
+using FluentAssertions;
+using NUnit.Framework;
+using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using Relativity.Testing.Identification;
+
+namespace Relativity.IntegrationPoints.Tests.Functional.CD
+{
+    [TestExecutionCategory.RAPCD.Verification.Functional]
+    public class PerformanceTests : TestsBase
+    {
+        private readonly PerformanceTestsImplementation _implementation;
+
+        public PerformanceTests() : base(nameof(PerformanceTests))
+        {
+            _implementation = new PerformanceTestsImplementation(this); 
+        }
+
+        [OneTimeSetUp]
+        public void OneTimeSetup() => _implementation.OnSetUpFixture();
+
+        [OneTimeTearDown] 
+        public void OneTimeTeardown() => _implementation.OnTearDownFixture();
+
+        [IdentifiedTest("601D1C86-18A4-45AD-ABF5-38FE1D3BC99C")]
+        public async Task SyncPerformanceTest()
+        {
+            double averageRunTime = await _implementation.RunPerformanceBenchmark().ConfigureAwait(false);
+
+            averageRunTime.Should().BeLessOrEqualTo(30000);
+        }
+    }
+}
