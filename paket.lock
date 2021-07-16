@@ -139,7 +139,7 @@ NUGET
     Mono.TextTransform (1.0.0)
     Moq (4.5.3)
     netDumbster (2.0.0.4)
-    Newtonsoft.Json (6.0.8)
+    Newtonsoft.Json (6.0.8) - redirects: force
     NSubstitute (1.10.0.0)
     NUnit (3.11.0) - redirects: force
     NUnitExtras.HierarchicalCategories (1.3.0)
@@ -175,7 +175,7 @@ NUGET
       Relativity.IntegrationPoints.Services.Interfaces.Private (>= 1.0.5)
       Relativity.Kepler (>= 2.0.7)
       Relativity.Telemetry.APM (>= 2019.1.1)
-    Relativity.IntegrationPoints.Services.Interfaces.Private (1.0.5)
+    Relativity.IntegrationPoints.Services.Interfaces.Private (1.1.1)
       Relativity.API (>= 12.0)
       Relativity.Kepler (>= 2.0.7)
       Relativity.Telemetry.APM (>= 2019.1.1)
