@@ -294,6 +294,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
+				job = JobService.GetJob(job.JobId);
+
 				LogPostExecuteStart(job);
 				JobHistoryErrorService.CommitErrors();
 				UpdateJobHistoryStopState(job);
