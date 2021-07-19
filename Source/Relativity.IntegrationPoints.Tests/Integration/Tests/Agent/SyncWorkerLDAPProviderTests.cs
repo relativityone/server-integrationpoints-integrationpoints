@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.ScheduleQueue.Core.Core;
-using Relativity.IntegrationPoints.Tests.Integration.Utils;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -61,6 +60,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			JobTest linkManagersJob = FakeRelativityInstance.JobsInQueue.Single();
 			linkManagersJob.TaskType.Should().Be(TaskType.SyncEntityManagerWorker.ToString());
+			linkManagersJob.StopState.Should().Be(StopState.None);
 		}
 
 		[IdentifiedTest("3BDAF07F-FC93-4A74-B60B-A47E404FA85D")]
@@ -206,6 +206,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			linkManagersJob.ParentJobId.Should().Be(syncWorkerJob.JobId);
 			linkManagersJob.DeserializeDetails<EntityManagerJobParameters>().EntityManagerMap.Should()
 				.HaveCount(drainStopAfter).And.ContainKeys(_managementTestData.EntryIds.Take(drainStopAfter));
+			linkManagersJob.StopState.Should().Be(StopState.None);
 		}
 
 		private JobTest ScheduleImportEntityFromLdapJob(bool linkEntityManagers)
@@ -214,7 +215,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
-			return FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint);
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, _managementTestData.EntryIds);
+
+			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+
+			InsertBatchToJobTrackerTable(job, jobHistory);
+
+			return job;
+		}
+
+		private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
+		{
+			string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
+
+
+			if (!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
+			{
+				FakeRelativityInstance.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
+			}
+
+			FakeRelativityInstance.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = job.JobId });
 		}
 
 		private void VerifyJobHistoryStatus(Guid expectedStatusGuid)

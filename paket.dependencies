@@ -4,7 +4,7 @@ strategy: min
 source https://proget.kcura.corp/nuget/NuGet
 
 //RIP packages
-nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.0.5
+nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.1.1
 nuget Relativity.IntegrationPoints.Contracts 1.0.8-pre.3
 nuget Relativity.IntegrationPoints.SDK 1.0.8-pre.3
 

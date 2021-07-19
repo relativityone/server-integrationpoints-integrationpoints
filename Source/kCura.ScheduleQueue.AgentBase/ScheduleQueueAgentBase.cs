@@ -7,9 +7,7 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
-using kCura.Utility.Extensions;
 using Relativity.API;
-using Relativity.Logging;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -93,6 +91,8 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 
 			CompleteExecution();
+
+			DidWork = true;
 		}
 		
 		private bool PreExecute()
