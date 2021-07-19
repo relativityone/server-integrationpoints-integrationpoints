@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Services
 	{
 		private Installer _installer;
 
-		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
+		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointAgentManagerInstaller());
 
 		public IntegrationPointAgentManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
 			: base(logger, permissionRepositoryFactory, container)
@@ -30,7 +30,6 @@ namespace Relativity.IntegrationPoints.Services
 
 		public void Dispose()
 		{
-			throw new System.NotImplementedException();
 		}
 	}
 }

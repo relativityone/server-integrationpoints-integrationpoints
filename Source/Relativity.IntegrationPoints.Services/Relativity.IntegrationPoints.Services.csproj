@@ -61,6 +61,7 @@
     <Compile Include="Installers\Context\WorkspaceContextRegistration.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
     <Compile Include="Installers\HealthCheckInstaller.cs" />
+    <Compile Include="Installers\IntegrationPointAgentManagerInstaller.cs" />
     <Compile Include="Installers\ProviderManager\ProviderInstallerAndUninstallerRegistration.cs" />
     <Compile Include="Installers\StatisticsManagerInstaller.cs" />
     <Compile Include="Installers\Installer.cs" />
