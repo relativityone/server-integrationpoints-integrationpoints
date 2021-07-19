@@ -68,6 +68,7 @@
     <Compile Include="Installers\JobHistoryManagerInstaller.cs" />
     <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />
     <Compile Include="Installers\ProviderManagerInstaller.cs" />
+    <Compile Include="IntegrationPointAgentManager.cs" />
     <Compile Include="IntegrationPointHealthCheckManager.cs" />
     <Compile Include="IntegrationPointManager.cs" />
     <Compile Include="IntegrationPointProfileManager.cs" />
@@ -283,6 +284,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="WorkloadDiscovery">
+          <HintPath>..\..\packages\Relativity.Platform.Agent.WorkloadDiscovery.SDK\lib\net462\WorkloadDiscovery.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
