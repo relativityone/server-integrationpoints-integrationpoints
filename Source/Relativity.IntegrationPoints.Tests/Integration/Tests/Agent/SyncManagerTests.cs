@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Castle.MicroKernel.Registration;
-using Castle.Windsor;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -269,6 +268,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             syncWorkerJobs.Should().HaveCount(documentsInSyncWorkerJobs.Length);
             syncWorkerJobs.Should().OnlyContain(x => x.StopState == stopState);
+
+			FakeRelativityInstance.JobTrackerResourceTables.Single().Value
+				.Should().HaveCount(documentsInSyncWorkerJobs.Length);
 		}
 
         private void AssertNumberOfRecords(JobTest job, int numberOfRecords)

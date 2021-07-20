@@ -32,8 +32,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncWorkerMyFirstProviderTests : TestsBase
 	{
-		private const int ROOT_JOB_ID = 5;
-
 		private SyncWorker PrepareSut(Action<FakeJobImport> importAction)
 		{
 			Container.Register(Component.For<IDataSourceProvider>()
@@ -49,7 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 		private JobTest PrepareJob(string xmlPath, out JobHistoryTest jobHistory)
 		{
-			FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			SourceProviderTest provider =
 				SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
@@ -71,12 +69,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			taskParameters.BatchParameters = recordsIds;
 
 			job.JobDetails = Serializer.Serialize(taskParameters);
-			job.LockedByAgentID = 1;
-			job.RootJobId = ROOT_JOB_ID;
+			job.LockedByAgentID = agent.ArtifactId;
+			job.RootJobId = JobId.Next;
+
+			InsertBatchToJobTrackerTable(job, jobHistory);
 
 			RegisterJobContext(job);
 
 			return job;
+		}
+
+		private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
+		{
+			string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
+
+			
+			if(!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
+			{
+				FakeRelativityInstance.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
+			}
+
+			FakeRelativityInstance.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = job.JobId });
 		}
 
 		/// <summary>
@@ -228,7 +241,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		}
 
 		[IdentifiedTest("72118579-91DB-4018-8EF9-A4EB3FC2CD51")]
-		public void SyncWorker_Should_Not_DrainStop_WhenAllItemsInBatchWereProcessed()
+		public void SyncWorker_ShouldNotDrainStop_WhenAllItemsInBatchWereProcessedWithItemLevelErrors()
 		{
 			// Arrange
 			const int numberOfRecords = 100;
@@ -253,9 +266,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			sut.Execute(job.AsJob());
 
 			// Assert
-			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistoryProcessingGuid);
-            FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
-        }
+			jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
+			FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
+		}
 
 		[IdentifiedTest("4D867717-3C3D-4763-9E29-63AAAA435885")]
 		public void SyncWorker_ShouldNotDrainStopOtherBatches()
@@ -399,7 +412,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.TotalItems = 5000;
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
-			FakeRelativityInstance.JobsInQueue.AddRange(otherJobs);
+
+			PrepareOtherJobs(job, jobHistory, otherJobs);
 
 			SyncWorker sut = PrepareSut((importJob) =>
 			{
@@ -420,6 +434,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus.Guids.First().Should().Be(expectedJobHistoryStatus);
 			jobHistory.ItemsTransferred.Should().Be(transferredItems);
 			jobHistory.ItemsWithErrors.Should().Be(itemLevelErrors);
+		}
+
+		private void PrepareOtherJobs(JobTest job, JobHistoryTest jobHistory, JobTest[] otherJobs)
+		{
+			foreach(var otherJob in otherJobs)
+			{
+				otherJob.RootJobId = job.RootJobId;
+				otherJob.WorkspaceID = job.WorkspaceID;
+
+				FakeRelativityInstance.JobsInQueue.Add(otherJob);
+
+				InsertBatchToJobTrackerTable(otherJob, jobHistory);
+			}
 		}
 
 		[IdentifiedTest("5C618B8A-D8F5-4BD8-B83A-CC9A289093BF")]
