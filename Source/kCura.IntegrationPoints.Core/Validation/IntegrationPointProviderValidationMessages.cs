@@ -4,6 +4,7 @@
 	{
 		public static readonly string WORKSPACE_NOT_EXIST = "workspace does not exist.";
 		public static readonly string ARTIFACT_NOT_EXIST = "artifact does not exists.";
+		public static readonly string ARTIFACT_NOT_EXIST_WITH_INSTRUCTION = "artifact does not exists. Click \"Next\" and fill in the missing value(s)";
 		public static readonly string ERROR_INTEGRATION_POINT_NAME_EMPTY = "Integration Point name cannot be empty.";
 		public static readonly string ERROR_INTEGRATION_POINT_NAME_CONTAINS_ILLEGAL_CHARACTERS = "Integration Point name contains illegal characters (<>:\\\"\\\\\\/|\\?\\* TAB).";
 		public static readonly string ERROR_DESTINATON_LOCATION_EMPTY = "Destination location cannot be empty.";

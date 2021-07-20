@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 			if (artifact == null)
 			{
-				result.Add($"{_artifactTypeName} {IntegrationPointProviderValidationMessages.ARTIFACT_NOT_EXIST}");
+				result.Add($"{_artifactTypeName} {IntegrationPointProviderValidationMessages.ARTIFACT_NOT_EXIST_WITH_INSTRUCTION}");
 			}
 
 			return result;

@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.MessageTexts.First().Contains(IntegrationPointProviderValidationMessages.ARTIFACT_NOT_EXIST));
+			Assert.IsTrue(actual.MessageTexts.First().Contains(IntegrationPointProviderValidationMessages.ARTIFACT_NOT_EXIST_WITH_INSTRUCTION));
 		}
 	}
 }
