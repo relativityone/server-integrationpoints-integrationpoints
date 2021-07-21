@@ -1437,12 +1437,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016752</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Management.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1016753</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Agent.dll</Name>
@@ -1751,7 +1745,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2021-07-21T08:42:11.2532206Z</ExtractionDate>
+  <ExtractionDate>2021-07-21T09:01:04.5409219Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11812,7 +11806,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.9</Version>
+  <Version>12.2.15.10</Version>
   <SchemaVersion>11.3.10.13</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
