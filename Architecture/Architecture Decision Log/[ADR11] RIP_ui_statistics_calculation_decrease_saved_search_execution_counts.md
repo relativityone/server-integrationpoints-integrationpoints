@@ -50,6 +50,8 @@ We should create new methods which would be responsible for whole calculation:
 
 Detailed implementation is not part of this elaborate, but main goal is to reduce Object Manager calls to one (if possible) with all needed data and then just perform calculation as it was done before.
 
+Present implementation uses standard ObjectManager approach. As there could be significant amount of data needs to be retrieved we should change the code for using **Export API**.
+
 **Note:** Based on current implementation the statistics part that couldn't be calculated should be marked as -1 which is handle later in the UI.
 
 Calling an API and return processed result should be done in `summary-page-statistics.js` where we could leave logic as it is, but only replace the calling logic at the end of the file. Rest should work as it was.
