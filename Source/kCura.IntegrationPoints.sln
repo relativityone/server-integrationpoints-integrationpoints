@@ -128,10 +128,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain.Tests", "kCura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj", "{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Management", "kCura.IntegrationPoints.Management\kCura.IntegrationPoints.Management.csproj", "{740D99BE-11AF-4476-BE13-09EE54F664A4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Management.Tests", "kCura.IntegrationPoints.Management.Tests\kCura.IntegrationPoints.Management.Tests.csproj", "{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Email.Tests", "kCura.IntegrationPoints.Email.Tests\kCura.IntegrationPoints.Email.Tests.csproj", "{4A7CFCBE-998F-4161-8072-3F5609BBD629}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Common", "kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj", "{32BCB03B-4980-4434-9392-F72334E6E348}"
@@ -160,7 +156,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Rel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.AgentBase.Tests", "kCura.ScheduleQueue.AgentBase.Tests\kCura.ScheduleQueue.AgentBase.Tests.csproj", "{B98DF39A-AD93-4A78-8B26-26170D9F3C6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Tests", "Relativity.IntegrationPoints.Tests\Relativity.IntegrationPoints.Tests.csproj", "{9D87DE97-6533-4034-9B3E-FACCE4F1A9E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.Tests", "Relativity.IntegrationPoints.Tests\Relativity.IntegrationPoints.Tests.csproj", "{9D87DE97-6533-4034-9B3E-FACCE4F1A9E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -372,14 +368,6 @@ Global
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{740D99BE-11AF-4476-BE13-09EE54F664A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A7CFCBE-998F-4161-8072-3F5609BBD629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A7CFCBE-998F-4161-8072-3F5609BBD629}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A7CFCBE-998F-4161-8072-3F5609BBD629}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -472,7 +460,6 @@ Global
 		{44849C37-810B-43E8-972B-12D3D0D87A7F} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{2034058F-F57F-411A-9699-87BBD72F1598} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
-		{23B046F0-B59B-4D56-9F2F-3D6EE25BDDB5} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{4A7CFCBE-998F-4161-8072-3F5609BBD629} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{0323EA51-DCB5-42CC-BCD7-EB1C4120A731} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{88F9B589-2AA4-4609-AF61-E0BADB5DE82E} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}

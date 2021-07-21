@@ -1437,12 +1437,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016752</ArtifactId>
-      <Keywords />
-      <Name>kCura.IntegrationPoints.Management.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>1016753</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Agent.dll</Name>
@@ -1751,7 +1745,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2021-07-20T13:11:07.2796453Z</ExtractionDate>
+  <ExtractionDate>2021-07-21T09:01:04.5409219Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11812,7 +11806,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.7</Version>
+  <Version>12.2.15.10</Version>
   <SchemaVersion>11.3.10.13</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
@@ -11830,20 +11824,6 @@
     </CustomPage>
   </CustomPages>
   <AgentTypes>
-    <AgentType>
-      <ArtifactId>1016789</ArtifactId>
-      <Guid>f37752eb-d204-4f7d-9d6b-f55e64991846</Guid>
-      <AgentTypeName>Integration Points Manager</AgentTypeName>
-      <FullNameSpace>kCura.IntegrationPoints.Manager.IntegrationPointsManagerAgent</FullNameSpace>
-      <DefaultInterval>3600</DefaultInterval>
-      <DefaultLogging>1</DefaultLogging>
-      <MinInstanceEnvironment>0</MinInstanceEnvironment>
-      <MaxInstanceEnvironment>1</MaxInstanceEnvironment>
-      <MinInstanceServer>0</MinInstanceServer>
-      <MaxInstanceServer>0</MaxInstanceServer>
-      <MinInstanceResourcePool>0</MinInstanceResourcePool>
-      <MaxInstanceResourcePool>0</MaxInstanceResourcePool>
-    </AgentType>
     <AgentType>
       <ArtifactId>1016790</ArtifactId>
       <Guid>08c0ce2d-8191-4e8f-b037-899ceaee493d</Guid>
