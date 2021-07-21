@@ -109,6 +109,11 @@
     <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
+    <Compile Include="Queries\CreateJobTrackingEntry.cs" />
+    <Compile Include="Queries\GetProcessingSyncWorkerBatches.cs" />
+    <Compile Include="Queries\IJobTrackerQueryManager.cs" />
+    <Compile Include="Queries\JobTrackerQueryManager.cs" />
+    <Compile Include="Queries\RemoveEntryAndCheckBatchStatus.cs" />
     <Compile Include="Queries\MarkEntityManagerLinksAsExpired.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />

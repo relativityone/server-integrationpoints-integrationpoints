@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IHelper _helper;
 		private IIntegrationPointSerializer _serializer;
 		private JobTracker _jobTracker;
-		private IWorkspaceDBContext _workspaceDbContext;
+		private IJobTrackerQueryManager _jobTrackerQueryManager;
 		private JobResourceTracker _jobResource;
 		private IScratchTableRepository _scratchTableRepository;
 		private string _JOB_TRACKER_TABLE_PREFIX = "RIP_JobTracker";
@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_jobService = Container.Resolve<IJobService>();
 			_serializer = Container.Resolve<IIntegrationPointSerializer>();
 			_helper = Container.Resolve<IHelper>();
-			_workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
-			_jobResource = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
+			_jobTrackerQueryManager = Container.Resolve<IJobTrackerQueryManager>();
+			_jobResource = new JobResourceTracker(_jobTrackerQueryManager);
 			_jobTracker = new JobTracker(_jobResource);
 			_eddsServiceContext = Container.Resolve<IEddsServiceContext>();
 			_manager = new AgentJobManager(_eddsServiceContext, _jobService, _helper, _serializer, _jobTracker);

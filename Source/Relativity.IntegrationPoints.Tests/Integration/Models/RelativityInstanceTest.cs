@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
@@ -19,6 +18,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public List<JobTest> JobsInQueue { get; } = new List<JobTest>();
 
 		public Dictionary<string, List<EntityManagerTest>> EntityManagersResourceTables { get; } = new Dictionary<string, List<EntityManagerTest>>();
+
+		public Dictionary<string, List<JobTrackerTest>> JobTrackerResourceTables { get; } = new Dictionary<string, List<JobTrackerTest>>();
 
 		public IList<WorkspaceTest> Workspaces => _workspaces;
 

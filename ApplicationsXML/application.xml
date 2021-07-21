@@ -1742,10 +1742,16 @@
       <Name>Relativity.IntegrationPoints.FieldsMapping.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>5510911</ArtifactId>
+      <Keywords />
+      <Name>WorkloadDiscovery.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2021-06-22T13:33:11.151573Z</ExtractionDate>
+  <ExtractionDate>2021-07-20T13:11:07.2796453Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11806,7 +11812,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.6</Version>
+  <Version>12.2.15.7</Version>
   <SchemaVersion>11.3.10.13</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>

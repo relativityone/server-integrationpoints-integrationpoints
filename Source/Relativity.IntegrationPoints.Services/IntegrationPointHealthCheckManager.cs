@@ -21,6 +21,16 @@ namespace Relativity.IntegrationPoints.Services
 
 		public Task<HealthCheckOperationResult> RunHealthChecksAsync()
 		{
+			return RunHealthCheckAsync();
+		}
+
+		public Task<HealthCheckOperationResult> RunDeploymentHealthChecksAsync()
+		{
+			return RunHealthCheckAsync();
+		}
+
+		private static Task<HealthCheckOperationResult> RunHealthCheckAsync()
+		{
 			HealthCheckOperationResult healthCheckOperationResult = new HealthCheckOperationResult(isHealthy: true, message: "Integration Points application is healthy!");
 			Client.APMClient.HealthCheckOperation(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => healthCheckOperationResult)
 				.Write();

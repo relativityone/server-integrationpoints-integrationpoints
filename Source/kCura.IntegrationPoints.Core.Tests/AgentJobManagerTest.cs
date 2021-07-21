@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -25,11 +24,10 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IEddsServiceContext _context;
 		private IJobService _jobService;
 		private IIntegrationPointSerializer _serializer;
+		private IJobTrackerQueryManager _jobTrackerQueryManager;
 		private IHelper _helper;
 		private JobTracker _jobTracker;
 		private JobResourceTracker _jobResource;
-		private IWorkspaceDBContext _workspaceDbContext;
-		private IRepositoryFactory _repositoryFactory;
 		private int _workspaceId;
 		private int _integrationPointId;
 		private int _userId;
@@ -47,10 +45,9 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 			_helper = Substitute.For<IHelper>();
 			_jobService = Substitute.For<IJobService>();
-			_serializer = NSubstitute.Substitute.For<IIntegrationPointSerializer>();
-			_workspaceDbContext = NSubstitute.Substitute.For<IWorkspaceDBContext>();
-			_repositoryFactory = NSubstitute.Substitute.For<IRepositoryFactory>();
-			_jobResource = new JobResourceTracker(_repositoryFactory, _workspaceDbContext);
+			_serializer = Substitute.For<IIntegrationPointSerializer>();
+			_jobTrackerQueryManager = Substitute.For<IJobTrackerQueryManager>();
+			_jobResource = new JobResourceTracker(_jobTrackerQueryManager);
 			_jobTracker = new JobTracker(_jobResource);
 			_manager = new AgentJobManager(_context, _jobService, _helper, _serializer, _jobTracker);
 		}
