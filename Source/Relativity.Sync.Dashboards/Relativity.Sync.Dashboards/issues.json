@@ -253,7 +253,7 @@
 	},
 	{
 		"Jira": "REL-416663",
-		"Exception": "Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.Exception: A Serious Error Occurred Transferring the Requested Files*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. *System.Exception: A serious error occurred transferring the requested files*"
 	},
 	{
 		"Jira": "REL-425869",
@@ -401,7 +401,7 @@
 	},
 	{
 		"Jira": "REL-497312",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service*: Error: NoBcpDirectoryException*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service*: Error:* NoBcpDirectoryException*"
 	},
 	{
 		"Jira": "REL-497323",
@@ -433,7 +433,7 @@
 	},
 	{
 		"Jira": "REL-503811",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.NullReferenceException: Object reference not set to an instance of an object.*at Relativity.Sync.Transfer.BatchDataReader.GetValue(Int32 i)*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.NullReferenceException: Object reference not set to an instance of an object.*at Relativity.Sync.Transfer.BatchDataReader*.GetValue(Int32 i)*"
 	},
 	{
 		"Jira": "REL-503860",
@@ -534,5 +534,97 @@
 	{
 		"Jira": "REL-561754",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'ImportNativesStage'*'SQL Statement Failed'* Server stack limit has been reached. Please look for potentially deep nesting in your query, and try to simplify it.*"
+	},
+	{
+		"Jira": "REL-561855",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.NullReferenceException: Object reference not set to an instance of an object.*at kCura.WinEDDS.ImportExtension.DataReaderImageImporter.get_TotalRecords()*"
+	},
+	{
+		"Jira": "REL-575981",
+		"Exception": "*Relativity.OAuth2Client.Exceptions.IdentityProviderConnectionException: Failed to retrieve access token: A task was canceled*at Relativity.Sync.Transfer.SearchManagerFactory.<SearchManagerFactoryAsync>*"
+	},
+	{
+		"Jira": "REL-575993",
+		"Exception": "*System.InvalidOperationException: Connection was disconnected before invocation result was received.*at Relativity.Sync.Executors.WorkspaceNameQuery.<GetWorkspaceNameAsync>*"
+	},
+	{
+		"Jira": "REL-575996",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.Net.Http.HttpRequestException: Error while copying content to a stream*at kCura.WinEDDS.BulkLoadFileImporter.ReadFile*"
+	},
+	{
+		"Jira": "REL-576002",
+		"Exception": "*Relativity.Sync.SyncException: Mass creation of item level errors was not successful. Message: Created 0 objects.*"
+	},
+	{
+		"Jira": "REL-576011",
+		"Exception": "*System.InvalidOperationException: Connection was disconnected before invocation result was received.*at Relativity.Sync.Executors.JobHistoryNameQuery.<GetJobNameAsync>*"
+	},
+	{
+		"Jira": "REL-576015",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: Cannot bulk load because the file*is incomplete or could not be read.*"
+	},
+	{
+		"Jira": "REL-576018",
+		"Exception": "*System.InvalidOperationException: Connection was disconnected before invocation result was received.*at Relativity.Sync.Executors.RelativitySourceCaseTagRepository.<ReadAsync>*"
+	},
+	{
+		"Jira": "REL-576031",
+		"Exception": "*Relativity.Sync.SyncException: Failed to create Saved Search for promoted documents*The DLL kcura.edds.dtsearchprovider.dll could not be found*"
+	},
+	{
+		"Jira": "REL-576594",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: Invalid column name*"
+	},
+	{
+		"Jira": "REL-576596",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.ApplicationException: Error Downloading File*at Relativity.DataExchange.Service.RelativityDistributed.RelativityDistributedFacade.DownloadFile*"
+	},
+	{
+		"Jira": "REL-576598",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.OutOfMemoryException: Exception of type 'System.OutOfMemoryException' was thrown.*"
+	},
+	{
+		"Jira": "REL-576607",
+		"Exception": "*System.OutOfMemoryException*at Relativity.Sync.Executors.SynchronizationExecutorBase`1.<ExecuteSynchronizationAsync>*"
+	},
+	{
+		"Jira": "REL-576609",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*This operation cannot be performed because the Outside In file identification library located at*"
+	},
+	{
+		"Jira": "REL-576617",
+		"Exception": "*System.Net.WebException: The request was aborted: The connection was closed unexpectedly*at kCura.WinEDDS.BulkLoadFileImporter*"
+	},
+	{
+		"Jira": "REL-576618",
+		"Exception": "*System.Net.WebException: The remote name could not be resolved*at Relativity.Sync.Transfer.SearchManagerFactory.<SearchManagerFactoryAsync>*"
+	},
+	{
+		"Jira": "REL-576619",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*Error: SQL Statement Failed*Invalid object name '_rd_utilities_export.dbo.tblBridgeProjects'*"
+	},
+	{
+		"Jira": "REL-576620",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException: DataGrid: GetDataGridFieldInfo expected * but found * mappings*"
+	},
+	{
+		"Jira": "REL-576624",
+		"Exception": "*Relativity.Sync.Executors.SyncKeplerException: Failed to retrieve data on choice*Relativity.Services.Exceptions.ServiceException: Could not load type*from assembly*"
+	},
+	{
+		"Jira": "REL-576627",
+		"Exception": "*kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Exception: Unknown failure during authentication*System.Net.WebException: The remote name could not be resolved*at Relativity.Sync.Executors.ImportApiFactory.CreateImportApiAsync*"
+	},
+	{
+		"Jira": "REL-576639",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: SQL Statement Failed*There is already an object named 'RELIMGTMP*"
+	},
+	{
+		"Jira": "REL-576647",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: Error occured while executing 'ImportMetadataFilesToStagingTablesStage'*Bad or inaccessible location specified in external data source*"
+	},
+	{
+		"Jira": "REL-576650",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: Error occured while executing 'CreateFoldersStage'*The given key was not present in the dictionary*"
 	}
 ]
