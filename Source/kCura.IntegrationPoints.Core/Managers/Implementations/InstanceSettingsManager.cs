@@ -68,5 +68,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				return TimeSpan.FromMinutes(3);
 			}
 		}
+
+		public string GetWorkloadSizeSettings()
+		{
+			IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
+			string workloadSizeSettings = instanceSettingRepository.GetConfigurationValue(
+				Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, Constants.InstanceSettings.WORKLOAD_SIZE_SETTINGS);
+			return workloadSizeSettings;
+		}
 	}
 }

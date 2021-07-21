@@ -32,6 +32,7 @@
           <Assembly>Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.LDAPProvider\bin\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
           <Assembly>Source\Relativity.IntegrationPoints.Services\bin\Relativity.IntegrationPoints.Services.dll</Assembly>
+		  <Assembly>Source\Relativity.IntegrationPoints.Services\bin\WorkloadDiscovery.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>

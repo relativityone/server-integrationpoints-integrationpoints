@@ -75,6 +75,7 @@
     <Compile Include="Data\Queries\GetAllJobs.cs" />
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
+    <Compile Include="Data\Queries\GetPendingJobsCount.cs" />
     <Compile Include="Data\Queries\UnlockJob.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
     <Compile Include="Data\Queries\DeleteJob.cs" />
@@ -128,6 +129,7 @@
     <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
     <Content Include="Data\Resources\GetAllJobs.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
+    <Content Include="Data\Resources\GetPendingJobsCount.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />
