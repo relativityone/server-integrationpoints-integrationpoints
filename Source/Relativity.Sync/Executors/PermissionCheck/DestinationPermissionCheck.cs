@@ -117,26 +117,14 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 			if (objectTypeQueryResult.Objects.Any())
 			{
-				using (var objectTypeManager = await _proxyFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
-				{
-					string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
+				string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
 
-					try
-					{
-						ObjectTypeResponse objectType = await objectTypeManager
-							.ReadAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID)
-							.ConfigureAwait(false);
+				int objectArtifactTypeID = await _syncObjectTypeManager.GetArtifactTypeID(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID);
 
-						return await ValidateUserHasArtifactTypePermissionAsync(configuration,
-							objectType.ArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
-							insufficientPermissionsMessage).ConfigureAwait(false);
-					}
-					catch (NotAuthorizedException ex)
-					{
-						_logger.LogInformation(ex, "User does not have permissions to make a call to IObjectTypeManager.");
-						return new ValidationResult(new ValidationMessage(insufficientPermissionsMessage));
-					}
-				}
+				return await ValidateUserHasArtifactTypePermissionAsync(configuration,
+					objectArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
+					insufficientPermissionsMessage).ConfigureAwait(false);
+					
 			}
 			else
 			{

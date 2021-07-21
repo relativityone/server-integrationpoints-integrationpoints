@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
@@ -9,5 +10,6 @@ namespace Relativity.Sync.Executors
 	{
 		Task<int> EnsureObjectTypeExistsAsync(int workspaceArtifactId, Guid objectTypeGuid, ObjectTypeRequest objectTypeRequest);
 		Task<QueryResult> QueryObjectTypeByNameAsync(int workspaceArtifactId, string name);
+		Task<int> GetArtifactTypeID(int workspaceArtifactId, int ArtifactId);
 	}
 }
