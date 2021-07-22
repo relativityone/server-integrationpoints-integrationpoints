@@ -361,10 +361,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LoadFileTaskParameters storedLoadFileParameters = GetLoadFileTaskParameters(GetTaskParameters(job));
 			LoadFileInfo currentLoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
 
-			if(currentLoadFile.Size != storedLoadFileParameters.Size || currentLoadFile.LastModifiedDate != storedLoadFileParameters.LastModifiedDate)
+			if(storedLoadFileParameters == null)
 			{
-				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
-				throw new IntegrationPointValidationException(result);
+				UpdateJobWithLoadFileDetails(job, currentLoadFile);
+			}
+			else
+			{
+				ValidateLoadFileHasNotChanged(storedLoadFileParameters, currentLoadFile);
 			}
 		}
 
@@ -387,6 +390,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			return loadFileParameters;
+		}
+
+		private void UpdateJobWithLoadFileDetails(Job job, LoadFileInfo loadFile)
+		{
+			TaskParameters taskParameters = GetTaskParameters(job);
+			taskParameters.BatchParameters = new LoadFileTaskParameters
+			{
+				LastModifiedDate = loadFile.LastModifiedDate,
+				Size = loadFile.Size
+			};
+
+			job.JobDetails = Serializer.Serialize(taskParameters);
+			
+			JobService.UpdateJobDetails(job);
+		}
+
+		private void ValidateLoadFileHasNotChanged(LoadFileTaskParameters storedLoadFileParameters, LoadFileInfo currentLoadFile)
+		{
+			if (currentLoadFile.Size != storedLoadFileParameters.Size || currentLoadFile.LastModifiedDate != storedLoadFileParameters.LastModifiedDate)
+			{
+				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
+				throw new IntegrationPointValidationException(result);
+			}
 		}
 
 		private int GetProcessedItemsCountFromJobDetails(Job job)
