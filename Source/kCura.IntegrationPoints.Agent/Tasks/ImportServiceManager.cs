@@ -361,6 +361,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LoadFileTaskParameters storedLoadFileParameters = GetLoadFileTaskParameters(GetTaskParameters(job));
 			LoadFileInfo currentLoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
 
+			Logger.LogInformation("Validating LoadFile {@loadFile}, based on TaskParameters {@taskParameters}",
+				currentLoadFile, storedLoadFileParameters);
+
 			if(storedLoadFileParameters == null)
 			{
 				UpdateJobWithLoadFileDetails(job, currentLoadFile);
@@ -394,6 +397,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void UpdateJobWithLoadFileDetails(Job job, LoadFileInfo loadFile)
 		{
+			Logger.LogInformation("Updating Job {jobId} details with LoadFileInfo {@loadFile}", job.JobId, loadFile);
 			TaskParameters taskParameters = GetTaskParameters(job);
 			taskParameters.BatchParameters = new LoadFileTaskParameters
 			{
@@ -408,6 +412,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void ValidateLoadFileHasNotChanged(LoadFileTaskParameters storedLoadFileParameters, LoadFileInfo currentLoadFile)
 		{
+			Logger.LogInformation("Validating if LoadFile has not changed since the job was scheduled...");
 			if (currentLoadFile.Size != storedLoadFileParameters.Size || currentLoadFile.LastModifiedDate != storedLoadFileParameters.LastModifiedDate)
 			{
 				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
