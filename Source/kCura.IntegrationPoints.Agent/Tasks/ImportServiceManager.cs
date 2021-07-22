@@ -366,6 +366,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if(storedLoadFileParameters == null)
 			{
+				Logger.LogWarning("TaskParameters doesn't contain LoadFile parameters, but should.");
 				UpdateJobWithLoadFileDetails(job, currentLoadFile);
 			}
 			else
