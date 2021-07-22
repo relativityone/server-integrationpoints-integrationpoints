@@ -19,6 +19,8 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.LoadFile;
 using Relativity.IntegrationPoints.Tests.Integration.Utils;
+using kCura.IntegrationPoints.Core.Contracts.Import;
+using Newtonsoft.Json.Linq;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -84,6 +86,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			// Assert
 			action.ShouldThrow<IntegrationPointValidationException>();
+		}
+
+		[IdentifiedTest("D0202A69-C66A-43A6-A40F-F183735E71C2")]
+		public void Execute_ShouldNotThrowAndUpdateDetails_WhenLoadFileInformationIsNotPresentInJobDetails()
+		{
+			// Arrange
+			const string loadFile = @"DataTransfer\Import\SaltPepper\saltvpepper-no_errors.dat";
+			const long size = 1000;
+			DateTime modifiedDate = new DateTime(2020, 1, 1);
+
+			_fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
+
+			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+				.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
+
+			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
+			RegisterJobContext(job);
+
+			ImportServiceManager sut = PrepareSut();
+
+			// Act
+			Action action = () => sut.Execute(job.AsJob());
+
+			// Assert
+			action.ShouldNotThrow<NullReferenceException>();
+
+			VerifyLoadFileInfoInJobDetails(job, modifiedDate, size);
 		}
 
 		[IdentifiedTest("1C5F2F4E-30C0-4B2B-B43A-282AE2413E37")]
@@ -203,6 +232,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
 			return job;
+		}
+
+		private void VerifyLoadFileInfoInJobDetails(JobTest job, DateTime expectedLastModifiedDate, long expectedSize)
+		{
+			TaskParameters jobParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+
+			LoadFileTaskParameters loadFileParameters = ((JObject)jobParameters.BatchParameters).ToObject<LoadFileTaskParameters>();
+
+			loadFileParameters.Size.Should().Be(expectedSize);
+			loadFileParameters.LastModifiedDate.Should().Be(expectedLastModifiedDate);
 		}
 	}
 }
