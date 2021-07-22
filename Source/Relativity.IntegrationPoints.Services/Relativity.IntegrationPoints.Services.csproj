@@ -61,6 +61,7 @@
     <Compile Include="Installers\Context\WorkspaceContextRegistration.cs" />
     <Compile Include="Installers\DocumentManagerInstaller.cs" />
     <Compile Include="Installers\HealthCheckInstaller.cs" />
+    <Compile Include="Installers\IntegrationPointAgentManagerInstaller.cs" />
     <Compile Include="Installers\ProviderManager\ProviderInstallerAndUninstallerRegistration.cs" />
     <Compile Include="Installers\StatisticsManagerInstaller.cs" />
     <Compile Include="Installers\Installer.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Installers\JobHistoryManagerInstaller.cs" />
     <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />
     <Compile Include="Installers\ProviderManagerInstaller.cs" />
+    <Compile Include="IntegrationPointAgentManager.cs" />
     <Compile Include="IntegrationPointHealthCheckManager.cs" />
     <Compile Include="IntegrationPointManager.cs" />
     <Compile Include="IntegrationPointProfileManager.cs" />
@@ -130,6 +132,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +289,17 @@
       <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="WorkloadDiscovery">
+          <HintPath>..\..\packages\Relativity.Platform.Agent.WorkloadDiscovery.SDK\lib\net462\WorkloadDiscovery.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
