@@ -4,7 +4,7 @@
       <Application name="kCura.IntegrationPoints" generatenuspec="true">
         <Destination>Artifacts\kCura.IntegrationPoints.rap</Destination>
         <ApplicationSchema>ApplicationsXML/application.xml</ApplicationSchema>
-		<TestDirectory>Source\Relativity.IntegrationPoints.Tests\bin\</TestDirectory>
+		<TestDirectory>Source\kCura.IntegrationPoints.FunctionalTests\bin\</TestDirectory>
         <Assemblies>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Windsor.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Core.dll</Assembly>

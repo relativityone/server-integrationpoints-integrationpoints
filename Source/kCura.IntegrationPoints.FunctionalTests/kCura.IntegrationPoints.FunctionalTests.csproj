@@ -9,6 +9,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <IsTestProject>true</IsTestProject>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <RootNamespace>Relativity.IntegrationPoints.Tests</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
