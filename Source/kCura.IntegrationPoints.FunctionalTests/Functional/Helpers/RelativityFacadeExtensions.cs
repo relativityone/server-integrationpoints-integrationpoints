@@ -61,7 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 				OverlayBehavior = overlayBehavior
 			};
 
-			int documentImportTimeout = Int32.Parse(TestContext.Parameters["DocumentImportTimeout"]);
+			int documentImportTimeout = TestConfig.DocumentImportTimeout;
 
 			SetImportMode();
 
@@ -126,7 +126,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
 		private static void SetImportMode()
 		{
-			if (Boolean.Parse(TestContext.Parameters["DocumentImportEnforceWebMode"]))
+			if (TestConfig.DocumentImportEnforceWebMode)
 			{
 				DataExchange.AppSettings.Instance.TapiForceHttpClient = true;
 				DataExchange.AppSettings.Instance.TapiForceBcpHttpClient = true;
