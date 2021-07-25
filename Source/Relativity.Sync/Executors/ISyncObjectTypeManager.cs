@@ -10,6 +10,6 @@ namespace Relativity.Sync.Executors
 	{
 		Task<int> EnsureObjectTypeExistsAsync(int workspaceArtifactId, Guid objectTypeGuid, ObjectTypeRequest objectTypeRequest);
 		Task<QueryResult> QueryObjectTypeByNameAsync(int workspaceArtifactId, string name);
-		Task<int> GetArtifactTypeID(int workspaceArtifactId, int ArtifactId);
+		Task<int> GetObjectTypeArtifactTypeIdAsync(int workspaceArtifactId, int objectTypeArtifactI);
 	}
 }

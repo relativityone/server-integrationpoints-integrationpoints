@@ -149,11 +149,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				}) ;
 
 			// act
-			int actualArtifactTypeId = await _instance.GetArtifactTypeID(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			int actualArtifactTypeId = await _instance.GetObjectTypeArtifactTypeIdAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			// assert
 			actualArtifactTypeId.Should().Be(artifactTypeId);
-
 		}
 	}
 }
