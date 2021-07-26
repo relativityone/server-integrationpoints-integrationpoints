@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
@@ -11,7 +12,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
     public class RipApi : IRipApi
     {
         private readonly IKeplerServiceFactory _serviceFactory;
-        private Task _integrationPointRunningTask;
 
         public RipApi(IKeplerServiceFactory serviceFactory)
         {
@@ -36,15 +36,36 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
         {
             using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
             {
-                await  manager.RunIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
+                await manager.RunIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
             }
 
-            _integrationPointRunningTask = Task.Delay(10000);
-            
-            return 5;
+            QueryRequest query = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    Guid = ObjectTypeGuids.JobHistoryGuid
+                },
+                Fields = new[] {new FieldRef {Name = "Integration Point"}},
+                // Condition = $"'Integration Point' == OBJECT {integrationPointId}"
+            };
+
+            using (var objectManager = _serviceFactory
+                .GetServiceProxy<IObjectManager>())
+            {
+                QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, 1000)
+                    .ConfigureAwait(false);
+
+                RelativityObject jobHistory = result.Objects
+                    .Where(x => (x.FieldValues.First().Value as List<RelativityObjectValue>)?.First()?.ArtifactID ==
+                                integrationPoint.ArtifactId)
+                    .OrderByDescending(x => x.ArtifactID)
+                    .First();
+
+                return jobHistory.ArtifactID;
+            }
         }
 
-        public async Task<string> GetJobHistoryStatus(int integrationPointId, int workspaceId)
+        public async Task<string> GetJobHistoryStatus(int jobHistoryId, int workspaceId)
         {
             QueryRequest query = new QueryRequest
             {
@@ -52,17 +73,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 {
                     Guid = ObjectTypeGuids.JobHistoryGuid
                 },
-                Fields = new []{new FieldRef{Name = "JobStatus"}},
-                Condition = $"'ParentObject' == '{integrationPointId}'"
+                Fields = new[] {new FieldRef {Name = "Job Status"}},
+                Condition = $"'ArtifactId' == '{jobHistoryId}'"
             };
 
             using (var objectManager = _serviceFactory
                 .GetServiceProxy<IObjectManager>())
             {
-                var result = await objectManager.QueryAsync(workspaceId, query, 0, 1000)
+                QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, 1)
                     .ConfigureAwait(false);
 
-                return result.Objects.OrderByDescending(x => x.ArtifactID).First().FieldValues.First().Value.ToString();
+                return (result.Objects.FirstOrDefault()?.FieldValues.FirstOrDefault()?.Value as Choice)?.Name;
             }
         }
     }

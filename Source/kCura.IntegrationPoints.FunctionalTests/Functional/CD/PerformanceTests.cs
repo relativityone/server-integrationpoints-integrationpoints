@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
 
@@ -25,9 +26,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
         [IdentifiedTest("601D1C86-18A4-45AD-ABF5-38FE1D3BC99C")]
         public async Task SyncPerformanceTest()
         {
-            double averageRunTime = await _implementation.RunPerformanceBenchmark().ConfigureAwait(false);
+            double averageRunTimeInSeconds = await _implementation.RunPerformanceBenchmark().ConfigureAwait(false);
 
-            averageRunTime.Should().BeLessOrEqualTo(30000);
+            averageRunTimeInSeconds.Should().BeLessOrEqualTo(PerformanceTestsConstants.MAX_AVERAGE_DURATION_S);
         }
     }
 }

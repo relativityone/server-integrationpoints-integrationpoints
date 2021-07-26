@@ -7,6 +7,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
     {
         Task CreateIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId);
         Task<int> RunIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId);
-        Task<string> GetJobHistoryStatus(int integrationPointId, int workspaceId);
+        Task<string> GetJobHistoryStatus(int jobHistoryId, int workspaceId);
     }
 }
