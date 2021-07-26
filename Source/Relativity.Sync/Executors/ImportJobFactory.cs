@@ -86,8 +86,6 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
 			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
-			importJob.Settings.FileSizeColumn = configuration.FileSizeColumn;
-			importJob.Settings.FileNameColumn = configuration.FileNameColumn;
 			importJob.Settings.OIFileTypeColumnName = configuration.OiFileTypeColumnName;
 			importJob.Settings.SupportedByViewerColumn = configuration.SupportedByViewerColumn;
 
@@ -96,6 +94,8 @@ namespace Relativity.Sync.Executors
 				importJob.Settings.NativeFilePathSourceFieldName = configuration.NativeFilePathSourceFieldName;
 				importJob.Settings.OIFileIdMapped = true;
 				importJob.Settings.FileSizeMapped = true;
+				importJob.Settings.FileSizeColumn = configuration.FileSizeColumn;
+				importJob.Settings.FileNameColumn = configuration.FileNameColumn;
 
 				// Do not set DisableNativeValidation to "true" - Import API will ignore "Relativity Native Type" field
 				// and will set it to "Unknown format". Overwriting "OIFileTypeColumnName" and "SupportedByViewerColumn"

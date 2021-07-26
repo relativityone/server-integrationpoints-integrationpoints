@@ -23,28 +23,28 @@ namespace Relativity.Sync.Transfer
 			yield return FieldInfoDto.RelativityNativeTypeField();
 		}
 
-		public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
-		{
-			IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
-				.QueryAsync(sourceWorkspaceArtifactId, documentArtifactIds)
-				.ConfigureAwait(false);
+        public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
+        {
+            IEnumerable<INativeFile> nativeFileInfo = await _nativeFileRepository
+                .QueryAsync(sourceWorkspaceArtifactId, documentArtifactIds)
+                .ConfigureAwait(false);
 
-			IDictionary<int, INativeFile> artifactIdToNativeFile = new Dictionary<int, INativeFile>(documentArtifactIds.Length);
+            IDictionary<int, INativeFile> artifactIdToNativeFile = new Dictionary<int, INativeFile>(documentArtifactIds.Length);
 
-			foreach (INativeFile nativeFile in nativeFileInfo)
-			{
-				if (artifactIdToNativeFile.ContainsKey(nativeFile.DocumentArtifactId))
-				{
-					artifactIdToNativeFile[nativeFile.DocumentArtifactId].IsDuplicated = true;
-					_logger.LogWarning("Duplicated native file detected for document Artifact ID: {artifactId}", nativeFile.DocumentArtifactId);
-				}
-				else
-				{
-					artifactIdToNativeFile.Add(nativeFile.DocumentArtifactId, nativeFile);
-				}
-			}
+            foreach (INativeFile nativeFile in nativeFileInfo)
+            {
+                if (artifactIdToNativeFile.ContainsKey(nativeFile.DocumentArtifactId))
+                {
+                    artifactIdToNativeFile[nativeFile.DocumentArtifactId].IsDuplicated = true;
+                    _logger.LogWarning("Duplicated native file detected for document Artifact ID: {artifactId}", nativeFile.DocumentArtifactId);
+                }
+                else
+                {
+                    artifactIdToNativeFile.Add(nativeFile.DocumentArtifactId, nativeFile);
+                }
+            }
 
-			return new NativeInfoRowValuesBuilder(artifactIdToNativeFile);
-		}
-	}
+            return new NativeInfoRowValuesBuilder(artifactIdToNativeFile);
+        }
+    }
 }

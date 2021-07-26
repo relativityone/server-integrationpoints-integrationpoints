@@ -76,14 +76,17 @@ namespace Relativity.Sync.Executors.SumReporting
 		private Task<long> CreateCalculateNativesTotalSizeTaskAsync(IDocumentJobStartMetricsConfiguration configuration,
 			CompositeCancellationToken token)
 		{
-			Task<long> calculateNativesTotalSizeTask = Task.Run(async () =>
-			{
-				_logger.LogInformation("Natives bytes requested calculation has been started...");
-				QueryRequest request = await _queryRequestProvider.GetRequestWithIdentifierOnlyForCurrentPipelineAsync(token.StopCancellationToken).ConfigureAwait(false);
-				return await _fileStatisticsCalculator.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, request, token).ConfigureAwait(false);
-			}, token.StopCancellationToken);
+			if(configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+            {
+				return Task.Run(async () =>
+				{
+					_logger.LogInformation("Natives bytes requested calculation has been started...");
+					QueryRequest request = await _queryRequestProvider.GetRequestWithIdentifierOnlyForCurrentPipelineAsync(token.StopCancellationToken).ConfigureAwait(false);
+					return await _fileStatisticsCalculator.CalculateNativesTotalSizeAsync(configuration.SourceWorkspaceArtifactId, request, token).ConfigureAwait(false);
+				}, token.StopCancellationToken);
+            }
 
-			return calculateNativesTotalSizeTask;
+			return Task.FromResult(0l);
 		}
 
 		private async Task LogFieldsMappingDetailsAsync(IDocumentJobStartMetricsConfiguration configuration, CancellationToken token)
