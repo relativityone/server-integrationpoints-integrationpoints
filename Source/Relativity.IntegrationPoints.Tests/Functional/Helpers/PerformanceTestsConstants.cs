@@ -5,9 +5,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
     internal static class PerformanceTestsConstants
     {
         public const int MAX_DURATION_MS = 600000; // 10 minutes
-        public const int RUN_COUNT = 5;
+        public const int RUN_COUNT = 1;
 
         public const string PERFORMANCE_TEST_WORKSPACE_NAME_FORMAT = "RIP_PERFORMANCE_{0}";
+        public const string PERFORMANCE_TEST_INTEGRATION_POINT_NAME_FORMAT = "RIP_PERFORMANCE_{0}";
 
         public static string JOB_STATUS_PENDING = JobStatusChoices.JobHistoryPending.Name;
         public static string JOB_STATUS_PROCESSING = JobStatusChoices.JobHistoryProcessing.Name;

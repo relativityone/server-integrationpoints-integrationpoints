@@ -1,9 +1,9 @@
-
-
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Services;
-using Relativity.Services.ServiceProxy;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework.Api.Kepler;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
@@ -18,41 +18,52 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             _serviceFactory = serviceFactory;
         }
         
-        public Task CreateIntegrationPoint(IntegrationPointModel integrationPoint, int workspaceId)
+        public async Task CreateIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId)
         {
             using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
             {
-                
+                IntegrationPointModel result = await manager.CreateIntegrationPointAsync(new CreateIntegrationPointRequest
+                {
+                    IntegrationPoint = integrationPoint,
+                    WorkspaceArtifactId = workspaceId
+                }).ConfigureAwait(false);
+
+                integrationPoint.ArtifactId = result.ArtifactId;
             }
-            return Task.Delay(100);
-            // using (IIntegrationPointManager integrationPointManager = _serviceFactory.CreateProxy<IIntegrationPointManager>())
-            // {
-            //     await integrationPointManager.CreateIntegrationPointAsync(new CreateIntegrationPointRequest
-            //     {
-            //         IntegrationPoint = integrationPoint,
-            //         
-            //     });
-            // }
         }
 
-        public  Task<int> RunIntegrationPoint(IntegrationPointModel integrationPoint, int workspaceId)
+        public async Task<int> RunIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId)
         {
-            _integrationPointRunningTask = Task.Delay(10000);
-            return Task.FromResult(5);
-            // using (IIntegrationPointManager integrationPointManager = _serviceFactory.CreateProxy<IIntegrationPointManager>())
-            // {
-            //     await integrationPointManager.RunIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId);
-            // }
-        }
-
-        public Task<string> CheckJobStatus(int jobId)
-        {
-            if (_integrationPointRunningTask.IsCompleted)
+            using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
             {
-                return Task.FromResult(JobStatusChoices.JobHistoryCompleted.Name);
+                await  manager.RunIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
             }
 
-            return Task.FromResult(PerformanceTestsConstants.JOB_STATUS_PROCESSING);
+            _integrationPointRunningTask = Task.Delay(10000);
+            
+            return 5;
+        }
+
+        public async Task<string> GetJobHistoryStatus(int integrationPointId, int workspaceId)
+        {
+            QueryRequest query = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    Guid = ObjectTypeGuids.JobHistoryGuid
+                },
+                Fields = new []{new FieldRef{Name = "JobStatus"}},
+                Condition = $"'ParentObject' == '{integrationPointId}'"
+            };
+
+            using (var objectManager = _serviceFactory
+                .GetServiceProxy<IObjectManager>())
+            {
+                var result = await objectManager.QueryAsync(workspaceId, query, 0, 1000)
+                    .ConfigureAwait(false);
+
+                return result.Objects.OrderByDescending(x => x.ArtifactID).First().FieldValues.First().Value.ToString();
+            }
         }
     }
 }
