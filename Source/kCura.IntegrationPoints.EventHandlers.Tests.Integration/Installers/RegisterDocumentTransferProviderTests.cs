@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.EventHandlers.Installers;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.Testing.Identification;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		[SmokeTest]
 		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{
-			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider();
+			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider(null);
 			IDictionary<Guid, SourceProvider> installationInfo = installer.GetSourceProviders();
 
 			Assert.AreEqual(1, installationInfo.Count, "Expect the installer to only have one provider.");

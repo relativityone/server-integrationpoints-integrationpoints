@@ -227,7 +227,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
                 IEHHelper helper,
                 IErrorService errorService,
                 IRipProviderInstaller ripProviderInstaller)
-            : base(errorService, ripProviderInstaller)
+            : base(errorService, ripProviderInstaller, null)
             {
                 Helper = helper;
             }

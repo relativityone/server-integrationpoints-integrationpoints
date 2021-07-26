@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using Relativity.IntegrationPoints.Contracts;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -11,6 +12,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     [Guid("01E26CBC-98CA-48A6-942E-FD546E2D5F7E")]
     public class RegisterImportProvider : InternalSourceProviderInstaller
 	{
+        public RegisterImportProvider(IToggleProvider toggleProvider) : base(toggleProvider)
+        {
+            
+        }
         public override IDictionary<Guid, SourceProvider> GetSourceProviders()
         {
             return new Dictionary<Guid, SourceProvider>()

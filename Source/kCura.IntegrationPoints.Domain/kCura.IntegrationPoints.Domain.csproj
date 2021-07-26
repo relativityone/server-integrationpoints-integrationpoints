@@ -38,6 +38,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Toggles">
+      <HintPath>..\kCura.IntegrationPoints.Core.Tests\bin\Relativity.Toggles.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
@@ -130,6 +133,8 @@
     <Compile Include="RelativityFeaturePathService.cs" />
     <Compile Include="StackOfDisposables.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
+    <Compile Include="Toggles\SkipLoadingRequiredAssemblies.cs" />
+    <Compile Include="Toggles\DeployLibraryFilesFromWorkingDirectory.cs" />
     <Compile Include="Utils\WorkspaceAndJobNameUtils.cs" />
     <Compile Include="WindsorContainerSetup.cs" />
   </ItemGroup>

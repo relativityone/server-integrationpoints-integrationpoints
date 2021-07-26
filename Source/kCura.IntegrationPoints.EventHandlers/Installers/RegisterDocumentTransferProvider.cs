@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Internals;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -11,8 +12,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[kCura.EventHandler.CustomAttributes.RunOnce(true)]
 	[Guid("93057ef0-9b7e-4fc5-9691-7f97e98cc703")]
 	public class RegisterDocumentTransferProvider : InternalSourceProviderInstaller
-	{
-		/// <summary>
+    {
+
+        public RegisterDocumentTransferProvider(IToggleProvider toggleProvider) : base(toggleProvider)
+        {
+        }
+ 		/// <summary>
 		/// Define guid with source provider to allow integration core to be used for source provider installation.
 		/// </summary>
 		/// <returns>a Dictionary with mapped Guid and Relativity source provider</returns>

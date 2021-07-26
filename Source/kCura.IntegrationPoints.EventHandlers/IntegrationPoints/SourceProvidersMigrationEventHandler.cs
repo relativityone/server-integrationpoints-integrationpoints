@@ -3,37 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
-using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     [Guid("0846CFFC-757D-4F19-A439-24510012CCBE")]
-    [Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
+    [EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
     public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
         private readonly IRipProviderInstaller _ripProviderInstaller;
+        private readonly IToggleProvider _toggleProvider;
 
         public SourceProvidersMigrationEventHandler()
         { }
 
         public SourceProvidersMigrationEventHandler(IErrorService errorService,
-            IRipProviderInstaller ripProviderInstaller)
+            IRipProviderInstaller ripProviderInstaller,
+            IToggleProvider toggleProvider)
             : base(errorService)
         {
             _ripProviderInstaller = ripProviderInstaller;
+            _toggleProvider = toggleProvider;
         }
 
         protected override void Run()
         {
             Logger.LogInformation($"Running {nameof(SourceProvidersMigrationEventHandler)}");
             List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger);
+            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger, _toggleProvider);
             Logger.LogInformation("Executing Source Providers migration job");
             Response migrationJobResult = migrationJob.Execute();
             Logger.LogInformation("Source Providers migration job execution result success: {result}", migrationJobResult.Success);
@@ -95,14 +98,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		        IEHHelper helper, 
 		        IRipProviderInstaller providerInstaller,
 		        int templateWorkspaceId,
-		        IAPILog logger)
-		        : base(providerInstaller)
+		        IAPILog logger,
+                IToggleProvider toggleProvider)
+		        : base(providerInstaller, toggleProvider)
 	        {
 		        _sourceProviders = sourceProvidersToMigrate;
 		        _templateWorkspaceId = templateWorkspaceId;
 		        _logger = logger;
                 Helper = helper;
-	        }
+
+            }
 
 	        public override IDictionary<Guid, SourceProvider> GetSourceProviders()
 	        {

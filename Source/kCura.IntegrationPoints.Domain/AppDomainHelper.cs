@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using kCura.IntegrationPoints.Domain.Toggles;
 using Polly;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Domain
 {
@@ -18,15 +20,17 @@ namespace kCura.IntegrationPoints.Domain
 		private readonly IHelper _helper;
 		private readonly IAPILog _logger;
 		private readonly RelativityFeaturePathService _relativityFeaturePathService;
-		
+		private readonly IToggleProvider _toggleProvider;
 
-		public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService)
+        public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService, IToggleProvider toggleProvider)
 		{
+
 			_pluginProvider = pluginProvider;
 			_helper = helper;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<AppDomainHelper>();
 			_relativityFeaturePathService = relativityFeaturePathService;
-		}
+            _toggleProvider = toggleProvider;
+        }
 
 		public virtual void LoadRequiredAssemblies(AppDomain domain)
 		{
@@ -187,15 +191,31 @@ namespace kCura.IntegrationPoints.Domain
 			AppDomain newDomain = AppDomain.CreateDomain(domainName, null, domainInfo);
 
 			_logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
-			DeployLibraryFiles(domainPath);
 
-			return newDomain;
+            if (_toggleProvider?.IsEnabled<DeployLibraryFilesFromWorkingDirectory>() ?? true)
+            {
+
+            }
+            else
+            {
+				DeployLibraryFiles(domainPath);
+			}
+
+            return newDomain;
 		}
 
 		public virtual IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid)
 		{
-			LoadRequiredAssemblies(domain);
+            if (_toggleProvider?.IsEnabled<SkipLoadingRequiredAssemblies>() ?? true)
+            {
+
+            }
+            else
+            {
+				LoadRequiredAssemblies(domain);
+			}
+			
 			LoadClientLibraries(domain, applicationGuid);
 			AppDomainManager manager = CreateInstance<AppDomainManager>(domain, _helper);
 
@@ -212,9 +232,7 @@ namespace kCura.IntegrationPoints.Domain
 
 		private void DeployLibraryFiles(string finalDllPath)
 		{
-			string libDllPath = null;
-
-			libDllPath = _relativityFeaturePathService.LibraryPath;
+            string libDllPath = _relativityFeaturePathService.LibraryPath;
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
 			//kCura.Agent

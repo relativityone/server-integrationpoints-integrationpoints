@@ -7,9 +7,12 @@ using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using NSubstitute;
 using Relativity.IntegrationPoints.Services.Installers.ProviderManager;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
+using Relativity.Toggles;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
@@ -24,6 +27,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
 		{
 			_container = new WindsorContainer();
 			_container.AddProviderInstallerAndUninstaller();
+            _container.Register(Component.For<IToggleProvider>().ImplementedBy<FakeToggleProviderWithDefaultValue>().IsDefault());
+
 		}
 
 		[Test]
