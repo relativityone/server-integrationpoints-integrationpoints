@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -47,9 +48,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
             RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace,
                 LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
-
-            RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME,
-                Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
 
             _destinationWorkspaces = Enumerable.Range(0, PerformanceTestsConstants.RUN_COUNT)
                 .Select(i =>
@@ -106,13 +104,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID)
                 .ConfigureAwait(false);
 
-            await WaitForJobToStartAsync(jobHistoryId, SourceWorkspace.ArtifactID).ConfigureAwait(false);
-            DateTime startTime = DateTime.Now;
+            await WaitForJobToStartAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 100).ConfigureAwait(false);
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
-            await WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID);
-            DateTime endTime = DateTime.Now;
+            await WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 250);
+            
+            stopwatch.Stop();
 
-            return (endTime - startTime).TotalSeconds;
+            return stopwatch.Elapsed.Milliseconds / 1000d;
         }
 
         /// <summary>
@@ -130,25 +129,24 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             return runTimeSum / PerformanceTestsConstants.RUN_COUNT;
         }
 
-        private Task WaitForJobToFinishAsync(int integrationPointId, int workspaceId)
+        private Task WaitForJobToFinishAsync(int integrationPointId, int workspaceId, int checkDelayInMs = 500)
         {
-            return WaitForJobStatus(integrationPointId,
-                status =>
-                    status != PerformanceTestsConstants.JOB_STATUS_PROCESSING &&
-                    status != PerformanceTestsConstants.JOB_STATUS_VALIDATING, workspaceId);
+            return WaitForJobStatus(integrationPointId, workspaceId, status =>
+                status != PerformanceTestsConstants.JOB_STATUS_PROCESSING &&
+                status != PerformanceTestsConstants.JOB_STATUS_VALIDATING, checkDelayInMs);
         }
 
-        private Task WaitForJobToStartAsync(int jobHistoryId, int workspaceId)
+        private Task WaitForJobToStartAsync(int jobHistoryId, int workspaceId, int checkDelayInMs = 500)
         {
-            return WaitForJobStatus(jobHistoryId, status => status != PerformanceTestsConstants.JOB_STATUS_PENDING, workspaceId);
+            return WaitForJobStatus(jobHistoryId, workspaceId, status => status != PerformanceTestsConstants.JOB_STATUS_PENDING, checkDelayInMs);
         }
 
-        private async Task WaitForJobStatus(int jobHistoryId, Func<string, bool> waitUntil, int workspaceId)
+        private async Task WaitForJobStatus(int jobHistoryId, int workspaceId, Func<string, bool> waitUntil, int checkDelayInMs)
         {
             string status = await _ripApi.GetJobHistoryStatus(jobHistoryId, workspaceId);
             while (!waitUntil(status))
             {
-                await Task.Delay(500);
+                await Task.Delay(checkDelayInMs);
                 status = await _ripApi.GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
             }
         }
