@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
-using Relativity.Services.Exceptions;
-using Relativity.Services.Interfaces.ObjectType;
-using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
@@ -117,26 +114,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 			if (objectTypeQueryResult.Objects.Any())
 			{
-				using (var objectTypeManager = await _proxyFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
-				{
-					string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
-
-					try
-					{
-						ObjectTypeResponse objectType = await objectTypeManager
-							.ReadAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID)
-							.ConfigureAwait(false);
-
-						return await ValidateUserHasArtifactTypePermissionAsync(configuration,
-							objectType.ArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
-							insufficientPermissionsMessage).ConfigureAwait(false);
-					}
-					catch (NotAuthorizedException ex)
-					{
-						_logger.LogInformation(ex, "User does not have permissions to make a call to IObjectTypeManager.");
-						return new ValidationResult(new ValidationMessage(insufficientPermissionsMessage));
-					}
-				}
+				string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
+				int objectArtifactTypeID = await _syncObjectTypeManager.GetObjectTypeArtifactTypeIdAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID).ConfigureAwait(false);
+				
+				return await ValidateUserHasArtifactTypePermissionAsync(configuration,
+					objectArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
+					insufficientPermissionsMessage).ConfigureAwait(false);	
 			}
 			else
 			{
