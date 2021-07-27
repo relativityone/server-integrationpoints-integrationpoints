@@ -1,7 +1,6 @@
 ﻿using Atata;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Models;
@@ -31,8 +30,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		{
 			RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
 
-			_destinationWorkspaces.Add(nameof(SavedSearchNativesAndMetadataGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow)));
-			_destinationWorkspaces.Add(nameof(ProductionImagesGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(ProductionImagesGoldFlow)));
+			CreateDestinationWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow));
+			CreateDestinationWorkspace(nameof(ProductionImagesGoldFlow));
 		}
 
 		public void OnTearDownFixture()
@@ -189,6 +188,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
+		}
+
+		private void CreateDestinationWorkspace(string name)
+		{
+			Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace(name, _testsImplementationTestFixture.Workspace.Name);
+
+			_destinationWorkspaces.Add(name, destinationWorkspace);
 		}
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
