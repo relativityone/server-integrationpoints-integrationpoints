@@ -23,19 +23,28 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Choice = Relativity.Services.ChoiceQuery.Choice;
+using KeywordSearch = Relativity.Testing.Framework.Models.KeywordSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class PerformanceTestsImplementation
     {
+        private const string SavedSearchName = "AllDocuments";
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
         private Workspace[] _destinationWorkspaces;
         private List<int> _integrationPoints = new List<int>();
         
         private readonly IRipApi _ripApi =
             new RipApi(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory);
+
+        private int _savedSearchId;
+        private int _destinationProviderId;
+        private int _sourceProviderId;
+        private int _integrationPointType;
+        private List<Choice> _choices;
 
         public Workspace SourceWorkspace => _testsImplementationTestFixture.Workspace;
 
@@ -48,12 +57,27 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
             RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace,
                 LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
+            
+            CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
+            
+            GetIntegrationPointsConstantsAsync().GetAwaiter().GetResult();
 
             _destinationWorkspaces = Enumerable.Range(0, PerformanceTestsConstants.RUN_COUNT)
                 .Select(i =>
                     RelativityFacade.Instance.CreateWorkspace(
-                        string.Format(PerformanceTestsConstants.PERFORMANCE_TEST_WORKSPACE_NAME_FORMAT, i)))
+                        string.Format(PerformanceTestsConstants.PERFORMANCE_TEST_WORKSPACE_NAME_FORMAT, i), SourceWorkspace.Name))
                 .ToArray();
+        }
+
+        private void CreateSavedSearch(int workspaceId)
+        {
+            KeywordSearch keywordSearch = new KeywordSearch
+            {
+                Name = SavedSearchName
+            };
+            
+            RelativityFacade.Instance.Resolve<IKeywordSearchService>()
+                .Require(workspaceId, keywordSearch);
         }
 
         public void OnTearDownFixture()
@@ -153,27 +177,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private async Task<IntegrationPointModel> GetIntegrationPointAsync(Workspace destinationWorkspace)
         {
-            int rootFolderId =
-                await GetRootFolderArtifactIdAsync(destinationWorkspace.ArtifactID).ConfigureAwait(false);
-            int savedSearchId =
-                await GetSavedSearchArtifactIdAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
             List<FieldMap> fieldsMapping =
                 await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID)
                     .ConfigureAwait(false);
-
-            int destinationProviderId =
-                await GetDestinationProviderIdAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
-            int sourceProviderId = await GetSourceProviderIdAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
-            int integrationPointType = await GetIntegrationPointTypeAsync(SourceWorkspace.ArtifactID, "Export")
-                .ConfigureAwait(false);
-
-            var choices =await GetChoicesOnFieldAsync(SourceWorkspace.ArtifactID,
-                    Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).ConfigureAwait(false);
-
+            
+            int rootFolderId =
+                await GetRootFolderArtifactIdAsync(destinationWorkspace.ArtifactID).ConfigureAwait(false);
+            
             var sourceConfiguration = new RelativityProviderSourceConfiguration
             {
                 TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch,
-                SavedSearchArtifactId = savedSearchId,
+                SavedSearchArtifactId = _savedSearchId,
                 SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID,
                 UseDynamicFolderPath = false
             };
@@ -186,13 +200,30 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 Name = string.Format(PerformanceTestsConstants.PERFORMANCE_TEST_INTEGRATION_POINT_NAME_FORMAT,
                     destinationWorkspace.ArtifactID),
                 FieldMappings = fieldsMapping,
-                DestinationProvider = destinationProviderId,
-                SourceProvider = sourceProviderId,
-                Type = integrationPointType,
+                DestinationProvider = _destinationProviderId,
+                SourceProvider = _sourceProviderId,
+                Type = _integrationPointType,
                 EmailNotificationRecipients = "",
-                OverwriteFieldsChoiceId = choices.First(c => c.Name == "Append/Overlay").ArtifactID,
+                OverwriteFieldsChoiceId = _choices.First(c => c.Name == "Append/Overlay").ArtifactID,
                 ScheduleRule = new ScheduleModel()
             };
+        }
+
+        private async Task GetIntegrationPointsConstantsAsync()
+        {
+            _savedSearchId =
+                await GetSavedSearchArtifactIdAsync(SourceWorkspace.ArtifactID, SavedSearchName).ConfigureAwait(false);
+
+            _destinationProviderId =
+                await GetDestinationProviderIdAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+
+            _sourceProviderId = await GetSourceProviderIdAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+
+            _integrationPointType = await GetIntegrationPointTypeAsync(SourceWorkspace.ArtifactID, "Export")
+                .ConfigureAwait(false);
+
+            _choices = await GetChoicesOnFieldAsync(SourceWorkspace.ArtifactID,
+                Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).ConfigureAwait(false);
         }
 
         private async Task<int> GetIntegrationPointTypeAsync(int workspaceId, string typeName)

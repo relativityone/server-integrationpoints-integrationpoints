@@ -261,7 +261,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             var childJobs = Enumerable.Range(0, 5).Select(x =>
             {
-                var childJob = job.Copy();
+                var childJob = new JobTest();
                 childJob.ParentJobId = job.JobId;
                 childJob.RootJobId = job.JobId;
                 childJob.JobId = job.JobId + x + 1;
