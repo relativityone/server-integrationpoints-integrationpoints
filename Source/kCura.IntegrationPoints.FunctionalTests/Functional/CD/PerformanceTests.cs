@@ -7,7 +7,9 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CD
 {
-    [TestExecutionCategory.RAPCD.Verification.Functional]
+    [IdentifiedTestFixture("1A83327E-7CEB-467B-B109-0203D65BE861", Description = "Performance Verification test for RIP")]
+    [TestExecutionCategory.RAPCD.Verification.NonFunctional]
+    [TestType.Performance]
     public class PerformanceTests : TestsBase
     {
         private readonly PerformanceTestsImplementation _implementation;

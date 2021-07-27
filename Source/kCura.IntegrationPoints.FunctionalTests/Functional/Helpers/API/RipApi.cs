@@ -45,8 +45,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 {
                     Guid = ObjectTypeGuids.JobHistoryGuid
                 },
-                Fields = new[] {new FieldRef {Name = "Integration Point"}},
-                // Condition = $"'Integration Point' == OBJECT {integrationPointId}"
+                Fields = new[] {new FieldRef {Name = "Integration Point"}}
             };
 
             using (var objectManager = _serviceFactory
