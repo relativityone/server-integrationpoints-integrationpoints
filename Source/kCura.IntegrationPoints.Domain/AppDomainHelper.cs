@@ -192,8 +192,10 @@ namespace kCura.IntegrationPoints.Domain
 
 			_logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
 
+
             if (_toggleProvider?.IsEnabled<DeployLibraryFilesFromWorkingDirectory>() ?? true)
             {
+                CopyLibraryFilesFromWorkingDirectory(domainPath);
 
             }
             else
@@ -204,7 +206,7 @@ namespace kCura.IntegrationPoints.Domain
             return newDomain;
 		}
 
-		public virtual IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
+        public virtual IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid)
 		{
             if (_toggleProvider?.IsEnabled<SkipLoadingRequiredAssemblies>() ?? true)
@@ -215,8 +217,8 @@ namespace kCura.IntegrationPoints.Domain
             {
 				LoadRequiredAssemblies(domain);
 			}
-			
-			LoadClientLibraries(domain, applicationGuid);
+
+            LoadClientLibraries(domain, applicationGuid);
 			AppDomainManager manager = CreateInstance<AppDomainManager>(domain, _helper);
 
 			manager.Init();
@@ -228,6 +230,25 @@ namespace kCura.IntegrationPoints.Domain
 				domain: domain);
 
 			return manager;
+		}
+
+        private void CopyLibraryFilesFromWorkingDirectory(string finalDllPath)
+        {
+            string workingDirectory = AppContext.BaseDirectory;
+            string topLevelDirectory = Directory.GetParent(workingDirectory.Remove(workingDirectory.Length - 1)).FullName;
+            DirectoryInfo[] appDomainCoreDirectory = new DirectoryInfo(topLevelDirectory).GetDirectories(@"*RelativityTmpAppDomain_Core*");
+			
+            CopyDirectoryFiles(workingDirectory, finalDllPath, true, true);
+
+            if (appDomainCoreDirectory.Any())
+            {
+                CopyDirectoryFiles(appDomainCoreDirectory[0].ToString(), finalDllPath, true, true);
+            }
+            else
+            {
+				_logger.LogWarning("Temporary application Domain Core directory not found");
+            }
+
 		}
 
 		private void DeployLibraryFiles(string finalDllPath)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services.Domain;
@@ -81,20 +82,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 
 			_domainHelperMock.DidNotReceive().ReleaseDomain(_appDomainMock);
 		}
-
-        [Test]
-        public void CreateNewDomainTest()
-        {
-            IHelper helper = new TestHelper();
-            IDBContext adminCaseDbContext = helper.GetDBContext(-1);
-            var getAppBinaries = new GetApplicationBinaries(adminCaseDbContext);
-            IPluginProvider pluginProvider = new DefaultSourcePluginProvider(getAppBinaries);
-            RelativityFeaturePathService relativityFeaturePathService = new RelativityFeaturePathService();
-            AppDomainHelper appDomainHelper = new AppDomainHelper(pluginProvider, helper, relativityFeaturePathService, null);
-
-			appDomainHelper.CreateNewDomain();
-        }
-
-
-	}
+    }
 }
