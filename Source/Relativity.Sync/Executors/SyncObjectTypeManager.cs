@@ -85,9 +85,9 @@ namespace Relativity.Sync.Executors
 
 		public async Task<int> GetObjectTypeArtifactTypeIdAsync(int workspaceArtifactId, int objectTypeArtifactI)
         {
-			using (IObjectTypeManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
+			using (IObjectTypeManager objectTypeManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
 			{
-				ObjectTypeResponse objectType = await objectManager.ReadAsync(workspaceArtifactId, objectTypeArtifactI).ConfigureAwait(false);
+				ObjectTypeResponse objectType = await objectTypeManager.ReadAsync(workspaceArtifactId, objectTypeArtifactI).ConfigureAwait(false);
 				return objectType.ArtifactTypeID;
 			}
 		}
