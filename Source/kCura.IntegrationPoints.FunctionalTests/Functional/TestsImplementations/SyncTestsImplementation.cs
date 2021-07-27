@@ -29,9 +29,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void OnSetUpFixture()
 		{
 			RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
-
-			CreateDestinationWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow));
-			CreateDestinationWorkspace(nameof(ProductionImagesGoldFlow));
 		}
 
 		public void OnTearDownFixture()
@@ -45,6 +42,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void SavedSearchNativesAndMetadataGoldFlow()
 		{
 			// Arrange
+			CreateDestinationWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow));
+
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
 			string integrationPointName = nameof(SavedSearchNativesAndMetadataGoldFlow);
 
 			Workspace destinationWorkspace = _destinationWorkspaces[nameof(SavedSearchNativesAndMetadataGoldFlow)];
@@ -98,6 +99,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void ProductionImagesGoldFlow()
 		{
 			// Arrange
+			CreateDestinationWorkspace(nameof(ProductionImagesGoldFlow));
+
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
 			string integrationPointName = nameof(ProductionImagesGoldFlow);
 
 			Workspace destinationWorkspace = _destinationWorkspaces[nameof(ProductionImagesGoldFlow)];

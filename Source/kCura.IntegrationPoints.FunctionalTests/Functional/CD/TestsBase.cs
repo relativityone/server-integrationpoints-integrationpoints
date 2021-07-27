@@ -8,8 +8,7 @@ using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
-using Relativity.Testing.Framework.Web.Triggers;
-using Relativity.Testing.Framework.Web.Steps;
+using Relativity.Testing.Framework.Web.Components;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CD
 {
@@ -24,6 +23,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 		{
 		}
 
+		public void LoginAsStandardUser()
+		{
+			Go.To<LoginPage>()
+				.EnterCredentials(_user.Email, _user.Password)
+				.Login.Click();
+		}
+
 		[OneTimeSetUp]
 		public virtual void OneTimeSetUp()
 		{
@@ -32,10 +38,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 			RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
 
 			InstallIntegrationPoints();
-
-			SetUpAtataContext();
-
-			LoginAsStandardAccount();
 		}
 
 		[OneTimeTearDown]
@@ -56,23 +58,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 			{
 				applicationService.InstallToWorkspace(Workspace.ArtifactID, app.ArtifactID);
 			}
-		}
-
-		private void SetUpAtataContext(string contextName = null)
-		{
-			SwitchContext.CurrentFrame = null;
-
-			AtataContextBuilder contextBuilder = AtataContext.Configure();
-
-			if (contextName != null)
-				contextBuilder.UseTestName(contextName);
-
-			contextBuilder.Build();
-		}
-
-		private void LoginAsStandardAccount(bool useCookies = false)
-		{
-			LoginSteps.Login(_user.Email, _user.Password, useCookies);
 		}
 
 		private void CleanUpTestUser()
