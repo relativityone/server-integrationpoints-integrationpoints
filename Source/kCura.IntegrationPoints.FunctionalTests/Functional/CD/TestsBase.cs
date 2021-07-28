@@ -8,6 +8,7 @@ using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using Relativity.Testing.Framework.Web.Components;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CD
 {
@@ -22,12 +23,21 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 		{
 		}
 
+		public void LoginAsStandardUser()
+		{
+			Go.To<LoginPage>()
+				.EnterCredentials(_user.Email, _user.Password)
+				.Login.Click();
+		}
+
 		[OneTimeSetUp]
 		public virtual void OneTimeSetUp()
 		{
 			RelativityFacade.Instance.RelyOn<WebComponent>();
 
 			RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
+
+			InstallIntegrationPoints();
 		}
 
 		[OneTimeTearDown]
@@ -36,6 +46,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 			AtataContext.Current?.Dispose();
 
 			CleanUpTestUser();
+		}
+
+		private void InstallIntegrationPoints()
+		{
+			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+
+			var app = applicationService.Get(Const.INTEGRATION_POINTS_APPLICATION_NAME);
+
+			if(!applicationService.IsInstalledInWorkspace(Workspace.ArtifactID, app.ArtifactID))
+			{
+				applicationService.InstallToWorkspace(Workspace.ArtifactID, app.ArtifactID);
+			}
 		}
 
 		private void CleanUpTestUser()
