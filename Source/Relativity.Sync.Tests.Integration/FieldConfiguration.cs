@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Transfer;
+﻿using Relativity.Sync.Configuration;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -8,6 +9,7 @@ namespace Relativity.Sync.Tests.Integration
 		public string DestinationColumnName { get; }
 		public RelativityDataType DataType { get; }
 		public FieldType Type { get; }
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 		public object Value { get; }
 
 		private FieldConfiguration(string sourceColumnName, string destinationColumnName, RelativityDataType dataType, FieldType fieldType, object value)
@@ -16,6 +18,7 @@ namespace Relativity.Sync.Tests.Integration
 			DestinationColumnName = destinationColumnName;
 			DataType = dataType;
 			Type = fieldType;
+			ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles;
 			Value = value;
 		}
 

@@ -28,10 +28,21 @@ namespace Relativity.Sync.Transfer
 		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository,
 			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders)
 		{
-			_configuration = configuration;
+			if(configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+            {
+                nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.Where(x => IsNotNativeInfoFieldsBuilder(x));
+            }
+
+            _configuration = configuration;
 			_documentFieldRepository = documentFieldRepository;
 			_nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
 			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
+
+        }
+
+		bool IsNotNativeInfoFieldsBuilder(INativeSpecialFieldBuilder x)
+		{
+			return x.GetType().GetInterface(nameof(INativeSpecialFieldBuilder)) == null;
 		}
 
 		public IEnumerable<FieldInfoDto> GetNativeSpecialFields()

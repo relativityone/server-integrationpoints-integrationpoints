@@ -58,6 +58,7 @@ namespace Relativity.Sync.Tests.Integration
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None
 			};
 			_configuration.SetFieldMappings(new List<FieldMap>());
+			_configuration.ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles;
 
 			_objectManager = new Mock<IObjectManager>();
 			_searchManager = new Mock<ISearchManager>();

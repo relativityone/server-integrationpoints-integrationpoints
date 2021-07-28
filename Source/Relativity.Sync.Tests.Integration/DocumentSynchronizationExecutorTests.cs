@@ -90,7 +90,8 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID,
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
 			};
 			_config.SetFieldMappings(fieldMaps);
 			containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();

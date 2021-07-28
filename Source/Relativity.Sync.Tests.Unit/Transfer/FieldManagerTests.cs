@@ -88,6 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration = new Mock<IFieldConfiguration>();
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_configuration.Setup(c => c.GetFieldMappings()).Returns(_MAPPED_FIELDS);
+			_configuration.SetupGet(c => c.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
 			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
 			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))

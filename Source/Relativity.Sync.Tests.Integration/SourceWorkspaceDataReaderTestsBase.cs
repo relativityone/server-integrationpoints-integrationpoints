@@ -37,8 +37,9 @@ namespace Relativity.Sync.Tests.Integration
 			_configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = _WORKSPACE_ID,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None
-			};
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
+		};
 
 			_documentTransferServicesMocker = new DocumentTransferServicesMocker();
 
