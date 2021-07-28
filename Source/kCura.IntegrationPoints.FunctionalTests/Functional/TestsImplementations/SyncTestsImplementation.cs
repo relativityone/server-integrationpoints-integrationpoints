@@ -1,7 +1,6 @@
 ﻿using Atata;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Models;
@@ -30,9 +29,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void OnSetUpFixture()
 		{
 			RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
-
-			_destinationWorkspaces.Add(nameof(SavedSearchNativesAndMetadataGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow)));
-			_destinationWorkspaces.Add(nameof(ProductionImagesGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(ProductionImagesGoldFlow)));
 		}
 
 		public void OnTearDownFixture()
@@ -46,6 +42,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void SavedSearchNativesAndMetadataGoldFlow()
 		{
 			// Arrange
+			CreateDestinationWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow));
+
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
 			string integrationPointName = nameof(SavedSearchNativesAndMetadataGoldFlow);
 
 			Workspace destinationWorkspace = _destinationWorkspaces[nameof(SavedSearchNativesAndMetadataGoldFlow)];
@@ -99,6 +99,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void ProductionImagesGoldFlow()
 		{
 			// Arrange
+			CreateDestinationWorkspace(nameof(ProductionImagesGoldFlow));
+
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
 			string integrationPointName = nameof(ProductionImagesGoldFlow);
 
 			Workspace destinationWorkspace = _destinationWorkspaces[nameof(ProductionImagesGoldFlow)];
@@ -189,6 +193,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
+		}
+
+		private void CreateDestinationWorkspace(string name)
+		{
+			_destinationWorkspaces.Add(name, RelativityFacade.Instance.CreateWorkspace(name, _testsImplementationTestFixture.Workspace.Name));
 		}
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)

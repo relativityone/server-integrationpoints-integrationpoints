@@ -122,7 +122,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
 			ResourcePool resourcePool = instance.Resolve<IResourcePoolService>().Get(templateWorkspace.ResourcePool.Name);
 
-			Group group = instance.Resolve<IGroupService>().Get(templateWorkspace.WorkspaceAdminGroup.Name);
+			Group group = templateWorkspace.WorkspaceAdminGroup != null
+				? instance.Resolve<IGroupService>().Get(templateWorkspace.WorkspaceAdminGroup.Name)
+				: null;
 
 			return new Workspace
 			{
