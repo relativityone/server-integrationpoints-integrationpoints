@@ -197,7 +197,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		private void CreateDestinationWorkspace(string name)
 		{
-			_destinationWorkspaces.Add(name, RelativityFacade.Instance.CreateWorkspace(name, _testsImplementationTestFixture.Workspace.Name));
+			string workspaceName = $"{name} - {Guid.NewGuid()}";
+
+			_destinationWorkspaces.Add(workspaceName, RelativityFacade.Instance.CreateWorkspace(workspaceName, _testsImplementationTestFixture.Workspace.Name));
 		}
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
