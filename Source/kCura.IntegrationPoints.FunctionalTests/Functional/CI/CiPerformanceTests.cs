@@ -5,29 +5,37 @@ using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
 
-namespace Relativity.IntegrationPoints.Tests.Functional.CD
+namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-    [TestExecutionCategory.RAPCD.Verification.NonFunctional]
     [TestType.Performance]
-    public class PerformanceTests : TestsBase
+    public class CiPerformanceTests : TestsBase 
     {
         private readonly PerformanceTestsImplementation _implementation;
+        private const int RunCount = 1;
 
-        public PerformanceTests() : base(nameof(PerformanceTests))
+        public CiPerformanceTests() : base(nameof(CiPerformanceTests))
         {
             _implementation = new PerformanceTestsImplementation(this); 
         }
 
         [OneTimeSetUp]
-        public void OneTimeSetup() => _implementation.OnSetUpFixture(PerformanceTestsConstants.RUN_COUNT);
+        public void OneTimeSetup()
+        {
+            base.OnSetUpFixture();
+            _implementation.OnSetUpFixture(RunCount);
+        }
 
         [OneTimeTearDown] 
-        public void OneTimeTeardown() => _implementation.OnTearDownFixture();
+        public void OneTimeTeardown()
+        {
+            base.OnTearDownFixture();
+            _implementation.OnTearDownFixture();
+        }
 
-        [IdentifiedTest("601D1C86-18A4-45AD-ABF5-38FE1D3BC99C")]
+        [IdentifiedTest("5859F168-7A8F-4E58-8200-EBB89132DE87")]
         public async Task SyncPerformanceTest()
         {
-            double averageRunTimeInSeconds = await _implementation.RunPerformanceBenchmark(PerformanceTestsConstants.RUN_COUNT).ConfigureAwait(false);
+            double averageRunTimeInSeconds = await _implementation.RunPerformanceBenchmark(RunCount).ConfigureAwait(false);
 
             averageRunTimeInSeconds.Should().BeLessOrEqualTo(PerformanceTestsConstants.MAX_AVERAGE_DURATION_S);
         }

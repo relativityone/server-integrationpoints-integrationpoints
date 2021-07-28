@@ -53,7 +53,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
-        public void OnSetUpFixture()
+        public void OnSetUpFixture(int runCount)
         {
             RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace,
                 LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
@@ -62,7 +62,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             
             GetIntegrationPointsConstantsAsync().GetAwaiter().GetResult();
 
-            _destinationWorkspaces = Enumerable.Range(0, PerformanceTestsConstants.RUN_COUNT)
+            _destinationWorkspaces = Enumerable.Range(0, runCount)
                 .Select(i =>
                     RelativityFacade.Instance.CreateWorkspace(
                         string.Format(PerformanceTestsConstants.PERFORMANCE_TEST_WORKSPACE_NAME_FORMAT, i), SourceWorkspace.Name))
@@ -141,16 +141,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         /// <summary>
         /// Runs <see cref="RunSyncAndMeasureTime"/> in a loop and calculates average time
         /// </summary>
+        /// <param name="runCount"></param>
         /// <returns>Average execution time</returns>
-        public async Task<double> RunPerformanceBenchmark()
+        public async Task<double> RunPerformanceBenchmark(int runCount)
         {
             double runTimeSum = 0;
-            for (int i = 0; i < PerformanceTestsConstants.RUN_COUNT; i++)
+            for (int i = 0; i < runCount; i++)
             {
                 runTimeSum += await RunSyncAndMeasureTime(i).ConfigureAwait(false);
             }
 
-            return runTimeSum / PerformanceTestsConstants.RUN_COUNT;
+            return runTimeSum / runCount;
         }
 
         private Task WaitForJobToFinishAsync(int integrationPointId, int workspaceId, int checkDelayInMs = 500)
