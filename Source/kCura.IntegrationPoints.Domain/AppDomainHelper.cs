@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Domain.Toggles;
 using Polly;
 using Relativity.API;
@@ -193,14 +194,14 @@ namespace kCura.IntegrationPoints.Domain
 			_logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
 
 
-            if (_toggleProvider?.IsEnabled<DeployLibraryFilesFromWorkingDirectory>() ?? true)
+            if (_toggleProvider?.IsEnabled<LoadRequiredAssembliesInKubernetesMode>() ?? false)
             {
-                CopyLibraryFilesFromWorkingDirectory(domainPath);
-
+                _logger.LogInformation("Required Assemblies Loaded in Kubernetes Mode");
+				DeployLibraryFiles(domainPath);
             }
             else
             {
-				DeployLibraryFiles(domainPath);
+                CopyLibraryFilesFromWorkingDirectory(domainPath);
 			}
 
             return newDomain;
@@ -209,11 +210,7 @@ namespace kCura.IntegrationPoints.Domain
         public virtual IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid)
 		{
-            if (_toggleProvider?.IsEnabled<SkipLoadingRequiredAssemblies>() ?? true)
-            {
-
-            }
-            else
+            if (_toggleProvider?.IsEnabled<LoadRequiredAssembliesInKubernetesMode>() ?? false)
             {
 				LoadRequiredAssemblies(domain);
 			}
@@ -234,21 +231,17 @@ namespace kCura.IntegrationPoints.Domain
 
         private void CopyLibraryFilesFromWorkingDirectory(string finalDllPath)
         {
-            string workingDirectory = AppContext.BaseDirectory;
-            string topLevelDirectory = Directory.GetParent(workingDirectory.Remove(workingDirectory.Length - 1)).FullName;
-            DirectoryInfo[] appDomainCoreDirectory = new DirectoryInfo(topLevelDirectory).GetDirectories(@"*RelativityTmpAppDomain_Core*");
-			
-            CopyDirectoryFiles(workingDirectory, finalDllPath, true, true);
+            string assemblyLocalPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
+            string assemblyLocalDirectory = Path.GetDirectoryName(assemblyLocalPath);
 
-            if (appDomainCoreDirectory.Any())
+            if (!assemblyLocalDirectory.IsNullOrEmpty())
             {
-                CopyDirectoryFiles(appDomainCoreDirectory[0].ToString(), finalDllPath, true, true);
+                CopyDirectoryFiles(assemblyLocalDirectory, finalDllPath, true, true);
             }
             else
             {
-				_logger.LogWarning("Temporary application Domain Core directory not found");
+				_logger.LogError("assemblyLocalDirectory directory not found; " + assemblyLocalPath);
             }
-
 		}
 
 		private void DeployLibraryFiles(string finalDllPath)
@@ -256,7 +249,7 @@ namespace kCura.IntegrationPoints.Domain
             string libDllPath = _relativityFeaturePathService.LibraryPath;
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
-			//kCura.Agent
+            //kCura.Agent
 			libDllPath = _relativityFeaturePathService.WebProcessingPath;
 			if (!string.IsNullOrWhiteSpace(libDllPath))
 			{
