@@ -17,8 +17,22 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 				? new Workspace { Name = name }
 				: GetRequestByWorkspaceTemplate(instance, name, templateWorkspace);
 
-			return instance.Resolve<IWorkspaceService>()
-				.Create(workspace);
+			IWorkspaceService workspaceService = instance.Resolve<IWorkspaceService>();
+			try
+			{
+				return workspaceService.Create(workspace);
+			}
+			catch(TaskCanceledException ex)
+			{
+				Thread.Sleep(5000);
+				Workspace createdWorkspace = workspaceService.Get(workspace.Name);
+				if(createdWorkspace != null)
+				{
+					return createdWorkspace;
+				}
+
+				throw ex;
+			}
 		}
 
 		public static void DeleteWorkspace(this IRelativityFacade instance, Workspace workspace)

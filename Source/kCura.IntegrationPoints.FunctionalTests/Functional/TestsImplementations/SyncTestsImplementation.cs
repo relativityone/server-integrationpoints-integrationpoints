@@ -42,13 +42,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void SavedSearchNativesAndMetadataGoldFlow()
 		{
 			// Arrange
-			CreateDestinationWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow));
-
 			_testsImplementationTestFixture.LoginAsStandardUser();
 
 			string integrationPointName = nameof(SavedSearchNativesAndMetadataGoldFlow);
 
-			Workspace destinationWorkspace = _destinationWorkspaces[nameof(SavedSearchNativesAndMetadataGoldFlow)];
+			Workspace destinationWorkspace = CreateDestinationWorkspace();
 
 			const int keywordSearchDocumentsCount = 5;
 			KeywordSearch keywordSearch = new KeywordSearch
@@ -99,13 +97,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void ProductionImagesGoldFlow()
 		{
 			// Arrange
-			CreateDestinationWorkspace(nameof(ProductionImagesGoldFlow));
-
 			_testsImplementationTestFixture.LoginAsStandardUser();
 
 			string integrationPointName = nameof(ProductionImagesGoldFlow);
 
-			Workspace destinationWorkspace = _destinationWorkspaces[nameof(ProductionImagesGoldFlow)];
+			Workspace destinationWorkspace = CreateDestinationWorkspace();
 
 			KeywordSearch keywordSearch = RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(_testsImplementationTestFixture.Workspace.ArtifactID, new KeywordSearch
 			{
@@ -195,9 +191,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
 		}
 
-		private void CreateDestinationWorkspace(string name)
+		private Workspace CreateDestinationWorkspace()
 		{
-			_destinationWorkspaces.Add(name, RelativityFacade.Instance.CreateWorkspace(name, _testsImplementationTestFixture.Workspace.Name));
+			string workspaceName = $"SYNC - {Guid.NewGuid()}";
+
+			Workspace workspace = RelativityFacade.Instance.CreateWorkspace(workspaceName, _testsImplementationTestFixture.Workspace.Name);
+
+			_destinationWorkspaces.Add(workspaceName, workspace);
+
+			return workspace;
 		}
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
