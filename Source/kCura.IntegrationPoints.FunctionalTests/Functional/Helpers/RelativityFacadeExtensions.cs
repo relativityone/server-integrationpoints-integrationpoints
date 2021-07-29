@@ -24,6 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 			}
 			catch(TaskCanceledException ex)
 			{
+				Thread.Sleep(5000);
 				Workspace createdWorkspace = workspaceService.Get(workspace.Name);
 				if(createdWorkspace != null)
 				{
