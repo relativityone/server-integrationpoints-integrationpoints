@@ -41,6 +41,8 @@ namespace kCura.ScheduleQueue.Core.Services
 				throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'");
 			}
 
+			_log.LogInformation("Get next job from the queue for Agent {agentId}.", agentID);
+
 			DataRow row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resurceGroupIdsArray);
 			return CreateJob(row);
 		}
@@ -53,6 +55,7 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 			if (job == null)
 			{
+				_log.LogWarning("Job is null. Return NextUtcRunDateTime as null");
 				return null;
 			}
 
@@ -65,6 +68,9 @@ namespace kCura.ScheduleQueue.Core.Services
 #endif
 				nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime();
 			}
+
+			_log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
+
 			return nextUtcRunDateTime;
 		}
 
@@ -119,9 +125,9 @@ namespace kCura.ScheduleQueue.Core.Services
 		}
 
 		public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
-			IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
+			IScheduleRule scheduleRule, string jobDetails, int submittedBy, long? rootJobID, long? parentJobID)
 		{
-			LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, SubmittedBy);
+			LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, submittedBy);
 
 			DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime();
 			if (nextRunTime.HasValue)
@@ -137,7 +143,7 @@ namespace kCura.ScheduleQueue.Core.Services
 					scheduleRule.ToSerializedString(),
 					jobDetails,
 					0,
-					SubmittedBy,
+					submittedBy,
 					rootJobID,
 					parentJobID);
 			}
@@ -145,6 +151,9 @@ namespace kCura.ScheduleQueue.Core.Services
 			{
 				throw new IntegrationPointsException($"Try to create new scheduled job without any rule specified. Previous Job Id: {oldJobId}");
 			}
+
+			LogOnCreatedScheduledJobBasedOnOldJob(oldJobId, workspaceID, relatedObjectArtifactID,
+				taskType, submittedBy, rootJobID, parentJobID, nextRunTime);
 		}
 
 		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
@@ -175,6 +184,8 @@ namespace kCura.ScheduleQueue.Core.Services
 					parentJobID);
 
 				job = CreateJob(row);
+
+				LogOnCreatedScheduledJob(job);
 			}
 			else
 			{
@@ -273,6 +284,8 @@ namespace kCura.ScheduleQueue.Core.Services
 				LogOnUpdateJobStopStateError(state, jobIds);
 				throw new InvalidOperationException("Invalid operation. Job state failed to update.");
 			}
+
+			LogCompletedUpdatedJobStopState(jobIds, state, count);
 		}
 
 		public IList<Job> GetJobs(long integrationPointId)
@@ -313,7 +326,6 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
 			_log.LogInformation("Attempting to update JobDetails for job with ID: ({jobId})", jobId);
 		}
-
 
 		public void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
 		{
@@ -371,6 +383,12 @@ namespace kCura.ScheduleQueue.Core.Services
 				string.Join(",", jobIds), state.ToString(), nameof(JobService));
 		}
 
+		private void LogCompletedUpdatedJobStopState(IList<long> jobIds, StopState state, int updatedCount)
+		{
+			_log.LogInformation("Jobs {count} count have been updated with StopState {stopState}. Updated Jobs: {jobs}. AllJobsWereUpdated: {wereAllUpdated}",
+				updatedCount, state, string.Join(",", jobIds), jobIds?.Count == updatedCount);
+		}
+
 		public void LogOnGetJobs(long integrationPointId)
 		{
 			_log.LogInformation(
@@ -381,6 +399,27 @@ namespace kCura.ScheduleQueue.Core.Services
 		public void LogOnCleanJobQueTable()
 		{
 			_log.LogDebug("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));
+		}
+
+		private void LogOnCreatedScheduledJob(Job job)
+		{
+			_log.LogInformation("Scheduled Job has been created:\n {@job}", job);
+		}
+
+		private void LogOnCreatedScheduledJobBasedOnOldJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
+			string taskType, int submittedBy, long? rootJobID, long? parentJobID, DateTime? nextRunTime)
+		{
+
+			_log.LogInformation("New scheduled job has been created based on OldJobId {oldJobId} with parameters:" +
+								"WorkspaceId: {workspaceId}, " +
+								"Integration Point: {relatedObjectArtifactId}, " +
+								"TaskType: {taskType}, " +
+								"NextRunTime: {nextRunTime}, " +
+								"SubmitedBy: {submitedBy}, " +
+								"RootJobId: {rootJobId}, " +
+								"ParentJobId: {parentJobId}",
+								oldJobId, workspaceID, relatedObjectArtifactID, taskType,
+								nextRunTime, submittedBy, rootJobID, parentJobID);
 		}
 
 		#endregion
