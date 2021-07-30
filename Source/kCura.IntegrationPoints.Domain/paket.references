@@ -1,6 +1,7 @@
 CSharpGuidelineAnalyzer
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.SDK
+Relativity.Toggles
 Castle.Windsor
 Relativity.DataGrid
 Relativity.DataTransfer.MessageService
