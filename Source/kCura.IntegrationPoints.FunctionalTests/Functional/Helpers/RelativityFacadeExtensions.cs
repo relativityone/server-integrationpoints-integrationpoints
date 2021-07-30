@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
+using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 {
@@ -22,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 			{
 				return workspaceService.Create(workspace);
 			}
-			catch(TaskCanceledException ex)
+			catch(Exception ex)
 			{
 				Thread.Sleep(5000);
 				Workspace createdWorkspace = workspaceService.Get(workspace.Name);
