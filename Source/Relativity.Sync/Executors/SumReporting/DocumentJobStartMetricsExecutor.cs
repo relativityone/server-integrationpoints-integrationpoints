@@ -86,7 +86,7 @@ namespace Relativity.Sync.Executors.SumReporting
 				}, token.StopCancellationToken);
             }
 
-			return Task.FromResult(0l);
+			return Task.FromResult(0L);
 		}
 
 		private async Task LogFieldsMappingDetailsAsync(IDocumentJobStartMetricsConfiguration configuration, CancellationToken token)
