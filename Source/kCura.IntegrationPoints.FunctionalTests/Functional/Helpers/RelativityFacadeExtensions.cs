@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
-using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 {
