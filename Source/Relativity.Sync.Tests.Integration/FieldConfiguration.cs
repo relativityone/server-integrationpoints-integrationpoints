@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Integration
 			DestinationColumnName = destinationColumnName;
 			DataType = dataType;
 			Type = fieldType;
-			ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles;
+			//ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles;
 			Value = value;
 		}
 

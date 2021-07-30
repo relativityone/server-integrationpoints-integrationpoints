@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class NativeInfoFieldsBuilder : INativeSpecialFieldBuilder
+	internal sealed class NativeInfoFieldsBuilder : INativeInfoFieldsBuilder
 	{
 		private readonly INativeFileRepository _nativeFileRepository;
 		private readonly ISyncLog _logger;

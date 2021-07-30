@@ -27,25 +27,26 @@ namespace Relativity.Sync.Transfer
 
 		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository,
 			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders)
-		{
-			if(configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles)
-            {
-                nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.Where(x => IsNotNativeInfoFieldsBuilder(x));
-            }
+        {
+            nativeSpecialFieldBuilders = OmmitNativeSpecialFieldBuilderIfNotNeeded(configuration, nativeSpecialFieldBuilders);
 
             _configuration = configuration;
-			_documentFieldRepository = documentFieldRepository;
-			_nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
-			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
-
+            _documentFieldRepository = documentFieldRepository;
+            _nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
+            _imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
         }
 
-		bool IsNotNativeInfoFieldsBuilder(INativeSpecialFieldBuilder x)
-		{
-			return x.GetType().GetInterface(nameof(INativeSpecialFieldBuilder)) == null;
-		}
+        private static IEnumerable<INativeSpecialFieldBuilder> OmmitNativeSpecialFieldBuilderIfNotNeeded(IFieldConfiguration configuration, IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders)
+        {
+            if (configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+            {
+                nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.Where(x => !(x is INativeInfoFieldsBuilder));
+            }
 
-		public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
+            return nativeSpecialFieldBuilders;
+        }
+
+        public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
 			=> _nativeSpecialFieldBuilders.SelectMany(b => b.BuildColumns());
 
 		public IEnumerable<FieldInfoDto> GetImageSpecialFields()

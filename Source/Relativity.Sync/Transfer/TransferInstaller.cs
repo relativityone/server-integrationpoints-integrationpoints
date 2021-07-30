@@ -24,6 +24,7 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<ImportStreamBuilder>().As<IImportStreamBuilder>();
 			builder.RegisterType<StreamRetryPolicyFactory>().As<IStreamRetryPolicyFactory>();
 			builder.RegisterTypesInExecutingAssembly<INativeSpecialFieldBuilder>();
+			builder.RegisterTypesInExecutingAssembly<INativeInfoFieldsBuilder>();
 			builder.RegisterTypesInExecutingAssembly<IImageSpecialFieldBuilder>();
 			builder.RegisterTypesInExecutingAssembly<IExportFieldSanitizer>();
 			builder.RegisterType<RetriableLongTextStreamBuilderFactory>().As<IRetriableStreamBuilderFactory>();

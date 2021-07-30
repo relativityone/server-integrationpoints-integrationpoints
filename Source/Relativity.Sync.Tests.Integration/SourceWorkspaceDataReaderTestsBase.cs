@@ -32,14 +32,14 @@ namespace Relativity.Sync.Tests.Integration
 		private const string _USER_EMAIL = "relativity.admin@kcura.com";
 		private const int _WORKSPACE_ID = 12345;
 
-		public void SetUp(int batchSize)
+		public void SetUp(int batchSize, ImportNativeFileCopyMode importNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles)
 		{
 			_configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = _WORKSPACE_ID,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
-				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
-		};
+				ImportNativeFileCopyMode = importNativeFileCopyMode
+			};
 
 			_documentTransferServicesMocker = new DocumentTransferServicesMocker();
 
@@ -156,6 +156,17 @@ namespace Relativity.Sync.Tests.Integration
 				FieldConfiguration.Identifier(sourceColumnName, destinationColumnName)
 			};
 			fields.UnionWith(DefaultSpecialFields);
+
+			return fields;
+		}
+
+		protected static HashSet<FieldConfiguration> IdentifierWithoutSpecialFields(string sourceColumnName, string destinationColumnName)
+		{
+			HashSet<FieldConfiguration> fields = new HashSet<FieldConfiguration>
+			{
+				FieldConfiguration.Identifier(sourceColumnName, destinationColumnName)
+			};
+
 			return fields;
 		}
 
@@ -166,6 +177,8 @@ namespace Relativity.Sync.Tests.Integration
 		};
 
 		protected static HashSet<FieldConfiguration> DefaultIdentifierWithSpecialFields => IdentifierWithSpecialFields(_DEFAULT_IDENTIFIER_COLUMN_NAME, _DEFAULT_IDENTIFIER_COLUMN_NAME);
+
+		protected static HashSet<FieldConfiguration> DefaultIdentifierWithoutSpecialFields => IdentifierWithoutSpecialFields(_DEFAULT_IDENTIFIER_COLUMN_NAME, _DEFAULT_IDENTIFIER_COLUMN_NAME);
 
 		protected static object RunThroughSerializer(object value)
 		{
