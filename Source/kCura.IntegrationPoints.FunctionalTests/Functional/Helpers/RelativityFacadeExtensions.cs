@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
-using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 {
@@ -14,19 +13,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 	{
 		public static Workspace CreateWorkspace(this IRelativityFacade instance, string name, string templateWorkspace = null)
 		{
+			Workspace workspace = String.IsNullOrWhiteSpace(templateWorkspace)
+				? new Workspace { Name = name }
+				: GetRequestByWorkspaceTemplate(instance, name, templateWorkspace);
+
 			IWorkspaceService workspaceService = instance.Resolve<IWorkspaceService>();
-
-			Workspace workspace = new Workspace
+			try
 			{
-				Name = name
-			};
-
-			if (!String.IsNullOrWhiteSpace(templateWorkspace))
-			{
-				workspace.TemplateWorkspace = new NamedArtifact {Name = templateWorkspace};
+				return workspaceService.Create(workspace);
 			}
+			catch(TaskCanceledException ex)
+			{
+				Thread.Sleep(5000);
+				Workspace createdWorkspace = workspaceService.Get(workspace.Name);
+				if(createdWorkspace != null)
+				{
+					return createdWorkspace;
+				}
 
-			return workspaceService.Create(workspace);
+				throw ex;
+			}
 		}
 
 		public static void DeleteWorkspace(this IRelativityFacade instance, Workspace workspace)
@@ -49,7 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
 		public static void ImportDocumentsFromCsv(this IRelativityFacade instance, Workspace workspace, string pathToFile,
 			string nativeFilePathColumnName = "FILE_PATH", string folderColumnName = null,
-			DocumentOverwriteMode overwriteMode = DocumentOverwriteMode.Append, DocumentOverlayBehavior overlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults)
+			DocumentOverwriteMode overwriteMode = DocumentOverwriteMode.AppendOverlay, DocumentOverlayBehavior overlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults)
 		{
 			IDocumentService documentService = instance.Resolve<IDocumentService>();
 
@@ -122,6 +128,25 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 				Thread.Sleep(1000);
 			}
 			while (productionStatus != ProductionStatus.Produced);
+		}
+
+		private static Workspace GetRequestByWorkspaceTemplate(IRelativityFacade instance, string name, string templateName)
+		{
+			Workspace templateWorkspace = instance.Resolve<IWorkspaceService>().Get(templateName);
+
+			ResourcePool resourcePool = instance.Resolve<IResourcePoolService>().Get(templateWorkspace.ResourcePool.Name);
+
+			Group group = templateWorkspace.WorkspaceAdminGroup != null
+				? instance.Resolve<IGroupService>().Get(templateWorkspace.WorkspaceAdminGroup.Name)
+				: null;
+
+			return new Workspace
+			{
+				Name = name,
+				ResourcePool = resourcePool,
+				TemplateWorkspace = templateWorkspace,
+				WorkspaceAdminGroup = group
+			};
 		}
 
 		private static void SetImportMode()

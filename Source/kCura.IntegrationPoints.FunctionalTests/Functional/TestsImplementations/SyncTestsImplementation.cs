@@ -1,7 +1,6 @@
 ﻿using Atata;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Models;
@@ -30,9 +29,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void OnSetUpFixture()
 		{
 			RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
-
-			_destinationWorkspaces.Add(nameof(SavedSearchNativesAndMetadataGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(SavedSearchNativesAndMetadataGoldFlow)));
-			_destinationWorkspaces.Add(nameof(ProductionImagesGoldFlow), RelativityFacade.Instance.CreateWorkspace(nameof(ProductionImagesGoldFlow)));
 		}
 
 		public void OnTearDownFixture()
@@ -46,9 +42,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void SavedSearchNativesAndMetadataGoldFlow()
 		{
 			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
 			string integrationPointName = nameof(SavedSearchNativesAndMetadataGoldFlow);
 
-			Workspace destinationWorkspace = _destinationWorkspaces[nameof(SavedSearchNativesAndMetadataGoldFlow)];
+			Workspace destinationWorkspace = CreateDestinationWorkspace();
 
 			const int keywordSearchDocumentsCount = 5;
 			KeywordSearch keywordSearch = new KeywordSearch
@@ -99,9 +97,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void ProductionImagesGoldFlow()
 		{
 			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
 			string integrationPointName = nameof(ProductionImagesGoldFlow);
 
-			Workspace destinationWorkspace = _destinationWorkspaces[nameof(ProductionImagesGoldFlow)];
+			Workspace destinationWorkspace = CreateDestinationWorkspace();
 
 			KeywordSearch keywordSearch = RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(_testsImplementationTestFixture.Workspace.ArtifactID, new KeywordSearch
 			{
@@ -189,6 +189,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
+		}
+
+		private Workspace CreateDestinationWorkspace()
+		{
+			string workspaceName = $"SYNC - {Guid.NewGuid()}";
+
+			Workspace workspace = RelativityFacade.Instance.CreateWorkspace(workspaceName, _testsImplementationTestFixture.Workspace.Name);
+
+			_destinationWorkspaces.Add(workspaceName, workspace);
+
+			return workspace;
 		}
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
