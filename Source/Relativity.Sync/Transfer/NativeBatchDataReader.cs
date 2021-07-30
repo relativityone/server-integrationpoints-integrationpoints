@@ -24,7 +24,7 @@ namespace Relativity.Sync.Transfer
 			: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer,
 				itemLevelErrorHandler, cancellationToken, logger)
 		{
-
+			CanCancel = true;
 		}
 
 		protected override IEnumerable<object[]> GetBatchEnumerable()

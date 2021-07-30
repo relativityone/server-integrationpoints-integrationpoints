@@ -247,6 +247,19 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			action.Should().Throw<SourceDataReaderException>();
 		}
 
+		[Test]
+		public async Task BuildAsync_ShouldReturnNativeBatchDataReader_WhichCanBeCanceled()
+		{
+			// Arrange
+			NativeBatchDataReaderBuilder builder = PrepareSut();
+
+			// Act
+			IBatchDataReader nativeBatchDataReader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			nativeBatchDataReader.CanCancel.Should().BeTrue();
+		}
+
 		private NativeBatchDataReaderBuilder PrepareSut()
 		{
 			return new NativeBatchDataReaderBuilder(_fieldManagerMock.Object, _exportDataSanitizerFake.Object, new EmptyLogger());
