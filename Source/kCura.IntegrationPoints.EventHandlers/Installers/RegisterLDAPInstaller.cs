@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Core.Provider;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.Toggles;
 
@@ -14,7 +15,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     {
         public RegisterLDAPInstaller(IToggleProvider toggleProvider) : base(toggleProvider)
         {
-            
+        }
+        public RegisterLDAPInstaller(IRipProviderInstaller ripProviderInstaller, IToggleProvider toggleProvider) : base(ripProviderInstaller, toggleProvider)
+        {
         }
         public override IDictionary<Guid, SourceProvider> GetSourceProviders()
         {
