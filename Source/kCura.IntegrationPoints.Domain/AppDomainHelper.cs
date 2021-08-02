@@ -33,36 +33,7 @@ namespace kCura.IntegrationPoints.Domain
             _toggleProvider = toggleProvider;
         }
 
-		public virtual void LoadRequiredAssemblies(AppDomain domain)
-		{
-			//loads the contracts dll into the app domain so we have reference 
-			var assemblyLocalPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
-			var assemblyLocalDirectory = Path.GetDirectoryName(assemblyLocalPath);
-			var assemblyPath = Path.Combine(assemblyLocalDirectory, "Relativity.IntegrationPoints.Contracts.dll");
-			if (!File.Exists(assemblyPath))
-			{
-				throw new FileNotFoundException(
-					$"Required file Relativity.IntegrationPoints.Contracts.dll is missing in {assemblyLocalDirectory}.");
-			}
-			var stream = File.ReadAllBytes(assemblyPath);
-			var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
-			File.WriteAllBytes(dir, stream);
-			assemblyPath = Path.Combine(assemblyLocalDirectory, "kCura.IntegrationPoints.Domain.dll");
-			if (!File.Exists(assemblyPath))
-			{
-				throw new FileNotFoundException(
-					$"Required file kCura.IntegrationPoints.Domain.dll is missing in {assemblyLocalDirectory}.");
-			}
-			stream = File.ReadAllBytes(assemblyPath);
-			dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
-			File.WriteAllBytes(dir, stream);
-
-			domain.Load(AssemblyName.GetAssemblyName(dir).Name);
-			_appDomainLoader = CreateInstance<AssemblyDomainLoader>(domain);
-			domain.AssemblyResolve += _appDomainLoader.ResolveAssembly;
-		}
-
-		public virtual T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
+		private T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
 		{
 			Type type = typeof(T);
 			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, false, BindingFlags.Default, null, constructorArgs, null, null) as T;
@@ -194,11 +165,12 @@ namespace kCura.IntegrationPoints.Domain
 			_logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
 
 
-            if (_toggleProvider?.IsEnabled<LoadRequiredAssembliesInKubernetesMode>() ?? false)
+            if (_toggleProvider.IsEnabled<LoadRequiredAssembliesInKubernetesMode>())
             {
-                _logger.LogInformation("Required Assemblies Loaded in Kubernetes Mode");
+                _logger.LogInformation("Required Assemblies Loading in Kubernetes Mode");
 				DeployLibraryFiles(domainPath);
-            }
+                LoadRequiredAssemblies(newDomain);
+			}
             else
             {
                 CopyLibraryFilesFromWorkingDirectory(domainPath);
@@ -210,11 +182,6 @@ namespace kCura.IntegrationPoints.Domain
         public virtual IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid)
 		{
-            if (_toggleProvider?.IsEnabled<LoadRequiredAssembliesInKubernetesMode>() ?? false)
-            {
-				LoadRequiredAssemblies(domain);
-			}
-
             LoadClientLibraries(domain, applicationGuid);
 			AppDomainManager manager = CreateInstance<AppDomainManager>(domain, _helper);
 
@@ -263,6 +230,35 @@ namespace kCura.IntegrationPoints.Domain
 				CopyFileWithWildcard(Path.Combine(libDllPath, "bin"), finalDllPath, "FSharp.Core*");
 			}
 		}
+
+        private void LoadRequiredAssemblies(AppDomain domain)
+        {
+            //loads the contracts dll into the app domain so we have reference 
+            var assemblyLocalPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
+            var assemblyLocalDirectory = Path.GetDirectoryName(assemblyLocalPath);
+            var assemblyPath = Path.Combine(assemblyLocalDirectory, "Relativity.IntegrationPoints.Contracts.dll");
+            if (!File.Exists(assemblyPath))
+            {
+                throw new FileNotFoundException(
+                    $"Required file Relativity.IntegrationPoints.Contracts.dll is missing in {assemblyLocalDirectory}.");
+            }
+            var stream = File.ReadAllBytes(assemblyPath);
+            var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
+            File.WriteAllBytes(dir, stream);
+            assemblyPath = Path.Combine(assemblyLocalDirectory, "kCura.IntegrationPoints.Domain.dll");
+            if (!File.Exists(assemblyPath))
+            {
+                throw new FileNotFoundException(
+                    $"Required file kCura.IntegrationPoints.Domain.dll is missing in {assemblyLocalDirectory}.");
+            }
+            stream = File.ReadAllBytes(assemblyPath);
+            dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
+            File.WriteAllBytes(dir, stream);
+
+            domain.Load(AssemblyName.GetAssemblyName(dir).Name);
+            _appDomainLoader = CreateInstance<AssemblyDomainLoader>(domain);
+            domain.AssemblyResolve += _appDomainLoader.ResolveAssembly;
+        }
 
 		private void CopyFileWithWildcard(string sourceDir, string targetDir, string fileName)
 		{
