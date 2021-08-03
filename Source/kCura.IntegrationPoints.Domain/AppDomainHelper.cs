@@ -33,34 +33,7 @@ namespace kCura.IntegrationPoints.Domain
             _toggleProvider = toggleProvider;
         }
 
-		private T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
-		{
-			Type type = typeof(T);
-			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, false, BindingFlags.Default, null, constructorArgs, null, null) as T;
-			if (instance == null)
-			{
-				throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name,
-					domain.FriendlyName));
-			}
-			return instance;
-		}
-
-		private byte[] ReadFully(Stream stream)
-		{
-			byte[] buffer = new byte[16 * 1024];
-			using (MemoryStream ms = new MemoryStream())
-			{
-				int read;
-				while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
-				{
-					ms.Write(buffer, 0, read);
-				}
-				stream.Seek(0, SeekOrigin.Begin);
-				return ms.ToArray();
-			}
-		}
-
-		public virtual void LoadClientLibraries(AppDomain domain, Guid applicationGuid)
+        public virtual void LoadClientLibraries(AppDomain domain, Guid applicationGuid)
 		{
 			if (_appDomainLoader == null)
 			{
@@ -210,6 +183,33 @@ namespace kCura.IntegrationPoints.Domain
 				_logger.LogError("assemblyLocalDirectory directory not found; " + assemblyLocalPath);
             }
 		}
+
+        private T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
+        {
+            Type type = typeof(T);
+            var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, false, BindingFlags.Default, null, constructorArgs, null, null) as T;
+            if (instance == null)
+            {
+                throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name,
+                    domain.FriendlyName));
+            }
+            return instance;
+        }
+
+        private byte[] ReadFully(Stream stream)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                stream.Seek(0, SeekOrigin.Begin);
+                return ms.ToArray();
+            }
+        }
 
 		private void DeployLibraryFiles(string finalDllPath)
 		{
