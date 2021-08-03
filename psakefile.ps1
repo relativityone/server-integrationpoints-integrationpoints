@@ -48,9 +48,6 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 }
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests) && cat != NotWorkingOnTrident" -OutputFile $LogPath
-
     $LogPath = Join-Path $LogsDir "CI_FunctionalTestResults.xml"
     Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath -WithCoverage
 }
