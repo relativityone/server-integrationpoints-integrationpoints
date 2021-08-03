@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Internal;
 
 namespace kCura.IntegrationPoints.Domain.Models
 {
@@ -133,6 +134,25 @@ namespace kCura.IntegrationPoints.Domain.Models
 
 			_messages.Add(new ValidationMessage(errorCode, shortMessage));
 		}
+
+		/// <summary>
+		/// Appends validation message to internal existing message
+		/// </summary>
+		/// <param name="searchShortMessage">Message where text will be appended</param>
+		/// <param name="appendShortMessage">Text to append into validation message</param>
+        public void AppendTextToShortMessage(string searchShortMessage, string appendShortMessage)
+        {
+            int index = _messages.FindIndex(x => x.ShortMessage.Contains(searchShortMessage));
+
+            if (index != -1)
+            {
+                string errorCode = _messages[index].ErrorCode;
+                string shortMessage = _messages[index].ShortMessage;
+
+				_messages.RemoveAt(index);
+				_messages.Add(new ValidationMessage(errorCode, shortMessage + appendShortMessage));
+            }
+        }
 
 		private void AddRange(IEnumerable<string> messages)
 		{

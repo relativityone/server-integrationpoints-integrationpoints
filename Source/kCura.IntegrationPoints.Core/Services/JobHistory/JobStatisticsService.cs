@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			{
 				Data.JobHistory historyRdo = _jobHistoryService.GetRdo(batchInstance);
 				historyRdo.ItemsTransferred = stats.Imported > 0 ? stats.Imported : 0;
-				historyRdo.ItemsWithErrors = stats.Errored;
+				historyRdo.ItemsWithErrors = stats.ImportApiErrors;
 				historyRdo.FilesSize = FileSizeUtils.FormatFileSize(totalSize);
 				_jobHistoryService.UpdateRdo(historyRdo);
 			}
@@ -161,8 +161,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			try
 			{
 				Data.JobHistory historyRdo = _jobHistoryService.GetRdo(_helper.GetBatchInstance(_job));
-				int updatedNumberOfTransferedItems = (historyRdo.ItemsTransferred ?? 0) + transferredItem;
-				historyRdo.ItemsTransferred = Math.Max(0, updatedNumberOfTransferedItems);
+				int updatedNumberOfTransferredItems = (historyRdo.ItemsTransferred ?? 0) + transferredItem;
+				historyRdo.ItemsTransferred = Math.Max(0, updatedNumberOfTransferredItems);
 				historyRdo.ItemsWithErrors += erroredCount;
 				_jobHistoryService.UpdateRdo(historyRdo);
 			}

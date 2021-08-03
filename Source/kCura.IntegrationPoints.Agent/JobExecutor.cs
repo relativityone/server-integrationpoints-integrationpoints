@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			Job job = _jobService.GetJob(jobId);
 			if (job.StopState.HasFlag(StopState.DrainStopping) || job.StopState.HasFlag(StopState.DrainStopped))
-			{
+            {
 				return new TaskResult { Status = TaskStatusEnum.DrainStopped, Exceptions = null };
 			}
 

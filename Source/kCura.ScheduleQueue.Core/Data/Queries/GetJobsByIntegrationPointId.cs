@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.ScheduleQueue.Core.Data.Interfaces;
-using kCura.ScheduleQueue.Core.Properties;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-    public class GetJobsByIntegrationPointId : IQuery<DataTable>
+	public class GetJobsByIntegrationPointId : IQuery<DataTable>
     {
         private readonly IQueueDBContext _qDbContext = null;
         private readonly long _integrationPointId;

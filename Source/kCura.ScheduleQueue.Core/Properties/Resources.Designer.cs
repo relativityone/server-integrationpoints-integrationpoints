@@ -339,6 +339,15 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string GetPendingJobsCount {
+            get {
+                return ResourceManager.GetString("GetPendingJobsCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INSERT INTO [eddsdbo].[{0}]
         ///		(
         ///			[JobID],

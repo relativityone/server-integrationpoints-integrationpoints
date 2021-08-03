@@ -170,21 +170,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int processedItemsCount = GetProcessedItemsCount(JobHistory);
 			
-			if (IsDrainStopped() && AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
+			if (IsDrainStopped())
 			{
-				MarkJobAsDrainStopped(job, processedItemsCount);
+				if(AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
+				{
+					UpdateJobWithProcessedItemsCount(job, processedItemsCount);
+					return;
+				}
+
+				JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
 			}
 		}
 
-		private void MarkJobAsDrainStopped(Job job, int processedItemsCount)
+		private void UpdateJobWithProcessedItemsCount(Job job, int processedItemsCount)
 		{
 			TaskParameters updatedTaskParameters = UpdateJobDetails(job, processedItemsCount);
 			job.JobDetails = Serializer.Serialize(updatedTaskParameters);
-			JobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
-			JobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
-
-			job.StopState = StopState.DrainStopped;
-			JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
 			JobService.UpdateJobDetails(job);
 		}
 
@@ -207,7 +208,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private static int GetProcessedItemsCount(JobHistory jobHistory)
 		{
-			return jobHistory.ItemsTransferred ?? 0 + jobHistory.ItemsWithErrors ?? 0;
+			return (jobHistory.ItemsTransferred ?? 0) + (jobHistory.ItemsWithErrors ?? 0);
 		}
 
 		private static bool AnyItemsLeftToBeProcessed(int processedItemCount, JobHistory jobHistory)
@@ -360,10 +361,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LoadFileTaskParameters storedLoadFileParameters = GetLoadFileTaskParameters(GetTaskParameters(job));
 			LoadFileInfo currentLoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
 
-			if(currentLoadFile.Size != storedLoadFileParameters.Size || currentLoadFile.LastModifiedDate != storedLoadFileParameters.LastModifiedDate)
+			Logger.LogInformation("Validating LoadFile {@loadFile}, based on TaskParameters {@taskParameters}",
+				currentLoadFile, storedLoadFileParameters);
+
+			if(storedLoadFileParameters == null)
 			{
-				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
-				throw new IntegrationPointValidationException(result);
+				Logger.LogWarning("TaskParameters doesn't contain LoadFile parameters, but should.");
+				UpdateJobWithLoadFileDetails(job, currentLoadFile);
+			}
+			else
+			{
+				ValidateLoadFileHasNotChanged(storedLoadFileParameters, currentLoadFile);
 			}
 		}
 
@@ -386,6 +394,31 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			return loadFileParameters;
+		}
+
+		private void UpdateJobWithLoadFileDetails(Job job, LoadFileInfo loadFile)
+		{
+			Logger.LogInformation("Updating Job {jobId} details with LoadFileInfo {@loadFile}", job.JobId, loadFile);
+			TaskParameters taskParameters = GetTaskParameters(job);
+			taskParameters.BatchParameters = new LoadFileTaskParameters
+			{
+				LastModifiedDate = loadFile.LastModifiedDate,
+				Size = loadFile.Size
+			};
+
+			job.JobDetails = Serializer.Serialize(taskParameters);
+			
+			JobService.UpdateJobDetails(job);
+		}
+
+		private void ValidateLoadFileHasNotChanged(LoadFileTaskParameters storedLoadFileParameters, LoadFileInfo currentLoadFile)
+		{
+			Logger.LogInformation("Validating if LoadFile has not changed since the job was scheduled...");
+			if (currentLoadFile.Size != storedLoadFileParameters.Size || currentLoadFile.LastModifiedDate != storedLoadFileParameters.LastModifiedDate)
+			{
+				ValidationResult result = new ValidationResult(false, "Load File has been modified.");
+				throw new IntegrationPointValidationException(result);
+			}
 		}
 
 		private int GetProcessedItemsCountFromJobDetails(Job job)

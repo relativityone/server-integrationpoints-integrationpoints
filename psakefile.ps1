@@ -55,6 +55,12 @@ Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that requ
     Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath -WithCoverage
 }
 
+
+Task CIFunctionalTest -Description "Run tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "CIFunctionalTestResults.xml"
+    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
+}
+
 Task Sign -Description "Sign all files" {
     Get-ChildItem $SourceDir -recurse | Where-Object {$_.Directory.Name -eq "bin" -and @(".dll",".msi",".exe") -contains $_.Extension} | Select-Object -expand FullName | Set-DigitalSignature -ErrorAction Stop
 }

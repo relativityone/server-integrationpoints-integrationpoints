@@ -3,6 +3,7 @@ CSharpGuidelineAnalyzer
 LanguageExt.Core
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
+Relativity.Platform.Agent.WorkloadDiscovery.SDK
 Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
 FluentAssertions

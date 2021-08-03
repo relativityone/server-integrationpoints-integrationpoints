@@ -10,6 +10,7 @@ Relativity.IntegrationPoints.Contracts
 Relativity.Logging
 Relativity.Productions.Services.Interfaces
 Relativity.DataExchange.Client.SDK
+Relativity.Services.Interfaces
 iTextSharp
 
 Relativity.Kepler.Service

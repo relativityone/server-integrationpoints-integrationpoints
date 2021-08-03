@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
@@ -151,7 +152,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
 		private RdoEntitySynchronizer PrepareSut()
 		{
-			return new RdoEntitySynchronizer(_fieldQuery.Object, GetMockAPI(_fieldQuery.Object), _importJobFactory, _helper.Object);
+			Mock<IEntityManagerLinksSanitizer> entityManagerLinksSanitizer = new Mock<IEntityManagerLinksSanitizer>();
+
+			return new RdoEntitySynchronizer(_fieldQuery.Object, GetMockAPI(_fieldQuery.Object), 
+				_importJobFactory, _helper.Object, entityManagerLinksSanitizer.Object);
 		}
 	}
 }

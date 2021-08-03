@@ -23,5 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 		/// <param name="taskTypeExceptions">Task types to exclude when checking for the count of associated jobs</param>
 		/// <returns>True if associated batch jobs are complete, false otherwise</returns>
 		bool AreAllTasksOfTheBatchDone(Job job, string[] taskTypeExceptions);
+
+		void MarkEntityManagerLinksAsExpired(Job job, Guid batchInstance);
 	}
 }

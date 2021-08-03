@@ -7,9 +7,9 @@ namespace kCura.ScheduleQueue.Core.Data
 {
 	public class JobServiceDataProvider : IJobServiceDataProvider
 	{
-		private readonly IQueryManager _queryManager;
+		private readonly IQueueQueryManager _queryManager;
 
-		public JobServiceDataProvider(IQueryManager queryManager)
+		public JobServiceDataProvider(IQueueQueryManager queryManager)
 		{
 			_queryManager = queryManager;
 		}

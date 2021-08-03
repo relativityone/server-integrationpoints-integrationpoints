@@ -1,10 +1,11 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-    public class JobTracker : IJobTracker
+	public class JobTracker : IJobTracker
     {
         private readonly IJobResourceTracker _tracker;
 
@@ -35,11 +36,18 @@ namespace kCura.IntegrationPoints.Core.Services
             _tracker.CreateTrackingEntry(jobTrackerTempTableName, job.JobId, job.WorkspaceID);
         }
 
-        public bool CheckEntries(Job job, string batchId)
+        public bool CheckEntries(Job job, string batchId, bool batchIsFinished)
         {
 	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
 
-            return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID) == 0;
+            return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID, batchIsFinished) == 0;
+        }
+
+        public BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId)
+        {
+	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+
+	        return _tracker.GetBatchesStatuses(jobTrackerTempTableName, job.RootJobId.Value, job.WorkspaceID);
         }
     }
 }

@@ -1,53 +1,85 @@
-﻿using System.Collections.Generic;
-using System.Data.SqlClient;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using System;
+using System.Data;
+using kCura.IntegrationPoints.Data.DTO;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-    public class JobResourceTracker : IJobResourceTracker
+	public class JobResourceTracker : IJobResourceTracker
     {
-	    private static readonly object _syncRoot = new object();
+		private readonly IJobTrackerQueryManager _jobTrackerQueryManager;
 
-		private readonly IRepositoryFactory _repositoryFactory;
-        private readonly IWorkspaceDBContext _context;
+		private static readonly object _syncRoot = new object();
 
-        public JobResourceTracker(IRepositoryFactory repositoryFactory, IWorkspaceDBContext context)
-        {
-            _repositoryFactory = repositoryFactory;
-            _context = context;
-        }
+		public JobResourceTracker(IJobTrackerQueryManager jobTrackerQueryManager)
+		{
+			_jobTrackerQueryManager = jobTrackerQueryManager;
+		}
 
-        public void CreateTrackingEntry(string tableName, long jobId, int workspaceId)
+		public void CreateTrackingEntry(string tableName, long jobId, int workspaceId)
         {
 	        lock (_syncRoot)
 	        {
-		        IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceId, string.Empty, string.Empty);
-
-		        string sql = string.Format(Resources.Resource.CreateJobTrackingEntry, scratchTableRepository.GetResourceDBPrepend(), tableName);
-		        IList<SqlParameter> sqlParams = GetSqlParameters(jobId);
-		        _context.ExecuteNonQuerySQLStatement(sql, sqlParams);
+				_jobTrackerQueryManager.CreateJobTrackingEntry(tableName, workspaceId, jobId)
+					.Execute();
 	        }
         }
 
-        public int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId)
+        public int RemoveEntryAndCheckStatus(string tableName, long jobId, int workspaceId, bool batchIsFinished)
         {
 	        lock (_syncRoot)
 	        {
-		        IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceId, string.Empty, string.Empty);
-
-		        string sql = string.Format(Resources.Resource.RemoveEntryAndCheckBatchStatus, scratchTableRepository.GetResourceDBPrepend(), scratchTableRepository.GetSchemalessResourceDataBasePrepend(), tableName);
-		        IList<SqlParameter> sqlParams = GetSqlParameters(jobId);
-		        return _context.ExecuteSqlStatementAsScalar<int>(sql, sqlParams);
+				return _jobTrackerQueryManager.RemoveEntryAndCheckBatchStatus(tableName, workspaceId, jobId, batchIsFinished)
+					.Execute();
 	        }
         }
 
-        private IList<SqlParameter> GetSqlParameters(long jobId)
+        public BatchStatusQueryResult GetBatchesStatuses(string tableName, long rootJobId, int workspaceId)
         {
-            return new List<SqlParameter>
-            {
-                new SqlParameter("@jobID", jobId)
-            };
+	        lock (_syncRoot)
+	        {
+				DataTable dataTable = _jobTrackerQueryManager.GetProcessingSyncWorkerBatches(tableName, workspaceId, rootJobId)
+					.Execute();
+
+				BatchStatusQueryResult result = new BatchStatusQueryResult
+		        {
+					ProcessingCount = CountProcessingBatches(dataTable),
+					SuspendedCount = CountSuspendedBatches(dataTable)
+		        };
+				
+				return result;
+	        }
+        }
+
+        private int CountSuspendedBatches(DataTable dataTable)
+        {
+	        const int stopStateSuspended = 8;
+			int result = 0;
+			
+			foreach (DataRow row in dataTable.Rows)
+	        {
+		        
+		        if (row[0] == DBNull.Value && (int)row[1] == stopStateSuspended)
+		        {
+			        ++result;
+		        }
+	        }
+
+	        return result;
+        }
+
+        private int CountProcessingBatches(DataTable dataTable)
+        {
+	        int result = 0;
+
+	        foreach (DataRow row in dataTable.Rows)
+	        {
+		        if (row[0] != DBNull.Value)
+		        {
+			        ++result;
+		        }
+	        }
+
+	        return result;
         }
     }
 }

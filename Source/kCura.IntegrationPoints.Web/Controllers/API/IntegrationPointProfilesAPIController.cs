@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -186,8 +187,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			};
 
 			ValidationResult validationResult = _validationExecutor.ValidateOnProfile(validationContext);
+            validationResult.AppendTextToShortMessage(IntegrationPointProviderValidationMessages.ARTIFACT_NOT_EXIST, IntegrationPointProviderValidationMessages.NEXT_BUTTON_INSTRUCTION);
 
-			return MapToValidationResultOutputModel(validationResult);
+            return MapToValidationResultOutputModel(validationResult);
 		}
 
 		private ValidationResultDTO MapToValidationResultOutputModel(ValidationResult validationResult)

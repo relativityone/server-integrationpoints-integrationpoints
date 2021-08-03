@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -18,16 +21,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	{
 		private List<RelativityObject> _allRdoFields;
 		private int _artifactTypeIdForAllRdoFields;
-		private IDictionary<string, string> _entityManagerMap;
+		private OrderedDictionary _entityManagerMap;
 
 		private const string _LDAP_MAP_FULL_NAME_FIELD_NAME = "CustomFullName";
 
 		private readonly IAPILog _logger;
+		private readonly IEntityManagerLinksSanitizer _entityManagerLinksSanitizer;
 
-		public RdoEntitySynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
+		public RdoEntitySynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory,
+			IImportJobFactory jobFactory, IHelper helper, IEntityManagerLinksSanitizer entityManagerLinksSanitizer)
 			: base(fieldQuery, factory, jobFactory, helper)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
+			_entityManagerLinksSanitizer = entityManagerLinksSanitizer;
 		}
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
@@ -82,7 +88,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 				Dictionary<string, int> importFieldMap = base.GetSyncDataImportFieldMap(fieldMap, settings);
 				LoadFullNameField(allRdoFields, importFieldMap);
-				_entityManagerMap = new Dictionary<string, string>();
+				_entityManagerMap = new OrderedDictionary();
 
 				LoadManagerFieldId(fieldMap, settings, allRdoFields);
 
@@ -244,7 +250,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void SubmitLinkManagersJob(IEnumerable<FieldMap> fieldMap)
 		{
-			if (TaskJobSubmitter == null || !_entityManagerMap.Any())
+			if (TaskJobSubmitter == null || _entityManagerMap.Count == 0)
 			{
 				LogMissingArguments();
 				return;
@@ -252,9 +258,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			_logger.LogDebug("Creating new Job for Manager reference import");
 
+			Dictionary<string, string> finalEntityManagerMap = GetEntityManagerMapForTransferredRecords(ImportService.TotalRowsProcessed);
+
 			var jobParameters = new
 			{
-				EntityManagerMap = _entityManagerMap,
+				EntityManagerMap = finalEntityManagerMap,
 				EntityManagerFieldMap = new List<FieldMap>
 				{
 					new FieldMap
@@ -265,7 +273,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 								DisplayName = "CustodianIdentifier",
 								FieldIdentifier = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First()
 							},
-						DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = "distinguishedname"},
+						DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = _entityManagerLinksSanitizer.ManagerLinksFieldIdentifier},
 						FieldMapType = FieldMapTypeEnum.Identifier
 					}
 				},
@@ -275,6 +283,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			LogSubmittingJob();
 			TaskJobSubmitter.SubmitJob(jobParameters);
+		}
+
+		private Dictionary<string, string> GetEntityManagerMapForTransferredRecords(int transferredItemsCount)
+		{
+			int i = 0;
+			Dictionary<string, string> finalEntityManagerMap = new Dictionary<string, string>();
+			foreach (DictionaryEntry entry in _entityManagerMap)
+			{
+				if (i < transferredItemsCount)
+				{
+					finalEntityManagerMap.Add(entry.Key.ToString(), entry.Value.ToString());
+					i++;
+				}
+			}
+
+			return finalEntityManagerMap;
 		}
 
 		private static string GenerateFullName(string lastName, string firstName)
@@ -305,8 +329,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (!string.IsNullOrWhiteSpace(managerReferenceLink))
 				{
 					if (!string.IsNullOrWhiteSpace(uniqueIdentifier) &&
-						!_entityManagerMap.ContainsKey(uniqueIdentifier))
+						!_entityManagerMap.Contains(uniqueIdentifier))
 					{
+						managerReferenceLink = _entityManagerLinksSanitizer.SanitizeManagerReferenceLink(managerReferenceLink);
+
 						_logger.LogDebug(
 							$"Add Manager Ref Link: '{managerReferenceLink}' for entity unique id field value: '{uniqueIdentifier}'");
 						_entityManagerMap.Add(uniqueIdentifier, managerReferenceLink);

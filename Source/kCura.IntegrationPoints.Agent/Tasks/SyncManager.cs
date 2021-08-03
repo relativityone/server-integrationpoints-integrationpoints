@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -199,7 +200,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						if (workerThreadCompleted)
 						{
 							_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
-							break;
+                            break;
 						}
 
 						Thread.Sleep(sleep);
@@ -210,8 +211,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						_logger.LogInformation("Drain-Stop timeout exceeded. SyncManager task will be aborted.");
 						workerThread.Abort();
-						JobHistory.JobStatus = JobStatusChoices.JobHistorySuspended;
-						_jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
 						throw new OperationCanceledException();
 					}
 				}
@@ -221,7 +220,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				throw workedThreadException;
 			}
-
+			
+			JobStopManager?.StopCheckingDrainStopAndUpdateStopState(job, (bool)JobStopManager?.ShouldDrainStop);
+			
 			return reader;
 		}
 
