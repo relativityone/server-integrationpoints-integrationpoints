@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 
@@ -12,12 +13,14 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 	public class TaskJobSubmitter : ITaskJobSubmitter
 	{
 		private readonly IJobManager _jobManager;
+		private readonly IJobService _jobService;
 		private readonly Job _parentJob;
 		private readonly TaskType _taskToSubmit;
 		private readonly Guid _batchInstance;
-		public TaskJobSubmitter(IJobManager jobManager, Job parentJob, TaskType taskToSubmit, Guid batchInstance)
+		public TaskJobSubmitter(IJobManager jobManager, IJobService jobService, Job parentJob, TaskType taskToSubmit, Guid batchInstance)
 		{
 			_jobManager = jobManager;
+			_jobService = jobService;
 			_parentJob = parentJob;
 			_taskToSubmit = taskToSubmit;
 			_batchInstance = batchInstance;
@@ -30,7 +33,9 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 				BatchInstance = _batchInstance,
 				BatchParameters = jobDetailsObject
 			};
-			_jobManager.CreateJobWithTracker(_parentJob, taskParameters, _taskToSubmit, _batchInstance.ToString());
+			Job job = _jobManager.CreateJobWithTracker(_parentJob, taskParameters, _taskToSubmit, _batchInstance.ToString());
+
+			_jobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
 		}
 	}
 }

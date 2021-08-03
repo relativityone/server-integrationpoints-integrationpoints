@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 
 		public static ICorrespondingJobDelete Create(IHelper helper)
 		{
-			IQueryManager queryManager = new QueryManager(helper, _agentGuid);
+			IQueueQueryManager queryManager = new QueueQueryManager(helper, _agentGuid);
 			IAgentService agentService = new AgentService(helper, queryManager, _agentGuid);
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 			IJobService jobService = new JobService(agentService, jobServiceDataProvider, helper);

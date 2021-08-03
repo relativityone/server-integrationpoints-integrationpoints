@@ -26,10 +26,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IJobServiceDataProvider _jobServiceDataProvider;
 		private readonly long _jobId;
 		private readonly IRemovableAgent _agent;
-		private readonly bool _supportsDrainStop;
-		private readonly IAPILog _logger;
+        private readonly IAPILog _logger;
 		private readonly CancellationToken _token;
 
+        private bool _supportsDrainStop;
 		private bool _isDrainStopping;
 		private Timer _timerThread;
 		private bool _disposed;
@@ -164,6 +164,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			StopRequestedEvent?.Invoke(this, EventArgs.Empty);
 		}
+
+        public void StopCheckingDrainStop()
+		{
+            _supportsDrainStop = false;
+			_isDrainStopping = false;
+        }
+
+        public void CleanUpJobDrainStop()
+        {
+            UpdateStopState(StopState.None);
+        }
 
 		#region Logging
 

@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IRelativityObjectManagerServiceFactory>().ImplementedBy<RelativityObjectManagerServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
 			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
-			container.Register(Component.For<IQueryManager>().ImplementedBy<QueryManager>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
+			container.Register(Component.For<IQueueQueryManager>().ImplementedBy<QueueQueryManager>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
 			container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>().LifestyleTransient());
 			container.Register(Component.For<IJobRepository>().ImplementedBy<JobRepository>().LifestyleTransient());
 			container.Register(Component.For<IUnfinishedJobService>().ImplementedBy<UnfinishedJobService>().LifestyleTransient());

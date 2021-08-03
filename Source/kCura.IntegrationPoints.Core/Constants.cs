@@ -200,6 +200,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string INTEGRATION_POINTS_SECTION = "kCura.IntegrationPoints";
 			public const string BLOCKED_HOSTS = "BlockedIPs";
 			public const string DRAIN_STOP_TIMEOUT = "DrainStopTimeoutSeconds";
+			public const string WORKLOAD_SIZE_SETTINGS = "WorkloadSizeSettings";
 		}
 	}
 }

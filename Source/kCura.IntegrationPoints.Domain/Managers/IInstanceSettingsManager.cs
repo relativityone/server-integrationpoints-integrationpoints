@@ -13,5 +13,7 @@ namespace kCura.IntegrationPoints.Domain.Managers
 		string RetrieveBlockedIPs();
 
 		TimeSpan GetDrainStopTimeout();
+
+		string GetWorkloadSizeSettings();
 	}
 }

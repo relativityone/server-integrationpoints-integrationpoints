@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
     {
         private readonly IDataReader _dataReaderImplementation;
         private readonly IJobStopManager _stopManager;
+        private bool _firsReadDone;
 
         public PausableDataReader(IDataReader dataReaderImplementation, IJobStopManager stopManager)
         {
@@ -17,12 +18,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         
         public bool Read()
         {
-            if (_stopManager?.ShouldDrainStop ?? false)
+            // IAPI always reads the reader once to get the column names
+            // it also ignores the first Read invocation result, so we need to read the inner reader at least once
+	        if (_firsReadDone && _stopManager?.ShouldDrainStop == true)
             {
-                Close();
                 return false;
             }
 
+            _firsReadDone = true;
             return _dataReaderImplementation.Read();
         }
         

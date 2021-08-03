@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<GetJobEntityManagerLinks>().ImplementedBy<GetJobEntityManagerLinks>().LifestyleTransient());
 			container.Register(Component.For<GetJobsCount>().ImplementedBy<GetJobsCount>().LifestyleTransient());
 			container.Register(Component.For<IJobResourceTracker>().ImplementedBy<JobResourceTracker>().LifestyleTransient());
+			container.Register(Component.For<IJobTrackerQueryManager>().ImplementedBy<JobTrackerQueryManager>().LifestyleTransient());
 			container.Register(Component.For<JobStatistics>().ImplementedBy<JobStatistics>().LifestyleTransient());
 			container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());

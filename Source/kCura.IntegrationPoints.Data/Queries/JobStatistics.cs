@@ -2,10 +2,18 @@ using System.Data;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-    public class JobStatistics
+	public class JobStatistics
     {
         public int Completed { get; set; }
+        
+        /// <summary>
+        /// This is a value from JobReport from OnComplete IAPI event
+        /// </summary>
         public int Errored { get; set; }
+        
+        /// <summary>
+        /// This is a count of OnError invocations
+        /// </summary>
         public int ImportApiErrors { get; set; }
         public int Imported { get { return Completed - ImportApiErrors; } }
 

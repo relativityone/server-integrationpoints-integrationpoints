@@ -7,16 +7,14 @@ using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
-using kCura.Utility.Extensions;
 using Relativity.API;
-using Relativity.Logging;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
 		private IAgentService _agentService;
-		private IQueryManager _queryManager;
+		private IQueueQueryManager _queryManager;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
@@ -34,7 +32,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueryManager queryManager = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
@@ -56,7 +54,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			if (_queryManager == null)
 			{
-				_queryManager = new QueryManager(Helper, _agentGuid);
+				_queryManager = new QueueQueryManager(Helper, _agentGuid);
 			}
 
 			if (_agentService == null)
@@ -93,6 +91,8 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 
 			CompleteExecution();
+
+			DidWork = true;
 		}
 		
 		private bool PreExecute()
@@ -173,7 +173,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					{
 						Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
 						_jobService.FinalizeDrainStoppedJob(nextJob);
-						nextJob = null;
+                        nextJob = null;
 					}
 					else
 					{
@@ -189,7 +189,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(ex, "Unhandled exception occured while processing queue jobs.");
+				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs.");
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				NotifyAgentTab(LogCategory.Warn, $"An error occured cleaning jobs queue. {ex.Message} {ex.StackTrace}");
+				NotifyAgentTab(LogCategory.Warn, $"An error occurred cleaning jobs queue. {ex.Message} {ex.StackTrace}");
 				LogCleanupError(ex);
 			}
 		}

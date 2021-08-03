@@ -1,0 +1,5 @@
+"givenname","manager","sn","uid"
+"Courtney","cn=Delia Ozmizrak,ou=Management,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io","Pasvar","PasvarC"
+"Daisie","cn=Darrel Carling,ou=Management,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io","Chaisupakosol","ChaisupD"
+"Darrel","cn=Delia Ozmizrak,ou=Management,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io","Carling","CarlingD"
+"Delia","cn=Daisie Chaisupakosol,ou=Management,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io","Ozmizrak","OzmizraD"

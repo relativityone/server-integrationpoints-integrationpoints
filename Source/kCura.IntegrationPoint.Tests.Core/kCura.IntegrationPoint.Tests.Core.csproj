@@ -200,7 +200,6 @@
     <Compile Include="TestHelpers\Utils.cs" />
     <Compile Include="TestHelpers\WindsorContainerTestHelpers.cs" />
     <Compile Include="TestHelpers\WindsorDependenciesGraphRecorder.cs" />
-    <Compile Include="ToggleHelper.cs" />
     <Compile Include="User.cs" />
     <Compile Include="TestServiceContextHelper.cs" />
     <Compile Include="Validators\DocumentFieldsValidator.cs" />

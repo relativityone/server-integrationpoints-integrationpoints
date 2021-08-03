@@ -66,10 +66,8 @@
     <Compile Include="Core\StopState.cs" />
     <Compile Include="Core\TaskParameters.cs" />
     <Compile Include="Data\IJobServiceDataProvider.cs" />
-    <Compile Include="Data\Interfaces\ICommand.cs" />
-    <Compile Include="Data\Interfaces\IQuery.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
-    <Compile Include="Data\IQueryManager.cs" />
+    <Compile Include="Data\IQueueQueryManager.cs" />
     <Compile Include="Data\JobServiceDataProvider.cs" />
     <Compile Include="Data\Queries\AddStopStateColumnToQueueTable.cs" />
     <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
@@ -77,6 +75,7 @@
     <Compile Include="Data\Queries\GetAllJobs.cs" />
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
+    <Compile Include="Data\Queries\GetPendingJobsCount.cs" />
     <Compile Include="Data\Queries\UnlockJob.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
     <Compile Include="Data\Queries\DeleteJob.cs" />
@@ -87,7 +86,7 @@
     <Compile Include="Data\Queries\GetAgentTypeInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />
     <Compile Include="Data\Queries\UpdateStopState.cs" />
-    <Compile Include="Data\QueryManager.cs" />
+    <Compile Include="Data\QueueQueryManager.cs" />
     <Compile Include="Data\QueueDBContext.cs" />
     <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
     <Compile Include="BatchProcess\IBatchableTask.cs" />
@@ -130,6 +129,7 @@
     <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
     <Content Include="Data\Resources\GetAllJobs.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
+    <Content Include="Data\Resources\GetPendingJobsCount.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />

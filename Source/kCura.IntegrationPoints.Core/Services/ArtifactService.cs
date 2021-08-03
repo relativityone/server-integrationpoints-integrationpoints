@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public RelativityObject GetArtifact(int workspaceArtifactId, string artifactTypeName, int artifactId)
 		{
-			return GetArtifactsByCondition(workspaceArtifactId, artifactTypeName, $"'ArtifactID' == {artifactId}").Single();
+			return GetArtifactsByCondition(workspaceArtifactId, artifactTypeName, $"'ArtifactID' == {artifactId}").SingleOrDefault();
 		}
 
 		private IEnumerable<RelativityObject> GetArtifactsByCondition(int workspaceArtifactId, string artifactTypeName, string condition = null)

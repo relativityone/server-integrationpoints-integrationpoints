@@ -65,6 +65,7 @@
     <Compile Include="Converters\RelativityObjectExtensions.cs" />
     <Compile Include="Converters\RelativityObjectSlimExtensions.cs" />
     <Compile Include="Converters\WorkspaceRefExtensions.cs" />
+    <Compile Include="DTO\BatchStatusQueryResult.cs" />
     <Compile Include="DTO\ImageFile.cs" />
     <Compile Include="DTO\ExportInitializationResultsDto.cs" />
     <Compile Include="DTO\RelativityObjectSlimDto.cs" />
@@ -94,9 +95,11 @@
     <Compile Include="Helpers\IMassUpdateHelper.cs" />
     <Compile Include="Helpers\MassUpdateHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="ICommand.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
+    <Compile Include="IQuery.cs" />
     <Compile Include="LoadFileInfo.cs" />
     <Compile Include="Installers\HelpersRegistration.cs" />
     <Compile Include="Installers\RepositoryRegistration.cs" />
@@ -106,10 +109,19 @@
     <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
+    <Compile Include="Queries\CreateJobTrackingEntry.cs" />
+    <Compile Include="Queries\GetProcessingSyncWorkerBatches.cs" />
+    <Compile Include="Queries\IJobTrackerQueryManager.cs" />
+    <Compile Include="Queries\JobTrackerQueryManager.cs" />
+    <Compile Include="Queries\RemoveEntryAndCheckBatchStatus.cs" />
+    <Compile Include="Queries\MarkEntityManagerLinksAsExpired.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="Queries\IJobStatisticsQuery.cs" />
+    <Compile Include="Queries\InsertDataToEntityManagerResourceTable.cs" />
+    <Compile Include="Queries\IEntityManagerQueryManager.cs" />
     <Compile Include="Queries\JobStatistics.cs" />
+    <Compile Include="Queries\EntityManagerQueryManager.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IDestinationProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IIntegrationPointsCompletedJobsQueryBuilder.cs" />
@@ -324,6 +336,7 @@
   <ItemGroup>
     <Content Include="Resources\AddReplaceWebAPIWithExportCoreSetting.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
+    <Content Include="Resources\MarkEntityManagerLinksAsExpired.sql" />
     <Content Include="Resources\GetJobsCount.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />
     <Content Include="Resources\GetJobEntityManagerLinks.sql" />
@@ -332,6 +345,7 @@
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
+    <Content Include="Resources\GetProcessingSyncWorkerBatches.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
