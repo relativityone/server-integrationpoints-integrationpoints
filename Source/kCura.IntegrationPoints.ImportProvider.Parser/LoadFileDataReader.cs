@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.WinEDDS;
@@ -20,16 +20,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private readonly DataTable _schemaTable;
 		private readonly Dictionary<string, int> _ordinalMap;
 		private readonly IArtifactReader _loadFileReader;
+		private readonly IJobStopManager _jobStopManager;
 		private readonly LoadFile _config;
 		private readonly string _loadFileDirectory;
 		private readonly ImportProviderSettings _providerSettings;
 
-		public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, IArtifactReader reader)
+		public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, IArtifactReader reader, IJobStopManager jobStopManager)
 		{
 			_providerSettings = providerSettings;
 			_config = config;
 			_loadFileReader = reader;
-
+			_jobStopManager = jobStopManager;
 			_isClosed = false;
 			_columnCount = 0;
 			_extractedTextHasPathInfo = !string.IsNullOrEmpty(_providerSettings.ExtractedTextPathFieldIdentifier);
@@ -133,7 +134,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public override bool Read()
 		{
-			if (_loadFileReader.HasMoreRecords)
+			if (_loadFileReader.HasMoreRecords && !_jobStopManager?.ShouldDrainStop == true)
 			{
 				ReadCurrentRecord();
 				return true;

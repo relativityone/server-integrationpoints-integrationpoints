@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using NSubstitute.ExceptionExtensions;
+using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -38,6 +39,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 		LoadFileDataReader _instance;
 		IArtifactReader _loadFileReader;
+		IJobStopManager _jobStopManager;
 		LoadFile _loadFile;
 		ImportProviderSettings _providerSettings;
 
@@ -70,6 +72,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_loadFileReader.ManageErrorRecords(Arg.Any<string>(), Arg.Any<string>()).Returns(_ERROR_FILE_PATH);
 			_loadFileReader.CountRecords().Returns(_RECORDS.Length);
 
+			_jobStopManager = Substitute.For<IJobStopManager>();
+
 			LoadArtifact(_ROOTED_PATH_ARTIFACT_INDEX);
 		}
 
@@ -78,7 +82,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			//Arrange
 			_loadFileReader.HasMoreRecords.Returns(false);
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -92,7 +96,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldCallReadArtifact_IfReaderHasMoreRecords()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -109,7 +113,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			LoadArtifact(_UN_ROOTED_PATH_ARTIFACT_INDEX);
 			_providerSettings.NativeFilePathFieldIdentifier = _NATIVE_PATH_LOAD_FILE_INDEX.ToString();
 			_providerSettings.ExtractedTextPathFieldIdentifier = _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX.ToString();
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -129,7 +133,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			LoadArtifact(_ROOTED_PATH_ARTIFACT_INDEX);
 			_providerSettings.NativeFilePathFieldIdentifier = _NATIVE_PATH_LOAD_FILE_INDEX.ToString();
 			_providerSettings.ExtractedTextPathFieldIdentifier = _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX.ToString();
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -144,7 +148,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldSequentiallyNameColumnsInSchemaTable()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -162,7 +166,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldPassThroughCallsToManageErrorRecords()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -175,7 +179,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldPassThroughCallsToCountRecords()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -188,7 +192,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldNotBeClosed_WhenFirstCreated()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -202,7 +206,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			//Arrange
 			_loadFileReader.GetColumnNames(Arg.Any<object>()).Returns(new string[0]);
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -215,7 +219,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldReturnFieldCount_WhenOperatingOnNonEmptyFile()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -228,7 +232,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldReturnCorrectOrdinal()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -244,7 +248,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldReturnCorrectName()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -261,7 +265,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldBlankOutput_WhenLoadFileReaderThrowsColumnCountMismatchException()
 		{
 			_loadFileReader.ReadArtifact().Throws(new kCura.WinEDDS.LoadFileBase.ColumnCountMismatchException(0,0,0));
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
 
 			//Act
 			_instance.Init();
@@ -272,6 +276,23 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			{
 				Assert.IsEmpty(_instance.GetString(i));
 			}
+		}
+
+		[Test]
+		public void Read_ShouldReturnFalse_WhenDrainStopWasTriggered()
+		{
+			// Arrange
+			_jobStopManager.ShouldDrainStop.Returns(true);
+
+			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
+			_instance.Init();
+
+			// Act
+			bool readResult = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(readResult);
+			Assert.IsTrue(_instance.IsClosed);
 		}
 	}
 }

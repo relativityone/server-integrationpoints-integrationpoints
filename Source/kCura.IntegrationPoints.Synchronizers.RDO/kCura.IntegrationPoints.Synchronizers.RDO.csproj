@@ -63,7 +63,6 @@
     <Compile Include="JobImport\IImportJobFactory.cs" />
     <Compile Include="JobImport\IImportSettingsBaseBuilder.cs" />
     <Compile Include="JobImport\IJobImport.cs" />
-    <Compile Include="JobImport\Implementations\ImageDataTableHelper.cs" />
     <Compile Include="JobImport\Implementations\ImageImportSettingsBuilder.cs" />
     <Compile Include="JobImport\Implementations\ImageJobImport.cs" />
     <Compile Include="JobImport\Implementations\ImageRelativityToRelativityImportSettingsBuilder.cs" />
