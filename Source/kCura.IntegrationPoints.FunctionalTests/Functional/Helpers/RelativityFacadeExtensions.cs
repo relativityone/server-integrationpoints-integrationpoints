@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 			{
 				return workspaceService.Create(workspace);
 			}
-			catch(TaskCanceledException ex)
+			catch(Exception ex)
 			{
 				Thread.Sleep(5000);
 				Workspace createdWorkspace = workspaceService.Get(workspace.Name);
