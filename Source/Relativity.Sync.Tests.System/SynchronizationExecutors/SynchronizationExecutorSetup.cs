@@ -211,8 +211,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			Container.ComponentRegistry.Sources.ForEach(rs => overrideContainerBuilder.RegisterSource(rs));
 			overrideContainerBuilder.RegisterTypes(typeof(NullSupportedByViewerFileInfoFieldsBuilder)).As<INativeSpecialFieldBuilder>();
 
-			// Wondering if I should register the new INativeInfoFieldsBuilder somewhere there as well. BTW great comments
-
 			Container = overrideContainerBuilder.Build();
 
 			return this;

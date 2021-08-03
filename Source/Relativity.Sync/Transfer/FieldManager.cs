@@ -28,22 +28,10 @@ namespace Relativity.Sync.Transfer
 		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository,
 			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders)
         {
-            nativeSpecialFieldBuilders = OmmitNativeSpecialFieldBuilderIfNotNeeded(configuration, nativeSpecialFieldBuilders);
-
             _configuration = configuration;
             _documentFieldRepository = documentFieldRepository;
-            _nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.OrderBy(b => b.GetType().FullName).ToList();
+            _nativeSpecialFieldBuilders = OmitNativeInfoFieldsBuildersIfNotNeeded(configuration, nativeSpecialFieldBuilders).OrderBy(b => b.GetType().FullName).ToList();
             _imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
-        }
-
-        private static IEnumerable<INativeSpecialFieldBuilder> OmmitNativeSpecialFieldBuilderIfNotNeeded(IFieldConfiguration configuration, IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders)
-        {
-            if (configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles)
-            {
-                nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.Where(x => !(x is INativeInfoFieldsBuilder));
-            }
-
-            return nativeSpecialFieldBuilders;
         }
 
         public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
@@ -133,6 +121,16 @@ namespace Relativity.Sync.Transfer
 				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 			}
 			return _mappedDocumentFields;
+		}
+
+		private static IEnumerable<INativeSpecialFieldBuilder> OmitNativeInfoFieldsBuildersIfNotNeeded(IFieldConfiguration configuration, IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders)
+		{
+			if (configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+			{
+				nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.Where(x => !(x is INativeInfoFieldsBuilder));
+			}
+
+			return nativeSpecialFieldBuilders;
 		}
 
 		private async Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsInternalAsync(Func<IEnumerable<FieldInfoDto>> specialFieldsProvider, CancellationToken token)

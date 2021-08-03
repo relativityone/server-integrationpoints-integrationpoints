@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task ExecuteAsync_NativesBytesRequestedShouldBeSetToZeroIfDoNotImportNatives(bool isResuming)
+		public async Task ExecuteAsync_ShouldSetNativesBytesRequestedToZero_WhenDoNotImportNatives(bool isResuming)
 		{
 			// Arrange
 			_configurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
