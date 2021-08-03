@@ -49,7 +49,7 @@ param(
 Set-StrictMode -Version 2.0
 
 $BaseDir = $PSScriptRoot
-$NugetUrl = "https://relativity.jfrog.io/relativity/nuget-download/v5.3.0/nuget.exe"
+$NugetUrl = "https://dist.nuget.org/win-x86-commandline/v5.10.0/nuget.exe"
 $ToolsDir = Join-Path $BaseDir "buildtools"
 $NugetExe = Join-Path $ToolsDir "nuget.exe"
 
