@@ -140,8 +140,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			JobStatisticsService jobStatisticsService = Substitute.For<JobStatisticsService>();
 
-			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC).Returns(loadFileReader);
-			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE).Returns(opticonFileReader);
+			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC, Arg.Any<IJobStopManager>()).Returns(loadFileReader);
+			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE, Arg.Any<IJobStopManager>()).Returns(opticonFileReader);
 
 			object syncRootLock = new object();
 			_integrationPoint = new Data.IntegrationPoint()

@@ -10,6 +10,7 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using kCura.Apps.Common.Utils.Serializers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -19,12 +20,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		private DataReaderFactory _instance;
 		private ImportSettingsBase _settings;
 		private ISerializer _serializer;
+		private IJobStopManager _jobStopManager;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			_serializer = new JSONSerializer();
 			_settings = new ImportSettingsBase();
+
+			_jobStopManager = Substitute.For<IJobStopManager>();
 
 			IWinEddsLoadFileFactory winEddsLoadFileFactory = Substitute.For<IWinEddsLoadFileFactory>();
 			winEddsLoadFileFactory.GetImageLoadFile(Arg.Any<ImportSettingsBase>()).Returns(new ImageLoadFile());
@@ -53,7 +57,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_settings.ImportType = ((int)ImportType.ImportTypeValue.Document).ToString();
 
 			//Act
-			IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings));
+			IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings), _jobStopManager);
 
 			//Assert
 			Assert.IsNotNull(reader as ImportDataReader);
@@ -66,7 +70,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_settings.ImportType = ((int)ImportType.ImportTypeValue.Image).ToString();
 
 			//Act
-			IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings));
+			IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings), _jobStopManager);
 
 			//Assert
 			Assert.IsNotNull(reader as OpticonDataReader);
@@ -79,7 +83,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_settings.ImportType = ((int)ImportType.ImportTypeValue.Production).ToString();
 
 			//Act
-			IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings));
+			IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings), _jobStopManager);
 
 			//Assert
 			Assert.IsNotNull(reader as OpticonDataReader);

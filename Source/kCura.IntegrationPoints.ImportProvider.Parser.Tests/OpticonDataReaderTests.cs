@@ -5,6 +5,9 @@ using NUnit.Framework;
 using NSubstitute;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS.Api;
+using kCura.IntegrationPoints.Domain.Managers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -19,6 +22,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 		OpticonDataReader _instance;
 		IImageReader _opticonFileReader;
+		IJobStopManager _jobStopManager;
 		ImageRecord _imageRecord;
 
 		[SetUp]
@@ -35,11 +39,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
 			_opticonFileReader = Substitute.For<IImageReader>();
 
+			_jobStopManager = Substitute.For<IJobStopManager>();
+
 			_opticonFileReader.GetImageRecord().Returns(_imageRecord);
 			_opticonFileReader.HasMoreRecords.Returns(true);
 			_opticonFileReader.CountRecords().Returns(_RECORD_COUNT);
 
-			_instance = new OpticonDataReader(providerSettings, _opticonFileReader);
+			_instance = new OpticonDataReader(providerSettings, _opticonFileReader, _jobStopManager);
 		}
 
 		[Test]
@@ -236,6 +242,23 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			//Methods
 			Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetDataTypeName(0));
 			Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetFieldType(0));
+		}
+
+		[TestCase(false, true)]
+		[TestCase(true, false)]
+		public void Read_ShouldHandleRead_WhenDrainStopWasTriggered(bool isNewDoc, bool expectedReadResult)
+		{
+			// Arrange
+			_imageRecord.IsNewDoc = isNewDoc;
+			_jobStopManager.ShouldDrainStop.Returns(true);
+
+			_instance.Init();
+
+			// Act
+			bool readResult = _instance.Read();
+
+			// Assert
+			Assert.AreEqual(readResult, expectedReadResult);
 		}
 	}
 }
