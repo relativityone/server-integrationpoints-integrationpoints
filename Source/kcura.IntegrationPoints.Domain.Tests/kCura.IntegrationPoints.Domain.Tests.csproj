@@ -75,11 +75,11 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj">
-      <Project>{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A}</Project>
-      <Name>kCura.IntegrationPoints.Core.Tests</Name>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
+      <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>
+      <Name>kCura.IntegrationPoint.Tests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+	<ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
       <Project>{5D5B52B4-8769-431A-9743-B96F15FED5FD}</Project>
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>

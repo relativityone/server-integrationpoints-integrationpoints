@@ -153,6 +153,7 @@
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
     <Compile Include="Productions\ProductionHelper.cs" />
     <Compile Include="TestCategories\Attributes\NotWorkingOnTridentAttribute.cs" />
+    <Compile Include="TestHelpers\FakeHelper.cs" />
     <Compile Include="TestRdoGenerator.cs" />
     <Compile Include="TestCategories\Attributes\ConnectivityToTestRunnerRequiredTestAttribute.cs" />
     <Compile Include="TestCategories\Attributes\StressTestAttribute.cs" />

@@ -2,7 +2,7 @@
 using Moq;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Tests.Helpers
+namespace kCura.IntegrationPoints.Tests.Core.Helpers
 {
     [Serializable]
     public class FakeHelper : IHelper

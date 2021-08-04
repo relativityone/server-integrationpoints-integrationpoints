@@ -61,7 +61,6 @@
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Helpers\ButtonStateBuilderTests.cs" />
-    <Compile Include="Helpers\FakeHelper.cs" />
     <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />

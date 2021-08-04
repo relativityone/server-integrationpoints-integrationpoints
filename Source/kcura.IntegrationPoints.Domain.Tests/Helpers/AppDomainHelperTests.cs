@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using kCura.IntegrationPoints.Core.Tests.Helpers;
 using kCura.IntegrationPoints.Domain.Toggles;
+using kCura.IntegrationPoints.Tests.Core.Helpers;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -137,8 +137,6 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             // Assert
             manager.Should().NotBeNull();
         }
-
-        
 
         private AppDomain CreateDomain(string domainName)
         {
