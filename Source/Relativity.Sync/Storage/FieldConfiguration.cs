@@ -26,5 +26,7 @@ namespace Relativity.Sync.Storage
 		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);
 
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings.GetFieldMappings();
+
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
 	}
 }

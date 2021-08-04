@@ -304,12 +304,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			)));
 		}
 
-		[Test]
-		public async Task Execute_ShouldSetImportApiSettings()
+		[TestCase(ImportNativeFileCopyMode.CopyFiles)]
+		[TestCase(ImportNativeFileCopyMode.SetFileLinks)]
+		public async Task Execute_ShouldSetImportApiSettings_WhenImportingNatives(ImportNativeFileCopyMode importNativeCopyMode)
 		{
 			// Arrange 
 			SetupBatchRepository(1);
 			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
+			_configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(importNativeCopyMode);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
 
 			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
@@ -325,6 +327,30 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configFake.VerifySet(x => x.FileNameColumn = _NATIVE_FILE_FILENAME_DISPLAY_NAME, Times.Once);
 			_configFake.VerifySet(x => x.OiFileTypeColumnName = _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, Times.Once);
 			_configFake.VerifySet(x => x.SupportedByViewerColumn = _SUPPORTED_BY_VIEWER_DISPLAY_NAME, Times.Once);
+		}
+
+		[Test]
+		public async Task Execute_ShouldSetImportApiSettings_WhenDoNotImportNatives()
+		{
+			// Arrange 
+			SetupBatchRepository(1);
+			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
+			_configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
+
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
+			SetUpDocumentsTagRepository(executionResult);
+
+			// Act
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			_configFake.VerifySet(x => x.FolderPathSourceFieldName = _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME, Times.Once);
+			_configFake.VerifySet(x => x.FileSizeColumn = _NATIVE_FILE_SIZE_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.NativeFilePathSourceFieldName = _NATIVE_FILE_LOCATION_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.FileNameColumn = _NATIVE_FILE_FILENAME_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.OiFileTypeColumnName = _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.SupportedByViewerColumn = _SUPPORTED_BY_VIEWER_DISPLAY_NAME, Times.Never);
 		}
 
 		[Test]
@@ -379,6 +405,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			//Arrange
 			SetupBatchRepository(1);
 			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+			_configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
 			SetupImportJob();
 
@@ -396,6 +423,32 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configFake.VerifySet(x => x.FileNameColumn = _NATIVE_FILE_FILENAME_DISPLAY_NAME, Times.Once);
 			_configFake.VerifySet(x => x.OiFileTypeColumnName = _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, Times.Once);
 			_configFake.VerifySet(x => x.SupportedByViewerColumn = _SUPPORTED_BY_VIEWER_DISPLAY_NAME, Times.Once);
+		}
+
+		[Test]
+		public async Task Execute_ShouldSetOnlyFolderInfo()
+		{
+			//Arrange
+			SetupBatchRepository(1);
+			_configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
+			_configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+
+			SetupImportJob();
+
+			Task<TaggingExecutionResult> executionResult = ReturnTaggingCompletedResultAsync();
+
+			SetUpDocumentsTagRepository(executionResult);
+
+			// Act
+			await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			_configFake.VerifySet(x => x.FolderPathSourceFieldName = It.IsAny<string>(), Times.Once);
+			_configFake.VerifySet(x => x.FileSizeColumn = _NATIVE_FILE_SIZE_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.NativeFilePathSourceFieldName = _NATIVE_FILE_LOCATION_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.FileNameColumn = _NATIVE_FILE_FILENAME_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.OiFileTypeColumnName = _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, Times.Never);
+			_configFake.VerifySet(x => x.SupportedByViewerColumn = _SUPPORTED_BY_VIEWER_DISPLAY_NAME, Times.Never);
 		}
 
 		[Test]
@@ -417,6 +470,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Arrange 
 			SpecialFieldType missingSpecialField = SpecialFieldType.NativeFileSize;
+			_configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 			List<FieldInfoDto> specialFields = _specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
 			_fieldManagerFake.Setup(x => x.GetNativeSpecialFields()).Returns(specialFields);
 			Func<Task> action = () => _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None);

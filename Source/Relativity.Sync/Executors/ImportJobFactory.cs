@@ -86,16 +86,15 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
 			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
-			importJob.Settings.FileSizeColumn = configuration.FileSizeColumn;
-			importJob.Settings.FileNameColumn = configuration.FileNameColumn;
-			importJob.Settings.OIFileTypeColumnName = configuration.OiFileTypeColumnName;
-			importJob.Settings.SupportedByViewerColumn = configuration.SupportedByViewerColumn;
-
 			if (configuration.ImportNativeFileCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
 			{
 				importJob.Settings.NativeFilePathSourceFieldName = configuration.NativeFilePathSourceFieldName;
 				importJob.Settings.OIFileIdMapped = true;
 				importJob.Settings.FileSizeMapped = true;
+				importJob.Settings.FileSizeColumn = configuration.FileSizeColumn;
+				importJob.Settings.FileNameColumn = configuration.FileNameColumn;
+				importJob.Settings.OIFileTypeColumnName = configuration.OiFileTypeColumnName;
+				importJob.Settings.SupportedByViewerColumn = configuration.SupportedByViewerColumn;
 
 				// Do not set DisableNativeValidation to "true" - Import API will ignore "Relativity Native Type" field
 				// and will set it to "Unknown format". Overwriting "OIFileTypeColumnName" and "SupportedByViewerColumn"
@@ -113,6 +112,39 @@ namespace Relativity.Sync.Executors
 				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
 			_logger.LogInformation("Import Settings: {@settings}", 
+				NativeImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
+
+			return job;
+		}
+
+		public async Task<IImportJob> CreateNativeImportJobAsyncWithDoNotImportNatives(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		{
+			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token);
+			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
+
+			SetCommonIapiSettings(configuration, importJob.Settings);
+
+			importJob.SourceData.SourceData = sourceWorkspaceDataReader; // This assignment invokes IDataReader.Read immediately!
+			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
+			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
+			importJob.Settings.Billable = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles;
+			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
+			importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
+
+			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
+			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+
+			importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
+				importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
+				configuration.IdentityFieldId);
+
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+
+			_logger.LogInformation("Import Settings: {@settings}",
 				NativeImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
 
 			return job;

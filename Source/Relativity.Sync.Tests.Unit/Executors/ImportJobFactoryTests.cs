@@ -73,6 +73,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
+		public async Task CreateNativeImportJobAsync_ShouldPassGoldFlow_WhenDoNotImporNatives()
+		{
+			// Arrange
+			ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock());
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			result.Dispose();
+
+			// Assert
+			result.Should().NotBeNull();
+		}
+
+		[Test]
 		public async Task CreateImageImportJobAsync_ShouldPassGoldFlow()
 		{
 			// Arrange
@@ -101,6 +116,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Should().NotBeNull();
 		}
 
+		[Test]
+		public async Task CreateNativeImportJobAsync_HasExtractedFieldPath_WhenDoNotImporNatives()
+		{
+			// Arrange
+			Mock<IImportApiFactory> importApiFactory = GetNativesImportAPIFactoryMock();
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			result.Dispose();
+
+			// Assert
+			result.Should().NotBeNull();
+		}
+
 		[TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
 		[TestCase("", "WebAPIPath doesn't exist")]
 		[TestCase(null, "WebAPIPath doesn't exist")]
@@ -108,6 +139,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Arrange
 			ImportJobFactory instance = PrepareInstanceForWebApiPathTests(GetNativesImportAPIFactoryMock(), invalidWebAPIPath);
+
+			// Act
+			Task Action() => instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None);
+
+			// Assert
+			return AssertWebApiPathTestsAsync(Action, expectedMessage);
+		}
+
+		[TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
+		[TestCase("", "WebAPIPath doesn't exist")]
+		[TestCase(null, "WebAPIPath doesn't exist")]
+		public Task CreateNativeImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalidAndDoNotImporNatives(string invalidWebAPIPath, string expectedMessage)
+		{
+			// Arrange
+			ImportJobFactory instance = PrepareInstanceForWebApiPathTests(GetNativesImportAPIFactoryMock(), invalidWebAPIPath);
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
 
 			// Act
 			Task Action() => instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None);
@@ -137,6 +184,23 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Arrange
 			ImportBulkArtifactJob importBulkArtifactJobMock = new ImportBulkArtifactJob();
 			ImportJobFactory instance = 
+				PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(x => x.NewNativeDocumentImportJob(), importBulkArtifactJobMock);
+
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			result.Dispose();
+
+			// Assert
+			AssertStartRecordNumberForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(importBulkArtifactJobMock.Settings);
+		}
+
+		[Test]
+		public async Task CreateNativeImportJobAsync_ShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0_WhenDoNotImporNatives()
+		{
+			// Arrange
+			ImportBulkArtifactJob importBulkArtifactJobMock = new ImportBulkArtifactJob();
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+			ImportJobFactory instance =
 				PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(x => x.NewNativeDocumentImportJob(), importBulkArtifactJobMock);
 
 			// Act

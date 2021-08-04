@@ -9,5 +9,7 @@
 		int SourceWorkspaceArtifactId { get; }
 
 		int DestinationWorkspaceArtifactId { get; }
+
+		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 	}
 }

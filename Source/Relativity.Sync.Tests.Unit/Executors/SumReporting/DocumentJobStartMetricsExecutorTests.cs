@@ -100,9 +100,32 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public async Task ExecuteAsync_ShouldSetNativesBytesRequestedInStatisticsContainer(bool isResuming)
 		{
 			// Arrange
+			_configurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 			_configurationFake.SetupGet(x => x.Resuming).Returns(isResuming);
 
 			const long expectedNativesBytesRequested = 100;
+
+			_fileStatisticsCalculatorFake.Setup(x =>
+					x.CalculateNativesTotalSizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), It.IsAny<CompositeCancellationToken>()))
+				.ReturnsAsync(expectedNativesBytesRequested);
+
+			// Act
+			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			long nativesBytesRequested = await _jobStatisticsContainer.NativesBytesRequested.ConfigureAwait(false);
+			nativesBytesRequested.Should().Be(expectedNativesBytesRequested);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task ExecuteAsync_ShouldSetNativesBytesRequestedToZero_WhenDoNotImportNatives(bool isResuming)
+		{
+			// Arrange
+			_configurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+			_configurationFake.SetupGet(x => x.Resuming).Returns(isResuming);
+
+			const long expectedNativesBytesRequested = 0;
 
 			_fileStatisticsCalculatorFake.Setup(x =>
 					x.CalculateNativesTotalSizeAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<QueryRequest>(), It.IsAny<CompositeCancellationToken>()))
