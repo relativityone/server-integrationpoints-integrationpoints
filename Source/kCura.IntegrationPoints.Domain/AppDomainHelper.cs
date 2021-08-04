@@ -169,7 +169,19 @@ namespace kCura.IntegrationPoints.Domain
 			return manager;
 		}
 
-        private void CopyLibraryFilesFromWorkingDirectory(string finalDllPath)
+        public virtual T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
+        {
+            Type type = typeof(T);
+            var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, false, BindingFlags.Default, null, constructorArgs, null, null) as T;
+            if (instance == null)
+            {
+                throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name,
+                    domain.FriendlyName));
+            }
+            return instance;
+        }
+
+		private void CopyLibraryFilesFromWorkingDirectory(string finalDllPath)
         {
             string assemblyLocalPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
             string assemblyLocalDirectory = Path.GetDirectoryName(assemblyLocalPath);
@@ -183,18 +195,6 @@ namespace kCura.IntegrationPoints.Domain
 				_logger.LogError("assemblyLocalDirectory directory not found; " + assemblyLocalPath);
             }
 		}
-
-        private T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
-        {
-            Type type = typeof(T);
-            var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName, false, BindingFlags.Default, null, constructorArgs, null, null) as T;
-            if (instance == null)
-            {
-                throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name,
-                    domain.FriendlyName));
-            }
-            return instance;
-        }
 
         private byte[] ReadFully(Stream stream)
         {

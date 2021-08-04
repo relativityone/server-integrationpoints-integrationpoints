@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using FluentAssertions;
+using kCura.IntegrationPoints.Core.Tests.Helpers;
 using kCura.IntegrationPoints.Domain.Toggles;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.API.Foundation;
@@ -20,50 +19,72 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         private IAppDomainHelper _sut;
         private AppDomain _appDomain;
         private FakeRelativityFeaturePathService _relativityFeaturePathService;
-        private IHelper _helper;
+        private IHelper _fakeHelper;
         private IDictionary<ApplicationBinary, Stream> _fakePluginLibraries;
+        private string _currentDir;
+        private string _tempDir;
+        private bool _appDomainReleased;
 
-        private Mock<IPluginProvider> _pluginProviderMock;
-        private Mock<IToggleProvider> _toggleProviderMock;
-        private Mock<IAPILog> _loggerMock;
+        private Mock<IPluginProvider> _pluginProviderFake;
+        private Mock<IToggleProvider> _toggleProviderFake;
 
         private readonly Guid _applicationGuid = Guid.NewGuid();
-
+        
         [SetUp]
         public void Setup()
         {
-            _pluginProviderMock = new Mock<IPluginProvider>();
-            _helper = Substitute.For<IHelper>();
-            _toggleProviderMock = new Mock<IToggleProvider>();
-            _loggerMock = new Mock<IAPILog>();
-            
-            _relativityFeaturePathService = new FakeRelativityFeaturePathService();
-            _loggerMock.Object.ForContext<AppDomainHelper>();
+            _pluginProviderFake = new Mock<IPluginProvider>();
+            _toggleProviderFake = new Mock<IToggleProvider>();
 
-            _appDomain = CreateDomain("AppDomainHelperTestsAppDomain", Directory.GetCurrentDirectory());
+            Mock<IAPILog> loggerFake = new Mock<IAPILog>();
+            loggerFake.Setup(x => x.ForContext<AppDomainHelper>()).Returns(loggerFake.Object);
+
+            Mock<ILogFactory> logFactoryFake = new Mock<ILogFactory>();
+            logFactoryFake.Setup(x => x.GetLogger()).Returns(loggerFake.Object);
+
+            Mock<IHelper> helperFake = new Mock<IHelper>();
+            helperFake.Setup(x => x.GetLoggerFactory()).Returns(logFactoryFake.Object);
+
+            _fakeHelper = new FakeHelper(helperFake);
+            _relativityFeaturePathService = new FakeRelativityFeaturePathService();
+            _tempDir = Path.GetTempPath() + Guid.NewGuid();
+            _currentDir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString();
+            _appDomainReleased = false;
+
+            _appDomain = CreateDomain("AppDomainHelperTestsAppDomain");
             
-            _sut = new AppDomainHelper(_pluginProviderMock.Object, _helper,
-                _relativityFeaturePathService, _toggleProviderMock.Object);
+            _sut = new AppDomainHelper(_pluginProviderFake.Object, _fakeHelper,
+                _relativityFeaturePathService, _toggleProviderFake.Object);
+        }
+
+        [TearDown]
+        public void CleanUp()
+        {
+            if (!_appDomainReleased)
+            {
+                _sut.ReleaseDomain(_appDomain);
+            }
         }
 
         [Test]
         public void LoadClientLibrariesShallLoadAllRequiredAssemblies()
         {
             // Arrange
-            CreateInstance<AssemblyDomainLoader>(new object[0]);
-            List<string> expectedAssembliesLocations = GetAssembliesLocations(_appDomain.GetAssemblies().ToList());
+            _sut.CreateInstance<AssemblyDomainLoader>(_appDomain, new object[0]);
+            List<string> expectedAssembliesLocations = _appDomain.GetAssemblies().Select(x => x.Location).ToList();
 
             foreach (KeyValuePair<ApplicationBinary, Stream> library in _fakePluginLibraries)
             {
-                expectedAssembliesLocations.Add(library.Key.Name);
+                string assemblyLocation = library.Key.Name;
+                string expectedLocation = assemblyLocation.Replace(Directory.GetParent(library.Key.Name).ToString(),
+                    _currentDir);
+                expectedAssembliesLocations.Add(expectedLocation);
             }
-            expectedAssembliesLocations.Sort();
 
             //Act
             _sut.LoadClientLibraries(_appDomain, _applicationGuid);
-            List<string> loadedAssemblies = GetAssembliesLocations(_appDomain.GetAssemblies().ToList());
-            loadedAssemblies.Sort();
-
+            List<string> loadedAssemblies = _appDomain.GetAssemblies().Select(x => x.Location).ToList();
+            
             //Assert
             loadedAssemblies.Count().Should().Be(expectedAssembliesLocations.Count());
             loadedAssemblies.ShouldAllBeEquivalentTo(expectedAssembliesLocations);
@@ -72,30 +93,19 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         [Test]
         public void ReleaseDomainShallRemoveBaseDirectory()
         {
-            // Arrange
-            string tempDir = Path.GetTempPath() + Guid.NewGuid();
-            string currentDir = Directory.GetCurrentDirectory();
-            Directory.CreateDirectory(tempDir);
-
-            foreach (string newPath in Directory.GetFiles(currentDir, "*.*", SearchOption.AllDirectories))
-            {
-                File.Copy(newPath, newPath.Replace(currentDir, tempDir), true);
-            }
-
-            AppDomain appDomain = CreateDomain("TestDomain", tempDir);
-
             // Act
-            _sut.ReleaseDomain(appDomain);
+            _sut.ReleaseDomain(_appDomain);
+            _appDomainReleased = true;
 
             // Assert
-            Directory.Exists(tempDir).Should().Be(false);
+            Directory.Exists(_tempDir).Should().Be(false);
         }
 
         [Test]
         public void CreateNewDomainShallRunInKubernetesModeWhenToggleIsTrue()
         {
             // Arrange
-            _toggleProviderMock.Setup(x => x.IsEnabled<LoadRequiredAssembliesInKubernetesMode>()).Returns(true);
+            _toggleProviderFake.Setup(x => x.IsEnabled<LoadRequiredAssembliesInKubernetesMode>()).Returns(true);
             
             // Act
             AppDomain appDomain = _sut.CreateNewDomain();
@@ -117,28 +127,42 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         }
 
         [Test]
-        public void SetupDomainAndCreateManagerTest()
+        public void SetupDomainAndCreateManagerShallBeCreated()
         {
             // Arrange
-            _sut = new AppDomainHelper(_pluginProviderMock.Object, new FakeHelper(),
-                _relativityFeaturePathService, _toggleProviderMock.Object);
             Bootstrappers.AppDomainBootstrapper = new Mock<IAppDomainBootstrapper>().Object;
 
             // Act
             IAppDomainManager manager = _sut.SetupDomainAndCreateManager(_appDomain, _applicationGuid);
-
             // Assert
             manager.Should().NotBeNull();
         }
 
-        private AppDomain CreateDomain(string domainName, string baseDirectory)
+        
+
+        private AppDomain CreateDomain(string domainName)
         {
+            
+            Directory.CreateDirectory(_tempDir);
+
+            foreach (string dirPath in Directory.GetDirectories(_currentDir, "*.*", SearchOption.AllDirectories))
+            {
+                string newPath = dirPath.Replace(_currentDir, _tempDir);
+                Directory.CreateDirectory(newPath);
+            }
+
+            foreach (string path in Directory.GetFiles(_currentDir, "*.*", SearchOption.AllDirectories))
+            {
+                string newPath = path.Replace(_currentDir, _tempDir);
+                File.Copy(path, newPath, true);
+            }
+
             AppDomainSetup setup = new AppDomainSetup();
-            setup.ApplicationBase = baseDirectory;
+            setup.ApplicationBase = _tempDir;
 
             AppDomain appDomain = AppDomain.CreateDomain(domainName, null, setup);
             _fakePluginLibraries = CreateFakePluginLibraries(appDomain);
-            _pluginProviderMock.Setup(x => x.GetPluginLibraries(_applicationGuid)).Returns(_fakePluginLibraries);
+            _pluginProviderFake.Setup(x => x.GetPluginLibraries(_applicationGuid)).Returns(_fakePluginLibraries);
 
             return appDomain;
         }
@@ -156,26 +180,6 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             return fakePluginLibraries;
         }
 
-        private T CreateInstance<T>(params object[] constructorArgs) where T : class
-        {
-            Type type = typeof(T);
-            T instance = (T) _appDomain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName,
-                false, BindingFlags.Default, null, constructorArgs, null,
-                null);
-            return instance;
-        }
-
-        private List<string> GetAssembliesLocations(List<Assembly> assemblies)
-        {
-            List<string> assembliesLocations = new List<string>();
-            foreach (Assembly assembly in assemblies)
-            {
-                assembliesLocations.Add(assembly.Location);
-            }
-
-            return assembliesLocations;
-        }
-
         private class FakeRelativityFeaturePathService : RelativityFeaturePathService
         {
             public static bool KubernetesModeExecuted { get; set; }
@@ -183,169 +187,14 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             protected override string GetFeaturePathsValue(string keyName)
             {
                 KubernetesModeExecuted = true;
-                string currentDir = Directory.GetCurrentDirectory();
+                string currentDir = AppDomain.CurrentDomain.BaseDirectory;
 
                 if (keyName == "WebPath")
                 {
-                    return Directory.GetParent(currentDir)?.FullName;
+                    return Directory.GetParent(Directory.GetParent(currentDir)?.FullName)?.FullName;
                 }
 
                 return currentDir;
-            }
-        }
-
-        [Serializable]
-        private class FakeHelper : IHelper
-        {
-            public void Dispose()
-            {
-                throw new NotImplementedException();
-            }
-
-            public IDBContext GetDBContext(int caseID)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IServicesMgr GetServicesManager()
-            {
-                throw new NotImplementedException();
-            }
-
-            public IUrlHelper GetUrlHelper()
-            {
-                throw new NotImplementedException();
-            }
-
-            public ILogFactory GetLoggerFactory()
-            {
-                return new FakeLogFactory();
-            }
-
-            public string ResourceDBPrepend()
-            {
-                throw new NotImplementedException();
-            }
-
-            public string ResourceDBPrepend(IDBContext context)
-            {
-                throw new NotImplementedException();
-            }
-
-            public string GetSchemalessResourceDataBasePrepend(IDBContext context)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Guid GetGuid(int workspaceID, int artifactID)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ISecretStore GetSecretStore()
-            {
-                throw new NotImplementedException();
-            }
-
-            public IInstanceSettingsBundle GetInstanceSettingBundle()
-            {
-                throw new NotImplementedException();
-            }
-
-            public IStringSanitizer GetStringSanitizer(int workspaceID)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class FakeLogFactory : ILogFactory
-        {
-            public IAPILog GetLogger()
-            {
-                return new FakeIAPILog();
-            }
-        }
-
-        private class FakeIAPILog : IAPILog
-        {
-            public void LogVerbose(string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogVerbose(Exception exception, string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogDebug(string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogDebug(Exception exception, string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogInformation(string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogInformation(Exception exception, string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogWarning(string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogWarning(Exception exception, string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogError(string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogFatal(string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues)
-            {
-                
-            }
-
-            public IAPILog ForContext<T>()
-            {
-                return new FakeIAPILog();
-            }
-
-            public IAPILog ForContext(Type source)
-            {
-                return new FakeIAPILog();
-            }
-
-            public IAPILog ForContext(string propertyName, object value, bool destructureObjects)
-            {
-                return new FakeIAPILog();
-            }
-
-            public IDisposable LogContextPushProperty(string propertyName, object obj)
-            {
-                throw new NotImplementedException();
             }
         }
     }
