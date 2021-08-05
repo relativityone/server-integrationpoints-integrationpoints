@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Services;
@@ -27,6 +28,7 @@ using kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup;
 using kCura.IntegrationPoints.RelativitySync.RdoCleanup;
 using kCura.IntegrationPoints.Security;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 {
@@ -120,8 +122,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
 			container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
-			
+
+            container.Register(Component
+                .For<IToggleProvider>()
+                .UsingFactoryMethod(k => ToggleProviderHelper.CreateSqlServerToggleProvider(k.Resolve<IHelper>()))
+                .LifestyleSingleton()
+            );
+
+
 			container.AddSecretStoreMigrator();
 		}
+
+		
 	}
 }
