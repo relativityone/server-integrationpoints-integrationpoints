@@ -217,6 +217,7 @@ namespace Relativity.Sync.Tests.System
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
 				FolderPathSourceFieldName = folderInfoFieldName,
 				IsImageJob = true
 			};
