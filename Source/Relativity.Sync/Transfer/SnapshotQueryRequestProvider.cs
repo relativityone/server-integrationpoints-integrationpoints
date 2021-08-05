@@ -129,7 +129,7 @@ namespace Relativity.Sync.Transfer
 			return queryRequest;
 		}
 
-		private string DocumentsWithImages()
+        private string DocumentsWithImages()
 		{
 			if (_configuration.ProductionImagePrecedence.Any())
 			{
