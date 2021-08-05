@@ -37,6 +37,8 @@ namespace Relativity.Sync.Tests.Common
 
 		public int DataSourceArtifactId { get; set; }
 
+		public int workspaceId { get; set; }
+
 		public IList<FieldMap> GetFieldMappings() => _fieldMappings;
 
 		public void SetFieldMappings(IList<FieldMap> fieldMappings)

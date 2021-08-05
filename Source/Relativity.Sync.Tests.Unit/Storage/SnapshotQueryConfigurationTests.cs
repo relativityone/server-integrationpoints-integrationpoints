@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
+using System;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -9,14 +10,17 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	{
 		private JSONSerializer _serializer;
 
+		private SyncJobParameters _syncJobParameters;
+
 		private SnapshotQueryConfiguration _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_serializer = new JSONSerializer();
+			_syncJobParameters = new SyncJobParameters(1, 1, Guid.NewGuid());
 
-			_sut = new SnapshotQueryConfiguration(_configuration.Object, _serializer);
+			_sut = new SnapshotQueryConfiguration(_configuration.Object, _serializer, _syncJobParameters);
 		}
 		
 		[Test]

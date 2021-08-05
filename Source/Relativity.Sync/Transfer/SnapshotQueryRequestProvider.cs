@@ -18,15 +18,16 @@ namespace Relativity.Sync.Transfer
 		private readonly IPipelineSelector _pipelineSelector;
 		private readonly IFieldManager _fieldManager;
 		private readonly ISyncServiceManager _servicesMgr;
-		private readonly SyncJobParameters _syncJobParameters;
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager)
+		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager, ISyncServiceManager syncServiceManager)
 		{
 			_configuration = configuration;
 			_pipelineSelector = pipelineSelector;
 			_fieldManager = fieldManager;
+			_servicesMgr = syncServiceManager;
+
 		}
 
 		public Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token)
@@ -140,7 +141,7 @@ namespace Relativity.Sync.Transfer
 
             using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(API.ExecutionIdentity.CurrentUser))
             {
-                QueryResult result = await objectManager.QueryAsync(_syncJobParameters.WorkspaceId, new QueryRequest()
+                QueryResult result = await objectManager.QueryAsync(_configuration.workspaceId, new QueryRequest()
                 {
                     ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Field },
                     Condition = "'Name' == 'Has Images'",
@@ -150,7 +151,7 @@ namespace Relativity.Sync.Transfer
 
             using (IChoiceQueryManager choiceQueryManager = _servicesMgr.CreateProxy<IChoiceQueryManager>(API.ExecutionIdentity.CurrentUser))
             {
-                List<Services.ChoiceQuery.Choice> fieldChoicesList = await choiceQueryManager.QueryAsync(_syncJobParameters.WorkspaceId, fieldArtifactID);
+                List<Services.ChoiceQuery.Choice> fieldChoicesList = await choiceQueryManager.QueryAsync(_configuration.workspaceId, fieldArtifactID);
                 Services.ChoiceQuery.Choice yesChoice = fieldChoicesList.Find(choice => choice.Name == "Yes");
                 choiceYesArtifactId = yesChoice.ArtifactID;
             }
@@ -158,21 +159,23 @@ namespace Relativity.Sync.Transfer
             return choiceYesArtifactId;
         }
 
-        private string DocumentsWithImages()
+        private async Task<string> DocumentsWithImages()
 		{
+			int choiceArtifactId = await GetGuidOfYesHoiceOnHasImagesAsync();
+			string documentsWithOriginalImages = DocumentsWithOriginalImages(choiceArtifactId);
 			if (_configuration.ProductionImagePrecedence.Any())
 			{
 				return _configuration.IncludeOriginalImageIfNotFoundInProductions
-					? $"({DocumentsWithProducedImages} OR {DocumentsWithOriginalImages})"
+					? $"({DocumentsWithProducedImages} OR {documentsWithOriginalImages})"
 					: DocumentsWithProducedImages;
 			}
 
-			return DocumentsWithOriginalImages;
+			return documentsWithOriginalImages;
 		}
 
 		private static string DocumentsWithProducedImages => "('Production::Image Count' > 0)";
 
-		private static string DocumentsWithOriginalImages => $"('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)"; // "Has Images" == "Yes"
+		private string DocumentsWithOriginalImages(int choiceArtifactId)  => $"('Has Images' == CHOICE {choiceArtifactId})"; // "Has Images" == "Yes"
 
 		private string DocumentsInSavedSearch() => $"('ArtifactId' IN SAVEDSEARCH {_configuration.DataSourceArtifactId})";
 

@@ -20,6 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<ISnapshotQueryConfiguration> _configurationFake;
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 		private Mock<IFieldManager> _fieldManagerFake;
+		private Mock<ISyncServiceManager> _servicesMgr;
 
 		private SnapshotQueryRequestProvider _sut;
 
@@ -39,6 +40,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_pipelineSelectorFake = new Mock<IPipelineSelector>();
 
+			_servicesMgr = new Mock<ISyncServiceManager>();
+
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_fieldManagerFake.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(_expectedDocumentTypeFields.ToList());
@@ -48,7 +51,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_sut = new SnapshotQueryRequestProvider(
 				_configurationFake.Object,
 				_pipelineSelectorFake.Object,
-				_fieldManagerFake.Object);
+				_fieldManagerFake.Object,
+				_servicesMgr.Object);
 		}
 
 		[Test]
