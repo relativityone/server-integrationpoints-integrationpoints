@@ -8,71 +8,71 @@ namespace kCura.IntegrationPoints.Tests.Core.Helpers
     public class FakeHelper : IHelper
     {
         [NonSerialized]
-        public Mock<IHelper> _helperMock;
+        public Mock<IHelper> HelperMock;
 
         public FakeHelper(Mock<IHelper> helperMock)
         {
-            _helperMock = helperMock;
+            HelperMock = helperMock;
         }
 
         public void Dispose()
         {
-            _helperMock.Object.Dispose();
+            HelperMock.Object.Dispose();
         }
 
         public IDBContext GetDBContext(int caseID)
         {
-            return _helperMock.Object.GetDBContext(caseID);
+            return HelperMock.Object.GetDBContext(caseID);
         }
 
         public IServicesMgr GetServicesManager()
         {
-            return _helperMock.Object.GetServicesManager();
+            return HelperMock.Object.GetServicesManager();
         }
 
         public IUrlHelper GetUrlHelper()
         {
-            return _helperMock.Object.GetUrlHelper();
+            return HelperMock.Object.GetUrlHelper();
         }
 
         public ILogFactory GetLoggerFactory()
         {
-            return _helperMock.Object.GetLoggerFactory();
+            return HelperMock.Object.GetLoggerFactory();
         }
 
         public string ResourceDBPrepend()
         {
-            return _helperMock.Object.ResourceDBPrepend();
+            return HelperMock.Object.ResourceDBPrepend();
         }
 
         public string ResourceDBPrepend(IDBContext context)
         {
-            return _helperMock.Object.ResourceDBPrepend(context);
+            return HelperMock.Object.ResourceDBPrepend(context);
         }
 
         public string GetSchemalessResourceDataBasePrepend(IDBContext context)
         {
-            return _helperMock.Object.GetSchemalessResourceDataBasePrepend(context);
+            return HelperMock.Object.GetSchemalessResourceDataBasePrepend(context);
         }
 
         public Guid GetGuid(int workspaceID, int artifactID)
         {
-            return _helperMock.Object.GetGuid(workspaceID, artifactID);
+            return HelperMock.Object.GetGuid(workspaceID, artifactID);
         }
 
         public ISecretStore GetSecretStore()
         {
-            return _helperMock.Object.GetSecretStore();
+            return HelperMock.Object.GetSecretStore();
         }
 
         public IInstanceSettingsBundle GetInstanceSettingBundle()
         {
-            return _helperMock.Object.GetInstanceSettingBundle();
+            return HelperMock.Object.GetInstanceSettingBundle();
         }
 
         public IStringSanitizer GetStringSanitizer(int workspaceID)
         {
-            return _helperMock.Object.GetStringSanitizer(workspaceID);
+            return HelperMock.Object.GetStringSanitizer(workspaceID);
         }
     }
 }
