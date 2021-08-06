@@ -106,7 +106,7 @@ namespace Relativity.Sync.Transfer
 				{
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
-				Condition = $"{DocumentsInSavedSearch()} AND {DocumentsWithImages()}",
+				Condition = $"{DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
 				Fields = new[]
 				{
 					new FieldRef { Name = identifierField.SourceFieldName }
@@ -125,7 +125,7 @@ namespace Relativity.Sync.Transfer
 				{
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
-				Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()} AND {DocumentsWithImages()}",
+				Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
 				Fields = new[]
 				{
 					new FieldRef { Name = identifierField.SourceFieldName }

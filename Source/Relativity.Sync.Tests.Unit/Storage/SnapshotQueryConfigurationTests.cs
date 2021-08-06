@@ -46,6 +46,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		[Test]
+		public void WorkspaceId_ShouldReturnValue()
+		{
+			// Act & Assert
+			_sut.workspaceId.Should().Be(1);
+		}
+
+		[Test]
 		public void ProductionImagePrecedence_ShouldReturnValue()
 		{
 			// Arrange
