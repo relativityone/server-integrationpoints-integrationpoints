@@ -81,14 +81,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			});
 		}
 
-		public ICommand MarkEntityManagerLinksAsExpired(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext, string tableName, long jobID, int workspaceID)
+		public ICommand DeleteEntityManagerLinksByLockedJobId(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext, string tableName, long jobID, int workspaceID)
 		{
 			return new ActionCommand(() =>
 			{
-				foreach(var manager in _relativity.EntityManagersResourceTables[tableName].Where(x => x.LockedByJobId == jobID))
-				{
-					manager.LockedByJobId = -1;
-				}
+				_relativity.EntityManagersResourceTables[tableName] =
+					_relativity.EntityManagersResourceTables[tableName]
+						.Where(x => x.LockedByJobId != jobID)
+						.ToList();
 			});
 		}
 	}
