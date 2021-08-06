@@ -9,7 +9,6 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -18,25 +17,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
     public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
         private readonly IRipProviderInstaller _ripProviderInstaller;
-        private readonly IToggleProvider _toggleProvider;
 
         public SourceProvidersMigrationEventHandler()
         { }
 
         public SourceProvidersMigrationEventHandler(IErrorService errorService,
-            IRipProviderInstaller ripProviderInstaller,
-            IToggleProvider toggleProvider)
+            IRipProviderInstaller ripProviderInstaller)
             : base(errorService)
         {
             _ripProviderInstaller = ripProviderInstaller;
-            _toggleProvider = toggleProvider;
         }
 
         protected override void Run()
         {
             Logger.LogInformation($"Running {nameof(SourceProvidersMigrationEventHandler)}");
             List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger, _toggleProvider);
+            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger);
             Logger.LogInformation("Executing Source Providers migration job");
             Response migrationJobResult = migrationJob.Execute();
             Logger.LogInformation("Source Providers migration job execution result success: {result}", migrationJobResult.Success);
@@ -98,15 +94,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		        IEHHelper helper, 
 		        IRipProviderInstaller providerInstaller,
 		        int templateWorkspaceId,
-		        IAPILog logger,
-                IToggleProvider toggleProvider)
-		        : base(providerInstaller, toggleProvider)
+		        IAPILog logger)
+		        : base(providerInstaller)
 	        {
 		        _sourceProviders = sourceProvidersToMigrate;
 		        _templateWorkspaceId = templateWorkspaceId;
 		        _logger = logger;
                 Helper = helper;
-
             }
 
 	        public override IDictionary<Guid, SourceProvider> GetSourceProviders()

@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		[SmokeTest]
 		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{
-			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider(null);
+			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider();
 			IDictionary<Guid, SourceProvider> installationInfo = installer.GetSourceProviders();
 
 			Assert.AreEqual(1, installationInfo.Count, "Expect the installer to only have one provider.");

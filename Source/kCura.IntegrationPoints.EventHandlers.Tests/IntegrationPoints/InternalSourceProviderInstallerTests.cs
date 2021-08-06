@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Contracts;
-using Relativity.Toggles;
 using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
@@ -54,8 +53,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             _sut = new SubjectUnderTest(
                 _ripProviderInstallerMock.Object,
                 _helperMock.Object,
-                sourceProviders,
-                null
+                sourceProviders
             );
         }
 
@@ -115,9 +113,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             public SubjectUnderTest(
                 IRipProviderInstaller ripProviderInstaller,
                 IEHHelper helper,
-                IEnumerable<SourceProvider> sourceProviders,
-                IToggleProvider toggleProvider)
-            : base(ripProviderInstaller, toggleProvider)
+                IEnumerable<SourceProvider> sourceProviders)
+            : base(ripProviderInstaller)
             {
                 Helper = helper;
                 ApplicationArtifactId = _APPLICATION_ID;
