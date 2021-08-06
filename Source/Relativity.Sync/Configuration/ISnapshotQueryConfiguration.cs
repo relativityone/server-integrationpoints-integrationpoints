@@ -5,7 +5,7 @@
 		int? JobHistoryToRetryId { get; }
 
 		int DataSourceArtifactId { get; }
-		
+
 		int[] ProductionImagePrecedence { get; }
 
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
