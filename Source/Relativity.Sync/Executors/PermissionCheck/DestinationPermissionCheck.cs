@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services;
-using Relativity.Services.Interfaces.ObjectType;
-using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
@@ -116,20 +114,16 @@ namespace Relativity.Sync.Executors.PermissionCheck
 
 			if (objectTypeQueryResult.Objects.Any())
 			{
-				using (var objectTypeManager = await _proxyFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
-				{
-					ObjectTypeResponse objectType = await objectTypeManager
-						.ReadAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID)
-						.ConfigureAwait(false);
-
-					return await ValidateUserHasArtifactTypePermissionAsync(configuration,
-						objectType.ArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
-						$"User does not have permissions to create tag: {objectTypeName}").ConfigureAwait(false);
-				}
+				string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
+				int objectArtifactTypeID = await _syncObjectTypeManager.GetObjectTypeArtifactTypeIdAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID).ConfigureAwait(false);
+				
+				return await ValidateUserHasArtifactTypePermissionAsync(configuration,
+					objectArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
+					insufficientPermissionsMessage).ConfigureAwait(false);	
 			}
 			else
 			{
-				throw new ValidationException($"Cannot find Object Type: {objectTypeName} in Destination Workspace Artifact ID: {configuration.DestinationWorkspaceArtifactId}");
+				throw new Validation.ValidationException($"Cannot find Object Type: {objectTypeName} in Destination Workspace Artifact ID: {configuration.DestinationWorkspaceArtifactId}");
 			}
 		}
 

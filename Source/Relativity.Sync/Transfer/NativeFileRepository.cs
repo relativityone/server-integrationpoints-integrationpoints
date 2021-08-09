@@ -4,29 +4,17 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Service.Export;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Extensions;
-using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
 {
 	internal sealed class NativeFileRepository : INativeFileRepository
 	{
-		private const int _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES = 10000;
-		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
-		private const string _LOCATION_COLUMN_NAME = "Location";
-		private const string _FILENAME_COLUMN_NAME = "Filename";
-		private const string _SIZE_COLUMN_NAME = "Size";
-
 		private readonly ISearchManagerFactory _searchManagerFactory;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
-		public NativeFileRepository(ISearchManagerFactory searchManagerFactory, ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public NativeFileRepository(ISearchManagerFactory searchManagerFactory, ISyncLog logger)
 		{
 			_searchManagerFactory = searchManagerFactory;
-			_serviceFactory = serviceFactory;
 			_logger = logger;
 		}
 
@@ -68,28 +56,6 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		/// <summary>
-		/// Returns long running task
-		/// </summary>
-		public async Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request)
-		{
-			_logger.LogInformation("Initializing calculating total natives size (in chunks of {batchSize} )", _BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
-			long nativesTotalSize = 0;
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				IEnumerable<IList<int>> documentArtifactIdBatches = (await objectManager.QueryAllAsync(workspaceId, request).ConfigureAwait(false))
-					.Select(x => x.ArtifactID)
-					.SplitList(_BATCH_SIZE_FOR_NATIVES_SIZE_QUERIES);
-
-				foreach (IList<int> batch in documentArtifactIdBatches)
-				{
-					IEnumerable<INativeFile> nativesInBatch = await this.QueryAsync(workspaceId, batch).ConfigureAwait(false);
-					nativesTotalSize += nativesInBatch.Sum(x => x.Size);
-				}
-			}
-			return nativesTotalSize;
-		}
-
 		private IList<INativeFile> GetNativeFiles(DataTable dataTable)
 		{
 			List<INativeFile> natives = new List<INativeFile>(dataTable.Rows.Count);
@@ -105,10 +71,10 @@ namespace Relativity.Sync.Transfer
 
 		private INativeFile GetNativeFile(DataRow dataRow)
 		{
-			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
-			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
-			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
-			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
+			int documentArtifactId = GetValue<int>(dataRow, "DocumentArtifactID");
+			string location = GetValue<string>(dataRow, "Location");
+			string fileName = GetValue<string>(dataRow, "Filename");
+			long size = GetValue<long>(dataRow, "Size");
 
 			return new NativeFile(documentArtifactId, location, fileName, size);
 		}

@@ -13,6 +13,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
@@ -89,7 +90,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			result.Should().Be(_readableStream.Object);
 			_readableStream.VerifyGet(s => s.CanRead, Times.Once);
 			_objectManager.Verify(om => om.StreamLongTextAsync(_WORKSPACE_ARTIFACT_ID, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>()), Times.Exactly(expectedCallCount));
-			_syncMetrics.Verify(m => m.CountOperation(It.IsAny<string>(), ExecutionStatus.Failed), Times.Once);
+			
+			_syncMetrics.Verify(x => x.Send(It.Is<StreamRetryMetric>(m => m.RetryCounter != null)), Times.Once);
 		}
 
 		[Test]
@@ -107,7 +109,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			result.Should().Be(_readableStream.Object);
 			_readableStream.VerifyGet(s => s.CanRead, Times.Once);
 			_objectManager.Verify(om => om.StreamLongTextAsync(_WORKSPACE_ARTIFACT_ID, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>()), Times.Exactly(expectedCallCount));
-			_syncMetrics.Verify(m => m.CountOperation(It.IsAny<string>(), ExecutionStatus.Failed), Times.Once);
+			_syncMetrics.Verify(x => x.Send(It.Is<StreamRetryMetric>(m => m.RetryCounter != null)), Times.Once);
 		}
 		
 		[Test]
@@ -126,7 +128,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			// Assert
 			result.Should().Be(unreadableStream.Object);
 			_objectManager.Verify(om => om.StreamLongTextAsync(_WORKSPACE_ARTIFACT_ID, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>()), Times.Exactly(expectedCallCount));
-			_syncMetrics.Verify(m => m.CountOperation(It.IsAny<string>(), ExecutionStatus.Failed), Times.Exactly(_RETRY_COUNT));
+
+			_syncMetrics.Verify(x => x.Send(It.Is<StreamRetryMetric>(m => m.RetryCounter != null)), Times.Exactly(_RETRY_COUNT));
 		}
 
 		[Test]
@@ -144,7 +147,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			await action.Should().ThrowAsync<ServiceException>().ConfigureAwait(false);
 
 			_objectManager.Verify(om => om.StreamLongTextAsync(_WORKSPACE_ARTIFACT_ID, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>()), Times.Exactly(expectedCallCount));
-			_syncMetrics.Verify(m => m.CountOperation(It.IsAny<string>(), ExecutionStatus.Failed), Times.Exactly(_RETRY_COUNT));
+			_syncMetrics.Verify(x => x.Send(It.Is<StreamRetryMetric>(m => m.RetryCounter != null)), Times.Exactly(_RETRY_COUNT));
 		}
 
 		private IAsyncPolicy<Stream> GetRetryPolicy(Func<Stream, bool> shouldRetry, Action<Stream, Exception, int> onRetry, int retryCount)

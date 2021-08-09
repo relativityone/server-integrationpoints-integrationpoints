@@ -76,25 +76,26 @@ namespace Relativity.Sync.Tests.System
 			// Prepare environment
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
 			int allDocumentsSavedSearchArtifactId =
-				await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
+				await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 			int jobHistoryArtifactId = await Rdos
 				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
 				.ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos
-				.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId,
-					fieldMap).ConfigureAwait(false);
 
 			// Create configuration
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
 				FolderPathSourceFieldName = folderInfoFieldName
 			};
 			configuration.SetFieldMappings(fieldMap);
+
+			configuration.SyncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationRdoAsync(sourceWorkspaceArtifactId, configuration)
+				.ConfigureAwait(false);
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
@@ -109,10 +110,10 @@ namespace Relativity.Sync.Tests.System
 			IContainer container = ContainerHelper.Create(configuration);
 
 			// Create snapshot
-			IExecutor<IDocumentDataSourceSnapshotConfiguration> executor =
-				container.Resolve<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
+			IExecutor<IDataSourceSnapshotConfiguration> executor =
+				container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
 			ExecutionResult result =
-				await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+				await executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
 			// Create batch and SourceWorkspaceDataReader
@@ -177,7 +178,7 @@ namespace Relativity.Sync.Tests.System
 			Dataset dataset = Dataset.MultipleImagesPerDocument;
 			const string folderInfoFieldName = "Document Folder Path";
 			const int controlNumberFieldId = 1003667;
-			const int totalItemsCount = 1;
+			const int totalItemsCount = 2;
 
 			string sourceWorkspaceName = $"{Guid.NewGuid()}";
 			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
@@ -204,26 +205,26 @@ namespace Relativity.Sync.Tests.System
 			// Prepare environment
 			int sourceWorkspaceArtifactId = await CreateWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
 			int allDocumentsSavedSearchArtifactId =
-				await Rdos.GetSavedSearchInstance(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
+				await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId).ConfigureAwait(false);
 			int jobHistoryArtifactId = await Rdos
 				.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
 				.ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos
-				.CreateSyncConfigurationInstance(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryArtifactId,
-					fieldMap).ConfigureAwait(false);
-
+			
 			// Create configuration
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
 				DataSourceArtifactId = allDocumentsSavedSearchArtifactId,
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
 				FolderPathSourceFieldName = folderInfoFieldName,
 				IsImageJob = true
 			};
 			configuration.SetFieldMappings(fieldMap);
+
+			configuration.SyncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationRdoAsync(sourceWorkspaceArtifactId, configuration).ConfigureAwait(false);
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
@@ -235,8 +236,8 @@ namespace Relativity.Sync.Tests.System
 			IContainer container = ContainerHelper.Create(configuration);
 
 			// Create snapshot
-			IExecutor<IImageDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IImageDataSourceSnapshotConfiguration>>();
-			ExecutionResult result = await executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			IExecutor<IDataSourceSnapshotConfiguration> executor = container.Resolve<IExecutor<IDataSourceSnapshotConfiguration>>();
+			ExecutionResult result = await executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
 			// Create batch and SourceWorkspaceDataReader

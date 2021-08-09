@@ -15,7 +15,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			_validators = validators;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IPermissionsCheckConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IPermissionsCheckConfiguration configuration, CompositeCancellationToken token)
 		{
 			var validationResult = new ValidationResult();
 

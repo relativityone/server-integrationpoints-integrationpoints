@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class ValidationExecutorSystemTests : SystemTest
+	internal sealed class ValidationExecutorSystemTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
 		private WorkspaceRef _sourceWorkspace;
@@ -34,8 +34,8 @@ namespace Relativity.Sync.Tests.System
 			Task<WorkspaceRef> sourceWorkspaceCreationTask = Environment.CreateWorkspaceWithFieldsAsync();
 			Task<WorkspaceRef> destinationWorkspaceCreationTask = Environment.CreateWorkspaceAsync();
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
-			_sourceWorkspace = sourceWorkspaceCreationTask.Result;
-			_destinationWorkspace = destinationWorkspaceCreationTask.Result;
+			_sourceWorkspace = sourceWorkspaceCreationTask.GetAwaiter().GetResult();
+			_destinationWorkspace = destinationWorkspaceCreationTask.GetAwaiter().GetResult();
 		}
 
 		[IdentifiedTest("96d83692-044d-40f0-b335-84bc5a413478")]
@@ -43,9 +43,9 @@ namespace Relativity.Sync.Tests.System
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
-			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
-			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int savedSearchArtifactId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderArtifactId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldNameAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 
 			const string fieldsMap =
 				"[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true," +
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
 
 			// assert
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("E070BD2B-BEAB-4304-A175-434D8EBA7348")]
@@ -80,9 +80,9 @@ namespace Relativity.Sync.Tests.System
 		{
 			int expectedSourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID;
 			int expectedJobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId, _JOB_HISTORY_NAME).ConfigureAwait(false);
-			int savedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
-			int destinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldName(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int savedSearchArtifactId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderArtifactId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			string folderPathSourceFieldName = await Rdos.GetFolderPathSourceFieldNameAsync(ServiceFactory, expectedSourceWorkspaceArtifactId).ConfigureAwait(false);
 
 			const string fieldsMap =
 				@"[
@@ -135,7 +135,7 @@ namespace Relativity.Sync.Tests.System
 
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
-			Func<Task> executeJob = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> executeJob = () => syncJob.ExecuteAsync(CompositeCancellationToken.None);
 
 			// assert
 			executeJob.Should().Throw<ValidationException>();

@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.Common
 	[ExcludeFromCodeCoverage]
 	internal sealed class ExecutorStub<T> : IExecutor<T> where T : IConfiguration
 	{
-		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(T configuration, CompositeCancellationToken token)
 		{
 			return Task.FromResult(ExecutionResult.Success());
 		}

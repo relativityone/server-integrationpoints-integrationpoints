@@ -12,5 +12,8 @@ namespace Relativity.Sync.Configuration
 		string GetFolderPathSourceFieldName();
 
 		IList<FieldMap> GetFieldMappings();
+
+		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+
 	}
 }

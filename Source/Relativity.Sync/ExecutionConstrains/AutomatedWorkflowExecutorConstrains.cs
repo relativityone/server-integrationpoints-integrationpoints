@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
@@ -10,7 +12,7 @@ namespace Relativity.Sync.ExecutionConstrains
 {
 	internal sealed class AutomatedWorkflowExecutorConstrains : IExecutionConstrains<IAutomatedWorkflowTriggerConfiguration>
 	{
-		private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
+		private const string _RELATIVITY_APPLICATION_NAME = "Relativity Application";
 		private const string _AUTOMATED_WORKFLOWS_APPLICATION_NAME = "Automated Workflows";
 
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
@@ -34,23 +36,39 @@ namespace Relativity.Sync.ExecutionConstrains
 			try
 			{
 				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				using (IObjectTypeManager objectTypeManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
 				{
-					QueryRequest automatedWorkflowsInstalledRequest = new QueryRequest
+					QueryRequest relativityApplicationObjectTypeQueryRequest = new QueryRequest
 					{
-						ObjectType = new ObjectTypeRef { ArtifactTypeID = _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID },
+						ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.ObjectType },
+						Condition = $"'Name' == '{_RELATIVITY_APPLICATION_NAME}'"
+					};
+					QueryResultSlim relativityApplicationObjectTypeQueryResult = await objectManager.QuerySlimAsync(workspaceArtifactId, relativityApplicationObjectTypeQueryRequest, 0, 1).ConfigureAwait(false);
+
+					if (relativityApplicationObjectTypeQueryResult.ResultCount == 0)
+					{
+						throw new Exception($"The { _RELATIVITY_APPLICATION_NAME} object type wasn't found.");
+					}
+
+					int relativityApplicationObjectTypeArtifactId = relativityApplicationObjectTypeQueryResult.Objects[0].ArtifactID;
+					ObjectTypeResponse relativityApplicationObjectTypeMetadata = await objectTypeManager.ReadAsync(workspaceArtifactId, relativityApplicationObjectTypeArtifactId).ConfigureAwait(false);
+
+					QueryRequest automatedWorkflowsInstalledQueryRequest = new QueryRequest
+					{
+						ObjectType = new ObjectTypeRef { ArtifactTypeID = relativityApplicationObjectTypeMetadata.ArtifactTypeID },
 						Condition = $"'Name' == '{_AUTOMATED_WORKFLOWS_APPLICATION_NAME}'"
 					};
-					QueryResultSlim automatedWorkflowsInstalledResult = await objectManager.QuerySlimAsync(workspaceArtifactId, automatedWorkflowsInstalledRequest, 0, 0).ConfigureAwait(false);
+					QueryResultSlim automatedWorkflowsInstalledQueryResult = await objectManager.QuerySlimAsync(workspaceArtifactId, automatedWorkflowsInstalledQueryRequest, 0, 0).ConfigureAwait(false);
 
-					_logger.LogInformation(_AUTOMATED_WORKFLOWS_APPLICATION_NAME + " installation status for workspace {workspaceArtifactId} is {installationStatus}.", workspaceArtifactId, automatedWorkflowsInstalledResult.TotalCount > 0);
+					_logger.LogInformation(_AUTOMATED_WORKFLOWS_APPLICATION_NAME + " installation status for workspace {workspaceArtifactId} is {installationStatus}.", workspaceArtifactId, automatedWorkflowsInstalledQueryResult.TotalCount > 0);
 
-					return automatedWorkflowsInstalledResult.TotalCount > 0;
+					return automatedWorkflowsInstalledQueryResult.TotalCount > 0;
 				}
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Exception occurred when checking {_AUTOMATED_WORKFLOWS_APPLICATION_NAME} installation status.");
-				throw;
+				_logger.LogWarning(ex, $"Exception occurred when checking {_AUTOMATED_WORKFLOWS_APPLICATION_NAME} installation status.");
+				return true;
 			}
 		}
 	}

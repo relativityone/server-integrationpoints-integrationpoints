@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			var jobReport = (JobReport)Activator.CreateInstance(typeof(JobReport), true);
 
-			System.Reflection.FieldInfo errorRowsField = jobReport.GetType()
+			global::System.Reflection.FieldInfo errorRowsField = jobReport.GetType()
 				.GetField("_errorRows", BindingFlags.Instance | BindingFlags.NonPublic);
 			errorRowsField?.SetValue(jobReport, new JobReport.RowError[failedItems].ToList());
 

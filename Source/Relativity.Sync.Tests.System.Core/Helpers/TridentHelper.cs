@@ -1,13 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Security;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal static class TridentHelper
 	{
-		public static void UpdateFilePathToLocalIfNeeded(int workspaceArtifactId, Dataset dataSet, bool natives)
+		public static void UpdateFilePathToLocalIfNeeded(int workspaceArtifactId, Dataset dataSet)
 		{
 			if (AppSettings.IsSettingsFileSet)
 			{
@@ -19,36 +21,29 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				//where out test data are stored. So we assume in testing that push is working correctly, but whole flow (metadata, etc.) is under tests.
 
 				#endregion
-				using (SqlConnection connection = CreateConnectionFromAppConfig(workspaceArtifactId))
+				using (SqlConnection connection = SqlHelper.CreateConnectionFromAppConfig(workspaceArtifactId))
 				{
-					string localFolderPath = natives
+					connection.Open();
+
+					string localFolderPath = dataSet.ImportType == ImportType.Native
 						? Path.Combine(dataSet.FolderPath, "NATIVES")
 						: dataSet.FolderPath;
 
-					connection.Open();
+					SqlParameter[] fileNames = Directory.GetFiles(localFolderPath)
+						.Select((x, idx) => new SqlParameter($"File{idx}", new FileInfo(x).Name)).ToArray();
+					string fileParameterNames = string.Join(",", fileNames.Select(x => $"@{x.ParameterName}"));
 
-					const string sqlStatement =
-						@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename])";
+					string sqlStatement =
+						$@"UPDATE [File] SET Location = CONCAT(@LocalFilePath, '\', [Filename]) WHERE [TYPE] = @FileType AND [Filename] IN ({fileParameterNames})";
+
 					SqlCommand command = new SqlCommand(sqlStatement, connection);
 					command.Parameters.AddWithValue("LocalFilePath", localFolderPath);
+					command.Parameters.AddWithValue("FileType", (int)dataSet.ImportType);
+					command.Parameters.AddRange(fileNames);
 
 					command.ExecuteNonQuery();
 				}
 			}
 		}
-
-		private static SqlConnection CreateConnectionFromAppConfig(int workspaceArtifactId)
-		{
-			SecureString password = new NetworkCredential("", AppSettings.SqlPassword).SecurePassword;
-			password.MakeReadOnly();
-			SqlCredential credential = new SqlCredential(AppSettings.SqlUsername, password);
-
-			return new SqlConnection(
-				GetWorkspaceConnectionString(workspaceArtifactId),
-				credential);
-		}
-
-		private static string GetWorkspaceConnectionString(int workspaceArtifactId) => $"Data Source={AppSettings.SqlServer};Initial Catalog=EDDS{workspaceArtifactId}";
-
 	}
 }

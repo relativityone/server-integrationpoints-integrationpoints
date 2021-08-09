@@ -120,7 +120,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupForSourceJobDocumentField(false, false);
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -143,7 +143,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupForSourceJobDocumentField(false, false);
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -166,7 +166,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupForSourceJobDocumentField(true, true);
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -189,7 +189,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupForSourceJobDocumentField(false, false);
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -212,7 +212,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupForSourceJobDocumentField(false, true);
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -238,7 +238,7 @@ namespace Relativity.Sync.Tests.Integration
 			_artifactGuidManager.Setup(agm => agm.GuidExistsAsync(_WORKSPACE_ID, It.Is((Guid guid) => guid == JobHistoryFieldOnDocumentGuid))).ThrowsAsync(exception);
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Failed);

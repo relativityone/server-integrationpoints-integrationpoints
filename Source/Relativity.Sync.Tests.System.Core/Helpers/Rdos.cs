@@ -9,11 +9,12 @@ using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.User;
 using Relativity.Sync.Utils;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
 using User = Relativity.Services.User.User;
-using Newtonsoft.Json;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.Tests.System.Core.Stubs;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
@@ -60,43 +61,16 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static readonly Guid _DESTINATION_WORKSPACE_NAME_GUID =
 			new Guid("155649c0-db15-4ee7-b449-bfdf2a54b7b5");
 
-		private static readonly Guid _SYNC_CONFIGURATION_FIELD_MAPPINGS_GUID =
-			new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
-
-		private static readonly Guid CreateSavedSearchInDestinationGuid =
-			new Guid("BFAB4AF6-4704-4A12-A8CA-C96A1FBCB77D");
-
-		private static readonly Guid JobHistoryToRetryGuid
-			= new Guid("d7d0ddb9-d383-4578-8d7b-6cbdd9e71549");
-
 		private static readonly Guid JobHistoryMultiObjectFieldGuid = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
 
-		private static readonly Guid DataDestinationArtifactIdGuid = new Guid("0E9D7B8E-4643-41CC-9B07-3A66C98248A1");
-		private static readonly Guid DataDestinationTypeGuid = new Guid("86D9A34A-B394-41CF-BFF4-BD4FF49A932D");
-		private static readonly Guid DataSourceArtifactIdGuid = new Guid("6D8631F9-0EA1-4EB9-B7B2-C552F43959D0");
-		private static readonly Guid DataSourceTypeGuid = new Guid("A00E6BC1-CA1C-48D9-9712-629A63061F0D");
+		public static async Task<int> CreateJobHistoryInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name", Guid? jobHistoryTypeGuid = null)
+		{
+			RelativityObject result = await CreateJobHistoryRelativityObjectInstanceAsync(serviceFactory, workspaceId, jobHistoryTypeGuid ?? new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9"), name).ConfigureAwait(false);
 
-		private static readonly Guid DestinationFolderStructureBehaviorGuid =
-			new Guid("A1593105-BD99-4A15-A51A-3AA8D4195908");
+			return result.ArtifactID;
+		}
 
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid =
-			new Guid("15B88438-6CF7-47AB-B630-424633159C69");
-
-		private static readonly Guid EmailNotificationRecipientsGuid = new Guid("4F03914D-9E86-4B72-B75C-EE48FEEBB583");
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
-		private static readonly Guid FieldOverlayBehaviorGuid = new Guid("34ECB263-1370-4D6C-AC11-558447504EC4");
-		private static readonly Guid FolderPathSourceFieldNameGuid = new Guid("66A37443-EF92-47ED-BEEA-392464C853D3");
-		private static readonly Guid ImportOverwriteModeGuid = new Guid("1914D2A3-A1FF-480B-81DC-7A2AA563047A");
-		private static readonly Guid MoveExistingDocumentsGuid = new Guid("26F9BF88-420D-4EFF-914B-C47BA36E10BF");
-		private static readonly Guid NativesBehaviorGuid = new Guid("D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2");
-		private static readonly Guid RdoArtifactTypeIdGuid = new Guid("4DF15F2B-E566-43CE-830D-671BD0786737");
-
-		private static readonly Guid ImageImportGuid = new Guid("b282bbe4-7b32-41d1-bb50-960a0e483bb5");
-		private static readonly Guid IncludeOriginalImagesGuid = new Guid("f2cad5c5-63d5-49fc-bd47-885661ef1d8b");
-		private static readonly Guid ProductionImagePrecedenceGuid = new Guid("421cf05e-bab4-4455-a9ca-fa83d686b5ed");
-		private static readonly Guid ImageFileCopyModeGuid = new Guid("bd5dc6d2-faa2-4312-8dc0-4d1b6945dfe1");
-
-		public static async Task<int> CreateJobHistoryInstanceAsync(ServiceFactory serviceFactory, int workspaceId, string name = "Name")
+		public static async Task<RelativityObject> CreateJobHistoryRelativityObjectInstanceAsync(ServiceFactory serviceFactory, int workspaceId, Guid jobHistoryTypeGuid, string name = "Name")
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -115,44 +89,15 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					},
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")
+						Guid = jobHistoryTypeGuid
 					}
 				};
 				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
+				return result.Object;
 			}
 		}
 
-		public static async Task<int> CreateSyncConfigurationInstance(ServiceFactory serviceFactory, int workspaceId,
-			int jobHistoryId, List<FieldMap> fieldMappings = null)
-		{
-			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
-			{
-				CreateRequest request = new CreateRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
-					},
-					ParentObject = new RelativityObjectRef
-					{
-						ArtifactID = jobHistoryId
-					},
-					FieldValues = new List<FieldRefValuePair>
-					{
-						new FieldRefValuePair
-						{
-							Field = new FieldRef {Guid = _SYNC_CONFIGURATION_FIELD_MAPPINGS_GUID},
-							Value = new JSONSerializer().Serialize(fieldMappings)
-						}
-					}
-				};
-				CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
-			}
-		}
-
-		public static async Task<int> CreateRelativitySourceCaseInstance(ServiceFactory serviceFactory,
+		public static async Task<int> CreateRelativitySourceCaseInstanceAsync(ServiceFactory serviceFactory,
 			int destinationWorkspaceArtifactId, RelativitySourceCaseTag tag)
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -193,7 +138,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateRelativitySourceJobInstance(ServiceFactory serviceFactory,
+		public static async Task<int> CreateRelativitySourceJobInstanceAsync(ServiceFactory serviceFactory,
 			int destinationWorkspaceArtifactId, RelativitySourceJobTag tag)
 		{
 			using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -230,7 +175,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateDestinationWorkspaceTagInstance(ServiceFactory serviceFactory,
+		public static async Task<int> CreateDestinationWorkspaceTagInstanceAsync(ServiceFactory serviceFactory,
 			int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
 		{
 			const string destinationInstanceName = "This Instance";
@@ -280,7 +225,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> GetSavedSearchInstance(ServiceFactory serviceFactory, int workspaceId,
+		public static async Task<int> GetSavedSearchInstanceAsync(ServiceFactory serviceFactory, int workspaceId,
 			string name = "All Documents")
 		{
 			using (IKeywordSearchManager keywordSearchManager = serviceFactory.CreateProxy<IKeywordSearchManager>())
@@ -301,7 +246,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> GetRootFolderInstance(ServiceFactory serviceFactory, int workspaceId)
+		public static async Task<int> GetRootFolderInstanceAsync(ServiceFactory serviceFactory, int workspaceId)
 		{
 			using (IFolderManager folderManager = serviceFactory.CreateProxy<IFolderManager>())
 			{
@@ -310,7 +255,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<int> CreateFolderInstance(ServiceFactory serviceFactory, int workspaceId,
+		public static async Task<int> CreateFolderInstanceAsync(ServiceFactory serviceFactory, int workspaceId,
 			string folderName)
 		{
 			using (IFolderManager folderManager = serviceFactory.CreateProxy<IFolderManager>())
@@ -327,7 +272,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		public static async Task<string> GetFolderPathSourceFieldName(ServiceFactory serviceFactory, int workspaceId)
+		public static async Task<string> GetFolderPathSourceFieldNameAsync(ServiceFactory serviceFactory, int workspaceId)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -421,20 +366,69 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			};
 		}
 
-		public static async Task<int> CreateSyncConfigurationRdoAsync(ServiceFactory serviceFactory, int workspaceId,
-			ConfigurationStub configuration, ISerializer serializer = null)
+		private static SyncConfigurationRdo GetConfiguration(ConfigurationStub configurationStub, ISerializer serializer)
 		{
-			CreateRequest request =
-				PrepareSyncConfigurationCreateRequestAsync(configuration, serializer ?? new JSONSerializer());
-			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
+			return new SyncConfigurationRdo
 			{
-				CreateResult createResult = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
+				CreateSavedSearchInDestination =  configurationStub.CreateSavedSearchForTags,
+				DataDestinationArtifactId = configurationStub.DestinationFolderArtifactId,
+				DataDestinationType = "Folder",
+				DataSourceArtifactId =  configurationStub.SavedSearchArtifactId,
+				DataSourceType =  "SavedSearch",
+				DestinationFolderStructureBehavior = configurationStub.DestinationFolderStructureBehavior.ToString(),
+				FolderPathSourceFieldName = configurationStub.FolderPathSourceFieldName,
+				DestinationWorkspaceArtifactId = configurationStub.DestinationWorkspaceArtifactId,
+				EmailNotificationRecipients = configurationStub.GetNotificationEmails(),
+				FieldsMapping = serializer.Serialize(configurationStub.GetFieldMappings()),
+				FieldOverlayBehavior = configurationStub.FieldOverlayBehavior.GetDescription(),
+				ImportOverwriteMode = configurationStub.ImportOverwriteMode.GetDescription(),
+				MoveExistingDocuments = configurationStub.MoveExistingDocuments,
+				NativesBehavior = configurationStub.ImportNativeFileCopyMode.GetDescription(),
+				RdoArtifactTypeId = (int)ArtifactType.Document,
+				JobHistoryId = configurationStub.JobHistoryArtifactId,
+				JobHistoryToRetryId = configurationStub.JobHistoryToRetryId,
+				ImageImport = configurationStub.ImageImport,
+				IncludeOriginalImages = configurationStub.ProductionImagePrecedence is null || configurationStub.IncludeOriginalImageIfNotFoundInProductions,
+				ImageFileCopyMode = configurationStub.ImportImageFileCopyMode.GetDescription(),
+				ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
 
-				return createResult.Object.ArtifactID;
-			}
+				//Drain-Stop
+				SyncStatisticsId = configurationStub.SyncStatisticsId,
+
+				// JobHistoryGuids
+				JobHistoryType = configurationStub.JobHistory.TypeGuid,
+				JobHistoryGuidTotalField = configurationStub.JobHistory.TotalItemsFieldGuid,
+				JobHistoryGuidFailedField = configurationStub.JobHistory.FailedItemsFieldGuid,
+				JobHistoryCompletedItemsField = configurationStub.JobHistory.CompletedItemsFieldGuid,
+				JobHistoryDestinationWorkspaceInformationField = configurationStub.JobHistory.DestinationWorkspaceInformationGuid,
+				
+				// JobHistoryErrorGuids
+				JobHistoryErrorType = configurationStub.JobHistoryError.TypeGuid,
+				JobHistoryErrorErrorMessages = configurationStub.JobHistoryError.ErrorMessagesGuid,
+				JobHistoryErrorErrorStatus = configurationStub.JobHistoryError.ErrorStatusGuid,
+				JobHistoryErrorErrorType = configurationStub.JobHistoryError.ErrorTypeGuid,
+				JobHistoryErrorName = configurationStub.JobHistoryError.NameGuid,
+				JobHistoryErrorSourceUniqueId = configurationStub.JobHistoryError.SourceUniqueIdGuid,
+				JobHistoryErrorStackTrace = configurationStub.JobHistoryError.StackTraceGuid,
+				JobHistoryErrorTimeStamp = configurationStub.JobHistoryError.TimeStampGuid,
+				JobHistoryErrorItemLevelError = configurationStub.JobHistoryError.ItemLevelErrorGuid,
+				JobHistoryErrorJobLevelError = configurationStub.JobHistoryError.JobLevelErrorGuid,
+				JobHistoryErrorJobHistoryRelation = configurationStub.JobHistoryError.JobHistoryRelationGuid,
+				JobHistoryErrorNewChoice = configurationStub.JobHistoryError.NewStatusGuid,
+				
+				// DestinationWorkspaceGuids
+				DestinationWorkspaceType = configurationStub.DestinationWorkspace.TypeGuid,
+				DestinationWorkspaceNameField = configurationStub.DestinationWorkspace.NameGuid,
+				DestinationWorkspaceWorkspaceArtifactIdField = configurationStub.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid,
+				DestinationWorkspaceDestinationWorkspaceName = configurationStub.DestinationWorkspace.DestinationWorkspaceNameGuid,
+				DestinationWorkspaceDestinationInstanceArtifactId = configurationStub.DestinationWorkspace.DestinationInstanceArtifactIdGuid,
+				DestinationWorkspaceDestinationInstanceName = configurationStub.DestinationWorkspace.DestinationInstanceNameGuid,
+				DestinationWorkspaceOnDocumentField = configurationStub.DestinationWorkspace.DestinationWorkspaceOnDocument,
+				JobHistoryOnDocumentField = configurationStub.DestinationWorkspace.JobHistoryOnDocumentGuid,
+			};
 		}
 
-		private static async Task<IList<RelativityObject>> QueryDocumentsAsync(ServiceFactory serviceFactory,
+		public static async Task<IList<RelativityObject>> QueryDocumentsAsync(ServiceFactory serviceFactory,
 			int workspaceId, string condition)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -460,9 +454,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				return documents;
 			}
 		}
-
-
-		public static async Task<RelativityObject> GetJobHistoryAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId)
+		
+		public static async Task<RelativityObject> GetJobHistoryAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId, Guid jobHistoryGuid)
 		{
 			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
 			{
@@ -470,7 +463,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				{
 					ObjectType = new ObjectTypeRef
 					{
-						Guid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9")
+						Guid = jobHistoryGuid
 					},
 					Condition = $"'ArtifactId' == {jobHistoryId}",
 					Fields = new []
@@ -496,192 +489,50 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 		}
 
-		private static CreateRequest PrepareSyncConfigurationCreateRequestAsync(ConfigurationStub configuration, ISerializer serializer)
+		public static async Task<int> CreateSyncConfigurationRdoAsync(int workspaceId,
+			ConfigurationStub configurationStub, ISyncLog logger = null, ISerializer serializer = null)
 		{
-			RelativityObject jobHistoryToRetry = null;
+			serializer = serializer ?? new JSONSerializer();
+			logger = logger ?? TestLogHelper.GetLogger();
+			var rdoManager = new RdoManager(logger, new ServicesManagerStub(), new RdoGuidProvider());
+			SyncConfigurationRdo configuration = GetConfiguration(configurationStub, serializer);
 
-			if (configuration.JobHistoryToRetryId.HasValue)
-			{
-				jobHistoryToRetry = new RelativityObject()
-				{
-					ArtifactID = configuration.JobHistoryToRetryId.Value
-				};
-			}
+			await rdoManager.CreateAsync(workspaceId, configuration).ConfigureAwait(false);
 
-			return new CreateRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					Guid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57")
-				},
-				ParentObject = new RelativityObjectRef
-				{
-					ArtifactID = configuration.JobHistoryArtifactId
-				},
-				FieldValues = new[]
-				{
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = CreateSavedSearchInDestinationGuid
-						},
-						Value = configuration.CreateSavedSearchForTags
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataDestinationArtifactIdGuid
-						},
-						Value = configuration.DestinationFolderArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataDestinationTypeGuid
-						},
-						Value = "Folder"
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataSourceArtifactIdGuid
-						},
-						Value = configuration.SavedSearchArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DataSourceTypeGuid
-						},
-						Value = "SavedSearch"
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DestinationFolderStructureBehaviorGuid
-						},
-						Value = configuration.DestinationFolderStructureBehavior.ToString()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = FolderPathSourceFieldNameGuid
-						},
-						Value = configuration.FolderPathSourceFieldName
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = DestinationWorkspaceArtifactIdGuid
-						},
-						Value = configuration.DestinationWorkspaceArtifactId
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = EmailNotificationRecipientsGuid
-						},
-						Value = configuration.GetNotificationEmails()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = FieldMappingsGuid
-						},
-						Value = serializer.Serialize(configuration.GetFieldMappings())
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = FieldOverlayBehaviorGuid
-						},
-						Value = configuration.FieldOverlayBehavior.GetDescription()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = ImportOverwriteModeGuid
-						},
-						Value = configuration.ImportOverwriteMode.ToString()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = MoveExistingDocumentsGuid
-						},
-						Value = configuration.MoveExistingDocuments
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = NativesBehaviorGuid
-						},
-						Value = configuration.ImportNativeFileCopyMode.GetDescription()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = RdoArtifactTypeIdGuid
-						},
-						Value = (int) ArtifactType.Document
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = JobHistoryToRetryGuid
-						},
-						Value = jobHistoryToRetry
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = ImageImportGuid
-						},
-						Value = configuration.ImageImport
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = IncludeOriginalImagesGuid
-						},
-						Value = configuration.IncludeOriginalImages
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = ImageFileCopyModeGuid
-						},
-						Value = configuration.ImportImageFileCopyMode.GetDescription()
-					},
-					new FieldRefValuePair
-					{
-						Field = new FieldRef
-						{
-							Guid = ProductionImagePrecedenceGuid
-						},
-						Value = configuration.ProductionImagePrecedence is null ? String.Empty : JsonConvert.SerializeObject(configuration.ProductionImagePrecedence)
+			return configuration.ArtifactId;
 		}
-				}
-			};
+
+		public static Task<int> CreateSyncConfigurationRdoAsync(int workspaceId, int jobHistoryId)
+		{
+			return CreateSyncConfigurationRdoAsync(workspaceId, new ConfigurationStub
+			{
+				JobHistoryArtifactId = jobHistoryId
+			});
+		}
+
+		public static async Task<int> CreateEmptySyncStatisticsRdoAsync(int workspaceId)
+		{
+			IRdoManager rdoManager = CreateRdoManager();
+
+			SyncStatisticsRdo syncStatistics = new SyncStatisticsRdo();
+
+			await rdoManager.CreateAsync(workspaceId, syncStatistics).ConfigureAwait(false);
+
+			return syncStatistics.ArtifactId;
+		}
+
+		public static Task<TRdo> ReadRdoAsync<TRdo>(int workspaceId, int artifactId)
+			where TRdo : IRdoType, new()
+		{
+			IRdoManager rdoManager = CreateRdoManager();
+
+			return rdoManager.GetAsync<TRdo>(workspaceId, artifactId);
+		}
+
+		private static IRdoManager CreateRdoManager()
+		{
+			ISyncLog log = TestLogHelper.GetLogger();
+			return new RdoManager(log, new ServicesManagerStub(), new RdoGuidProvider());
 		}
 	}
 }

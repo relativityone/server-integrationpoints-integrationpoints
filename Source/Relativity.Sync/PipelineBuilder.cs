@@ -22,7 +22,7 @@ namespace Relativity.Sync
 
 			containerBuilder.Register(componentContext =>
 				{
-					var pipeline = componentContext.Resolve<IPipelineSelector>().GetPipeline();
+					ISyncPipeline pipeline = componentContext.Resolve<IPipelineSelector>().GetPipeline();
 					return componentContext.Resolve<INodeFactory<SyncExecutionContext>>().BuildFlow(pipeline.GetType().Name);
 				})
 				.As<INode<SyncExecutionContext>>();
@@ -32,10 +32,9 @@ namespace Relativity.Sync
 		{
 			var pipelines = new ISyncPipeline[] { new SyncDocumentRunPipeline(), new SyncDocumentRetryPipeline(), new SyncImageRunPipeline(), new SyncImageRetryPipeline() };
 
-			foreach (var syncPipeline in pipelines)
+			foreach (ISyncPipeline syncPipeline in pipelines)
 			{
-				FlowBuilder<SyncExecutionContext> flowBuilder =
-					new FlowBuilder<SyncExecutionContext>(new AutofacFlowRegistrar(containerBuilder));
+				FlowBuilder<SyncExecutionContext> flowBuilder = new FlowBuilder<SyncExecutionContext>(new AutofacFlowRegistrar(containerBuilder));
 
 				syncPipeline.BuildFlow(flowBuilder.CreateFlow(syncPipeline.GetType().Name));
 

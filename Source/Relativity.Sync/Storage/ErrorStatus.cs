@@ -2,18 +2,12 @@
 
 namespace Relativity.Sync.Storage
 {
+	/// <summary>
+	/// In RIP this has multiple value. For now, Sync only uses New
+	/// </summary>
 	internal enum ErrorStatus
 	{
 		[Description("New")]
 		New = 0,
-
-		[Description("Expired")]
-		Expired = 1,
-
-		[Description("In Progress")]
-		InProgress = 2,
-
-		[Description("Retried")]
-		Retried = 3
 	}
 }

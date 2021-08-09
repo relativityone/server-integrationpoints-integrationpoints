@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Relativity.Services.ArtifactGuid;
@@ -15,9 +14,10 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class DestinationWorkspaceObjectTypesCreationExecutorTests : SystemTest
+	internal sealed class DestinationWorkspaceObjectTypesCreationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
+		private WorkspaceRef _sourceWorkspace;
 		private readonly List<Guid> _guids = new List<Guid>()
 		{
 			new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC"),
@@ -34,6 +34,7 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
+			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
@@ -41,22 +42,26 @@ namespace Relativity.Sync.Tests.System
 		public async Task ItShouldCreateObjectTypesAndFields()
 		{
 			// Verify that object types and fields are not existing in a workspace before we run the test
-			await VerifyObjectTypesAndFieldsExist(false).ConfigureAwait(false);
+			await VerifyObjectTypesAndFieldsExistAsync(false).ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub
 			{
+				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
 			};
 
+			configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+				configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
+
 			// act
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceObjectTypesCreationConfiguration>(configuration);
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
-			await VerifyObjectTypesAndFieldsExist(true).ConfigureAwait(false);
+			await VerifyObjectTypesAndFieldsExistAsync(true).ConfigureAwait(false);
 		}
 
-		private async Task VerifyObjectTypesAndFieldsExist(bool expectExisting)
+		private async Task VerifyObjectTypesAndFieldsExistAsync(bool expectExisting)
 		{
 			using (IArtifactGuidManager guidManager = ServiceFactory.CreateProxy<IArtifactGuidManager>())
 			{

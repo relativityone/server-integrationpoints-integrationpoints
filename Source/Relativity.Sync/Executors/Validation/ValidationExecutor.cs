@@ -21,11 +21,11 @@ namespace Relativity.Sync.Executors.Validation
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IValidationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IValidationConfiguration configuration, CompositeCancellationToken token)
 		{
 			try
 			{
-				ValidationResult validationResult = await ValidateAllAsync(configuration, token).ConfigureAwait(false);
+				ValidationResult validationResult = await ValidateAllAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 				LogValidationErrors(validationResult);
 
 				if (!validationResult.IsValid)
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				const string message = "Exception occurred during validation. See inner exception for more details.";
 				_logger.LogError(ex, message);
-				throw new ValidationException(message, ex);
+				throw new Exception(message, ex);
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			foreach (ValidationMessage validationMessage in validationResult.Messages)
 			{
-				_logger.LogError("Integration Point validation failed. ErrorCode: {errorCode}, ShortMessage: {shortMessage}", validationMessage.ErrorCode, validationMessage.ShortMessage);
+				_logger.LogError("Sync job validation failed. ErrorCode: {errorCode}, ShortMessage: {shortMessage}", validationMessage.ErrorCode, validationMessage.ShortMessage);
 			}
 		}
 	}

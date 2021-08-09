@@ -10,6 +10,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 {
@@ -30,7 +31,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private readonly Guid _jobHistory = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
 		private readonly Guid _batchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private readonly Guid _progressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
-		private readonly Guid _configurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
 
 		[SetUp]
 		public void SetUp()
@@ -162,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
 			Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(_configurationObjectTypeGuid)))))
+			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.Guids.Contains(new Guid(SyncRdoGuids.SyncConfigurationGuid))))))
 				.Throws<SyncException>();
 
 			// Act
@@ -311,6 +311,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		{
 			Mock<IPermissionsCheckConfiguration> configuration = new Mock<IPermissionsCheckConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
+			configuration.SetupGet(x => x.JobHistoryObjectTypeGuid).Returns(_jobHistory);
 
 			return configuration;
 		}

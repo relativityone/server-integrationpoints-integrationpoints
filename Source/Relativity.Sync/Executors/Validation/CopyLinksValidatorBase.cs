@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		protected abstract string ValidatorKind { get; }
 
-		public CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
 		{
 			_instanceSettings = instanceSettings;
 			_userContext = userContext;
@@ -59,15 +59,14 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				string message = $"Exception occurred during {ValidatorKind} copy by links validation.";
 				_logger.LogError(ex, message);
-				validationResult.Add(message);
+				throw;
 			}
 
 			return validationResult;
 		}
 
 		public abstract bool ShouldValidate(ISyncPipeline pipeline);
-
-
+		
 		protected abstract bool ShouldValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
 
 		private async Task<bool> ExecutingUserIsAdminAsync()

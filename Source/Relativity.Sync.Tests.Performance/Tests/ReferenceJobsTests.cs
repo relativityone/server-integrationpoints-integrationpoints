@@ -4,21 +4,34 @@ using Relativity.Sync.Tests.Performance.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using FluentAssertions;
+using Relativity.Testing.Identification;
 using EnvironmentVariable = System.Environment;
 
 namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("ReferencePerformance")]
-	public class ReferenceJobsTests : PerformanceTestBase
+	[TestType.Performance]
+	[TestType.MainFlow]
+	[TestLevel.L3]
+	internal class ReferenceJobsTests : PerformanceTestBase
 	{
-		private readonly AzureTableHelper _tableHelper;
+		private AzureTableHelper _tableHelper;
 
 		public const string _PERFORMANCE_RESULTS_TABLE_NAME = "SyncReferenceJobsPerformanceTestsResults";
+		public const double _THRESHOLD_FACTOR = 0.1;
+		public const int _HISTORICAL_RUNS_COUNT = 10;
 
-		public ReferenceJobsTests() : base(WorkspaceType.ARM, "Performance_Reference_Workspace.zip", null)
+		protected override async Task ChildSuiteSetup()
 		{
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseArmWorkspaceAsync(
+					"Nightly_Performance_Tests.zip",
+					null)
+				.ConfigureAwait(false);
+
 			_tableHelper = AzureTableHelper.CreateFromTestConfig();
 		}
 
@@ -30,11 +43,11 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			{
 				new PerformanceTestCase
 				{
-					TestCaseName = "Reference-1",
+					TestCaseName = "Nightly-1",
 					CopyMode = ImportNativeFileCopyMode.SetFileLinks,
-					ExpectedItemsTransferred = 10,
+					ExpectedItemsTransferred = 50000,
 					MapExtractedText = true,
-					NumberOfMappedFields = 15
+					NumberOfMappedFields = 50
 				}
 			};
 
@@ -47,25 +60,50 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		}
 
 		[TestCaseSource(nameof(Cases))]
+		[IdentifiedTest("8fe8483e-78d4-433d-b638-131d9f11845f")]
 		public async Task RunJob(PerformanceTestCase testCase)
 		{
+			// Act
 			await RunTestCaseAsync(testCase).ConfigureAwait(false);
-
-			await PublishTestResult(testCase).ConfigureAwait(false);
+			
+			// Assert
+			TestResult result = PrepareTestResult(testCase);
+			try
+			{
+				AssertWithHistoricalData(result);
+			}
+			finally
+			{
+				await Publish(result).ConfigureAwait(false);
+			}
 		}
 
-		private Task PublishTestResult(PerformanceTestCase testCase)
+		private Task Publish(TestResult result)
 		{
-			TestResult testResult = new TestResult(
-				testCase.TestCaseName,
-				EnvironmentVariable.GetEnvironmentVariable("BUILD_ID"))
-			{
-				Duration = _testTimes[testCase.TestCaseName].TotalSeconds
-			};
+			return _tableHelper.InsertAsync(_PERFORMANCE_RESULTS_TABLE_NAME, result);
+		}
 
-			return _tableHelper.InsertAsync(
-				_PERFORMANCE_RESULTS_TABLE_NAME,	
-				testResult);
+		private void AssertWithHistoricalData(TestResult result)
+		{
+			double averageTestRunDuration = _tableHelper
+				.QueryAll<TestResult>(_PERFORMANCE_RESULTS_TABLE_NAME)
+				.ToList()
+				.OrderByDescending(x => x.Timestamp)
+				.Take(_HISTORICAL_RUNS_COUNT).Average(x => x.Duration);
+
+			double testRunThreshold = averageTestRunDuration * _THRESHOLD_FACTOR;
+
+			result.Duration.Should().BeLessThan(averageTestRunDuration + testRunThreshold);
+		}
+
+		private TestResult PrepareTestResult(PerformanceTestCase testCase)
+		{
+			string buildId = EnvironmentVariable.GetEnvironmentVariable("BUILD_ID");
+
+			return new TestResult(testCase.TestCaseName, buildId)
+			{
+				Duration = TestTimes[testCase.TestCaseName].TotalSeconds
+			};
 		}
 	}
 }

@@ -50,6 +50,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return documentData;
 		}
 
+		public static ImportDataTableWrapper CreateNativesImportDataTable(Dataset dataSet)
+		{
+			return CreateImportDataTable(dataSet, false, true);
+		}
+
 		public static ImportDataTableWrapper CreateImportDataTable(Dataset dataset, bool extractedText = false, bool natives = false)
 		{
 			if (!(extractedText || natives))

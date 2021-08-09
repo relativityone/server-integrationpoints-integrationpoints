@@ -23,13 +23,13 @@
 		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
 		<ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
 	</ItemGroup>
-  <!-- Relativity Packages with Release Versioning Schema -->
+  <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
-    <PackageReference Include="Relativity.Platform.Keywords" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
   </ItemGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
-    <PackageReference Include="Relativity.Testing.Identification" Version="1.20.*" />
+    <PackageReference Include="Relativity.Testing.Identification" Version="3.5.0" />
   </ItemGroup>
 	<ItemGroup>
 		<Reference Include="System.Web.Services" />
@@ -69,6 +69,36 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000002_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleImagesPerDocument\PRE_0000002_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_3-PROD_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_4-PROD_1.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_5-PROD_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_4-PROD_2.tif">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_6.pdf">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_7.xls">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">

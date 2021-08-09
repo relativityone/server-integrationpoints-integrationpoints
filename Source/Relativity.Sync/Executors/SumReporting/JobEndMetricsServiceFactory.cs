@@ -34,23 +34,26 @@ namespace Relativity.Sync.Executors.SumReporting
 			_logger = logger;
 		}	
 
-		public IJobEndMetricsService CreateJobEndMetricsService()
+		public IJobEndMetricsService CreateJobEndMetricsService(bool isSuspended)
 		{
-			var syncPipeline = _pipelineSelector.GetPipeline();
-			if (syncPipeline.IsDocumentPipeline())
-			{
-				return new DocumentJobEndMetricsService(_batchRepository, _configuration, _fieldManager, _jobStatisticsContainer, _syncMetrics, _logger);
-			}
+			ISyncPipeline syncPipeline = _pipelineSelector.GetPipeline();
+			bool isDocumentPipeline = syncPipeline.IsDocumentPipeline();
+			bool isImagePipeline = syncPipeline.IsImagePipeline();
 
-			else if (syncPipeline.IsImagePipeline())
+			switch (isSuspended)
 			{
-				return new ImageJobEndMetricsService(_batchRepository, _configuration, _jobStatisticsContainer, _syncMetrics, _logger);
-			}
-			else
-			{
-				_logger.LogWarning(
-					"Unable to determine valid job pipeline type {pipelineType} for metrics send. EmptyJobEndMetricsService is creating...", syncPipeline.GetType());
-				return new EmptyJobEndMetricsService();
+				case true when isDocumentPipeline:
+					return new DocumentJobSuspendedMetricsService(_syncMetrics);
+				case true when isImagePipeline:
+					return new ImageJobSuspendedMetricsService(_syncMetrics);
+				case false when isDocumentPipeline:
+					return new DocumentJobEndMetricsService(_batchRepository, _configuration, _fieldManager, _jobStatisticsContainer, _syncMetrics, _logger);
+				case false when isImagePipeline:
+					return new ImageJobEndMetricsService(_batchRepository, _configuration, _jobStatisticsContainer, _syncMetrics, _logger);
+				default:
+					_logger.LogWarning(
+						"Unable to determine valid job pipeline type {pipelineType} for metrics send. EmptyJobEndMetricsService is creating...", syncPipeline.GetType());
+					return new EmptyJobEndMetricsService();
 			}
 		}
 	}

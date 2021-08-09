@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -21,10 +22,34 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("RETRY_Jobs")]
-	public class RetryJobsTests : PerformanceTestBase
+	internal class RetryJobsTests : PerformanceTestBase
 	{
-		public RetryJobsTests() : base(WorkspaceType.ARM, "Sync Retries 100k_Docs-30k_Errors.zip", null)
+		private readonly string _sourceWorkspaceArmFile;
+		private readonly int _expectedTotalItems;
+		private readonly int _expectedItemsWithErrors;
+
+		public RetryJobsTests(string sourceWorkspaceArmFile, int expectedTotalItems,int expectedItemsWithErrors )
 		{
+			_sourceWorkspaceArmFile = sourceWorkspaceArmFile;
+			_expectedTotalItems = expectedTotalItems;
+			_expectedItemsWithErrors = expectedItemsWithErrors;
+		}
+
+		public RetryJobsTests()
+		{
+			_sourceWorkspaceArmFile = "Sync Retries 100k_Docs-30k_Errors.zip";
+			_expectedTotalItems = 100000;
+			_expectedItemsWithErrors = 30000;
+		}
+
+		protected override async Task ChildSuiteSetup()
+		{
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseArmWorkspaceAsync(
+					_sourceWorkspaceArmFile,
+					null)
+				.ConfigureAwait(false);
 		}
 
 		public static IEnumerable<TestCaseData> TestCases()
@@ -49,78 +74,74 @@ namespace Relativity.Sync.Tests.Performance.Tests
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 		}
 
-		private async Task SetupAsync(PerformanceTestCase testCase, int? targetWorkspaceId, string savedSearchName)
+		private async Task SetupAsync(PerformanceTestCase testCase, string savedSearchName)
 		{
 			Configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
 			Configuration.ImportNativeFileCopyMode = testCase.CopyMode;
 
 			await SetupConfigurationAsync(
-				sourceWorkspaceId: _sourceWorkspaceId,
-				targetWorkspaceId: targetWorkspaceId,
 				savedSearchName: savedSearchName).ConfigureAwait(false);
 
 			IEnumerable<FieldMap> generatedFields = await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: null).ConfigureAwait(false);
 			Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(generatedFields).ToArray());
 			if (testCase.MapExtractedText)
 			{
-				IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
+				IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 				Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
 			}
 			Logger.LogInformation("Fields mapping ready");
 		}
 
 		[TestCaseSource(nameof(TestCases))]
-		public async Task Run(PerformanceTestCase testCase)
+		public virtual async Task Run(PerformanceTestCase testCase)
 		{
 			// Arrange
-			const int expectedTotalItems = 100000;
-			const int expectedItemsWithErrors = 30000;
 
 			// Sync 30% Of All Documents
-			await SetupAsync(testCase, null, "30% Of All Documents").ConfigureAwait(false);
+			await SetupAsync(testCase, "30% Of All Documents").ConfigureAwait(false);
 			await RunJobAsync().ConfigureAwait(false);
 
 			// Sync All Documents using AppendOnly to create item level errors
-			await SetupAsync(testCase, TargetWorkspace.ArtifactID, "All Documents").ConfigureAwait(false);
+			await SetupAsync(testCase, "All Documents").ConfigureAwait(false);
 			await RunJobAsync().ConfigureAwait(false);
 
-			RelativityObject jobHistory = await Rdos.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId).ConfigureAwait(false);
+			RelativityObject jobHistory = await Rdos.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId, Configuration.JobHistory.TypeGuid).ConfigureAwait(false);
 
 			int totalItems = (int)jobHistory["Total Items"].Value;
 			int itemsTranferred = (int)jobHistory["Items Transferred"].Value;
 			int itemsWithErrors = (int)jobHistory["Items with Errors"].Value;
 
-			totalItems.Should().Be(expectedTotalItems);
-			itemsTranferred.Should().Be(expectedTotalItems - expectedItemsWithErrors);
-			itemsWithErrors.Should().Be(expectedItemsWithErrors);
+			totalItems.Should().Be(_expectedTotalItems);
+			itemsTranferred.Should().Be(_expectedTotalItems - _expectedItemsWithErrors);
+			itemsWithErrors.Should().Be(_expectedItemsWithErrors);
 
 			// Retry 
 			Configuration.JobHistoryToRetryId = Configuration.JobHistoryArtifactId;
-			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceId).ConfigureAwait(false);
+			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(Configuration);
 
 			Stopwatch stopwatch = Stopwatch.StartNew();
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 			stopwatch.Stop();
 			TimeSpan elapsedTime = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
-			_testTimes.Add(testCase.TestCaseName, elapsedTime);
+			TestTimes.Add(testCase.TestCaseName, elapsedTime);
 
 			Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
 
 			// ASSERT
-			Configuration.TotalRecordsCount.Should().Be(expectedItemsWithErrors);
+			Configuration.TotalRecordsCount.Should().Be(_expectedItemsWithErrors);
 		}
 
 		private async Task RunJobAsync()
 		{
-			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRdoAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
+			ConfigurationRdoId = await Rdos.CreateSyncConfigurationRdoAsync(SourceWorkspace.ArtifactID, Configuration).ConfigureAwait(false);
 			Logger.LogInformation("Configuration RDO created");
 
-			SyncJobParameters jobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId);
-			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger());
+			SyncJobParameters jobParameters = FakeHelper.CreateSyncJobParameters();
+			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
 
 			Logger.LogInformation("Starting the job");
-			SyncJobState syncJobState = await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);
+			await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);
 		}
 
 	}

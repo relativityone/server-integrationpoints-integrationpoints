@@ -9,7 +9,7 @@ namespace Relativity.Sync.Storage
 		/// <summary>
 		/// Creates batch for given sync configuration.
 		/// </summary>
-		Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalItemsCount, int startingIndex);
+		Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex);
 
 		/// <summary>
 		/// Gets batch based on artifact ID.
@@ -37,9 +37,14 @@ namespace Relativity.Sync.Storage
 		Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId);
 
 		/// <summary>
-		/// Returns all batches that has not been started yet (have status New).
+		/// Returns all batches that have not been finished - first Paused, then New.
 		/// </summary>
-		Task<IEnumerable<int>> GetAllNewBatchesIdsAsync(int workspaceArtifactId, int syncConfigurationId);
+		Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int workspaceArtifactId, int syncConfigurationId);
+
+		/// <summary>
+		/// Returns all batches that have successfully execute - first Completed, then Completed with Errors.
+		/// </summary>
+		Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(int workspaceArtifactId, int syncConfigurationId);
 
 		/// <summary>
 		/// Returns batch with lowest starting index higher than given one. Null if no such batch found.

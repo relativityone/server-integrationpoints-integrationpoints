@@ -12,6 +12,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -21,6 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	{
 		private Mock<IObjectManager> _objectManagerFake;
 		private Mock<IBatchRepository> _batchRepositoryStub;
+		private Mock<IJobStatisticsContainer> _jobStatisticsContainerStub;
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryStub;
 		private Mock<IJobStatusConsolidationConfiguration> _configurationStub;
 		private List<IBatch> _batches;
@@ -50,6 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			_objectManagerFake = new Mock<IObjectManager>();
 			_batchRepositoryStub = new Mock<IBatchRepository>();
+			_jobStatisticsContainerStub = new Mock<IJobStatisticsContainer>();
 			_configurationStub = new Mock<IJobStatusConsolidationConfiguration>();
 
 			_serviceFactoryStub = new Mock<ISourceServiceFactoryForAdmin>();
@@ -65,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			SetUpUpdateCall(success: true);
 
-			_sut = new JobStatusConsolidationExecutor(_batchRepositoryStub.Object, _serviceFactoryStub.Object);
+			_sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryStub.Object);
 		}
 
 		[Test]
@@ -82,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -103,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -112,18 +115,41 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		}
 
 		[Test]
-		public async Task ExecuteAsync_ShouldAggregateStatisticsFromBatches(
+		public async Task ExecuteAsync_ShouldAggregateStatisticsFromBatches_WhenNoImagesStatisticsPresent(
 			[Values(1, 2, 5, 8)] int batchCount,
 			[Values(0, 2, 10, 1000)] int transferredCount,
 			[Values(0, 2, 10, 1000)] int failedCount)
 		{
 			// Arrange
 			int totalItemCount = transferredCount + failedCount;
+
+			_jobStatisticsContainerStub.SetupGet(p => p.ImagesStatistics).Returns(() => null);
 			SetUpBatches(batchCount, transferredCount, failedCount);
 
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
+				.ConfigureAwait(false);
+
+			// Assert
+			result.Status.Should().Be(ExecutionStatus.Completed);
+			VerifyUpdateCall(transferredCount, failedCount, totalItemCount);
+		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldAggregateStatisticsFromBatchesAndStatistics_WhenImagesStatisticsPresent(
+			[Values(1, 2, 5, 8)] int batchCount,
+			[Values(0, 2, 10, 1000)] int transferredCount,
+			[Values(0, 2, 10, 1000)] int failedCount)
+		{
+			// Arrange
+			int totalItemCount = transferredCount + failedCount;
+			_jobStatisticsContainerStub.SetupGet(p => p.ImagesStatistics).Returns(Task.FromResult(new ImagesStatistics(totalItemCount, 0)));
+			SetUpBatches(batchCount, transferredCount, failedCount, 0);
+
+			// Act
+			ExecutionResult result = await _sut
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -136,7 +162,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Act
 			ExecutionResult result = await _sut
-				.ExecuteAsync(_configurationStub.Object, CancellationToken.None)
+				.ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -163,15 +189,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			return updateResult;
 		}
 
-		private void SetUpBatches(int batchesTotalCount, int totalTransferred, int totalFailed)
+		private void SetUpBatches(int batchesTotalCount, int totalTransferred, int totalFailed, int? batchItemsCount = null)
 		{
 			if (batchesTotalCount > 0)
 			{
-				_batches.AddRange(CreateBatches(batchesTotalCount, totalTransferred, totalFailed));
+				_batches.AddRange(CreateBatches(batchesTotalCount, totalTransferred, totalFailed, batchItemsCount));
 			}
 		}
 
-		private static IEnumerable<IBatch> CreateBatches(int count, int transferred, int failed)
+		private static IEnumerable<IBatch> CreateBatches(int count, int transferred, int failed, int? batchItemsCount = null)
 		{
 			int total = transferred + failed;
 			int batchSize = total / count;
@@ -183,12 +209,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Shuffle()
 				.SplitList(batchSize)
 				.Select(isTransferredList =>
-					CreateBatch(isTransferredList.Count(t => t), isTransferredList.Count(t => !t)));
+					CreateBatch(isTransferredList.Count(t => t), isTransferredList.Count(t => !t), batchItemsCount));
 
 			return batches;
 		}
 
-		private static IBatch CreateBatch(int transferred, int failed)
+		private static IBatch CreateBatch(int transferred, int failed, int? batchItemsCount = null)
 		{
 			var batch = new Mock<IBatch>();
 
@@ -201,8 +227,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Returns(failed);
 
 			batch
-				.SetupGet(b => b.TotalItemsCount)
-				.Returns(transferred + failed);
+				.SetupGet(b => b.TotalDocumentsCount)
+				.Returns(batchItemsCount ?? transferred + failed);
 
 			return batch.Object;
 		}

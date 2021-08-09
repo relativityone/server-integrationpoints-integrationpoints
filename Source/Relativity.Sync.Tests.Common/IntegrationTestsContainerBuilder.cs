@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Common
 			containerBuilder.RegisterInstance(Mock.Of<ISyncMetrics>()).As<ISyncMetrics>();
 
 			var jobEndMetricsServiceFactory = new Mock<IJobEndMetricsServiceFactory>();
-			jobEndMetricsServiceFactory.Setup(x => x.CreateJobEndMetricsService())
+			jobEndMetricsServiceFactory.Setup(x => x.CreateJobEndMetricsService(It.IsAny<bool>()))
 				.Returns(new EmptyJobEndMetricsService());
 
 			containerBuilder.RegisterInstance(jobEndMetricsServiceFactory.Object).As<IJobEndMetricsServiceFactory>();

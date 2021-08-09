@@ -23,7 +23,7 @@ namespace Relativity.Sync
 		/// Build version of Sync
 		/// </summary>
 		public string SyncBuildVersion { get; }
-
+		
 		/// <summary>
 		/// Name of the Sync application
 		/// </summary>
@@ -47,17 +47,17 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Workflow ID.
 		/// </summary>
-		public Lazy<string> WorkflowId { get; }
-
+		public string WorkflowId { get; }
+		
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int jobHistoryArtifactId)
+		public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, Guid workflowId)
 		{
 			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
 			SyncBuildVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			WorkflowId = new Lazy<string>(() => $"{TelemetryConstants.PROVIDER_NAME}_{jobHistoryArtifactId}");
+			WorkflowId = workflowId.ToString();
 		}
 	}
 }

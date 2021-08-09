@@ -85,7 +85,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				const string message = "Exception occurred during saved search validation.";
 				_logger.LogError(ex, message);
-				validationResult.Add(message);
+				throw;
 			}
 
 			return validationResult;

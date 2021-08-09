@@ -11,6 +11,8 @@ namespace Relativity.Sync.Executors
 {
 	internal class AutomatedWorkflowExecutor : IExecutor<IAutomatedWorkflowTriggerConfiguration>
 	{
+		private const string _ERROR_MESSAGE = "Error occured while executing Automated Workflows trigger: {0} for workspace artifact ID : {1}";
+		
 		private readonly ISyncLog _logger;
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
 
@@ -20,7 +22,7 @@ namespace Relativity.Sync.Executors
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CompositeCancellationToken token)
 		{
 			try
 			{
@@ -48,8 +50,8 @@ namespace Relativity.Sync.Executors
 			}
 			catch (Exception ex)
 			{
-				string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
-				_logger.LogError(ex, message, configuration.TriggerName, configuration.DestinationWorkspaceArtifactId);
+				
+				_logger.LogError(ex, _ERROR_MESSAGE, configuration.TriggerName, configuration.DestinationWorkspaceArtifactId);
 			}
 			
 			_logger.LogInformation("For workspace : {0} trigger {1} finished sending.", configuration.DestinationWorkspaceArtifactId, configuration.TriggerName);

@@ -14,6 +14,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 
@@ -57,7 +58,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			AssertExecutionOrder(expectedOrder, _executorTypesInActualExecutionOrder);
@@ -72,7 +73,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			_executorTypesInActualExecutionOrder.Should().Contain(typeof(INotificationConfiguration));
@@ -89,7 +90,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
-			Func<Task> action = async () => await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => syncJob.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
@@ -107,10 +108,10 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>()));
+			syncMetrics.Verify(x => x.Send(It.Is<CommandMetric>(m => m.Duration != null)));
 		}
 
 		[TestCaseSource(nameof(PipelineTypes))]
@@ -126,7 +127,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			// We're expecting at least two invocations per node; there will be more for notification steps, etc.
@@ -152,7 +153,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			var flowComponents = ContainerHelper.GetSyncNodesFromRegisteredPipeline(container, pipelineType);
 
@@ -179,7 +180,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
 			// ACT
-			Action action = () => syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+			Action action = () => syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			// ASSERT
 			action.Should().Throw<SyncException>();
@@ -209,7 +210,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = container.Resolve<ISyncJob>();
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			INode<SyncExecutionContext>[] completedNodes = ContainerHelper.GetSyncNodesFromRegisteredPipeline(container, pipelineType)
@@ -236,24 +237,14 @@ namespace Relativity.Sync.Tests.Integration
 
 		private static Type GetSnapshotNodeType(Type pipelineType)
 		{
-			if (pipelineType == typeof(SyncDocumentRetryPipeline))
+			if (pipelineType == typeof(SyncDocumentRetryPipeline) || pipelineType == typeof(SyncImageRetryPipeline))
 			{
-				return typeof(DocumentRetryDataSourceSnapshotNode);
+				return typeof(RetryDataSourceSnapshotNode);
 			}
 
-			if (pipelineType == typeof(SyncDocumentRunPipeline))
+			if (pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncImageRunPipeline))
 			{
-				return typeof(Nodes.DocumentDataSourceSnapshotNode);
-			}
-
-			if (pipelineType == typeof(SyncImageRetryPipeline))
-			{
-				return typeof(ImageRetryDataSourceSnapshotNode);
-			}
-
-			if (pipelineType == typeof(SyncImageRunPipeline))
-			{
-				return typeof(ImageDataSourceSnapshotNode);
+				return typeof(DataSourceSnapshotNode);
 			}
 
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");

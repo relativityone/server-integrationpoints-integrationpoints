@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Integration
 			SyncJob job = CreateSyncJob(_containerBuilder);
 
 			// Act
-			SyncException thrownException = Assert.ThrowsAsync<SyncException>(async () => await job.ExecuteAsync(CancellationToken.None).ConfigureAwait(false));
+			SyncException thrownException = Assert.ThrowsAsync<SyncException>(() => job.ExecuteAsync(CompositeCancellationToken.None));
 
 			// Assert
 			AggregateException aggregateException = thrownException.InnerException as AggregateException;
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Integration
 		private static void RegisterExecutorMock<T>(ContainerBuilder containerBuilder, ExecutionResult result) where T : IConfiguration
 		{
 			Mock<IExecutor<T>> executorMock = new Mock<IExecutor<T>>();
-			executorMock.Setup(e => e.ExecuteAsync(It.IsAny<T>(), CancellationToken.None)).ReturnsAsync(result);
+			executorMock.Setup(e => e.ExecuteAsync(It.IsAny<T>(), CompositeCancellationToken.None)).ReturnsAsync(result);
 			containerBuilder.RegisterInstance(executorMock.Object).As<IExecutor<T>>();
 		}
 
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Integration
 			IContainer container = containerBuilder.Build();
 			return new SyncJob(container.Resolve<INode<SyncExecutionContext>>(),
 				container.Resolve<ISyncExecutionContextFactory>(),
-				new SyncJobParameters(1, 1, 1), 
+				FakeHelper.CreateSyncJobParameters(), 
 				Mock.Of<IProgress<SyncJobState>>(),
 				Mock.Of<ISyncLog>());
 		}

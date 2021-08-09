@@ -15,25 +15,25 @@ namespace Relativity.Sync.Storage
 			_logger = logger;
 		}
 
-		public async Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
+		public Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
 		{
 			var createProgressDto = new CreateProgressDto(name, order, status, syncConfigurationArtifactId, workspaceArtifactId);
-			return await Progress.CreateAsync(_serviceFactory, _logger, createProgressDto).ConfigureAwait(false);
+			return Progress.CreateAsync(_serviceFactory, _logger, createProgressDto);
 		}
 
-		public async Task<IProgress> GetAsync(int workspaceArtifactId, int artifactId)
+		public Task<IProgress> GetAsync(int workspaceArtifactId, int artifactId)
 		{
-			return await Progress.GetAsync(_serviceFactory, _logger, workspaceArtifactId, artifactId).ConfigureAwait(false);
+			return Progress.GetAsync(_serviceFactory, _logger, workspaceArtifactId, artifactId);
 		}
 
-		public async Task<IReadOnlyCollection<IProgress>> QueryAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		public Task<IReadOnlyCollection<IProgress>> QueryAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			return await Progress.QueryAllAsync(_serviceFactory, _logger, workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
+			return Progress.QueryAllAsync(_serviceFactory, _logger, workspaceArtifactId, syncConfigurationArtifactId);
 		}
 
-		public async Task<IProgress> QueryAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name)
+		public Task<IProgress> QueryAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name)
 		{
-			return await Progress.QueryAsync(_serviceFactory, _logger, workspaceArtifactId, syncConfigurationArtifactId, name).ConfigureAwait(false);
+			return Progress.QueryAsync(_serviceFactory, _logger, workspaceArtifactId, syncConfigurationArtifactId, name);
 		}
 	}
 }

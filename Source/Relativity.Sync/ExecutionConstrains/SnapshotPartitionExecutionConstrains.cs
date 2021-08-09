@@ -29,7 +29,7 @@ namespace Relativity.Sync.ExecutionConstrains
 					return true;
 				}
 
-				int numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalItemsCount;
+				int numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalDocumentsCount;
 
 				// we should execute if number of records included in batches in lower than total number of records
 				return numberOfRecordsIncludedInBatches < configuration.TotalRecordsCount;

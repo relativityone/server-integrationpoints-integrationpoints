@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(savedSearchId);
 
 			// act
-			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_config.Verify(x => x.SetSavedSearchInDestinationArtifactIdAsync(savedSearchId));
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_tagSavedSearchFolder.Setup(x => x.GetFolderIdAsync(It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_tagSavedSearch.Setup(x => x.CreateTagSavedSearchAsync(It.IsAny<IDestinationWorkspaceSavedSearchCreationConfiguration>(), It.IsAny<int>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult executionResult = await _instance.ExecuteAsync(_config.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			executionResult.Status.Should().Be(ExecutionStatus.Failed);

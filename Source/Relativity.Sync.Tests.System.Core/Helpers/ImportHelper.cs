@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 			importJob.Settings.CaseArtifactId = workspaceArtifactId;
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
-			importJob.Settings.DestinationFolderArtifactID = await Rdos.GetRootFolderInstance(_serviceFactory, workspaceArtifactId).ConfigureAwait(false);
+			importJob.Settings.DestinationFolderArtifactID = await Rdos.GetRootFolderInstanceAsync(_serviceFactory, workspaceArtifactId).ConfigureAwait(false);
 			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID; // Specify the ArtifactID of the document identifier field, such as a control number.
 			importJob.SourceData.SourceData = dataTable.DataReader;
 
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 			importJob.Settings.CaseArtifactId = workspaceArtifactId;
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
-			importJob.Settings.DestinationFolderArtifactID = await Rdos.GetRootFolderInstance(_serviceFactory, workspaceArtifactId).ConfigureAwait(false);
+			importJob.Settings.DestinationFolderArtifactID = await Rdos.GetRootFolderInstanceAsync(_serviceFactory, workspaceArtifactId).ConfigureAwait(false);
 			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID; // Specify the ArtifactID of the document identifier field, such as a control number.
 			importJob.SourceData.SourceData = dataTable.Data;
 

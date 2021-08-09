@@ -7,6 +7,7 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
@@ -79,6 +80,15 @@ namespace Relativity.Sync.Executors
 				};
 				QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
 				return queryResult;
+			}
+		}
+
+		public async Task<int> GetObjectTypeArtifactTypeIdAsync(int workspaceArtifactId, int objectTypeArtifactI)
+        {
+			using (IObjectTypeManager objectTypeManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
+			{
+				ObjectTypeResponse objectType = await objectTypeManager.ReadAsync(workspaceArtifactId, objectTypeArtifactI).ConfigureAwait(false);
+				return objectType.ArtifactTypeID;
 			}
 		}
 

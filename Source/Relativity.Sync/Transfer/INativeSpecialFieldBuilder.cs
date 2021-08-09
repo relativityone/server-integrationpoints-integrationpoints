@@ -5,8 +5,8 @@ namespace Relativity.Sync.Transfer
 {
 	internal interface INativeSpecialFieldBuilder
 	{
-		IEnumerable<FieldInfoDto> BuildColumns();
+        IEnumerable<FieldInfoDto> BuildColumns();
 
-		Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds);
-	}
+        Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds);
+    }
 }

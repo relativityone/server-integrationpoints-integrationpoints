@@ -1,22 +1,23 @@
-﻿using Relativity.Services.Objects.DataContracts;
+﻿using System;
 using Relativity.Sync.Configuration;
-using System;
 
 namespace Relativity.Sync.Storage
 {
 	internal sealed class JobEndMetricsConfiguration : IJobEndMetricsConfiguration
 	{
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
-		
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IConfiguration _cache;
 
-		private static readonly Guid JobHistoryToRetryGuid = new Guid("D7D0DDB9-D383-4578-8D7B-6CBDD9E71549");
-
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
-		public int? JobHistoryToRetryId => _cache.GetFieldValue<RelativityObjectValue>(JobHistoryToRetryGuid)?.ArtifactID;
+		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
+
+		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue(x => x.ImportOverwriteMode)));
+		public DataSourceType DataSourceType => (DataSourceType)(Enum.Parse(typeof(DataSourceType), _cache.GetFieldValue(x => x.DataSourceType)));
+		public DestinationLocationType DestinationType => (DestinationLocationType)(Enum.Parse(typeof(DestinationLocationType), _cache.GetFieldValue(x => x.DataDestinationType)));
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
+		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode).GetEnumFromDescription<ImportImageFileCopyMode>();
 
 		public JobEndMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{

@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 			_identifierField = identifierField;
 		}
 
-		public async Task<IDataReader> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		public async Task<IBatchDataReader> BuildAsync(int workspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
 			await Task.Yield();
 			DataTable dt = new DataTable();
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
 				dt.Rows.Add(obj.Values.ToArray());
 			}
 			DataTableReader dataReader = dt.CreateDataReader();
-			return dataReader;
+			return new SimpleBatchDataReader(dataReader);
 		}
 	}
 }

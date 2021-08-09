@@ -11,6 +11,8 @@ namespace Relativity.Sync.Transfer
 {
 	internal class ImageBatchDataReader : BatchDataReaderBase
 	{
+		private readonly int _identifierFieldIndex;
+
 		public ImageBatchDataReader(
 			DataTable templateDataTable,
 			int sourceWorkspaceArtifactId,
@@ -19,10 +21,12 @@ namespace Relativity.Sync.Transfer
 			IFieldManager fieldManager,
 			IExportDataSanitizer exportDataSanitizer,
 			Action<string, string> itemLevelErrorHandler,
-			CancellationToken cancellationToken)
-		: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer, itemLevelErrorHandler, cancellationToken)
+			int identifierFieldIndex,
+			CancellationToken cancellationToken,
+			ISyncLog logger)
+		: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer, itemLevelErrorHandler, cancellationToken, logger)
 		{
-			
+			_identifierFieldIndex = identifierFieldIndex;
 		}
 
 		protected override IEnumerable<object[]> GetBatchEnumerable()
@@ -45,8 +49,24 @@ namespace Relativity.Sync.Transfer
 						continue;
 					}
 
-					foreach (object[] row in rows)
+					bool isCancellationWarningLogged = false;
+					CanCancel = false;
+					
+					for (int i = 0; i < rows.Count; i++)
 					{
+						if (_cancellationToken.IsCancellationRequested && !isCancellationWarningLogged)
+						{
+							_logger.LogWarning("Transfer cancellation was requested, but image transfer for current document is still in progress. Document Artifact ID: {artifactID}  Remaining images: {remainingImagesCount}",
+								batchItem.ArtifactID, rows.Count - i);
+							isCancellationWarningLogged = true;
+						}
+
+						if (i == rows.Count - 1)
+						{
+							CanCancel = true;
+						}
+
+						object[] row = rows[i];
 						yield return row;
 					}
 				}
@@ -102,8 +122,8 @@ namespace Relativity.Sync.Transfer
 				IEnumerable<string> specialFieldNameAndLengthPairs = specialFieldsValues.Select(x => $"{x.Key} ({x.Value.Length})");
 
 				string message = $"Cannot determine images count for document Artifact ID: {batchItem.ArtifactID}. " +
-				                 $"Special fields builders should all return equal number of field values, but was: " +
-				                 $"{string.Join(",", specialFieldNameAndLengthPairs)}";
+								 $"Special fields builders should all return equal number of field values, but was: " +
+								 $"{string.Join(",", specialFieldNameAndLengthPairs)}";
 				throw new SyncItemLevelErrorException(message);
 			}
 
@@ -111,14 +131,14 @@ namespace Relativity.Sync.Transfer
 			return specialFieldsValues;
 		}
 
-		private static object[] BuildSpecialFieldValues(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
+		private object[] BuildSpecialFieldValues(IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
 		{
 			if (!specialFieldBuilders.ContainsKey(fieldInfo.SpecialFieldType))
 			{
 				throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType}");
 			}
 
-			return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowsValues(fieldInfo, batchItem).ToArray();
+			return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowsValues(fieldInfo, batchItem, document => document.Values[_identifierFieldIndex].ToString()).ToArray();
 		}
 
 		private object SanitizeFieldIfNeeded(string itemIdentifierFieldName, string itemIdentifier, FieldInfoDto field, object initialValue)

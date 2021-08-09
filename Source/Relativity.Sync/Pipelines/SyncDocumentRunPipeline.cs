@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Banzai.Factories;
+﻿using Banzai.Factories;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Nodes.SumReporting;
 
@@ -14,13 +9,14 @@ namespace Relativity.Sync.Pipelines
 		public void BuildFlow(IFlowBuilder<SyncExecutionContext> flowBuilder)
 		{
 			flowBuilder.AddRoot<SyncRootNode>()
+				.AddChild<PreValidationNode>()
 				.AddChild<DestinationWorkspaceObjectTypesCreationNode>()
 				.AddChild<PermissionsCheckNode>()
 				.AddChild<ValidationNode>()
-				.AddChild<DocumentDataSourceSnapshotNode>()
+				.AddChild<DataSourceSnapshotNode>()
 				.AddChild<SyncMultiNode>()
 				.ForLastChild()
-				.AddChild<JobStartMetricsNode>()
+				.AddChild<DocumentJobStartMetricsNode>()
 				.AddChild<DestinationWorkspaceTagsCreationNode>()
 				.AddChild<SourceWorkspaceTagsCreationNode>()
 				.AddChild<DataDestinationInitializationNode>()

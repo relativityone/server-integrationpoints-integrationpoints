@@ -120,25 +120,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandleCreateProxy_ThrowsException()
+		public void ValidateAsync_ShouldThrow_WhenCreateProxyFails()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async ()=> await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
-
-			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
-			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.Is<string>(y => y.StartsWith("Exception occurred", StringComparison.InvariantCulture))), Times.Once());
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandleQueryAsync_ThrowsException()
+		public void ValidateAsync_ShouldThrow_WhenQueryAsyncFails()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
@@ -147,16 +142,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
-
-			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
-			_objectManager.Verify(x => x.Dispose(), Times.Once);
-			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>()), Times.AtLeastOnce());
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[TestCase(typeof(SyncDocumentRunPipeline), true)]

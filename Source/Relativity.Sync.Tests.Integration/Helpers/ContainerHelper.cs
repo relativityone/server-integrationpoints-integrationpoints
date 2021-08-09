@@ -77,8 +77,11 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			ContainerFactory containerFactory = new ContainerFactory();
-			RelativityServices relativityServices = CreateMockedRelativityServices();
-			containerFactory.RegisterSyncDependencies(containerBuilder, new SyncJobParameters(1, 1, 1),
+			IRelativityServices relativityServices = CreateMockedRelativityServices();
+
+			SyncJobParameters parameters = FakeHelper.CreateSyncJobParameters();
+
+			containerFactory.RegisterSyncDependencies(containerBuilder, parameters,
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
 			MockSearchManagerFactory(containerBuilder);
@@ -98,7 +101,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		/// <summary>
 		///     Creates Relativity Services with mocked dependencies
 		/// </summary>
-		public static RelativityServices CreateMockedRelativityServices()
+		public static IRelativityServices CreateMockedRelativityServices()
 		{
 			IAPM apm = Mock.Of<IAPM>();
 			Mock<IInstanceSettingManager> instanceSettingManager = new Mock<IInstanceSettingManager>();

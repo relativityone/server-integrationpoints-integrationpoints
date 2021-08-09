@@ -46,23 +46,23 @@ namespace Relativity.Sync.Tests.Unit
 		[Test]
 		public async Task ItShouldExecuteCommand()
 		{
-			_executor.Setup(x => x.ExecuteAsync(_configuration, CancellationToken.None)).ReturnsAsync(ExecutionResult.Success());
+			_executor.Setup(x => x.ExecuteAsync(_configuration, CompositeCancellationToken.None)).ReturnsAsync(ExecutionResult.Success());
 
 			// ACT
-			ExecutionResult result = await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _command.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_executor.Verify(x => x.ExecuteAsync(_configuration, CancellationToken.None));
+			_executor.Verify(x => x.ExecuteAsync(_configuration, CompositeCancellationToken.None));
 			Assert.AreEqual(result.Status, ExecutionStatus.Completed);
 		}
 
 		[Test]
 		public void ItShouldThrowOnException()
 		{
-			_executor.Setup(x => x.ExecuteAsync(_configuration, CancellationToken.None)).Throws(new InvalidOperationException("Foo bar baz"));
+			_executor.Setup(x => x.ExecuteAsync(_configuration, CompositeCancellationToken.None)).Throws(new InvalidOperationException("Foo bar baz"));
 
 			// ACT
-			Func<Task> action = async () => await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _command.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<InvalidOperationException>().WithMessage("Foo bar baz");

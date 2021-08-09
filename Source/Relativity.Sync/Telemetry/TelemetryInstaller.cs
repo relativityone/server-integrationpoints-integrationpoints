@@ -19,9 +19,6 @@ namespace Relativity.Sync.Telemetry
 			builder.RegisterType<StopwatchWrapper>().As<IStopwatch>();
 			builder.RegisterType<SyncMetrics>().As<ISyncMetrics>();
 			builder.RegisterType<JobStatisticsContainer>().As<IJobStatisticsContainer>().SingleInstance();
-			builder.Register(c => EnvironmentPropertyProvider.Create(c.Resolve<ISyncServiceManager>(), c.Resolve<ISyncLog>()))
-				.As<IEnvironmentPropertyProvider>()
-				.SingleInstance();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISyncMetricsSink>())
 				.ToArray()).As<ISyncMetricsSink>();

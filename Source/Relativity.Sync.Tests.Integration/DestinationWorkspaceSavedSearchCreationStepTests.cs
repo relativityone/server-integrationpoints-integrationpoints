@@ -15,11 +15,12 @@ namespace Relativity.Sync.Tests.Integration
 
 		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
 		{
+			typeof(IPreValidationConfiguration),
 			typeof(IPermissionsCheckConfiguration),
 			typeof(IValidationConfiguration),
 			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
-			typeof(IDocumentDataSourceSnapshotConfiguration),
-			typeof(ISumReporterConfiguration),
+			typeof(IDataSourceSnapshotConfiguration),
+			typeof(IDocumentJobStartMetricsConfiguration),
 			typeof(ISourceWorkspaceTagsCreationConfiguration),
 			typeof(IDestinationWorkspaceTagsCreationConfiguration),
 			typeof(IDataDestinationInitializationConfiguration),

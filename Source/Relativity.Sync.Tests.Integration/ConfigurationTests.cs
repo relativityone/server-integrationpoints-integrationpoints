@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -7,9 +8,10 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Integration
@@ -17,12 +19,12 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public sealed class ConfigurationTests : IDisposable
 	{
-		private ISourceServiceFactoryForAdmin _serviceFactory;
 		private Mock<IObjectManager> _objectManager;
 		private SemaphoreSlimStub _semaphoreSlim;
 
 		private const int _WORKSPACE_ID = 458;
 		private const int _ARTIFACT_ID = 365;
+		private readonly Guid _WORKFLOW_ID = Guid.NewGuid();
 
 		[SetUp]
 		public void SetUp()
@@ -31,8 +33,6 @@ namespace Relativity.Sync.Tests.Integration
 
 			Mock<ISourceServiceFactoryForAdmin> serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
 			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-
-			_serviceFactory = serviceFactoryMock.Object;
 		}
 
 		[Test]
@@ -48,12 +48,25 @@ namespace Relativity.Sync.Tests.Integration
 
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
-			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, 1);
-			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(_serviceFactory, jobParameters, new EmptyLogger(), _semaphoreSlim).ConfigureAwait(false);
+			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, _WORKFLOW_ID);
+			var rdoManagerMock = new Mock<IRdoManager>();
+
+			rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new SyncConfigurationRdo());
+			
+			rdoManagerMock.Setup(x => x.SetValueAsync(It.IsAny<int>(), It.IsAny<SyncConfigurationRdo>(),
+					It.IsAny<Expression<Func<SyncConfigurationRdo, int>>>(), It.IsAny<int>()))
+				.Callback((int ws, SyncConfigurationRdo rdo, Expression<Func<SyncConfigurationRdo, int>> expression,
+					int value) =>
+				{
+					rdo.JobHistoryId = value;
+				});
+			
+			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoManagerMock.Object).ConfigureAwait(false);
 
 			// ACT
-			Task updateTask = cache.UpdateFieldValueAsync(guid, newValue);
-			int actualValue = cache.GetFieldValue<int>(guid);
+			Task updateTask = cache.UpdateFieldValueAsync(x => x.JobHistoryId, newValue);
+			int actualValue = cache.GetFieldValue(x => x.JobHistoryId);
 
 			await updateTask.ConfigureAwait(false);
 

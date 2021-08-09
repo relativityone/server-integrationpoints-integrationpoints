@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors.Validation
@@ -35,11 +36,14 @@ namespace Relativity.Sync.Executors.Validation
 				_stopwatch.Stop();
 				ExecutionStatus status = result.IsValid ? ExecutionStatus.Completed : ExecutionStatus.Failed;
 
-				_metrics.TimedOperation(metricName, _stopwatch.Elapsed, status);
-				if (!result.IsValid)
+				ValidationMetric metric = new ValidationMetric(metricName)
 				{
-					_metrics.CountOperation(metricName, status);
-				}
+					ExecutionStatus = status,
+					Duration = _stopwatch.Elapsed.TotalMilliseconds,
+					FailedCounter = !result.IsValid ? (Counter?)Counter.Increment : null
+				};
+
+				_metrics.Send(metric);
 			}
 			
 			return result;

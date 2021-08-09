@@ -1,77 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Relativity.Sync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Unit.Storage;
 
 namespace Relativity.Sync.Tests.Unit
 {
-	[TestFixture]
-	internal sealed class FieldMappingsTests
-	{
-		private FieldMappings _instance;
+    internal sealed class FieldMappingsTests : ConfigurationTestBase
+    {
+        private FieldMappings _instance;
 
-		private Mock<IConfiguration> _configuration;
-		private Mock<ISerializer> _serializer;
+        private Mock<ISerializer> _serializer;
 
-		private const string _FIELD_MAP = "field map";
+        private const string _FIELD_MAP = "field map";
+      
+        [SetUp]
+        public void Setup()
+        {
+            _serializer = new Mock<ISerializer>();
 
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
+            _instance = new FieldMappings(_configuration.Object, _serializer.Object, new EmptyLogger());
+           
+            _configurationRdo.FieldsMapping = _FIELD_MAP;
+        }
 
-		[SetUp]
-		public void SetUp()
-		{
-			_configuration = new Mock<IConfiguration>();
-			_serializer = new Mock<ISerializer>();
+        [Test]
+        public void ItShouldDeserializeFieldMappings()
+        {
+            List<FieldMap> fieldMappings = new List<FieldMap>();
 
-			_configuration.Setup(x => x.GetFieldValue<string>(FieldMappingsGuid)).Returns(_FIELD_MAP);
+            _serializer.Setup(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP)).Returns(fieldMappings);
 
-			_instance = new FieldMappings(_configuration.Object, _serializer.Object, new EmptyLogger());
-		}
+            // ACT
+            IList<FieldMap> actualResult = _instance.GetFieldMappings();
 
-		[Test]
-		public void ItShouldDeserializeFieldMappings()
-		{
-			List<FieldMap> fieldMappings = new List<FieldMap>();
+            // ASSERT
+            actualResult.Should().BeSameAs(fieldMappings);
+        }
 
-			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP)).Returns(fieldMappings);
+        [Test]
+        public void ItShouldCacheFieldMappings()
+        {
+            List<FieldMap> fieldMappings = new List<FieldMap>();
 
-			// ACT
-			IList<FieldMap> actualResult = _instance.GetFieldMappings();
+            _serializer.Setup(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP)).Returns(fieldMappings);
 
-			// ASSERT
-			actualResult.Should().BeSameAs(fieldMappings);
-		}
+            // ACT
+            _instance.GetFieldMappings();
+            _instance.GetFieldMappings();
 
-		[Test]
-		public void ItShouldCacheFieldMappings()
-		{
-			List<FieldMap> fieldMappings = new List<FieldMap>();
+            // ASSERT
+            _configuration.Verify(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>()), Times.Once);
+            _serializer.Verify(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP), Times.Once);
+        }
 
-			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP)).Returns(fieldMappings);
+        [Test]
+        public void ItShouldNotHideException()
+        {
+            _serializer.Setup(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP)).Throws<InvalidOperationException>();
 
-			// ACT
-			_instance.GetFieldMappings();
-			_instance.GetFieldMappings();
+            // ACT
+            Action action = () => _instance.GetFieldMappings();
 
-			// ASSERT
-			_configuration.Verify(x => x.GetFieldValue<string>(FieldMappingsGuid), Times.Once);
-			_serializer.Verify(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP), Times.Once);
-		}
-
-		[Test]
-		public void ItShouldNotHideException()
-		{
-			_serializer.Setup(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP)).Throws<InvalidOperationException>();
-
-			// ACT
-			Action action = () => _instance.GetFieldMappings();
-
-			// ASSERT
-			action.Should().Throw<InvalidOperationException>();
-		}
-	}
+            // ASSERT
+            action.Should().Throw<InvalidOperationException>();
+        }
+    }
 }

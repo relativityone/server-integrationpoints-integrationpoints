@@ -10,11 +10,11 @@ namespace Relativity.Sync
 		private readonly IContainerFactory _containerFactory;
 		private readonly IContainer _container;
 		private readonly SyncJobParameters _syncJobParameters;
-		private readonly RelativityServices _relativityServices;
+		private readonly IRelativityServices _relativityServices;
 		private readonly SyncJobExecutionConfiguration _configuration;
 		private readonly ISyncLog _logger;
 
-		public SyncJobInLifetimeScope(IContainerFactory containerFactory, IContainer container, SyncJobParameters syncJobParameters, RelativityServices relativityServices,
+		public SyncJobInLifetimeScope(IContainerFactory containerFactory, IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices,
 			SyncJobExecutionConfiguration configuration, ISyncLog logger)
 		{
 			_containerFactory = containerFactory;
@@ -25,7 +25,7 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public async Task ExecuteAsync(CancellationToken token)
+		public async Task ExecuteAsync(CompositeCancellationToken token)
 		{
 			using (ILifetimeScope scope = BeginLifetimeScope())
 			{
@@ -34,7 +34,7 @@ namespace Relativity.Sync
 			}
 		}
 
-		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
+		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CompositeCancellationToken token)
 		{
 			using (ILifetimeScope scope = BeginLifetimeScope())
 			{
@@ -42,25 +42,7 @@ namespace Relativity.Sync
 				await syncJob.ExecuteAsync(progress, token).ConfigureAwait(false);
 			}
 		}
-
-		public async Task RetryAsync(CancellationToken token)
-		{
-			using (ILifetimeScope scope = BeginLifetimeScope())
-			{
-				ISyncJob syncJob = CreateSyncJob(scope);
-				await syncJob.RetryAsync(token).ConfigureAwait(false);
-			}
-		}
-
-		public async Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
-		{
-			using (ILifetimeScope scope = BeginLifetimeScope())
-			{
-				ISyncJob syncJob = CreateSyncJob(scope);
-				await syncJob.RetryAsync(progress, token).ConfigureAwait(false);
-			}
-		}
-
+		
 		private ILifetimeScope BeginLifetimeScope()
 		{
 			return _container.BeginLifetimeScope(builder => _containerFactory.RegisterSyncDependencies(builder, _syncJobParameters, _relativityServices, _configuration, _logger));
@@ -74,8 +56,8 @@ namespace Relativity.Sync
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Failed to create Sync job {workflowId}.", _syncJobParameters.WorkflowId.Value);
-				throw new SyncException("Unable to create Sync job. See inner exception for more details.", ex, _syncJobParameters.WorkflowId.Value);
+				_logger.LogError(ex, "Failed to create Sync job {workflowId}.", _syncJobParameters.WorkflowId);
+				throw new SyncException("Unable to create Sync job. See inner exception for more details.", ex, _syncJobParameters.WorkflowId);
 			}
 		}
 	}

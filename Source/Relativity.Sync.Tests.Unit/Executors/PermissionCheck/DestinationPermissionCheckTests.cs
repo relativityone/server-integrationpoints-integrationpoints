@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Interfaces.ObjectType;
-using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
@@ -22,7 +20,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 	public class DestinationPermissionCheckTests
 	{
 		private DestinationPermissionCheck _sut;
-		private Mock<IObjectTypeManager> _objectTypeManagerFake;
 		private Mock<ISyncObjectTypeManager> _syncObjectTypeManagerFake;
 		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryFake;
 
@@ -71,26 +68,17 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 						}
 					}
 				});
-
-			_objectTypeManagerFake = new Mock<IObjectTypeManager>();
-			_objectTypeManagerFake
-				.Setup(x => x.ReadAsync(It.IsAny<int>(),
+			_syncObjectTypeManagerFake
+				.Setup(x => x.GetObjectTypeArtifactTypeIdAsync(It.IsAny<int>(),
 					It.Is<int>(artifactID => artifactID == sourceCaseObjectTypeArtifactId)))
-					.ReturnsAsync(new ObjectTypeResponse()
-				{
-					ArtifactTypeID = _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID
-				});
-			_objectTypeManagerFake
-				.Setup(x => x.ReadAsync(It.IsAny<int>(),
+				.ReturnsAsync( _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID);
+			_syncObjectTypeManagerFake
+				.Setup(x => x.GetObjectTypeArtifactTypeIdAsync(It.IsAny<int>(),
 					It.Is<int>(artifactID => artifactID == sourceJobObjectTypeArtifactId)))
-					.ReturnsAsync(new ObjectTypeResponse()
-				{
-					ArtifactTypeID = _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID
-				});
+				.ReturnsAsync(_SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID);
+
 
 			_destinationServiceFactoryFake = new Mock<IDestinationServiceFactoryForUser>();
-			_destinationServiceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
-				.ReturnsAsync(_objectTypeManagerFake.Object);
 			_sut = new DestinationPermissionCheck(_destinationServiceFactoryFake.Object,
 				_syncObjectTypeManagerFake.Object, new EmptyLogger());
 		}
@@ -340,16 +328,24 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 				.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(permissionRefs => permissionRefs.Any(permissionRef =>
 					permissionRef.ArtifactType.ID == _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID ||
 					permissionRef.ArtifactType.ID == _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID))))
-					.ReturnsAsync(permission);
+				.ReturnsAsync(permission);
 
 			// Act
 			ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
 			// Assert
+			AssertInsufficientPermissionsToCreateTagInDestination(actualResult);
+		}
+
+
+		private static void AssertInsufficientPermissionsToCreateTagInDestination(ValidationResult actualResult)
+		{
 			actualResult.IsValid.Should().BeFalse();
 			const int expectedNumberOfErrors = 2;
 			actualResult.Messages.Should().HaveCount(expectedNumberOfErrors);
-			actualResult.Messages.All(x => x.ShortMessage.StartsWith("User does not have permissions to create tag", StringComparison.InvariantCulture));
+			actualResult.Messages
+				.All(x => x.ShortMessage.StartsWith("User does not have permissions to create tag", StringComparison.InvariantCulture))
+				.Should().BeTrue();
 		}
 
 		private Mock<IPermissionManager> SetupPermissions()

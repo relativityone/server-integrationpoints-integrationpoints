@@ -11,6 +11,8 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
@@ -21,24 +23,20 @@ namespace Relativity.Sync.Executors
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly ITagNameFormatter _tagNameFormatter;
-
-		private readonly Guid _destinationInstanceArtifactIdGuid = new Guid("323458DB-8A06-464B-9402-AF2516CF47E0");
-		private readonly Guid _destinationInstanceNameGuid = new Guid("909ADC7C-2BB9-46CA-9F85-DA32901D6554");
-		private readonly Guid _destinationWorkspaceArtifactIdGuid = new Guid("207E6836-2961-466B-A0D2-29974A4FAD36");
-		private readonly Guid _destinationWorkspaceFieldMultiObject = new Guid("8980C2FA-0D33-4686-9A97-EA9D6F0B4196");
-		private readonly Guid _destinationWorkspaceNameGuid = new Guid("348D7394-2658-4DA4-87D0-8183824ADF98");
-		private readonly Guid _jobHistoryFieldMultiObject = new Guid("97BC12FA-509B-4C75-8413-6889387D8EF6");
-		private readonly Guid _nameGuid = new Guid("155649C0-DB15-4EE7-B449-BFDF2A54B7B5");
-		private readonly Guid _objectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
+		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
+		private readonly Func<IStopwatch> _stopwatch;
 
 		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
-			ISyncLog logger, ISyncMetrics syncMetrics)
+			IRdoGuidConfiguration rdoGuidConfiguration, ISyncLog logger, ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch)
+			: base(logger)
 		{
 			_federatedInstance = federatedInstance;
 			_logger = logger;
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_syncMetrics = syncMetrics;
 			_tagNameFormatter = tagNameFormatter;
+			_rdoGuidConfiguration = rdoGuidConfiguration;
+			_stopwatch = stopwatch;
 		}
 
 		public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
@@ -54,9 +52,9 @@ namespace Relativity.Sync.Executors
 				destinationWorkspaceTag = new DestinationWorkspaceTag
 				{
 					ArtifactId = tag.ArtifactID,
-					DestinationWorkspaceName = tag[_destinationWorkspaceNameGuid].Value.ToString(),
-					DestinationInstanceName = tag[_destinationInstanceNameGuid].Value.ToString(),
-					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[_destinationWorkspaceArtifactIdGuid].Value, CultureInfo.InvariantCulture)
+					DestinationWorkspaceName = tag[_rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid].Value.ToString(),
+					DestinationInstanceName = tag[_rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceNameGuid].Value.ToString(),
+					DestinationWorkspaceArtifactId = Convert.ToInt32(tag[_rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid].Value, CultureInfo.InvariantCulture)
 				};
 			}
 			return destinationWorkspaceTag;
@@ -75,7 +73,10 @@ namespace Relativity.Sync.Executors
 			{
 				var request = new CreateRequest
 				{
-					ObjectType = new ObjectTypeRef { Guid = _objectTypeGuid },
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = _rdoGuidConfiguration.DestinationWorkspace.TypeGuid
+					},
 					FieldValues = CreateFieldValues(destinationWorkspaceArtifactId, destinationWorkspaceName, federatedInstanceName, federatedInstanceId)
 				};
 
@@ -144,8 +145,6 @@ namespace Relativity.Sync.Executors
 		protected override async Task<TagDocumentsResult<int>> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
-			var metricsCustomData = new Dictionary<string, object> { { "batchSize", batch.Count } };
-
 			var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
 			{
 				Objects = ConvertArtifactIdsToObjectRefs(batch),
@@ -153,13 +152,15 @@ namespace Relativity.Sync.Executors
 			};
 
 			TagDocumentsResult<int> result;
+			IStopwatch stopwatch = _stopwatch();
 			try
 			{
-				using (_syncMetrics.TimedOperation("Relativity.Sync.TagDocuments.SourceUpdate.Time", ExecutionStatus.None, metricsCustomData))
 				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
+					stopwatch.Start();
 					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
 					result = GenerateTagDocumentsResult(updateResult, batch);
+					stopwatch.Stop();
 				}
 			}
 			catch (Exception updateException)
@@ -173,7 +174,13 @@ namespace Relativity.Sync.Executors
 				result = new TagDocumentsResult<int>(batch, exceptionMessage, false, 0);
 			}
 
-			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.SourceUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
+			_syncMetrics.Send(new DestinationWorkspaceTagMetric
+			{
+				BatchSize = batch.Count,
+				SourceUpdateTime = stopwatch.Elapsed.TotalMilliseconds,
+				SourceUpdateCount = result.TotalObjectsUpdated,
+				UnitOfMeasure = _UNIT_OF_MEASURE
+			});
 
 			return result;
 		}
@@ -184,12 +191,15 @@ namespace Relativity.Sync.Executors
 			{
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = _destinationWorkspaceFieldMultiObject },
+					Field = new FieldRef
+					{
+						Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceOnDocument
+					},
 					Value = ToMultiObjectValue(synchronizationConfiguration.DestinationWorkspaceTagArtifactId)
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = _jobHistoryFieldMultiObject },
+					Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.JobHistoryOnDocumentGuid },
 					Value = ToMultiObjectValue(synchronizationConfiguration.JobHistoryArtifactId)
 				}
 			};
@@ -204,16 +214,16 @@ namespace Relativity.Sync.Executors
 
 				var request = new QueryRequest
 				{
-					ObjectType = new ObjectTypeRef { Guid = _objectTypeGuid },
-					Condition = $"'{_destinationWorkspaceArtifactIdGuid}' == {destinationWorkspaceArtifactId} AND ('{_destinationInstanceArtifactIdGuid}' == {federatedInstanceId})",
+					ObjectType = new ObjectTypeRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.TypeGuid },
+					Condition = $"'{_rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid}' == {destinationWorkspaceArtifactId} AND ('{_rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceArtifactIdGuid}' == {federatedInstanceId})",
 					Fields = new List<FieldRef>
 					{
 						new FieldRef { Name = "ArtifactId" },
-						new FieldRef { Guid = _destinationWorkspaceNameGuid},
-						new FieldRef { Guid = _destinationInstanceNameGuid },
-						new FieldRef { Guid = _destinationWorkspaceArtifactIdGuid },
-						new FieldRef { Guid = _destinationInstanceArtifactIdGuid },
-						new FieldRef { Guid = _nameGuid }
+						new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid},
+						new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceNameGuid },
+						new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid},
+						new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceArtifactIdGuid },
+						new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.NameGuid }
 					}
 				};
 				QueryResult queryResult;
@@ -259,27 +269,27 @@ namespace Relativity.Sync.Executors
 			{
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = _nameGuid },
+					Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.NameGuid },
 					Value = destinationTagName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = _destinationWorkspaceNameGuid },
+					Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid},
 					Value = destinationWorkspaceName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = _destinationWorkspaceArtifactIdGuid },
+					Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid },
 					Value = destinationWorkspaceArtifactId
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = _destinationInstanceNameGuid },
+					Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceNameGuid },
 					Value = federatedInstanceName
 				},
 				new FieldRefValuePair
 				{
-					Field = new FieldRef { Guid = _destinationInstanceArtifactIdGuid },
+					Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceArtifactIdGuid },
 					Value = federatedInstanceId
 				}
 			};
@@ -288,7 +298,7 @@ namespace Relativity.Sync.Executors
 
 		private IEnumerable<FieldRefValuePair> RemoveSensitiveUserData(IEnumerable<FieldRefValuePair> fieldValues)
 		{
-			fieldValues.First(fieldValue => fieldValue.Field.Guid == _nameGuid).Value = "[Sensitive user data has been removed]";
+			fieldValues.First(fieldValue => fieldValue.Field.Guid == _rdoGuidConfiguration.DestinationWorkspace.NameGuid).Value = "[Sensitive user data has been removed]";
 
 			return fieldValues;
 		}

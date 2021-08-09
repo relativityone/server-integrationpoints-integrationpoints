@@ -10,8 +10,10 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
@@ -19,7 +21,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class DestinationWorkspaceTagRepositoryTests : SystemTest
+	internal sealed class DestinationWorkspaceTagRepositoryTests : SystemTest
 	{
 		private int _sourceWorkspaceArtifactId;
 
@@ -42,7 +44,7 @@ namespace Relativity.Sync.Tests.System
 			string jobHistoryName = Guid.NewGuid().ToString();
 			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
 			string destinationWorkspaceTagName = Guid.NewGuid().ToString();
-			int destinationWorkspaceTagId = await Rdos.CreateDestinationWorkspaceTagInstance(ServiceFactory, _sourceWorkspaceArtifactId, 0, destinationWorkspaceTagName).ConfigureAwait(false);
+			int destinationWorkspaceTagId = await Rdos.CreateDestinationWorkspaceTagInstanceAsync(ServiceFactory, _sourceWorkspaceArtifactId, 0, destinationWorkspaceTagName).ConfigureAwait(false);
 
 			var configuration = new ConfigurationStub
 			{
@@ -55,8 +57,10 @@ namespace Relativity.Sync.Tests.System
 			var repository = new DestinationWorkspaceTagRepository(new ServiceFactoryStub(ServiceFactory),
 				new FederatedInstance(),
 				new TagNameFormatter(new EmptyLogger()),
+				configuration,
 				new EmptyLogger(),
-				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new SyncJobParameters(int.MaxValue, _sourceWorkspaceArtifactId, jobHistoryId)));
+				new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new ConfigurationStub()),
+				() => new StopwatchWrapper());
 
 			IList<TagDocumentsResult<int>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
 
@@ -78,7 +82,7 @@ namespace Relativity.Sync.Tests.System
 
 		private async Task<IList<int>> UploadDocumentsAsync(int numDocuments)
 		{
-			int destinationFolderId = await Rdos.GetRootFolderInstance(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
+			int destinationFolderId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
 			ImportDataTableWrapper importDataTableWrapper = DataTableFactory.GenerateDocumentsWithExtractedText(numDocuments);
 
 			ImportBulkArtifactJob documentImportJob = ImportJobFactory.CreateNonNativesDocumentImportJob(_sourceWorkspaceArtifactId, destinationFolderId, importDataTableWrapper);

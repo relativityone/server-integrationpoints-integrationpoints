@@ -1,38 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	[TestFixture]
-	internal sealed class SnapshotPartitionConfigurationTests
+	internal sealed class SnapshotPartitionConfigurationTests : ConfigurationTestBase
 	{
 		private SnapshotPartitionConfiguration _instance;
-
-		private Mock<Sync.Storage.IConfiguration> _cache;
 
 		private const int _WORKSPACE_ID = 987432;
 		private const int _JOB_ID = 9687413;
 
 		private const int _BATCH_SIZE = 985632;
 
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
-
 		[SetUp]
 		public void SetUp()
 		{
-			_cache = new Mock<Sync.Storage.IConfiguration>();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, 1);
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, It.IsAny<Guid>());
 			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration
 			{
 				BatchSize = _BATCH_SIZE
 			};
 
-			_instance = new SnapshotPartitionConfiguration(_cache.Object, syncJobParameters, configuration, new EmptyLogger());
+			_instance = new SnapshotPartitionConfiguration(_configuration.Object, syncJobParameters, configuration, new EmptyLogger());
 		}
 
 		[Test]
@@ -58,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			const int totalRecordsCount = 874596;
 
-			_cache.Setup(x => x.GetFieldValue<int>(SnapshotRecordsCountGuid)).Returns(totalRecordsCount);
+			_configurationRdo.SnapshotRecordsCount = totalRecordsCount;
 
 			// ACT & ASSERT
 			_instance.TotalRecordsCount.Should().Be(totalRecordsCount);
@@ -67,24 +63,22 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[Test]
 		public void ItShouldReturnExportRunId()
 		{
-			const string runId = "7B7CB209-69A5-4903-A210-3452EAB7BB34";
+			Guid runId = new Guid("7B7CB209-69A5-4903-A210-3452EAB7BB34");
 
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_configurationRdo.SnapshotId = runId;
 
 			// ACT
 			Guid actualRunId = _instance.ExportRunId;
 
 			// ASSERT
-			actualRunId.Should().Be(Guid.Parse(runId));
+			actualRunId.Should().Be(runId);
 		}
 
 		[Test]
-		[TestCase("")]
-		[TestCase("ABC")]
-		[TestCase("7B7CB209-69A5-4903-A210-3452EAB7BB3", Description = "Missing one character")]
-		public void ItShouldReturnEmptyGuidForInvalidString(string runId)
+		[TestCaseSource(nameof(SnapshotCaseSource))]
+		public void ItShouldReturnEmptyGuidForInvalidString(Guid? runId)
 		{
-			_cache.Setup(x => x.GetFieldValue<string>(SnapshotIdGuid)).Returns(runId);
+			_configurationRdo.SnapshotId = runId;
 
 			// ACT
 			Action action = () =>
@@ -94,6 +88,12 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// ASSERT
 			action.Should().Throw<ArgumentException>();
+		}
+		
+		static IEnumerable<TestCaseData> SnapshotCaseSource()
+		{
+			yield return new TestCaseData((Guid?) null);
+			yield return new TestCaseData((Guid?) Guid.Empty);
 		}
 	}
 }

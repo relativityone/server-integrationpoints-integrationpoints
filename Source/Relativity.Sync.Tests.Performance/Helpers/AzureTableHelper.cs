@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 using Relativity.Sync.Tests.System.Core;
 using System;
-using System.Net;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
@@ -34,6 +34,14 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			TableOperation insertOperation = TableOperation.Insert(entity);
 
 			return table.ExecuteAsync(insertOperation);
+		}
+
+		public IEnumerable<T> QueryAll<T>(string tableName)
+			where T : TableEntity, new()
+		{
+			CloudTable table = _tableClient.GetTableReference(tableName);
+
+			return table.CreateQuery<T>();
 		}
 	}
 }

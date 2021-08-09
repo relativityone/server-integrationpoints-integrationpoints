@@ -18,27 +18,17 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public Task ExecuteAsync(CancellationToken token)
+		public Task ExecuteAsync(CompositeCancellationToken token)
 		{
 			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.ExecuteAsync, token);
 		}
 
-		public Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
+		public Task ExecuteAsync(IProgress<SyncJobState> progress, CompositeCancellationToken token)
 		{
 			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.ExecuteAsync, progress, token);
 		}
-
-		public Task RetryAsync(CancellationToken token)
-		{
-			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.RetryAsync, token);
-		}
-
-		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
-		{
-			return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.RetryAsync, progress, token);
-		}
-
-		private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<CancellationToken, Task> action, CancellationToken token)
+		
+		private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<CompositeCancellationToken, Task> action, CompositeCancellationToken token)
 		{
 			_appDomain.UnhandledException += OnUnhandledException;
 
@@ -52,7 +42,7 @@ namespace Relativity.Sync
 			}
 		}
 
-		private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<IProgress<SyncJobState>, CancellationToken, Task> action, IProgress<SyncJobState> progress, CancellationToken token)
+		private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<IProgress<SyncJobState>, CompositeCancellationToken, Task> action, IProgress<SyncJobState> progress, CompositeCancellationToken token)
 		{
 			_appDomain.UnhandledException += OnUnhandledException;
 

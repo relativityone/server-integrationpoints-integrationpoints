@@ -1,13 +1,9 @@
 ﻿using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 
@@ -36,7 +32,7 @@ namespace Relativity.Sync.Tests.Integration
 		public async Task ItShouldAssignIncreasingOrder()
 		{
 			// ACT
-			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			// Checks progress objects in creation order - if final value is null
@@ -51,12 +47,12 @@ namespace Relativity.Sync.Tests.Integration
 		public async Task ItShouldAssignSameOrderToMultiNodeChildren()
 		{
 			// ACT
-			await _instance.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _instance.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			string[] multiNodeChildIds =
 			{
-				_container.ResolveNode<ISumReporterConfiguration>().Id,
+				_container.ResolveNode<IDocumentJobStartMetricsConfiguration>().Id,
 				_container.ResolveNode<IDestinationWorkspaceTagsCreationConfiguration>().Id,
 				_container.ResolveNode<ISourceWorkspaceTagsCreationConfiguration>().Id,
 				_container.ResolveNode<IDataDestinationInitializationConfiguration>().Id

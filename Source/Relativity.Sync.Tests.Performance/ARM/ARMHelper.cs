@@ -1,28 +1,23 @@
-﻿using Refit;
-using Relativity.Automation.Utility;
-using Relativity.Automation.Utility.Api;
-using Relativity.Automation.Utility.Models;
-using Relativity.Automation.Utility.Orchestrators;
-using Relativity.Services.Interfaces.LibraryApplication.Models;
-using Relativity.Sync.Tests.Performance.ARM.Contracts;
-using Relativity.Sync.Tests.Performance.Helpers;
+﻿using Relativity.Sync.Tests.Performance.Helpers;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using kCura.Utility.Extensions;
+using Relativity.ARM.Services.Interfaces.V1.JobAction;
+using Relativity.ARM.Services.Interfaces.V1.JobStatus;
+using Relativity.ARM.Services.Interfaces.V1.Models;
+using Relativity.ARM.Services.Interfaces.V1.Models.JobStatus;
+using Relativity.ARM.Services.Interfaces.V1.Models.Restore;
+using Relativity.ARM.Services.Interfaces.V1.Restore;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ResourcePool;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -30,24 +25,19 @@ namespace Relativity.Sync.Tests.Performance.ARM
 	{
 		private static bool _isInitialized;
 
-
-		private readonly ApiComponent _component;
-		private readonly IARMApi _armApi;
 		private readonly FileShareHelper _fileShare;
 		private readonly AzureStorageHelper _storage;
 
-		private static readonly string _INITIAL_BCP_PATH = "BCPPath";
 		private static readonly string _RELATIVE_ARCHIVES_LOCATION = AppSettings.RelativeArchivesLocation;
-		private static readonly string _UNC_ARCHIVE_LOCATION = Path.Combine(AppSettings.RemoteArchivesLocation, _RELATIVE_ARCHIVES_LOCATION);
+		private readonly IKeplerServiceFactory _serviceFactory;
 
 
-		private ARMHelper(IARMApi armApi, FileShareHelper fileShare, AzureStorageHelper storage)
+		private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storage)
 		{
-			_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
-
-			_armApi = armApi;
 			_fileShare = fileShare;
 			_storage = storage;
+
+			_serviceFactory = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory;
 
 			Logger = TestLogHelper.GetLogger();
 		}
@@ -56,14 +46,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		public static ARMHelper CreateInstance()
 		{
-			HttpClient armClient = RestService.CreateHttpClient(
-				AppSettings.RelativityRestUrl.AbsoluteUri,
-				new RefitSettings());
-			armClient.DefaultRequestHeaders.Authorization =
-				AuthenticationHeaderValue.Parse($"Basic {AppSettings.BasicAccessToken}");
-
 			ARMHelper instance = new ARMHelper(
-				RestService.For<IARMApi>(armClient),
 				FileShareHelper.CreateInstance(),
 				AzureStorageHelper.CreateFromTestConfig());
 
@@ -82,44 +65,26 @@ namespace Relativity.Sync.Tests.Performance.ARM
 					InstallARM();
 				}
 
-				EnsureConfigurationAsync().GetAwaiter().GetResult();
+				ConfigureBCPPath();
+
+				CreateRemoteLocationExistsAsync().GetAwaiter().GetResult();
 
 				_isInitialized = true;
 				Logger.LogInformation("ARM has been initialized.");
 			}
 		}
 
-		private async Task EnsureConfigurationAsync()
+		private Task CreateRemoteLocationExistsAsync()
 		{
-			Logger.LogInformation("Checking BCP path ARM configuration");
+			Logger.LogInformation("Creating remote archive location directory");
 
-			IOrchestrateInstanceSettings settingOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>();
-			if (settingOrchestrator.GetInstanceSetting("BcpShareFolderName", "kCura.ARM").Value == _INITIAL_BCP_PATH)
-			{
-				Logger.LogInformation("ARM BCP path not set, using default value");
+			return _fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION);
+		}
 
-				settingOrchestrator.SetInstanceSetting("BcpShareFolderName", @"\\emttest\BCPPath", "kCura.ARM", InstanceSettingValueTypeEnum.Text);
-			}
-
-			Logger.LogInformation("Checking ARM locations");
-			var currentArmConfiguration = await _armApi.GetConfigurationData().ConfigureAwait(false);
-
-			if (currentArmConfiguration.ArmArchiveLocations.IsNullOrEmpty())
-			{
-				Logger.LogInformation("Remote ARM location not configured, creating default");
-				await _fileShare.CreateDirectoryAsync(_RELATIVE_ARCHIVES_LOCATION).ConfigureAwait(false);
-
-				Logger.LogInformation(
-					$"ARM Archive Location has been created on fileshare: {_RELATIVE_ARCHIVES_LOCATION}");
-
-				Logger.LogInformation($"Set ARM Archive location to {_UNC_ARCHIVE_LOCATION}");
-				currentArmConfiguration.ArmArchiveLocations = new[] { new ArchiveLocation { Location = _UNC_ARCHIVE_LOCATION } };
-
-				Logger.LogInformation("Updating ARM configuration");
-				ContractEnvelope<ArmConfiguration> request = new ContractEnvelope<ArmConfiguration> { Contract = currentArmConfiguration };
-
-				await _armApi.SetConfigurationAsync(request).ConfigureAwait(false);
-			}
+		private void ConfigureBCPPath()
+		{
+			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+				.UpdateValue("BcpShareFolderName", "kCura.ARM", AppSettings.RemoteBCPPathLocation);
 		}
 
 		private bool ShouldBeInstalled()
@@ -127,7 +92,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			Version installedVersion = GetInstalledArmVersion();
 			Version rapArmVersion = GetRapArmVersion(GetARMRapPath());
 			return installedVersion == null || rapArmVersion > installedVersion;
-				}
+		}
 
 		private static Version GetRapArmVersion(string armRapPath)
 		{
@@ -156,34 +121,27 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private Version GetInstalledArmVersion()
 		{
-			const string armAppName = "ARM";
-			LibraryApplicationResponse app = new LibraryApplicationResponse() { Name = armAppName };
-			bool isAppInstalled = _component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
-				.IsApplicationInstalledInLibrary(app);
+			LibraryApplication armApplication = RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+					.Get("ARM");
 
-			if (isAppInstalled)
-			{
-				string version = _component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
-					.GetLibraryApplicationByName(armAppName).Version;
-
-				return new Version(version);
-			}
-
-			return null;
+			return armApplication != null ? new Version(armApplication.Version) : null;
 		}
 
 		private void InstallARM()
 		{
-			IOrchestrateRelativityApplications applicationsOrchestrator =
-				_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>();
-
 			string rapPath = GetARMRapPath();
 			try
 			{
-			Logger.LogInformation("Installing ARM...");
-			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true, };
-			applicationsOrchestrator.InstallRelativityApplicationToLibrary(rapPath, options);
-			Logger.LogInformation("ARM has been successfully installed.");
+				Logger.LogInformation("Installing ARM...");
+
+				ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+
+				applicationService.InstallToLibrary(rapPath, new LibraryApplicationInstallOptions()
+				{
+					CreateIfMissing = true
+				});
+
+				Logger.LogInformation("ARM has been successfully installed.");
 			}
 			finally
 			{
@@ -206,33 +164,31 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			return rapPath;
 		}
 
-		public void EnableAgents(bool ensureNew = false)
+		public void EnableAgents()
 		{
-			EnableAgent("ARM Agent", ensureNew);
-			EnableAgent("ARM Metric Agent", ensureNew);
-			EnableAgent("Structured Analytics Manager", ensureNew);
-			EnableAgent("Structured Analytics Worker", ensureNew);
+			ResourceServer agentServer = RelativityFacade.Instance.Resolve<IResourceServerService>().GetAll()
+				.FirstOrDefault(x => x.Type == ResourceServerType.Agent);
+
+			EnableAgent("ARM Agent", agentServer);
+			EnableAgent("ARM Metric Agent", agentServer);
+			EnableAgent("Structured Analytics Manager", agentServer);
+			EnableAgent("Structured Analytics Worker", agentServer);
 		}
 
-		private void EnableAgent(string type, bool ensureNew = true)
+		private void EnableAgent(string type, ResourceServer agentServer)
 		{
-			IOrchestrateAgents agentsOrchestrator = _component.OrchestratorFactory.Create<IOrchestrateAgents>();
+			IAgentService agentService = RelativityFacade.Instance.Resolve<IAgentService>();
 
-			AgentType agentType = agentsOrchestrator.GetAllAgentTypes()
-				.First(x => x.Name == type);
+			AgentType agentType = agentService.GetAgentType(type);
 
-			Automation.Utility.Models.ResourceServer server = agentsOrchestrator.GetAvailableAgentServersForAgentType(agentType.ArtifactID)
-				.First(x => x.Type == ResourceServerTypeEnum.Agent);
-
-			Agent agent = new Agent()
+			agentService.Create(new Agent()
 			{
+				AgentServer = agentServer,
 				AgentType = agentType,
-				AgentServer = server,
-				RunInterval = (int)agentType.DefaultInterval.Value,
-				LoggingLevel = (AgentLoggingLevelTypeEnum)agentType.DefaultLoggingLevel
-			};
-
-			agentsOrchestrator.GetBasicAgent(agent, ensureNew);
+				Enabled = true,
+				LoggingLevel = (AgentLoggingLevelType)agentType.DefaultLoggingLevel.Value,
+				RunInterval = (int)(agentType.DefaultInterval ?? 5)
+			});
 		}
 
 		public async Task<int> RestoreWorkspaceAsync(string archivedWorkspaceLocalPath, TestEnvironment environment)
@@ -243,24 +199,22 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 				await ThrowIfWorkspaceAlreadyExistsAsync(workspaceName, environment).ConfigureAwait(false);
 
-				string remoteLocation = await GetRemoteLocationAsync().ConfigureAwait(false);
-
-				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, remoteLocation)
+				string uploadedFile = await _fileShare.UploadFileAsync(archivedWorkspaceLocalPath, _RELATIVE_ARCHIVES_LOCATION)
 					.ConfigureAwait(false);
 				Logger.LogInformation($"Archived workspace has been uploaded to fileshare ({uploadedFile})");
 
-				string archivedWorkspacePath = Path.Combine(remoteLocation,
-					Path.GetFileNameWithoutExtension(uploadedFile));
+				Logger.LogInformation($"Restoring workspace from: {uploadedFile}");
 
-				Logger.LogInformation($"Restoring workspace from: {archivedWorkspacePath}");
+				string remoteArchiveLocation =
+					Path.Combine(AppSettings.RemoteArchivesLocation, Path.GetFileNameWithoutExtension(uploadedFile));
 
-				Job job = await CreateRestoreJobAsync(archivedWorkspacePath).ConfigureAwait(false);
-				Logger.LogInformation($"Restore job {job.JobId} has been created");
+				int jobId = await CreateRestoreJobAsync(remoteArchiveLocation).ConfigureAwait(false);
+				Logger.LogInformation($"Restore job {jobId} has been created");
 
-				await RunJobAsync(job).ConfigureAwait(false);
-				Logger.LogInformation($"Job {job.JobId} is running...");
+				await RunJobAsync(jobId).ConfigureAwait(false);
+				Logger.LogInformation($"Job {jobId} is running...");
 
-				await WaitUntilJobIsCompletedAsync(job).ConfigureAwait(false);
+				await WaitUntilJobIsCompletedAsync(jobId).ConfigureAwait(false);
 				Logger.LogInformation("Restore job has been completed successfully.");
 
 				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByNameAsync(workspaceName).ConfigureAwait(true);
@@ -284,26 +238,30 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private async Task<string> GetRemoteLocationAsync()
-		{
-			return (await _armApi.GetConfigurationData().ConfigureAwait(false)).ArmArchiveLocations.First().Location;
-		}
-
 		private static string GetWorkspaceNameFromArmZip(string archivedWorkspaceLocalPath)
 		{
 			try
 			{
-				using (var fileStream = new FileStream(archivedWorkspaceLocalPath, FileMode.Open))
+				using (ZipArchive archive = ZipFile.OpenRead(archivedWorkspaceLocalPath))
 				{
-					using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
+					ZipArchiveEntry archiveInformationEntry =
+						archive.Entries.First(e => e.Name == "ArchiveInformation.xml");
+
+					string archiveInformationFile = Path.GetTempFileName();
+					try
 					{
-						ZipArchiveEntry applicationXml = archive.Entries.First(e => e.Name == "ArchiveInformation.xml");
-						using (var stream = applicationXml.Open())
+						archiveInformationEntry.ExtractToFile(archiveInformationFile, true);
+						using (var stream = File.OpenRead(archiveInformationFile))
 						{
 							var xmlDoc = XDocument.Load(stream);
 							return xmlDoc.XPathSelectElement(@"//ArchiveInformation/CaseInformation/Name").Value;
 						}
 					}
+					finally
+					{
+						File.Delete(archiveInformationFile);
+					}
+
 				}
 			}
 			catch (Exception ex)
@@ -313,22 +271,27 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private async Task<Job> CreateRestoreJobAsync(string archivedWorkspacePath)
+		private async Task<int> CreateRestoreJobAsync(string archivedWorkspacePath)
 		{
-			int resourcePoolId = await GetResourcePoolId(AppSettings.ResourcePoolName).ConfigureAwait(false);
-
-			int databaseServerId = await GetRestoreSqlServerId().ConfigureAwait(false);
-
-			ContractEnvelope<RestoreJob> request = RestoreJob.GetRequest(archivedWorkspacePath, resourcePoolId, databaseServerId);
-
 			try
 			{
-				return await _armApi.CreateRestoreJobAsync(request).ConfigureAwait(false);
-			}
-			catch (ApiException ex)
-			{
-				Logger.LogError(ex, "API Exception occurred during ARM restore. Content: {content}", ex.Content);
-				throw;
+				using (var restoreJobManager = _serviceFactory.GetServiceProxy<IArmRestoreJobManager>())
+				{
+					RestoreJobRequest request = new RestoreJobRequest()
+					{
+						ArchivePath = archivedWorkspacePath,
+						DestinationOptions = new RestoreDestinationOptions
+						{
+							ResourcePoolID = GetResourcePoolId(AppSettings.ResourcePoolName),
+							DatabaseServerID = GetRestoreSqlServerId(),
+							MatterID = AppSettings.ArmRelativityTemplateMatterId,
+							CacheLocationID = AppSettings.ArmCacheLocationId,
+							FileRepositoryID = AppSettings.ArmFileRepositoryId
+						},
+
+					};
+					return await restoreJobManager.CreateAsync(request).ConfigureAwait(false);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -337,59 +300,52 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private Task RunJobAsync(Job job)
+		private async Task RunJobAsync(int jobId)
 		{
-			return _armApi.RunJobAsync(job);
+			using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
+			{
+				await armJobActionManager.RunAsync(jobId).ConfigureAwait(false);
+			}
 		}
 
-		private async Task WaitUntilJobIsCompletedAsync(Job job)
+		private async Task WaitUntilJobIsCompletedAsync(int jobId)
 		{
 			// restoring workspaces takes a long time
 			const int delay = 30000;
-			JobStatus jobStatus;
-			do
+			ArmJobStatusResponse jobStatus;
+			using (var statusManager = _serviceFactory.GetServiceProxy<IArmJobStatusManager>())
 			{
-				jobStatus = await _armApi.GetJobStatus(job).ConfigureAwait(false);
-				Logger.LogInformation($"Job is still processing ({jobStatus.Status})...");
-				if (jobStatus.Status == "Errored")
+				do
 				{
-					throw new InvalidOperationException("Error occured during restoring workspace");
-				}
+					jobStatus = await statusManager.ReadAsync(jobId).ConfigureAwait(false);
+					Logger.LogInformation($"Job is still processing ({jobStatus.JobState})...");
+					if (jobStatus.JobState == JobState.Errored)
+					{
+						throw new InvalidOperationException("Error occurred during restoring workspace");
+					}
 
-				await Task.Delay(delay).ConfigureAwait(false);
+					await Task.Delay(delay).ConfigureAwait(false);
+				} while (jobStatus.JobState != JobState.Complete);
 			}
-			while (jobStatus.Status != "Complete");
 		}
 
-		private async Task<int> GetResourcePoolId(string name)
+		private int GetResourcePoolId(string name)
 		{
-			var query = new Services.Query()
-			{
-				Condition = $"'Name' == '{name}'"
-			};
+			IResourcePoolService resourcePoolService = RelativityFacade.Instance.Resolve<IResourcePoolService>();
 
-			var result = await _component.ServiceFactory.GetAdminServiceProxy<IResourcePoolManager>()
-				.QueryAsync(query).ConfigureAwait(false);
+			var resourcePool = resourcePoolService.Get(name);
 
-			return result.Results.Single().Artifact.ArtifactID;
+			return resourcePool.ArtifactID;
 		}
 
-		private async Task<int> GetRestoreSqlServerId()
+		private int GetRestoreSqlServerId()
 		{
-			var queryRequest = new QueryRequest()
-			{
-				ObjectType = new ObjectTypeRef() { Name = "Resource Server" },
-				Condition = "'Type' LIKE 'SQL'",
-				Fields = new FieldRef[]
-				{
-					new FieldRef { Name = "Type" }
-				}
-			};
+			ResourceServer[] sqlServers = RelativityFacade.Instance.Resolve<IResourceServerService>().GetAll()
+				.Where(x => x.Type == ResourceServerType.SqlDistributed || x.Type == ResourceServerType.SqlPrimary)
+				.ToArray();
 
-			var result = await _component.ServiceFactory.GetAdminServiceProxy<IObjectManager>().QueryAsync(-1, queryRequest, 0, int.MaxValue).ConfigureAwait(false);
-
-			return result.Objects.FirstOrDefault(o => o["Type"].Value.ToString() == "SQL - Distributed")?.ArtifactID
-				?? result.Objects.Single().ArtifactID;
+			return sqlServers.FirstOrDefault(x => x.Type == ResourceServerType.SqlDistributed)?.ArtifactID
+				   ?? sqlServers.Single(x => x.Type == ResourceServerType.SqlPrimary).ArtifactID;
 		}
 	}
 }

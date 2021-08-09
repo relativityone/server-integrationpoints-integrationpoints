@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
 {
 	internal sealed class DestinationWorkspaceTagLinker : IDestinationWorkspaceTagsLinker
 	{
+		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly ISyncLog _logger;
 
-		private static readonly Guid DestinationWorkspaceInformationGuid = new Guid("20a24c4e-55e8-4fc2-abbe-f75c07fad91b");
-
-		public DestinationWorkspaceTagLinker(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
+		public DestinationWorkspaceTagLinker(IRdoGuidConfiguration rdoGuidConfiguration, ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
 		{
+			_rdoGuidConfiguration = rdoGuidConfiguration;
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_logger = logger;
 		}
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Executors
 					{
 						Field = new FieldRef()
 						{
-							Guid = DestinationWorkspaceInformationGuid
+							Guid = _rdoGuidConfiguration.JobHistory.DestinationWorkspaceInformationGuid
 						},
 						Value = new[] { destinationWorkspaceObjectValue }
 					}

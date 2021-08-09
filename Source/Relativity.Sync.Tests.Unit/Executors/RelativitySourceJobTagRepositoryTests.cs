@@ -112,5 +112,76 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// assert
 			action.Should().Throw<RelativitySourceJobTagRepositoryException>().WithInnerException<InvalidOperationException>();
 		}
+
+		[Test]
+		public async Task ReadAsync_ShouldReturnNull_WhenJobRelatedSourceJobTagDoesNotExist()
+		{
+			// Arrange
+			_objectManager.Setup(x =>
+					x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult {TotalCount = 0});
+
+			// Act
+			var result = await _sut.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public async Task ReadAsync_ShouldReturnSourceJobTag()
+		{
+			// Arrange
+
+			RelativitySourceJobTag expectedSourceJobTag = new RelativitySourceJobTag
+			{
+				ArtifactId = 1,
+				Name = "Tag Name",
+				JobHistoryArtifactId = 2,
+				JobHistoryName = "Job History Name",
+				SourceCaseTagArtifactId = 3
+			};
+			
+
+			_objectManager.Setup(x =>
+					x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult
+				{
+					TotalCount = 1,
+					Objects = new List<RelativityObject>
+					{
+						PrepareRelativityObjectFrom(expectedSourceJobTag)
+					}
+				});
+
+			// Act
+			var result = await _sut.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().BeEquivalentTo(expectedSourceJobTag);
+		}
+
+		private RelativityObject PrepareRelativityObjectFrom(RelativitySourceJobTag sourceJobTag)
+		{
+			return new RelativityObject
+			{
+				ArtifactID = sourceJobTag.ArtifactId,
+				FieldValues = new List<FieldValuePair>()
+				{
+					new FieldValuePair
+					{
+						Field = new Field {Guids = new List<Guid> {new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169")}},
+						Value = sourceJobTag.JobHistoryName
+					},
+					new FieldValuePair
+					{
+						Field = new Field {Guids = new List<Guid> {new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231")}},
+						Value = sourceJobTag.JobHistoryArtifactId
+					}
+				},
+				Name = sourceJobTag.Name,
+				ParentObject = new RelativityObjectRef() {ArtifactID = sourceJobTag.SourceCaseTagArtifactId}
+			};
+		}
 	}
 }

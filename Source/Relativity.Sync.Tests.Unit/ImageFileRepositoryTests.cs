@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using FluentAssertions;
+using kCura.EDDS.WebAPI.FileManagerBase;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
@@ -17,7 +20,6 @@ namespace Relativity.Sync.Tests.Unit
 		private const int WORKSPACE_ID = 5;
 
 		private Mock<ISearchManagerFactory> _searchManagerFactoryMock;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
 		private Mock<ISyncLog> _loggerMock;
 		private ImageFileRepository _sut;
 		private Mock<ISearchManager> _searchManagerMock;
@@ -26,7 +28,6 @@ namespace Relativity.Sync.Tests.Unit
 		public void Setup()
 		{
 			_searchManagerFactoryMock = new Mock<ISearchManagerFactory>();
-			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
 			_loggerMock = new Mock<ISyncLog>();
 
 			_searchManagerMock = new Mock<ISearchManager>();
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 			_searchManagerFactoryMock.Setup(x => x.CreateSearchManagerAsync()).ReturnsAsync(_searchManagerMock.Object);
 
 
-			_sut = new ImageFileRepository(_searchManagerFactoryMock.Object, _serviceFactoryMock.Object, _loggerMock.Object);
+			_sut = new ImageFileRepository(_searchManagerFactoryMock.Object, _loggerMock.Object);
 		}
 
 		[Test]
@@ -133,6 +134,61 @@ namespace Relativity.Sync.Tests.Unit
 			result.Count(x => x.ProductionId == null).Should().Be(5);
 		}
 
+		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldNotCallOriginalImages_WhenIncludeOriginalImagesIsSetAndAllImagesMeetProductionPrecedence()
+		{
+			// Arrange
+			var data = Enumerable.Range(1, 10)
+				.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 1 }).ToList();
+
+			MockProductions(data);
+
+			QueryImagesOptions options = new QueryImagesOptions
+				{ ProductionIds = new[] {1}, IncludeOriginalImageIfNotFoundInProductions = true };
+
+			int[] documentIds = data.Select(x => x.DocumentArtifactId).ToArray();
+
+			// Act
+			await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, documentIds, options).ConfigureAwait(false);
+
+			// Assert
+			_searchManagerMock.Verify(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()), Times.Never);
+		}
+
+		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldNotGetOriginalImages_WhenIncludeOriginalImagesIsSetAndImageForProductionWasFound()
+		{
+			// Arrange
+			const int productionId = 1;
+
+			var productionData = new DocumentImageData[]
+			{
+				new DocumentImageData { DocumentArtifactId = 1000, ProductionId = productionId },
+				new DocumentImageData { DocumentArtifactId = 1001, ProductionId = 2 }
+			};
+
+			MockProductions(productionData);
+
+			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
+				.Returns(CreateDataSet(productionData.Where(x => x.ProductionId == 1)));
+
+			var documentIdsWithProductionId = productionData
+				.Where(x => x.ProductionId == productionId)
+				.Select(x => x.DocumentArtifactId);
+
+			QueryImagesOptions options = new QueryImagesOptions
+				{ ProductionIds = new[] { productionId }, IncludeOriginalImageIfNotFoundInProductions = true };
+
+			int[] documentIds = productionData.Select(x => x.DocumentArtifactId).ToArray();
+
+			// Act
+			await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, documentIds, options).ConfigureAwait(false);
+
+			// Assert
+			_searchManagerMock.Verify(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, 
+				It.Is<int[]>(expectedIds => expectedIds.Intersect(documentIdsWithProductionId).Any())), Times.Never);
+		}
+
 
 		[Test]
 		public async Task QueryImagesForDocumentsAsync_ShouldReturnProducedDocumentImages_WithRespectToProductionPrecedence()
@@ -161,6 +217,29 @@ namespace Relativity.Sync.Tests.Unit
 				.BeEquivalentTo(Enumerable.Range(1, 5));
 		}
 
+		[Test]
+		public async Task QueryImagesForDocumentsAsync_ShouldStopSearchForProducedDocumentImages_WhenAllImagesFound()
+		{
+			// Arrange
+			var data = Enumerable.Range(1, 10)
+				.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 1 })
+				.Concat(Enumerable.Range(1, 5)
+					.Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 2 }))
+				.ToList();
+
+			MockProductions(data);
+			
+
+			// Act
+			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToArray(),
+				new QueryImagesOptions { ProductionIds = new[] { 1, 2 } }).ConfigureAwait(false);
+
+			// Assert
+			_searchManagerMock.Verify(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),1), Times.Once);
+			_searchManagerMock.Verify(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),2), Times.Never);
+		}
+
+
 		private void MockProductions(IEnumerable<DocumentImageData> data)
 		{
 			foreach (var productionSet in data.GroupBy(x => x.ProductionId).Where(x => x.Key != null))
@@ -181,6 +260,7 @@ namespace Relativity.Sync.Tests.Unit
 			dataTable.Columns.Add("ImageSize", typeof(long));
 			dataTable.Columns.Add("Filename");
 			dataTable.Columns.Add("NativeIdentifier");
+			dataTable.Columns.Add("Identifier");
 			dataTable.Columns.Add("Size", typeof(long));
 
 			foreach (var imageData in data)
@@ -189,6 +269,7 @@ namespace Relativity.Sync.Tests.Unit
 
 				dataRow["DocumentArtifactID"] = imageData.DocumentArtifactId;
 				dataRow["NativeIdentifier"] = imageData.DocumentArtifactId.ToString();
+				dataRow["Identifier"] = imageData.Identifier ?? (imageData.DocumentArtifactId.ToString() + (imageData.ProductionId != null ? "_" + imageData.ProductionId : ""));
 				dataRow["Location"] = "location";
 				dataRow["ImageFileName"] = imageData.DocumentArtifactId.ToString();
 				dataRow["Filename"] = imageData.DocumentArtifactId.ToString();
@@ -204,6 +285,7 @@ namespace Relativity.Sync.Tests.Unit
 		private struct DocumentImageData
 		{
 			public int DocumentArtifactId { get; set; }
+			public string Identifier { get; set; }
 			public int ImageSize { get; set; }
 			public int? ProductionId { get; set; }
 		}

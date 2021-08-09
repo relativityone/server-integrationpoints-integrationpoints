@@ -11,8 +11,8 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class ImageBatchDataReaderBuilder : BatchDataReaderBuilderBase
 	{
-		public ImageBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer)
-			: base(fieldManager, exportDataSanitizer)
+		public ImageBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, ISyncLog logger)
+			: base(fieldManager, exportDataSanitizer, logger)
 		{
 		}
 
@@ -21,9 +21,10 @@ namespace Relativity.Sync.Transfer
 			return _fieldManager.GetImageAllFieldsAsync(token);
 		}
 
-		protected override IDataReader CreateDataReader(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		protected override async Task<IBatchDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
-			return new ImageBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token);
+			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+			return new ImageBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, identifierField.DocumentFieldIndex, token, _logger);
 		}
 	}
 }

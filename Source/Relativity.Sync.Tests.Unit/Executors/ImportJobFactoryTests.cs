@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Threading;
@@ -13,6 +14,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -20,6 +22,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public class ImportJobFactoryTests
 	{
+		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
+		
 		private Mock<IDocumentSynchronizationConfiguration> _documentConfigurationMock;
 		private Mock<IImageSynchronizationConfiguration> _imageConfigurationMock;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
@@ -38,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_imageConfigurationMock = new Mock<IImageSynchronizationConfiguration>();
 			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
-			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(It.IsAny<IScheduler>())).Returns(jobProgressHandler.Object);
+			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(Enumerable.Empty<IBatch>(), It.IsAny<IScheduler>())).Returns(jobProgressHandler.Object);
 			Mock<ISourceWorkspaceDataReader> dataReader = new Mock<ISourceWorkspaceDataReader>();
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
 			_dataReaderFactory.Setup(x => x.CreateNativeSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
@@ -46,13 +50,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
-			_syncJobParameters = new SyncJobParameters(0, 0, 0)
-			{
-				SyncApplicationName = "Test App"
-			};
+			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			_logger = new EmptyLogger();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
+
+			_imageConfigurationMock.SetupGet(x => x.IdentifierColumn).Returns(_IMAGE_IDENTIFIER_DISPLAY_NAME);
 		}
 
 		[Test]
@@ -60,6 +63,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Arrange
 			ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock());
+
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			result.Dispose();
+
+			// Assert
+			result.Should().NotBeNull();
+		}
+
+		[Test]
+		public async Task CreateNativeImportJobAsync_ShouldPassGoldFlow_WhenDoNotImporNatives()
+		{
+			// Arrange
+			ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock());
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
 
 			// Act
 			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -98,6 +116,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Should().NotBeNull();
 		}
 
+		[Test]
+		public async Task CreateNativeImportJobAsync_HasExtractedFieldPath_WhenDoNotImporNatives()
+		{
+			// Arrange
+			Mock<IImportApiFactory> importApiFactory = GetNativesImportAPIFactoryMock();
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+			ImportJobFactory instance = GetTestInstance(importApiFactory);
+
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			result.Dispose();
+
+			// Assert
+			result.Should().NotBeNull();
+		}
+
 		[TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
 		[TestCase("", "WebAPIPath doesn't exist")]
 		[TestCase(null, "WebAPIPath doesn't exist")]
@@ -105,6 +139,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			// Arrange
 			ImportJobFactory instance = PrepareInstanceForWebApiPathTests(GetNativesImportAPIFactoryMock(), invalidWebAPIPath);
+
+			// Act
+			Task Action() => instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None);
+
+			// Assert
+			return AssertWebApiPathTestsAsync(Action, expectedMessage);
+		}
+
+		[TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
+		[TestCase("", "WebAPIPath doesn't exist")]
+		[TestCase(null, "WebAPIPath doesn't exist")]
+		public Task CreateNativeImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalidAndDoNotImporNatives(string invalidWebAPIPath, string expectedMessage)
+		{
+			// Arrange
+			ImportJobFactory instance = PrepareInstanceForWebApiPathTests(GetNativesImportAPIFactoryMock(), invalidWebAPIPath);
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
 
 			// Act
 			Task Action() => instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None);
@@ -134,6 +184,23 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Arrange
 			ImportBulkArtifactJob importBulkArtifactJobMock = new ImportBulkArtifactJob();
 			ImportJobFactory instance = 
+				PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(x => x.NewNativeDocumentImportJob(), importBulkArtifactJobMock);
+
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+			result.Dispose();
+
+			// Assert
+			AssertStartRecordNumberForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(importBulkArtifactJobMock.Settings);
+		}
+
+		[Test]
+		public async Task CreateNativeImportJobAsync_ShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0_WhenDoNotImporNatives()
+		{
+			// Arrange
+			ImportBulkArtifactJob importBulkArtifactJobMock = new ImportBulkArtifactJob();
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+			ImportJobFactory instance =
 				PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(x => x.NewNativeDocumentImportJob(), importBulkArtifactJobMock);
 
 			// Act
@@ -266,6 +333,35 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			AssertApplicationName(importBulkArtifactJob.Settings);
+		}
+
+		[Test]
+		public async Task CreateImagesImportJob_ShouldSetBatesNumberFieldToImageIdentifier()
+		{
+			// Arrange
+			var importBulkArtifactJob = new ImageImportBulkArtifactJob();
+			ImportJobFactory instance = GetTestInstance(GetImagesImportAPIFactoryMock(importBulkArtifactJob));
+
+			// Act
+			await instance.CreateImageImportJobAsync(_imageConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.BatesNumberField.Should().Be(_imageConfigurationMock.Object.IdentifierColumn);
+		}
+
+		[Test]
+		public async Task CreateImagesImportJob_ShouldSetImageFileName()
+		{
+			// Arrange
+			_imageConfigurationMock.SetupGet(x => x.FileNameColumn).Returns("MyCustomImageFileNameColumn");
+			var importBulkArtifactJob = new ImageImportBulkArtifactJob();
+			ImportJobFactory instance = GetTestInstance(GetImagesImportAPIFactoryMock(importBulkArtifactJob));
+
+			// Act
+			await instance.CreateImageImportJobAsync(_imageConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			importBulkArtifactJob.Settings.FileNameField.Should().Be(_imageConfigurationMock.Object.FileNameColumn);
 		}
 
 		private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)

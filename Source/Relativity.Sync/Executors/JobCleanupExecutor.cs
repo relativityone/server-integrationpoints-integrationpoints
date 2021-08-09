@@ -17,7 +17,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IJobCleanupConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IJobCleanupConfiguration configuration, CompositeCancellationToken token)
 		{
 			try
 			{

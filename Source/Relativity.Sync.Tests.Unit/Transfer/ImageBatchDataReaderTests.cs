@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			Mock<IImageSpecialFieldRowValuesBuilder> imageRowValuesBuilderMock = new Mock<IImageSpecialFieldRowValuesBuilder>();
 			imageRowValuesBuilderMock
-				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>()))
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>(), It.IsAny<Func<RelativityObjectSlim, string>>()))
 				.Returns(Enumerable.Range(0, numberOfImagesInDocument).Select(i => $"image-{i}"));
 
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
@@ -70,7 +71,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				fieldManager.Object,
 				exportDataSanitizer.Object,
 				itemLevelErrorHandler,
-				CancellationToken.None);
+				0,
+				CancellationToken.None,
+				new EmptyLogger());
 
 			// Act & Assert
 			bool read;
@@ -95,11 +98,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Mock<IImageSpecialFieldRowValuesBuilder> imageRowValuesBuilderMock = new Mock<IImageSpecialFieldRowValuesBuilder>();
 			const int imageFileNameCount = 5;
 			imageRowValuesBuilderMock
-				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>()))
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>(), It.IsAny<Func<RelativityObjectSlim, string>>()))
 				.Returns(Enumerable.Range(0, imageFileNameCount).Select(i => $"image-{i}"));
 			const int imageFileLocationCount = 2;
 			imageRowValuesBuilderMock
-				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileLocation), It.IsAny<RelativityObjectSlim>()))
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileLocation), It.IsAny<RelativityObjectSlim>(), It.IsAny<Func<RelativityObjectSlim, string>>()))
 				.Returns(Enumerable.Range(0, imageFileLocationCount).Select(i => $"image-{i}"));
 
 			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
@@ -133,7 +136,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				fieldManager.Object,
 				exportDataSanitizer.Object,
 				itemLevelErrorHandlerMock.Object,
-				CancellationToken.None);
+				0,
+				CancellationToken.None,
+				new EmptyLogger());
 
 			// Act
 			bool read = sut.Read();
@@ -143,6 +148,71 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			itemLevelErrorHandlerMock.Verify(x => x.Invoke(It.IsAny<string>(), It.Is<string>(message => 
 				message.Contains($"Special fields builders should all return equal number of field values, but was: ImageFileName ({imageFileNameCount}),ImageFileLocation ({imageFileLocationCount})"))),
 				Times.Exactly(numberOfDocuments));
+		}
+
+		[Test]
+		public void Read_ShouldReturnAllImagesForDocument_WhenCancelledBeforeAllImagesAreReturned()
+		{
+			// Arrange
+			const int numberOfDocuments = 1;
+			const int numberOfImages = 4;
+
+			Mock<IImageSpecialFieldRowValuesBuilder> imageRowValuesBuilderMock = new Mock<IImageSpecialFieldRowValuesBuilder>();
+			imageRowValuesBuilderMock
+				.Setup(x => x.BuildRowsValues(It.Is<FieldInfoDto>(field => field.SpecialFieldType == SpecialFieldType.ImageFileName), It.IsAny<RelativityObjectSlim>(), It.IsAny<Func<RelativityObjectSlim, string>>()))
+				.Returns(Enumerable.Range(0, numberOfImages).Select(i => $"image-{i}"));
+
+			Mock<IFieldManager> fieldManager = new Mock<IFieldManager>();
+			fieldManager.Setup(x => x.GetObjectIdentifierFieldAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_identifierField);
+			fieldManager.Setup(x => x.CreateImageSpecialFieldRowValueBuildersAsync(It.IsAny<int>(), It.IsAny<int[]>()))
+				.ReturnsAsync(new Dictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>()
+				{
+					{
+						SpecialFieldType.ImageFileName, imageRowValuesBuilderMock.Object
+					}
+				});
+
+			Mock<IExportDataSanitizer> exportDataSanitizer = new Mock<IExportDataSanitizer>();
+			IReadOnlyList<FieldInfoDto> allFields = new List<FieldInfoDto>()
+			{
+				FieldInfoDto.ImageFileNameField(),
+				_identifierField
+			};
+
+			Action<string, string> itemLevelErrorHandler = (s1, s2) => { };
+
+			CancellationTokenSource tokenSource = new CancellationTokenSource();
+
+			ImageBatchDataReader sut = new ImageBatchDataReader(
+				CreateTemplateDataTable(allFields),
+				SourceWorkspaceId,
+				GenerateBatch(numberOfDocuments),
+				allFields,
+				fieldManager.Object,
+				exportDataSanitizer.Object,
+				itemLevelErrorHandler,
+				0,
+				tokenSource.Token,
+				new EmptyLogger());
+
+			// Act & Assert
+
+			for (int i = 0; i < 2; i++)
+			{
+				sut.CanCancel.Should().BeFalse();
+				sut.Read().Should().BeTrue();
+			}
+
+			tokenSource.Cancel();
+
+			for (int i = 0; i < 2; i++)
+			{
+				sut.CanCancel.Should().BeFalse();
+				sut.Read().Should().BeTrue();
+			}
+
+			sut.CanCancel.Should().BeTrue();
+			sut.Read().Should().BeFalse();
 		}
 
 		private static DataTable CreateTemplateDataTable(IEnumerable<FieldInfoDto> fields)

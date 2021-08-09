@@ -29,6 +29,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _FILENAME_COLUMN_NAME = "Filename";
+		private const string _IDENTIFIER_COLUMN_NAME = "Identifier";
 		private const string _LOCATION_COLUMN_NAME = "Location";
 		private const string _SIZE_COLUMN_NAME = "Size";
 
@@ -155,7 +156,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		// NOTE: If the condition or result parsing logic changes, this method will need to be updated.
 		private static QueryResultSlim SelectFieldResults(string condition, IReadOnlyDictionary<string, RelativityDataType> fieldNameToDataType)
 		{
-			System.Text.RegularExpressions.Match match = Regex.Match(condition, @"^'Name' IN \[([^]]+)\]", RegexOptions.IgnoreCase);
+			global::System.Text.RegularExpressions.Match match = Regex.Match(condition, @"^'Name' IN \[([^]]+)\]", RegexOptions.IgnoreCase);
 			if (match == null)
 			{
 				throw new ArgumentException($"Could not find field name pattern in field name query's condition: {condition}", nameof(condition));
@@ -277,6 +278,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			{
 				new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
 				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
+				new DataColumn(_IDENTIFIER_COLUMN_NAME, typeof(string)),
 				new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
 				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
 			});
@@ -288,6 +290,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 					DataRow dataRow = dataTable.NewRow();
 					dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
 					dataRow[_FILENAME_COLUMN_NAME] = image.Filename;
+					dataRow[_IDENTIFIER_COLUMN_NAME] = image.Identifier;
 					dataRow[_LOCATION_COLUMN_NAME] = image.Location;
 					dataRow[_SIZE_COLUMN_NAME] = image.Size;
 					dataTable.Rows.Add(dataRow);

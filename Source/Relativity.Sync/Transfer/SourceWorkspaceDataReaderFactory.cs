@@ -24,12 +24,12 @@ namespace Relativity.Sync.Transfer
 
 		public ISourceWorkspaceDataReader CreateNativeSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
-			return CreateSourceWorkspaceDataReader(batch, new NativeBatchDataReaderBuilder(_fieldManager, _dataSanitizer), token);
+			return CreateSourceWorkspaceDataReader(batch, new NativeBatchDataReaderBuilder(_fieldManager, _dataSanitizer, _logger), token);
 		}
 
 		public ISourceWorkspaceDataReader CreateImageSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
-			return CreateSourceWorkspaceDataReader(batch, new ImageBatchDataReaderBuilder(_fieldManager, _dataSanitizer), token);
+			return CreateSourceWorkspaceDataReader(batch, new ImageBatchDataReaderBuilder(_fieldManager, _dataSanitizer, _logger), token);
 		}
 
 		private ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, IBatchDataReaderBuilder batchDataReaderBuilder, CancellationToken token)

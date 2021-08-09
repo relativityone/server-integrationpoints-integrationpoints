@@ -33,6 +33,15 @@ namespace Relativity.Sync
 		}
 
 		/// <summary>
+		/// Creates a <see cref="ExecutionResult"/> for an operation that completed but encountered non-fatal
+		/// errors during execution.
+		/// </summary>
+		public static ExecutionResult SuccessWithErrors()
+		{
+			return new ExecutionResult(ExecutionStatus.CompletedWithErrors, string.Empty, null);
+		}
+
+		/// <summary>
 		/// Creates a <see cref="ExecutionResult"/> for a successful operation.
 		/// </summary>
 		public static ExecutionResult Success()
@@ -54,6 +63,14 @@ namespace Relativity.Sync
 		public static ExecutionResult Skipped()
 		{
 			return new ExecutionResult(ExecutionStatus.Skipped, string.Empty, null);
+		}
+		
+		/// <summary>
+		/// Creates a <see cref="ExecutionResult"/> for a paused operation.
+		/// </summary>
+		public static ExecutionResult Paused()
+		{
+			return new ExecutionResult(ExecutionStatus.Paused, string.Empty, null);
 		}
 
 		/// <summary>

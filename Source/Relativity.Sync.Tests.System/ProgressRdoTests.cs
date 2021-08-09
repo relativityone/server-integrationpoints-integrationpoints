@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class ProgressRdoTests : SystemTest
+	internal sealed class ProgressRdoTests : SystemTest
 	{
 		private ProgressRepository _repository;
 
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.System
 			_workspaceId = workspace.ArtifactID;
 
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
-			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryArtifactId).ConfigureAwait(false);
+			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationRdoAsync(_workspaceId, new ConfigurationStub{JobHistoryArtifactId = jobHistoryArtifactId}).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("48bc9b70-5341-4605-83e9-c96ac301457d")]

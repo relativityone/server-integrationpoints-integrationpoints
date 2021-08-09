@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
@@ -18,23 +21,25 @@ namespace Relativity.Sync.Executors
 		private readonly IProxyFactory _serviceFactory;
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
+		private readonly Func<IStopwatch> _stopwatch;
 
 		private readonly Guid _sourceWorkspaceTagFieldMultiObject = new Guid("2FA844E3-44F0-47F9-ABB7-D6D8BE0C9B8F");
 		private readonly Guid _sourceJobTagFieldMultiObject = new Guid("7CC3FAAF-CBB8-4315-A79F-3AA882F1997F");
 
-		public SourceWorkspaceTagRepository(IDestinationServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics, IFieldMappings fieldMappings)
+		public SourceWorkspaceTagRepository(IDestinationServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics,
+			IFieldMappings fieldMappings, Func<IStopwatch> stopwatch)
+		: base(logger)
 		{
 			_fieldMappings = fieldMappings;
 			_logger = logger;
 			_serviceFactory = serviceFactory;
 			_syncMetrics = syncMetrics;
+			_stopwatch = stopwatch;
 		}
 		
 		protected override async Task<TagDocumentsResult<string>> TagDocumentsBatchAsync(
 			ISynchronizationConfiguration synchronizationConfiguration, IList<string> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
 		{
-			var metricsCustomData = new Dictionary<string, object> { { "batchSize", batch.Count } };
-
 			var updateByCriteriaRequest = new MassUpdateByCriteriaRequest
 			{
 				ObjectIdentificationCriteria = ConvertIdentifiersToObjectCriteria(batch),
@@ -42,13 +47,15 @@ namespace Relativity.Sync.Executors
 			};
 
 			TagDocumentsResult<string> result;
+			IStopwatch stopwatch = _stopwatch();
 			try
 			{
-				using (_syncMetrics.TimedOperation("Relativity.Sync.TagDocuments.DestinationUpdate.Time", ExecutionStatus.None, metricsCustomData))
 				using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
+					stopwatch.Start();
 					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.DestinationWorkspaceArtifactId, updateByCriteriaRequest, massUpdateOptions, token).ConfigureAwait(false);
 					result = GenerateTagDocumentsResult(updateResult, batch);
+					stopwatch.Stop();
 				}
 			}
 			catch (Exception updateException)
@@ -62,7 +69,13 @@ namespace Relativity.Sync.Executors
 				result = new TagDocumentsResult<string>(batch, exceptionMessage, false, 0);
 			}
 
-			_syncMetrics.GaugeOperation("Relativity.Sync.TagDocuments.DestinationUpdate.Count", ExecutionStatus.None, result.TotalObjectsUpdated, "document(s)", metricsCustomData);
+			_syncMetrics.Send(new SourceWorkspaceTagMetric
+			{
+				BatchSize = batch.Count,
+				DestinationUpdateTime = stopwatch.Elapsed.TotalMilliseconds,
+				DestinationUpdateCount = result.TotalObjectsUpdated,
+				UnitOfMeasure = _UNIT_OF_MEASURE
+			});
 
 			return result;
 		}

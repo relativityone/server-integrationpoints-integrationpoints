@@ -1,4 +1,5 @@
-﻿using Relativity.Services.Objects.DataContracts;
+﻿using System;
+using Relativity.Services.Objects.DataContracts;
 using System.Collections.Generic;
 
 namespace Relativity.Sync.Transfer
@@ -7,6 +8,6 @@ namespace Relativity.Sync.Transfer
 	{
 		IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes { get; }
 
-		IEnumerable<object> BuildRowsValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document);
+		IEnumerable<object> BuildRowsValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document, Func<RelativityObjectSlim, string> identifierFieldValueSelector);
 	}
 }

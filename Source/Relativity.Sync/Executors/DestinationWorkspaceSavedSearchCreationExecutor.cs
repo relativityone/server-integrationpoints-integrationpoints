@@ -18,7 +18,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceSavedSearchCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceSavedSearchCreationConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Creating saved search in destination workspace artifact ID: {destinationWorkspaceArtifactId}", configuration.DestinationWorkspaceArtifactId);
 
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				int savedSearchFolderArtifactId = await _tagSavedSearchFolder.GetFolderIdAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
-				int savedSearchId = await _tagSavedSearch.CreateTagSavedSearchAsync(configuration, savedSearchFolderArtifactId, token).ConfigureAwait(false);
+				int savedSearchId = await _tagSavedSearch.CreateTagSavedSearchAsync(configuration, savedSearchFolderArtifactId, token.StopCancellationToken).ConfigureAwait(false);
 
 				await configuration.SetSavedSearchInDestinationArtifactIdAsync(savedSearchId).ConfigureAwait(false);
 			}

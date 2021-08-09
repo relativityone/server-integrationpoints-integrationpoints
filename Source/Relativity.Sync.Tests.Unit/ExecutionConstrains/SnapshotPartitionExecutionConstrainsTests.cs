@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		{
 			Mock<IBatch> batch = new Mock<IBatch>();
 			batch.Setup(x => x.StartingIndex).Returns(startingIndex);
-			batch.Setup(x => x.TotalItemsCount).Returns(batchSize);
+			batch.Setup(x => x.TotalDocumentsCount).Returns(batchSize);
 
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(batch.Object);
 
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		{
 			Mock<IBatch> batch = new Mock<IBatch>();
 			batch.Setup(x => x.StartingIndex).Returns(startingIndex);
-			batch.Setup(x => x.TotalItemsCount).Returns(batchSize);
+			batch.Setup(x => x.TotalDocumentsCount).Returns(batchSize);
 
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(batch.Object);
 
