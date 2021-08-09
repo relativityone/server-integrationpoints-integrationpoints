@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.ChoiceQuery;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Transfer;
 using NotImplementedException = System.NotImplementedException;
@@ -20,6 +24,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<ISnapshotQueryConfiguration> _configurationFake;
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 		private Mock<IFieldManager> _fieldManagerFake;
+		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdmin;
+		private Mock<IObjectManager> _objectManager;
+		private Mock<IChoiceQueryManager> _choiceQueryManager;
 
 		private SnapshotQueryRequestProvider _sut;
 
@@ -39,6 +46,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_pipelineSelectorFake = new Mock<IPipelineSelector>();
 
+			_objectManager = new Mock<IObjectManager>();
+			_choiceQueryManager = new Mock<IChoiceQueryManager>();
+
+			_sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+			_sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IChoiceQueryManager>()).ReturnsAsync(_choiceQueryManager.Object);
+
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_fieldManagerFake.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(_expectedDocumentTypeFields.ToList());
@@ -48,7 +62,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_sut = new SnapshotQueryRequestProvider(
 				_configurationFake.Object,
 				_pipelineSelectorFake.Object,
-				_fieldManagerFake.Object);
+				_fieldManagerFake.Object,
+				_sourceServiceFactoryForAdmin.Object,
+				new EmptyLogger()
+				);
 		}
 
 		[Test]
@@ -100,10 +117,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			VerifyQueryRequest(request, expectedDocumentRetryCondition, expectedFieldRefs);
 		}
 
-		[TestCase(10, new [] {1}, true, "('ArtifactId' IN SAVEDSEARCH 10) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676))")]
-		[TestCase(10, new int[0], true, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)")]
+		[TestCase(10, new [] {1}, true, "('ArtifactId' IN SAVEDSEARCH 10) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 1034243))")]
+		[TestCase(10, new int[0], true, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 1034243)")]
 		[TestCase(10, new [] {1}, false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Production::Image Count' > 0)")]
-		[TestCase(10, new int[0], false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)")]
+		[TestCase(10, new int[0], false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 1034243)")]
 		public async Task GetRequestForCurrentPipelineAsync_ShouldPrepareQueryRequest_WhenImageFlowIsSelected(
 			int dataSourceArtifactId, int[] productionImagePrecedence, bool includeOriginalImages, string expectedCondition)
 		{
@@ -111,8 +128,37 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configurationFake.SetupGet(x => x.DataSourceArtifactId).Returns(dataSourceArtifactId);
 			_configurationFake.SetupGet(x => x.ProductionImagePrecedence).Returns(productionImagePrecedence);
 			_configurationFake.SetupGet(x => x.IncludeOriginalImageIfNotFoundInProductions).Returns(includeOriginalImages);
+            _configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(123456);
 
-			_pipelineSelectorFake.Setup(x => x.GetPipeline())
+            QueryResult fieldArtifactIdQueryResult = new QueryResult()
+            {
+                Objects = new List<RelativityObject>()
+                {
+                    new RelativityObject()
+                    {
+                        Name = "Has Images",
+                        ArtifactID = 1003672
+                    }
+                }
+            };
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(fieldArtifactIdQueryResult);
+
+            List<Services.ChoiceQuery.Choice> fieldChoicesList = new List<Services.ChoiceQuery.Choice>()
+            {
+                new Services.ChoiceQuery.Choice()
+                {
+                    Name = "Yes",
+                    ArtifactID = 1034243
+                },
+                new Services.ChoiceQuery.Choice()
+                {
+                    Name = "No",
+                    ArtifactID = 1034244
+                }
+            };
+            _choiceQueryManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(fieldChoicesList);
+
+            _pipelineSelectorFake.Setup(x => x.GetPipeline())
 				.Returns((ISyncPipeline)Activator.CreateInstance(typeof(SyncImageRunPipeline)));
 
 			IEnumerable<FieldRef> expectedFieldRefs =
@@ -135,12 +181,41 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configurationFake.SetupGet(x => x.DataSourceArtifactId).Returns(dataSourceArtifactId);
 			_configurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(jobHistoryToRetryArtifactId);
 			_configurationFake.SetupGet(x => x.ProductionImagePrecedence).Returns(Array.Empty<int>());
+			_configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(123456);
+
+			QueryResult fieldArtifactIdQueryResult = new QueryResult()
+			{
+				Objects = new List<RelativityObject>()
+				{
+					new RelativityObject()
+					{
+						Name = "Has Images",
+						ArtifactID = 1003672
+					}
+				}
+			};
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(fieldArtifactIdQueryResult);
+
+			List<Services.ChoiceQuery.Choice> fieldChoicesList = new List<Services.ChoiceQuery.Choice>()
+			{
+				new Services.ChoiceQuery.Choice()
+				{
+					Name = "Yes",
+					ArtifactID = 1034243
+				},
+				new Services.ChoiceQuery.Choice()
+				{
+					Name = "No",
+					ArtifactID = 1034244
+				}
+			};
+			_choiceQueryManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(fieldChoicesList);
 
 			_pipelineSelectorFake.Setup(x => x.GetPipeline())
 				.Returns((ISyncPipeline)Activator.CreateInstance(typeof(SyncImageRetryPipeline)));
 
 			string expectedImageRetryCondition = $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{jobHistoryToRetryArtifactId}])) AND " +
-			                                     $"('ArtifactId' IN SAVEDSEARCH {dataSourceArtifactId}) AND ('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)";
+			                                     $"('ArtifactId' IN SAVEDSEARCH {dataSourceArtifactId}) AND ('Has Images' == CHOICE 1034243)";
 
 			IEnumerable<FieldRef> expectedFieldRefs =
 				new[] { _expectedIdentifierField }.Select(x => new FieldRef { Name = x.SourceFieldName });
@@ -150,6 +225,49 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			VerifyQueryRequest(request, expectedImageRetryCondition, expectedFieldRefs);
+		}
+
+		[Test]
+		public void GetRequestForCurrentPipelineAsync_ShouldThrowError_WhenCannotFindYesChoice()
+		{
+			// Arrange
+			const int dataSourceArtifactId = 10;
+			const int jobHistoryToRetryArtifactId = 20;
+
+			_configurationFake.SetupGet(x => x.DataSourceArtifactId).Returns(dataSourceArtifactId);
+			_configurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(jobHistoryToRetryArtifactId);
+			_configurationFake.SetupGet(x => x.ProductionImagePrecedence).Returns(Array.Empty<int>());
+			_configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(123456);
+
+			QueryResult fieldArtifactIdQueryResult = new QueryResult()
+			{
+				Objects = new List<RelativityObject>()
+				{
+					new RelativityObject()
+					{
+						Name = "Has Images",
+						ArtifactID = 1003672
+					}
+				}
+			};
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(fieldArtifactIdQueryResult);
+
+			List<Services.ChoiceQuery.Choice> fieldChoicesList = new List<Services.ChoiceQuery.Choice>()
+			{
+				new Services.ChoiceQuery.Choice()
+				{
+					Name = "No",
+					ArtifactID = 1034244
+				}
+			};
+			_choiceQueryManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(fieldChoicesList);
+
+			_pipelineSelectorFake.Setup(x => x.GetPipeline())
+				.Returns((ISyncPipeline)Activator.CreateInstance(typeof(SyncImageRunPipeline)));
+
+			// Assert
+			SyncException syncException = Assert.ThrowsAsync<SyncException>(async () => await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false));
+			syncException.Message.Should().Be("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
 		}
 
 		private void VerifyQueryRequest(QueryRequest actualRequest, 
