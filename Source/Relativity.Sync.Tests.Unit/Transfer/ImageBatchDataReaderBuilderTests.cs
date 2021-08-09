@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -49,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task BuildAsync_ShouldInvokeGetImageAllFieldsAsync()
 		{
 			// Arrange
-			var builder = new ImageBatchDataReaderBuilder(_fieldManagerMock.Object, _exportDataSanitizerFake.Object);
+			var builder = new ImageBatchDataReaderBuilder(_fieldManagerMock.Object, _exportDataSanitizerFake.Object, new EmptyLogger());
 
 			// Act
 			IDataReader dataReader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);

@@ -11,7 +11,7 @@ namespace Relativity.Sync.KeplerFactory
 		{
 			builder.RegisterType<OAuth2ClientFactory>().As<IOAuth2ClientFactory>();
 			builder.RegisterType<OAuth2TokenGenerator>().As<IAuthTokenGenerator>()
-				.WithParameter(new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(Uri), (pi, ctx) => ctx.Resolve<RelativityServices>().AuthenticationUri));
+				.WithParameter(new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(Uri), (pi, ctx) => ctx.Resolve<IRelativityServices>().AuthenticationUri));
 
 			builder.RegisterType<TokenProviderFactoryFactory>().As<ITokenProviderFactoryFactory>();
 

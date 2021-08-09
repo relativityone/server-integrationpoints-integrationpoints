@@ -4,9 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
-using Platform.Keywords.RSAPI;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using Relativity.Services.Workspace;
@@ -14,9 +12,10 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Identification;
 
-#pragma warning disable CS0612 // Type or member is obsolete
 namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
@@ -25,12 +24,18 @@ namespace Relativity.Sync.Tests.System
 	{
 		private WorkspaceRef _sourceWorkspace;
 		private WorkspaceRef _destinationWorkspace;
-		private ConfigurationStub _configurationStub;
-		private Group _group;
-		private int _destinationFolderArtifactId;
-		private User _user;
 
-		private const string _TEST_USER_NAME = "testuser03@relativity.com";
+		private ConfigurationStub _configurationStub;
+
+		private Group _group;
+		private IGroupService _groupService;
+
+		private User _user;
+		private IUserService _userService;
+
+		private int _destinationFolderArtifactId;
+
+		private const string _TEST_USER_EMAIL = "testuser03@relativity.com";
 		private const string _TEST_PASSWORD = "Test1234!";
 		private const string _DESTINATION_FOLDER_NAME = "folderName";
 
@@ -132,11 +137,15 @@ namespace Relativity.Sync.Tests.System
 			await Task.WhenAll(sourceWorkspaceCreationTask, destinationWorkspaceCreationTask).ConfigureAwait(false);
 			_sourceWorkspace = sourceWorkspaceCreationTask.GetAwaiter().GetResult();
 			_destinationWorkspace = destinationWorkspaceCreationTask.GetAwaiter().GetResult();
-			_destinationFolderArtifactId = await Rdos.CreateFolderInstance(ServiceFactory, _destinationWorkspace.ArtifactID, _DESTINATION_FOLDER_NAME).ConfigureAwait(false);
+			_destinationFolderArtifactId = await Rdos.CreateFolderInstanceAsync(ServiceFactory, _destinationWorkspace.ArtifactID, _DESTINATION_FOLDER_NAME).ConfigureAwait(false);
 
+			_groupService = RelativityFacade.Instance.Resolve<IGroupService>();
 			string groupName = Guid.NewGuid().ToString();
-			_group = CreateGroup(groupName);
-			_user = CreateAndSetUpUser(_TEST_USER_NAME, _TEST_PASSWORD, _group);
+			_group = _groupService.Create(new Group {Name = groupName});
+
+			_userService = RelativityFacade.Instance.Resolve<IUserService>();
+			_user = CreateAndSetUpUser(_TEST_USER_EMAIL, _TEST_PASSWORD, _group);
+
 			await AddGroupToWorkspaceAsync(_sourceWorkspace.ArtifactID, _group).ConfigureAwait(false);
 			await AddGroupToWorkspaceAsync(_destinationWorkspace.ArtifactID, _group).ConfigureAwait(false);
 		}
@@ -158,7 +167,7 @@ namespace Relativity.Sync.Tests.System
 
 			// Create object types in destination (DestinationWorkspaceObjectTypesCreationExecutor is always executed in admin context)
 			IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration> executor = container.Resolve<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
-			ExecutionResult result = await executor.ExecuteAsync(_configurationStub, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await executor.ExecuteAsync(_configurationStub, CompositeCancellationToken.None).ConfigureAwait(false);
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
 			// Setup permissions for created user
@@ -168,27 +177,27 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPermissionsCheckConfiguration>(_configurationStub);
 
 			// Act-Assert
-			Assert.DoesNotThrowAsync(() => syncJob.ExecuteAsync(CancellationToken.None));
+			Assert.DoesNotThrowAsync(() => syncJob.ExecuteAsync(CompositeCancellationToken.None));
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			GroupHelpers.DeleteGroup(Client, _group);
-			UserHelpers.DeleteUser(Client, _user);
+			_userService.Delete(_user.ArtifactID);
+			_groupService.Delete(_group.ArtifactID);
 		}
 
 		private async Task SetUpPermissionsInWorkspaceAsync(int workspaceArtifactId, IEnumerable<ObjectPermissionSelection> objectPermissionSelections, IEnumerable<string> selectedAdminPermissions)
 		{
 			using (IPermissionManager permissionManager = ServiceFactory.CreateProxy<IPermissionManager>())
 			{
-				GroupPermissions workspaceGroupPermissions = await permissionManager
+				Services.Permission.GroupPermissions workspaceGroupPermissions = await permissionManager
 					.GetWorkspaceGroupPermissionsAsync(workspaceArtifactId, GroupRef)
 					.ConfigureAwait(false);
 
 				foreach (ObjectPermissionSelection permissionConfig in objectPermissionSelections)
 				{
-					ObjectPermission objectPermission = workspaceGroupPermissions.ObjectPermissions.Find(p => p.Name.Equals(permissionConfig.ObjectName, StringComparison.OrdinalIgnoreCase));
+					Services.Permission.ObjectPermission objectPermission = workspaceGroupPermissions.ObjectPermissions.Find(p => p.Name.Equals(permissionConfig.ObjectName, StringComparison.OrdinalIgnoreCase));
 					objectPermission.AddSelected = permissionConfig.AddSelected;
 					objectPermission.ViewSelected = permissionConfig.ViewSelected;
 					objectPermission.EditSelected = permissionConfig.EditSelected;
@@ -196,7 +205,7 @@ namespace Relativity.Sync.Tests.System
 
 				foreach (string permissionName in selectedAdminPermissions)
 				{
-					GenericPermission adminPermission = workspaceGroupPermissions.AdminPermissions
+					Services.Permission.GenericPermission adminPermission = workspaceGroupPermissions.AdminPermissions
 						.Find(p => p.Name.Equals(permissionName, StringComparison.OrdinalIgnoreCase));
 					adminPermission.Selected = true;
 				}
@@ -205,45 +214,26 @@ namespace Relativity.Sync.Tests.System
 			}
 		}
 
-		private Group CreateGroup(string name)
+		private User CreateAndSetUpUser(string userEmail, string password, Group group)
 		{
-			Group newGroup = new Group
+			IClientService clientService = RelativityFacade.Instance.Resolve<IClientService>();
+
+			return _userService.Require(new User
 			{
-				Name = name
-			};
-
-			WriteResultSet<Group> result = Client.Repositories.Group.Create(newGroup);
-			if (!result.Success)
-			{
-				throw new InvalidOperationException($"Cannot create group. Group name: {name}");
-			}
-
-			return GroupHelpers.GroupGetByName(Client, name);
-		}
-
-		private User CreateAndSetUpUser(string userName, string password, Group group)
-		{
-			int userArtifactId = UserHelpers.FindUserArtifactID(Client, userName);
-
-			User user;
-			if (userArtifactId == 0)
-			{
-				user = UserHelpers.CreateUserWithPassword(Client, "Test", "Test", userName, "Relativity", password);
-			}
-			else
-			{
-				user = Client.Repositories.User.ReadSingle(userArtifactId);
-			}
-
-			GroupHelpers.GroupAddUserIfNotInGroup(Client, group, user);
-			return user;
+				EmailAddress = userEmail,
+				FirstName = "Test",
+				LastName = "Test",
+				Client = clientService.Get("Relativity"),
+				Password = password,
+				Groups = new List<Artifact> { group }
+			});
 		}
 
 		private async Task AddGroupToWorkspaceAsync(int workspaceId, Group group)
 		{
 			using (var proxy = ServiceFactory.CreateProxy<IPermissionManager>())
 			{
-				GroupSelector groupSelector = await proxy.GetWorkspaceGroupSelectorAsync(workspaceId).ConfigureAwait(false);
+				Services.Permission.GroupSelector groupSelector = await proxy.GetWorkspaceGroupSelectorAsync(workspaceId).ConfigureAwait(false);
 				groupSelector.DisabledGroups = new List<GroupRef>();
 				groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(group.ArtifactID) };
 

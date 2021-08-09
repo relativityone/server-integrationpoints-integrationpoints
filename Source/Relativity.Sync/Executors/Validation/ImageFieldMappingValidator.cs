@@ -28,7 +28,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				const string message = "Exception occurred during image field mappings validation. See logs for more details.";
 				_logger.LogError(ex, message);
-				return new ValidationResult(new ValidationMessage(message));
+				throw;
 			}
 		}
 

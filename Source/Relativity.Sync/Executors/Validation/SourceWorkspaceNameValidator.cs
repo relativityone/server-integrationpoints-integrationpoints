@@ -35,15 +35,15 @@ namespace Relativity.Sync.Executors.Validation
 				bool isValidName = _workspaceNameValidator.Validate(workspaceName, configuration.SourceWorkspaceArtifactId, token);
 				if (!isValidName)
 				{
-					_logger.LogError("Destination workspace name is invalid.");
+					_logger.LogError("Source workspace name is invalid.");
 					result.Add(_WORKSPACE_INVALID_NAME_MESSAGE);
 				}
 			}
 			catch (Exception ex)
 			{
-				string message = "Error occurred while querying for workspace artifact ID: {0}";
+				string message = "Error occurred while validating source workspace name ID: {0}";
 				_logger.LogError(ex, message, configuration.SourceWorkspaceArtifactId);
-				result.Add(string.Format(CultureInfo.InvariantCulture, message, configuration.SourceWorkspaceArtifactId));
+				throw;
 			}
 			return result;
 		}

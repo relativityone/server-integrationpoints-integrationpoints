@@ -8,25 +8,29 @@
 		private int _itemsProcessed;
 		private int _itemsFailed;
 		private bool _completed;
-
-
+		
 		private readonly object _itemProcessedLock = new object();
 		private readonly object _itemFailedLock = new object();
 		private readonly object _completedLock = new object();
-
-
+		
 		/// <summary>
 		/// Creates the instance for batch with given Id.
-		///
+		/// 
 		/// All public properties setters are thread-safe
 		/// </summary>
 		/// <param name="batchId">Id of monitored batch</param>
 		/// <param name="totalItems">Total items count in batch</param>
-		public SyncBatchProgress(int batchId, int totalItems)
+		/// <param name="failedItemsCount">Count of already failed items in the batch</param>
+		/// <param name="transferredItemsCount">Count of already transferred items in batch</param>
+		public SyncBatchProgress(int batchId, int totalItems, int failedItemsCount, int transferredItemsCount)
 		{
 			BatchId = batchId;
 			TotalItems = totalItems;
+			ItemsAlreadyFailed = failedItemsCount;
+			ItemsAlreadyProcessed = transferredItemsCount;
 		}
+
+		public int ItemsAlreadyProcessed { get; }
 
 		public int ItemsProcessed
 		{
@@ -42,6 +46,8 @@
 				}
 			}
 		}
+
+		public int ItemsAlreadyFailed { get; }
 
 		public int ItemsFailed
 		{

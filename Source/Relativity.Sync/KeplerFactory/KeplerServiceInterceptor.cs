@@ -8,6 +8,7 @@ using Castle.DynamicProxy;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
@@ -93,6 +94,7 @@ namespace Relativity.Sync.KeplerFactory
 					.Or<TemporarilyUnavailableException>()                                          // Thrown when the service is temporarily unavailable.
 					.Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route"))   // Thrown when there are bad routing entries.
 					.Or<TimeoutException>()                                                         // Thrown when there is an infrastructure level timeout.
+					.Or<Exception>(HasInInnerExceptions<Exception>)									// Thrown when there is an issue on networking layer
 					.WaitAndRetryAsync(_MAX_NUMBER_OF_HTTP_RETRIES, retryAttempt =>
 				{
 					const int maxJitterMs = 100;
@@ -207,6 +209,22 @@ namespace Relativity.Sync.KeplerFactory
 			AsyncFunction
 		}
 
+		private static bool HasInInnerExceptions<T>(Exception ex) where T : Exception
+		{
+			Exception currentEx = ex;
+			while (currentEx.InnerException != null)
+			{
+				if (currentEx.InnerException is T)
+				{
+					return true;
+				}
+
+				currentEx = currentEx.InnerException;
+			}
+
+			return false;
+		}
+
 		private void LogIfExecutionSuccessfullyRetried(string invocationKepler, ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
 			if (status == ExecutionStatus.Completed)
@@ -227,22 +245,27 @@ namespace Relativity.Sync.KeplerFactory
 
 		private void ReportMetrics(string invocationKepler, ExecutionStatus status, TimeSpan duration, int numberOfHttpRetries, int authTokenExpirationCount)
 		{
-			_syncMetrics.TimedOperation(
-				$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX}", 
-				duration, status);
+			KeplerMetric metric = new KeplerMetric(invocationKepler)
+			{
+				ExecutionStatus = status,
+				Duration = duration.TotalMilliseconds
+			};
 
-			_syncMetrics.LogPointInTimeLong(
-				status == ExecutionStatus.Completed
-					? $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_SUCCESS_SUFFIX}"
-					: $"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX}", 
-					numberOfHttpRetries);
+			if (status == ExecutionStatus.Completed)
+			{
+				metric.NumberOfHttpRetriesForSuccess = numberOfHttpRetries;
+			}
+			else
+			{
+				metric.NumberOfHttpRetriesForFailed = numberOfHttpRetries;
+			}
 
 			if (authTokenExpirationCount > 0)
 			{
-				_syncMetrics.LogPointInTimeLong(
-					$"{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_PREFIX}.{invocationKepler}.{TelemetryConstants.MetricIdentifiers.KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX}",
-					authTokenExpirationCount);
+				metric.AuthTokenExpirationCount = authTokenExpirationCount;
 			}
+
+			_syncMetrics.Send(metric);
 		}
 	}
 }

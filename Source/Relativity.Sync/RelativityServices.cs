@@ -1,13 +1,10 @@
 ﻿using System;
-using Relativity.API;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync
 {
-	/// <summary>
-	///     Provides access to Relativity Services
-	/// </summary>
-	public sealed class RelativityServices
+	/// <inheritdoc />
+	public sealed class RelativityServices : IRelativityServices
 	{
 		/// <summary>
 		///     Constructor
@@ -19,19 +16,13 @@ namespace Relativity.Sync
 			AuthenticationUri = authenticationUri;
 		}
 
-		/// <summary>
-		///     Provides access to Relativity Telemetry
-		/// </summary>
+		/// <inheritdoc />
 		public IAPM APM { get; }
 
-		/// <summary>
-		///     Used to create handles to Relativity Services
-		/// </summary>
+		/// <inheritdoc />
 		public ISyncServiceManager ServicesMgr { get; }
 
-		/// <summary>
-		///     Relativity authentication endpoint address
-		/// </summary>
+		/// <inheritdoc />
 		public Uri AuthenticationUri { get; }
 	}
 }

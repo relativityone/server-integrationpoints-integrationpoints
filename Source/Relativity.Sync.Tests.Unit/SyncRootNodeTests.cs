@@ -17,26 +17,25 @@ namespace Relativity.Sync.Tests.Unit
 		private SyncRootNode _sut;
 
 		private SyncExecutionContext _syncExecutionContext;
-		private CancellationToken _token;
+		private CancellationTokenSource _drainStopTokenSource;
+		private CompositeCancellationToken _token;
 		
 		private Mock<ICommand<IJobStatusConsolidationConfiguration>> _jobStatusConsolidationCommandFake;
 		private Mock<ICommand<INotificationConfiguration>> _notificationCommandFake;
 		private Mock<ICommand<IJobCleanupConfiguration>> _jobCleanupCommandFake;
 		private Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>> _automatedWorkflowTriggerCommandFake;
 
+		private Mock<IJobEndMetricsService> _jobEndMetricsService;
 		private Mock<IJobEndMetricsServiceFactory> _jobEndMetricsServiceFactory;
 		private Mock<INode<SyncExecutionContext>> _childNodeFake;
 		private Mock<ISyncLog> _loggerFake;
 		
-		[OneTimeSetUp]
-		public void OneTimeSetUp()
-		{
-			_token = CancellationToken.None;
-		}
-
 		[SetUp]
 		public void SetUp()
 		{
+			_drainStopTokenSource = new CancellationTokenSource();
+			_token = new CompositeCancellationToken(CancellationToken.None, _drainStopTokenSource.Token);
+
 			var progress = new Mock<IProgress<SyncJobState>>();
 			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
@@ -47,9 +46,9 @@ namespace Relativity.Sync.Tests.Unit
 			_jobCleanupCommandFake = new Mock<ICommand<IJobCleanupConfiguration>>();
 			_automatedWorkflowTriggerCommandFake = new Mock<ICommand<IAutomatedWorkflowTriggerConfiguration>>();
 
-			var jobEndMetricsService = new Mock<IJobEndMetricsService>();
+			_jobEndMetricsService = new Mock<IJobEndMetricsService>();
 			_jobEndMetricsServiceFactory = new Mock<IJobEndMetricsServiceFactory>();
-			_jobEndMetricsServiceFactory.Setup(x => x.CreateJobEndMetricsService()).Returns(jobEndMetricsService.Object);
+			_jobEndMetricsServiceFactory.Setup(x => x.CreateJobEndMetricsService(It.IsAny<bool>())).Returns(_jobEndMetricsService.Object);
 
 			_childNodeFake = new Mock<INode<SyncExecutionContext>>();
 
@@ -73,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit
 			int commandExecutionOrder = 0;
 			_childNodeFake.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Callback(() => nodeExecutionOrder = index++);
 
-			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
+			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token.StopCancellationToken)).ReturnsAsync(true);
 			_notificationCommandFake.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success()).Callback(() => commandExecutionOrder = index++);
 
 			// ACT
@@ -89,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ExecuteAsync_ShouldSendNotifications_WhenExecutionFailed()
 		{
 			// ARRANGE
-			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(true);
+			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token.StopCancellationToken)).ReturnsAsync(true);
 			_notificationCommandFake.Setup(x => x.ExecuteAsync(_token)).ReturnsAsync(ExecutionResult.Success());
 			_childNodeFake.Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>())).Throws<InvalidOperationException>();
 
@@ -105,13 +104,29 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ExecuteAsync_ShouldNotSendNotifications_WhenNotificationIsDisabled()
 		{
 			// ARRANGE
-			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token)).ReturnsAsync(false);
+			_notificationCommandFake.Setup(x => x.CanExecuteAsync(_token.StopCancellationToken)).ReturnsAsync(false);
 
 			// ACT
 			await _sut.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
 
 			// ASSERT
 			_notificationCommandFake.Verify(x => x.ExecuteAsync(_token), Times.Never);
+		}
+
+		[Test]
+		public async Task ExecuteAsync_ShouldNotExecuteAfterExecuteOperations_WhenJobIsSuspended()
+		{
+			// ARRANGE
+			_drainStopTokenSource.Cancel();
+
+			// ACT
+			await _sut.ExecuteAsync(_syncExecutionContext).ConfigureAwait(false);
+
+			// ASSERT
+			_automatedWorkflowTriggerCommandFake.Verify(x => x.ExecuteAsync(It.IsAny<CompositeCancellationToken>()), Times.Never);
+			_jobCleanupCommandFake.Verify(x => x.ExecuteAsync(It.IsAny<CompositeCancellationToken>()), Times.Never);
+			_jobStatusConsolidationCommandFake.Verify(x => x.ExecuteAsync(It.IsAny<CompositeCancellationToken>()), Times.Never);
+			_notificationCommandFake.Verify(x => x.ExecuteAsync(It.IsAny<CompositeCancellationToken>()), Times.Never);
 		}
 	}
 }

@@ -7,6 +7,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
@@ -71,7 +72,11 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 			stream?.Dispose();
 			_logger.LogWarning(exception, "Retrying Kepler Stream creation inside {SelfRecreatingStream}. Attempt {retryAttempt} of {maxNumberOfRetries}",
 				nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
-			_syncMetrics.CountOperation(_STREAM_RETRY_COUNT_BUCKET_NAME, ExecutionStatus.Failed);
+			
+			_syncMetrics.Send(new StreamRetryMetric
+			{
+				RetryCounter = Counter.Increment
+			});
 		}
 
 		private static bool ShouldRetry(Stream stream)

@@ -3,11 +3,9 @@
 	interface IImageSynchronizationConfiguration : ISynchronizationConfiguration
 	{
 		string ImageFilePathSourceFieldName { get; set; }
-		
-		bool IncludeOriginalImages { get; }
+
+		string IdentifierColumn { get; set; }
 
 		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
-
-		int[] ProductionImagePrecedence { get; }
 	}
 }

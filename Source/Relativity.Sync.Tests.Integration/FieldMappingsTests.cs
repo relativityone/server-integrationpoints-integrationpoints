@@ -4,6 +4,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Integration.Helpers;
 
@@ -13,8 +14,6 @@ namespace Relativity.Sync.Tests.Integration
 	public sealed class FieldMappingsTests
 	{
 		private IFieldMappings _sut;
-
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 
 		[SetUp]
 		public void SetUp()
@@ -36,7 +35,7 @@ namespace Relativity.Sync.Tests.Integration
 		    }]";
 
 			Mock<IConfiguration> configuration = new Mock<IConfiguration>();
-			configuration.Setup(x => x.GetFieldValue<string>(FieldMappingsGuid)).Returns(fieldsMap);
+			configuration.Setup(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>())).Returns(fieldsMap);
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			containerBuilder.RegisterInstance(configuration.Object).As<IConfiguration>();

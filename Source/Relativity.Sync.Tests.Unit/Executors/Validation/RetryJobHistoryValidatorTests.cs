@@ -32,6 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private const int _TEST_JOB_HISTORY_TO_RETRY_ID = 101345;
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 101202;
 		private const string _EXPECTED_QUERY_FIELD_TYPE = "Owner";
+		private const string _JOB_HISTORY_GUID = "08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9";
 
 		[SetUp]
 		public void SetUp()
@@ -43,6 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_objectManager = new Mock<IObjectManager>();
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 
+			_validationConfiguration.SetupGet(x => x.JobHistoryObjectTypeGuid).Returns(new Guid(_JOB_HISTORY_GUID));
 			_validationConfiguration.SetupGet(x => x.JobHistoryToRetryId).Returns(_TEST_JOB_HISTORY_TO_RETRY_ID);
 			_validationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 
@@ -110,25 +112,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_Should_ReturnInvalied_When_CreateProxyThrowsExceptionTest()
+		public void ValidateAsync_ShouldThrow_WhenCreateProxyFails()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
-
-			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
-			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.Is<string>(y => y.StartsWith("Failed to validate JobHistoryToRetry", StringComparison.InvariantCulture)), +_TEST_JOB_HISTORY_TO_RETRY_ID), Times.Once());
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
-		public async Task ValidateAsync_Should_ReturnInvalid_When_QueryAsyncThrowsExceptionTest()
+		public void ValidateAsync_ShouldThrow_WhenQueryAsyncFails()
 		{
 			// Arrange
 			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
@@ -137,16 +134,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				.Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			Assert.AreEqual(1, actualResult.Messages.Count());
-
-			Mock.VerifyAll(_sourceServiceFactoryForUser, _objectManager);
-			_objectManager.Verify(x => x.Dispose(), Times.Once);
-			_syncLog.Verify(x => x.LogError(It.IsAny<Exception>(), It.IsAny<string>(), _TEST_JOB_HISTORY_TO_RETRY_ID), Times.AtLeastOnce());
+			func.Should().Throw<InvalidOperationException>();
 		}
 
 		[TestCase(typeof(SyncDocumentRunPipeline), false)]
@@ -195,7 +186,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private void VerifyObjectManagerQueryRequest()
 		{
-			Guid searchArtifactTypeId = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
+			Guid searchArtifactTypeId = new Guid(_JOB_HISTORY_GUID);
 
 			_objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
 				It.Is<QueryRequest>(y => y.ObjectType.Guid == searchArtifactTypeId && y.Condition == $"'ArtifactId' == {_TEST_JOB_HISTORY_TO_RETRY_ID}"),

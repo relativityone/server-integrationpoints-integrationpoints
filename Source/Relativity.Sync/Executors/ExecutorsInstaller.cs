@@ -1,13 +1,13 @@
-﻿using System.Linq;
-using System.Reflection;
-using System.Threading;
+﻿using System.Threading;
 using Autofac;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
 using Relativity.Sync.Executors.PermissionCheck;
+using Relativity.Sync.Executors.PreValidation;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
@@ -33,35 +33,35 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<WorkspaceNameValidator>().As<IWorkspaceNameValidator>();
 			builder.RegisterType<TagSavedSearch>().As<ITagSavedSearch>();
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
-			builder.Register(c => new BatchProgressUpdater(c.Resolve<ISyncLog>(), new SemaphoreSlimWrapper(new SemaphoreSlim(1)))).As<IBatchProgressUpdater>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 
-			builder.RegisterType<JobStartMetricsExecutorConstrains>().As<IExecutionConstrains<ISumReporterConfiguration>>();
-			builder.RegisterType<JobStartMetricsExecutor>().As<IExecutor<ISumReporterConfiguration>>();
+			builder.RegisterType<DocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IDocumentJobStartMetricsConfiguration>>();
+			builder.RegisterType<DocumentJobStartMetricsExecutor>().As<IExecutor<IDocumentJobStartMetricsConfiguration>>();
+			builder.RegisterType<ImageJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IImageJobStartMetricsConfiguration>>();
+			builder.RegisterType<ImageJobStartMetricsExecutor>().As<IExecutor<IImageJobStartMetricsConfiguration>>();
+
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceObjectTypesCreationExecutorConstrains>().As<IExecutionConstrains<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceObjectTypesCreationExecutor>().As<IExecutor<IDestinationWorkspaceObjectTypesCreationConfiguration>>();
+			builder.RegisterType<PreValidationExecutionConstrains>().As<IExecutionConstrains<IPreValidationConfiguration>>();
+			builder.RegisterType<PreValidationExecutor>().As<IExecutor<IPreValidationConfiguration>>();
 			builder.RegisterType<ValidationExecutionConstrains>().As<IExecutionConstrains<IValidationConfiguration>>();
 			builder.RegisterType<ValidationExecutor>().As<IExecutor<IValidationConfiguration>>();
 			builder.RegisterType<PermissionCheckExecutionConstrains>().As<IExecutionConstrains<IPermissionsCheckConfiguration>>();
 			builder.RegisterType<PermissionCheckExecutor>().As<IExecutor<IPermissionsCheckConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutionConstrains>().As<IExecutionConstrains<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutor>().As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
-			
-			builder.RegisterType<DocumentDataSourceSnapshotExecutor>().As<IExecutor<IDocumentDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<DocumentRetryDataSourceSnapshotExecutor>().As<IExecutor<IDocumentRetryDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageDataSourceSnapshotExecutor>().As<IExecutor<IImageDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageRetryDataSourceSnapshotExecutor>().As<IExecutor<IImageRetryDataSourceSnapshotConfiguration>>();
 
-			builder.RegisterType<DocumentDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDocumentDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<DocumentRetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDocumentRetryDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IImageDataSourceSnapshotConfiguration>>();
-			builder.RegisterType<ImageRetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IImageRetryDataSourceSnapshotConfiguration>>();
-			
+			builder.RegisterType<DataSourceSnapshotExecutor>().As<IExecutor<IDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<RetryDataSourceSnapshotExecutor>().As<IExecutor<IRetryDataSourceSnapshotConfiguration>>();
+
+			builder.RegisterType<DataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<RetryDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<IRetryDataSourceSnapshotConfiguration>>();
+
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
 			
@@ -83,7 +83,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<AutomatedWorkflowExecutorConstrains>().As<IExecutionConstrains<IAutomatedWorkflowTriggerConfiguration>>();
 			builder.RegisterType<AutomatedWorkflowExecutor>().As<IExecutor<IAutomatedWorkflowTriggerConfiguration>>();
 
-			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes().Where(t => !t.IsAbstract && t.IsAssignableTo<IPermissionCheck>()).ToArray()).As<IPermissionCheck>();
+			builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
+			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();

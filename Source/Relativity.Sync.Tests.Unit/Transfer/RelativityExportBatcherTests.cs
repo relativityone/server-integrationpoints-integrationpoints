@@ -30,13 +30,36 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public async Task GetNextItemsFromBatchAsync_ShouldRespectAlreadyTransferredItems_WhenSetRemainingItems()
+		{
+			// Arrange
+			const int totalDocumentsCount = 10;
+			const int transferredDocumentsCount = 3;
+
+			int expectedRemainingItemsCount = totalDocumentsCount - transferredDocumentsCount;
+
+			Mock<IBatch> batch = new Mock<IBatch>();
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalDocumentsCount);
+			batch.SetupGet(x => x.TransferredDocumentsCount).Returns(transferredDocumentsCount);
+
+			RelativityExportBatcher sut = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, It.IsAny<Guid>(), It.IsAny<int>());
+
+			// Act
+			await sut.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+
+			// Assert
+			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
+				It.IsAny<int>(), It.IsAny<Guid>(), expectedRemainingItemsCount, It.IsAny<int>()));
+		}
+
+		[Test]
 		public void GetNextItemsFromBatchAsync_ShouldReturnAllItemsInOneBlock()
 		{
 			// arrange
 			Mock<IBatch> batch = new Mock<IBatch>();
 			batch.SetupGet(x => x.StartingIndex).Returns(0);
 			const int totalItemsCount = 10;
-			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
 			SetupRetrieveResultsBlock(totalItemsCount);
 			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, Guid.Empty, 0);
 
@@ -57,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			batchStub.SetupGet(x => x.StartingIndex).Returns(0);
 			const int totalItemsCount = 10;
 			const int maxResultsBlockSize = 7;
-			batchStub.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			batchStub.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
 			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, Guid.Empty, 0);
 
 			// act
@@ -82,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			Mock<IBatch> batchStub = new Mock<IBatch>();
 			batchStub.SetupGet(x => x.StartingIndex).Returns(0);
-			batchStub.SetupGet(x => x.TotalItemsCount).Returns(0);
+			batchStub.SetupGet(x => x.TotalDocumentsCount).Returns(0);
 
 			RelativityExportBatcher batcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, Guid.Empty, 0);
 

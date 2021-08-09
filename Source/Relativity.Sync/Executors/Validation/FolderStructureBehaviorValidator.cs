@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors.Validation
 				{
 					string message = "Exception occurred when validating folder structure behavior";
 					_logger.LogError(ex, message);
-					result.Add(message);
+					throw;
 				}
 			}
 

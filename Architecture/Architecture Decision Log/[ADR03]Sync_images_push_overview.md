@@ -146,6 +146,8 @@ Probably we should add another property to IJobsStatisticsContainer - ImagesByte
 
 _ADR Reference_: [ADR06]Sync_images_push_image_size_calculation
 
+As for export itself, it needs to include identifier field to enable tagging in destination workspace and provide correct names for pushed docuemnts.
+
 #### **ImagesSynchronizationNode**
 
 This step needs to be replaced completely and it'll be most complicated task. We need to replace following line of code in method ExecuteSynchronizationAsync and provide proper ISynchronizationConfiguration

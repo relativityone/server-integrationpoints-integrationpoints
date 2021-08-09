@@ -1,112 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
 	///     Entry point for logging metrics. Dispatches metrics to registered <see cref="ISyncMetricsSink" />s for processing.
 	/// </summary>
-	internal sealed class SyncMetrics : ISyncMetrics
+	internal class SyncMetrics : ISyncMetrics
 	{
 		private readonly IEnumerable<ISyncMetricsSink> _sinks;
-		private readonly SyncJobParameters _syncJobParameters;
+		private readonly IMetricsConfiguration _metricsConfiguration;
 
 		/// <summary>
 		///     Creates a new instance of <see cref="SyncMetrics" /> with the given sinks.
 		/// </summary>
 		/// <param name="sinks">Sinks to which metrics should be sent</param>
-		/// <param name="syncJobParameters">ID which correlates all metrics across a job</param>
-		public SyncMetrics(IEnumerable<ISyncMetricsSink> sinks, SyncJobParameters syncJobParameters)
+		/// <param name="metricsConfiguration">Metrics configuration.</param>
+		public SyncMetrics(IEnumerable<ISyncMetricsSink> sinks, IMetricsConfiguration metricsConfiguration)
 		{
 			_sinks = sinks;
-			_syncJobParameters = syncJobParameters;
+			_metricsConfiguration = metricsConfiguration;
 		}
 
 		/// <inheritdoc />
-		public void TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus)
+		public void Send(IMetric metric)
 		{
+			metric.CorrelationId = _metricsConfiguration.CorrelationId;
+			metric.ExecutingApplication = _metricsConfiguration.ExecutingApplication;
+			metric.ExecutingApplicationVersion = _metricsConfiguration.ExecutingApplicationVersion;
+			metric.DataSourceType = _metricsConfiguration.DataSourceType;
+			metric.DataDestinationType = _metricsConfiguration.DataDestinationType;
+			metric.IsRetry = _metricsConfiguration.JobHistoryToRetryId.HasValue;
+			metric.FlowName = _metricsConfiguration.ImageImport ? TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_IMAGES : TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_NATIVES_OR_METADATA;
+			
 			foreach (ISyncMetricsSink sink in _sinks)
 			{
-				Metric metric = Metric.TimedOperation(name, duration, executionStatus, _syncJobParameters.WorkflowId.Value);
-				sink.Log(metric);
-			}
-		}
-
-		/// <inheritdoc />
-		public void TimedOperation(string name, TimeSpan duration, ExecutionStatus executionStatus, Dictionary<string, object> customData)
-		{
-			foreach (ISyncMetricsSink sink in _sinks)
-			{
-				Metric metric = Metric.TimedOperation(name, duration, executionStatus, _syncJobParameters.WorkflowId.Value);
-				foreach (KeyValuePair<string, object> keyValuePair in customData)
-				{
-					metric.CustomData.Add(keyValuePair);
-				}
-
-				sink.Log(metric);
-			}
-		}
-
-		/// <inheritdoc />
-		public void CountOperation(string name, ExecutionStatus status)
-		{
-			foreach (ISyncMetricsSink sink in _sinks)
-			{
-				Metric metric = Metric.CountOperation(name, status, _syncJobParameters.WorkflowId.Value);
-				sink.Log(metric);
-			}
-		}
-
-		/// <inheritdoc />
-		public IDisposable TimedOperation(string name, ExecutionStatus executionStatus, Dictionary<string, object> customData)
-		{
-			return new DisposableStopwatch(timeSpan => TimedOperation(name, timeSpan, executionStatus, customData));
-		}
-
-		public IDisposable TimedOperation(string name, ExecutionStatus executionStatus)
-		{
-			return new DisposableStopwatch(timeSpan => TimedOperation(name, timeSpan, executionStatus));
-		}
-
-		/// <inheritdoc />
-		public void GaugeOperation(string name, ExecutionStatus executionStatus, long value, string unitOfMeasure, Dictionary<string, object> customData)
-		{
-			foreach (ISyncMetricsSink sink in _sinks)
-			{
-				Metric metric = Metric.GaugeOperation(name, executionStatus, _syncJobParameters.WorkflowId.Value, value, unitOfMeasure);
-				foreach (KeyValuePair<string, object> keyValuePair in customData)
-				{
-					metric.CustomData.Add(keyValuePair);
-				}
-
-				sink.Log(metric);
-			}
-		}
-
-		public void LogPointInTimeString(string name, string value)
-		{
-			foreach (ISyncMetricsSink sink in _sinks)
-			{
-				Metric metric = Metric.PointInTimeStringOperation(name, value, _syncJobParameters.WorkflowId.Value);
-				sink.Log(metric);
-			}
-		}
-
-		public void LogPointInTimeLong(string name, long value)
-		{
-			foreach (ISyncMetricsSink sink in _sinks)
-			{
-				Metric metric = Metric.PointInTimeLongOperation(name, value, _syncJobParameters.WorkflowId.Value);
-				sink.Log(metric);
-			}
-		}
-
-		public void LogPointInTimeDouble(string name, double value)
-		{
-			foreach (ISyncMetricsSink sink in _sinks)
-			{
-				Metric metric = Metric.PointInTimeDoubleOperation(name, value, _syncJobParameters.WorkflowId.Value);
-				sink.Log(metric);
+				sink.Send(metric);
 			}
 		}
 	}

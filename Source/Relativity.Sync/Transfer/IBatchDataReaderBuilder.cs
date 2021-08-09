@@ -10,6 +10,6 @@ namespace Relativity.Sync.Transfer
 	{
 		Action<string, string> ItemLevelErrorHandler { get; set; }
 
-		Task<IDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
+		Task<IBatchDataReader> BuildAsync(int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token);
 	}
 }

@@ -3,24 +3,24 @@ using System;
 using System.IO;
 using ARMTestServices.Services.Interfaces;
 using Relativity.Kepler.Transport;
-using Relativity.Automation.Utility.Api;
-using Relativity.Automation.Utility;
-using Relativity.Automation.Utility.Models;
-using Relativity.Automation.Utility.Orchestrators;
 using System.Threading.Tasks;
+using Relativity.Services.Interfaces.InstanceSetting.Model;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
 	public class FileShareHelper
 	{
+		private readonly IKeplerServiceFactory _serviceFactory;
+
 		private static bool _isInitialized;
 
-		private readonly ApiComponent _component;
 		private readonly AzureStorageHelper _storageHelper;
 
 		private FileShareHelper(AzureStorageHelper storageHelper)
 		{
-			_component = RelativityFacade.Instance.GetComponent<ApiComponent>();
+			_serviceFactory = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory;
 
 			_storageHelper = storageHelper;
 		}
@@ -52,17 +52,27 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 		private void Configure()
 		{
-			_component.OrchestratorFactory.Create<IOrchestrateInstanceSettings>()
-				.SetInstanceSetting("DevelopmentMode", "True", "kCura.ARM", InstanceSettingValueTypeEnum.TrueFalse);
+			IInstanceSettingsService instanceSettingsService = RelativityFacade.Instance.Resolve<IInstanceSettingsService>();
+
+			var developmentModeSetting = instanceSettingsService.Get("DevelopmentMode", "kCura.ARM");
+			if (developmentModeSetting == null)
+			{
+				instanceSettingsService.Create(new Testing.Framework.InstanceSetting
+				{
+					Name = "DevelopmentMode",
+					Section = "kCura.ARM",
+					Value = "True",
+					ValueType = InstanceSettingValueType.TrueFalse
+				});
+			}
 		}
 
 		private bool IsAppInstalled()
 		{
-			LibraryApplicationResponse app = new LibraryApplicationResponse() { Name = "ARM Test Services" };
-			bool isAppInstalled = _component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
-				.IsApplicationInstalledInLibrary(app);
+			LibraryApplication armTestServicesApp = RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+				.Get("ARM Test Services");
 
-			return isAppInstalled;
+			return armTestServicesApp != null;
 		}
 
 		private void InstallARMTestServices()
@@ -70,9 +80,11 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			string rapPath = GetTestServicesRapPathAsync().Result;
 			try
 			{
-			LibraryApplicationRequestOptions options = new LibraryApplicationRequestOptions() { CreateIfMissing = true };
-			_component.OrchestratorFactory.Create<IOrchestrateRelativityApplications>()
-				.InstallRelativityApplicationToLibrary(rapPath, options);
+				RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+					.InstallToLibrary(rapPath, new LibraryApplicationInstallOptions()
+				{
+					CreateIfMissing = true
+				});
 			}
 			finally
 			{
@@ -101,8 +113,8 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
 			string destinationFile = Path.Combine(directory, Path.GetFileName(filePath));
 
-			using (var fileShareManager = _component.ServiceFactory.GetAdminServiceProxy<IFileshareManager>())
-			using (var fileManager = _component.ServiceFactory.GetAdminServiceProxy<IFileManager>())
+			using (var fileShareManager = _serviceFactory.GetServiceProxy<IFileshareManager>())
+			using (var fileManager = _serviceFactory.GetServiceProxy<IFileManager>())
 			{
 				bool fileExists = await fileManager.FileExists(destinationFile).ConfigureAwait(false);
 				if (!fileExists)
@@ -124,7 +136,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 				directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
 			}
 
-			using (var directoryManager = _component.ServiceFactory.GetAdminServiceProxy<IDirectoryManager>())
+			using (var directoryManager = _serviceFactory.GetServiceProxy<IDirectoryManager>())
 			{
 				bool exists = directoryManager.DirectoryExists(directory).Result;
 				if(!exists)

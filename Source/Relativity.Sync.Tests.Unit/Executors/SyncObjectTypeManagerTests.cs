@@ -26,6 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Guid _guid;
 
 		private const int _WORKSPACE_ID = 1;
+		private const int _ARTIFACT_ID = 2;
 
 		[SetUp]
 		public void SetUp()
@@ -134,6 +135,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// assert
 			actualArtifactId.Should().Be(artifactId);
 			_artifactGuidManager.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, artifactId, It.Is<List<Guid>>(guids => guids.Contains(_guid))));
+		}
+
+		[Test]
+		public async Task ItShouldReturnArtifactTypeIdByArtifactId()
+		{
+			const int artifactTypeId = 2;
+
+			_objectTypeManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.Is<int>(artifactID => artifactID == _ARTIFACT_ID)))
+				.ReturnsAsync(new ObjectTypeResponse()
+				{
+					ArtifactTypeID = artifactTypeId
+				}) ;
+
+			// act
+			int actualArtifactTypeId = await _instance.GetObjectTypeArtifactTypeIdAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+			// assert
+			actualArtifactTypeId.Should().Be(artifactTypeId);
 		}
 	}
 }

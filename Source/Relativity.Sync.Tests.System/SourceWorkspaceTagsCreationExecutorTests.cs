@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class SourceWorkspaceTagsCreationExecutorTests : SystemTest
+	internal sealed class SourceWorkspaceTagsCreationExecutorTests : SystemTest
 	{
 		private WorkspaceRef _destinationWorkspace;
 		private WorkspaceRef _sourceWorkspace;
@@ -54,10 +54,10 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			RelativityObject tag = await QueryForCreatedTag(configuration.DestinationWorkspaceTagArtifactId)
+			RelativityObject tag = await QueryForCreatedTagAsync(configuration.DestinationWorkspaceTagArtifactId)
 				.ConfigureAwait(false);
 
 			Assert.AreEqual(_destinationWorkspace.ArtifactID, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID)).Value);
@@ -84,15 +84,15 @@ namespace Relativity.Sync.Tests.System
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<ISourceWorkspaceTagsCreationConfiguration>(configuration);
 
 			int destinationWorkspaceTagArtifactId =
-				await CreateDestinationWorkspaceTag(_sourceWorkspace.ArtifactID, "whatever", "Wrong Workspace Name", _destinationWorkspace.ArtifactID).ConfigureAwait(false);
+				await CreateDestinationWorkspaceTagAsync(_sourceWorkspace.ArtifactID, "whatever", "Wrong Workspace Name", _destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			Assert.AreEqual(destinationWorkspaceTagArtifactId, configuration.DestinationWorkspaceTagArtifactId);
 
-			RelativityObject tag = await QueryForCreatedTag(configuration.DestinationWorkspaceTagArtifactId)
+			RelativityObject tag = await QueryForCreatedTagAsync(configuration.DestinationWorkspaceTagArtifactId)
 				.ConfigureAwait(false);
 
 			Assert.AreEqual(_destinationWorkspace.ArtifactID, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID)).Value);
@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.System
 			Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
 		}
 
-		private async Task<RelativityObject> QueryForCreatedTag(int destinationWorkspaceTagArtifactId)
+		private async Task<RelativityObject> QueryForCreatedTagAsync(int destinationWorkspaceTagArtifactId)
 		{
 			RelativityObject tag;
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.System
 			return tag;
 		}
 
-		private async Task<int> CreateDestinationWorkspaceTag(int workspaceId, string tagName, string destinationWorkspaceName, int destinationWorkspaceArtifactId)
+		private async Task<int> CreateDestinationWorkspaceTagAsync(int workspaceId, string tagName, string destinationWorkspaceName, int destinationWorkspaceArtifactId)
 		{
 			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{

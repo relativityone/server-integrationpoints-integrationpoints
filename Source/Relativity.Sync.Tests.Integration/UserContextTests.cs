@@ -31,7 +31,6 @@ namespace Relativity.Sync.Tests.Integration
 		private const string _CLIENT_SECRET = "secret";
 		private const string _INSTANCE_URL = "https://relativity.one";
 		private const string _AUTH_ENDPOINT = "https://relativity.one/Identity/connect/token";
-		private const string _SERVICES_URL = "https://relativity.one/services";
 		private const string _REST_URL = "https://relativity.one/rest";
 		private const string _TOKEN = "token";
 
@@ -77,7 +76,6 @@ namespace Relativity.Sync.Tests.Integration
 			_containerBuilder.RegisterInstance(serviceMgr.Object).As<ISyncServiceManager>();
 			serviceMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(oAuth2ClientManager.Object);
 			serviceMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri(_REST_URL));
-			serviceMgr.Setup(x => x.GetServicesURL()).Returns(new Uri(_SERVICES_URL));
 		}
 
 		private void MockProvideServiceUrisToProvideValidUris()
@@ -85,8 +83,8 @@ namespace Relativity.Sync.Tests.Integration
 			IAPM apm = Mock.Of<IAPM>();
 			ISyncServiceManager servicesMgr = Mock.Of<ISyncServiceManager>();
 			Uri authenticationUri = new Uri(_INSTANCE_URL);
-			RelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri);
-			_containerBuilder.RegisterInstance(relativityServices).As<RelativityServices>();
+			IRelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri);
+			_containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
 		}
 
 		private void MockTokenProviderToProvideGivenToken()
@@ -113,7 +111,6 @@ namespace Relativity.Sync.Tests.Integration
 			// ASSERT
 			_serviceFactoryFactoryStub.Settings.Should().NotBeNull();
 			_serviceFactoryFactoryStub.Settings.RelativityRestUri.Should().Be(_REST_URL);
-			_serviceFactoryFactoryStub.Settings.RelativityServicesUri.Should().Be(_SERVICES_URL);
 			_serviceFactoryFactoryStub.Settings.Credentials.Should().BeOfType<BearerTokenCredentials>();
 			((BearerTokenCredentials) _serviceFactoryFactoryStub.Settings.Credentials).Token.Should().Be(_TOKEN);
 		}

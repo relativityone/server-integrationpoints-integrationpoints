@@ -32,18 +32,25 @@ namespace Relativity.Sync.Dashboards
 			
 			foreach (SyncIssueDTO syncIssue in _syncIssues)
 			{
-				JiraTicketInfo jiraTicket = await GetJiraTicketAsync(syncIssue.Jira).ConfigureAwait(false);
-				var kvCollectionItem = new SplunkKVCollectionItem()
+				try
 				{
-					Jira = syncIssue.Jira,
-					Exception = syncIssue.Exception,
-					IssueType = jiraTicket.Fields.IssueType.Name,
-					Status = jiraTicket.Fields.Status.Name,
-					Summary = jiraTicket.Fields.Summary,
-					Labels = jiraTicket.Fields.Labels,
-					FixVersions = jiraTicket.Fields.FixVersions?.Select(x => x.Name).ToArray()
-				};
-				await AddSplunkKVItemAsync(kvCollectionItem).ConfigureAwait(false);
+					JiraTicketInfo jiraTicket = await GetJiraTicketAsync(syncIssue.Jira).ConfigureAwait(false);
+					var kvCollectionItem = new SplunkKVCollectionItem()
+					{
+						Jira = syncIssue.Jira,
+						Exception = syncIssue.Exception,
+						IssueType = jiraTicket.Fields.IssueType.Name,
+						Status = jiraTicket.Fields.Status.Name,
+						Summary = jiraTicket.Fields.Summary,
+						Labels = jiraTicket.Fields.Labels,
+						FixVersions = jiraTicket.Fields.FixVersions?.Select(x => x.Name).ToArray()
+					};
+					await AddSplunkKVItemAsync(kvCollectionItem).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException($"There was an error while processing issue: {syncIssue.Jira}", ex);
+				}
 			}
 		}
 

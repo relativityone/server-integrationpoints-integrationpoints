@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Integration
 	internal sealed class FieldManagerTests
 	{
 		private ConfigurationStub _configuration;
-		private FieldManager _instance;
+		private FieldManager _sut;
 		private Mock<IFolderManager> _folderManager;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISearchManager> _searchManager;
@@ -55,14 +55,21 @@ namespace Relativity.Sync.Tests.Integration
 
 				// IFieldConfiguration
 				FolderPathSourceFieldName = _FOLDER_PATH_SOURCE_FIELD_NAME,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None
-			};
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles
+		};
 			_configuration.SetFieldMappings(new List<FieldMap>());
+			
 
 			_objectManager = new Mock<IObjectManager>();
 			_searchManager = new Mock<ISearchManager>();
 			_folderManager = new Mock<IFolderManager>();
 
+			_sut = GetSut(_folderManager, _objectManager, _searchManager, _configuration);
+		}
+
+		private static FieldManager GetSut(Mock<IFolderManager> _folderManager, Mock<IObjectManager> _objectManager, Mock<ISearchManager> _searchManager, ConfigurationStub _configuration)
+        {
 			var searchManagerFactory = new Mock<ISearchManagerFactory>();
 			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
 				.Returns(Task.FromResult(_searchManager.Object));
@@ -86,7 +93,7 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterType<FieldManager>().As<FieldManager>();
 
 			IContainer container = builder.Build();
-			_instance = container.Resolve<FieldManager>();
+			return container.Resolve<FieldManager>();
 		}
 
 		private static IEnumerable<KeyValuePair<string, RelativityDataType>> MappedDocumentFieldTypePairs()
@@ -108,17 +115,20 @@ namespace Relativity.Sync.Tests.Integration
 
 		private static IEnumerable<FieldInfoDto> SpecialDocumentFields() => SpecialDocumentFieldTypePairs().Select(NameTypePairToDocumentFieldInfoDto);
 
-		private static IEnumerable<FieldInfoDto> SpecialFields(DestinationFolderStructureBehavior folderStructureBehavior)
+		private static IEnumerable<FieldInfoDto> SpecialFields(DestinationFolderStructureBehavior folderStructureBehavior, ImportNativeFileCopyMode importNativeCopyMode)
 		{
-			// These are not in any specific order.
+            // These are not in any specific order.
 
-			yield return FieldInfoDto.NativeFileLocationField();
-			yield return FieldInfoDto.NativeFileFilenameField();
-			yield return FieldInfoDto.NativeFileSizeField();
+            if (importNativeCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
+            {
+				yield return FieldInfoDto.NativeFileLocationField();
+				yield return FieldInfoDto.NativeFileFilenameField();
+				yield return FieldInfoDto.NativeFileSizeField();
 
-			foreach (FieldInfoDto field in SpecialDocumentFields())
-			{
-				yield return field;
+				foreach (FieldInfoDto field in SpecialDocumentFields())
+				{
+					yield return field;
+				}
 			}
 
 			if (folderStructureBehavior == DestinationFolderStructureBehavior.ReadFromField)
@@ -131,17 +141,36 @@ namespace Relativity.Sync.Tests.Integration
 			}
 		}
 
-		[TestCase(DestinationFolderStructureBehavior.None)]
-		[TestCase(DestinationFolderStructureBehavior.ReadFromField)]
-		[TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
-		public void ItShouldBuildAllSpecialFieldColumns(DestinationFolderStructureBehavior folderStructureBehavior)
+
+        [TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
+        [TestCase(DestinationFolderStructureBehavior.ReadFromField)]
+        [TestCase(DestinationFolderStructureBehavior.None)]
+		public void ItShouldBuildAllSpecialFieldColumnsDependingOnDestinationFolderStructureBehavior(DestinationFolderStructureBehavior folderStructureBehavior)
 		{
 			// Arrange
-			IEnumerable<FieldInfoDto> expectedSpecialFieldColumns = SpecialFields(folderStructureBehavior);
+			IEnumerable<FieldInfoDto> expectedSpecialFieldColumns = SpecialFields(folderStructureBehavior, _configuration.ImportNativeFileCopyMode);
 			_configuration.DestinationFolderStructureBehavior = folderStructureBehavior;
 
 			// Act
-			List<FieldInfoDto> specialFieldColumns = _instance.GetNativeSpecialFields().ToList();
+			List<FieldInfoDto> specialFieldColumns = _sut.GetNativeSpecialFields().ToList();
+
+			// Assert
+			specialFieldColumns.Should().BeEquivalentTo(expectedSpecialFieldColumns);
+		}
+
+		[TestCase(ImportNativeFileCopyMode.CopyFiles)]
+		[TestCase(ImportNativeFileCopyMode.DoNotImportNativeFiles)]
+		[TestCase(ImportNativeFileCopyMode.SetFileLinks)]
+		public void ItShouldBuildAllSpecialFieldColumnsDependingOnImportNativeFileCopyMode(ImportNativeFileCopyMode importNativeCopyMode)
+		{
+			// Arrange
+			IEnumerable<FieldInfoDto> expectedSpecialFieldColumns = SpecialFields(_configuration.DestinationFolderStructureBehavior, importNativeCopyMode);
+			_configuration.ImportNativeFileCopyMode = importNativeCopyMode;
+
+			_sut = GetSut(_folderManager, _objectManager, _searchManager, _configuration);
+
+			// Act
+			List<FieldInfoDto> specialFieldColumns = _sut.GetNativeSpecialFields().ToList();
 
 			// Assert
 			specialFieldColumns.Should().BeEquivalentTo(expectedSpecialFieldColumns);
@@ -154,7 +183,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupDocumentFieldServices(MappedDocumentFieldTypePairs());
 
 			// Act
-			IEnumerable<FieldInfoDto> documentFields = await _instance
+			IEnumerable<FieldInfoDto> documentFields = await _sut
 				.GetDocumentTypeFieldsAsync(CancellationToken.None)
 				.ConfigureAwait(false);
 
@@ -163,21 +192,21 @@ namespace Relativity.Sync.Tests.Integration
 			documentFields.Should().BeEquivalentTo(expectedDocumentFields, opt => opt.WithStrictOrdering());
 		}
 
-		[TestCase(DestinationFolderStructureBehavior.None)]
-		[TestCase(DestinationFolderStructureBehavior.ReadFromField)]
 		[TestCase(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
-		public async Task ItShouldReturnAllFieldColumns(DestinationFolderStructureBehavior folderStructureBehavior)
+		[TestCase(DestinationFolderStructureBehavior.ReadFromField)]
+		[TestCase(DestinationFolderStructureBehavior.None)]
+		public async Task ItShouldReturnAllFieldColumnsDependingOnDestinationFolderStructureBehavior(DestinationFolderStructureBehavior folderStructureBehavior)
 		{
 			// Arrange
 			IEnumerable<FieldInfoDto> expectedDocumentFields = MappedDocumentFields();
-			IEnumerable<FieldInfoDto> expectedSpecialFields = SpecialFields(folderStructureBehavior);
+			IEnumerable<FieldInfoDto> expectedSpecialFields = SpecialFields(folderStructureBehavior, _configuration.ImportNativeFileCopyMode);
 			List<FieldInfoDto> expectedAllFields = AssignIndicesToDocumentFields(expectedDocumentFields.Concat(expectedSpecialFields)).ToList();
 
 			_configuration.DestinationFolderStructureBehavior = folderStructureBehavior;
 			SetupDocumentFieldServices(MappedDocumentFieldTypePairs());
 
 			// Act
-			IEnumerable<FieldInfoDto> allFields = await _instance
+			IEnumerable<FieldInfoDto> allFields = await _sut
 				.GetNativeAllFieldsAsync(CancellationToken.None)
 				.ConfigureAwait(false);
 
@@ -186,6 +215,7 @@ namespace Relativity.Sync.Tests.Integration
 				options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
 		}
 
+
 		[Test]
 		public async Task CreateNativeSpecialFieldRowValueBuildersAsync_ShouldReturnSpecialFieldRowValueBuildersForNativeSpecialFieldType()
 		{
@@ -193,7 +223,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupFileInfoFieldServices();
 
 			// Act
-			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _instance
+			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders = await _sut
 				.CreateNativeSpecialFieldRowValueBuildersAsync(0, Array.Empty<int>())
 				.ConfigureAwait(false);
 
@@ -237,7 +267,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Act
 			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
-				await _instance.CreateNativeSpecialFieldRowValueBuildersAsync(0, new int[] { documentArtifactId }).ConfigureAwait(false);
+				await _sut.CreateNativeSpecialFieldRowValueBuildersAsync(0, new int[] { documentArtifactId }).ConfigureAwait(false);
 
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = documentArtifactId };
 			object value = specialFieldRowValueBuilders[field.SpecialFieldType].BuildRowValue(field, document, null);
@@ -274,7 +304,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// Act
 			IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldRowValueBuilders =
-				await _instance.CreateNativeSpecialFieldRowValueBuildersAsync(0, new int[] { documentArtifactId }).ConfigureAwait(false);
+				await _sut.CreateNativeSpecialFieldRowValueBuildersAsync(0, new int[] { documentArtifactId }).ConfigureAwait(false);
 
 			FieldInfoDto fieldInfo = FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, _FOLDER_PATH_SOURCE_FIELD_NAME, _FOLDER_PATH_SOURCE_FIELD_NAME);
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = documentArtifactId };
@@ -379,7 +409,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private static IEnumerable<int> ParseArtifactIdsFromQueryCondition(string condition)
 		{
-			System.Text.RegularExpressions.Match match = Regex.Match(condition, @" IN \[(.*)\]");
+			global::System.Text.RegularExpressions.Match match = Regex.Match(condition, @" IN \[(.*)\]");
 			if (match.Success)
 			{
 				return match.Groups[1]

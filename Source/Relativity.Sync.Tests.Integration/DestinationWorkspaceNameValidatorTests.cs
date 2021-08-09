@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.DataContracts.DTOs;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
+using Relativity.Services.Interfaces.Workspace;
+using Relativity.Services.Interfaces.Workspace.Models;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -22,17 +18,16 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private ConfigurationStub _configuration;
 		private DestinationWorkspaceNameValidator _sut;
-		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IWorkspaceManager> _workspaceManagerMock;
 		private const int _WORKSPACE_ARTIFACT_ID = 123;
-		private const int _ADMIN_WORKSPACE_ARTIFACT_ID = -1;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_objectManagerMock = new Mock<IObjectManager>();
+			_workspaceManagerMock = new Mock<IWorkspaceManager>();
 
 			var serviceFactory = new Mock<IDestinationServiceFactoryForUser>();
-			serviceFactory.Setup(sf => sf.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			serviceFactory.Setup(sf => sf.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			containerBuilder.RegisterInstance(serviceFactory.Object).As<IDestinationServiceFactoryForUser>();
@@ -47,25 +42,21 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task ItShouldHandleValidDestinationWorkspaceName()
 		{
+			// Arrange
 			string validWorkspaceName = "So much valid";
 
-			_objectManagerMock.Setup(x =>
-					x.QueryAsync(
-						_ADMIN_WORKSPACE_ARTIFACT_ID,
-						It.Is<QueryRequest>(y => y.Condition.Contains(_WORKSPACE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
-						It.IsAny<int>(),
-						It.IsAny<int>(),
-						CancellationToken.None,
-						It.IsAny<IProgress<ProgressReport>>()))
-						.Returns(Task.FromResult(new QueryResult
-					{
-						Objects = new List<RelativityObject> {new RelativityObject() {Name = validWorkspaceName}}
-					}));
-
+			_workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID))
+				.ReturnsAsync(new WorkspaceResponse
+				{
+					Name = validWorkspaceName
+				});
+			
 			_configuration.DestinationWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
@@ -73,24 +64,20 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task ItShouldHandleInvalidDestinationWorkspaceName()
 		{
+			// Arrange
 			string invalidWorkspaceName = "So ; much ; invalid";
 
-			_objectManagerMock.Setup(x => x.QueryAsync(
-				-1,
-				It.Is<QueryRequest>(y => y.Condition.Contains(_WORKSPACE_ARTIFACT_ID.ToString(CultureInfo.InvariantCulture))),
-				It.IsAny<int>(),
-				It.IsAny<int>(),
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult
+			_workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID)).ReturnsAsync(new WorkspaceResponse
 			{
-				Objects = new List<RelativityObject> { new RelativityObject() { Name = invalidWorkspaceName } }
-			}));
-
+				Name = invalidWorkspaceName
+			});
+			
 			_configuration.DestinationWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
+			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
+			// Assert
 			result.IsValid.Should().BeFalse();
 			result.Messages.Should().NotBeEmpty();
 		}

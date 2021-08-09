@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				var dataReaderMock = new Mock<IDataReader>();
 				dataReaderMock.Setup(x => x.Dispose()).Callback(() => previousReaderWasDisposed = true);
 				mocks.Add(dataReaderMock);
-				return dataReaderMock.Object;
+				return new SimpleBatchDataReader(dataReaderMock.Object);
 			});
 
 			SourceWorkspaceDataReader instance = BuildInstanceUnderTest(dataReaderBuilder.Object);
@@ -161,6 +161,36 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			result.Should().Be(false);
+		}
+
+		[Test]
+		public void Read_ShouldDisposeReader_WhenDrainStoppingAndBatchDataReaderFinishedWork()
+		{
+			// Arrange
+			const int batchSize = 2;
+			const int numberOfBatches = 5;
+
+			RelativityObjectSlim[][] batches = Enumerable.Range(1, numberOfBatches)
+				.Select(i => GenerateBatch(batchSize))
+				.ToArray();
+			ExportBatcherReturnsBatches(batches);
+
+			Mock<IBatchDataReader> batchDataReader = new Mock<IBatchDataReader>();
+			batchDataReader.SetupGet(x => x.CanCancel).Returns(true);
+			Mock<IBatchDataReaderBuilder> batchDataReaderBuilder = new Mock<IBatchDataReaderBuilder>();
+			batchDataReaderBuilder.Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), It.IsAny<CancellationToken>()))
+				.ReturnsAsync(batchDataReader.Object);
+			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			SourceWorkspaceDataReader sut = BuildInstanceUnderTest(batchDataReaderBuilder.Object, tokenSource.Token);
+
+			// Act
+			sut.Read();
+			tokenSource.Cancel();
+			bool read = sut.Read();
+
+			// Assert
+			read.Should().BeFalse();
+			batchDataReader.Verify(x => x.Dispose());
 		}
 
 		[Test]
@@ -324,13 +354,18 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private SourceWorkspaceDataReader BuildInstanceUnderTest(IBatchDataReaderBuilder dataTableBuilder)
 		{
+			return BuildInstanceUnderTest(dataTableBuilder, CancellationToken.None);
+		}
+
+		private SourceWorkspaceDataReader BuildInstanceUnderTest(IBatchDataReaderBuilder dataTableBuilder, CancellationToken token)
+		{
 			return new SourceWorkspaceDataReader(dataTableBuilder,
 				_configuration.Object,
 				_exportBatcher.Object,
 				_fieldManager.Object,
 				_itemStatusMonitor.Object,
 				new EmptyLogger(),
-				CancellationToken.None);
+				token);
 		}
 
 		private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)

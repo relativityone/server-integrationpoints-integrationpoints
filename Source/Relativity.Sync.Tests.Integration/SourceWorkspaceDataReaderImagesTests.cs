@@ -5,6 +5,7 @@ using System.Linq;
 using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
 
@@ -94,7 +95,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			IEnumerable<ImageFile> images = Enumerable
 				.Range(0, numberOfImages)
-				.Select(x => new ImageFile(artifactId, $@"\\fake\path\img{x}.jpg", $"img{x}.jpg", 100 + artifactId));
+				.Select(x => new ImageFile(artifactId, artifactId.ToString(), $@"\\fake\path\img{x}.jpg", $"img{x}.jpg", 100 + artifactId));
 
 			FieldValue[] fieldValues = values
 				.Select(x => x.Type == FieldType.Identifier
@@ -108,7 +109,7 @@ namespace Relativity.Sync.Tests.Integration
 		protected override IBatchDataReaderBuilder CreateBatchDataReaderBuilder()
 		{
 			return new ImageBatchDataReaderBuilder(_container.Resolve<IFieldManager>(),
-				_container.Resolve<IExportDataSanitizer>());
+				_container.Resolve<IExportDataSanitizer>(), new EmptyLogger());
 		}
 	}
 }

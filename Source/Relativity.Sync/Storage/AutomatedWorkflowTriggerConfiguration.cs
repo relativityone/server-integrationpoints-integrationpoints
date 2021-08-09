@@ -1,5 +1,5 @@
-﻿using System;
-using Relativity.Sync.Configuration;
+﻿using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {
@@ -7,7 +7,6 @@ namespace Relativity.Sync.Storage
 	{
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
-		private static readonly Guid DestinationWorkspaceArtifactIdGuid = new Guid("15B88438-6CF7-47AB-B630-424633159C69");
 
 		public AutomatedWorkflowTriggerConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
@@ -15,7 +14,7 @@ namespace Relativity.Sync.Storage
 			_syncJobParameters = syncJobParameters;
 		}
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue<int>(DestinationWorkspaceArtifactIdGuid);
+		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 		public string TriggerName => _syncJobParameters.TriggerName;
 		public ExecutionResult SynchronizationExecutionResult { get; set; } = new ExecutionResult(ExecutionStatus.None, string.Empty, null);
 		public string TriggerId => _syncJobParameters.TriggerId;

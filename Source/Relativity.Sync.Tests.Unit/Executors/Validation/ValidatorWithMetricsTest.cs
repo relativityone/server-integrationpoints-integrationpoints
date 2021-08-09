@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -9,6 +10,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
@@ -42,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetrics.Verify(x => x.CountOperation(It.IsAny<string>(), It.IsAny<ExecutionStatus>()), Times.Never);
+			VerifySentMetric(m => m.FailedCounter == null);
 		}
 
 		[Test]
@@ -55,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetrics.Verify(x => x.CountOperation(It.IsAny<string>(), ExecutionStatus.Failed), Times.Once);
+			VerifySentMetric(m => m.FailedCounter == Counter.Increment);
 		}
 
 		[Test]
@@ -68,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Failed), Times.Once);
+			VerifySentMetric(m => m.Duration != null);
 		}
 
 		[Test]
@@ -81,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Completed), Times.Once);
+			VerifySentMetric(m => m.Duration != null);
 		}
 
 		[Test]
@@ -108,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_syncMetrics.Verify(x => x.TimedOperation(It.IsAny<string>(), expected, It.IsAny<ExecutionStatus>()));
+			VerifySentMetric(m => m.Duration == expected.TotalMilliseconds);
 		}
 
 		[TestCase(true)]
@@ -122,6 +124,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Act && Assert
 			_sut.ShouldValidate(new Mock<ISyncPipeline>().Object).Should()
 				.Be(innerValidatorShouldValidate);
+		}
+
+		private void VerifySentMetric(Expression<Func<ValidationMetric, bool>> validationFunc)
+		{
+			_syncMetrics.Verify(x => x.Send(It.Is(validationFunc)));
 		}
 	}
 }

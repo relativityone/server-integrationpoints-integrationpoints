@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 
 namespace Relativity.Sync.Tests.Common
 {
@@ -13,8 +14,8 @@ namespace Relativity.Sync.Tests.Common
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
-		IDocumentDataSourceSnapshotConfiguration, IDocumentRetryDataSourceSnapshotConfiguration, IImageDataSourceSnapshotConfiguration, IImageRetryDataSourceSnapshotConfiguration,
-		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration
+		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
+		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -24,6 +25,7 @@ namespace Relativity.Sync.Tests.Common
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
+		private const int _BATCH_SIZE_FOR_FILE_QUERIES = 10000;
 
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
 
@@ -81,6 +83,10 @@ namespace Relativity.Sync.Tests.Common
 			_emailNotificationRecipients = emailNotificationRecipients;
 		}
 
+		string IMetricsConfiguration.DataSourceType => DataSourceType.ToString();
+
+		public string DataDestinationType { get; }
+
 		public int SourceWorkspaceArtifactId { get; set; }
 
 		public string TriggerName { get; }
@@ -114,6 +120,14 @@ namespace Relativity.Sync.Tests.Common
 		public string FolderPathSourceFieldName { get; set; }
 
 		public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;
+		
+		public bool Resuming { get; set; }
+
+		public int SyncStatisticsId { get; set; }
+
+		public int BatchSizeForFileQueries { get; set; } = _BATCH_SIZE_FOR_FILE_QUERIES;
+
+		public Guid? SnapshotId { get; set; }
 
 		public string FileSizeColumn { get; set; }
 
@@ -139,11 +153,9 @@ namespace Relativity.Sync.Tests.Common
 
 		public bool ImageImport { get; set; }
 
-		public bool IncludeOriginalImages { get; set; }
-
 		public ImportImageFileCopyMode ImportImageFileCopyMode { get; set; }
 
-		public int[] ProductionImagePrecedence { get; set; }
+		public int[] ProductionImagePrecedence { get; set; } = { };
 
 		public string GetSourceJobTagName() => _sourceJobTagName;
 
@@ -166,6 +178,8 @@ namespace Relativity.Sync.Tests.Common
 		}
 
 		public int DestinationWorkspaceTagArtifactId { get; set; }
+
+		public Guid JobHistoryObjectTypeGuid => JobHistory.TypeGuid;
 
 		public int JobHistoryArtifactId { get; set; }
 
@@ -199,10 +213,26 @@ namespace Relativity.Sync.Tests.Common
 
 		public int? JobHistoryToRetryId { get; set; }
 
-		public int[] ProductionIds { get; set; }
-
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 
 		public bool IsImageJob { get; set; }
+
+		public string IdentifierColumn { get; set; }
+
+		public IJobHistoryRdoGuidsProvider JobHistory { get; set;  } = DefaultGuids.JobHistory;
+
+		public IJobHistoryErrorGuidsProvider JobHistoryError { get; set; } = DefaultGuids.JobHistoryError;
+		
+		public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; set;  } = DefaultGuids.DestinationWorkspace;
+
+		public DataSourceType DataSourceType { get; set; }
+		
+		public DestinationLocationType DestinationType { get; set; }
+
+		public string CorrelationId { get; set; }
+
+		public string ExecutingApplication { get; set; }
+
+		public string ExecutingApplicationVersion { get; set; } 
 	}
 }

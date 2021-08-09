@@ -18,7 +18,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Creating tags in destination workspace (workspace artifact id: {destinationWorkspaceArtifactId})", configuration.DestinationWorkspaceArtifactId);
 
@@ -26,10 +26,10 @@ namespace Relativity.Sync.Executors
 
 			try
 			{
-				RelativitySourceCaseTag sourceCaseTag = await _sourceCaseTagService.CreateOrUpdateSourceCaseTagAsync(configuration, token).ConfigureAwait(false);
+				RelativitySourceCaseTag sourceCaseTag = await _sourceCaseTagService.CreateOrUpdateSourceCaseTagAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 				await configuration.SetSourceWorkspaceTagAsync(sourceCaseTag.ArtifactId, sourceCaseTag.Name).ConfigureAwait(false);
 
-				RelativitySourceJobTag sourceJobTag = await _sourceJobTagService.CreateSourceJobTagAsync(configuration, sourceCaseTag.ArtifactId, token).ConfigureAwait(false);
+				RelativitySourceJobTag sourceJobTag = await _sourceJobTagService.CreateOrReadSourceJobTagAsync(configuration, sourceCaseTag.ArtifactId, token.StopCancellationToken).ConfigureAwait(false);
 				await configuration.SetSourceJobTagAsync(sourceJobTag.ArtifactId, sourceJobTag.Name).ConfigureAwait(false);
 			}
 			catch (Exception ex)

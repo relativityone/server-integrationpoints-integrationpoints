@@ -12,6 +12,15 @@ namespace Relativity.Sync.Executors
 	{
 		private const int _MAX_OBJECT_QUERY_BATCH_SIZE = 10000;
 
+		private readonly ISyncLog _logger;
+
+		protected const string _UNIT_OF_MEASURE = "document(s)";
+
+		protected WorkspaceTagRepositoryBase(ISyncLog logger)
+		{
+			_logger = logger;
+		}
+
 		public async Task<IList<TagDocumentsResult<TIdentifier>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<TIdentifier> documentIdentifiers, CancellationToken token)
 		{
 			var tagResults = new List<TagDocumentsResult<TIdentifier>>();
@@ -48,13 +57,17 @@ namespace Relativity.Sync.Executors
 			return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
 		}
 
-		protected static TagDocumentsResult<TIdentifier> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<TIdentifier> batch)
+		protected TagDocumentsResult<TIdentifier> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<TIdentifier> batch)
 		{
 			IEnumerable<TIdentifier> failedDocumentArtifactIds;
 			if (!updateResult.Success)
 			{
 				int elementsToCapture = batch.Count - updateResult.TotalObjectsUpdated;
 				failedDocumentArtifactIds = batch.ToList().GetRange(updateResult.TotalObjectsUpdated, elementsToCapture);
+
+				const string massUpdateErrorTemplate = "A response to a request for mass tagging synchronized documents in workspace indicates that an error has occurred while processing the request: {MassUpdateResultMessage}. Successfully tagged {MassUpdateResultTotalObjectsUpdated} of {BatchCount} documents.";
+
+				_logger.LogError(massUpdateErrorTemplate, updateResult.Message, updateResult.TotalObjectsUpdated, batch.Count);
 			}
 			else
 			{

@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Unit
@@ -16,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IContainer> _container;
 		private ISyncLog _logger;
 		private SyncJobParameters _syncJobParameters;
-		private RelativityServices _relativityServices;
+		private IRelativityServices _relativityServices;
 		private SyncJobExecutionConfiguration _configuration;
 
 		[SetUp]
@@ -24,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_container = new Mock<IContainer>();
 
-			_syncJobParameters = new SyncJobParameters(1, 1, 1);
+			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			_relativityServices = new RelativityServices(Mock.Of<IAPM>(), Mock.Of<ISyncServiceManager>(),
 				new Uri("http://localhost", UriKind.RelativeOrAbsolute));
 			_configuration = new SyncJobExecutionConfiguration();

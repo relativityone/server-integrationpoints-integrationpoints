@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
@@ -11,8 +12,6 @@ namespace Relativity.Sync.Storage
 		private readonly IConfiguration _configuration;
 		private readonly ISerializer _serializer;
 		private readonly ISyncLog _logger;
-
-		private static readonly Guid FieldMappingsGuid = new Guid("E3CB5C64-C726-47F8-9CB0-1391C5911628");
 
 		public FieldMappings(IConfiguration configuration, ISerializer serializer, ISyncLog logger)
 		{
@@ -28,7 +27,7 @@ namespace Relativity.Sync.Storage
 				return _fieldMappings;
 			}
 
-			string fieldMap = _configuration.GetFieldValue<string>(FieldMappingsGuid);
+			string fieldMap = _configuration.GetFieldValue(x => x.FieldsMapping);
 
 			try
 			{

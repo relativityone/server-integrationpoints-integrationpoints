@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldReportMergedProgress()
 		{
 			SyncJobProgressStub syncJobProgressStub = new SyncJobProgressStub();
-			SyncExecutionContext context = new SyncExecutionContext(syncJobProgressStub, CancellationToken.None);
+			SyncExecutionContext context = new SyncExecutionContext(syncJobProgressStub, CompositeCancellationToken.None);
 
 			// ACT
 			await _instance.ExecuteAsync(context).ConfigureAwait(false);

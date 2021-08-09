@@ -2,15 +2,14 @@
 {
 	internal class ImageFile
 	{
-		public ImageFile(int documentArtifactId, string location, string filename, long size, int? productionId = null,
-			string nativeIdentifier = null)
+		public ImageFile(int documentArtifactId, string identifier, string location, string filename, long size, int? productionId = null)
 		{
 			DocumentArtifactId = documentArtifactId;
 			Location = location;
 			Filename = filename;
 			Size = size;
 			ProductionId = productionId;
-			NativeIdentifier = nativeIdentifier;
+			Identifier = identifier;
 		}
 
 		public int DocumentArtifactId { get; }
@@ -18,6 +17,6 @@
 		public string Filename { get; }
 		public long Size { get; }
 		public int? ProductionId { get; }
-		public string NativeIdentifier { get; }
+		public string Identifier { get; }
 	}
 }

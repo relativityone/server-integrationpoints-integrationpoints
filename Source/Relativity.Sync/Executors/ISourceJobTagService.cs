@@ -6,6 +6,6 @@ namespace Relativity.Sync.Executors
 {
 	internal interface ISourceJobTagService
 	{
-		Task<RelativitySourceJobTag> CreateSourceJobTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, int sourceCaseTagArtifactId, CancellationToken token);
+		Task<RelativitySourceJobTag> CreateOrReadSourceJobTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, int sourceCaseTagArtifactId, CancellationToken token);
 	}
 }

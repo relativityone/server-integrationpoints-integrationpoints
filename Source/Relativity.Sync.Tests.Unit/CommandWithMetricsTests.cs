@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
@@ -13,134 +15,157 @@ namespace Relativity.Sync.Tests.Unit
 	[TestFixture]
 	public class CommandWithMetricsTests
 	{
-		private Mock<ICommand<IConfiguration>> _innerCommand;
-		private Mock<ISyncMetrics> _metrics;
-		private Mock<IStopwatch> _stopwatch;
+		private Mock<ICommand<IConfiguration>> _innerCommandMock;
+		private Mock<ISyncMetrics> _metricsMock;
+		private Mock<IStopwatch> _stopwatchFake;
 
-		private CommandWithMetrics<IConfiguration> _command;
+		private CommandWithMetrics<IConfiguration> _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_innerCommand = new Mock<ICommand<IConfiguration>>();
-			_metrics = new Mock<ISyncMetrics>();
-			_stopwatch = new Mock<IStopwatch>();
+			_innerCommandMock = new Mock<ICommand<IConfiguration>>();
+			_metricsMock = new Mock<ISyncMetrics>();
+			_stopwatchFake = new Mock<IStopwatch>();
 
-			_command = new CommandWithMetrics<IConfiguration>(_innerCommand.Object, _metrics.Object, _stopwatch.Object);
+			_sut = new CommandWithMetrics<IConfiguration>(_innerCommandMock.Object, _metricsMock.Object, _stopwatchFake.Object);
 		}
 
 		[Test]
-		public async Task ItShouldCallCanExecuteInnerCommand()
+		public async Task CanExecuteAsync_ShouldCallCanExecuteInnerCommand()
 		{
 			// ACT
-			await _command.CanExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.CanExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_innerCommand.Verify(x => x.CanExecuteAsync(CancellationToken.None), Times.Once);
+			_innerCommandMock.Verify(x => x.CanExecuteAsync(CancellationToken.None), Times.Once);
 		}
 
 		[Test]
-		public async Task ItShouldCallExecuteInnerCommand()
+		public async Task ExecuteAsync_ShouldCallExecuteInnerCommand()
 		{
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_innerCommand.Verify(x => x.ExecuteAsync(CancellationToken.None), Times.Once);
+			_innerCommandMock.Verify(x => x.ExecuteAsync(CompositeCancellationToken.None), Times.Once);
 		}
 
 		[Test]
-		public async Task ItShouldReportValidMetricName()
+		public async Task ExecuteAsync_ShouldReportValidMetricName()
 		{
-			const string expectedName = nameof(IConfiguration);
+			string expectedName = $"{nameof(IConfiguration)}.Execute";
 
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(expectedName, It.IsAny<TimeSpan>(), It.IsAny<ExecutionStatus>()), Times.Once);
+			VerifySentMetric(m => m.Name == expectedName);
 		}
 
 		[Test]
-		public async Task ItShouldReportCompletedStatus()
+		public async Task CanExecuteAsync_ShouldReportValidMetricName()
 		{
+			string expectedName = $"{nameof(IConfiguration)}.CanExecute";
+
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.CanExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Completed));
+			VerifySentMetric(m => m.Name == expectedName);
 		}
 
 		[Test]
-		public void ItShouldReportFailedStatus()
+		public async Task ExecuteAsync_ShouldReportCompletedStatus()
 		{
-			_innerCommand.Setup(x => x.ExecuteAsync(CancellationToken.None)).Throws<Exception>();
+			// ACT
+			await _sut.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
+
+			// ASSERT
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Completed);
+		}
+
+		[Test]
+		public void ExecuteAsync_ShouldReportFailedStatus()
+		{
+			_innerCommandMock.Setup(x => x.ExecuteAsync(CompositeCancellationToken.None)).Throws<Exception>();
 
 			// ACT
-			Func<Task> action = async () => await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = () => _sut.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Failed));
+
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Failed);
 		}
 
 		[Test]
-		public void ItShouldReportCanceledStatusWhenExecutionCanceledByThrowingException()
+		public void ExecuteAsync_ShouldReportCanceledStatusWhenExecutionCanceledByThrowingException()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			_innerCommand.Setup(x => x.ExecuteAsync(tokenSource.Token)).Throws<OperationCanceledException>();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			_innerCommandMock.Setup(x => x.ExecuteAsync(compositeCancellationToken)).Throws<OperationCanceledException>();
 
 			// ACT
 			tokenSource.Cancel();
-			Func<Task> action = async () => await _command.ExecuteAsync(tokenSource.Token).ConfigureAwait(false);
+			Func<Task> action = () => _sut.ExecuteAsync(compositeCancellationToken);
 
 			// ASSERT
 			action.Should().Throw<OperationCanceledException>();
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Canceled));
+			
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Canceled);
 		}
 
 
 		[Test]
-		public async Task ItShouldReportCanceledStatusWhenExecutionCanceledGracefuly()
+		public async Task ExecuteAsync_ShouldReportCanceledStatusWhenExecutionCanceledGracefuly()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
 
 			// ACT
 			tokenSource.Cancel();
-			await _command.ExecuteAsync(tokenSource.Token).ConfigureAwait(false);
+			await _sut.ExecuteAsync(compositeCancellationToken).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.IsAny<TimeSpan>(), ExecutionStatus.Canceled));
+			VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Canceled);
 		}
 
 		[Test]
-		public async Task ItShouldMeasureExecuteTimeProperly()
+		public async Task ExecuteAsync_ShouldMeasureExecuteTimeProperly()
 		{
-			const double milliseconds = 10;
-			TimeSpan executionTime = TimeSpan.FromMilliseconds(milliseconds);
-			_stopwatch.Setup(x => x.Elapsed).Returns(executionTime);
+			const double expectedMilliseconds = 10;
+			TimeSpan executionTime = TimeSpan.FromMilliseconds(expectedMilliseconds);
+			_stopwatchFake.Setup(x => x.Elapsed).Returns(executionTime);
 
 			// ACT
-			await _command.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<TimeSpan>(actualTimespan => 
-				actualTimespan.Equals(executionTime)), ExecutionStatus.Completed));
+			VerifySentMetric(m =>
+				m.Duration == expectedMilliseconds &&
+				m.ExecutionStatus == ExecutionStatus.Completed);
 		}
 
 		[Test]
-		public async Task ItShouldMeasureCanExecuteTimeProperly()
+		public async Task CanExecuteAsync_ShouldMeasureCanExecuteTimeProperly()
 		{
-			const double milliseconds = 10;
-			TimeSpan executionTime = TimeSpan.FromMilliseconds(milliseconds);
-			_stopwatch.Setup(x => x.Elapsed).Returns(executionTime);
+			const double expectedMilliseconds = 10;
+			TimeSpan executionTime = TimeSpan.FromMilliseconds(expectedMilliseconds);
+			_stopwatchFake.Setup(x => x.Elapsed).Returns(executionTime);
 
 			// ACT
-			await _command.CanExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await _sut.CanExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			_metrics.Verify(x => x.TimedOperation(It.IsAny<string>(), It.Is<TimeSpan>(actualTimespan =>
-				actualTimespan.Equals(executionTime)), ExecutionStatus.Completed));
+			VerifySentMetric(m => 
+				m.Duration == expectedMilliseconds &&
+				m.ExecutionStatus == ExecutionStatus.Completed);
+		}
+		
+		private void VerifySentMetric(Expression<Func<CommandMetric, bool>> validationFunc)
+		{
+			_metricsMock.Verify(x => x.Send(It.Is(validationFunc)));
 		}
 	}
 }

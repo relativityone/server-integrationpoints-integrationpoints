@@ -10,6 +10,7 @@
 		RelativityNativeType,
 		SupportedByViewer,
 		ImageFileName,
-		ImageFileLocation
+		ImageFileLocation,
+		ImageIdentifier
 	}
 }

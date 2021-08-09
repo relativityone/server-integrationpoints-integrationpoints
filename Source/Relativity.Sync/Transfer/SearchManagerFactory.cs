@@ -13,8 +13,6 @@ namespace Relativity.Sync.Transfer
 {
 	internal class SearchManagerFactory : ISearchManagerFactory
 	{
-		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
-
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IAuthTokenGenerator _tokenGenerator;
@@ -60,7 +58,7 @@ namespace Relativity.Sync.Transfer
 			{
 				ApplicationName = _syncJobParameters.SyncApplicationName
 			};
-			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(_RELATIVITY_BEARER_USERNAME, authToken, cookieContainer, runningContext);
+			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AuthConstants._RELATIVITY_BEARER_USERNAME, authToken, cookieContainer, runningContext);
 
 			return new SearchManager(credentials, cookieContainer);
 		}

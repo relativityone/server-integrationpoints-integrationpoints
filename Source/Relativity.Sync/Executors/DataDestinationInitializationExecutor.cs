@@ -10,7 +10,7 @@ namespace Relativity.Sync.Executors
 	/// </summary> 
 	internal sealed class DataDestinationInitializationExecutor : IExecutor<IDataDestinationInitializationConfiguration>
 	{
-		public Task<ExecutionResult> ExecuteAsync(IDataDestinationInitializationConfiguration configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(IDataDestinationInitializationConfiguration configuration, CompositeCancellationToken token)
 		{
 			return Task.FromResult(ExecutionResult.Success());
 		}

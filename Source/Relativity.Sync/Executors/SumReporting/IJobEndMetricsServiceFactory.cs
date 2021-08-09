@@ -2,6 +2,6 @@
 {
 	internal interface IJobEndMetricsServiceFactory
 	{
-		IJobEndMetricsService CreateJobEndMetricsService();
+		IJobEndMetricsService CreateJobEndMetricsService(bool isSuspended);
 	}
 }

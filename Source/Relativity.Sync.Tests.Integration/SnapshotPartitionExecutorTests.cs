@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public class SnapshotPartitionExecutorTests
 	{
-		private CancellationToken _token;
+		private CompositeCancellationToken _token;
 
 		private Mock<ISyncLog> _syncLog;
 		private Mock<IObjectManager> _objectManager;
@@ -27,21 +27,22 @@ namespace Relativity.Sync.Tests.Integration
 
 		private IExecutor<ISnapshotPartitionConfiguration> _instance;
 
+		private readonly Guid _totalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
+		private readonly Guid _transferredDocumentsCountGuid = new Guid("A5618A97-48C5-441C-86DF-2867481D30AB");
+		private readonly Guid _failedDocumentsCountGuid = new Guid("4FA1CF50-B261-4157-BD2D-50619F0347D6");
+		private readonly Guid _transferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
 		private readonly Guid _failedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
-		private readonly Guid _lockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
-		private readonly Guid _progressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
 		private readonly Guid _startingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private readonly Guid _statusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
-		private readonly Guid _totalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
-		private readonly Guid _transferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-		private readonly Guid _taggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
+		private readonly Guid _taggedDocumentsCountGuid = new Guid("AF3C2398-AF49-4537-9BC3-D79AE1734A8C");
+		private readonly Guid _metadataBytesTransferredGuid = new Guid("2BE1C011-0A0C-4A10-B77A-74BB9405A68A");
+		private readonly Guid _filesBytesTransferredGuid = new Guid("4A21D596-6961-4389-8210-8D2D8C56DBAD");
+		private readonly Guid _totalBytesTransferredGuid = new Guid("511C4B49-2E05-4DFB-BB3E-771EC0BDEFED");
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			string correlationGuid = Guid.NewGuid().ToString();
-
-			_token = CancellationToken.None;
+			_token = CompositeCancellationToken.None;
 		}
 
 		[SetUp]
@@ -188,7 +189,7 @@ namespace Relativity.Sync.Tests.Integration
 						{
 							new FieldValuePair
 							{
-								Field = new Field{ Guids = new List<Guid>{_totalItemsCountGuid}},
+								Field = new Field{ Guids = new List<Guid>{_totalDocumentsCountGuid}},
 								Value = numberOfItems
 							},
 							new FieldValuePair
@@ -203,6 +204,14 @@ namespace Relativity.Sync.Tests.Integration
 							},
 							new FieldValuePair
 							{
+								Field = new Field{ Guids = new List<Guid>{_failedDocumentsCountGuid}}
+							},
+							new FieldValuePair
+							{
+								Field = new Field{ Guids = new List<Guid>{_transferredDocumentsCountGuid}}
+							},
+							new FieldValuePair
+							{
 								Field = new Field{ Guids = new List<Guid>{_failedItemsCountGuid}}
 							},
 							new FieldValuePair
@@ -211,15 +220,19 @@ namespace Relativity.Sync.Tests.Integration
 							},
 							new FieldValuePair
 							{
-								Field = new Field{ Guids = new List<Guid>{_progressGuid}}
+								Field = new Field{ Guids = new List<Guid>{_taggedDocumentsCountGuid}}
 							},
 							new FieldValuePair
 							{
-								Field = new Field{ Guids = new List<Guid>{_lockedByGuid}}
+								Field = new Field{ Guids = new List<Guid>{_metadataBytesTransferredGuid}}
 							},
 							new FieldValuePair
 							{
-								Field = new Field{ Guids = new List<Guid>{_taggedItemsCountGuid}}
+								Field = new Field{ Guids = new List<Guid>{_filesBytesTransferredGuid}}
+							},
+							new FieldValuePair
+							{
+								Field = new Field{ Guids = new List<Guid>{_totalBytesTransferredGuid}}
 							}
 						}
 					}

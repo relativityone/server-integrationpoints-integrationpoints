@@ -36,20 +36,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private const int _TEST_DEST_WORKSPACE_ARTIFACT_ID = 202567;
 		private const int _TEST_SOURCE_WORKSPACE_ARTIFACT_ID = 101234;
-		private const int _IDENTIFIER_DEST_FIELD_ARTIFACT_ID = 1003668;
-		private const int _IDENTIFIER_SOURCE_FIELD_ARTIFACT_ID = 1003667;
 		private const string _IDENTIFIER_DEST_FIELD_NAME = "Control Number";
 		private const string _IDENTIFIER_SOURCE_FIELD_NAME = "Control Number";
-
-
-		private const string _TEST_DEST_FIELD_NAME = "Test";
-		private const string _TEST_SOURCE_FIELD_NAME = "Test";
-
-
-		private const int _TEST_DEST_FIELD_ARTIFACT_ID = 1003669;
-		private const int _TEST_SOURCE_FIELD_ARTIFACT_ID = 10036670;
-
-
+		
 		private const string _TEST_FIELDS_MAP = @"[{
 	        ""sourceField"": {
 	            ""displayName"": ""Control Number"",
@@ -127,17 +116,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldDeserializeThrowsException()
+		public void ValidateAsync_ShouldDeserializeThrowsException()
 		{
 			// Arrange
 			_validationConfiguration.Setup(x => x.GetFieldMappings()).Throws<InvalidOperationException>().Verifiable();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> actualResult = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
+			actualResult.Should().Throw<InvalidOperationException>();
 		}
 
 		[Test]
@@ -228,43 +216,19 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandleSourceObjectQuery_ThrowsException()
+		public void ValidateAsync_ShouldThrowException_WhenObjectManagerFails()
 		{
 			// Arrange
 			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
 				It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+			Func<Task<ValidationResult>> actualResult = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
 			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation. See logs for more details.");
-
-			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration);
+			actualResult.Should().Throw<InvalidOperationException>();
 		}
-
-		[Test]
-		public async Task ValidateAsync_ShouldHandleDestinationObjectQuery_ThrowsException()
-		{
-			// Arrange
-			_objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
-				It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
-
-			// Act
-			ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
-
-			// Assert
-			Assert.IsFalse(actualResult.IsValid);
-			Assert.IsNotEmpty(actualResult.Messages);
-			actualResult.Messages.First().ShortMessage.Should().Be("Exception occurred during field mappings validation. See logs for more details.");
-
-			VerifyObjectManagerQueryRequest();
-			Mock.Verify(_validationConfiguration);
-		}
-
+		
 		[TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
 		public async Task ValidateAsync_ShouldHandleUniqueIdentifierInvalid(string testInvalidFieldMap, string expectedErrorMessage)
 		{

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using Autofac;
-using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.Storage.RdoGuidsProviders;
 
 namespace Relativity.Sync.Storage
 {
@@ -10,13 +11,17 @@ namespace Relativity.Sync.Storage
 		{
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 
+			builder.RegisterType<MetricsConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<StatisticsConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<PreValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<PermissionsCheckConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SnapshotPartitionConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<DocumentDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<DocumentRetryDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<ImageDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<ImageRetryDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<ImageJobStartMetricsConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<DataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<RetryDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<SnapshotQueryConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<FieldConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ImageRetrieveConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DestinationWorkspaceSavedSearchCreationConfiguration>().AsImplementedInterfaces();
@@ -31,6 +36,9 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<JobEndMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<NotificationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<JobStatusConsolidationConfiguration>().AsImplementedInterfaces();
+			
+			builder.RegisterType<RdoGuidConfiguration>().AsImplementedInterfaces();
+			
 			builder.RegisterType<FieldMappings>().As<IFieldMappings>();
 			builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
 			builder.RegisterType<JobProgressUpdaterFactory>().As<IJobProgressUpdaterFactory>();
@@ -41,10 +49,11 @@ namespace Relativity.Sync.Storage
 
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)
 		{
-			ISourceServiceFactoryForAdmin serviceFactory = componentContext.Resolve<ISourceServiceFactoryForAdmin>();
 			SyncJobParameters syncJobParameters = componentContext.Resolve<SyncJobParameters>();
 			ISyncLog logger = componentContext.Resolve<ISyncLog>();
-			return Configuration.GetAsync(serviceFactory, syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1))).ConfigureAwait(false).GetAwaiter().GetResult();
+			IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
+			
+			return Configuration.GetAsync(syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();
 		}
 	}
 }

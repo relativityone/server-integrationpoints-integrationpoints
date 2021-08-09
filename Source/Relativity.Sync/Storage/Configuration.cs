@@ -1,104 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Polly;
-using Relativity.Kepler.Transport;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 
 namespace Relativity.Sync.Storage
 {
 	internal sealed class Configuration : IConfiguration
 	{
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly IRdoManager _rdoManager;
 		private readonly int _workspaceArtifactId;
 		private readonly int _syncConfigurationArtifactId;
 		private readonly ISyncLog _logger;
 
 		private readonly ISemaphoreSlim _semaphoreSlim;
 
-		private readonly Dictionary<Guid, object> _cache = new Dictionary<Guid, object>();
+		private SyncConfigurationRdo _configuration;
 
-		private static readonly Guid ConfigurationObjectTypeGuid = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
-
-		private Configuration(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, ISyncLog logger, ISemaphoreSlim semaphoreSlim)
+		private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_rdoManager = rdoManager;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
 			_syncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
-			_logger = logger;
 			_semaphoreSlim = semaphoreSlim;
+			_logger = logger;
 		}
 
-		public T GetFieldValue<T>(Guid guid)
+		public T GetFieldValue<T>(Func<SyncConfigurationRdo, T> valueGetter)
 		{
 			_semaphoreSlim.Wait();
-			object value = null;
+
 			try
 			{
-				if (!_cache.ContainsKey(guid))
-				{
-					_logger.LogError("Requesting unknown field with GUID {guid}.", guid);
-					throw new ArgumentException($"Field with GUID {guid} does not exist in cache.");
-				}
-
-				value = _cache[guid];
-				if (value == null)
-				{
-					_logger.LogVerbose("Returning default value for field with GUID {guid}.", guid);
-					return default(T);
-				}
-
-				return (T) value;
-			}
-			catch (InvalidCastException ex)
-			{
-				_logger.LogError("Exception occurred when trying to cast value: \"{value}\" to type {type}", value, typeof(T).ToString());
-				throw new InvalidCastException($"Cannot cast value \"{value}\" to type {typeof(T)}", ex);
+				return valueGetter(_configuration);
 			}
 			finally
 			{
 				_semaphoreSlim.Release();
 			}
 		}
-
-		public async Task UpdateFieldValueAsync<T>(Guid guid, T value)
+		
+		public async Task UpdateFieldValueAsync<T>(Expression<Func<SyncConfigurationRdo, T>> memberExpression, T value)
 		{
-			if (!_cache.ContainsKey(guid))
-			{
-				_logger.LogError("Updating unknown field with GUID {guid}.", guid);
-				throw new ArgumentException($"Field with GUID {guid} does not exist in cache.");
-			}
-
 			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
 			try
 			{
-				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-				{
-					UpdateRequest request = new UpdateRequest
-					{
-						Object = new RelativityObjectRef
-						{
-							ArtifactID = _syncConfigurationArtifactId
-						},
-						FieldValues = new[]
-						{
-							new FieldRefValuePair
-							{
-								Field = new FieldRef
-								{
-									Guid = guid
-								},
-								Value = value
-							}
-						}
-					};
-					await objectManager.UpdateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-					_cache[guid] = value;
-				}
+				await _rdoManager.SetValueAsync(_workspaceArtifactId, _configuration, memberExpression, value)
+					.ConfigureAwait(false);
 			}
 			finally
 			{
@@ -110,88 +58,23 @@ namespace Relativity.Sync.Storage
 		{
 			_logger.LogVerbose("Reading Sync Configuration {artifactId}.", _syncConfigurationArtifactId);
 
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			_configuration = await _rdoManager
+				.GetAsync<SyncConfigurationRdo>(_workspaceArtifactId, _syncConfigurationArtifactId)
+				.ConfigureAwait(false);
+
+			if (_configuration == null)
 			{
-				var request = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = ConfigurationObjectTypeGuid
-					},
-					Condition = $"(('Artifact ID' == {_syncConfigurationArtifactId}))",
-					Fields = new[]
-					{
-						new FieldRef
-						{
-							Name = "*"
-						}
-					}
-				};
-				const int start = 1;
-				const int length = 1;
-				QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, start, length).ConfigureAwait(false);
-
-				if (result.TotalCount == 0)
-				{
-					throw new SyncException($"Cannot find Sync Configuration with given artifact ID {_syncConfigurationArtifactId}.");
-				}
-
-				foreach (FieldValuePair fieldValuePair in result.Objects[0].FieldValues)
-				{
-					foreach (Guid guid in fieldValuePair.Field.Guids)
-					{
-						const string longTextTruncateMark = "...";
-
-						if (fieldValuePair.Field.FieldType == FieldType.LongText &&
-							!string.IsNullOrEmpty(fieldValuePair.Value?.ToString()) &&
-							fieldValuePair.Value.ToString().EndsWith(longTextTruncateMark, StringComparison.InvariantCulture))
-						{
-							const int maxNumberOfRetries = 2;
-							const int maxWaitTime = 500;
-
-							string longTextField = await Policy
-								.Handle<Exception>()
-								.WaitAndRetryAsync(maxNumberOfRetries, i => TimeSpan.FromMilliseconds(maxWaitTime))
-								.ExecuteAsync(() => ReadLongTextFieldAsync(objectManager, guid))
-								.ConfigureAwait(false);
-
-							_logger.LogVerbose("Long text field with guid {guid} read.", guid);
-							_cache.Add(guid, longTextField);
-						}
-						else
-						{
-							_logger.LogVerbose("Field with guid {guid} read.", guid);
-							_cache.Add(guid, fieldValuePair.Value);
-						}
-					}
-				}
+				_logger.LogError("Configuration with Id {artifactId} does not exist in workspace {workspaceId}",
+					_syncConfigurationArtifactId, _workspaceArtifactId);
+				throw new SyncException(
+					$"Configuration with Id {_syncConfigurationArtifactId} does not exist in workspace {_workspaceArtifactId}");
 			}
 		}
 
-		private async Task<string> ReadLongTextFieldAsync(IObjectManager objectManager, Guid longTextFieldGuid)
+		public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, ISyncLog logger,
+			ISemaphoreSlim semaphoreSlim, IRdoManager rdoManager)
 		{
-			var exportObject = new RelativityObjectRef
-			{
-				Guid = ConfigurationObjectTypeGuid,
-				ArtifactID = _syncConfigurationArtifactId
-			};
-			var fieldRef = new FieldRef
-			{
-				Guid = longTextFieldGuid
-			};
-			using (IKeplerStream longTextResult = await objectManager.StreamLongTextAsync(_workspaceArtifactId, exportObject, fieldRef).ConfigureAwait(false))
-			using (Stream longTextStream = await longTextResult.GetStreamAsync().ConfigureAwait(false))
-			using (var streamReader = new StreamReader(longTextStream, Encoding.Unicode))
-			{
-				string longTextField = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-				return longTextField;
-			}
-		}
-
-		public static async Task<IConfiguration> GetAsync(ISourceServiceFactoryForAdmin serviceFactory, SyncJobParameters syncJobParameters, ISyncLog logger,
-			ISemaphoreSlim semaphoreSlim)
-		{
-			Configuration configuration = new Configuration(serviceFactory, syncJobParameters, logger, semaphoreSlim);
+			Configuration configuration = new Configuration(syncJobParameters, rdoManager, semaphoreSlim, logger);
 			await configuration.ReadAsync().ConfigureAwait(false);
 			return configuration;
 		}

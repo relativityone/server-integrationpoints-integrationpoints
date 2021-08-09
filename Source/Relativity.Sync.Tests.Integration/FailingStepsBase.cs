@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
-			Func<Task> action = () => syncJob.ExecuteAsync(CancellationToken.None);
+			Func<Task> action = () => syncJob.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Integration
 			ISyncJob syncJob = _containerBuilder.Build().Resolve<ISyncJob>();
 
 			// ACT
-			Func<Task> action = () => syncJob.ExecuteAsync(CancellationToken.None);
+			Func<Task> action = () => syncJob.ExecuteAsync(CompositeCancellationToken.None);
 
 			// ASSERT
 			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);

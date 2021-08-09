@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Executors.SumReporting
 {
@@ -10,44 +10,43 @@ namespace Relativity.Sync.Executors.SumReporting
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobEndMetricsConfiguration _configuration;
-		protected readonly ISyncMetrics _syncMetrics;
 
-		protected JobEndMetricsServiceBase(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, ISyncMetrics syncMetrics)
+		protected JobEndMetricsServiceBase(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration)
 		{
 			_batchRepository = batchRepository;
 			_configuration = configuration;
-			_syncMetrics = syncMetrics;
 		}
 
-		protected async Task ReportRecordsStatisticsAsync()
+		protected void WriteJobDetails<T>(JobEndMetricBase<T> jobEndMetric, ExecutionStatus executionStatus)
+			where T : JobEndMetricBase<T>, new()
 		{
-			int totalTransferred = 0;
-			int totalTagged = 0;
-			int totalFailed = 0;
-			int totalRequested = 0;
+			jobEndMetric.JobEndStatus = executionStatus.GetDescription();
+
+			if (_configuration.JobHistoryToRetryId != null)
+			{
+				jobEndMetric.RetryJobEndStatus = executionStatus.GetDescription();
+			}
+
+			jobEndMetric.SourceType = _configuration.DataSourceType;
+			jobEndMetric.DestinationType = _configuration.DestinationType;
+			jobEndMetric.OverwriteMode = _configuration.ImportOverwriteMode;
+		}
+
+		protected async Task WriteRecordsStatisticsAsync<T>(JobEndMetricBase<T> jobEndMetric)
+			where T: JobEndMetricBase<T>, new()
+		{
+			jobEndMetric.TotalRecordsTransferred = 0;
+			jobEndMetric.TotalRecordsTagged = 0;
+			jobEndMetric.TotalRecordsFailed = 0;
+			jobEndMetric.TotalRecordsRequested = 0;
 
 			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 			foreach (IBatch batch in batches)
 			{
-				totalTransferred += batch.TransferredItemsCount;
-				totalTagged += batch.TaggedItemsCount;
-				totalFailed += batch.FailedItemsCount;
-				totalRequested += batch.TotalItemsCount;
-			}
-
-			_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TRANSFERRED, totalTransferred);
-			_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TAGGED, totalTagged);
-			_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_FAILED, totalFailed);
-			_syncMetrics.LogPointInTimeLong(TelemetryConstants.MetricIdentifiers.DATA_RECORDS_TOTAL_REQUESTED, totalRequested);
-		}
-
-		protected void ReportJobEndStatus(string bucketName, ExecutionStatus jobExecutionStatus)
-		{
-			_syncMetrics.LogPointInTimeString(bucketName, jobExecutionStatus.GetDescription());
-
-			if (_configuration.JobHistoryToRetryId != null)
-			{
-				_syncMetrics.LogPointInTimeString(TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS, jobExecutionStatus.GetDescription());
+				jobEndMetric.TotalRecordsTransferred += batch.TransferredDocumentsCount;
+				jobEndMetric.TotalRecordsTagged += batch.TaggedDocumentsCount;
+				jobEndMetric.TotalRecordsFailed += batch.FailedDocumentsCount;
+				jobEndMetric.TotalRecordsRequested += batch.TotalDocumentsCount;
 			}
 		}
 	}

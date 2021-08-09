@@ -8,25 +8,26 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Executors
 {
 	internal class JobStatusConsolidationExecutor : IExecutor<IJobStatusConsolidationConfiguration>
 	{
+		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly IBatchRepository _batchRepository;
+		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 
-		private static readonly Guid _COMPLETED_ITEMS_COUNT_GUID = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
-		private static readonly Guid _FAILED_ITEMS_COUNT_GUID = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
-		private static readonly Guid _TOTAL_ITEMS_COUNT_GUID = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
-
-		public JobStatusConsolidationExecutor(IBatchRepository batchRepository, ISourceServiceFactoryForAdmin serviceFactory)
+		public JobStatusConsolidationExecutor(IRdoGuidConfiguration rdoGuidConfiguration, IBatchRepository batchRepository, IJobStatisticsContainer jobStatisticsContainer, ISourceServiceFactoryForAdmin serviceFactory)
 		{
+			_rdoGuidConfiguration = rdoGuidConfiguration;
 			_batchRepository = batchRepository;
+			_jobStatisticsContainer = jobStatisticsContainer;
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CompositeCancellationToken token)
 		{
 			UpdateResult updateResult;
 			try
@@ -35,17 +36,11 @@ namespace Relativity.Sync.Executors
 					.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId)
 					.ConfigureAwait(false)).ToList();
 
-				int completedItemsCount = batches
-					.Sum(batch => batch.TransferredItemsCount);
+				int completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
+				int totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
+				int failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
 
-				int totalItemsCount = batches
-					.Sum(batch => batch.TotalItemsCount);
-
-				int failedItemsCount = batches
-					.Sum(batch => batch.FailedItemsCount);
-
-				updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount)
-					.ConfigureAwait(false);
+				updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -59,6 +54,16 @@ namespace Relativity.Sync.Executors
 			}
 
 			return ExecutionResult.Success();
+		}
+
+		private async Task<int> GetTotalItemsCountAsync(List<IBatch> batches)
+		{
+			if (_jobStatisticsContainer.ImagesStatistics != null)
+			{
+				return (int)(await _jobStatisticsContainer.ImagesStatistics.ConfigureAwait(false)).TotalCount;
+			}
+
+			return batches.Sum(batch => batch.TotalDocumentsCount);
 		}
 
 		private static string CreateEventHandlersFailureMessage(UpdateResult updateResult)
@@ -85,7 +90,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = _COMPLETED_ITEMS_COUNT_GUID
+								Guid = _rdoGuidConfiguration.JobHistory.CompletedItemsFieldGuid
 							},
 							Value = completedItemsCount
 						},
@@ -93,7 +98,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = _FAILED_ITEMS_COUNT_GUID
+								Guid = _rdoGuidConfiguration.JobHistory.FailedItemsFieldGuid
 							},
 							Value = failedItemsCount
 						},
@@ -101,7 +106,7 @@ namespace Relativity.Sync.Executors
 						{
 							Field = new FieldRef
 							{
-								Guid = _TOTAL_ITEMS_COUNT_GUID
+								Guid = _rdoGuidConfiguration.JobHistory.TotalItemsFieldGuid
 							},
 							Value = totalItemsCount
 						}

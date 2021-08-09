@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
-using Relativity.Sync.Nodes;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
@@ -30,7 +27,6 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid StatusGuid = new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B");
 		private static readonly Guid ExceptionGuid = new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939");
 		private static readonly Guid MessageGuid = new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44");
-		private static readonly Guid ParentArtifactGuid = new Guid("E0188DD7-4B1B-454D-AFA4-3CCC7F9DC001");
 
 		[SetUp]
 		public async Task SetUp()
@@ -46,21 +42,23 @@ namespace Relativity.Sync.Tests.System
 			string jobHistoryName = $"JobHistory.{Guid.NewGuid()}";
 
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, workspaceArtifactId, jobHistoryName).ConfigureAwait(false);
-			int syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _sourceWorkspace.ArtifactID, jobHistoryArtifactId).ConfigureAwait(false);
 			ConfigurationStub configuration = new ConfigurationStub
 			{
 				SourceWorkspaceArtifactId = workspaceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
-				SyncConfigurationArtifactId = syncConfigurationArtifactId,
 				JobHistoryToRetryId = pipelineType == typeof(SyncDocumentRetryPipeline) ? (int?)1 : null
 			};
+
+			configuration.SyncConfigurationArtifactId = await Rdos
+				.CreateSyncConfigurationRdoAsync(_sourceWorkspace.ArtifactID, configuration).ConfigureAwait(false);
+			
 			ISyncJob syncJob = SyncJobHelper.CreateWithMockedAllSteps(configuration);
 
 			// ACT
-			await syncJob.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			List<RelativityObject> progressRdos = await QueryForProgressRdosAsync(workspaceArtifactId, syncConfigurationArtifactId).ConfigureAwait(false);
+			List<RelativityObject> progressRdos = await QueryForProgressRdosAsync(workspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 
 			const int nonNodeProgressSteps = 1; // MultiNode
 			int minimumExpectedProgressRdos = GetSyncNodes(pipelineType).Count + nonNodeProgressSteps;
@@ -77,7 +75,7 @@ namespace Relativity.Sync.Tests.System
 					{
 						Guid = ProgressObjectTypeGuid
 					},
-					Condition = $"'{ParentArtifactGuid}' == {syncConfigurationId}",
+					Condition = $"'SyncConfiguration' == {syncConfigurationId}",
 					Fields = new[]
 					{
 						new FieldRef

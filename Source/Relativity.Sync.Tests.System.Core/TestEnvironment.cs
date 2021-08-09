@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -13,13 +13,13 @@ using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Production;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Tests.System.Core.Stubs;
 using FieldRef = Relativity.Services.Field.FieldRef;
-using NumberingType = Relativity.Services.Production.NumberingType;
-using ProductionDetails = Relativity.Services.Production.ProductionDetails;
-using ProductionNumberingBase = Relativity.Productions.Services.ProductionNumberingBase;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -27,10 +27,12 @@ namespace Relativity.Sync.Tests.System.Core
 	{
 		private int _templateWorkspaceArtifactId = -1;
 		private const string _RELATIVITY_SYNC_TEST_HELPER_RAP = "Relativity_Sync_Test_Helper.xml";
+		private const string _CUSTOM_RELATIVITY_SYNC_TEST_HELPER_RAP = "Custom_Relativity_Sync_Test_Helper.xml";
 		private readonly List<WorkspaceRef> _workspaces = new List<WorkspaceRef>();
 		private readonly SemaphoreSlim _templateWorkspaceSemaphore = new SemaphoreSlim(1);
 		private readonly ServiceFactory _serviceFactory;
 		private static readonly Guid _HELPER_APP_GUID = new Guid("e08fd0d9-c3a1-4654-87ad-104f08980b84");
+		private static readonly Guid _CUSTOM_HELPER_APP_GUID = new Guid("fdd69e45-880a-40bb-aae1-784271974d49");
 
 		public TestEnvironment()
 		{
@@ -76,23 +78,21 @@ namespace Relativity.Sync.Tests.System.Core
 			}
 		}
 
-		public async Task<IEnumerable<WorkspaceRef>> GetWorkspacesAsync(string workspaceName)
-		{
-			using (var workspaceManager = _serviceFactory.CreateProxy<IWorkspaceManager>())
-			{
-				IEnumerable<WorkspaceRef> workspaces = await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
-				return workspaces.Where(ws => ws.Name == workspaceName).ToList();
-			}
-		}
-
 		public async Task<WorkspaceRef> CreateWorkspaceWithFieldsAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
 		{
 			WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
 			await CreateFieldsInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
 			return workspace;
 		}
+		
+		public async Task<WorkspaceRef> CreateWorkspaceWithCustomAppAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
+		{
+			WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
+			await InstallCustomHelperAppAsync(workspace.ArtifactID).ConfigureAwait(false);
+			return workspace;
+		}
 
-		public async Task DeleteAllDocumentsInWorkspace(WorkspaceRef workspace)
+		public async Task DeleteAllDocumentsInWorkspaceAsync(WorkspaceRef workspace)
 		{
 			var request = new MassDeleteByCriteriaRequest()
 			{
@@ -153,26 +153,10 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
 			{
-				// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
+				// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled 
 				await Task.WhenAll(_workspaces.Select(w => manager.DeleteAsync(new WorkspaceRef(w.ArtifactID)))).ConfigureAwait(false);
 			}
 			_workspaces.Clear();
-		}
-
-		public async Task DeleteWorkspacesAsync(IEnumerable<int> artifactIds)
-		{
-			List<int> artifactIdsList = artifactIds.ToList();
-			if (artifactIdsList.Any())
-			{
-				using (var manager = _serviceFactory.CreateProxy<IObjectManager>())
-				{
-					MassDeleteByObjectIdentifiersRequest request = new MassDeleteByObjectIdentifiersRequest()
-					{
-						Objects = artifactIdsList.Select(x => new RelativityObjectRef {ArtifactID = x}).ToList()
-					};
-					await manager.DeleteAsync(-1, request).ConfigureAwait(false);
-				}
-			}
 		}
 
 		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
@@ -180,14 +164,14 @@ namespace Relativity.Sync.Tests.System.Core
 			var production = new Productions.Services.Production
 			{
 				Name = productionName,
-				Details = new Productions.Services.ProductionDetails
+				Details = new ProductionDetails
 				{
 					BrandingFontSize = 10,
 					ScaleBrandingFont = false
 				},
 				Numbering = new DocumentFieldNumbering
 				{
-					NumberingType = Productions.Services.NumberingType.DocumentField,
+					NumberingType = NumberingType.DocumentField,
 					NumberingField = new FieldRef
 					{
 						ArtifactID = 1003667,
@@ -211,47 +195,71 @@ namespace Relativity.Sync.Tests.System.Core
 
 			using (var productionManager = _serviceFactory.CreateProxy<IProductionManager>())
 			{
-				
-
 				return await productionManager.CreateSingleAsync(workspaceID, production).ConfigureAwait(false);
 			}
 		}
 
 		public async Task CreateFieldsInWorkspaceAsync(int workspaceArtifactId)
 		{
-			await InstallHelperAppIfNeededAsync().ConfigureAwait(false);
-			using (var applicationInstallManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
+			await InstallHelperAppIfNeededAsync(_RELATIVITY_SYNC_TEST_HELPER_RAP, _HELPER_APP_GUID).ConfigureAwait(false);
+			await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _HELPER_APP_GUID);
+			
+			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
+		}
+
+		public async Task InstallCustomHelperAppAsync(int workspaceArtifactId)
+		{
+			await InstallHelperAppIfNeededAsync(_CUSTOM_RELATIVITY_SYNC_TEST_HELPER_RAP, _CUSTOM_HELPER_APP_GUID).ConfigureAwait(false);
+			await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _CUSTOM_HELPER_APP_GUID);
+			
+			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
+		}
+		
+		private async Task InstallApplicationFromLibraryToWorkspaceAsync(int workspaceArtifactId, Guid appGuid)
+		{
+			using (var applicationInstallManager =
+				_serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
 			{
 				var installApplicationRequest = new InstallApplicationRequest
 				{
-					WorkspaceIDs = new List<int> { workspaceArtifactId }
+					WorkspaceIDs = new List<int> {workspaceArtifactId}
 				};
-				InstallApplicationResponse install = await applicationInstallManager.InstallApplicationAsync(-1, _HELPER_APP_GUID, installApplicationRequest).ConfigureAwait(false);
+				InstallApplicationResponse install = await applicationInstallManager
+					.InstallApplicationAsync(-1, appGuid, installApplicationRequest).ConfigureAwait(false);
 				int applicationInstallId = install.Results.First().ApplicationInstallID;
 				InstallStatusCode installStatusCode;
 				do
 				{
 					await Task.Yield();
-					GetInstallStatusResponse status = await applicationInstallManager.GetStatusAsync(-1, _HELPER_APP_GUID, applicationInstallId).ConfigureAwait(false);
+					GetInstallStatusResponse status = await applicationInstallManager
+						.GetStatusAsync(-1, appGuid, applicationInstallId).ConfigureAwait(false);
 					installStatusCode = status.InstallStatus.Code;
-				}
-				while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
+				} while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
 			}
 		}
 
-		private async Task InstallHelperAppIfNeededAsync()
+		private static async Task EnsureRdosExistsAsync(int workspaceArtifactId)
 		{
-			using (var fileStream = GetHelperApplicationXml())
+			var rdoManager = new RdoManager(TestLogHelper.GetLogger(), new ServicesManagerStub(), new RdoGuidProvider());
+			await rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(workspaceArtifactId).ConfigureAwait(false);
+			await rdoManager.EnsureTypeExistsAsync<SyncProgressRdo>(workspaceArtifactId).ConfigureAwait(false);
+			await rdoManager.EnsureTypeExistsAsync<SyncBatchRdo>(workspaceArtifactId).ConfigureAwait(false);
+			await rdoManager.EnsureTypeExistsAsync<SyncStatisticsRdo>(workspaceArtifactId).ConfigureAwait(false);
+		}
+
+		private async Task InstallHelperAppIfNeededAsync(string appFileName, Guid appGuid)
+		{
+			using (var fileStream = GetHelperApplicationXml(appFileName))
 			using (var applicationLibraryManager = _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.ILibraryApplicationManager>())
 			{
 				List<LibraryApplicationResponse> apps = await applicationLibraryManager.ReadAllAsync(-1).ConfigureAwait(false);
-				LibraryApplicationResponse libraryApp = apps.FirstOrDefault(app => app.Guids.Contains(_HELPER_APP_GUID));
+				LibraryApplicationResponse libraryApp = apps.FirstOrDefault(app => app.Guids.Contains(appGuid));
 				var libraryAppVersion = new Version(libraryApp?.Version ?? "0.0.0.0");
 				Version appXmlAppVersion = GetVersionFromApplicationXmlStream(fileStream);
 
 				if (libraryAppVersion < appXmlAppVersion)
 				{
-					// Rewinding stream as it will be reused.
+					// Rewinding stream as it will be reused. 
 					fileStream.Seek(0, SeekOrigin.Begin);
 					using (var outStream = await CreateRapFileInMemoryAsync(fileStream).ConfigureAwait(false))
 					using (var keplerStream = new KeplerStream(outStream))
@@ -259,7 +267,7 @@ namespace Relativity.Sync.Tests.System.Core
 						var updateLibraryApplicationRequest = new UpdateLibraryApplicationRequest
 						{
 							CreateIfMissing = true,
-							FileName = Path.ChangeExtension(_RELATIVITY_SYNC_TEST_HELPER_RAP, "rap"),
+							FileName = Path.ChangeExtension(appFileName, "rap"),
 							IgnoreVersion = false,
 							RefreshCustomPages = false
 						};
@@ -281,7 +289,7 @@ namespace Relativity.Sync.Tests.System.Core
 				}
 			}
 
-			// Rewinding stream as it is meant to be reused.
+			// Rewinding stream as it is meant to be reused. 
 			outStream.Seek(0, SeekOrigin.Begin);
 			return outStream;
 		}
@@ -299,12 +307,12 @@ namespace Relativity.Sync.Tests.System.Core
 			return appXmlAppVersion;
 		}
 
-		/// <summary>
-		/// To prevent insecure DTD processing we have to load the XML in a specific way.
-		/// See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca3075-insecure-dtd-processing?view=vs-2017 for more info
-		/// </summary>
-		/// <param name="fileStream">Stream to be read</param>
-		/// <returns>XML document loaded from given stream</returns>
+		/// <summary> 
+		/// To prevent insecure DTD processing we have to load the XML in a specific way. 
+		/// See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca3075-insecure-dtd-processing?view=vs-2017 for more info 
+		/// </summary> 
+		/// <param name="fileStream">Stream to be read</param> 
+		/// <returns>XML document loaded from given stream</returns> 
 		private static XmlDocument SafeLoadXml(Stream fileStream)
 		{
 			var xmlReaderSettings = new XmlReaderSettings { XmlResolver = null };
@@ -314,10 +322,10 @@ namespace Relativity.Sync.Tests.System.Core
 			return appXml;
 		}
 
-		private static Stream GetHelperApplicationXml()
+		private static Stream GetHelperApplicationXml(string appResourceName)
 		{
 			Assembly asm = Assembly.GetExecutingAssembly();
-			string resource = $"Relativity.Sync.Tests.System.Core.Resources.{_RELATIVITY_SYNC_TEST_HELPER_RAP}";
+			string resource = $"Relativity.Sync.Tests.System.Core.Resources.{appResourceName}";
 			return asm.GetManifestResourceStream(resource);
 		}
 

@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			return Task.FromResult(false);
 		}
 
-		public Task<ExecutionResult> ExecuteAsync(T configuration, CancellationToken token)
+		public Task<ExecutionResult> ExecuteAsync(T configuration, CompositeCancellationToken token)
 		{
 			return Task.FromResult(ExecutionResult.Success());
 		}

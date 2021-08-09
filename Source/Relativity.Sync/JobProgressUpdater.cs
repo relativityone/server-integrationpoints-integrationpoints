@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {
@@ -11,15 +14,13 @@ namespace Relativity.Sync
 		private readonly int _workspaceArtifactId;
 		private readonly int _jobHistoryArtifactId;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly ISyncLog _logger;
 
-		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
-		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
-		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
-
-		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int jobHistoryArtifactId, ISyncLog logger)
+		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactory, IRdoGuidConfiguration rdoGuidConfiguration, int workspaceArtifactId, int jobHistoryArtifactId, ISyncLog logger)
 		{
 			_serviceFactory = serviceFactory;
+			_rdoGuidConfiguration = rdoGuidConfiguration;
 			_workspaceArtifactId = workspaceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
 			_logger = logger;
@@ -43,7 +44,7 @@ namespace Relativity.Sync
 							{
 								Field = new FieldRef()
 								{
-									Guid = TotalItemsCountGuid
+									Guid = _rdoGuidConfiguration.JobHistory.TotalItemsFieldGuid
 								},
 								Value = totalItemsCount
 							}
@@ -76,7 +77,7 @@ namespace Relativity.Sync
 							{
 								Field = new FieldRef()
 								{
-									Guid = CompletedItemsCountGuid
+									Guid = _rdoGuidConfiguration.JobHistory.CompletedItemsFieldGuid
 								},
 								Value = completedRecordsCount
 							},
@@ -84,7 +85,7 @@ namespace Relativity.Sync
 							{
 								Field = new FieldRef()
 								{
-									Guid = FailedItemsCountGuid
+									Guid = _rdoGuidConfiguration.JobHistory.FailedItemsFieldGuid
 								},
 								Value = failedRecordsCount
 							}, 

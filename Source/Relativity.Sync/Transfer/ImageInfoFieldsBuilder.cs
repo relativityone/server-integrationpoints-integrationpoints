@@ -22,13 +22,14 @@ namespace Relativity.Sync.Transfer
 		{
 			yield return FieldInfoDto.ImageFileNameField();
 			yield return FieldInfoDto.ImageFileLocationField();
+			yield return FieldInfoDto.ImageIdentifierField();
 		}
 
 		public async Task<IImageSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
 		{
 			QueryImagesOptions options = new QueryImagesOptions
 			{
-				ProductionIds = _configuration.ProductionIds,
+				ProductionIds = _configuration.ProductionImagePrecedence,
 				IncludeOriginalImageIfNotFoundInProductions = _configuration.IncludeOriginalImageIfNotFoundInProductions
 			};
 

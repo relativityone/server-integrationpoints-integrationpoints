@@ -8,10 +8,16 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("LARGE_Jobs-Large-2a")]
-	public class LargeJobTests_Large2a : PerformanceTestBase
+	internal class LargeJobTests_Large2a : PerformanceTestBase
 	{
-		public LargeJobTests_Large2a() : base(WorkspaceType.Relativity, "Large Job Tests - Large-2 [DO NOT DELETE]", null)
+		protected override async Task ChildSuiteSetup()
 		{
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseExistingWorkspaceAsync(
+					"Large Job Tests - Large-2 [DO NOT DELETE]",
+					null)
+				.ConfigureAwait(false);
 		}
 
 		[Test]

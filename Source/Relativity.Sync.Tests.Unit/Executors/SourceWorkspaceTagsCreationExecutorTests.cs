@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.CreateAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)).ReturnsAsync(new DestinationWorkspaceTag());
 			
 			// act
-			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_destinationWorkspaceTagRepository.Verify(x => x.CreateAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName));
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(destinationWorkspaceNewName);
 
 			// act
-			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<DestinationWorkspaceTag>(tag => 
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(federatedInstanceNewName);
 
 			// act
-			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<DestinationWorkspaceTag>(tag =>
@@ -136,7 +136,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(tag);
 
 			// act
-			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			_destinationWorkspaceTagsLinker.Verify(x => x.LinkDestinationWorkspaceTagToJobHistoryAsync(sourceWorkspaceArtifactId, destinationWorkspaceTagArtifactId, jobArtifactId));
@@ -167,7 +167,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(tag);
 
 			// act
-			await _sut.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			configuration.Verify(x => x.SetDestinationWorkspaceTagArtifactIdAsync(destinationWorkspaceTagArtifactId));
@@ -179,7 +179,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(It.IsAny<IDestinationServiceFactoryForUser>(), It.IsAny<int>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -193,7 +193,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -207,7 +207,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -223,7 +223,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -244,7 +244,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.UpdateAsync(It.IsAny<int>(), outdatedTag)).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);
@@ -260,7 +260,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagsLinker.Setup(x => x.LinkDestinationWorkspaceTagToJobHistoryAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
-			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _sut.ExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			Assert.AreEqual(ExecutionStatus.Failed, result.Status);

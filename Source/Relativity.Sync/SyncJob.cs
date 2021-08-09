@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
 using Relativity.Sync.Executors.Validation;
@@ -25,18 +24,18 @@ namespace Relativity.Sync
 			_logger = logger;
 		}
 
-		public Task ExecuteAsync(CancellationToken token)
+		public Task ExecuteAsync(CompositeCancellationToken token)
 		{
 			return ExecuteAsync(token, _syncProgress);
 		}
 
-		public Task ExecuteAsync(IProgress<SyncJobState> progress, CancellationToken token)
+		public Task ExecuteAsync(IProgress<SyncJobState> progress, CompositeCancellationToken token)
 		{
 			IProgress<SyncJobState> safeProgress = new SafeProgressWrapper<SyncJobState>(progress, _logger);
 			return ExecuteAsync(token, _syncProgress, safeProgress);
 		}
 
-		private async Task ExecuteAsync(CancellationToken token, params IProgress<SyncJobState>[] progressReporters)
+		private async Task ExecuteAsync(CompositeCancellationToken token, params IProgress<SyncJobState>[] progressReporters)
 		{
 			NodeResult executionResult;
 			try
@@ -44,6 +43,7 @@ namespace Relativity.Sync
 				IProgress<SyncJobState> combinedProgress = progressReporters.Combine();
 				IExecutionContext<SyncExecutionContext> executionContext = _executionContextFactory.Create(combinedProgress, token);
 				executionResult = await _pipeline.ExecuteAsync(executionContext).ConfigureAwait(false);
+				_logger.LogInformation("Sync job completed with execution result: {result}", executionResult.Status);
 			}
 			catch (OperationCanceledException e)
 			{
@@ -58,7 +58,7 @@ namespace Relativity.Sync
 			catch (Exception e)
 			{
 				_logger.LogError(e, "Error occured during Sync job execution.");
-				throw new SyncException("Error occured during Sync job execution. See inner exception for more details.", e, _syncJobParameters.WorkflowId.Value);
+				throw new SyncException("Error occured during Sync job execution. See inner exception for more details.", e, _syncJobParameters.WorkflowId);
 			}
 
 			if (executionResult.Status != NodeResultStatus.Succeeded && executionResult.Status != NodeResultStatus.SucceededWithErrors)
@@ -72,27 +72,14 @@ namespace Relativity.Sync
 				ValidationException validationException = failingExceptions.OfType<ValidationException>().FirstOrDefault();
 				if (validationException != null)
 				{
+					_logger.LogWarning(validationException, "Sync job validation failed.");
 					throw new ValidationException(validationException.Message, new AggregateException(failingExceptions), validationException.ValidationResult);
 				}
 
-				throw new SyncException("Sync job failed. See inner exceptions for more details.", new AggregateException(failingExceptions), _syncJobParameters.WorkflowId.Value);
+				const string errorMessage = "Sync job failed. See inner exceptions for more details.";
+				_logger.LogError(errorMessage);
+				throw new SyncException(errorMessage, new AggregateException(failingExceptions), _syncJobParameters.WorkflowId);
 			}
-		}
-
-		public Task RetryAsync(CancellationToken token)
-		{
-			return RetryAsync(token, _syncProgress);
-		}
-
-		public Task RetryAsync(IProgress<SyncJobState> progress, CancellationToken token)
-		{
-			IProgress<SyncJobState> safeProgress = new SafeProgressWrapper<SyncJobState>(progress, _logger);
-			return RetryAsync(token, _syncProgress, safeProgress);
-		}
-
-		private Task RetryAsync(CancellationToken token, params IProgress<SyncJobState>[] progressReporters)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

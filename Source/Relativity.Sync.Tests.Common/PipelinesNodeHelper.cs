@@ -36,13 +36,14 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IImageDataSourceSnapshotConfiguration)},
+				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IImageJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)
@@ -65,13 +66,14 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IImageRetryDataSourceSnapshotConfiguration)},
+				new[] {typeof(IRetryDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IImageJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)
@@ -94,13 +96,14 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDocumentDataSourceSnapshotConfiguration)},
+				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IDocumentJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)
@@ -123,13 +126,14 @@ namespace Relativity.Sync.Tests.Common
 		{
 			return new List<Type[]>
 			{
+				new[] {typeof(IPreValidationConfiguration)},
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDocumentRetryDataSourceSnapshotConfiguration)},
+				new[] {typeof(IRetryDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(ISumReporterConfiguration),
+					typeof(IDocumentJobStartMetricsConfiguration),
 					typeof(ISourceWorkspaceTagsCreationConfiguration),
 					typeof(IDestinationWorkspaceTagsCreationConfiguration),
 					typeof(IDataDestinationInitializationConfiguration)

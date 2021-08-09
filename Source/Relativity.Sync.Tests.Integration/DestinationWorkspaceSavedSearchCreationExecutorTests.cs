@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Integration
 			var configuration = new ConfigurationStub();
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Exception.Should().BeOfType<SyncException>();
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Integration
 			var configuration = new ConfigurationStub();
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Exception.Should().BeOfType<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
@@ -114,7 +114,7 @@ namespace Relativity.Sync.Tests.Integration
 			configuration.SetSourceJobTagName("Some name");
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Exception.Should().BeOfType<SyncException>().Which.InnerException.Should().BeOfType<InvalidOperationException>();
@@ -147,7 +147,7 @@ namespace Relativity.Sync.Tests.Integration
 			configuration.SetSourceJobTagName("Some name");
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Completed);

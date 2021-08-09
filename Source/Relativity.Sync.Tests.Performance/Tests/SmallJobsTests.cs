@@ -8,10 +8,16 @@ namespace Relativity.Sync.Tests.Performance.Tests
 {
 	[TestFixture]
 	[Category("SMALL_Jobs")]
-	public class SmallJobsTests : PerformanceTestBase
+	internal class SmallJobsTests : PerformanceTestBase
 	{
-		public SmallJobsTests() : base(WorkspaceType.ARM, "Small_jobs_tests.zip", null)
+		protected override async Task ChildSuiteSetup()
 		{
+			await base.ChildSuiteSetup().ConfigureAwait(false);
+
+			await UseArmWorkspaceAsync(
+					"Small_jobs_tests.zip",
+					null)
+				.ConfigureAwait(false);
 		}
 
 		public static IEnumerable<TestCaseData> Cases()

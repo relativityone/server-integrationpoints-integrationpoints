@@ -9,12 +9,6 @@ namespace Relativity.Sync
 	public interface ISyncServiceManager
 	{
 		/// <summary>
-		///  Return Relativity Services URL
-		/// </summary>
-		/// <returns></returns>
-		Uri GetServicesURL();
-
-		/// <summary>
 		/// Creates a Kepler client proxy for given interface
 		/// </summary>
 		/// <typeparam name="T"></typeparam>

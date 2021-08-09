@@ -201,16 +201,33 @@
     <None Include="App.config" />
     <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
+    <None Include="Resources\TestCases\Nightly.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\TestCases\Reference.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\TestCases\Small.json" />
-    <None Include="Resources\TestCases\Medium.json" />
-    <None Include="Resources\TestCases\Large5.json" />
-    <None Include="Resources\TestCases\Large4.json" />
-    <None Include="Resources\TestCases\Large3.json" />
-    <None Include="Resources\TestCases\Large2.json" />
-    <None Include="Resources\TestCases\Large1.json" />
+    <None Include="Resources\TestCases\Small.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\TestCases\Medium.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\TestCases\Large5.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\TestCases\Large4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\TestCases\Large3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\TestCases\Large2.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\TestCases\Large1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="oi\docs\fileids_values_only_sorted.txt" />

@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).Throws<InvalidOperationException>();
 
 			// ACT
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Failed);
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			IBatch batch = null;
 			_batchRepository.SetupSequence(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batch).Throws<InvalidOperationException>();
 			// ACT
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Failed);
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
 
 			// ACT
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			Mock<IBatch> lastBatch = new Mock<IBatch>();
 			lastBatch.Setup(x => x.StartingIndex).Returns(lastStartingIndex);
-			lastBatch.Setup(x => x.TotalItemsCount).Returns(lastBatchSize);
+			lastBatch.Setup(x => x.TotalDocumentsCount).Returns(lastBatchSize);
 
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(lastBatch.Object);
 
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
 
 			// ACT
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int ten = 10;
 			Mock<IBatch> lastBatch = new Mock<IBatch>();
 			lastBatch.Setup(x => x.StartingIndex).Returns(ten);
-			lastBatch.Setup(x => x.TotalItemsCount).Returns(ten);
+			lastBatch.Setup(x => x.TotalDocumentsCount).Returns(ten);
 
 			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(lastBatch.Object);
 
@@ -134,7 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
 
 			// ACT
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);

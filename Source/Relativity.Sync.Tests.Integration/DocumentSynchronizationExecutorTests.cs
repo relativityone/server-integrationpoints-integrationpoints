@@ -39,18 +39,19 @@ namespace Relativity.Sync.Tests.Integration
 		private static readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
+		private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 
-		private static readonly Guid LockedByGuid = new Guid("BEFC75D3-5825-4479-B499-58C6EF719DDB");
-		private static readonly Guid ProgressGuid = new Guid("8C6DAF67-9428-4F5F-98D7-3C71A1FF3AE8");
+		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
+		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
+		private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
+		private static readonly Guid TransferredDocumentsCountGuid = new Guid("A5618A97-48C5-441C-86DF-2867481D30AB");
+		private static readonly Guid FailedDocumentsCountGuid = new Guid("4FA1CF50-B261-4157-BD2D-50619F0347D6");
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
-
-		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
-		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-		private static readonly Guid TaggedItemsCountGuid = new Guid("2F87390B-8B92-4B50-84E8-EA6670976470");
-
-		private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
+		private static readonly Guid TaggedDocumentsCountGuid = new Guid("AF3C2398-AF49-4537-9BC3-D79AE1734A8C");
+		private static readonly Guid MetadataBytesTransferredGuid = new Guid("2BE1C011-0A0C-4A10-B77A-74BB9405A68A");
+		private static readonly Guid FilesBytesTransferredGuid = new Guid("4A21D596-6961-4389-8210-8D2D8C56DBAD");
+		private static readonly Guid TotalBytesTransferredGuid = new Guid("511C4B49-2E05-4DFB-BB3E-771EC0BDEFED");
 
 		[SetUp]
 		public void SetUp()
@@ -89,7 +90,8 @@ namespace Relativity.Sync.Tests.Integration
 			{
 				DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID,
 				SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
-				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure,
+				ImportNativeFileCopyMode = ImportNativeFileCopyMode.DoNotImportNativeFiles
 			};
 			_config.SetFieldMappings(fieldMaps);
 			containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();
@@ -150,7 +152,7 @@ namespace Relativity.Sync.Tests.Integration
 			SetupTaggingOfDocuments(totalItemsCount);
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -176,7 +178,7 @@ namespace Relativity.Sync.Tests.Integration
 			IList<int> documentIds = Enumerable.Range(startIndex, totalItemsCount).ToList();
 			RelativityObjectSlim[] exportBlock = CreateExportBlock(documentIds);
 
-			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
 			ISourceWorkspaceDataReader dataReader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch.Object, CancellationToken.None);
 			List<RelativityObjectSlim> failedDocuments = exportBlock.Take(numberOfErrors).ToList();
 			_importBulkArtifactJob.SetupGet(x => x.ItemStatusMonitor).Returns(dataReader.ItemStatusMonitor);
@@ -220,7 +222,7 @@ namespace Relativity.Sync.Tests.Integration
 					.Verifiable();
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
@@ -261,7 +263,7 @@ namespace Relativity.Sync.Tests.Integration
 					.Verifiable();
 
 			// act
-			ExecutionResult result = await _executor.ExecuteAsync(_config, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// assert
 			result.Status.Should().Be(ExecutionStatus.Failed);
@@ -277,10 +279,11 @@ namespace Relativity.Sync.Tests.Integration
 
 			SetupNewBatch(newBatchArtifactId, totalItemsCount);
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
 
 			// act
 			tokenSource.Cancel();
-			ExecutionResult result = await _executor.ExecuteAsync(_config, tokenSource.Token).ConfigureAwait(false);
+			ExecutionResult result = await _executor.ExecuteAsync(_config, compositeCancellationToken).ConfigureAwait(false);
 
 			// assert
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Never);
@@ -396,7 +399,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IBatch> SetupNewBatch(int newBatchArtifactId, int totalItemsCount)
 		{
 			Mock<IBatch> batch = new Mock<IBatch>();
-			batch.SetupGet(x => x.TotalItemsCount).Returns(totalItemsCount);
+			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
 
 			const int numberOfNewBatches = 1;
 			QueryResult queryResultForNewBatches = new QueryResult()
@@ -411,8 +414,20 @@ namespace Relativity.Sync.Tests.Integration
 				TotalCount = numberOfNewBatches
 			};
 
-			_objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid), It.IsAny<int>(), It.IsAny<int>()))
+			_objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("New")), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(queryResultForNewBatches)
+				.Verifiable();
+			
+			_objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("Paused")), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new QueryResult{Objects = new List<RelativityObject>(), ResultCount = 0, TotalCount = 0})
+				.Verifiable();
+
+			_objectManagerMock.Setup(x => x.QuerySlimAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("Completed")), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new QueryResultSlim { Objects = new List<RelativityObjectSlim>(), ResultCount = 0, TotalCount = 0 })
+				.Verifiable();
+
+			_objectManagerMock.Setup(x => x.QuerySlimAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("Completed With Errors")), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new QueryResultSlim { Objects = new List<RelativityObjectSlim>(), ResultCount = 0, TotalCount = 0 })
 				.Verifiable();
 
 			QueryResult readResultForBatch = CreateReadResultForBatch(totalItemsCount);
@@ -424,7 +439,7 @@ namespace Relativity.Sync.Tests.Integration
 			return batch;
 		}
 
-		private static QueryResult CreateReadResultForBatch(int totalItemsCount)
+		private static QueryResult CreateReadResultForBatch(int totalDocumentsCount)
 		{
 			QueryResult readResultForBatch = new QueryResult()
 			{
@@ -434,14 +449,17 @@ namespace Relativity.Sync.Tests.Integration
 					{
 						FieldValues = new List<FieldValuePair>()
 						{
-							CreateFieldValuePair(TotalItemsCountGuid, totalItemsCount),
-							CreateFieldValuePair(StartingIndexGuid, 0),
-							CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
+							CreateFieldValuePair(TotalDocumentsCountGuid, totalDocumentsCount),
+							CreateFieldValuePair(FailedDocumentsCountGuid, 0),
+							CreateFieldValuePair(TransferredDocumentsCountGuid, 0),
 							CreateFieldValuePair(FailedItemsCountGuid, 0),
 							CreateFieldValuePair(TransferredItemsCountGuid, 0),
-							CreateFieldValuePair(ProgressGuid, (decimal) 0),
-							CreateFieldValuePair(LockedByGuid, "locked by"),
-							CreateFieldValuePair(TaggedItemsCountGuid, 0)
+							CreateFieldValuePair(StartingIndexGuid, 0),
+							CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
+							CreateFieldValuePair(TaggedDocumentsCountGuid, 0),
+							CreateFieldValuePair(MetadataBytesTransferredGuid, 0),
+							CreateFieldValuePair(FilesBytesTransferredGuid, 0),
+							CreateFieldValuePair(TotalBytesTransferredGuid, 0)
 						}
 					}
 				}

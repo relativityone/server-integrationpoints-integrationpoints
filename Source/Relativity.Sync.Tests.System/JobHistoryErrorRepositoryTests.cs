@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -21,7 +22,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.Sync.Tests.System
 {
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public class JobHistoryErrorRepositoryTests : SystemTest
+	internal class JobHistoryErrorRepositoryTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
 		private ISourceServiceFactoryForUser _serviceFactory;
@@ -38,8 +39,12 @@ namespace Relativity.Sync.Tests.System
 		[SetUp]
 		public async Task SetUp()
 		{
+            Mock<IRandom> randomFake = new Mock<IRandom>();
+            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			_serviceFactory = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub());
+			_serviceFactory = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(), 
+                randomFake.Object, syncLogMock.Object);
 			_dateTime = new DateTimeWrapper();
 			_logger = new EmptyLogger();
 		}
@@ -62,7 +67,7 @@ namespace Relativity.Sync.Tests.System
 				StackTrace = expectedStackTrace,
 			};
 			
-			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, _dateTime, _logger);
+			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), _dateTime, _logger);
 
 			// Act
 			int createdErrorArtifactId = await instance.CreateAsync(_workspace.ArtifactID, expectedJobHistoryArtifactId, createDto).ConfigureAwait(false);
@@ -97,7 +102,7 @@ namespace Relativity.Sync.Tests.System
 
 			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(itemLevelError, itemLevelErrosCount).ToList();
 
-			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, _dateTime, _logger);
+			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), _dateTime, _logger);
 
 			// Act
 			IEnumerable<int> result = await sut.MassCreateAsync(_workspace.ArtifactID, jobHistoryArtifactID, itemLevelErrors).ConfigureAwait(false);

@@ -143,19 +143,24 @@ namespace Relativity.Sync.Executors
 			_jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, jobError).ConfigureAwait(false);
 		}
 
-		public async Task<ImportJobResult> RunAsync(CancellationToken token)
+		public async Task<ImportJobResult> RunAsync(CompositeCancellationToken token)
 		{
 			ExecutionResult executionResult = ExecutionResult.Success();
 
-			if (token.IsCancellationRequested)
+			if (token.IsStopRequested)
 			{
 				executionResult = ExecutionResult.Canceled();
+				return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
+			}
+			if (token.IsDrainStopRequested)
+			{
+				executionResult = ExecutionResult.Paused();
 				return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
 			}
 
 			try
 			{
-				await Task.Run(() => _syncImportBulkArtifactJob.Execute(), token).ConfigureAwait(false);
+				await Task.Run(() => _syncImportBulkArtifactJob.Execute(), token.AnyReasonCancellationToken).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
@@ -176,8 +181,14 @@ namespace Relativity.Sync.Executors
 				var syncException = new ImportFailedException(fatalExceptionMessage, _importApiException);
 				executionResult = ExecutionResult.Failure(fatalExceptionMessage, syncException);
 			}
+			else if (token.IsDrainStopRequested)
+			{
+				_logger.LogInformation("IAPI job has finished due to drain-stop. Returning Paused execution result.");
+				executionResult = ExecutionResult.Paused();
+			}
 			else if (_itemLevelErrorExists)
 			{
+				_logger.LogInformation("IAPI job has finished with item level errors.");
 				const string completedWithErrors = "Import completed with item level errors.";
 				executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
 			}

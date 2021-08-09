@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
@@ -45,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
 				.Returns(Task.FromResult(_searchManager.Object));
 
-			_instance = new NativeFileRepository(searchManagerFactory.Object, _serviceFactory.Object, new EmptyLogger());
+			_instance = new NativeFileRepository(searchManagerFactory.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -113,40 +110,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_searchManager.Verify(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
 		}
 
-
-		[Test]
-		public async Task ItShouldCalculateNativesSize()
-		{
-			// Arrange
-			List<INativeFile> allNatives = new List<INativeFile>()
-			{
-				new NativeFile(0, string.Empty, string.Empty, 10),
-				new NativeFile(1, string.Empty, string.Empty, 20),
-				new NativeFile(2, string.Empty, string.Empty, 30)
-			};
-
-			_searchManager.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.Is<string>(ids => ids == string.Join(",", allNatives.Select(d => d.DocumentArtifactId.ToString())))))
-				.Returns(CreateSampleDataSet(allNatives))
-				.Verifiable();
-
-			ExportInitializationResults exportResult = new ExportInitializationResults()
-			{
-				RecordCount = allNatives.Count
-			};
-
-			_objectManager.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>())).ReturnsAsync(exportResult);
-
-			RelativityObjectSlim[] resultsBlock = allNatives.Select(native => new RelativityObjectSlim() { ArtifactID = native.DocumentArtifactId }).ToArray();
-			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns((int workspaceId, Guid runId, int resultsBlockSize, int exportIndexId) => Task.FromResult(resultsBlockSize > 0 ? resultsBlock : Array.Empty<RelativityObjectSlim>()));
-
-			// Act
-			long nativesSize = await _instance.CalculateNativesTotalSizeAsync(1, new QueryRequest()).ConfigureAwait(false);
-
-			// Assert
-			long expectedTotalSize = allNatives.Sum(x => x.Size);
-			nativesSize.Should().Be(expectedTotalSize);
-		}
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 
 

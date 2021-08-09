@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
@@ -18,217 +19,249 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	internal sealed class SyncFieldManagerTests
 	{
-		private Mock<IDestinationServiceFactoryForAdmin> _serviceFactory;
-		private Mock<IArtifactGuidManager> _artifactGuidManager;
-		private Mock<IObjectManager> _objectManager;
-		private Mock<IFieldManager> _fieldManager;
-		private SyncFieldManager _instance;
-		private Guid _guid;
-
+		private Mock<IDestinationServiceFactoryForAdmin> _serviceFactoryFake;
+		private Mock<IArtifactGuidManager> _artifactGuidManagerMock;
+		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IFieldManager> _fieldManagerMock;
+		
+		private SyncFieldManager _sut;
+		
 		private const int _WORKSPACE_ID = 1;
+		private const int _FIELD_ARTIFACT_ID = 10;
+		private const string _FIELD_NAME = "My Field";
+		private readonly Guid _FIELD_GUID = Guid.NewGuid();
 
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<IDestinationServiceFactoryForAdmin>();
-			_artifactGuidManager = new Mock<IArtifactGuidManager>();
-			_objectManager = new Mock<IObjectManager>();
-			_fieldManager = new Mock<IFieldManager>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IArtifactGuidManager>()).ReturnsAsync(_artifactGuidManager.Object);
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IFieldManager>()).ReturnsAsync(_fieldManager.Object);
-			_instance = new SyncFieldManager(_serviceFactory.Object, new EmptyLogger());
-			_guid = Guid.NewGuid();
+			_serviceFactoryFake = new Mock<IDestinationServiceFactoryForAdmin>();
+			_artifactGuidManagerMock = new Mock<IArtifactGuidManager>();
+			_objectManagerMock = new Mock<IObjectManager>();
+			_fieldManagerMock = new Mock<IFieldManager>();
+			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IArtifactGuidManager>()).ReturnsAsync(_artifactGuidManagerMock.Object);
+			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IFieldManager>()).ReturnsAsync(_fieldManagerMock.Object);
+			
+			_sut = new SyncFieldManager(_serviceFactoryFake.Object, new EmptyLogger());
 		}
 
 		[Test]
-		public async Task ItShouldReadExistingObjectTypeGuid()
+		public async Task EnsureFieldsExistAsync_ShouldNotRegisterFieldTypeGuid_WhenExists()
 		{
-			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(true);
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, true);
 
-			// act
-			await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, new Dictionary<Guid, BaseFieldRequest>()).ConfigureAwait(false);
+			// Act
+			await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, It.IsAny<Dictionary<Guid, BaseFieldRequest>>()).ConfigureAwait(false);
 
-			// assert
-			_objectManager.Verify(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-			_fieldManager.Verify(x => x.CreateWholeNumberFieldAsync(It.IsAny<int>(), It.IsAny<WholeNumberFieldRequest>()), Times.Never);
-			_fieldManager.Verify(x => x.CreateFixedLengthFieldAsync(It.IsAny<int>(), It.IsAny<FixedLengthFieldRequest>()), Times.Never);
-			_fieldManager.Verify(x => x.CreateMultipleObjectFieldAsync(It.IsAny<int>(), It.IsAny<MultipleObjectFieldRequest>()), Times.Never);
-			_artifactGuidManager.Verify(x => x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<Guid>>()), Times.Never);
+			// Assert
+			_artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(
+				It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<Guid>>()), Times.Never);
 		}
 
 		[Test]
-		public async Task ItShouldQueryExistingFieldByName()
+		public async Task EnsureFieldsExistAsync_ShouldQueryExistingFieldByName()
 		{
-			const int artifactId = 2;
-			const string name = "Fancy Field";
-			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(false);
-			QueryResult queryResult = new QueryResult()
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, false);
+			
+			SetupFieldRead(_FIELD_NAME, CreateSingleFieldResult(_FIELD_ARTIFACT_ID));
+
+			Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
 			{
-				Objects = new List<RelativityObject>()
-				{
-					new RelativityObject()
-					{
-						ArtifactID = artifactId,
-						Name = name
-					}
-				}
-			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request =>
-				request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
-				request.Condition.Contains(name)), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult).Verifiable();
-			BaseFieldRequest fieldRequest = new BaseFieldRequest()
-			{
-				Name = name
+				{ _FIELD_GUID, CreateFieldRequest<FixedLengthFieldRequest>(_FIELD_NAME) }
 			};
 
-			// act
-			await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, new Dictionary<Guid, BaseFieldRequest>() { { _guid, fieldRequest } }).ConfigureAwait(false);
+			// Act
+			await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
 
-			// assert
-			_objectManager.Verify();
+			// Assert
+			_objectManagerMock.Verify();
 		}
 
 		[Test]
-		public async Task ItShouldAssignGuid()
+		public async Task EnsureFieldsExistAsync_ShouldAssignGuid()
 		{
-			const int artifactId = 2;
-			const string name = "Fancy Field";
-			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(false);
-			QueryResult queryResult = new QueryResult()
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, false);
+
+			SetupFieldRead(_FIELD_NAME, CreateSingleFieldResult(_FIELD_ARTIFACT_ID));
+
+			Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
 			{
-				Objects = new List<RelativityObject>()
-				{
-					new RelativityObject()
-					{
-						ArtifactID = artifactId,
-						Name = name
-					}
-				}
-			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request =>
-				request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
-				request.Condition.Contains(name)), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult).Verifiable();
-			BaseFieldRequest fieldRequest = new BaseFieldRequest()
-			{
-				Name = name
+				{ _FIELD_GUID, CreateFieldRequest<FixedLengthFieldRequest>(_FIELD_NAME) }
 			};
 
-			// act
-			await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, new Dictionary<Guid, BaseFieldRequest>() { { _guid, fieldRequest } }).ConfigureAwait(false);
+			// Act
+			await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
 
-			// assert
-			_objectManager.Verify();
-			_artifactGuidManager.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, artifactId, It.Is<List<Guid>>(list => list.Contains(_guid))));
+			// Assert
+			_objectManagerMock.Verify();
+			_artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, _FIELD_ARTIFACT_ID, 
+				It.Is<List<Guid>>(list => list.Contains(_FIELD_GUID))));
 		}
 
 		[Test]
-		public async Task ItShouldCreateNewWholeNumberField()
+		public async Task EnsureFieldsExistAsync_ShouldCreateNewWholeNumberField()
 		{
-			const string name = "My Field";
-			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(false);
-			QueryResult queryResult = new QueryResult()
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, false);
+
+			_objectManagerMock.Setup(x => x.QueryAsync(_WORKSPACE_ID, GetFieldQueryRequest(_FIELD_NAME), 
+					It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(CreateEmptyResult()).Verifiable();
+
+			WholeNumberFieldRequest expectedFieldRequest = CreateFieldRequest<WholeNumberFieldRequest>(_FIELD_NAME);
+
+			Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
 			{
-				Objects = new List<RelativityObject>()
-			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request =>
-				request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
-				request.Condition.Contains(name)), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult).Verifiable();
-			WholeNumberFieldRequest fieldRequest = new WholeNumberFieldRequest()
-			{
-				Name = name
+				{ _FIELD_GUID, expectedFieldRequest }
 			};
 
-			// act
-			await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, new Dictionary<Guid, BaseFieldRequest>() { { _guid, fieldRequest } }).ConfigureAwait(false);
+			// Act
+			await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
 
-			// assert
-			_objectManager.Verify();
-			_fieldManager.Verify(x => x.CreateWholeNumberFieldAsync(_WORKSPACE_ID, fieldRequest));
+			// Assert
+			_fieldManagerMock.Verify(x => x.CreateWholeNumberFieldAsync(_WORKSPACE_ID, expectedFieldRequest));
 		}
 
 		[Test]
-		public async Task ItShouldCreateNewFixedLengthTextField()
+		public async Task EnsureFieldsExistAsync_ShouldCreateNewFixedLengthTextField()
 		{
-			const string name = "My Field";
-			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(false);
-			QueryResult queryResult = new QueryResult()
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, false);
+
+			SetupFieldRead(_FIELD_NAME, CreateEmptyResult());
+
+			FixedLengthFieldRequest expectedFieldRequest = CreateFieldRequest<FixedLengthFieldRequest>(_FIELD_NAME);
+
+			Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
 			{
-				Objects = new List<RelativityObject>()
-			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request =>
-				request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
-				request.Condition.Contains(name)), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult).Verifiable();
-			FixedLengthFieldRequest fieldRequest = new FixedLengthFieldRequest()
-			{
-				Name = name
+				{ _FIELD_GUID, expectedFieldRequest }
 			};
 
-			// act
-			await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, new Dictionary<Guid, BaseFieldRequest>() { { _guid, fieldRequest } }).ConfigureAwait(false);
+			// Act
+			await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
 
-			// assert
-			_objectManager.Verify();
-			_fieldManager.Verify(x => x.CreateFixedLengthFieldAsync(_WORKSPACE_ID, fieldRequest));
+			// Assert
+			_objectManagerMock.Verify();
+			_fieldManagerMock.Verify(x => x.CreateFixedLengthFieldAsync(_WORKSPACE_ID, expectedFieldRequest));
 		}
 
 		[Test]
-		public async Task ItShouldCreateNewMultipleObjectField()
+		public async Task EnsureFieldsExistAsync_ShouldCreateNewMultipleObjectField()
 		{
-			const string name = "My Field";
-			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(false);
-			QueryResult queryResult = new QueryResult()
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, false);
+
+			SetupFieldRead(_FIELD_NAME, CreateEmptyResult());
+
+			MultipleObjectFieldRequest expectedFieldRequest = CreateFieldRequest<MultipleObjectFieldRequest>(_FIELD_NAME);
+
+			Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
 			{
-				Objects = new List<RelativityObject>()
-			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request =>
-				request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
-				request.Condition.Contains(name)), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult).Verifiable();
-			MultipleObjectFieldRequest fieldRequest = new MultipleObjectFieldRequest()
-			{
-				Name = name
+				{_FIELD_GUID, expectedFieldRequest}
 			};
 
-			// act
-			await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, new Dictionary<Guid, BaseFieldRequest>() { { _guid, fieldRequest } }).ConfigureAwait(false);
+			// Act
+			await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
 
-			// assert
-			_objectManager.Verify();
-			_fieldManager.Verify(x => x.CreateMultipleObjectFieldAsync(_WORKSPACE_ID, fieldRequest));
+			// Assert
+			_objectManagerMock.Verify();
+			_fieldManagerMock.Verify(x => x.CreateMultipleObjectFieldAsync(_WORKSPACE_ID, expectedFieldRequest));
 		}
 
 		[Test]
-		public void ItShouldThrowExceptionWhenCreatingUnsupportedFieldType()
+		public async Task EnsureFieldsExistAsync_ShouldTryReadFieldAgain_WhenFirstReadNotFoundAndCreationFailedDueFieldExists()
 		{
-			const string name = "My Field";
-			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(false);
-			QueryResult queryResult = new QueryResult()
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, false);
+
+			_objectManagerMock.SetupSequence(x => x.QueryAsync(_WORKSPACE_ID,
+					GetFieldQueryRequest(_FIELD_NAME), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(CreateEmptyResult())
+				.ReturnsAsync(CreateSingleFieldResult(_FIELD_ARTIFACT_ID));
+
+			_fieldManagerMock.Setup(x => x.CreateWholeNumberFieldAsync(It.IsAny<int>(),
+					It.IsAny<WholeNumberFieldRequest>()))
+				.Throws<InvalidInputException>();
+
+			Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
 			{
-				Objects = new List<RelativityObject>()
-			};
-			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request =>
-				request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
-				request.Condition.Contains(name)), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult).Verifiable();
-			SingleChoiceFieldRequest fieldRequest = new SingleChoiceFieldRequest()
-			{
-				Name = name
+				{ _FIELD_GUID, CreateFieldRequest<WholeNumberFieldRequest>(_FIELD_NAME) }
 			};
 
-			// act
-			Func<Task> action = async () => await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, new Dictionary<Guid, BaseFieldRequest>() { { _guid, fieldRequest } }).ConfigureAwait(false);
+			// Act
+			await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
 
-			// assert
+			// Assert
+			_artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, _FIELD_ARTIFACT_ID, 
+				new List<Guid>() { _FIELD_GUID }), Times.Once);
+		}
+
+
+		[Test]
+		public void EnsureFieldsExistAsync_ShouldThrowException_WhenCreatingUnsupportedFieldType()
+		{
+			// Arrange
+			SetupFieldGuidExists(_FIELD_GUID, false);
+
+			SetupFieldRead(_FIELD_NAME, CreateEmptyResult());
+
+			Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
+			{
+				{_FIELD_GUID, CreateFieldRequest<SingleChoiceFieldRequest>(_FIELD_NAME)}
+			};
+
+			// Act
+			Func<Task> action = async () => await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
+
+			// Assert
 			action.Should().Throw<NotSupportedException>();
 		}
 
 		[Test]
-		public void ItShouldNotThrowWhenPassingNullDictionary()
+		public void EnsureFieldsExistAsync_ShouldNotThrow_WhenPassingNullDictionary()
 		{
-			// act
-			Func<Task> action = async () => await _instance.EnsureFieldsExistAsync(_WORKSPACE_ID, null).ConfigureAwait(false);
+			// Act
+			Func<Task> action = async () => await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, null).ConfigureAwait(false);
 
-			// assert
+			// Assert
 			action.Should().NotThrow();
+		}
+
+		private void SetupFieldGuidExists(Guid fieldGuid, bool exists)
+		{
+			_artifactGuidManagerMock.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, fieldGuid)).ReturnsAsync(exists);
+		}
+
+		private void SetupFieldRead(string fieldName, QueryResult result)
+		{
+			_objectManagerMock.Setup(x => x.QueryAsync(_WORKSPACE_ID,
+					GetFieldQueryRequest(fieldName), It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(result)
+				.Verifiable();
+		}
+
+		private QueryRequest GetFieldQueryRequest(string fieldName)
+		{
+			return It.Is<QueryRequest>(request =>
+				request.ObjectType.ArtifactTypeID == (int)ArtifactType.Field &&
+				request.Condition.Contains(fieldName));
+		}
+
+		private QueryResult CreateEmptyResult() => new QueryResult { Objects = new List<RelativityObject>() };
+
+		private QueryResult CreateSingleFieldResult(int fieldArtifactId) =>
+			new QueryResult { Objects = new List<RelativityObject>() { new RelativityObject { ArtifactID = fieldArtifactId } } };
+
+		private T CreateFieldRequest<T>(string fieldName) where T : BaseFieldRequest, new()
+		{
+			T request = new T();
+
+			request.Name = fieldName;
+
+			return request;
 		}
 	}
 }

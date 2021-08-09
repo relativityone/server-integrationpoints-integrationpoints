@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -22,16 +20,15 @@ namespace Relativity.Sync.Tests.System
 {
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
-	public sealed class SnapshotPartitionExecutorTests : SystemTest
+	internal sealed class SnapshotPartitionExecutorTests : SystemTest
 	{
 		private int _workspaceId;
 		private int _syncConfigurationId;
 		private SnapshotPartitionExecutor _instance;
 		private IBatchRepository _batchRepository;
-
-		private static readonly Guid SyncConfigurationRelationGuid = new Guid("F673E67F-E606-4155-8E15-CA1C83931E16");
+		
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
-		private static readonly Guid TotalItemsCountGuid = new Guid("F84589FE-A583-4EB3-BA8A-4A2EEE085C81");
+		private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
 		private static readonly Guid _SYNC_BATCH_OBJECT_TYPE = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 
 		private static ObjectTypeRef SyncBatchObjectTypeRef => new ObjectTypeRef { Guid = _SYNC_BATCH_OBJECT_TYPE };
@@ -45,7 +42,7 @@ namespace Relativity.Sync.Tests.System
 			_workspaceId = workspace.ArtifactID;
 
 			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
-			_syncConfigurationId = await Rdos.CreateSyncConfigurationInstance(ServiceFactory, _workspaceId, jobHistoryId).ConfigureAwait(false);
+			_syncConfigurationId = await Rdos.CreateSyncConfigurationRdoAsync(_workspaceId, jobHistoryId).ConfigureAwait(false);
 
 			_batchRepository = new BatchRepository(new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
 			_instance = new SnapshotPartitionExecutor(_batchRepository, new EmptyLogger());
@@ -84,7 +81,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -120,7 +117,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -157,7 +154,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Status.Should().Be(ExecutionStatus.Completed);
@@ -177,7 +174,7 @@ namespace Relativity.Sync.Tests.System
 				var request = new QueryRequest
 				{
 					ObjectType = SyncBatchObjectTypeRef,
-					Condition = $"'{SyncConfigurationRelationGuid}' == OBJECT {syncConfigurationId}",
+					Condition = $"'SyncConfiguration' == OBJECT {syncConfigurationId}",
 					Sorts = new[]
 					{
 						new Sort
@@ -189,7 +186,7 @@ namespace Relativity.Sync.Tests.System
 					Fields = new []
 					{
 						new FieldRef { Guid = StartingIndexGuid },
-						new FieldRef { Guid = TotalItemsCountGuid }
+						new FieldRef { Guid = TotalDocumentsCountGuid }
 					}
 				};
 
@@ -204,7 +201,7 @@ namespace Relativity.Sync.Tests.System
 			foreach (RelativityObject batch in batches)
 			{
 				batch[StartingIndexGuid].Value.Should().Be(expectedStartIndex);
-				expectedStartIndex += (int)batch[TotalItemsCountGuid].Value;
+				expectedStartIndex += (int)batch[TotalDocumentsCountGuid].Value;
 			}
 		}
 

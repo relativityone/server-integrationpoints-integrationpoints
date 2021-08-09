@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceTag);
 
 			// Act
-			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -118,7 +118,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.ReturnsAsync(jobHistory.Object);
 			
 			//Act
-			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 			 
 			//Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -143,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobHistoryErrorRepository.Setup(x => x.GetLastJobErrorAsync(It.IsAny<int>(), It.IsAny<int>())).Throws<NullReferenceException>();
 
 			// Act
-			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -176,7 +176,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobHistoryErrorRepository.Setup(x => x.GetLastJobErrorAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(jobHistory.Object);
 
 			// Act
-			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -201,7 +201,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobHistoryErrorRepository.Setup(x => x.GetLastJobErrorAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(jobHistory.Object);
 
 			// Act
-			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -230,7 +230,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).Throws<NullReferenceException>();
 
 			// Act
-			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			actualResult.Status.Should().Be(ExecutionStatus.Failed);

@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {
@@ -7,9 +8,6 @@ namespace Relativity.Sync.Storage
 	{
 		private readonly IConfiguration _cache;
 		private readonly ISyncLog _syncLog;
-
-		private static readonly Guid SnapshotIdGuid = new Guid("D1210A1B-C461-46CB-9B73-9D22D05880C5");
-		private static readonly Guid SnapshotRecordsCountGuid = new Guid("57B93F20-2648-4ACF-973B-BCBA8A08E2BD");
 
 		public SnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog syncLog)
 		{
@@ -21,7 +19,7 @@ namespace Relativity.Sync.Storage
 			BatchSize = configuration.BatchSize;
 		}
 
-		public int TotalRecordsCount => _cache.GetFieldValue<int>(SnapshotRecordsCountGuid);
+		public int TotalRecordsCount => _cache.GetFieldValue(x => x.SnapshotRecordsCount);
 
 		public int BatchSize { get; }
 
@@ -29,15 +27,13 @@ namespace Relativity.Sync.Storage
 		{
 			get
 			{
-				string runId = _cache.GetFieldValue<string>(SnapshotIdGuid);
-				Guid guid;
-				if (Guid.TryParse(runId, out guid))
+				Guid? snapshotId = _cache.GetFieldValue(x => x.SnapshotId);
+				if (snapshotId == Guid.Empty)
 				{
-					return guid;
+					snapshotId = null;
 				}
 
-				_syncLog.LogError("Unable to parse export run ID {runId}.", runId);
-				throw new ArgumentException($"Run ID needs to be valid GUID, but {runId} found.");
+				return snapshotId ?? throw new ArgumentException($"Run ID needs to be valid GUID, but null found.");
 			}
 		}
 

@@ -2,15 +2,13 @@
 {
 	internal static class TelemetryConstants
 	{
-		private const string _SYNC_METRIC_PREPEND = "Relativity.Sync";
-
 		public const string SYNC_TELEMETRY_CATEGORY = "Relativity Sync";
 		public const string INTEGRATION_POINTS_TELEMETRY_CATEGORY = "Integration Points";
 
 		public const string PROVIDER_NAME = "Sync";
 
-		public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearched.Images";
-		public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearched.NativesAndMetadata";
+		public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearch.Images";
+		public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearch.NativesAndMetadata";
 		
 		public static class MetricIdentifiers
 		{
@@ -19,44 +17,58 @@
 			public const string KEPLER_SERVICE_INTERCEPTOR_FAILED_SUFFIX = "Failed";
 			public const string KEPLER_SERVICE_INTERCEPTOR_AUTH_REFRESH_SUFFIX = "AuthRefresh";
 
-			public static readonly string JOB_START_TYPE = $"{_SYNC_METRIC_PREPEND}.Job.Start.Type";
+			public const string APM_FLOW_NAME_IMAGES = "Images";
+			public const string APM_FLOW_NAME_NATIVES_OR_METADATA = "NativesOrMetadata";
 
-			public static readonly string JOB_END_STATUS_NATIVES_AND_METADATA = $"{_SYNC_METRIC_PREPEND}.Job.End.Status.{FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA}";
-			public static readonly string JOB_END_STATUS_IMAGES = $"{_SYNC_METRIC_PREPEND}.Job.End.Status.{FLOW_TYPE_SAVED_SEARCH_IMAGES}";
+			public const string JOB_CORRELATION_ID = "Relativity.Sync.Job.CorrelationId";
 
-			public static readonly string RETRY_JOB_START_TYPE = $"{_SYNC_METRIC_PREPEND}.Retry.Job.Start.Type";
-			public static readonly string RETRY_JOB_END_STATUS = $"{_SYNC_METRIC_PREPEND}.Retry.Job.End.Status";
+			public const string JOB_START_TYPE = "Relativity.Sync.Job.Start.Type";
+			public const string JOB_RESUME_TYPE = "Relativity.Sync.Job.Resume.Type";
 
-			public static readonly string FLOW_TYPE = $"{_SYNC_METRIC_PREPEND}.FlowType";
+			public const string JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.Suspended.Status.SavedSearch.NativesAndMetadata";
+			public const string JOB_SUSPENDED_STATUS_IMAGES = "Relativity.Sync.Job.Suspended.Status.SavedSearch.Images";
 
-			public static readonly string DATA_BYTES_METADATA_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.MetadataTransferred";
-			public static readonly string DATA_BYTES_NATIVES_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.NativesTransferred";
-			public static readonly string DATA_BYTES_IMAGES_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.ImagesTransferred";
-			public static readonly string DATA_BYTES_TOTAL_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.TotalTransferred";
-			public static readonly string DATA_BYTES_NATIVES_REQUESTED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.NativesRequested";
-			public static readonly string DATA_BYTES_IMAGES_REQUESTED = $"{_SYNC_METRIC_PREPEND}.Data.Bytes.ImagesRequested";
-			public static readonly string DATA_RECORDS_TRANSFERRED = $"{_SYNC_METRIC_PREPEND}.Data.Records.Transferred";
-			public static readonly string DATA_RECORDS_TAGGED = $"{_SYNC_METRIC_PREPEND}.Data.Records.Tagged";
-			public static readonly string DATA_RECORDS_FAILED = $"{_SYNC_METRIC_PREPEND}.Data.Records.Failed";
-			public static readonly string DATA_RECORDS_TOTAL_REQUESTED = $"{_SYNC_METRIC_PREPEND}.Data.Records.TotalRequested";
-			public static readonly string DATA_FIELDS_MAPPED = $"{_SYNC_METRIC_PREPEND}.Data.Fields.Mapped";
+			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearch.NativesAndMetadata";
+			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearch.Images";
 
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageSize.LessThan1MB";
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageTime.LessThan1MB";
+			public const string RETRY_JOB_START_TYPE = "Relativity.Sync.Retry.Job.Start.Type";
+			public const string RETRY_JOB_END_STATUS = "Relativity.Sync.Retry.Job.End.Status";
 
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageSize.Between1And10MB";
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageTime.Between1And10MB";
+			public const string FLOW_TYPE = "Relativity.Sync.FlowType";
 
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWWEEN10AND20MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageSize.Between10And20MB";
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWWEEN10AND20MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageTime.Between10And20MB";
+			public const string DATA_BYTES_METADATA_TRANSFERRED = "Relativity.Sync.Data.Bytes.MetadataTransferred";
+			public const string DATA_BYTES_NATIVES_TRANSFERRED = "Relativity.Sync.Data.Bytes.NativesTransferred";
+			public const string DATA_BYTES_IMAGES_TRANSFERRED = "Relativity.Sync.Data.Bytes.ImagesTransferred";
+			public const string DATA_BYTES_TOTAL_TRANSFERRED = "Relativity.Sync.Data.Bytes.TotalTransferred";
+			public const string DATA_BYTES_NATIVES_REQUESTED = "Relativity.Sync.Data.Bytes.NativesRequested";
+			public const string DATA_BYTES_IMAGES_REQUESTED = "Relativity.Sync.Data.Bytes.ImagesRequested";
+			public const string DATA_RECORDS_TRANSFERRED = "Relativity.Sync.Data.Records.Transferred";
+			public const string DATA_RECORDS_TAGGED = "Relativity.Sync.Data.Records.Tagged";
+			public const string DATA_RECORDS_FAILED = "Relativity.Sync.Data.Records.Failed";
+			public const string DATA_RECORDS_TOTAL_REQUESTED = "Relativity.Sync.Data.Records.TotalRequested";
+			public const string DATA_FIELDS_MAPPED = "Relativity.Sync.Data.Fields.Mapped";
+			
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageSize.LessThan1MB";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageTime.LessThan1MB";
 
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageSize.Over20MB";
-			public static readonly string DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.AverageTime.Over20MB";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN1AND10MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Between1And10MB";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN1AND10MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Between1And10MB";
 
-			public static readonly string DATA_LONGTEXT_STREAM_LARGEST_SIZE = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.LargestLongText.Size";
-			public static readonly string DATA_LONGTEXT_STREAM_LARGEST_TIME = $"{_SYNC_METRIC_PREPEND}.Data.LongTextStream.LargestLongText.Time";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_BETWEEN10AND20MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Between10And20MB";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_BETWEEN10AND20MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Between10And20MB";
 
-			public static readonly string KEPLER_SERVICE_INTERCEPTOR_PREFIX = $"{_SYNC_METRIC_PREPEND}.KeplerServiceInterceptor";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Over20MB";
+			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Over20MB";
+			
+			public const string KEPLER_SERVICE_INTERCEPTOR_PREFIX = "Relativity.Sync.KeplerServiceInterceptor";
+
+			public const string TAG_DOCUMENTS_SOURCE_UPDATE_TIME = "Relativity.Sync.TagDocuments.SourceUpdate.Time";
+			public const string TAG_DOCUMENTS_SOURCE_UPDATE_COUNT = "Relativity.Sync.TagDocuments.SourceUpdate.Count";
+
+			public const string TAG_DOCUMENTS_DESTINATION_UPDATE_TIME = "Relativity.Sync.TagDocuments.DestinationUpdate.Time";
+			public const string TAG_DOCUMENTS_DESTINATION_UPDATE_COUNT = "Relativity.Sync.TagDocuments.DestinationUpdate.Count";
+
+			public const string LONG_TEXT_STREAM_RETRY_COUNT = "Relativity.Sync.LongTextStreamBuilder.Retry.Count";
 		}
 	}
 }

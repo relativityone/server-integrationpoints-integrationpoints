@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Relativity.Sync.Storage;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -60,12 +61,14 @@ namespace Relativity.Sync.Telemetry
 		/// <summary>
 		/// Size of the images that was requested to push.
 		/// </summary>
-		Task<long> ImagesBytesRequested { get; set; }
+		Task<ImagesStatistics> ImagesStatistics { get; set; }
 
 		/// <summary>
 		/// Calculates average long text stream size and time.
 		/// </summary>
 		/// <returns>Tuple of double values, where Item1 is the average size (in megabytes) and Item2 is the average time (in seconds).</returns>
 		Tuple<double, double> CalculateAverageLongTextStreamSizeAndTime(Func<long, bool> streamSizePredicate);
+
+		void RestoreJobStatistics(IEnumerable<IBatch> alreadyExecutedBatches);
 	}
 }

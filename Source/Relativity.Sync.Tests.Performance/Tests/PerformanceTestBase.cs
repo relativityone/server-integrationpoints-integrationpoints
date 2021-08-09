@@ -8,10 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
-using Relativity.Automation.Utility;
-using Relativity.Automation.Utility.Api;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -20,7 +17,9 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.Performance.Helpers;
+using Relativity.Sync.Tests.Performance.PreConditions;
 using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Extensions;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
 using Relativity.Sync.Tests.System.Core.Stubs;
@@ -28,55 +27,26 @@ using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Performance.Tests
 {
-	public class PerformanceTestBase : SystemTest
+	internal class PerformanceTestBase : SystemTest
 	{
-		protected int _sourceWorkspaceId;
-		protected int _destinationWorkspaceId;
+		private WorkspaceType _workspaceType;
+		private bool _wasDestinationForTestCaseCreated;
 
-		protected readonly IDictionary<string, TimeSpan> _testTimes = new ConcurrentDictionary<string, TimeSpan>();
+		protected readonly IDictionary<string, TimeSpan> TestTimes = new ConcurrentDictionary<string, TimeSpan>();
 
-		private readonly WorkspaceType _workspaceType;
+		public WorkspaceRef SourceWorkspace { get; private set; }
 
-		public string ArmedSourceWorkspaceFileName { get; }
-		public string ArmedDestinationWorkspaceFileName { get; }
+		public WorkspaceRef DestinationWorkspace { get; private set; }
 
-		public string SourceWorkspaceName { get; }
-		public string DestinationWorkspaceName { get; }
+		public ARMHelper ARMHelper { get; private set; }
+		public AzureStorageHelper StorageHelper { get; private set; }
 
-		public ApiComponent Component { get; }
-		public ARMHelper ARMHelper { get; }
-		public AzureStorageHelper StorageHelper { get; }
-
-		public WorkspaceRef TargetWorkspace { get; set; }
-
-		public WorkspaceRef SourceWorkspace { get; set; }
-
-		internal ConfigurationStub Configuration { get; set; }
+		public ConfigurationStub Configuration { get; set; }
 
 		public int ConfigurationRdoId { get; set; }
 
-		public PerformanceTestBase(WorkspaceType workspaceType, string sourceWorkspace, string destinationWorkspace)
+		public PerformanceTestBase()
 		{
-			RelativityFacade.Instance.RelyOn<ApiComponent>();
-
-			Component = RelativityFacade.Instance.GetComponent<ApiComponent>();
-
-			_workspaceType = workspaceType;
-			if (_workspaceType == WorkspaceType.ARM)
-			{
-				ArmedSourceWorkspaceFileName = sourceWorkspace;
-				ArmedDestinationWorkspaceFileName = destinationWorkspace;
-
-				StorageHelper = AzureStorageHelper.CreateFromTestConfig();
-
-				ARMHelper = ARMHelper.CreateInstance();
-			}
-			else
-			{
-				SourceWorkspaceName = sourceWorkspace;
-				DestinationWorkspaceName = destinationWorkspace;
-			}
-
 			Configuration = new ConfigurationStub()
 			{
 				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
@@ -89,54 +59,103 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			};
 		}
 
-		[OneTimeSetUp]
-		public async Task SetUp()
+		public async Task UseArmWorkspaceAsync(string sourceWorkspaceArmFile, string destinationWorkspaceArmFile)
 		{
-			if(_workspaceType == WorkspaceType.ARM)
+			_workspaceType = WorkspaceType.ARM;
+			
+			StorageHelper = AzureStorageHelper.CreateFromTestConfig();
+
+			ARMHelper = ARMHelper.CreateInstance();
+
+			ARMHelper.EnableAgents();
+
+			SourceWorkspace = await RestoreWorkspaceAsync(sourceWorkspaceArmFile).ConfigureAwait(false);
+
+			if (!string.IsNullOrEmpty(destinationWorkspaceArmFile))
 			{
-				ARMHelper.EnableAgents();
-
-				_sourceWorkspaceId = await RestoreWorkspaceAsync(ArmedSourceWorkspaceFileName).ConfigureAwait(false);
-
-				if (!string.IsNullOrEmpty(ArmedDestinationWorkspaceFileName))
-				{
-					_destinationWorkspaceId = await RestoreWorkspaceAsync(ArmedDestinationWorkspaceFileName).ConfigureAwait(false);
-				}
-			}
-			else
-			{
-				_sourceWorkspaceId = await Environment.GetWorkspaceArtifactIdByNameAsync(SourceWorkspaceName).ConfigureAwait(false);
-
-				if (!string.IsNullOrEmpty(DestinationWorkspaceName))
-				{
-					_destinationWorkspaceId = await Environment.GetWorkspaceArtifactIdByNameAsync(DestinationWorkspaceName).ConfigureAwait(false);
-				}
+				DestinationWorkspace = await RestoreWorkspaceAsync(destinationWorkspaceArmFile).ConfigureAwait(false);
 			}
 		}
 
-		private async Task<int> RestoreWorkspaceAsync(string armedWorkspaceFileName)
+		public async Task UseExistingWorkspaceAsync(string sourceWorkspaceName, string destinationWorkspaceName)
 		{
-			string filePath = await StorageHelper
-				.DownloadFileAsync(armedWorkspaceFileName, Path.GetTempPath()).ConfigureAwait(false);
+			_workspaceType = WorkspaceType.Relativity;
 
-			Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
-			return await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
+			SourceWorkspace = await Environment.GetWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
+			
+			if (!string.IsNullOrEmpty(destinationWorkspaceName))
+			{
+				DestinationWorkspace = await Environment.GetWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
+			}
 		}
-		
-		[OneTimeTearDown]
-		public async Task OneTimeTearDown()
+
+		private async Task<WorkspaceRef> RestoreWorkspaceAsync(string armedWorkspaceFileName)
+		{
+			string filePath = "";
+			try
+			{
+				filePath = await StorageHelper
+					.DownloadFileAsync(armedWorkspaceFileName, Path.GetTempPath()).ConfigureAwait(false);
+
+				Logger.LogInformation($"ARMed workspace saved locally in {filePath}");
+				int workspaceArtifactId =
+					await ARMHelper.RestoreWorkspaceAsync(filePath, Environment).ConfigureAwait(false);
+
+				await Environment.CreateFieldsInWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
+
+				return await Environment.GetWorkspaceAsync(workspaceArtifactId).ConfigureAwait(false);
+			}
+			finally
+			{
+				File.Delete(filePath);
+			}
+
+		}
+
+		protected override async Task ChildSuiteTeardown()
 		{
 			await CleanUpWorkspacesAsync().ConfigureAwait(false);
 
 			if (!string.IsNullOrEmpty(AppSettings.PerformanceResultsFilePath))
 			{
 				File.WriteAllLines(AppSettings.PerformanceResultsFilePath,
-					_testTimes.Select(pair => $"{pair.Key};{pair.Value.TotalSeconds.ToString("0.##", CultureInfo.InvariantCulture)}\n"));
+					TestTimes.Select(pair => $"{pair.Key};{pair.Value.TotalSeconds.ToString("0.##", CultureInfo.InvariantCulture)}\n"));
+			}
+
+			await base.ChildSuiteTeardown().ConfigureAwait(false);
+		}
+
+		[SetUp]
+		public async Task SetUp()
+		{
+			if (DestinationWorkspace == null)
+			{
+				Logger.LogInformation("Creating destination workspace");
+				
+				DestinationWorkspace = await Environment
+					.CreateWorkspaceWithFieldsAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
+				_wasDestinationForTestCaseCreated = true;
+
+				Logger.LogInformation($"Destination workspace was created: {DestinationWorkspace.ArtifactID}");
+			}
+		}
+
+		[TearDown]
+		public async Task TearDown()
+		{
+			if (DestinationWorkspace != null && _wasDestinationForTestCaseCreated)
+			{
+				using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
+				{
+					await manager.DeleteAsync(DestinationWorkspace).ConfigureAwait(false);
+				}
 			}
 		}
 
 		protected async Task RunTestCaseAsync(PerformanceTestCase testCase)
 		{
+			PreConditionsCheckAndFix(testCase);
+
 			Logger.LogInformation("In test case: " + testCase.TestCaseName);
 			try
 			{
@@ -144,8 +163,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				Configuration.ImportOverwriteMode = testCase.OverwriteMode;
 				Configuration.ImportNativeFileCopyMode = testCase.CopyMode;
 
-				var destinationWorkspaceId = Configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOnly ? null : (int?)_destinationWorkspaceId;
-				await SetupConfigurationAsync(_sourceWorkspaceId, destinationWorkspaceId, testCase.TestCaseName).ConfigureAwait(false);
+				await SetupConfigurationAsync(testCase.TestCaseName).ConfigureAwait(false);
 
 				IEnumerable<FieldMap> generatedFields =
 					await GetMappingAndCreateFieldsInDestinationWorkspaceAsync(numberOfMappedFields: testCase.NumberOfMappedFields)
@@ -156,23 +174,23 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				if (testCase.MapExtractedText)
 				{
 					IEnumerable<FieldMap> extractedTextMapping =
-						await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
+						await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 					Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
 				}
 
 				Logger.LogInformation("Fields mapping ready");
 
 				ConfigurationRdoId = await
-					Rdos.CreateSyncConfigurationRdoAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration)
+					Rdos.CreateSyncConfigurationRdoAsync(SourceWorkspace.ArtifactID, Configuration, Logger)
 						.ConfigureAwait(false);
 
 				Logger.LogInformation("Configuration RDO created");
 
 				SyncJobParameters args = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID,
-					Configuration.JobHistoryArtifactId);
+					Guid.NewGuid());
 
 				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
-					new NullAPM(), TestLogHelper.GetLogger());
+					new NullAPM(), Logger);
 
 				Logger.LogInformation("Staring the job");
 
@@ -182,22 +200,32 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 				stopwatch.Stop();
 				var elapsedTime = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
-				_testTimes.Add(testCase.TestCaseName, elapsedTime);
+				TestTimes.Add(testCase.TestCaseName, elapsedTime);
 
 				Logger.LogInformation("Elapsed time {0} s", elapsedTime.TotalSeconds.ToString("F", CultureInfo.InvariantCulture));
 
 				RelativityObject jobHistory = await Rdos
-					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId)
+					.GetJobHistoryAsync(ServiceFactory, SourceWorkspace.ArtifactID, Configuration.JobHistoryArtifactId, Configuration.JobHistory.TypeGuid)
 					.ConfigureAwait(false);
+
+				string aggregatedJobHistoryErrors = null;
+				using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+				{
+					aggregatedJobHistoryErrors =
+						await objectManager.AggregateJobHistoryErrorMessagesAsync(SourceWorkspace.ArtifactID, jobHistory.ArtifactID).ConfigureAwait(false);
+
+					aggregatedJobHistoryErrors.Should().BeNullOrEmpty("There should be no item level errors");
+				}
 
 				// Assert
 				Assert.True(jobState.Status == SyncJobStatus.Completed, message: jobState.Message);
 
 				int totalItems = (int)jobHistory["Total Items"].Value;
-				int itemsTranferred = (int)jobHistory["Items Transferred"].Value;
+				int itemsTransferred = (int)jobHistory["Items Transferred"].Value;
 
-				itemsTranferred.Should().Be(totalItems);
-				itemsTranferred.Should().Be(testCase.ExpectedItemsTransferred);
+				aggregatedJobHistoryErrors.Should().BeNullOrEmpty();
+				itemsTransferred.Should().Be(totalItems);
+				itemsTransferred.Should().Be(testCase.ExpectedItemsTransferred);
 			}
 			catch (Exception e)
 			{
@@ -210,41 +238,24 @@ namespace Relativity.Sync.Tests.Performance.Tests
 		///	Creates needed objects in Relativity
 		/// </summary>
 		/// <returns></returns>
-		public async Task SetupConfigurationAsync(int? sourceWorkspaceId = null, int? targetWorkspaceId = null, string savedSearchName = "All Documents",
+		public async Task SetupConfigurationAsync(string savedSearchName = "All Documents",
 			IEnumerable<FieldMap> mapping = null, bool useRootWorkspaceFolder = true)
 		{
 			Logger.LogInformation("Setting up configuration");
-			if (sourceWorkspaceId == null)
-			{
-				SourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			}
-			else
-			{
-				SourceWorkspace = await Environment.GetWorkspaceAsync(sourceWorkspaceId.Value).ConfigureAwait(false);
-				await Environment.CreateFieldsInWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
-			}
-
-			if (targetWorkspaceId == null)
-			{
-				Logger.LogInformation("Creating target workspace");
-				TargetWorkspace = await Environment.CreateWorkspaceWithFieldsAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
-			}
-			else
-			{
-				TargetWorkspace = await Environment.GetWorkspaceAsync(targetWorkspaceId.Value).ConfigureAwait(false);
-			}
 
 			Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
-			Configuration.DestinationWorkspaceArtifactId = TargetWorkspace.ArtifactID;
-			Configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstance(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).ConfigureAwait(false);
+			Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
+			Configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).ConfigureAwait(false);
 			Configuration.DataSourceArtifactId = Configuration.SavedSearchArtifactId;
-			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, TargetWorkspace.ArtifactID).ConfigureAwait(false);
+			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 			Configuration.SetFieldMappings(fieldsMapping.ToList());
+
+			Logger.LogInformation("Create Job History...");
 			Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now.ToString("yyyy MMMM dd HH.mm.ss.fff")}").ConfigureAwait(false);
 
 			if (useRootWorkspaceFolder)
 			{
-				Configuration.DestinationFolderArtifactId = await Rdos.GetRootFolderInstance(ServiceFactory, TargetWorkspace.ArtifactID).ConfigureAwait(false);
+				Configuration.DestinationFolderArtifactId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 			}
 
 			Logger.LogInformation("Configuration done");
@@ -260,7 +271,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			var sourceFields = await GetFieldsFromSourceWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
 			sourceFields = FilterTestCaseFields(sourceFields, numberOfMappedFields);
 
-			IEnumerable<RelativityObject> destinationFields = await GetFieldsFromSourceWorkspaceAsync(TargetWorkspace.ArtifactID).ConfigureAwait(false);
+			IEnumerable<RelativityObject> destinationFields = await GetFieldsFromSourceWorkspaceAsync(DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 			destinationFields = FilterTestCaseFields(destinationFields, numberOfMappedFields);
 
 			return sourceFields.Zip(destinationFields, (sourceField, destinationField) => new FieldMap
@@ -338,27 +349,70 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			return queryRequest;
 		}
 
+		private void PreConditionsCheckAndFix(PerformanceTestCase testCase)
+		{
+			Logger.LogInformation("Pre-Condition checks started...");
+
+			IList<FixResult> fixResults = new List<FixResult>();
+
+			IEnumerable<IPreCondition> preConditions = new List<IPreCondition>()
+			{
+				new MassImportToggleOnPreCondition(),
+				new IndexEnabledPreCondition(SourceWorkspace.ArtifactID),
+				new IndexEnabledPreCondition(DestinationWorkspace.ArtifactID),
+				new DataGridEnabledPreCondition(ServiceFactory, SourceWorkspace.ArtifactID),
+				new DataGridEnabledPreCondition(ServiceFactory, DestinationWorkspace.ArtifactID),
+				new WorkspaceDocCountPreCondition(ServiceFactory, SourceWorkspace.ArtifactID,
+					testCase.ExpectedItemsTransferred),
+				new WorkspaceDocCountPreCondition(ServiceFactory, DestinationWorkspace.ArtifactID,
+					_wasDestinationForTestCaseCreated ? 0 : testCase.ExpectedItemsTransferred)
+			};
+			foreach (var preCondition in preConditions)
+			{
+				var isOk = preCondition.Check();
+				Logger.LogInformation("Pre-Condition check: {name} is valid - {status}", preCondition.Name, isOk);
+				if (!isOk)
+				{
+					Logger.LogInformation("Pre-Condition check {name} is invalid. Trying to fix...", preCondition.Name);
+					fixResults.Add(preCondition.TryFix());
+				}
+			}
+
+			IList<FixResult> fixErrors = fixResults.Where(x => !x.IsFixed).ToList();
+			if (fixErrors.Any())
+			{
+				LogPreConditionChecksErrors(fixErrors);
+				throw new Exception("Some of Pre-Condition checks failed. Check logs.");
+			}
+
+			Logger.LogInformation("Pre-Condition checks completed successfully...");
+		}
+
+		private void LogPreConditionChecksErrors(IList<FixResult> fixErrors)
+		{
+			foreach (var error in fixErrors)
+			{
+				Logger.LogError(error.Exception, "Pre-Condition: {name} fix failed.", error.PreConditionName);
+			}
+		}
+
 		private async Task CleanUpWorkspacesAsync()
 		{
 			if(_workspaceType == WorkspaceType.ARM)
 			{
-				if (_sourceWorkspaceId != 0)
+				if (SourceWorkspace != null)
 				{
 					using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
 					{
-						// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
-						var workspaceRef = new WorkspaceRef(_sourceWorkspaceId);
-						await manager.DeleteAsync(workspaceRef).ConfigureAwait(false);
+						await manager.DeleteAsync(SourceWorkspace).ConfigureAwait(false);
 					}
 				}
 
-				if (_destinationWorkspaceId != 0)
+				if (DestinationWorkspace != null)
 				{
 					using (var manager = ServiceFactory.CreateProxy<IWorkspaceManager>())
 					{
-						// ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
-						var workspaceRef = new WorkspaceRef(_destinationWorkspaceId);
-						await manager.DeleteAsync(workspaceRef).ConfigureAwait(false);
+						await manager.DeleteAsync(DestinationWorkspace).ConfigureAwait(false);
 					}
 				}
 			}

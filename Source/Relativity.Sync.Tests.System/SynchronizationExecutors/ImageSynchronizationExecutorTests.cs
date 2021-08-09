@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using NUnit.Framework;
@@ -18,9 +17,6 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal class ImageSynchronizationExecutorTests : SystemTest
 	{
-		private const int _CONTROL_NUMBER_FIELD_ID = 1003667;
-		private const string _CONTROL_NUMBER_FIELD_DISPLAY_NAME = "Control Number";
-
 		private string SourceWorkspaceName => $"Source.{Guid.NewGuid()}";
 		private string DestinationWorkspaceName => $"Destination.{Guid.NewGuid()}";
 
@@ -37,11 +33,11 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
-				.ImportData(dataSet, images: true)
+				.ImportImageData(dataSet)
 				.SetupImageConfiguration(identifierFieldMap, batchSize: _BATCH_SIZE)
 				.SetupContainer()
 				.SetDocumentTracking()
-				.ExecuteDocumentPreSynchronizationExecutors();
+				.ExecutePreSynchronizationExecutors();
 
 			// Act
 			ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -58,7 +54,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
 		{
 			IExecutor<IImageSynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<IImageSynchronizationConfiguration>>();
-			return syncExecutor.ExecuteAsync(configuration, CancellationToken.None);
+			return syncExecutor.ExecuteAsync(configuration, CompositeCancellationToken.None);
 		}
 	}
 }

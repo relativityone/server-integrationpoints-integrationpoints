@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -10,7 +11,8 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class DocumentFieldMappingValidator : FieldMappingValidatorBase
 	{
-		public DocumentFieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger) : base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, logger)
+		public DocumentFieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
+			: base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, logger)
 		{
 		}
 
@@ -20,7 +22,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				var allMessages = await BaseValidateAsync(configuration, onlyIdentifierShouldBeMapped: false, token).ConfigureAwait(false);
+				List<ValidationMessage> allMessages = await BaseValidateAsync(configuration, onlyIdentifierShouldBeMapped: false, token).ConfigureAwait(false);
 				
 				return new ValidationResult(allMessages.ToArray());
 			}
@@ -28,7 +30,7 @@ namespace Relativity.Sync.Executors.Validation
 			{
 				const string message = "Exception occurred during field mappings validation. See logs for more details.";
 				_logger.LogError(ex, message);
-				return new ValidationResult(new ValidationMessage(message));
+				throw;
 			}
 		}
 

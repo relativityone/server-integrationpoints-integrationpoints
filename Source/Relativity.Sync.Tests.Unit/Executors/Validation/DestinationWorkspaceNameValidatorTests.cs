@@ -72,16 +72,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		}
 
 		[Test]
-		public async Task ValidateAsync_ShouldHandleExceptionDuringValidation()
+		public void ValidateAsync_ShouldThrowExceptionDuringValidation()
 		{
 			// Arrange
 			_workspaceNameValidatorMock.Setup(x => x.Validate(_WORKSPACE_NAME, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).Throws<InvalidOperationException>();
 
 			// Act
-			ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
+			Func<Task<ValidationResult>> result = async () => await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			result.IsValid.Should().BeFalse();
+			result.Should().Throw<InvalidOperationException>();
 		}
 
 		[TestCase(typeof(SyncDocumentRunPipeline), true)]

@@ -28,6 +28,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IObjectManager> _objectManagerFake;
 		private Mock<IObjectTypeManager> _objectTypeManagerFake;
 		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUserFake;
+		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdminFake;
 		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryForUserFake;
 		private Mock<IDestinationServiceFactoryForAdmin> _destinationServiceFactoryForAdminFake;
 		private ConfigurationStub _configurationStubFake;
@@ -55,12 +56,15 @@ namespace Relativity.Sync.Tests.Integration
 			_objectManagerFake = new Mock<IObjectManager>();
 			_objectTypeManagerFake = new Mock<IObjectTypeManager>();
 			_sourceServiceFactoryForUserFake = new Mock<ISourceServiceFactoryForUser>();
+			_sourceServiceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>();
 			_destinationServiceFactoryForUserFake = new Mock<IDestinationServiceFactoryForUser>();
 			_destinationServiceFactoryForAdminFake = new Mock<IDestinationServiceFactoryForAdmin>();
 			_permissionManagerFake = new Mock<IPermissionManager>();
 
 			containerBuilder.RegisterInstance(_sourceServiceFactoryForUserFake.Object)
 				.As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(_sourceServiceFactoryForAdminFake.Object)
+				.As<ISourceServiceFactoryForAdmin>();
 			containerBuilder.RegisterInstance(_destinationServiceFactoryForUserFake.Object)
 				.As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(_destinationServiceFactoryForAdminFake.Object)
@@ -72,7 +76,13 @@ namespace Relativity.Sync.Tests.Integration
 			_sourceServiceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
 				.ReturnsAsync(_permissionManagerFake.Object);
 
+			_sourceServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
+				.ReturnsAsync(_permissionManagerFake.Object);
+
 			_destinationServiceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
+				.ReturnsAsync(_permissionManagerFake.Object);
+
+			_destinationServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
 				.ReturnsAsync(_permissionManagerFake.Object);
 
 			_destinationServiceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
@@ -80,6 +90,9 @@ namespace Relativity.Sync.Tests.Integration
 
 			_destinationServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerFake.Object);
+
+			_destinationServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
+				.ReturnsAsync(_objectTypeManagerFake.Object);
 
 			const int tagArtifactId = 111;
 			_objectManagerFake.Setup(x =>
@@ -97,10 +110,10 @@ namespace Relativity.Sync.Tests.Integration
 						}
 					});
 
-			_objectTypeManagerFake.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(new ObjectTypeResponse());
+            _objectTypeManagerFake.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new ObjectTypeResponse());
 
-			_container = containerBuilder.Build();
+            _container = containerBuilder.Build();
 
 			_permissionManagerFake = SetUpPermissionManager();
 		}
@@ -112,7 +125,7 @@ namespace Relativity.Sync.Tests.Integration
 			IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
 			
 			// Act
-			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			//Assert
 			validationResult.Status.Should().Be(ExecutionStatus.Completed);
@@ -129,7 +142,7 @@ namespace Relativity.Sync.Tests.Integration
 			IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
 
 			// Act
-			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CancellationToken.None).ConfigureAwait(false);
+			ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			//Assert
 			validationResult.Status.Should().Be(ExecutionStatus.Failed);

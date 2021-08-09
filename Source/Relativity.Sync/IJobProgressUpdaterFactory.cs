@@ -1,4 +1,7 @@
-﻿namespace Relativity.Sync
+﻿using Relativity.Sync.Storage;
+using System.Collections.Generic;
+
+namespace Relativity.Sync
 {
 	internal interface IJobProgressUpdaterFactory
 	{

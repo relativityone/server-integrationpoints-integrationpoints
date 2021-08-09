@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using System.Text;
@@ -12,7 +13,6 @@ namespace Relativity.Sync.Tests.System.Core
 		private static Uri _relativityServicesUrl;
 		private static Uri _relativityWebApiUrl;
 		private static Uri _relativityUrl;
-
 		public static bool IsSettingsFileSet => TestContext.Parameters.Names.Any();
 
 		public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
@@ -58,14 +58,26 @@ namespace Relativity.Sync.Tests.System.Core
 
 		public static string RelativeArchivesLocation => GetConfigValue("RelativeArchivesLocation");
 
-		public static string RemoteArchivesLocation => GetConfigValue("RemoteArchivesLocation");
+		public static string RelativeBCPPathLocation => GetConfigValue("RelativeBCPPathLocation");
+
+		public static string RemoteServerRoot => GetConfigValue("RemoteServerRoot");
+
+		public static string RemoteArchivesLocation => Path.Combine(RemoteServerRoot, RelativeArchivesLocation);
+		
+		public static string RemoteBCPPathLocation => Path.Combine(RemoteServerRoot, RelativeBCPPathLocation);
 
 		public static string ResourcePoolName => GetConfigValue("ResourcePoolName");
 
 		public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
 
 		public static bool UseLogger => !bool.TryParse(GetConfigValue("SuppressCertificateCheck"), out bool useLogger) || useLogger;
-
+		
+		public static int ArmRelativityTemplateMatterId => int.Parse(GetConfigValue("ArmRelativityTemplateMatterId"));
+		
+		public static int ArmCacheLocationId => int.Parse(GetConfigValue("ArmCacheLocationId"));
+		
+		public static int ArmFileRepositoryId => int.Parse(GetConfigValue("ArmFileRepositoryId"));
+		
 		private static Uri BuildHostNamedBasedUri(string path)
 		{
 			if (string.IsNullOrEmpty(RelativityHostName))

@@ -1,18 +1,19 @@
 {
-  "RelativityUri": "https://ctus014128-t009.r1.kcura.com/Relativity",
-  "RelativityServicesUri": "https://ctus014128-t009-services.r1.kcura.com/Relativity/Relativity.Services",
-  "RelativityUserName": "relativity.sync@kcura.com",
+  "RelativityUri": "https://<Hopper_Id>.hopper.relativity.com/Relativity",
+  "RelativityServicesUri": "https://<Hopper_Id>.hopper.relativity.com/Relativity/Relativity.Services",
+  "RelativityUserName": "relativity.admin@kcura.com",
   "RelativityPassword": "Test1234!",
-  "TemplateWorkspaceName": "RelativityOne Quick Start Template",
+  "TemplateWorkspaceName": "Relativity Starter Template",
   "DesiredWorkspaceName": "Nightly Performance Tests",
   "TestDataDirectoryPath": "C:\\Data",
+  "BatchSize": 10000,
   "TestCases": [
     {
       "Name": "Nightly-1",
-      "NumberOfDocuments": 30000,
-      "NumberOfFields": 200,
+      "NumberOfDocuments": 50000,
+      "NumberOfFields": 50,
       "TotalNativesSizeInMB": 0,
-      "TotalExtractedTextSizeInMB": 1500
+      "TotalExtractedTextSizeInMB": 500
     }
   ]
 }

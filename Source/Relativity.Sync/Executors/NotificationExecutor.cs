@@ -45,13 +45,13 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-		public async Task<ExecutionResult> ExecuteAsync(INotificationConfiguration configuration, CancellationToken token)
+		public async Task<ExecutionResult> ExecuteAsync(INotificationConfiguration configuration, CompositeCancellationToken token)
 		{
 			_logger.LogInformation("Sending notifications.");
 
 			try
 			{
-				EmailNotificationRequest emailRequest = await GetEmailNotificationRequestAsync(configuration, token).ConfigureAwait(false);
+				EmailNotificationRequest emailRequest = await GetEmailNotificationRequestAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
 				using (var emailManager = await _serviceFactory.CreateProxyAsync<IEmailNotificationsManager>().ConfigureAwait(false))
 				{
 					await emailManager.SendEmailNotificationAsync(emailRequest).ConfigureAwait(false);

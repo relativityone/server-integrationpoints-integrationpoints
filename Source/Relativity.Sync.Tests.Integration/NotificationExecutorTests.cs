@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public class NotificationExecutorTests
 	{
-		private CancellationToken _token;
+		private CompositeCancellationToken _token;
 
 		private Mock<IEmailNotificationsManager> _emailNotificationsManager;
 		private Mock<INotificationConfiguration> _notificationConfiguration;
@@ -51,11 +51,9 @@ namespace Relativity.Sync.Tests.Integration
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			string correlationGuid = Guid.NewGuid().ToString();
-
 			_syncLog = new Mock<ISyncLog>();
 			_syncMetrics = new Mock<ISyncMetrics>();
-			_token = CancellationToken.None;
+			_token = CompositeCancellationToken.None;
 
 			_notificationConfiguration = new Mock<INotificationConfiguration>();
 			_notificationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DEST_CASE_ARTIFACT_ID);

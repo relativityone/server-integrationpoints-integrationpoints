@@ -1,7 +1,10 @@
-﻿namespace Relativity.Sync.Telemetry
+﻿using System.Collections.Generic;
+using Relativity.Sync.Telemetry.Metrics;
+
+namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Logs <see cref="Metric"/>s to New Relic.
+	///     Logs <see cref="IMetric"/>s to New Relic.
 	/// </summary>
 	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink
 	{
@@ -19,9 +22,20 @@
 		}
 
 		/// <inheritdoc />
-		public void Log(Metric metric)
+		public void Send(IMetric metric)
 		{
-			_apmClient.Log(_NEW_RELIC_INDEX_NAME, metric.ToDictionary());
+			Dictionary<string, object> customData = metric.GetApmMetrics();
+			if (customData.Count > 0)
+			{
+				if (metric is BatchEndPerformanceMetric)
+				{
+					_apmClient.Gauge(_NEW_RELIC_INDEX_NAME, metric.CorrelationId, customData);
+				}
+				else
+				{
+					_apmClient.Count(_NEW_RELIC_INDEX_NAME, customData);
+				}
+			}
 		}
 	}
 }
