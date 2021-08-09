@@ -157,7 +157,7 @@ namespace Relativity.Sync.Transfer
 				if(yesChoice == null)
                 {
 					_logger.LogError("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
-					throw new SyncException("\"Has Images\" system field is in invalid state");
+					throw new SyncException("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
                 }
 
                 choiceYesArtifactId = yesChoice.ArtifactID;
