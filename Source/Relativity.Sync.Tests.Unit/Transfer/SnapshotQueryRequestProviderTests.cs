@@ -267,7 +267,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			SyncException syncException = Assert.ThrowsAsync<SyncException>(async () => await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false));
-			syncException.Message.Should().Be("\"Has Images\" system field is in invalid state");
+			syncException.Message.Should().Be("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
 		}
 
 		private void VerifyQueryRequest(QueryRequest actualRequest, 
