@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 	{
 		Task SendJobStartedAsync(Job job);
 		Task SendJobCompletedAsync(Job job);
-		Task SendJobFailedAsync(Job job);
+		Task SendJobFailedAsync(Job job, Exception e);
 	}
 }

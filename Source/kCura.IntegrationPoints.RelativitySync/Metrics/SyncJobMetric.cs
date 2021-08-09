@@ -58,12 +58,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 			}
 		}
 
-		public async Task SendJobFailedAsync(Job job)
+		public async Task SendJobFailedAsync(Job job, Exception e)
 		{
 			try
 			{
 				IMetric metric = _metricsFactory.CreateScheduleJobFailedMetric(job);
 				_logger.LogInformation("Sending Sync job failed metric: {@metric}", metric);
+				_logger.LogError(e, e.Message);
 
 				IMetricCollection metrics = new MetricsCollection().AddMetric(metric);
 
