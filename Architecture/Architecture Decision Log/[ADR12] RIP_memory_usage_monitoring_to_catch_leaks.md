@@ -24,7 +24,7 @@ Proposed class:
         public MemoryUsageReporter(IAPM apmClient)
         {
             _timerThread = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
-            apmClient = _apmClient;
+            _apmClient = apmClient;
         }
 
         public IDisposable ActivateTimer()
@@ -33,7 +33,7 @@ Proposed class:
 
             return Disposable.Create(() =>
             {
-                _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+                _timerThread.Dispose();
             });
         }
 
@@ -68,7 +68,7 @@ protected override TaskResult ProcessJob(Job job)
     using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer())
 ```
 
-Currently old RIP is sending following metric every 30sec: `IntegrationPoints.Performance.Progress`. This APM metrics contains infomrmatio about throughput of metadata, file and total transfer from last 30 sec.
+Currently old RIP is sending following metric every 30sec: `IntegrationPoints.Performance.Progress`. This APM metrics contains information about throughput of metadata, file and total transfer from last 30 sec.
 We should be safe to add another metric with details of systme usage.
 Proposed Details:
  - Memory usage
