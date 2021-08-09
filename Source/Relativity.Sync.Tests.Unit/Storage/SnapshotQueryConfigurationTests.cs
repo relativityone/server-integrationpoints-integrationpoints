@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void WorkspaceId_ShouldReturnValue()
 		{
 			// Act & Assert
-			_sut.workspaceId.Should().Be(1);
+			_sut.SourceWorkspaceArtifactId.Should().Be(1);
 		}
 
 		[Test]

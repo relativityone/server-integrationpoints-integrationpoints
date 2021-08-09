@@ -20,7 +20,7 @@ namespace Relativity.Sync.Storage
 
 		public int DataSourceArtifactId => _cache.GetFieldValue(x => x.DataSourceArtifactId);
 
-		public int workspaceId => _syncJobParameters.WorkspaceId;
+		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 
 		public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue(x => x.ProductionImagePrecedence));
 

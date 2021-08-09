@@ -7,6 +7,7 @@ using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
 
@@ -17,17 +18,18 @@ namespace Relativity.Sync.Transfer
 		private readonly ISnapshotQueryConfiguration _configuration;
 		private readonly IPipelineSelector _pipelineSelector;
 		private readonly IFieldManager _fieldManager;
-		private readonly ISyncServiceManager _servicesMgr;
+		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+		protected readonly ISyncLog _logger;
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager, ISyncServiceManager syncServiceManager)
+		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager, ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
 		{
 			_configuration = configuration;
 			_pipelineSelector = pipelineSelector;
 			_fieldManager = fieldManager;
-			_servicesMgr = syncServiceManager;
-
+			_sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+			_logger = logger;
 		}
 
 		public Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token)
@@ -139,20 +141,25 @@ namespace Relativity.Sync.Transfer
             int choiceYesArtifactId;
             int fieldArtifactID;
 
-            using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(API.ExecutionIdentity.CurrentUser))
-            {
-                QueryResult result = await objectManager.QueryAsync(_configuration.workspaceId, new QueryRequest()
+            using (IObjectManager objectManager = await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IChoiceQueryManager choiceQueryManager = await _sourceServiceFactoryForAdmin.CreateProxyAsync<IChoiceQueryManager>().ConfigureAwait(false))
+			{
+                QueryResult result = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, new QueryRequest()
                 {
                     ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Field },
                     Condition = "'Name' == 'Has Images'",
                 }, 0, 1).ConfigureAwait(false);
 				fieldArtifactID = result.Objects.ToArray().First().ArtifactID;
-            }
 
-            using (IChoiceQueryManager choiceQueryManager = _servicesMgr.CreateProxy<IChoiceQueryManager>(API.ExecutionIdentity.CurrentUser))
-            {
-                List<Services.ChoiceQuery.Choice> fieldChoicesList = await choiceQueryManager.QueryAsync(_configuration.workspaceId, fieldArtifactID);
-                Services.ChoiceQuery.Choice yesChoice = fieldChoicesList.Find(choice => choice.Name == "Yes");
+                List<Services.ChoiceQuery.Choice> fieldChoicesList = await choiceQueryManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, fieldArtifactID);
+                Services.ChoiceQuery.Choice yesChoice = fieldChoicesList.FirstOrDefault(choice => choice.Name == "Yes");
+
+				if(yesChoice == null)
+                {
+					_logger.LogError("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
+					throw new SyncException("\"Has Images\" system field is in invalid state");
+                }
+
                 choiceYesArtifactId = yesChoice.ArtifactID;
             }
 
@@ -160,7 +167,7 @@ namespace Relativity.Sync.Transfer
         }
 
         private async Task<string> DocumentsWithImages()
-		{
+        {
 			int choiceArtifactId = await GetGuidOfYesHoiceOnHasImagesAsync();
 			string documentsWithOriginalImages = DocumentsWithOriginalImages(choiceArtifactId);
 			if (_configuration.ProductionImagePrecedence.Any())

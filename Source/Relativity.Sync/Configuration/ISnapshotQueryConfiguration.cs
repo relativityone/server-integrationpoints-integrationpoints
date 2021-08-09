@@ -6,7 +6,7 @@
 
 		int DataSourceArtifactId { get; }
 
-		int workspaceId { get; }
+		int SourceWorkspaceArtifactId { get; }
 
 		int[] ProductionImagePrecedence { get; }
 
