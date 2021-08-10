@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.API;
@@ -11,14 +12,20 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
 	public class DocumentAccumulatedStatistics : IDocumentAccumulatedStatistics
 	{
-		private readonly IRelativityObjectManager _relativityObjectManager;
+		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 		private readonly INativeFileSizeStatistics _nativeFileSizeStatistics;
+		private readonly IImageFileSizeStatistics _imageFileSizeStatistics;
 		private readonly IAPILog _logger;
 
-		public DocumentAccumulatedStatistics(IRelativityObjectManager relativityObjectManager, INativeFileSizeStatistics nativeFileSizeStatistics, IAPILog logger)
+		public DocumentAccumulatedStatistics(
+			IRelativityObjectManagerFactory relativityObjectManagerFactory,
+			INativeFileSizeStatistics nativeFileSizeStatistics,
+			IImageFileSizeStatistics imageFileSizeStatistics,
+			IAPILog logger)
 		{
-			_relativityObjectManager = relativityObjectManager;
+			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 			_nativeFileSizeStatistics = nativeFileSizeStatistics;
+			_imageFileSizeStatistics = imageFileSizeStatistics;
 			_logger = logger;
 		}
 
@@ -29,12 +36,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				DocumentsStatistics statistics = new DocumentsStatistics();
 
 				QueryRequest query = new DocumentQueryBuilder()
-				.AddSavedSearchCondition(savedSearchId)
-				.AddField(DocumentFieldsConstants.HasNativeFieldGuid)
-				.Build();
+					.AddSavedSearchCondition(savedSearchId)
+					.AddField(DocumentFieldsConstants.HasNativeFieldGuid)
+					.Build();
 
-				List<RelativityObject> documents = _relativityObjectManager.Query(query);
-				
+				List<RelativityObject> documents = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId).Query(query);
+
 				statistics.DocumentsCount = documents.Count;
 				statistics.TotalNativesCount = documents.Count(x => (bool)x[DocumentFieldsConstants.HasNativeFieldGuid].Value == true);
 				statistics.TotalNativesSizeBytes = _nativeFileSizeStatistics.GetTotalFileSize(documents.Select(x => x.ArtifactID), workspaceId);
@@ -50,7 +57,32 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		public Task<DocumentsStatistics> GetImagesStatisticsForSavedSearchAsync(int workspaceId, int savedSearchId)
 		{
-			throw new System.NotImplementedException();
+			try
+			{
+				DocumentsStatistics statistics = new DocumentsStatistics();
+
+				QueryRequest query = new DocumentQueryBuilder()
+					.AddSavedSearchCondition(savedSearchId)
+					.AddField(DocumentFieldsConstants.HasImagesFieldName)
+					.AddField(DocumentFieldsConstants.RelativityImageCountGuid)
+					.Build();
+
+				IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
+				List<RelativityObject> documents = objectManager.Query(query);
+
+				statistics.DocumentsCount = documents.Count;
+				statistics.TotalImagesCount = documents.Sum(x => Convert.ToInt64(x[DocumentFieldsConstants.RelativityImageCountGuid].Value ?? 0));
+
+				List<RelativityObject> documentsWithImages = documents.Where(x => ((Choice)x[DocumentFieldsConstants.HasImagesFieldName].Value).Name == DocumentFieldsConstants.HasImagesYesChoiceName).ToList();
+				statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(documentsWithImages.Select(x => x.ArtifactID).ToList(), workspaceId);
+				
+				return Task.FromResult(statistics);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Exception occurred while calculating images statistics for Saved Search ID: {savedSearchId} in Workspace ID: {workspaceId}", savedSearchId, workspaceId);
+				throw;
+			}
 		}
 
 		public Task<DocumentsStatistics> GetImagesStatisticsForProductionAsync(int workspaceId, int productionId)

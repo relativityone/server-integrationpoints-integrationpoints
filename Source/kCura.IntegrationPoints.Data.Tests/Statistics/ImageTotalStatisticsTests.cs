@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			int viewId = 398415;
 			bool includeSubfolders = true;
 
-			ConfigureExportResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
+			ConfigureExportResult(expectedResult, DocumentFieldsConstants.RelativityImageCountGuid);
 
 			var actualResult = _instance.ForFolder(_WORKSPACE_ID, folderId, viewId, includeSubfolders);
 
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 			int savedSearchId = 768974;
 
-			ConfigureExportResult(expectedResult, DocumentFieldsConstants.RelativityImageCount);
+			ConfigureExportResult(expectedResult, DocumentFieldsConstants.RelativityImageCountGuid);
 
 			var actualResult = _instance.ForSavedSearch(_WORKSPACE_ID, savedSearchId);
 

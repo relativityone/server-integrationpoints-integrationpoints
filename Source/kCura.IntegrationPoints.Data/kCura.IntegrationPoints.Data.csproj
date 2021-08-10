@@ -194,6 +194,7 @@
     <Compile Include="Statistics\IImageFileSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\ErrorFilesSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\ImageFileSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\ImageStatisticsBase.cs" />
     <Compile Include="Statistics\Implementations\ImageTotalStatistics.cs" />
     <Compile Include="Statistics\INativeFileSizeStatistics.cs" />
     <Compile Include="Statistics\INativeTotalStatistics.cs" />
