@@ -100,16 +100,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, artifactIdsParameter, fileTypeParameter);
 		}
 
-		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId)
-		{
-			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
-				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
-			{
-				return queryResult.GetAllResultsAsync().GetAwaiter().GetResult().ToList();
-			}
-		}
-
-		private long GetTotalFileSize(int productionSetId, int workspaceArtifactId)
+		public long GetTotalFileSize(int productionSetId, int workspaceArtifactId)
 		{
 			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
 
@@ -117,6 +108,15 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 			var dbContext = _helper.GetDBContext(workspaceArtifactId);
 			return dbContext.ExecuteSqlStatementAsScalar<long>(string.Format(sqlText, tableName));
+		}
+
+		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId)
+		{
+			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
+				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
+			{
+				return queryResult.GetAllResultsAsync().GetAwaiter().GetResult().ToList();
+			}
 		}
 	}
 }

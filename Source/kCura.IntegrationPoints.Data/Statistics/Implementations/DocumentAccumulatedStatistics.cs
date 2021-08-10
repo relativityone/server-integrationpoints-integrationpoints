@@ -87,7 +87,29 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		public Task<DocumentsStatistics> GetImagesStatisticsForProductionAsync(int workspaceId, int productionId)
 		{
-			throw new System.NotImplementedException();
+			try
+			{
+				DocumentsStatistics statistics = new DocumentsStatistics();
+
+				QueryRequest query = new ProductionInformationQueryBuilder()
+					.AddProductionSetCondition(productionId)
+					.AddField(ProductionConsts.ImageCountFieldGuid)
+					.Build();
+
+				IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
+				List<RelativityObject> documents = objectManager.Query(query);
+
+				statistics.DocumentsCount = documents.Count; 
+				statistics.TotalImagesCount = documents.Sum(x => Convert.ToInt64(x[ProductionConsts.ImageCountFieldGuid].Value ?? 0));
+				statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(productionId, workspaceId);
+
+				return Task.FromResult(statistics);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Exception occurred while calculating images statistics for Production ID: {productionId} in Workspace ID: {workspaceId}", productionId, workspaceId);
+				throw;
+			}
 		}
 	}
 }
