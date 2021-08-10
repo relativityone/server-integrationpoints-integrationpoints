@@ -130,6 +130,9 @@
   <data name="CreateJobTrackingEntry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>createjobtrackingentry.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="DeleteEntityManagerLinksByLockedJobId" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>DeleteEntityManagerLinksByLockedJobId.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="GetApplicationBinaries" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getapplicationbinaries.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -150,9 +153,6 @@
   </data>
   <data name="GetProcessingSyncWorkerBatches" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getprocessingsyncworkerbatches.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="MarkEntityManagerLinksAsExpired" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>MarkEntityManagerLinksAsExpired.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="RemoveEntryAndCheckBatchStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>removeentryandcheckbatchstatus.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

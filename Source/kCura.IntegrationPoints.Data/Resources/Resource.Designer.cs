@@ -140,6 +140,19 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DELETE FROM 
+        ///	{0}.[{1}]
+        ///WHERE
+        ///	[LockedByJobID] = @JobID
+        ///.
+        /// </summary>
+        internal static string DeleteEntityManagerLinksByLockedJobId {
+            get {
+                return ResourceManager.GetString("DeleteEntityManagerLinksByLockedJobId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT 
         ///					RF.[ArtifactID]
         ///					,RF.[Name]
@@ -257,22 +270,6 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string GetProcessingSyncWorkerBatches {
             get {
                 return ResourceManager.GetString("GetProcessingSyncWorkerBatches", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to UPDATE			{0}.[{1}]
-        ///SET
-        ///				[LockedByJobID]	= -1
-        ///FROM 
-        ///				{0}.[{1}] t1 WITH (UPDLOCK, ROWLOCK)
-        ///WHERE
-        ///				t1.[LockedByJobID] = @JobID
-        ///.
-        /// </summary>
-        internal static string MarkEntityManagerLinksAsExpired {
-            get {
-                return ResourceManager.GetString("MarkEntityManagerLinksAsExpired", resourceCulture);
             }
         }
         
