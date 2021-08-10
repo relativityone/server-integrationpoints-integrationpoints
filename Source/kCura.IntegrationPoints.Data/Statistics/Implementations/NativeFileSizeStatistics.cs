@@ -94,25 +94,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId, out List<FieldMetadata> fieldsMetadata)
-		{
-			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
-				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
-			{
-				fieldsMetadata = queryResult.ExportResult.FieldData;
-				return queryResult.GetAllResultsAsync().GetAwaiter().GetResult().ToList();
-			}
-		}
-
-		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId) =>
-			ExecuteQuery(query, workspaceArtifactId, out _);
-
-		private IEnumerable<int> GetArtifactIds(IEnumerable<RelativityObjectSlim> relativityObjects) =>
-			relativityObjects.Select(GetArtifactId);
-
-		private int GetArtifactId(RelativityObjectSlim relativityObject) => relativityObject.ArtifactID;
-
-		private long GetTotalFileSize(IEnumerable<int> artifactIds, int workspaceArtifactId)
+		public long GetTotalFileSize(IEnumerable<int> artifactIds, int workspaceArtifactId)
 		{
 			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 
@@ -130,6 +112,24 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
 			return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, artifactIdsParameter, fileTypeParameter);
 		}
+
+		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId, out List<FieldMetadata> fieldsMetadata)
+		{
+			using (var queryResult = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId)
+				.QueryWithExportAsync(query, 0).GetAwaiter().GetResult())
+			{
+				fieldsMetadata = queryResult.ExportResult.FieldData;
+				return queryResult.GetAllResultsAsync().GetAwaiter().GetResult().ToList();
+			}
+		}
+
+		private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId) =>
+			ExecuteQuery(query, workspaceArtifactId, out _);
+
+		private IEnumerable<int> GetArtifactIds(IEnumerable<RelativityObjectSlim> relativityObjects) =>
+			relativityObjects.Select(GetArtifactId);
+
+		private int GetArtifactId(RelativityObjectSlim relativityObject) => relativityObject.ArtifactID;
 
 	}
 }
