@@ -141,12 +141,12 @@ namespace kCura.IntegrationPoints.Domain
             if (_toggleProvider.IsEnabled<LoadRequiredAssembliesInKubernetesMode>())
             {
                 _logger.LogInformation("Required Assemblies Loading in Kubernetes Mode");
-				DeployLibraryFiles(domainPath);
-                LoadRequiredAssemblies(newDomain);
+                CopyLibraryFilesFromWorkingDirectory(domainPath);
 			}
             else
             {
-                CopyLibraryFilesFromWorkingDirectory(domainPath);
+                DeployLibraryFiles(domainPath);
+                LoadRequiredAssemblies(newDomain);
 			}
 
             return newDomain;

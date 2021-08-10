@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             AppDomain appDomain = _sut.CreateNewDomain();
 
             // Assert
-            FakeRelativityFeaturePathService.KubernetesModeExecuted.Should().BeTrue();
+            FakeRelativityFeaturePathService.KubernetesModeNotExecuted.Should().BeFalse();
             appDomain.Should().NotBeNull();
         }
 
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             AppDomain appDomain = _sut.CreateNewDomain();
 
             // Assert
-            FakeRelativityFeaturePathService.KubernetesModeExecuted.Should().BeFalse();
+            FakeRelativityFeaturePathService.KubernetesModeNotExecuted.Should().BeTrue();
             appDomain.Should().NotBeNull();
         }
 
@@ -180,11 +180,16 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
 
         private class FakeRelativityFeaturePathService : RelativityFeaturePathService
         {
-            public static bool KubernetesModeExecuted { get; set; }
+            public static bool KubernetesModeNotExecuted { get; set; }
+
+            public FakeRelativityFeaturePathService()
+            {
+                KubernetesModeNotExecuted = false;
+            }
 
             protected override string GetFeaturePathsValue(string keyName)
             {
-                KubernetesModeExecuted = true;
+                KubernetesModeNotExecuted = true;
                 string currentDir = AppDomain.CurrentDomain.BaseDirectory;
 
                 if (keyName == "WebPath")
