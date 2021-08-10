@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				int sourceRecordCount = UpdateSourceRecordCount(settings);
 				if (sourceRecordCount > 0)
 				{
-					using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields))
+					using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields, JobStopManager))
 					{
 						context.TransferredItemsCount = JobHistory.ItemsTransferred ?? 0;
 						context.FailedItemsCount = JobHistory.ItemsWithErrors ?? 0;
@@ -330,7 +330,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			LogUpdateSourceRecordCountStart();
 			//Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
-			using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration))
+			using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
 			{
 				int recordCount =
 					settings.ImageImport ?

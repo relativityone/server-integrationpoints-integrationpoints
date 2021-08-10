@@ -6,7 +6,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-	public class MarkEntityManagerLinksAsExpired : ICommand
+	public class DeleteEntityManagerLinksByLockedJobId : ICommand
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IDBContext _caseDBcontext;
@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		private readonly long _jobID;
 		private readonly int _workspaceID;
 
-		public MarkEntityManagerLinksAsExpired(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext,
+		public DeleteEntityManagerLinksByLockedJobId(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext,
 			string tableName, long jobID, int workspaceID)
 		{
 			_repositoryFactory = repositoryFactory;
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		public void Execute()
 		{
 			IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(_workspaceID, string.Empty, string.Empty);
-			string sql = string.Format(Resources.Resource.MarkEntityManagerLinksAsExpired, scratchTableRepository.GetResourceDBPrepend(), _tableName);
+			string sql = string.Format(Resources.Resource.DeleteEntityManagerLinksByLockedJobId, scratchTableRepository.GetResourceDBPrepend(), _tableName);
 			var sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@JobID", _jobID));
 

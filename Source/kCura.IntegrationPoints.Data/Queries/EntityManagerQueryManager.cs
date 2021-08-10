@@ -26,9 +26,9 @@ namespace kCura.IntegrationPoints.Data.Queries
 			return new InsertDataToEntityManagerResourceTable(repositoryFactory, caseDBcontext, tableName, entityManagerRows, workspaceID);
 		}
 
-		public ICommand MarkEntityManagerLinksAsExpired(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext, string tableName, long jobID, int workspaceID)
+		public ICommand DeleteEntityManagerLinksByLockedJobId(IRepositoryFactory repositoryFactory, IDBContext caseDBcontext, string tableName, long jobID, int workspaceID)
 		{
-			return new MarkEntityManagerLinksAsExpired(repositoryFactory, caseDBcontext, tableName, jobID, workspaceID);
+			return new DeleteEntityManagerLinksByLockedJobId(repositoryFactory, caseDBcontext, tableName, jobID, workspaceID);
 		}
 
 	}
