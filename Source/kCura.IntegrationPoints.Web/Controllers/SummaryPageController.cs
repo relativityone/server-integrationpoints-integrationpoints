@@ -66,23 +66,23 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
-		public ActionResult GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId)
+		public ActionResult GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize)
 		{
-			return Json(_documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).GetAwaiter().GetResult());
+			return Json(_documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
-		public ActionResult GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId)
+		public ActionResult GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize)
 		{
-			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).GetAwaiter().GetResult());
+			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
-		public ActionResult GetImagesStatisticsForProduction(int workspaceId, int productionId)
+		public ActionResult GetImagesStatisticsForProduction(int workspaceId, int productionId, bool calculateSize)
 		{
-			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).GetAwaiter().GetResult());
+			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId, calculateSize).GetAwaiter().GetResult());
 		}
 
 		private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)

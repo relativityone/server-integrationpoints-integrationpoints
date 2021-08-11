@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			_logger = logger;
 		}
 
-		public Task<DocumentsStatistics> GetNativesStatisticsForSavedSearchAsync(int workspaceId, int savedSearchId)
+		public Task<DocumentsStatistics> GetNativesStatisticsForSavedSearchAsync(int workspaceId, int savedSearchId, bool calculateSize)
 		{
 			try
 			{
@@ -44,7 +44,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 				statistics.DocumentsCount = documents.Count;
 				statistics.TotalNativesCount = documents.Count(x => (bool)x[DocumentFieldsConstants.HasNativeFieldGuid].Value == true);
-				statistics.TotalNativesSizeBytes = _nativeFileSizeStatistics.GetTotalFileSize(documents.Select(x => x.ArtifactID), workspaceId);
+				if (calculateSize)
+				{
+					statistics.TotalNativesSizeBytes = _nativeFileSizeStatistics.GetTotalFileSize(documents.Select(x => x.ArtifactID), workspaceId);
+				}
 
 				return Task.FromResult(statistics);
 			}
@@ -55,7 +58,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		public Task<DocumentsStatistics> GetImagesStatisticsForSavedSearchAsync(int workspaceId, int savedSearchId)
+		public Task<DocumentsStatistics> GetImagesStatisticsForSavedSearchAsync(int workspaceId, int savedSearchId, bool calculateSize)
 		{
 			try
 			{
@@ -73,9 +76,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 				statistics.DocumentsCount = documents.Count;
 				statistics.TotalImagesCount = documents.Sum(x => Convert.ToInt64(x[DocumentFieldsConstants.RelativityImageCountGuid].Value ?? 0));
 
-				List<RelativityObject> documentsWithImages = documents.Where(x => ((Choice)x[DocumentFieldsConstants.HasImagesFieldName].Value).Name == DocumentFieldsConstants.HasImagesYesChoiceName).ToList();
-				statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(documentsWithImages.Select(x => x.ArtifactID).ToList(), workspaceId);
-				
+				if (calculateSize)
+				{
+					List<RelativityObject> documentsWithImages = documents.Where(x => ((Choice)x[DocumentFieldsConstants.HasImagesFieldName].Value).Name == DocumentFieldsConstants.HasImagesYesChoiceName).ToList();
+					statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(documentsWithImages.Select(x => x.ArtifactID).ToList(), workspaceId);
+				}
+
 				return Task.FromResult(statistics);
 			}
 			catch (Exception ex)
@@ -85,7 +91,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			}
 		}
 
-		public Task<DocumentsStatistics> GetImagesStatisticsForProductionAsync(int workspaceId, int productionId)
+		public Task<DocumentsStatistics> GetImagesStatisticsForProductionAsync(int workspaceId, int productionId, bool calculateSize)
 		{
 			try
 			{
@@ -101,7 +107,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 				statistics.DocumentsCount = documents.Count; 
 				statistics.TotalImagesCount = documents.Sum(x => Convert.ToInt64(x[ProductionConsts.ImageCountFieldGuid].Value ?? 0));
-				statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(productionId, workspaceId);
+				if (calculateSize)
+				{
+					statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(productionId, workspaceId);
+				}
 
 				return Task.FromResult(statistics);
 			}
