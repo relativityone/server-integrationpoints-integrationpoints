@@ -60,6 +60,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			SecretStore.Clear();
 		}
 
+        public Mock<IServicesMgr> GetServicesManagerMock()
+        {
+            return _serviceManager;
+
+        }
+
 		#region Not Implemented
 
 		public IDBContext GetDBContext(int caseID)
