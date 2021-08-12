@@ -1,4 +1,6 @@
-﻿group Tests
+﻿LanguageExt.Core
+
+group Tests
 	kCura
 	kCura.Agent
 	kCura.Apps.Common.Config
