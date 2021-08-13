@@ -204,10 +204,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
 		{
-			return integrationPointEditPage.ApplyModel(new IntegrationPointEdit
+			return integrationPointEditPage.ApplyModel(new IntegrationPointEditExport
 			{
 				Name = integrationPointName,
-				Type = IntegrationPointTypes.Export,
 				Destination = IntegrationPointDestinations.Relativity
 			}).RelativityProviderNext.ClickAndGo();
 		}
