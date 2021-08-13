@@ -9,6 +9,7 @@ using Moq;
 using Relativity.API;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Helpers;
+using Relativity.Logging;
 using Relativity.Services.Permission;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
@@ -23,6 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
         protected Mock<IPermissionManager> _permissionManagerFake;
         protected Mock<IPermissionRepositoryFactory> _permissionRepositoryFactoryFake;
+        protected Mock<ILog> _loggerFake = new Mock<ILog>();
 
         public override void SetUp()
         {
@@ -47,13 +49,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             if (artifactTypePermissions != null) SetUserArtifactTypePermissions((bool)artifactTypePermissions);
         }
 
-        protected int ActAndGetResult(Func<int> function)
+        protected T ActAndGetResult<T>(Func<T> function, T initialResultValue)
         {
-            int total = -1;
+            T result = initialResultValue;
 
             try
             {
-                total = function();
+                result = function();
             }
             catch (AggregateException exceptions)
             {
@@ -64,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 ex.Should().BeOfType<InsufficientPermissionException>();
             }
 
-            return total;
+            return result;
         }
 
         protected void Assert(int total, int expectedTotal, RepositoryPermissions expectedRepositoryPermissions)

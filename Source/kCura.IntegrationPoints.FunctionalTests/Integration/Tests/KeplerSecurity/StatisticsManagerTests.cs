@@ -15,15 +15,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             base.SetUp();
 
-            Mock<ILog> loggerFake = new Mock<ILog>();
-
             RegisterStatisticsFake<IDocumentTotalStatistics>();
             RegisterStatisticsFake<INativeTotalStatistics>();
             RegisterStatisticsFake<IImageTotalStatistics>();
             RegisterStatisticsFake<IImageFileSizeStatistics>();
             RegisterStatisticsFake<INativeFileSizeStatistics>();
             
-            _sut = new StatisticsManager(loggerFake.Object, _permissionRepositoryFactoryFake.Object, Container);
+            _sut = new StatisticsManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object, Container);
         }
 
         [IdentifiedTestCase("6756FA12-4035-4237-9CE8-04EE4E19B436", -1, false)]
@@ -33,9 +31,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalDocuments = -1;
 
             // Act
-            int totalDocuments = ActAndGetResult(() => (int)_sut.GetDocumentsTotalForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalDocuments = ActAndGetResult(() => (int)_sut.GetDocumentsTotalForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalDocuments);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -52,9 +52,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalNatives = -1;
 
             // Act
-            int totalNatives = ActAndGetResult(() => (int)_sut.GetNativesTotalForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalNatives = ActAndGetResult(() => (int)_sut.GetNativesTotalForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalNatives);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -71,9 +73,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalImages = -1;
 
             // Act
-            int totalImages = ActAndGetResult(() => (int)_sut.GetImagesTotalForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalImages = ActAndGetResult(() => (int)_sut.GetImagesTotalForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalImages);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -90,9 +94,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalImages = -1;
 
             // Act
-            int totalImages = ActAndGetResult(() => (int)_sut.GetImagesFileSizeForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalImages = ActAndGetResult(() => (int)_sut.GetImagesFileSizeForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalImages);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -109,9 +115,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalNatives = -1;
 
             // Act
-            int totalNatives = ActAndGetResult(() => (int)_sut.GetNativesFileSizeForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalNatives = ActAndGetResult(() => (int)_sut.GetNativesFileSizeForSavedSearchAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalNatives);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -128,9 +136,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalDocuments = -1;
 
             // Act
-            int totalDocuments = ActAndGetResult(() => (int)_sut.GetDocumentsTotalForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalDocuments = ActAndGetResult(() => (int)_sut.GetDocumentsTotalForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalDocuments);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -147,9 +157,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalNatives = -1;
 
             // Act
-            int totalNatives = ActAndGetResult(() => (int)_sut.GetNativesTotalForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalNatives = ActAndGetResult(() => (int)_sut.GetNativesTotalForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalNatives);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -166,9 +178,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalImages = -1;
 
             // Act
-            int totalImages = ActAndGetResult(() => (int)_sut.GetImagesTotalForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalImages = ActAndGetResult(() => (int)_sut.GetImagesTotalForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalImages);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -185,9 +199,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalImages = -1;
 
             // Act
-            int totalImages = ActAndGetResult(() => (int)_sut.GetImagesFileSizeForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalImages = ActAndGetResult(() => (int)_sut.GetImagesFileSizeForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalImages);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -204,9 +220,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalNatives = -1;
 
             // Act
-            int totalNatives = ActAndGetResult(() => (int)_sut.GetNativesFileSizeForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result);
+            totalNatives = ActAndGetResult(() => (int)_sut.GetNativesFileSizeForProductionAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID).Result,
+                totalNatives);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -223,9 +241,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalDocuments = -1;
 
             // Act
-            int totalDocuments = ActAndGetResult(() => (int)_sut.GetDocumentsTotalForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result);
+            totalDocuments = ActAndGetResult(() => (int)_sut.GetDocumentsTotalForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result,
+                totalDocuments);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -242,9 +262,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalNatives = -1;
 
             // Act
-            int totalNatives = ActAndGetResult(() => (int)_sut.GetNativesTotalForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result);
+            totalNatives = ActAndGetResult(() => (int)_sut.GetNativesTotalForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result,
+                totalNatives);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -261,9 +283,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalImages = -1;
 
             // Act
-            int totalImages = ActAndGetResult(() => (int)_sut.GetImagesTotalForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result);
+            totalImages = ActAndGetResult(() => (int)_sut.GetImagesTotalForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result,
+                totalImages);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -280,9 +304,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalImages = -1;
 
             // Act
-            int totalImages = ActAndGetResult(() => (int)_sut.GetImagesFileSizeForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result);
+            totalImages = ActAndGetResult(() => (int)_sut.GetImagesFileSizeForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result,
+                totalImages);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions
@@ -299,9 +325,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions);
+            int totalNatives = -1;
 
             // Act
-            int totalNatives = ActAndGetResult(() => (int)_sut.GetNativesFileSizeForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result);
+            totalNatives = ActAndGetResult(() => (int)_sut.GetNativesFileSizeForFolderAsync(_WORKSPACE_ID, _SAVEDSEARCH_ID, _VIEW_ID, false).Result,
+                totalNatives);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
@@ -20,9 +21,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         public override void SetUp()
         {
             base.SetUp();
-
-            Mock<ILog> loggerFake = new Mock<ILog>();
-
+            
             Mock<IProviderRepository> providerRepositoryFake = new Mock<IProviderRepository>();
             providerRepositoryFake.Setup(x => x.GetSourceProviders(_WORKSPACE_ID)).Returns(new List<ProviderModel>());
             providerRepositoryFake.Setup(x => x.GetDesinationProviders(_WORKSPACE_ID)).Returns(new List<ProviderModel>());
@@ -31,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             
             Container.Register(Component.For<IProviderRepository>().UsingFactoryMethod(k => providerRepositoryFake.Object).LifestyleTransient().IsDefault());
 
-            _sut = new ProviderManager(loggerFake.Object, _permissionRepositoryFactoryFake.Object, Container);
+            _sut = new ProviderManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object, Container);
         }
 
         [IdentifiedTestCase("D47A46E0-2BE2-41DE-9B72-9E51459FCBED", -1, false, false)]
@@ -43,9 +42,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            int total = -1;
 
             // Act
-            int total = ActAndGetResult(() => _sut.GetSourceProviderArtifactIdAsync(_WORKSPACE_ID, "").Result);
+            total = ActAndGetResult(() => _sut.GetSourceProviderArtifactIdAsync(_WORKSPACE_ID, "").Result,
+                total);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
@@ -68,9 +69,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             // Arrange
             Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            int total = -1;
 
             // Act
-            int total = ActAndGetResult(() => _sut.GetDestinationProviderArtifactIdAsync(_WORKSPACE_ID, "").Result);
+            total = ActAndGetResult(() => _sut.GetDestinationProviderArtifactIdAsync(_WORKSPACE_ID, "").Result,
+                total);
+
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
@@ -84,18 +88,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             Assert(total, expectedTotal, expectedRepositoryPermissions);
         }
 
-        [IdentifiedTestCase("BD357A65-0363-489E-BD5D-16B74926D7B2", -1, false, false)]
-        [IdentifiedTestCase("6CE0B203-011B-4E93-9A6B-D36C92157E54", -1, false, true)]
-        [IdentifiedTestCase("1466FCA1-98D0-4566-B386-C6A00D296C09", -1, true, false)]
+        [IdentifiedTestCase("BD357A65-0363-489E-BD5D-16B74926D7B2", 0, false, false)]
+        [IdentifiedTestCase("6CE0B203-011B-4E93-9A6B-D36C92157E54", 0, false, true)]
+        [IdentifiedTestCase("1466FCA1-98D0-4566-B386-C6A00D296C09", 0, true, false)]
         [IdentifiedTestCase("0D914254-740B-4A47-9451-967968ED33DE", 0, true, true)]
         public void UserPermissionsToGetSourceProvidersVerification(
             int expectedTotal, bool workspaceAccessPermissions, bool artifactTypePermissions)
         {
             // Arrange
             Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            IList<ProviderModel> total = new List<ProviderModel>();
 
             // Act
-            int total = ActAndGetResult(() => _sut.GetSourceProviders(_WORKSPACE_ID).Result.Count);
+            total = ActAndGetResult(() => _sut.GetSourceProviders(_WORKSPACE_ID).Result,
+                total);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
@@ -106,21 +112,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             // Assert
-            Assert(total, expectedTotal, expectedRepositoryPermissions);
+            Assert(total.Count, expectedTotal, expectedRepositoryPermissions);
         }
 
-        [IdentifiedTestCase("BEDE6DFD-3D03-432C-87B5-40B18EBE2A7B", -1, false, false)]
-        [IdentifiedTestCase("8465B97D-F294-4FED-BAAC-405D325CE758", -1, false, true)]
-        [IdentifiedTestCase("CF196867-D296-4824-B7A6-AF529BBE065D", -1, true, false)]
+        [IdentifiedTestCase("BEDE6DFD-3D03-432C-87B5-40B18EBE2A7B", 0, false, false)]
+        [IdentifiedTestCase("8465B97D-F294-4FED-BAAC-405D325CE758", 0, false, true)]
+        [IdentifiedTestCase("CF196867-D296-4824-B7A6-AF529BBE065D", 0, true, false)]
         [IdentifiedTestCase("1D898FED-CA03-4D5B-A40B-C11371E2A8D5", 0, true, true)]
         public void UserPermissionsToGetDestinationProvidersVerification(
             int expectedTotal, bool workspaceAccessPermissions, bool artifactTypePermissions)
         {
             // Arrange
             Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            IList<ProviderModel> total = new List<ProviderModel>();
 
             // Act
-            int total = ActAndGetResult(() => _sut.GetDestinationProviders(_WORKSPACE_ID).Result.Count);
+            total = ActAndGetResult(() => _sut.GetDestinationProviders(_WORKSPACE_ID).Result,
+                total);
+
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
@@ -131,7 +140,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             // Assert
-            Assert(total, expectedTotal, expectedRepositoryPermissions);
+            Assert(total.Count, expectedTotal, expectedRepositoryPermissions);
         }
 
         [IdentifiedTestCase("6BC44A6F-C269-47EF-B2E8-7B5D223D1539", -1, false, false)]
@@ -142,13 +151,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             int expectedTotal, bool workspaceAccessPermissions, bool artifactTypePermissions)
         {
             // Arrange
+            Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            InstallProviderResponse installProviderResponse = new InstallProviderResponse();
+
             InstallProviderRequest installProviderRequest = new InstallProviderRequest
             {
                 WorkspaceID = _WORKSPACE_ID,
                 ProvidersToInstall = new List<InstallProviderDto>()
             };
-            Arrange(workspaceAccessPermissions, artifactTypePermissions);
-
+            
             // Act
             Mock<IRipProviderInstaller> ripProviderInstallerFake = new Mock<IRipProviderInstaller>();
             ripProviderInstallerFake.Setup(x => x.InstallProvidersAsync(new List<SourceProvider>()))
@@ -157,7 +168,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             Container.Register(Component.For<IRipProviderInstaller>()
                 .UsingFactoryMethod(x => ripProviderInstallerFake.Object).LifestyleTransient().IsDefault());
 
-            ActAndGetResult(() => _sut.InstallProviderAsync(installProviderRequest).Result.ErrorMessage.Length);
+            installProviderResponse = ActAndGetResult(() => _sut.InstallProviderAsync(installProviderRequest).Result
+                , installProviderResponse);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
@@ -179,13 +191,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             int expectedTotal, bool workspaceAccessPermissions, bool artifactTypePermissions)
         {
             // Arrange
+            Arrange(workspaceAccessPermissions, artifactTypePermissions);
             int applicationId = 432;
+            UninstallProviderResponse uninstallProviderResponse = new UninstallProviderResponse();
             UninstallProviderRequest uninstallProviderRequest = new UninstallProviderRequest
             {
                 WorkspaceID = _WORKSPACE_ID,
                 ApplicationID = applicationId
             };
-            Arrange(workspaceAccessPermissions, artifactTypePermissions);
 
             // Act
             Mock<IRipProviderUninstaller> ripProviderInstallerFake = new Mock<IRipProviderUninstaller>();
@@ -195,7 +208,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             Container.Register(Component.For<IRipProviderUninstaller>()
                 .UsingFactoryMethod(x => ripProviderInstallerFake.Object).LifestyleTransient().IsDefault());
 
-            ActAndGetResult(() => _sut.UninstallProviderAsync(uninstallProviderRequest).Result.ErrorMessage.Length);
+            ActAndGetResult(() => _sut.UninstallProviderAsync(uninstallProviderRequest).Result, uninstallProviderResponse);
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
                 UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
