@@ -41,7 +41,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		private static void InstallLegalHoldToWorkspace(int workspaceId)
 		{
-			string rapFileLocation = Path.Combine(TestContext.Parameters["RAPDirectory"], "kCura.LegalHold.rap");
+			string rapFileLocation = Path.Combine(TestContext.Parameters["RAPDirectory"], "Relativity_Legal_Hold.rap");
 
 			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
@@ -67,14 +67,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			var importFromLDAPConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLDAP(integrationPointEditPage, integrationPointName);
 
-			//string connectionPath = "";
-			//string username = "";
-			//string password = "";
-			//var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage, connectionPath, username, password);
+            //string connectionPath = "";
+            //string username = "";
+            //string password = "";
+            //var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage, connectionPath, username, password);
 
-		}
+        }
 
-		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
+		private static ImportFromLDAPConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
 		{
 			IntegrationPointEdit integrationPointEdit = new IntegrationPointEditImport
 			{
@@ -82,30 +82,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				TransferredObject = IntegrationPointTransferredObjects.Entity
 			};
 			integrationPointEdit.Name = integrationPointName;
-			return integrationPointEditPage.ApplyModel(integrationPointEdit).RelativityProviderNext.ClickAndGo();
+			return integrationPointEditPage.ApplyModel(integrationPointEdit).ImportFromLDAPNext.ClickAndGo();
 		}
 
-		//private static RelativityProviderMapFieldsPage FillOutImportFromLDAPConnectToSourcePage(RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage, string connectionPath, string username, string password)
-		//{
-		//	RelativityProviderConnectToSource relativityProviderConnectToSource;
-		//	switch (source)
-		//	{
-		//		case RelativityProviderSources.SavedSearch:
-		//			relativityProviderConnectToSource = new RelativityProviderConnectToSavedSearchSource { SavedSearch = savedSearchName };
-		//			break;
-		//		case RelativityProviderSources.Production:
-		//			relativityProviderConnectToSource = new RelativityProviderConnectToProductionSource { ProductionSet = productionSetName };
-		//			break;
-		//		default:
-		//			throw new ArgumentException($"The provided source ({source}) for Relativity Provider is not supported.", nameof(source));
-		//	}
-		//	relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
-		//	relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;
-
-		//	return relativityProviderConnectToSourcePage
-		//		.ApplyModel(relativityProviderConnectToSource)
-		//		.SelectFolder.Click().SetItem($"{destinationWorkspace.Name}")
-		//		.Next.ClickAndGo();
-		//}
-	}
+        private static ImportFromLDAPMapFieldsPage FillOutImportFromLDAPConnectToSourcePage(ImportFromLDAPConnectToSourcePage importFromLDAPConnectToSourcePage, string connectionPath, string username, string password)
+        {
+			return importFromLDAPConnectToSourcePage
+			   .ApplyModel(new ImportFromLDAPConnectToSource
+			   {
+				   ConnectionPath = connectionPath,
+				   Username = username,
+				   Password = password,
+			   }).Next.ClickAndGo();
+        }
+    }
 }
