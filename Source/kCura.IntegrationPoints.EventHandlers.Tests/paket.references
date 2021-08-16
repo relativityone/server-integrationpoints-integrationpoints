@@ -7,6 +7,7 @@ Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.SDK
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces
+Relativity.Toggles
 FluentAssertions
 Moq
 NUnit

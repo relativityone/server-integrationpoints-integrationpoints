@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	[kCura.EventHandler.CustomAttributes.RunOnce(true)]
 	[Guid("93057ef0-9b7e-4fc5-9691-7f97e98cc703")]
 	public class RegisterDocumentTransferProvider : InternalSourceProviderInstaller
-	{
+    {
 		/// <summary>
 		/// Define guid with source provider to allow integration core to be used for source provider installation.
 		/// </summary>

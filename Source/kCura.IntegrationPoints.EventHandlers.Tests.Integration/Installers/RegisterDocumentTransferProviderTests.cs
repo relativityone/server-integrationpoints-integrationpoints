@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.EventHandlers.Installers;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.Testing.Identification;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {

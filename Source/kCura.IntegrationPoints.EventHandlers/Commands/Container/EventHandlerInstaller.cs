@@ -123,5 +123,5 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			
 			container.AddSecretStoreMigrator();
 		}
-	}
+    }
 }

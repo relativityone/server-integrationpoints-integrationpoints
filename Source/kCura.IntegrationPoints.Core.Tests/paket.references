@@ -12,6 +12,7 @@ Relativity.Services.Interfaces.Private
 Relativity.DataGrid
 Relativity.OAuth2Client
 Relativity.OAuth2Client.Interfaces
+Relativity.Toggles
 SystemWrapper.Interfaces
 iTextSharp
 
