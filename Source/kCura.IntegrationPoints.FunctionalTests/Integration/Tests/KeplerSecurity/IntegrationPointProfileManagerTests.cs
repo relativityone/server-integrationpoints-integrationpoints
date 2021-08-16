@@ -229,5 +229,46 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             Assert(-1, -1, expectedRepositoryPermissions);
         }
 
+        [IdentifiedTestCase("2B7E0B59-6718-4E18-9E56-BFE980E5371B", false, false)]
+        [IdentifiedTestCase("7D980BFE-97A4-4F55-950A-AE3C9C0AF2C5", false, true)]
+        [IdentifiedTestCase("D152F7AF-4D4D-4167-B6DD-D9FE49D5EC48", true, false)]
+        [IdentifiedTestCase("F2CA13FB-17CB-485A-BC60-E9287F3C742A", true, true)]
+        public void UserPermissionsToCreateIntegrationPointProfileFromIntegrationPointVerification(bool workspaceAccessPermissions,
+            bool artifactTypePermissions)
+        {
+            // Arrange
+            Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            string profileName = "example profile";
+
+            IntegrationPointModel overwriteFieldsModel = new IntegrationPointModel();
+
+            Mock<IIntegrationPointProfileRepository> integrationPointProfileRepositoryFake =
+                new Mock<IIntegrationPointProfileRepository>();
+            integrationPointProfileRepositoryFake
+                .Setup(x => x.CreateIntegrationPointProfileFromIntegrationPoint(_INTEGRATION_POINT_ARTIFACT_ID, profileName))
+                .Returns(new IntegrationPointModel());
+
+            Container.Register(Component.For<IIntegrationPointProfileRepository>()
+                .UsingFactoryMethod(_ => integrationPointProfileRepositoryFake.Object).LifestyleTransient()
+                .IsDefault());
+
+            // Act
+            overwriteFieldsModel = ActAndGetResult(
+                () => _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ARTIFACT_ID, profileName)
+                    .Result, overwriteFieldsModel);
+
+            RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
+            {
+                UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
+                UserHasCreatePermissions = artifactTypePermissions,
+                UserHasEditPermissions = artifactTypePermissions,
+                UserHasViewPermissions = artifactTypePermissions,
+                UserHasDeletePermissions = artifactTypePermissions
+            };
+
+            // Assert
+            Assert(-1, -1, expectedRepositoryPermissions);
+        }
+
     }
 }
