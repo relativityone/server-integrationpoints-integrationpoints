@@ -91,6 +91,7 @@ namespace Relativity.Sync.Transfer
 			}
 			object initialFieldValue = fieldInfo.IsDocumentField ? batchItem.Values[fieldInfo.DocumentFieldIndex] : null;
 
+			//HERE IS MY IMPLEMENTATION OF FUNC TO EDIT 
 			return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowValue(fieldInfo, batchItem, initialFieldValue);
 		}
 
