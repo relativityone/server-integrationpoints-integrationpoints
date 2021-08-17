@@ -1,18 +1,14 @@
 ﻿using Atata;
 using System;
 using System.IO;
-using System.Collections.Generic;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Api.Services;
-using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Navigation;
 using Relativity.Testing.Framework.Web.Extensions;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using FluentAssertions;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
@@ -28,15 +24,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void OnSetUpFixture()
 		{
-			//not sure if its needed?
-			RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
-
 			InstallLegalHoldToWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);
 		}
 
 		public void OnTearDownFixture()
 		{
-			//leave empty for now
+
 		}
 
 		private static void InstallLegalHoldToWorkspace(int workspaceId)
@@ -60,19 +53,33 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			string integrationPointName = nameof(ImportFromLDAPGoldFlow);
 
-
 			// Act
 			var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
 			var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
 			var importFromLDAPConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLDAP(integrationPointEditPage, integrationPointName);
 
-            //string connectionPath = "";
-            //string username = "";
-            //string password = "";
-            //var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage, connectionPath, username, password);
+            string connectionPath = "rip-openldap-cvnx78s.eastus.azurecontainer.io/ou=Human Resources,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
+            string username = "cn=admin,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
+            string password = "Test1234!";
+            var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage, connectionPath, username, password);
 
-        }
+			importFromLDAPMapFieldsPage.Cn.DoubleClick();
+			importFromLDAPMapFieldsPage.GivenName.DoubleClick();
+			importFromLDAPMapFieldsPage.Sn.DoubleClick();
+			importFromLDAPMapFieldsPage.UniqueID.DoubleClick();
+			importFromLDAPMapFieldsPage.FirstName.DoubleClick();
+			importFromLDAPMapFieldsPage.LastName.DoubleClick();
+
+			var integrationPointViewPage = importFromLDAPMapFieldsPage.Save.ClickAndGo();
+
+			integrationPointViewPage = RunIntegrationPoint(integrationPointViewPage, integrationPointName);
+
+			// Assert
+			int transferredItemsCount = GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int workspaceEntityCount = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
+			transferredItemsCount.Should().Be(workspaceEntityCount).And.Be(13);
+		}
 
 		private static ImportFromLDAPConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
 		{
@@ -95,5 +102,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				   Password = password,
 			   }).Next.ClickAndGo();
         }
-    }
+
+		private static IntegrationPointViewPage RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
+		{
+			return integrationPointViewPage.Run.WaitTo.Within(60).BeVisible().
+				Run.ClickAndGo().
+				OK.ClickAndGo().
+				WaitUntilJobCompleted(integrationPointName);
+		}
+
+		private static int GetTransferredItemsCount(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
+		{
+			return Int32.Parse(integrationPointViewPage.Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
+		}
+	}
 }
