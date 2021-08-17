@@ -27,6 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public TextInput<_> Name { get; private set; }
 
 		[FindByPrecedingDivContent]
+		[WaitForElement(WaitBy.Class, "loading", Until.MissingOrHidden, TriggerEvents.BeforeSet, AbsenceTimeout = 20)]
 		public RadioButtonList<IntegrationPointTypes, _> Type { get; private set; }
 
 		[FindById("promoteEligible")]

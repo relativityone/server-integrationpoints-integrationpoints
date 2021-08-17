@@ -6,6 +6,7 @@ using Relativity.Testing.Framework.Web.Components;
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
     using _ = ImportFromLDAPMapFieldsPage;
+
     [UseExternalFrame]
     [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 4, AbsenceTimeout = 30, AppliesTo = TriggerScope.Children)]
     [WaitForJQueryAjax(TriggerEvents.Init)]
