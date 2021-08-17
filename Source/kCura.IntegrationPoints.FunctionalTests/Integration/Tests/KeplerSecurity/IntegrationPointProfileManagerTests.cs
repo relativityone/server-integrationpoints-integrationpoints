@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
+using FluentAssertions;
 using Moq;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Repositories;
@@ -13,88 +14,143 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         private IIntegrationPointProfileManager _sut;
         private int _INTEGRATION_POINT_ARTIFACT_ID = 554556;
 
+        private Mock<IIntegrationPointProfileRepository> _integrationPointProfileRepositoryFake;
+
         public override void SetUp()
         {
             base.SetUp();
+
+            _integrationPointProfileRepositoryFake = new Mock<IIntegrationPointProfileRepository>();
+
+            Container.Register(Component.For<IIntegrationPointProfileRepository>()
+                .UsingFactoryMethod(_ => _integrationPointProfileRepositoryFake.Object).LifestyleTransient()
+                .IsDefault());
 
             _sut = new IntegrationPointProfileManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object,
                 Container);
         }
 
-        [IdentifiedTestCase("4EE1C0B2-81A7-4C2B-9568-014C9CE100D1", false, false)]
-        [IdentifiedTestCase("48976A72-2F7C-48DC-BE01-4E13B8B051B7", false, true)]
-        [IdentifiedTestCase("713E4D2D-00F2-454F-A09C-DB1B77E061DD", true, false)]
-        [IdentifiedTestCase("1FE4C284-0E6F-4FEF-A579-0601D4679819", true, true)]
+        [IdentifiedTestCase("7DEB25D8-55CC-4AB9-B07B-DA160365DABC", false, false, 0, 0, null, null)]
+        [IdentifiedTestCase("E7128653-CC75-4A7F-B357-6AD999699625", false, true, 0, 0, null, null)]
+        [IdentifiedTestCase("8FF3E176-46C7-4FA3-890E-70BDFC9B476C", true, false, 0, 0, null, null)]
+        [IdentifiedTestCase("D8DBCC4E-710E-4177-80F2-53EF082B3B52", true, true, 10, 20, "exampleName", "exampleEmail")]
         public void UserPermissionsToCreateIntegrationPointProfileVerification(bool workspaceAccessPermissions,
-            bool artifactTypePermissions)
+            bool artifactTypePermissions, int expectedArtifactId, int expectedDestinationProvider,
+            string expectedName, string expectedEmailNotificationRecipients)
         {
             // Arrange
             Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            IntegrationPointModel integrationPointModel = new IntegrationPointModel();
+
             CreateIntegrationPointRequest createIntegrationPointRequest = new CreateIntegrationPointRequest
             {
                 WorkspaceArtifactId = _WORKSPACE_ID
             };
 
-            IntegrationPointModel integrationPointModel = new IntegrationPointModel();
+            IntegrationPointModel expectedIntegrationPointModel = new IntegrationPointModel
+            {
+                ArtifactId = expectedArtifactId,
+                DestinationProvider = expectedDestinationProvider,
+                Name = expectedName,
+                EmailNotificationRecipients = expectedEmailNotificationRecipients
+            };
 
-            Mock<IIntegrationPointProfileRepository> integrationPointProfileRepositoryFake =
-                new Mock<IIntegrationPointProfileRepository>();
-            integrationPointProfileRepositoryFake
-                .Setup(x => x.CreateIntegrationPointProfile(new CreateIntegrationPointRequest()))
-                .Returns(new IntegrationPointModel());
+            RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
+            {
+                UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
+                UserHasCreatePermissions = artifactTypePermissions,
+                UserHasEditPermissions = artifactTypePermissions,
+                UserHasViewPermissions = artifactTypePermissions,
+                UserHasDeletePermissions = artifactTypePermissions
+            };
 
-            Container.Register(Component.For<IIntegrationPointProfileRepository>()
-                .UsingFactoryMethod(_ => integrationPointProfileRepositoryFake.Object).LifestyleTransient()
-                .IsDefault());
+            _integrationPointProfileRepositoryFake
+                .Setup(x => x.CreateIntegrationPointProfile(createIntegrationPointRequest))
+                .Returns(expectedIntegrationPointModel);
 
             // Act
             integrationPointModel = ActAndGetResult(
                 () => _sut.CreateIntegrationPointProfileAsync(createIntegrationPointRequest).Result,
-                integrationPointModel);
-
-            RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
-            {
-                UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
-                UserHasCreatePermissions = artifactTypePermissions,
-                UserHasEditPermissions = artifactTypePermissions,
-                UserHasViewPermissions = artifactTypePermissions,
-                UserHasDeletePermissions = artifactTypePermissions
-            };
+                integrationPointModel, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
+            Assert(expectedRepositoryPermissions);
+            integrationPointModel.ArtifactId.ShouldBeEquivalentTo(expectedArtifactId);
+            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(expectedDestinationProvider);
+            integrationPointModel.Name.ShouldBeEquivalentTo(expectedName);
+            integrationPointModel.EmailNotificationRecipients.ShouldBeEquivalentTo(expectedEmailNotificationRecipients);
         }
 
-        [IdentifiedTestCase("D68972EA-2481-417A-B47D-E5A600CA7977", false, false)]
-        [IdentifiedTestCase("B7646BEB-0623-40B3-B74D-7C988AA0E334", false, true)]
-        [IdentifiedTestCase("D03BDACD-3351-40E1-A307-EE43D7F35175", true, false)]
-        [IdentifiedTestCase("E5D1DF46-1811-4B38-B895-FED61A2BB98E", true, true)]
+        [IdentifiedTestCase("E06D7F78-55C5-4CA1-8DC8-6B92806F3A94", false, false, 0, 0, null, null)]
+        [IdentifiedTestCase("9C195000-2508-4982-A11A-3F76E052C488", false, true, 0, 0, null, null)]
+        [IdentifiedTestCase("D2586914-FAA8-48BB-8877-455EB9494D1E", true, false, 0, 0, null, null)]
+        [IdentifiedTestCase("797917CF-D119-4019-8FC5-3828723177DE", true, true, 10, 20, "exampleName", "exampleEmail")]
         public void UserPermissionsToUpdateIntegrationPointProfileVerification(bool workspaceAccessPermissions,
-            bool artifactTypePermissions)
+            bool artifactTypePermissions, int expectedArtifactId, int expectedDestinationProvider,
+            string expectedName, string expectedEmailNotificationRecipients)
         {
             // Arrange
             Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            IntegrationPointModel integrationPointModel = new IntegrationPointModel();
+
             CreateIntegrationPointRequest createIntegrationPointRequest = new CreateIntegrationPointRequest
             {
                 WorkspaceArtifactId = _WORKSPACE_ID
             };
 
-            IntegrationPointModel integrationPointModel = new IntegrationPointModel();
+            IntegrationPointModel expectedIntegrationPointModel = new IntegrationPointModel
+            {
+                ArtifactId = expectedArtifactId,
+                DestinationProvider = expectedDestinationProvider,
+                Name = expectedName,
+                EmailNotificationRecipients = expectedEmailNotificationRecipients
+            };
 
-            Mock<IIntegrationPointProfileRepository> integrationPointProfileRepositoryFake =
-                new Mock<IIntegrationPointProfileRepository>();
-            integrationPointProfileRepositoryFake
-                .Setup(x => x.UpdateIntegrationPointProfile(new CreateIntegrationPointRequest()))
-                .Returns(new IntegrationPointModel());
+            RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
+            {
+                UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
+                UserHasCreatePermissions = artifactTypePermissions,
+                UserHasEditPermissions = artifactTypePermissions,
+                UserHasViewPermissions = artifactTypePermissions,
+                UserHasDeletePermissions = artifactTypePermissions
+            };
 
-            Container.Register(Component.For<IIntegrationPointProfileRepository>()
-                .UsingFactoryMethod(_ => integrationPointProfileRepositoryFake.Object).LifestyleTransient()
-                .IsDefault());
+            _integrationPointProfileRepositoryFake
+                .Setup(x => x.UpdateIntegrationPointProfile(createIntegrationPointRequest))
+                .Returns(expectedIntegrationPointModel);
 
             // Act
             integrationPointModel = ActAndGetResult(
                 () => _sut.UpdateIntegrationPointProfileAsync(createIntegrationPointRequest).Result,
-                integrationPointModel);
+                integrationPointModel, workspaceAccessPermissions & artifactTypePermissions);
+
+            // Assert
+            Assert(expectedRepositoryPermissions);
+            integrationPointModel.ArtifactId.ShouldBeEquivalentTo(expectedArtifactId);
+            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(expectedDestinationProvider);
+            integrationPointModel.Name.ShouldBeEquivalentTo(expectedName);
+            integrationPointModel.EmailNotificationRecipients.ShouldBeEquivalentTo(expectedEmailNotificationRecipients);
+        }
+
+        [IdentifiedTestCase("B5747736-3E78-4C95-8E3F-230A6C1035F3", false, false, 0, 0, null, null)]
+        [IdentifiedTestCase("E6125A65-973D-4C3A-BE2D-534503A3FAF2", false, true, 0, 0, null, null)]
+        [IdentifiedTestCase("92E38881-CB3D-42CA-A844-0E8F3E407EBD", true, false, 0, 0, null, null)]
+        [IdentifiedTestCase("040BF4FD-6623-4797-AAB2-5AE3063ABE7F", true, true, 10, 20, "exampleName", "exampleEmail")]
+        public void UserPermissionsToGetIntegrationPointProfileVerification(bool workspaceAccessPermissions,
+            bool artifactTypePermissions, int expectedArtifactId, int expectedDestinationProvider,
+            string expectedName, string expectedEmailNotificationRecipients)
+        {
+            // Arrange
+            Arrange(workspaceAccessPermissions, artifactTypePermissions);
+            IntegrationPointModel integrationPointModel = new IntegrationPointModel();
+
+            IntegrationPointModel expectedIntegrationPointModel = new IntegrationPointModel
+            {
+                ArtifactId = expectedArtifactId,
+                DestinationProvider = expectedDestinationProvider,
+                Name = expectedName,
+                EmailNotificationRecipients = expectedEmailNotificationRecipients
+            };
 
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
@@ -105,48 +161,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 UserHasDeletePermissions = artifactTypePermissions
             };
 
-            // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
-        }
-
-        [IdentifiedTestCase("282D8773-B99D-4FE5-9831-E36E28E2C91E", false, false)]
-        [IdentifiedTestCase("9E7364A4-7FB8-4FA0-A3AA-6D56EDBFBAE8", false, true)]
-        [IdentifiedTestCase("43F7DC21-E4B7-4258-AE90-57F63E1D2D74", true, false)]
-        [IdentifiedTestCase("0B4CDFD4-9691-4E27-AC94-7857D09CF242", true, true)]
-        public void UserPermissionsToGetIntegrationPointProfileVerification(bool workspaceAccessPermissions,
-            bool artifactTypePermissions)
-        {
-            // Arrange
-            Arrange(workspaceAccessPermissions, artifactTypePermissions);
-
-            IntegrationPointModel integrationPointModel = new IntegrationPointModel();
-
-            Mock<IIntegrationPointProfileRepository> integrationPointProfileRepositoryFake =
-                new Mock<IIntegrationPointProfileRepository>();
-            integrationPointProfileRepositoryFake
-                .Setup(x => x.GetIntegrationPointProfile(_WORKSPACE_ID))
-                .Returns(new IntegrationPointModel());
-
-            Container.Register(Component.For<IIntegrationPointProfileRepository>()
-                .UsingFactoryMethod(_ => integrationPointProfileRepositoryFake.Object).LifestyleTransient()
-                .IsDefault());
+            _integrationPointProfileRepositoryFake
+                .Setup(x => x.GetIntegrationPointProfile(_INTEGRATION_POINT_ARTIFACT_ID))
+                .Returns(expectedIntegrationPointModel);
 
             // Act
             integrationPointModel = ActAndGetResult(
                 () => _sut.GetIntegrationPointProfileAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ARTIFACT_ID).Result,
-                integrationPointModel);
-
-            RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
-            {
-                UserHasWorkspaceAccessPermissions = workspaceAccessPermissions,
-                UserHasCreatePermissions = artifactTypePermissions,
-                UserHasEditPermissions = artifactTypePermissions,
-                UserHasViewPermissions = artifactTypePermissions,
-                UserHasDeletePermissions = artifactTypePermissions
-            };
+                integrationPointModel, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
+            Assert(expectedRepositoryPermissions);
+            integrationPointModel.ArtifactId.ShouldBeEquivalentTo(expectedArtifactId);
+            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(expectedDestinationProvider);
+            integrationPointModel.Name.ShouldBeEquivalentTo(expectedName);
+            integrationPointModel.EmailNotificationRecipients.ShouldBeEquivalentTo(expectedEmailNotificationRecipients);
         }
 
         [IdentifiedTestCase("A4E543B1-AE52-428F-A0C0-B2A6A088ED09", false, false)]
@@ -161,20 +190,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             IList<IntegrationPointModel> integrationPointModels = new List<IntegrationPointModel>();
 
-            Mock<IIntegrationPointProfileRepository> integrationPointProfileRepositoryFake =
-                new Mock<IIntegrationPointProfileRepository>();
-            integrationPointProfileRepositoryFake
+            _integrationPointProfileRepositoryFake
                 .Setup(x => x.GetAllIntegrationPointProfiles())
                 .Returns(new List<IntegrationPointModel>());
-
-            Container.Register(Component.For<IIntegrationPointProfileRepository>()
-                .UsingFactoryMethod(_ => integrationPointProfileRepositoryFake.Object).LifestyleTransient()
-                .IsDefault());
 
             // Act
             integrationPointModels = ActAndGetResult(
                 () => _sut.GetAllIntegrationPointProfilesAsync(_WORKSPACE_ID).Result,
-                integrationPointModels);
+                integrationPointModels, workspaceAccessPermissions & artifactTypePermissions);
 
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
@@ -186,7 +209,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
+            Assert(expectedRepositoryPermissions);
         }
 
         [IdentifiedTestCase("3F6B3362-265A-42F8-90B7-7DE57C645734", false, false)]
@@ -201,20 +224,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             IList<OverwriteFieldsModel> overwriteFieldsModels = new List<OverwriteFieldsModel>();
 
-            Mock<IIntegrationPointProfileRepository> integrationPointProfileRepositoryFake =
-                new Mock<IIntegrationPointProfileRepository>();
-            integrationPointProfileRepositoryFake
+            _integrationPointProfileRepositoryFake
                 .Setup(x => x.GetOverwriteFieldChoices())
                 .Returns(new List<OverwriteFieldsModel>());
-
-            Container.Register(Component.For<IIntegrationPointProfileRepository>()
-                .UsingFactoryMethod(_ => integrationPointProfileRepositoryFake.Object).LifestyleTransient()
-                .IsDefault());
 
             // Act
             overwriteFieldsModels = ActAndGetResult(
                 () => _sut.GetOverwriteFieldsChoicesAsync(_WORKSPACE_ID).Result,
-                overwriteFieldsModels);
+                overwriteFieldsModels, workspaceAccessPermissions & artifactTypePermissions);
 
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
@@ -226,7 +243,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
+            Assert(expectedRepositoryPermissions);
         }
 
         [IdentifiedTestCase("2B7E0B59-6718-4E18-9E56-BFE980E5371B", false, false)]
@@ -242,20 +259,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             IntegrationPointModel overwriteFieldsModel = new IntegrationPointModel();
 
-            Mock<IIntegrationPointProfileRepository> integrationPointProfileRepositoryFake =
-                new Mock<IIntegrationPointProfileRepository>();
-            integrationPointProfileRepositoryFake
+            _integrationPointProfileRepositoryFake
                 .Setup(x => x.CreateIntegrationPointProfileFromIntegrationPoint(_INTEGRATION_POINT_ARTIFACT_ID, profileName))
                 .Returns(new IntegrationPointModel());
-
-            Container.Register(Component.For<IIntegrationPointProfileRepository>()
-                .UsingFactoryMethod(_ => integrationPointProfileRepositoryFake.Object).LifestyleTransient()
-                .IsDefault());
 
             // Act
             overwriteFieldsModel = ActAndGetResult(
                 () => _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ARTIFACT_ID, profileName)
-                    .Result, overwriteFieldsModel);
+                    .Result, overwriteFieldsModel, workspaceAccessPermissions & artifactTypePermissions);
 
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
@@ -267,7 +278,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
+            Assert(expectedRepositoryPermissions);
         }
 
     }

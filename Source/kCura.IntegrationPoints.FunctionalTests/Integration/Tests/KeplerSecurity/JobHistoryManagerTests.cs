@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             // Act
             jobHistorySummaryModel = ActAndGetResult(() => _sut.GetJobHistoryAsync(jobHistoryRequest).Result,
-                jobHistorySummaryModel);
+                jobHistorySummaryModel, workspaceAccessPermissions & artifactTypePermissions);
 
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
+            Assert(expectedRepositoryPermissions);
         }
 
     }

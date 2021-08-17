@@ -37,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             // Act
             integrationPointTypeModel = ActAndGetResult(() => _sut.GetIntegrationPointTypes(_WORKSPACE_ID).Result,
-                integrationPointTypeModel);
+                integrationPointTypeModel, workspaceAccessPermissions & artifactTypePermissions);
 
             RepositoryPermissions expectedRepositoryPermissions = new RepositoryPermissions
             {
@@ -49,7 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             // Assert
-            Assert(-1, -1, expectedRepositoryPermissions);
+            Assert(expectedRepositoryPermissions);
         }
 
     }

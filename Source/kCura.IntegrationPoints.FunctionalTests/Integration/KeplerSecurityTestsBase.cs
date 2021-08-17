@@ -17,9 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
     class KeplerSecurityTestsBase : TestsBase
     {
         protected const int _WORKSPACE_ID = 266818;
-        protected const int _SAVEDSEARCH_ID = 4324;
-        protected const int _VIEW_ID = 1234;
-
+        
         protected IPermissionRepository _permissionRepository;
 
         protected Mock<IPermissionManager> _permissionManagerFake;
@@ -49,27 +47,41 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             if (artifactTypePermissions != null) SetUserArtifactTypePermissions((bool)artifactTypePermissions);
         }
 
-        protected T ActAndGetResult<T>(Func<T> function, T initialResultValue)
+        protected T ActAndGetResult<T>(Func<T> function, T initialResultValue, bool exceptionNotExpected)
         {
             T result = initialResultValue;
 
-            try
+            if (exceptionNotExpected)
             {
                 result = function();
             }
-            catch (AggregateException exceptions)
+            else
             {
-                exceptions.InnerExceptions[0].Should().BeOfType<InsufficientPermissionException>();
-            }
-            catch (Exception ex)
-            {
-                ex.Should().BeOfType<InsufficientPermissionException>();
+                bool exceptionFound = false;
+                try
+                {
+                    result = function();
+                }
+                catch (AggregateException exceptions)
+                {
+                    exceptionFound = true;
+                    exceptions.InnerExceptions[0].Should().BeOfType<InsufficientPermissionException>();
+                }
+                catch (Exception ex)
+                {
+                    exceptionFound = true;
+                    ex.Should().BeOfType<InsufficientPermissionException>();
+                }
+                finally
+                {
+                    exceptionFound.Should().BeTrue();
+                }
             }
 
             return result;
         }
 
-        protected void Assert(int total, int expectedTotal, RepositoryPermissions expectedRepositoryPermissions)
+        protected void Assert(RepositoryPermissions expectedRepositoryPermissions)
         {
             _permissionRepository.UserHasPermissionToAccessWorkspace()
                 .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasWorkspaceAccessPermissions);
@@ -95,8 +107,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasViewInstancePermissions);
             _permissionRepository.UserHasArtifactInstancePermission(_WORKSPACE_ID, _WORKSPACE_ID, ArtifactPermission.Delete)
                 .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasDeleteInstancePermissions);
-            total.ShouldBeEquivalentTo(expectedTotal);
-        }
+            }
 
         protected void SetUserWorkspaceAccessPermissions(bool permissionValue)
         {
