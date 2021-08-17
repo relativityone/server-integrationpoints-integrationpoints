@@ -34,16 +34,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		private static void InstallLegalHoldToWorkspace(int workspaceId)
 		{
-			string rapFileLocation = Path.Combine(TestContext.Parameters["RAPDirectory"], "Relativity_Legal_Hold.rap");
-
 			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
-
-			int appId = applicationService.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
-			{
-				IgnoreVersion = true
-			});
-
-			applicationService.InstallToWorkspace(workspaceId, appId);
+			applicationService.InstallToWorkspace(workspaceId, applicationService.Get("Relativity Legal Hold").ArtifactID);
 		}
 
 		public void ImportFromLDAPGoldFlow()
