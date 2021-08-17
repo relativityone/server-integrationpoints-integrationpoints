@@ -125,13 +125,8 @@
     <Compile Include="Configuration\RelativityUser.cs" />
     <Compile Include="Configuration\TestConfiguration.cs" />
     <Compile Include="Configuration\TestContext.cs" />
-    <Compile Include="Driver\ChromeDriverFactory.cs" />
-    <Compile Include="Driver\ChromeOptionsExtensions.cs" />
-    <Compile Include="Driver\ChromiumBasedDriverFactory.cs" />
-    <Compile Include="Driver\ChromiumDriverFactory.cs" />
     <Compile Include="Driver\DriverExtensions.cs" />
     <Compile Include="Driver\DriverFactory.cs" />
-    <Compile Include="Driver\FirefoxDriverFactory.cs" />
     <Compile Include="Driver\ImplicitTimeoutSetter.cs" />
     <Compile Include="Driver\ScreenshotSaver.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
@@ -713,7 +708,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="WebDriver.Support">
-          <HintPath>..\..\packages\Selenium.Support\lib\net45\WebDriver.Support.dll</HintPath>
+          <HintPath>..\..\packages\Selenium.Support\lib\net46\WebDriver.Support.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -724,7 +719,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="WebDriver">
-          <HintPath>..\..\packages\Selenium.WebDriver\lib\net45\WebDriver.dll</HintPath>
+          <HintPath>..\..\packages\Selenium.WebDriver\lib\net46\WebDriver.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

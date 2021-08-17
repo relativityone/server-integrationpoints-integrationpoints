@@ -37,5 +37,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
 		[FindByPrecedingDivContent]
 		public Select2<IntegrationPointTransferredObjects, _> TransferredObject { get; private set; }
+
+		[FindById("notificationEmails")]
+		public TextArea<_> EmailRecipients { get; private set; }
 	}
 }

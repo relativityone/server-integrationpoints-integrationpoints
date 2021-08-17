@@ -7,5 +7,7 @@
 		public IntegrationPointTypes Type { get; set; }
 
 		public IntegrationPointDestinations Destination { get; set; }
+
+		public string EmailRecipients { get; set; }
 	}
 }

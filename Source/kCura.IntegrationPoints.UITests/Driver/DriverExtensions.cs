@@ -4,9 +4,8 @@ using OpenQA.Selenium;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
-using OpenQA.Selenium.Internal;
-using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.PageObjects;
 
 namespace kCura.IntegrationPoints.UITests.Driver
 {

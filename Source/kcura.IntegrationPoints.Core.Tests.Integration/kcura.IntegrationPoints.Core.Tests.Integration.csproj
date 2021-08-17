@@ -566,7 +566,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="WebDriver">
-          <HintPath>..\..\packages\Selenium.WebDriver\lib\net45\WebDriver.dll</HintPath>
+          <HintPath>..\..\packages\Selenium.WebDriver\lib\net46\WebDriver.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

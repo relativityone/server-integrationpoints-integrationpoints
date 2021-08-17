@@ -8,12 +8,12 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
     [TestType.Performance]
-    public class CiPerformanceTests : TestsBase 
+    public class PerformanceTests : TestsBase 
     {
         private readonly PerformanceTestsImplementation _implementation;
         private const int RunCount = 1;
 
-        public CiPerformanceTests() : base(nameof(CiPerformanceTests))
+        public PerformanceTests() : base(nameof(PerformanceTests))
         {
             _implementation = new PerformanceTestsImplementation(this); 
         }
