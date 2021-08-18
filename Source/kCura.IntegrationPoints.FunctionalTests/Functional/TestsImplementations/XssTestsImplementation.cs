@@ -142,7 +142,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				.Where(x => x.Level == OpenQA.Selenium.LogLevel.Severe)
 				.Where(x => x.Message.Contains($"/{Const.INTEGRATION_POINTS_APPLICATION_GUID}/"))
 				.Select(x => x.Message));
-			errors.Should().BeNullOrWhiteSpace($"XSS attack should not cause JavaScript errors");
+			errors.Should().BeNullOrWhiteSpace("XSS attack should not cause JavaScript errors");
 		}
 	}
 }

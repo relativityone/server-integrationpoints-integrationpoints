@@ -18,7 +18,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 	internal class SyncTestsImplementation
 	{
 		private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-
 		private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();
 
 		public SyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)

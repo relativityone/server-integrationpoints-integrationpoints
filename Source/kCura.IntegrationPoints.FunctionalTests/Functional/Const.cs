@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Relativity.IntegrationPoints.Tests.Functional
+﻿namespace Relativity.IntegrationPoints.Tests.Functional
 {
 	internal static class Const
 	{
@@ -13,7 +11,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional
 		public static class XSS
 		{
 			public const string XSS_JS = "';window.relativityXss=true;";
-			public const string XSS_HTML = "${constructor.constructor('window.relativityXSS=true')()};";
 		}
 	}
 }
