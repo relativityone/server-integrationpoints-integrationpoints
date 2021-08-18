@@ -192,7 +192,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldThrowSyncExceptionWhenFolderManagerResultsAreMissing()
+		public void ItShouldLogWarningWhenFolderManagerResultsAreMissing()
 		{
 			// ARRANGE
 			const int countArtifactId = 10;
@@ -210,11 +210,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
 				.ReturnsAsync(folderPaths);
 
-			// ACT-ASSERT
-			SyncException syncException = Assert.ThrowsAsync<SyncException>(async () =>
-				await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false));
-			syncException.Message.Should()
-				.Be($"Could not find folders with IDs 1000007,1000008,1000009,1000010 in workspace {_WORKSPACE_ARTIFACT_ID}.");
+			// ACT
+			_instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false);
+
+			// ASSERT
+			string message = $"Could not find folders with IDs 1000007,1000008,1000009,1000010 in workspace {_WORKSPACE_ARTIFACT_ID}.";
+			_logger.Verify(x => x.LogWarning(It.Is<string>(msg => msg == message)), Times.Once);
 		}
 
 		[Test]
