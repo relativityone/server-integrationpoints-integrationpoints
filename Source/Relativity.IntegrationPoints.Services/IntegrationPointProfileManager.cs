@@ -18,11 +18,11 @@ namespace Relativity.IntegrationPoints.Services
 			: base(logger, permissionRepositoryFactory, container)
 		{
 		}
-
+		
 		public IntegrationPointProfileManager(ILog logger) : base(logger)
 		{
 		}
-
+		
 		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
 
 		public void Dispose()
