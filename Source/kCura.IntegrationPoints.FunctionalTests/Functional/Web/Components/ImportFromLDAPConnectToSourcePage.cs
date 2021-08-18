@@ -1,6 +1,4 @@
 ﻿using Atata;
-using OpenQA.Selenium;
-using System.Threading;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;

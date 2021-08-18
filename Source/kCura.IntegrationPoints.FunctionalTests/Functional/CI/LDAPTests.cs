@@ -1,17 +1,15 @@
-﻿using System.Threading.Tasks;
-using Relativity.Testing.Identification;
+﻿using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
-using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[TestType.UI, TestType.MainFlow]
-	public class LDAPTest : TestsBase
+	public class LDAPTests : TestsBase
 	{
 		private readonly ImportLDAPTestImplementation _testsImplementation;
 
-		public LDAPTest()
-			: base(nameof(LDAPTest))
+		public LDAPTests()
+			: base(nameof(LDAPTests))
 		{
 			_testsImplementation = new ImportLDAPTestImplementation(this);
 		}

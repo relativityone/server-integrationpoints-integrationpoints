@@ -1,15 +1,11 @@
 ﻿using Atata;
-using System;
-using System.IO;
 using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Web.Navigation;
 using Relativity.Testing.Framework.Web.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using FluentAssertions;
-using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -25,12 +21,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		public void OnSetUpFixture()
 		{
 			InstallLegalHoldToWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);
-		}
-
-		private static void InstallLegalHoldToWorkspace(int workspaceId)
-		{
-			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
-			applicationService.InstallToWorkspace(workspaceId, applicationService.Get("Relativity Legal Hold").ArtifactID);
 		}
 
 		public void ImportFromLDAPGoldFlow()
@@ -57,12 +47,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			var integrationPointViewPage = importFromLDAPMapFieldsPage.Save.ClickAndGo();
 
-			integrationPointViewPage = RunIntegrationPoint(integrationPointViewPage, integrationPointName);
+			integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
 
 			// Assert
-			int transferredItemsCount = GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
 			int workspaceEntityCount = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
 			transferredItemsCount.Should().Be(workspaceEntityCount).And.Be(13);
+		}
+		private static void InstallLegalHoldToWorkspace(int workspaceId)
+		{
+			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+			applicationService.InstallToWorkspace(workspaceId, applicationService.Get("Relativity Legal Hold").ArtifactID);
 		}
 
 		private static ImportFromLDAPConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
@@ -70,9 +65,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			IntegrationPointEdit integrationPointEdit = new IntegrationPointEditImport
 			{
 				Source = IntegrationPointSources.LDAP,
-				TransferredObject = IntegrationPointTransferredObjects.Entity
+				TransferredObject = IntegrationPointTransferredObjects.Entity,
+				Name = integrationPointName
 			};
-			integrationPointEdit.Name = integrationPointName;
+
 			return integrationPointEditPage.ApplyModel(integrationPointEdit).ImportFromLDAPNext.ClickAndGo();
 		}
 
@@ -86,18 +82,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				   Password = password,
 			   }).Next.ClickAndGo();
         }
-
-		private static IntegrationPointViewPage RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
-		{
-			return integrationPointViewPage.Run.WaitTo.Within(60).BeVisible().
-				Run.ClickAndGo().
-				OK.ClickAndGo().
-				WaitUntilJobCompleted(integrationPointName);
-		}
-
-		private static int GetTransferredItemsCount(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
-		{
-			return Int32.Parse(integrationPointViewPage.Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
-		}
 	}
 }

@@ -23,7 +23,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public Button<ImportFromLDAPConnectToSourcePage, _> ImportFromLDAPNext { get; private set; }
 
 		[FindById("name")]
-		//[WaitForElement(WaitBy.Class, "loading", Until.MissingOrHidden, TriggerEvents.BeforeSet, AbsenceTimeout = 20)]
 		public TextInput<_> Name { get; private set; }
 
 		[FindByPrecedingDivContent]
