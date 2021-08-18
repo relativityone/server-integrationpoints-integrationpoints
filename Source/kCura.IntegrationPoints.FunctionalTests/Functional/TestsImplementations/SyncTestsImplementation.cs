@@ -19,13 +19,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 	{
 		private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
 
-		private readonly TestWorkspaceManagement _workspaceManagement;
+		private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();
 
 		public SyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
 		{
 			_testsImplementationTestFixture = testsImplementationTestFixture;
-
-			_workspaceManagement = new TestWorkspaceManagement();
 		}
 
 		public void OnSetUpFixture()
@@ -35,7 +33,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void OnTearDownFixture()
 		{
-			_workspaceManagement.DeletaAll();
+			foreach (var destinationWorkspace in _destinationWorkspaces)
+			{
+				RelativityFacade.Instance.DeleteWorkspace(destinationWorkspace.Value);
+			}
 		}
 
 		public void SavedSearchNativesAndMetadataGoldFlow()
@@ -179,7 +180,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		{
 			string workspaceName = $"SYNC - {Guid.NewGuid()}";
 
-			return _workspaceManagement.CreateWorkspace(workspaceName, _testsImplementationTestFixture.Workspace.Name);
+			Workspace workspace = RelativityFacade.Instance.CreateWorkspace(workspaceName, _testsImplementationTestFixture.Workspace.Name);
+
+			_destinationWorkspaces.Add(workspaceName, workspace);
+
+			return workspace;
 		}
 
 		private static IntegrationPointViewPage RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)

@@ -20,13 +20,18 @@ namespace kCura.IntegrationPoints.UITests.Driver
 		
 		public static RemoteWebDriver Create()
 		{
-			RemoteWebDriver driver = null;
+			RemoteWebDriver driver;
 			switch (SharedVariables.UiBrowser)
 			{
 				case "chrome":
+					driver = ChromeDriverFactory.Create();
+					break;
 				case "chromium":
 				case "chromium-portable":
+					driver = ChromiumDriverFactory.Create();
+					break;
 				case "firefox":
+					driver = FirefoxDriverFactory.Create();
 					break;
 				default:
 					throw new ArgumentException($"Unsupported browser '{SharedVariables.UiBrowser}'");
