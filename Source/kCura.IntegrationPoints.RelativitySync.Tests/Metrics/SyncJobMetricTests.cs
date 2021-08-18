@@ -50,9 +50,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
 		{
 			// Arrange
 			_metricFake.Setup(x => x.SendAsync()).Throws<Exception>();
+			Exception ex = new Exception();
 
 			// Act
-			Func<Task> action = () => _sut.SendJobFailedAsync(null);
+			Func<Task> action = () => _sut.SendJobFailedAsync(null, ex);
 
 			// Assert
 			action.ShouldThrow<SyncMetricException>();

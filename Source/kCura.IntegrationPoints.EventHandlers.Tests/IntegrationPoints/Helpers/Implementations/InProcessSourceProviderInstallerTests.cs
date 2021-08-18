@@ -59,7 +59,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _sut = new InProcessSourceProviderInstaller(
                 _loggerMock.Object,
                 _helperMock.Object,
+                null,
                 _ripProviderInstallerMock.Object
+                
             );
         }
 
@@ -114,7 +116,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             var sut = new InProcessSourceProviderInstaller(
                 _loggerMock.Object,
                 _helperMock.Object,
+                null,
                 ripProviderInstaller: null
+                
             );
 
             // act

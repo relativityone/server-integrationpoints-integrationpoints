@@ -11,6 +11,7 @@ Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.SDK
 Relativity.Services.Interfaces.Private
 Relativity.Telemetry.MetricsCollection
+Relativity.Toggles
 Polly
 Relativity.Logging.Interfaces
 
