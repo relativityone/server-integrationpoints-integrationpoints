@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public void ItShouldThrowSyncItemLevelErrorExceptionWhenCouldNotFindFolderWithGivenID()
+		public void BuildRowValue_ShouldThrowSyncItemLevelErrorException_WhenCouldNotFindFolderWithGivenID()
 		{
 			FieldInfoDto fieldInfo = FieldInfoDto.FolderPathFieldFromDocumentField("name");
 			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = 3 };

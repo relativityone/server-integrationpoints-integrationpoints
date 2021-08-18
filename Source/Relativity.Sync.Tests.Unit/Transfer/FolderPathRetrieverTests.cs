@@ -215,7 +215,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// ASSERT
 			string message = $"Could not find folders with IDs 1000007,1000008,1000009,1000010 in workspace {_WORKSPACE_ARTIFACT_ID}.";
-			_logger.Verify(x => x.LogWarning(It.Is<string>(msg => msg == message)), Times.Once);
+			_logger.Verify(x => x.LogWarning(message), Times.Once);
 		}
 
 		[Test]

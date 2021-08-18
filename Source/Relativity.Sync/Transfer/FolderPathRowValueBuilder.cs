@@ -28,7 +28,7 @@ namespace Relativity.Sync.Transfer
                     {
 						return _folderPathsMap[document.ArtifactID];
 					}
-					throw new SyncItemLevelErrorException($"Could not find folder with ID { document.ArtifactID }.");
+					throw new SyncItemLevelErrorException($"Could not find folder for document with ID { document.ArtifactID }.");
 				}
 				return initialValue;
 			}
