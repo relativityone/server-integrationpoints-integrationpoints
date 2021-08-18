@@ -82,7 +82,7 @@ nuget netDumbster 2.0.0.4
 nuget NUnit 3.13.2 redirects: force
 nuget NSubstitute 1.10.0.0
 nuget Relativity.Testing.Identification 3.5.0
-nuget Selenium.Support 4.0.0-beta4
+nuget Selenium.Support 3.141.0
 nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
 nuget Serilog 1.5.14	
