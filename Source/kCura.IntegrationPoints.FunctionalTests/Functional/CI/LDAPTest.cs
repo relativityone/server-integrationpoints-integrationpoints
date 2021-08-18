@@ -6,12 +6,12 @@ using NUnit.Framework;
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[TestType.UI, TestType.MainFlow]
-	public class LoadTest : TestsBase
+	public class LDAPTest : TestsBase
 	{
 		private readonly ImportLDAPTestImplementation _testsImplementation;
 
-		public LoadTest()
-			: base(nameof(LoadTest))
+		public LDAPTest()
+			: base(nameof(LDAPTest))
 		{
 			_testsImplementation = new ImportLDAPTestImplementation(this);
 		}
@@ -23,16 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.OnSetUpFixture();
 		}
 
-		protected override void OnTearDownFixture()
-		{
-			base.OnTearDownFixture();
-
-			_testsImplementation.OnTearDownFixture();
-		}
-
-
 		[IdentifiedTest("09c54ba0-04d9-4f6e-9c46-0075612582fa")]
-		[Category("test")]
 		public void LoadFromLDAP_GoldFlow()
 		{
 			_testsImplementation.ImportFromLDAPGoldFlow();

@@ -27,11 +27,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			InstallLegalHoldToWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);
 		}
 
-		public void OnTearDownFixture()
-		{
-
-		}
-
 		private static void InstallLegalHoldToWorkspace(int workspaceId)
 		{
 			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
@@ -51,10 +46,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			var importFromLDAPConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLDAP(integrationPointEditPage, integrationPointName);
 
-            string connectionPath = "rip-openldap-cvnx78s.eastus.azurecontainer.io/ou=Human Resources,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
-            string username = "cn=admin,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
-            string password = "Test1234!";
-            var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage, connectionPath, username, password);
+            var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage, Const.LDAP.OPEN_LDAP_CONNECTION_PATH, Const.LDAP.OPEN_LDAP_USERNAME, Const.LDAP.OPEN_LDAP_PASSWORD);
 
 			importFromLDAPMapFieldsPage.Cn.DoubleClick();
 			importFromLDAPMapFieldsPage.GivenName.DoubleClick();
