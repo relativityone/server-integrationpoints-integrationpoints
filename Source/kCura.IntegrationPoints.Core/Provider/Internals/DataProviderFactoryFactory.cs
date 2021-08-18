@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Domain;
 using LanguageExt;
 using Relativity.API;
 using System;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Provider.Internals
 {
@@ -14,11 +15,13 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
 
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
+        private readonly IToggleProvider _toggleProvider;
 
-        public DataProviderFactoryFactory(IAPILog logger, IHelper helper)
+        public DataProviderFactoryFactory(IAPILog logger, IHelper helper, IToggleProvider toggleProvider)
         {
             _logger = logger;
             _helper = helper;
+            _toggleProvider = toggleProvider;
         }
 
         public Either<string, ProviderFactoryVendor> CreateProviderFactoryVendor()
@@ -45,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
                 var getAppBinaries = new GetApplicationBinaries(adminCaseDbContext);
                 IPluginProvider pluginProvider = new DefaultSourcePluginProvider(getAppBinaries);
                 var relativityFeaturePathService = new RelativityFeaturePathService();
-                var domainHelper = new AppDomainHelper(pluginProvider, _helper, relativityFeaturePathService);
+                var domainHelper = new AppDomainHelper(pluginProvider, _helper, relativityFeaturePathService, _toggleProvider);
                 var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
                 return strategy;
             }

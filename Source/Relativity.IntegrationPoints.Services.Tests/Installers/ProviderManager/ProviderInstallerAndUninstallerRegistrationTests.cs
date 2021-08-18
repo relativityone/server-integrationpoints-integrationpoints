@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.IntegrationPoints.Services.Installers.ProviderManager;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
@@ -21,10 +22,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
 
 		[SetUp]
 		public void SetUp()
-		{
+        {
 			_container = new WindsorContainer();
 			_container.AddProviderInstallerAndUninstaller();
-		}
+        }
 
 		[Test]
 		public void IIntegrationPointsRemover_ShouldBeRegisteredWithProperLifestyle()
@@ -196,7 +197,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
 				CreateDummyObjectRegistration<IWorkspaceDBContext>(),
 				CreateDummyObjectRegistration<IAPILog>(),
 				CreateDummyObjectRegistration<IHelper>(),
-				CreateDummyObjectRegistration<ISourceProviderRepository>()
+				CreateDummyObjectRegistration<ISourceProviderRepository>(),
+				CreateDummyObjectRegistration<IToggleProvider>()
 			};
 
 			container.Register(dependencies);

@@ -6,6 +6,7 @@ Relativity.IntegrationPoints.Services.Interfaces.Private
 Relativity.Platform.Agent.WorkloadDiscovery.SDK
 Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
+Relativity.Toggles
 FluentAssertions
 Moq
 NUnit

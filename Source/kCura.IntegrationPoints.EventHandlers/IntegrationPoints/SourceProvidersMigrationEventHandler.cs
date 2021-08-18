@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
-using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
 using Relativity.API;
@@ -14,7 +13,7 @@ using Relativity.Services.Objects.DataContracts;
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     [Guid("0846CFFC-757D-4F19-A439-24510012CCBE")]
-    [Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
+    [EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
     public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
         private readonly IRipProviderInstaller _ripProviderInstaller;
@@ -102,7 +101,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		        _templateWorkspaceId = templateWorkspaceId;
 		        _logger = logger;
                 Helper = helper;
-	        }
+            }
 
 	        public override IDictionary<Guid, SourceProvider> GetSourceProviders()
 	        {

@@ -11,6 +11,7 @@ using LanguageExt;
 using Relativity.API;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
 using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
+using Relativity.Toggles;
 using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
@@ -20,15 +21,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private readonly IAPILog _logger;
 		private readonly IEHHelper _helper;
 		private readonly IRipProviderInstaller _ripProviderInstaller;
+		private readonly IToggleProvider _toggleProvider;
 
 		public InProcessSourceProviderInstaller(
 			IAPILog logger,
 			IEHHelper helper,
-			IRipProviderInstaller ripProviderInstaller)
+            IToggleProvider toggleProvider,
+			IRipProviderInstaller ripProviderInstaller
+            )
 		{
 			_logger = logger.ForContext<InProcessSourceProviderInstaller>();
 			_helper = helper;
 			_ripProviderInstaller = ripProviderInstaller;
+            _toggleProvider = toggleProvider;
 		}
 
 		public Task InstallSourceProvidersAsync(int workspaceID, IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders)
@@ -103,7 +108,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private IDataProviderFactoryFactory CreateDataProviderFactoryFactory()
 		{
-			return new DataProviderFactoryFactory(_logger, _helper);
+			return new DataProviderFactoryFactory(_logger, _helper, _toggleProvider);
 		}
 	}
 }

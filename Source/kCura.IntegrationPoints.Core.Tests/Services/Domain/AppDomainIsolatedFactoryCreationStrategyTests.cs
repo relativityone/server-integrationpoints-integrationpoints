@@ -77,5 +77,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 
 			_domainHelperMock.DidNotReceive().ReleaseDomain(_appDomainMock);
 		}
-	}
+    }
 }
