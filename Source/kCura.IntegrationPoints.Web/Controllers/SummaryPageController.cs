@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -13,15 +12,6 @@ using kCura.IntegrationPoints.Web.Helpers;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-	public class DocumentsStatistics
-	{
-		public long DocumentsCount { get; set; }
-		public long TotalNativesCount { get; set; }
-		public long TotalNativesSizeBytes { get; set; }
-		public long TotalImagesCount { get; set; }
-		public long TotalImagesSizeBytes { get; set; }
-	}
-
 	public class SummaryPageController : Controller
 	{
 		private readonly ICaseServiceContext _context;

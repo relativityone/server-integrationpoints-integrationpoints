@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
@@ -70,15 +69,19 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 					.AddField(DocumentFieldsConstants.RelativityImageCountGuid)
 					.Build();
 
-				IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
-				List<RelativityObject> documents = objectManager.Query(query);
+				List<RelativityObject> documents = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId).Query(query);
 
 				statistics.DocumentsCount = documents.Count;
 				statistics.TotalImagesCount = documents.Sum(x => Convert.ToInt64(x[DocumentFieldsConstants.RelativityImageCountGuid].Value ?? 0));
 
 				if (calculateSize)
 				{
-					List<RelativityObject> documentsWithImages = documents.Where(x => ((Choice)x[DocumentFieldsConstants.HasImagesFieldName].Value).Name == DocumentFieldsConstants.HasImagesYesChoiceName).ToList();
+					List<RelativityObject> documentsWithImages = documents.Where(x =>
+					{
+						FieldValuePair hasImagesFieldValuePair = x[DocumentFieldsConstants.HasImagesFieldName];
+						Choice choice = (Choice)hasImagesFieldValuePair.Value;
+						return choice.Name == DocumentFieldsConstants.HasImagesYesChoiceName;
+					}).ToList();
 					statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(documentsWithImages.Select(x => x.ArtifactID).ToList(), workspaceId);
 				}
 
@@ -102,8 +105,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 					.AddField(ProductionConsts.ImageCountFieldGuid)
 					.Build();
 
-				IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
-				List<RelativityObject> documents = objectManager.Query(query);
+				List<RelativityObject> documents = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId).Query(query);
 
 				statistics.DocumentsCount = documents.Count; 
 				statistics.TotalImagesCount = documents.Sum(x => Convert.ToInt64(x[ProductionConsts.ImageCountFieldGuid].Value ?? 0));
