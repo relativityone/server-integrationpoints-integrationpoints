@@ -55,8 +55,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int nativesCount = 2;
 
 			List<RelativityObject> documents = Enumerable.Concat(
-				Enumerable.Repeat(CreateDocumentWithHasNativeField(hasNative: true), nativesCount),
-				Enumerable.Repeat(CreateDocumentWithHasNativeField(hasNative: false), 3)).ToList();
+				Enumerable.Repeat(CreateDocumentWithHasNativeField(true), nativesCount),
+				Enumerable.Repeat(CreateDocumentWithHasNativeField(false), 3)).ToList();
 
 			SetupObjectManagerForNatives(savedSearchArtifactId, documents);
 			_nativeFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IEnumerable<int>>(), _WORKSPACE_ID)).Returns(nativesSize);
@@ -78,8 +78,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int nativesCount = 2;
 
 			List<RelativityObject> documents = Enumerable.Concat(
-				Enumerable.Repeat(CreateDocumentWithHasNativeField(hasNative: true), nativesCount),
-				Enumerable.Repeat(CreateDocumentWithHasNativeField(hasNative: false), 3)).ToList();
+				Enumerable.Repeat(CreateDocumentWithHasNativeField(true), nativesCount),
+				Enumerable.Repeat(CreateDocumentWithHasNativeField(false), 3)).ToList();
 
 			SetupObjectManagerForNatives(savedSearchArtifactId, documents);
 
@@ -102,8 +102,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int imagesPerDocumentCount = 5;
 
 			List<RelativityObject> documents = Enumerable.Concat(
-				Enumerable.Repeat(CreateDocumentWithImages(hasImages: true, imagesPerDocumentCount), documentsWithImagesCount),
-				Enumerable.Repeat(CreateDocumentWithImages(hasImages: false, 0), 4)
+				Enumerable.Repeat(CreateDocumentWithImages(true, imagesPerDocumentCount), documentsWithImagesCount),
+				Enumerable.Repeat(CreateDocumentWithImages(false, 0), 4)
 				).ToList();
 
 			SetupObjectManagerForImages(savedSearchArtifactId, documents);
@@ -127,8 +127,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int imagesPerDocumentCount = 5;
 
 			List<RelativityObject> documents = Enumerable.Concat(
-				Enumerable.Repeat(CreateDocumentWithImages(hasImages: true, imagesPerDocumentCount), documentsWithImagesCount),
-				Enumerable.Repeat(CreateDocumentWithImages(hasImages: false, 0), 4)
+				Enumerable.Repeat(CreateDocumentWithImages(true, imagesPerDocumentCount), documentsWithImagesCount),
+				Enumerable.Repeat(CreateDocumentWithImages(false, 0), 4)
 			).ToList();
 
 			SetupObjectManagerForImages(savedSearchArtifactId, documents);
