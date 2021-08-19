@@ -54,12 +54,12 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 			if (size > -1) {
 				result += " (" + formatBytes(size) + ")";
 			} else if (size === -1) {
-				result += " (Error occured)";
+				result += " (Error occurred)";
 			} else {
 				result += " (Calculating size...)";
 			}
 		} else if (total === -1) {
-			result = "Error occured";
+			result = "Error occurred";
 		} else {
 			result = "Calculating...";
 		}
@@ -83,7 +83,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				},
 				error: function (err) {
 					console.error(err);
-					self.documents('Error occured');
+					self.documents('Error occurred');
 					self.nativesTotal(-1);
 					self.nativesSize(-1);
 				}
@@ -109,7 +109,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				},
 				error: function (err) {
 					console.error(err);
-					self.documents('Error occured');
+					self.documents('Error occurred');
 					self.imagesTotal(-1);
 					self.imagesSize(-1);
 				}
@@ -135,7 +135,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				},
 				error: function (err) {
 					console.error(err);
-					self.documents('Error occured');
+					self.documents('Error occurred');
 					self.imagesTotal(-1);
 					self.imagesSize(-1);
 				}
