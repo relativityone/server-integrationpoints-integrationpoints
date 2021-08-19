@@ -28,6 +28,7 @@
 		DestinationProvider,
 		Document,
 		Domain,
+		Entity,
 		FieldCategory,
 		FilterSet,
 		ImagingDocumentError,

@@ -12,5 +12,12 @@
 		{
 			public const string XSS_JS = "';window.relativityXss=true;";
 		}
+
+		public static class LDAP
+		{
+			public const string OPEN_LDAP_USERNAME = "cn=admin,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
+			public const string OPEN_LDAP_PASSWORD = "Test1234!";
+			public const string OPEN_LDAP_CONNECTION_PATH = "rip-openldap-cvnx78s.eastus.azurecontainer.io/ou=Human Resources,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
+		}
 	}
 }

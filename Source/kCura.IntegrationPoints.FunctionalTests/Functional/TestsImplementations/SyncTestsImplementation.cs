@@ -75,10 +75,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(integrationPointName,
 				destinationWorkspace, keywordSearch, copyNativesMode: RelativityProviderCopyNativeFiles.PhysicalFiles);
 
-			integrationPointViewPage = RunIntegrationPoint(integrationPointViewPage, integrationPointName);
+			integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
+
 
 			// Assert
-			int transferredItemsCount = GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(keywordSearchDocumentsCount);
@@ -165,11 +166,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			var integrationPointViewPage = integrationPointEditPage.CreateProductionToFolderIntegrationPoint(
 				integrationPointName, destinationWorkspace, production);
+			
+			integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
 
-			integrationPointViewPage = RunIntegrationPoint(integrationPointViewPage, integrationPointName);
 
 			// Assert
-			int transferredItemsCount = GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
@@ -184,19 +186,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			_destinationWorkspaces.Add(workspaceName, workspace);
 
 			return workspace;
-		}
-
-		private static IntegrationPointViewPage RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
-		{
-			return integrationPointViewPage.Run.WaitTo.Within(60).BeVisible().
-				Run.ClickAndGo().
-				OK.ClickAndGo().
-				WaitUntilJobCompleted(integrationPointName);
-		}
-
-		private static int GetTransferredItemsCount(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
-		{
-			return Int32.Parse(integrationPointViewPage.Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
 		}
 	}
 }
