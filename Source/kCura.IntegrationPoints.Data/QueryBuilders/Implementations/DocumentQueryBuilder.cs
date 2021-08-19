@@ -64,14 +64,7 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 
 			return this;
 		}
-
-		public DocumentQueryBuilder AddFields(List<Guid> fieldGuids)
-		{
-			Fields.AddRange(fieldGuids.Select(x => new FieldRef { Guid = x }));
-
-			return this;
-		}
-
+		
 		public override QueryRequest Build()
 		{
 			return new QueryRequest

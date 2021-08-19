@@ -76,13 +76,13 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 				if (calculateSize)
 				{
-					List<RelativityObject> documentsWithImages = documents.Where(x =>
+					List<int> documentsWithImagesArtifactIDs = documents.Where(x =>
 					{
 						FieldValuePair hasImagesFieldValuePair = x[DocumentFieldsConstants.HasImagesFieldName];
 						Choice choice = (Choice)hasImagesFieldValuePair.Value;
 						return choice.Name == DocumentFieldsConstants.HasImagesYesChoiceName;
-					}).ToList();
-					statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(documentsWithImages.Select(x => x.ArtifactID).ToList(), workspaceId);
+					}).Select(x => x.ArtifactID).ToList();
+					statistics.TotalImagesSizeBytes = _imageFileSizeStatistics.GetTotalFileSize(documentsWithImagesArtifactIDs, workspaceId);
 				}
 
 				return Task.FromResult(statistics);
