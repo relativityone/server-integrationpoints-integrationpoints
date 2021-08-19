@@ -21,5 +21,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 			{ "AZIPPER_0007747", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, String.Format(NATIVE_PATH_FORMAT, "AZIPPER_0007747.dat")) },
 			{ "AZIPPER_0007748", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, String.Format(NATIVE_PATH_FORMAT, "AZIPPER_0007748.dat")) }
 		};
+
+		private static IDictionary<string, string> NATIVES2 = new Dictionary<string, string>();
+
+		public static IDictionary<string, string> GenerateNativesForLoadFileImport()
+        {
+			for(int i=1; i<10; i++)
+            {
+				string line = String.Format("^1M_DOCS_WITH_NATIVES_000000000{0}^|^.\\NATIVES\\NATIVE_05B.GIF^|^621.00^|^NATIVE_05B.GIF^|^FOLDER_{1}^", i, i);
+				NATIVES2.Add($"1M_DOCS_WITH_NATIVES_000000000{i}", line);
+			}
+
+			return NATIVES2;
+        }
 	}
 }
