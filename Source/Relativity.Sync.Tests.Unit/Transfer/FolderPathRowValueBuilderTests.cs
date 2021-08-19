@@ -52,6 +52,22 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
+		public void BuildRowValue_ShouldThrowSyncItemLevelErrorException_WhenCouldNotFindFolderWithGivenID()
+		{
+			FieldInfoDto fieldInfo = FieldInfoDto.FolderPathFieldFromDocumentField("name");
+			RelativityObjectSlim document = new RelativityObjectSlim { ArtifactID = 3 };
+			string initialValue = "test\\test";
+
+			FolderPathRowValueBuilder instance = new FolderPathRowValueBuilder(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure, DefaultFolderPathsMap);
+
+			// Act
+			Action action = () => instance.BuildRowValue(fieldInfo, document, initialValue);
+
+			// Assert
+			action.Should().Throw<SyncItemLevelErrorException>();
+		}
+
+		[Test]
 		public void ItShouldThrowArgumentExceptionWhenNonFolderPathFieldIsGiven()
 		{
 			FieldInfoDto fieldInfo = FieldInfoDto.NativeFileLocationField();

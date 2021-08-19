@@ -109,7 +109,7 @@ namespace Relativity.Sync.Transfer
 					const int maxSubset = 50;
 					int subsetCount = Math.Min(differentValues.Count, maxSubset);
 					string subsetArtifactIds = string.Join(",", differentValues.Take(subsetCount));
-					throw new SyncException($"Could not find folders with IDs {subsetArtifactIds} in workspace {workspaceArtifactId}.");
+					_logger.LogWarning($"Could not find folders with IDs {subsetArtifactIds} in workspace {workspaceArtifactId}.");
 				}
 				return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
 			}
