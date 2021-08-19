@@ -8,10 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
-using kCura.WinEDDS.Service.Export;
 using Moq;
 using Moq.Language.Flow;
 using NUnit.Framework;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Tests.Integration
 		private FieldManager _sut;
 		private Mock<IFolderManager> _folderManager;
 		private Mock<IObjectManager> _objectManager;
-		private Mock<ISearchManager> _searchManager;
+		private Mock<ISearchService> _searchManager;
 
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _FOLDER_PATH_SOURCE_FIELD_NAME = "FolderPathSource";
@@ -62,18 +63,14 @@ namespace Relativity.Sync.Tests.Integration
 			
 
 			_objectManager = new Mock<IObjectManager>();
-			_searchManager = new Mock<ISearchManager>();
+			_searchManager = new Mock<ISearchService>();
 			_folderManager = new Mock<IFolderManager>();
 
 			_sut = GetSut(_folderManager, _objectManager, _searchManager, _configuration);
 		}
 
-		private static FieldManager GetSut(Mock<IFolderManager> _folderManager, Mock<IObjectManager> _objectManager, Mock<ISearchManager> _searchManager, ConfigurationStub _configuration)
+		private static FieldManager GetSut(Mock<IFolderManager> _folderManager, Mock<IObjectManager> _objectManager, Mock<ISearchService> _searchService, ConfigurationStub _configuration)
         {
-			var searchManagerFactory = new Mock<ISearchManagerFactory>();
-			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
-				.Returns(Task.FromResult(_searchManager.Object));
-
 			var adminServiceFactory = new Mock<ISourceServiceFactoryForAdmin>();
 
 			var userServiceFactory = new Mock<ISourceServiceFactoryForUser>();
@@ -81,13 +78,15 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(_objectManager.Object);
 			userServiceFactory.Setup(x => x.CreateProxyAsync<IFolderManager>())
 				.ReturnsAsync(_folderManager.Object);
+			
+			userServiceFactory.Setup(x => x.CreateProxyAsync<ISearchService>())
+				.ReturnsAsync(_searchService.Object);
 
 			ContainerBuilder builder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockReportingWithProgress(builder);
 			builder.RegisterInstance(_configuration).AsImplementedInterfaces();
 			builder.RegisterInstance(adminServiceFactory.Object).As<ISourceServiceFactoryForAdmin>();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
-			builder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>();
 
 			// This is so we can resolve FieldManager directly. We would normally register it by its interface.
 			builder.RegisterType<FieldManager>().As<FieldManager>();
@@ -333,12 +332,12 @@ namespace Relativity.Sync.Tests.Integration
 
 		private void SetupFileInfoFieldServices(params INativeFile[] nativeFileResponses)
 		{
-			DataSet result = GetDataSetForDocuments(nativeFileResponses);
-			_searchManager.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
-				.Returns(result);
+			DataSetWrapper result = GetDataSetForDocuments(nativeFileResponses);
+			_searchManager.Setup(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+				.ReturnsAsync(result);
 		}
 
-		private static DataSet GetDataSetForDocuments(INativeFile[] nativeFiles)
+		private static DataSetWrapper GetDataSetForDocuments(INativeFile[] nativeFiles)
 		{
 			DataSet dataSet = new DataSet();
 			DataTable dataTable = new DataTable("Table1");
@@ -360,7 +359,7 @@ namespace Relativity.Sync.Tests.Integration
 				return dataRow;
 			}).ToArray();
 			rows.ForEach(row => dataTable.Rows.Add(row));
-			return dataSet;
+			return new DataSetWrapper(dataSet);
 		}
 
 		private void SetupFolderPathFieldServices(Func<int, int> doc2Folder, params FolderPath[] folderPaths)

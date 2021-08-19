@@ -9,6 +9,9 @@ using kCura.EDDS.WebAPI.FileManagerBase;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer;
 
@@ -19,23 +22,23 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private const int WORKSPACE_ID = 5;
 
-		private Mock<ISearchManagerFactory> _searchManagerFactoryMock;
 		private Mock<ISyncLog> _loggerMock;
 		private ImageFileRepository _sut;
-		private Mock<ISearchManager> _searchManagerMock;
+		private Mock<ISearchService> _searchServiceMock;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
 
 		[SetUp]
 		public void Setup()
 		{
-			_searchManagerFactoryMock = new Mock<ISearchManagerFactory>();
 			_loggerMock = new Mock<ISyncLog>();
 
-			_searchManagerMock = new Mock<ISearchManager>();
+			_searchServiceMock = new Mock<ISearchService>();
+			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
 
-			_searchManagerFactoryMock.Setup(x => x.CreateSearchManagerAsync()).ReturnsAsync(_searchManagerMock.Object);
+			_serviceFactoryMock.Setup(x => x.CreateProxyAsync<ISearchService>())
+				.ReturnsAsync(_searchServiceMock.Object);
 
-
-			_sut = new ImageFileRepository(_searchManagerFactoryMock.Object, _loggerMock.Object);
+			_sut = new ImageFileRepository(_serviceFactoryMock.Object, _loggerMock.Object);
 		}
 
 		[Test]
@@ -45,8 +48,8 @@ namespace Relativity.Sync.Tests.Unit
 			var data = Enumerable.Range(1, 10)
 				.Select(x => new DocumentImageData { DocumentArtifactId = x }).ToList();
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
-				.Returns(CreateDataSet(data));
+			_searchServiceMock.Setup(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<string>()))
+				.ReturnsAsync(CreateDataSet(data));
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToArray(),
@@ -63,8 +66,8 @@ namespace Relativity.Sync.Tests.Unit
 			var data = Enumerable.Range(1, 10)
 				.Select(x => new DocumentImageData { DocumentArtifactId = x }).ToList();
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
-				.Returns(CreateDataSet(data));
+			_searchServiceMock.Setup(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<string>()))
+				.ReturnsAsync(CreateDataSet(data));
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).Concat(Enumerable.Range(20, 5)).ToArray(),
@@ -81,8 +84,8 @@ namespace Relativity.Sync.Tests.Unit
 			var data = Enumerable.Range(1, 10)
 				.Select(x => new DocumentImageData { DocumentArtifactId = x % 2 }).ToList();
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
-				.Returns(CreateDataSet(data));
+			_searchServiceMock.Setup(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<string>()))
+				.ReturnsAsync(CreateDataSet(data));
 
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToArray(),
@@ -120,9 +123,9 @@ namespace Relativity.Sync.Tests.Unit
 
 			MockProductions(data);
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
-				.Returns(CreateDataSet(data.Where(x => x.ProductionId == 2)));
-
+			_searchServiceMock.Setup(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<string>()))
+				.ReturnsAsync(CreateDataSet(data.Where(x => x.ProductionId == 2)));
+			
 			// Act
 			IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToArray(),
 				new QueryImagesOptions { ProductionIds = new[] { 1 }, IncludeOriginalImageIfNotFoundInProductions = true }).ConfigureAwait(false);
@@ -152,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit
 			await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, documentIds, options).ConfigureAwait(false);
 
 			// Assert
-			_searchManagerMock.Verify(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()), Times.Never);
+			_searchServiceMock.Verify(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
@@ -169,9 +172,10 @@ namespace Relativity.Sync.Tests.Unit
 
 			MockProductions(productionData);
 
-			_searchManagerMock.Setup(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, It.IsAny<int[]>()))
-				.Returns(CreateDataSet(productionData.Where(x => x.ProductionId == 1)));
-
+			
+			_searchServiceMock.Setup(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<string>()))
+				.ReturnsAsync(CreateDataSet(productionData.Where(x => x.ProductionId == 1)));
+		
 			var documentIdsWithProductionId = productionData
 				.Where(x => x.ProductionId == productionId)
 				.Select(x => x.DocumentArtifactId);
@@ -185,8 +189,8 @@ namespace Relativity.Sync.Tests.Unit
 			await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, documentIds, options).ConfigureAwait(false);
 
 			// Assert
-			_searchManagerMock.Verify(x => x.RetrieveImagesForDocuments(WORKSPACE_ID, 
-				It.Is<int[]>(expectedIds => expectedIds.Intersect(documentIdsWithProductionId).Any())), Times.Never);
+			_searchServiceMock.Verify(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, 
+				It.Is<int[]>(expectedIds => expectedIds.Intersect(documentIdsWithProductionId).Any()), It.IsAny<string>()), Times.Never);
 		}
 
 
@@ -235,8 +239,8 @@ namespace Relativity.Sync.Tests.Unit
 				new QueryImagesOptions { ProductionIds = new[] { 1, 2 } }).ConfigureAwait(false);
 
 			// Assert
-			_searchManagerMock.Verify(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),1), Times.Once);
-			_searchManagerMock.Verify(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),2), Times.Never);
+			_searchServiceMock.Verify(x => x.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(WORKSPACE_ID,1, It.IsAny<int[]>(), It.IsAny<string>()), Times.Once);
+			_searchServiceMock.Verify(x => x.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(WORKSPACE_ID,2, It.IsAny<int[]>(), It.IsAny<string>()), Times.Never);
 		}
 
 
@@ -244,13 +248,14 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			foreach (var productionSet in data.GroupBy(x => x.ProductionId).Where(x => x.Key != null))
 			{
-				_searchManagerMock
-					.Setup(x => x.RetrieveImagesForProductionDocuments(WORKSPACE_ID, It.IsAny<int[]>(),
-						productionSet.Key.Value)).Returns(CreateDataSet(productionSet));
+				_searchServiceMock
+					.Setup(x => x.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(WORKSPACE_ID, productionSet.Key.Value, 
+						It.IsAny<int[]>(),It.IsAny<string>()))
+					.ReturnsAsync(CreateDataSet(productionSet));
 			}
 		}
 
-		private DataSet CreateDataSet(IEnumerable<DocumentImageData> data)
+		private DataSetWrapper CreateDataSet(IEnumerable<DocumentImageData> data)
 		{
 			var dataTable = new DataTable();
 
@@ -279,7 +284,7 @@ namespace Relativity.Sync.Tests.Unit
 				dataTable.Rows.Add(dataRow);
 			}
 
-			return new DataSet { Tables = { dataTable } };
+			return new DataSetWrapper(new DataSet { Tables = { dataTable } });
 		}
 
 		private struct DocumentImageData

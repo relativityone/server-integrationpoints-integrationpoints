@@ -3,7 +3,10 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using kCura.WinEDDS.Service.Export;
+using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
 {
@@ -19,16 +22,17 @@ namespace Relativity.Sync.Transfer
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
 
-		private readonly ISearchManagerFactory _searchManagerFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
 
-		public ImageFileRepository(ISearchManagerFactory searchManagerFactory, ISyncLog logger)
+		public ImageFileRepository(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
 		{
-			_searchManagerFactory = searchManagerFactory;
+			_serviceFactory = serviceFactory;
 			_logger = logger;
 		}
 
-		public async Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, int[] documentIds, QueryImagesOptions options)
+		public async Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, int[] documentIds,
+			QueryImagesOptions options)
 		{
 			IEnumerable<ImageFile> empty = Enumerable.Empty<ImageFile>();
 
@@ -39,11 +43,12 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for image files based on options. Documents count: {numberOfDocuments}", documentIds.Length);
 
-			using (ISearchManager searchManager = await _searchManagerFactory.CreateSearchManagerAsync().ConfigureAwait(false))
+			using (ISearchService searchManager = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
+				string correlationId = Guid.NewGuid().ToString();
 				ImageFile[] imageFiles = options != null && options.ProductionImagePrecedence
-					? RetrieveImagesByProductionsForDocuments(searchManager, workspaceId, documentIds, options)
-					: RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentIds).Item1;
+					? await RetrieveImagesByProductionsForDocuments(searchManager, workspaceId, documentIds, options, correlationId).ConfigureAwait(false)
+					: (await RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentIds, correlationId).ConfigureAwait(false)).Images;
 
 				_logger.LogInformation("Found {numberOfImages} image files for {numberOfDocuments} documents",
 					imageFiles.Length,
@@ -53,9 +58,10 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		private ImageFile[] RetrieveImagesByProductionsForDocuments(ISearchManager searchManager, int workspaceId, int[] documentIds, QueryImagesOptions options)
+		private async Task<ImageFile[]> RetrieveImagesByProductionsForDocuments(ISearchService searchService,
+			int workspaceId, int[] documentIds, QueryImagesOptions options, string correlationId)
 		{
-			(ImageFile[] producedImageFiles, int[] documentsWithoutImages) = GetImagesWithPrecedence(workspaceId, searchManager, options.ProductionIds, documentIds);
+			(ImageFile[] producedImageFiles, int[] documentsWithoutImages) = await GetImagesWithPrecedence(workspaceId, searchService, options.ProductionIds, documentIds).ConfigureAwait(false);
 
 			if (!producedImageFiles.Any())
 			{
@@ -66,7 +72,7 @@ namespace Relativity.Sync.Transfer
 
 			if (options.IncludeOriginalImageIfNotFoundInProductions && documentsWithoutImages.Any())
 			{
-				(originalImageFiles, documentsWithoutImages) = RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentsWithoutImages);
+				(originalImageFiles, documentsWithoutImages) = await RetrieveOriginalImagesForDocuments(searchService, workspaceId, documentsWithoutImages, correlationId).ConfigureAwait(false);
 			}
 
 			_logger.LogInformation("Image retrieve statistics: ProducedImages: {producedImagesCount}, OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
@@ -75,16 +81,26 @@ namespace Relativity.Sync.Transfer
 			return producedImageFiles.Concat(originalImageFiles).ToArray();
 		}
 
-		private (ImageFile[], int[]) GetImagesWithPrecedence(int workspaceId, ISearchManager searchManager, int[] productionPrecedence, int[] documentIds)
+		private async Task<(ImageFile[], int[])> GetImagesWithPrecedence(int workspaceId, ISearchService searchService, int[] productionPrecedence, int[] documentIds)
 		{
 			var result = new Dictionary<int, IEnumerable<ImageFile>>();
 
 			int[] documentsWithoutImages = documentIds;
+			string correlationId = Guid.NewGuid().ToString();
 
 			foreach (int production in productionPrecedence)
 			{
-				EnumerableRowCollection<ImageFile> producedImages = searchManager
-					.RetrieveImagesForProductionDocuments(workspaceId, documentsWithoutImages, production)
+				DataSetWrapper dataSetWrapper = await searchService
+					.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(workspaceId, production, documentsWithoutImages, correlationId)
+					.ConfigureAwait(false);
+
+				if (dataSetWrapper == null)
+				{
+					// there are no results for this production
+					continue;
+				}
+				
+				EnumerableRowCollection<ImageFile> producedImages = dataSetWrapper.Unwrap()
 					.Tables[0]
 					.AsEnumerable()
 					.Select(x => GetImageFileFromProduction(x, production));
@@ -112,11 +128,12 @@ namespace Relativity.Sync.Transfer
 			return (result.Values.SelectMany(x => x).ToArray(), documentsWithoutImages);
 		}
 
-		private (ImageFile[], int[]) RetrieveOriginalImagesForDocuments(ISearchManager searchManager, int workspaceId, int[] documentIds)
+		private async Task<(ImageFile[] Images, int[] DocumentWithoutImages)> RetrieveOriginalImagesForDocuments(ISearchService searchService, int workspaceId,
+			int[] documentIds, string correlationId)
 		{
-			DataSet dataSet = searchManager.RetrieveImagesForDocuments(workspaceId, documentIds);
+			DataSetWrapper dataSet = await searchService.RetrieveImagesForSearchAsync(workspaceId, documentIds, correlationId);
 
-			if (dataSet == null || dataSet.Tables.Count == 0)
+			if (dataSet == null || dataSet.Unwrap().Tables.Count == 0)
 			{
 				_logger.LogWarning("SearchManager.RetrieveImagesByProductionIDsAndDocumentIDsForExport returned null/empty data set.");
 				_logger.LogInformation("Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
@@ -124,7 +141,7 @@ namespace Relativity.Sync.Transfer
 				return (Array.Empty<ImageFile>(), documentIds.ToArray());
 			}
 
-			ImageFile[] imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFile).ToArray();
+			ImageFile[] imageFiles = dataSet.Unwrap().Tables[0].AsEnumerable().Select(GetImageFile).ToArray();
 
 			_logger.LogInformation("Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
 				imageFiles.Length, documentIds.Length - imageFiles.Length);

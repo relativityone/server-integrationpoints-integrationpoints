@@ -9,9 +9,10 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using kCura.WinEDDS.Service.Export;
 using Moq;
 using Moq.Language.Flow;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -36,19 +37,20 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		public Mock<ISourceServiceFactoryForUser> SourceServiceFactoryForUser { get; }
 		public Mock<ISourceServiceFactoryForAdmin> SourceServiceFactoryForAdmin { get; }
 		public Mock<IObjectManager> ObjectManager { get; }
-		public Mock<ISearchManager> SearchManager { get; }
+		public Mock<ISearchService> SearchService { get; }
 
 		public DocumentTransferServicesMocker()
 		{
 			SourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			SourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			ObjectManager = new Mock<IObjectManager>();
-			SearchManager = new Mock<ISearchManager>();
+			SearchService = new Mock<ISearchService>();
 		}
 
 		private void SetupServicesWithTestData(DocumentImportJob job)
 		{
 			SetupServiceCreation(ObjectManager);
+			SetupServiceCreation(SearchService);
 			SetupFields(job.Schema);
 		}
 
@@ -76,7 +78,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 		public void SetupFailingSearchManagerCreation()
 		{
-			SetupFailingServiceCreation<ISearchManager>();
+			SetupFailingServiceCreation<ISearchService>();
 		}
 
 		public void SetupFailingObjectManagerCall<TResult>(Expression<Func<IObjectManager, TResult>> expression)
@@ -84,21 +86,15 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			ObjectManager.Setup(expression).Throws<AggregateException>();
 		}
 
-		public void SetupFailingSearchManagerCall<TResult>(Expression<Func<ISearchManager, TResult>> expression)
+		public void SetupFailingSearchManagerCall<TResult>(Expression<Func<ISearchService, TResult>> expression)
 		{
-			SearchManager.Setup(expression).Throws<AggregateException>();
+			SearchService.Setup(expression).Throws<AggregateException>();
 		}
 
 		public void RegisterServiceMocks(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(SourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(SourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
-
-			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
-			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
-				.Returns(Task.FromResult(SearchManager.Object));
-
-			containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>();
 		}
 
 		public void SetupLongTextStream(string fieldName, Encoding encoding, string streamContents)
@@ -230,21 +226,21 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 		private void SetupNatives(Document[] documents)
 		{
-			DataSet dataSet = GetDataSetForDocumentsWithNatives(documents);
-			SearchManager
-				.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
-				.Returns(dataSet);
+			DataSetWrapper dataSet = GetDataSetForDocumentsWithNatives(documents);
+			SearchService
+				.Setup(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+				.ReturnsAsync(dataSet);
 		}
 
 		private void SetupImages(Document[] documents)
 		{
-			DataSet dataSet = GetDataSetForDocumentsWithImages(documents);
-			SearchManager
-				.Setup(x => x.RetrieveImagesForDocuments(It.IsAny<int>(), It.IsAny<int[]>()))
-				.Returns(dataSet);
+			DataSetWrapper dataSet = GetDataSetForDocumentsWithImages(documents);
+			SearchService
+				.Setup(x => x.RetrieveImagesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>(), It.IsAny<string>()))
+				.ReturnsAsync(dataSet);
 		}
 
-		private static DataSet GetDataSetForDocumentsWithNatives(Document[] documents)
+		private static DataSetWrapper GetDataSetForDocumentsWithNatives(Document[] documents)
 		{
 			DataSet dataSet = new DataSet();
 			DataTable dataTable = new DataTable("DataTableWithNatives");
@@ -266,10 +262,10 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				return dataRow;
 			}).ToArray();
 			rows.ForEach(row => dataTable.Rows.Add(row));
-			return dataSet;
+			return new DataSetWrapper(dataSet);
 		}
 
-		private static DataSet GetDataSetForDocumentsWithImages(Document[] documents)
+		private static DataSetWrapper GetDataSetForDocumentsWithImages(Document[] documents)
 		{
 			DataSet dataSet = new DataSet();
 			DataTable dataTable = new DataTable("DataTableWithImages");
@@ -297,7 +293,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				}
 			}
 			
-			return dataSet;
+			return new DataSetWrapper(dataSet);
 		}
 
 		private static bool MatchesQueryByIdentifierRequest(QueryRequest request)
