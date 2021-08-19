@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             base.SetUp();
             
-            _sut = new JobHistoryManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object, Container);
+            _sut = new JobHistoryManager(Logger, PermissionRepositoryFactory, Container);
         }
 
         [IdentifiedTestCase("A41778E7-2D25-49FA-9919-ECD90B2168BD", false, false, 0, 0, 0)]
@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             JobHistoryRequest jobHistoryRequest = new JobHistoryRequest
             {
-                WorkspaceArtifactId = _WORKSPACE_ID
+                WorkspaceArtifactId = SourceWorkspace.ArtifactId
             };
 
             JobHistorySummaryModel jobHistorySummaryModel = new JobHistorySummaryModel();

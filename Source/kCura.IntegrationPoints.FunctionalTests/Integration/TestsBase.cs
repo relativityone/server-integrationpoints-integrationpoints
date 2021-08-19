@@ -28,6 +28,8 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
@@ -37,6 +39,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.Lo
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.WebApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Logging;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
 using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
@@ -137,10 +140,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
+            RegisterKeplerServices();
 		}
 
 		private void OverrideRelativitySyncInstaller()
 		{
+            Container.Register(Component.For<IWindsorContainer>().Instance(Container).LifestyleSingleton().Named(nameof(Container)).IsDefault());
 			Container.Register(Component.For<ISyncOperationsWrapper, IExtendedFakeSyncOperations>()
 				.ImplementedBy<FakeSyncOperationsWrapper>()
 				.LifestyleSingleton().IsDefault());
@@ -230,7 +235,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig()).LifestyleTransient().IsDefault());
 			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory()).LifestyleTransient().IsDefault());
 		}
-		
+
+        private void RegisterKeplerServices()
+        {
+			ConsoleLogger consoleLogger = new ConsoleLogger();
+
+            typeof(API.Services).GetProperty("Helper").SetValue(this, Helper);
+
+			Container.Register(Component.For<ILog>().Instance(consoleLogger).Named("ILog").LifestyleSingleton());
+            Container.Register(Component.For<IPermissionRepositoryFactory>().ImplementedBy<PermissionRepositoryFactory>());
+            Container.Register(Component.For<IDocumentManager>().Instance(new DocumentManager(consoleLogger, 
+                Container.Resolve<IPermissionRepositoryFactory>(), Container)));
+        }
+
 		private void SetupGlobalSettings()
 		{
 			Config.Instance.InstanceSettingsProvider = new FakeInstanceSettingsProvider();

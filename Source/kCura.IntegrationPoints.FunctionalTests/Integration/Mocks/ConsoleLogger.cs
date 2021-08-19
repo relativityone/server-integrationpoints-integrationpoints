@@ -1,10 +1,16 @@
 ﻿using System;
 using Relativity.API;
+using Relativity.Logging;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class ConsoleLogger : IAPILog
+	public class ConsoleLogger : IAPILog, ILog
 	{
+        public bool IsEnabled { get; }
+        public string Application { get; }
+        public string SubSystem { get; }
+        public string System { get; }
+
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
 			Console.WriteLine($"[VERBOSE] {messageTemplate}; {String.Join(", ", propertyValues)}");
@@ -76,7 +82,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			Console.Out.Flush();
 		}
 
-		public IAPILog ForContext<T>()
+        ILog ILog.ForContext<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        ILog ILog.ForContext(Type forContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        ILog ILog.ForContext(string propertyName, object value, bool destructureObjects)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IAPILog ForContext<T>()
 		{
 			return this;
 		}
@@ -95,5 +116,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			return (IDisposable)null;
 		}
-	}
+    }
 }

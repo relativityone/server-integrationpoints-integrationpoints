@@ -10,7 +10,7 @@ using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class TestHelper : IHelper, IAgentHelper, ICPHelper
+	public class TestHelper : IServiceHelper, IHelper, IAgentHelper, ICPHelper
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
 
@@ -63,7 +63,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         public Mock<IServicesMgr> GetServicesManagerMock()
         {
             return _serviceManager;
-
         }
 
 		#region Not Implemented

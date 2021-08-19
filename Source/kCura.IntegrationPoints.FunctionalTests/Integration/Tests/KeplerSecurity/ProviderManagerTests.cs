@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             Container.Register(Component.For<IProviderRepository>().UsingFactoryMethod(k => _providerRepositoryFake.Object)
                 .LifestyleTransient().IsDefault());
 
-            _sut = new ProviderManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object, Container);
+            _sut = new ProviderManager(Logger, PermissionRepositoryFactory, Container);
         }
 
         [IdentifiedTestCase("D47A46E0-2BE2-41DE-9B72-9E51459FCBED", -1, false, false)]
@@ -50,11 +50,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 UserHasDeletePermissions = artifactTypePermissions
             };
 
-            _providerRepositoryFake.Setup(x => x.GetSourceProviderArtifactId(_WORKSPACE_ID, ""))
+            _providerRepositoryFake.Setup(x => x.GetSourceProviderArtifactId(SourceWorkspace.ArtifactId, ""))
                 .Returns(expectedSourceProviderArtifactId);
 
             // Act
-            sourceProviderArtifactId = ActAndGetResult(() => _sut.GetSourceProviderArtifactIdAsync(_WORKSPACE_ID, "").Result,
+            sourceProviderArtifactId = ActAndGetResult(() => _sut.GetSourceProviderArtifactIdAsync(SourceWorkspace.ArtifactId, "").Result,
                 sourceProviderArtifactId, workspaceAccessPermissions & artifactTypePermissions);
             
 
@@ -83,11 +83,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 UserHasDeletePermissions = artifactTypePermissions
             };
 
-            _providerRepositoryFake.Setup(x => x.GetDestinationProviderArtifactId(_WORKSPACE_ID, ""))
+            _providerRepositoryFake.Setup(x => x.GetDestinationProviderArtifactId(SourceWorkspace.ArtifactId, ""))
                 .Returns(expectedDestinationProviderArtifactId);
 
             // Act
-            destinationProviderArtifactId = ActAndGetResult(() => _sut.GetDestinationProviderArtifactIdAsync(_WORKSPACE_ID, "").Result,
+            destinationProviderArtifactId = ActAndGetResult(() => _sut.GetDestinationProviderArtifactIdAsync(SourceWorkspace.ArtifactId, "").Result,
                 destinationProviderArtifactId, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
@@ -132,10 +132,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 UserHasDeletePermissions = artifactTypePermissions
             };
 
-            _providerRepositoryFake.Setup(x => x.GetSourceProviders(_WORKSPACE_ID))
+            _providerRepositoryFake.Setup(x => x.GetSourceProviders(SourceWorkspace.ArtifactId))
                 .Returns(expectedProviderModels);
             // Act
-            providerModels = ActAndGetResult(() => _sut.GetSourceProviders(_WORKSPACE_ID).Result,
+            providerModels = ActAndGetResult(() => _sut.GetSourceProviders(SourceWorkspace.ArtifactId).Result,
                 providerModels, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
@@ -180,11 +180,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 UserHasDeletePermissions = artifactTypePermissions
             };
 
-            _providerRepositoryFake.Setup(x => x.GetDesinationProviders(_WORKSPACE_ID))
+            _providerRepositoryFake.Setup(x => x.GetDesinationProviders(SourceWorkspace.ArtifactId))
                 .Returns(expectedProviderModels);
 
             // Act
-            providerModels = ActAndGetResult(() => _sut.GetDestinationProviders(_WORKSPACE_ID).Result,
+            providerModels = ActAndGetResult(() => _sut.GetDestinationProviders(SourceWorkspace.ArtifactId).Result,
                 providerModels, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
@@ -204,7 +204,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             Arrange(workspaceAccessPermissions, artifactTypePermissions);
             InstallProviderRequest installProviderRequest = new InstallProviderRequest
             {
-                WorkspaceID = _WORKSPACE_ID,
+                WorkspaceID = SourceWorkspace.ArtifactId,
                 ProvidersToInstall = new List<InstallProviderDto>()
             };
             
@@ -255,7 +255,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             
             UninstallProviderRequest uninstallProviderRequest = new UninstallProviderRequest
             {
-                WorkspaceID = _WORKSPACE_ID,
+                WorkspaceID = SourceWorkspace.ArtifactId,
                 ApplicationID = applicationId
             };
 

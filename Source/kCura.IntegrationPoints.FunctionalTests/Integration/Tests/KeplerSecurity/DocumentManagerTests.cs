@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using Moq;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Repositories;
 using Relativity.Testing.Identification;
@@ -25,8 +26,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 .UsingFactoryMethod(_ => _documentRepositoryFake.Object).LifestyleTransient()
                 .IsDefault());
 
-            _sut = new DocumentManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object,
-                Container);
+            _sut = Container.Resolve<IDocumentManager>();
         }
         
         [IdentifiedTestCase("92F8A6B8-EDF5-485C-85BA-E28EDC7A3623", false, 0, 0)]
@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             PercentagePushedToReviewRequest percentagePushedToReviewRequest = new PercentagePushedToReviewRequest
             {
-                WorkspaceArtifactId = _WORKSPACE_ID
+                WorkspaceArtifactId = SourceWorkspace.ArtifactId
             };
 
             PercentagePushedToReviewModel expectedPercentagePushedToReviewModel = new PercentagePushedToReviewModel
@@ -81,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             CurrentPromotionStatusRequest currentPromotionStatusRequest = new CurrentPromotionStatusRequest
             {
-                WorkspaceArtifactId = _WORKSPACE_ID
+                WorkspaceArtifactId = SourceWorkspace.ArtifactId
             };
 
             CurrentPromotionStatusModel expectedCurrentPromotionStatusModel = new CurrentPromotionStatusModel
@@ -138,7 +138,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             HistoricalPromotionStatusRequest historicalPromotionStatusRequest = new HistoricalPromotionStatusRequest
             {
-                WorkspaceArtifactId = _WORKSPACE_ID
+                WorkspaceArtifactId = SourceWorkspace.ArtifactId
             };
 
             HistoricalPromotionStatusSummaryModel expectedHistoricalPromotionStatusSummaryModel =

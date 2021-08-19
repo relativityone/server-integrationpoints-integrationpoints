@@ -16,7 +16,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             base.SetUp();
 
-            _sut = new IntegrationPointTypeManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object, Container);
+            _sut = new IntegrationPointTypeManager(Logger, PermissionRepositoryFactory, Container);
         }
 
         [IdentifiedTestCase("D5995683-160D-459A-B36C-3D2D7F24AF4A", false, false, null, 0)]
@@ -64,7 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 .Returns(expectedIntegrationPointTypeModel);
 
             // Act
-            integrationPointTypeModel = ActAndGetResult(() => _sut.GetIntegrationPointTypes(_WORKSPACE_ID).Result,
+            integrationPointTypeModel = ActAndGetResult(() => _sut.GetIntegrationPointTypes(SourceWorkspace.ArtifactId).Result,
                 integrationPointTypeModel, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert

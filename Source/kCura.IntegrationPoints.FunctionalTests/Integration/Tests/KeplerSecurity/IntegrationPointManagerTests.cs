@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 .UsingFactoryMethod(_ => _integrationPointRepositoryFake.Object).LifestyleTransient()
                 .IsDefault());
 
-            _sut = new IntegrationPointManager(_loggerFake.Object, _permissionRepositoryFactoryFake.Object,
+            _sut = new IntegrationPointManager(Logger, PermissionRepositoryFactory,
                 Container);
         }
 
@@ -43,7 +43,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             CreateIntegrationPointRequest createIntegrationPointRequest = new CreateIntegrationPointRequest
             {
-                WorkspaceArtifactId = _WORKSPACE_ID
+                WorkspaceArtifactId = SourceWorkspace.ArtifactId
             };
 
             IntegrationPointModel expectedIntegrationPointModel = new IntegrationPointModel
@@ -95,7 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             UpdateIntegrationPointRequest updateIntegrationPointRequest = new UpdateIntegrationPointRequest
             {
-                WorkspaceArtifactId = _WORKSPACE_ID
+                WorkspaceArtifactId = SourceWorkspace.ArtifactId
             };
 
             IntegrationPointModel expectedIntegrationPointModel = new IntegrationPointModel
@@ -167,7 +167,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             // Act
             integrationPointModel = ActAndGetResult(
-                () => _sut.GetIntegrationPointAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ARTIFACT_ID).Result,
+                () => _sut.GetIntegrationPointAsync(SourceWorkspace.ArtifactId, _INTEGRATION_POINT_ARTIFACT_ID).Result,
                 integrationPointModel, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
@@ -209,12 +209,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             };
 
             _integrationPointRepositoryFake
-                .Setup(x => x.RunIntegrationPoint(_WORKSPACE_ID, _INTEGRATION_POINT_ARTIFACT_ID))
+                .Setup(x => x.RunIntegrationPoint(SourceWorkspace.ArtifactId, _INTEGRATION_POINT_ARTIFACT_ID))
                 .Returns(expectedIntegrationPointModel);
 
             // Act
             integrationPointModelObject = ActAndGetResult(
-                () => _sut.RunIntegrationPointAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ARTIFACT_ID).Result,
+                () => _sut.RunIntegrationPointAsync(SourceWorkspace.ArtifactId, _INTEGRATION_POINT_ARTIFACT_ID).Result,
                 integrationPointModelObject, workspaceAccessPermissions & artifactTypePermissions);
 
             integrationPointModel = (IntegrationPointModel) integrationPointModelObject;
@@ -274,7 +274,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             
             // Act
             integrationPointModels = ActAndGetResult(
-                () => _sut.GetAllIntegrationPointsAsync(_WORKSPACE_ID).Result,
+                () => _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId).Result,
                 integrationPointModels, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
@@ -327,7 +327,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             // Act
             overwriteFieldsModels = ActAndGetResult(
-                () => _sut.GetOverwriteFieldsChoicesAsync(_WORKSPACE_ID).Result,
+                () => _sut.GetOverwriteFieldsChoicesAsync(SourceWorkspace.ArtifactId).Result,
                 overwriteFieldsModels, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
@@ -373,7 +373,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             // Act
             integrationPointModel = ActAndGetResult(
-                () => _sut.CreateIntegrationPointFromProfileAsync(_WORKSPACE_ID, profileArtifactId, integrationPointName).Result,
+                () => _sut.CreateIntegrationPointFromProfileAsync(SourceWorkspace.ArtifactId, profileArtifactId, integrationPointName).Result,
                 integrationPointModel, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
@@ -410,7 +410,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
             // Act
             artifactTypeId = ActAndGetResult(
-                () => _sut.GetIntegrationPointArtifactTypeIdAsync(_WORKSPACE_ID).Result,
+                () => _sut.GetIntegrationPointArtifactTypeIdAsync(SourceWorkspace.ArtifactId).Result,
                 artifactTypeId, workspaceAccessPermissions & artifactTypePermissions);
 
             // Assert
