@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync
 {

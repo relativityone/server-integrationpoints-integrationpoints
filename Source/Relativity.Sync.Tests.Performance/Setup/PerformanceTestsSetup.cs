@@ -1,18 +1,15 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 using Relativity.Sync.Tests.Performance.ARM;
 using Relativity.Sync.Tests.System.Core;
-using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Api;
 
 // ReSharper disable once CheckNamespace
 // No namespace applies this to the whole assembly
 public class PerformanceTestsSetup : InstanceTestsSetup
 {
-	public override async Task RunBeforeAnyTests()
+	public override void RunBeforeAnyTests()
 	{
 		Logger.LogInformation("PerformanceTestsSetup: BeforeAnyTests");
-		await base.RunBeforeAnyTests().ConfigureAwait(false);
+		base.RunBeforeAnyTests();
 
 		if (!AppSettings.IsSettingsFileSet)
 		{

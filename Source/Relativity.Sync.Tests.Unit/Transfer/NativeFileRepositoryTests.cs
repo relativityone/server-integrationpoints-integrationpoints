@@ -39,8 +39,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 			_serviceFactory.Setup(x => x.CreateProxyAsync<ISearchService>()).ReturnsAsync(_searchService.Object);
 
+			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), Guid.NewGuid());
 
-			_instance = new NativeFileRepository(_serviceFactory.Object, new EmptyLogger());
+			_instance = new NativeFileRepository(_serviceFactory.Object, new EmptyLogger(), parameters);
 		}
 
 		[Test]

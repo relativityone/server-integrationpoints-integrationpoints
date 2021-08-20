@@ -13,11 +13,13 @@ namespace Relativity.Sync.Transfer
 	{
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
+		private readonly SyncJobParameters _parameters;
 
-		public NativeFileRepository(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public NativeFileRepository(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger, SyncJobParameters parameters)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;
+			_parameters = parameters;
 		}
 
 		public async Task<IEnumerable<INativeFile>> QueryAsync(int workspaceId, ICollection<int> documentIds)
@@ -31,12 +33,11 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for native files. Documents count: {numberOfDocuments}", documentIds.Count);
 
-			string correlationId = Guid.NewGuid().ToString();
-
 			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
 				string concatenatedArtifactIds = string.Join(",", documentIds);
-				DataSetWrapper dataSetWrapper = await searchService.RetrieveNativesForSearchAsync(workspaceId, concatenatedArtifactIds, correlationId).ConfigureAwait(false);
+				DataSetWrapper dataSetWrapper = await searchService.RetrieveNativesForSearchAsync(
+					workspaceId, concatenatedArtifactIds, _parameters.WorkflowId).ConfigureAwait(false);
 
 				if (dataSetWrapper == null)
 				{
@@ -45,7 +46,6 @@ namespace Relativity.Sync.Transfer
 				}
 
 				DataSet dataSet = dataSetWrapper.Unwrap();
-
 				if (dataSet.Tables.Count == 0)
 				{
 					_logger.LogWarning("SearchManager returned empty data set.");
