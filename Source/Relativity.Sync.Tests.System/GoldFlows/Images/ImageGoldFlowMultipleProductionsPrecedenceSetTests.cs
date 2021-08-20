@@ -66,10 +66,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			goldFlowTestRun.AssertImages(
+			await goldFlowTestRun.AssertImagesAsync(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, expectedDocumentsWithImagesInDestinationWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			);
+			).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("6176e481-2a75-4654-af46-096f24bb6bfe")]
@@ -101,10 +101,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			goldFlowTestRun.AssertImages(
+			await goldFlowTestRun.AssertImagesAsync(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, expectedDocumentsWithImagesInDestinationWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			);
+			).ConfigureAwait(false);
 		}
 
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration, 

@@ -41,14 +41,14 @@ namespace Relativity.Sync.Transfer
 
 				if (dataSetWrapper == null)
 				{
-					_logger.LogWarning("SearchManager returned null data set.");
+					_logger.LogWarning("SearchService returned null data set.");
 					return empty;
 				}
 
 				DataSet dataSet = dataSetWrapper.Unwrap();
 				if (dataSet.Tables.Count == 0)
 				{
-					_logger.LogWarning("SearchManager returned empty data set.");
+					_logger.LogWarning("SearchService returned empty data set.");
 					return empty;
 				}
 

@@ -45,11 +45,11 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for image files based on options. Documents count: {numberOfDocuments}", documentIds.Length);
 
-			using (ISearchService searchManager = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
+			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
 				ImageFile[] imageFiles = options != null && options.ProductionImagePrecedence
-					? await RetrieveImagesByProductionsForDocuments(searchManager, workspaceId, documentIds, options).ConfigureAwait(false)
-					: (await RetrieveOriginalImagesForDocuments(searchManager, workspaceId, documentIds).ConfigureAwait(false)).Images;
+					? await RetrieveImagesByProductionsForDocuments(searchService, workspaceId, documentIds, options).ConfigureAwait(false)
+					: (await RetrieveOriginalImagesForDocuments(searchService, workspaceId, documentIds).ConfigureAwait(false)).Images;
 
 
 
