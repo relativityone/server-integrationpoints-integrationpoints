@@ -75,11 +75,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(integrationPointName,
 				destinationWorkspace, keywordSearch, copyNativesMode: RelativityProviderCopyNativeFiles.PhysicalFiles);
 
-			integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
-
+			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
 			// Assert
-			int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(keywordSearchDocumentsCount);
@@ -167,11 +166,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			var integrationPointViewPage = integrationPointEditPage.CreateProductionToFolderIntegrationPoint(
 				integrationPointName, destinationWorkspace, production);
 			
-			integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
-
+			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
 			// Assert
-			int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);

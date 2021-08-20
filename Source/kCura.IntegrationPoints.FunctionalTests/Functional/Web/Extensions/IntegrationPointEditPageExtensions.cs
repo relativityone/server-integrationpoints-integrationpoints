@@ -54,10 +54,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
 		{
-			return integrationPointEditPage.ApplyModel(new IntegrationPointEdit
+			return integrationPointEditPage.ApplyModel(new IntegrationPointEditExport
 			{
 				Name = integrationPointName,
-				Type = IntegrationPointTypes.Export,
 				Destination = IntegrationPointDestinations.Relativity
 			}).RelativityProviderNext.ClickAndGo();
 		}
@@ -75,7 +74,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 					relativityProviderConnectToSource = new RelativityProviderConnectToProductionSource { ProductionSet = productionSetName };
 					break;
 				default:
-					throw new ArgumentException($"The provided source ({source}) for Relativity Provider is not supported.", nameof(source));
+					throw new ArgumentException(@"The provided source for Relativity Provider is not supported.", nameof(source));
 			}
 			relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
 			relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;

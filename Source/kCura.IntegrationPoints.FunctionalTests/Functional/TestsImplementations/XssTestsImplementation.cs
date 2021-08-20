@@ -107,10 +107,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		private IntegrationPointEdit ExportIntegrationPointEdit(string name = null, string emailRecipients = "")
 		{
-			return new IntegrationPointEdit
+			return new IntegrationPointEditExport
 			{
 				Name = name ?? $" XSS Integration Point - {Guid.NewGuid()}",
-				Type = IntegrationPointTypes.Export,
 				Destination = IntegrationPointDestinations.Relativity,
 				EmailRecipients = emailRecipients
 			};
