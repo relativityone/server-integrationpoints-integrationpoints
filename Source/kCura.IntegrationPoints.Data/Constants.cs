@@ -74,15 +74,14 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public static readonly Guid HasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
 		public static readonly string HasImagesFieldName = "Has Images";
-		public static readonly Guid RelativityImageCount = new Guid("D726B2D9-4192-43DF-86EF-27D36560931A");
+		public static readonly string HasImagesYesChoiceName = "Yes";
+		public static readonly Guid RelativityImageCountGuid = new Guid("D726B2D9-4192-43DF-86EF-27D36560931A");
 
 		public static readonly Guid ControlNumberGuid = new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438");
 		public static readonly Guid FileIconGuid = new Guid("861295b5-5b1d-4830-89e7-77e0a7ef1c30");
 
 		public const string EDIT_FIELD_NAME = "Edit";
-
-		public static Guid HasImagesYesGuid = new Guid("5002224A-59F9-4C19-AA57-3765BDBFB676");
-
+		
 		public const string POPUP_FILTER_TYPE_NAME = "Popup";
 	}
 
