@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -29,32 +30,32 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			_serializer = serializer;
 		}
 
-		public IDataReader GetDataReader(FieldMap[] fieldMaps, string options)
+		public IDataReader GetDataReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager)
 		{
 			ImportProviderSettings providerSettings = _serializer.Deserialize<ImportProviderSettings>(options);
 			if (int.Parse(providerSettings.ImportType) == (int)ImportType.ImportTypeValue.Document)
 			{
-				LoadFileDataReader lfdr = GetLoadFileDataReader(fieldMaps, providerSettings);
+				LoadFileDataReader lfdr = GetLoadFileDataReader(fieldMaps, providerSettings, jobStopManager);
 				ImportDataReader idr = new ImportDataReader(lfdr);
 				idr.Setup(fieldMaps);
 				return idr;
 			}
 			else
 			{
-				return GetOpticonDataReader(providerSettings);
+				return GetOpticonDataReader(providerSettings, jobStopManager);
 			}
 		}
 
-		private OpticonDataReader GetOpticonDataReader(ImportProviderSettings settings)
+		private OpticonDataReader GetOpticonDataReader(ImportProviderSettings settings, IJobStopManager jobStopManager)
 		{
 			ImageLoadFile config = _winEddsLoadFileFactory.GetImageLoadFile(settings);
 			IImageReader reader = _winEddsFileReaderFactory.GetOpticonFileReader(config);
-			OpticonDataReader rv = new OpticonDataReader(settings, reader);
+			OpticonDataReader rv = new OpticonDataReader(settings, reader, jobStopManager);
 			rv.Init();
 			return rv;
 		}
 
-		private LoadFileDataReader GetLoadFileDataReader(FieldMap[] fieldMaps, ImportProviderSettings settings)
+		private LoadFileDataReader GetLoadFileDataReader(FieldMap[] fieldMaps, ImportProviderSettings settings, IJobStopManager jobStopManager)
 		{
 			string fieldIdentifierColumnName = fieldMaps.FirstOrDefault(x => x.SourceField.IsIdentifier)?.SourceField.DisplayName;
 			
@@ -78,7 +79,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 			IArtifactReader reader = _winEddsFileReaderFactory.GetLoadFileReader(loadFile);
 
-			LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader);
+			LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager);
 			rv.Init();
 			return rv;
 		}

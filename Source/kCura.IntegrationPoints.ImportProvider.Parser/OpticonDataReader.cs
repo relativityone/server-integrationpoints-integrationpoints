@@ -6,6 +6,7 @@ using System.IO;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -16,13 +17,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		private readonly DataTable _schemaTable;
 		private readonly Dictionary<string, int> _ordinalMap;
 		private readonly IImageReader _opticonFileReader;
+		private readonly IJobStopManager _jobStopManager;
 		private readonly string _loadFileDirectory;
 		private readonly string[] _currentLine;
 
-		public OpticonDataReader(ImportProviderSettings providerSettings, IImageReader reader)
+		public OpticonDataReader(ImportProviderSettings providerSettings, IImageReader reader, IJobStopManager jobStopManager)
 		{
 			_opticonFileReader = reader;
-
+			_jobStopManager = jobStopManager;
+			
 			_isClosed = false;
 			_documentId = 0;
 
@@ -45,7 +48,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			_opticonFileReader.Initialize();
 		}
 
-		private void ReadCurrentRecord()
+		private ImageRecord ReadCurrentRecord()
 		{
 			ImageRecord currentRecord = _opticonFileReader.GetImageRecord();
 			if (currentRecord.IsNewDoc)
@@ -64,6 +67,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 			{
 				_currentLine[OpticonInfo.FILE_LOCATION_FIELD_INDEX] = fileLocation;
 			}
+
+			return currentRecord;
 		}
 
 		public long CountRecords()
@@ -115,15 +120,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public override bool Read()
 		{
-			if (_opticonFileReader.HasMoreRecords)
-			{
-				ReadCurrentRecord();
-				return true;
-			}
-			else
+			if(!_opticonFileReader.HasMoreRecords)
 			{
 				return false;
 			}
+
+			ImageRecord record = ReadCurrentRecord();
+			if(_jobStopManager?.ShouldDrainStop == true && record.IsNewDoc)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		public override string GetDataTypeName(int i)

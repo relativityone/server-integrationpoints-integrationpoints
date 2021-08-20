@@ -242,7 +242,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				LogFieldMapLength(fieldMaps);
 				if (fieldMaps.Length > 0)
 				{
-					context.DataReader = new RelativityReaderDecorator(new PausableDataReader(context.DataReader, jobStopManager), fieldMaps);
+					context.DataReader = new RelativityReaderDecorator(context.DataReader, fieldMaps);
 					ImportService.KickOffImport(context);
 				}
 				else

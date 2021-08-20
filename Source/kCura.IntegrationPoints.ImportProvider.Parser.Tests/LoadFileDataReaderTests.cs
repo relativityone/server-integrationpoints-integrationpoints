@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using NSubstitute.ExceptionExtensions;
+using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -36,25 +37,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			new string [] { "REL2", _UN_ROOTED_PATH, _UN_ROOTED_PATH }
 		};
 
-		LoadFileDataReader _instance;
 		IArtifactReader _loadFileReader;
+		IJobStopManager _jobStopManager;
 		LoadFile _loadFile;
 		ImportProviderSettings _providerSettings;
-
-		private void LoadArtifact(int recordIndex)
-		{
-			_currentArtifactIndex = recordIndex;
-			ArtifactFieldCollection artifact = new ArtifactFieldCollection();
-			for (int k = 0; k < _RECORDS[recordIndex].Length; k++)
-			{
-				ArtifactField cur = new ArtifactField(new DocumentField(_HEADERS[k], k,
-					k == 0 ? _IDENTIFIER_FIELD_TYPE : _NONE_FIELD_TYPE, -1, -1, -1, -1, false,
-					kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false));
-				cur.Value = _RECORDS[recordIndex][k];
-				artifact.Add(cur);
-			}
-			_loadFileReader.ReadArtifact().Returns(artifact);
-		}
 
 		[SetUp]
 		public override void SetUp()
@@ -70,6 +56,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			_loadFileReader.ManageErrorRecords(Arg.Any<string>(), Arg.Any<string>()).Returns(_ERROR_FILE_PATH);
 			_loadFileReader.CountRecords().Returns(_RECORDS.Length);
 
+			_jobStopManager = Substitute.For<IJobStopManager>();
+
 			LoadArtifact(_ROOTED_PATH_ARTIFACT_INDEX);
 		}
 
@@ -78,27 +66,28 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			//Arrange
 			_loadFileReader.HasMoreRecords.Returns(false);
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.IsFalse(_instance.Read());
-			Assert.IsTrue(_instance.IsClosed);
+			Assert.IsFalse(sut.Read());
+			Assert.IsTrue(sut.IsClosed);
 		}
 
 		[Test]
 		public void ItShouldCallReadArtifact_IfReaderHasMoreRecords()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.IsTrue(_instance.Read());
+			Assert.IsTrue(sut.Read());
 			_loadFileReader.Received(1).ReadArtifact();
 		}
 
@@ -109,17 +98,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			LoadArtifact(_UN_ROOTED_PATH_ARTIFACT_INDEX);
 			_providerSettings.NativeFilePathFieldIdentifier = _NATIVE_PATH_LOAD_FILE_INDEX.ToString();
 			_providerSettings.ExtractedTextPathFieldIdentifier = _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX.ToString();
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.IsTrue(_instance.Read());
+			Assert.IsTrue(sut.Read());
 			Assert.AreEqual(Path.Combine(Path.GetDirectoryName(_LOAD_FILE_FULL_PATH), _RECORDS[_currentArtifactIndex][_NATIVE_PATH_LOAD_FILE_INDEX]),
-				_instance.GetValue(_NATIVE_PATH_LOAD_FILE_INDEX));
+				sut.GetValue(_NATIVE_PATH_LOAD_FILE_INDEX));
 			Assert.AreEqual(Path.Combine(Path.GetDirectoryName(_LOAD_FILE_FULL_PATH), _RECORDS[_currentArtifactIndex][_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX]),
-				_instance.GetValue(_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX));
+				sut.GetValue(_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX));
 		}
 
 		[Test]
@@ -129,29 +119,30 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 			LoadArtifact(_ROOTED_PATH_ARTIFACT_INDEX);
 			_providerSettings.NativeFilePathFieldIdentifier = _NATIVE_PATH_LOAD_FILE_INDEX.ToString();
 			_providerSettings.ExtractedTextPathFieldIdentifier = _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX.ToString();
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.IsTrue(_instance.Read());
-			Assert.AreEqual(_RECORDS[_currentArtifactIndex][_NATIVE_PATH_LOAD_FILE_INDEX], _instance.GetValue(_NATIVE_PATH_LOAD_FILE_INDEX));
-			Assert.AreEqual(_RECORDS[_currentArtifactIndex][_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX], _instance.GetValue(_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX));
+			Assert.IsTrue(sut.Read());
+			Assert.AreEqual(_RECORDS[_currentArtifactIndex][_NATIVE_PATH_LOAD_FILE_INDEX], sut.GetValue(_NATIVE_PATH_LOAD_FILE_INDEX));
+			Assert.AreEqual(_RECORDS[_currentArtifactIndex][_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX], sut.GetValue(_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX));
 		}
 
 		[Test]
 		public void ItShouldSequentiallyNameColumnsInSchemaTable()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.IsTrue(_instance.Read());
-			DataTable schemaTable = _instance.GetSchemaTable(); 
+			Assert.IsTrue(sut.Read());
+			DataTable schemaTable = sut.GetSchemaTable(); 
 			for (int i = 0; i < schemaTable.Columns.Count; i++)
 			{
 				Assert.AreEqual(i.ToString(), schemaTable.Columns[i].ColumnName);
@@ -162,39 +153,39 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldPassThroughCallsToManageErrorRecords()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.AreEqual(_ERROR_FILE_PATH, _instance.ManageErrorRecords(string.Empty, string.Empty));
+			Assert.AreEqual(_ERROR_FILE_PATH, sut.ManageErrorRecords(string.Empty, string.Empty));
 		}
 
 		[Test]
 		public void ItShouldPassThroughCallsToCountRecords()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.AreEqual(_RECORDS.Length, _instance.CountRecords());
+			Assert.AreEqual(_RECORDS.Length, sut.CountRecords());
 		}
 
 		[Test]
 		public void ItShouldNotBeClosed_WhenFirstCreated()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.IsFalse(_instance.IsClosed);
+			Assert.IsFalse(sut.IsClosed);
 		}
 
 		[Test]
@@ -202,41 +193,42 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			//Arrange
 			_loadFileReader.GetColumnNames(Arg.Any<object>()).Returns(new string[0]);
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.AreEqual(0, _instance.FieldCount);
+			Assert.AreEqual(0, sut.FieldCount);
 		}
 
 		[Test]
 		public void ItShouldReturnFieldCount_WhenOperatingOnNonEmptyFile()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
-			Assert.AreEqual(_HEADERS.Length, _instance.FieldCount);
+			Assert.AreEqual(_HEADERS.Length, sut.FieldCount);
 		}
 
 		[Test]
 		public void ItShouldReturnCorrectOrdinal()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
 			for (int i = 0; i < _HEADERS.Length; i++)
 			{
-				Assert.AreEqual(i, _instance.GetOrdinal(i.ToString()));
+				Assert.AreEqual(i, sut.GetOrdinal(i.ToString()));
 			}
 		}
 
@@ -244,15 +236,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldReturnCorrectName()
 		{
 			//Arrange
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
+			sut.Init();
 
 			//Assert
 			for (int i = 0; i < _HEADERS.Length; i++)
 			{
-				Assert.AreEqual(i.ToString(), _instance.GetName(i));
+				Assert.AreEqual(i.ToString(), sut.GetName(i));
 			}
 		}
 
@@ -261,17 +253,56 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		public void ItShouldBlankOutput_WhenLoadFileReaderThrowsColumnCountMismatchException()
 		{
 			_loadFileReader.ReadArtifact().Throws(new kCura.WinEDDS.LoadFileBase.ColumnCountMismatchException(0,0,0));
-			_instance = new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader);
+			
+			LoadFileDataReader sut = PrepareSut();
 
 			//Act
-			_instance.Init();
-			_instance.Read();
+			sut.Init();
+			sut.Read();
 
 			//Assert
 			for (int i = 0; i < _RECORDS[_currentArtifactIndex].Length; i++)
 			{
-				Assert.IsEmpty(_instance.GetString(i));
+				Assert.IsEmpty(sut.GetString(i));
 			}
+		}
+
+		[Test]
+		public void Read_ShouldReturnFalse_WhenDrainStopWasTriggered()
+		{
+			// Arrange
+			_jobStopManager.ShouldDrainStop.Returns(true);
+
+			LoadFileDataReader sut = PrepareSut();
+
+			sut.Init();
+
+			// Act
+			bool readResult = sut.Read();
+
+			// Assert
+			Assert.IsFalse(readResult);
+			Assert.IsTrue(sut.IsClosed);
+		}
+
+		private LoadFileDataReader PrepareSut()
+		{
+			return new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
+		}
+
+		private void LoadArtifact(int recordIndex)
+		{
+			_currentArtifactIndex = recordIndex;
+			ArtifactFieldCollection artifact = new ArtifactFieldCollection();
+			for (int k = 0; k < _RECORDS[recordIndex].Length; k++)
+			{
+				ArtifactField cur = new ArtifactField(new DocumentField(_HEADERS[k], k,
+					k == 0 ? _IDENTIFIER_FIELD_TYPE : _NONE_FIELD_TYPE, -1, -1, -1, -1, false,
+					kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false));
+				cur.Value = _RECORDS[recordIndex][k];
+				artifact.Add(cur);
+			}
+			_loadFileReader.ReadArtifact().Returns(artifact);
 		}
 	}
 }

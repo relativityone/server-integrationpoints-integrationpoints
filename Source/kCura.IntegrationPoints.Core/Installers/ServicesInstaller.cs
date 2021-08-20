@@ -46,10 +46,7 @@ using SystemInterface.IO;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
-using Relativity.Toggles.Providers;
 using System;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Installers;
@@ -175,7 +172,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
 			container.Register(Component
 				.For<IToggleProvider>()
-				.UsingFactoryMethod(k => CreateSqlServerToggleProvider(k.Resolve<IHelper>()))
+				.UsingFactoryMethod(k => ToggleProviderHelper.CreateSqlServerToggleProvider(k.Resolve<IHelper>()))
 				.LifestyleSingleton()
 			);
 
@@ -183,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 			container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>().LifestyleTransient());
-			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleTransient());
+			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleSingleton());
 
 			container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
 			
@@ -219,21 +216,5 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.AddWebApiLoginService();
 		}
 
-		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)
-		{
-			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper)) { CacheEnabled = true };
-		}
-
-		private Task<SqlConnection> AsyncConnectionFactory(IHelper helper)
-		{
-			return Task.Run(() => ConnectionFactory(helper));
-		}
-
-		private SqlConnection ConnectionFactory(IHelper helper)
-		{
-			SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
-
-			return connection;
-		}
 	}
 }

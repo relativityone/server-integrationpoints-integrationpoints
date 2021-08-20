@@ -85,10 +85,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				PathInformation = RelativityProviderFolderPathInformation.No
 			}).Save.ClickAndGo();
 
-			integrationPointViewPage = RunIntegrationPoint(integrationPointViewPage, integrationPointName);
+			integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
 
 			// Assert
-			int transferredItemsCount = GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(keywordSearchDocumentsCount);
@@ -182,10 +182,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				Overwrite = RelativityProviderOverwrite.AppendOnly
 			}).Save.ClickAndGo();
 
-			integrationPointViewPage = RunIntegrationPoint(integrationPointViewPage, integrationPointName);
+			integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
 
 			// Assert
-			int transferredItemsCount = GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+			int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
 			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
@@ -204,10 +204,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
 		{
-			return integrationPointEditPage.ApplyModel(new IntegrationPointEdit
+			return integrationPointEditPage.ApplyModel(new IntegrationPointEditExport
 			{
 				Name = integrationPointName,
-				Type = IntegrationPointTypes.Export,
 				Destination = IntegrationPointDestinations.Relativity
 			}).RelativityProviderNext.ClickAndGo();
 		}
@@ -234,19 +233,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				.ApplyModel(relativityProviderConnectToSource)
 				.SelectFolder.Click().SetItem($"{destinationWorkspace.Name}")
 				.Next.ClickAndGo();
-		}
-
-		private static IntegrationPointViewPage RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
-		{
-			return integrationPointViewPage.Run.WaitTo.Within(60).BeVisible().
-				Run.ClickAndGo().
-				OK.ClickAndGo().
-				WaitUntilJobCompleted(integrationPointName);
-		}
-
-		private static int GetTransferredItemsCount(IntegrationPointViewPage integrationPointViewPage, string integrationPointName)
-		{
-			return Int32.Parse(integrationPointViewPage.Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
 		}
 	}
 }

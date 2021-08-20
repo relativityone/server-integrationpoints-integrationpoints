@@ -48,7 +48,6 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="BatchManagerTests.cs" />
-    <Compile Include="ImageDataTableHelperTests.cs" />
     <Compile Include="ImportApiFactoryTests.cs" />
     <Compile Include="ImportAPI\JobProgressInfoTests.cs" />
     <Compile Include="ImportServiceTests.cs" />

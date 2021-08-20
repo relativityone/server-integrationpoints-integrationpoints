@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 			_builder.PopulateFrom(ImportSettings, ImportJob.Settings);
 			LogJobSettings();
 			_logger.LogInformation("Building data table");
-			ImportJob.SourceData.SourceData = ImageDataTableHelper.GetDataTable(_sourceData);
+			ImportJob.SourceData.Reader = _sourceData;
 			_logger.LogInformation("Building data table finished");
 			Context.UpdateTransferStatus();
 		}

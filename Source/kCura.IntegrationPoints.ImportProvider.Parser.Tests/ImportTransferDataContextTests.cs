@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using kCura.IntegrationPoints.Domain.Managers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -20,9 +21,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 		{
 			_dataReader = Substitute.For<IDataReader>();
 			IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
-			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>()).Returns(_dataReader);
+			dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>(), Arg.Any<IJobStopManager>()).Returns(_dataReader);
 
-			_instance = new ImportTransferDataContext(dataReaderFactory, string.Empty, new List<FieldMap>());
+			_instance = new ImportTransferDataContext(dataReaderFactory, string.Empty, new List<FieldMap>(), Arg.Any<IJobStopManager>());
 		}
 
 		[Test]
