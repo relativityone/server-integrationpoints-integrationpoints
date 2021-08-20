@@ -1,36 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using LanguageExt;
-using Moq;
-using Relativity.API;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Logging;
-using Relativity.Services.Permission;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
     class KeplerSecurityTestsBase : TestsBase
     {
+        private RepositoryPermissions _expectedPermissionRepository;
+
         protected int ArtifactTypeId;
         protected int ArtifactId;
 
         protected IPermissionRepository PermissionRepository;
         protected IPermissionRepositoryFactory PermissionRepositoryFactory;
         protected ILog Logger;
-        
-        
+
         public override void SetUp()
         {
             base.SetUp();
 
             ArtifactTypeId = ArtifactProvider.NextId();
             ArtifactId = ArtifactProvider.NextId();
+            _expectedPermissionRepository = new RepositoryPermissions();
 
             Logger = Container.Resolve<ILog>();
             PermissionRepositoryFactory = Container.Resolve<IPermissionRepositoryFactory>();
@@ -38,10 +33,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             PermissionRepository = PermissionRepositoryFactory.Create(Helper, SourceWorkspace.ArtifactId);
         }
 
-        protected void Arrange(bool? workspaceAccessPermissions = null, bool? artifactTypePermissions = null)
+        protected void Arrange(bool workspaceOrArtifactInstancePermissionsValue = false, bool artifactTypePermissionsValue = false)
         {
-            if (workspaceAccessPermissions != null) SetUserWorkspaceAccessPermissions((bool)workspaceAccessPermissions);
-            if (artifactTypePermissions != null) SetUserArtifactTypePermissions((bool)artifactTypePermissions);
+            SetupPermissionsCheck(workspaceOrArtifactInstancePermissionsValue, artifactTypePermissionsValue);
+            SetExpectedRepositoryPermissions(workspaceOrArtifactInstancePermissionsValue, artifactTypePermissionsValue);
         }
 
         protected T ActAndGetResult<T>(Func<T> function, T initialResultValue, bool exceptionNotExpected)
@@ -78,67 +73,56 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             return result;
         }
 
-        protected void Assert(RepositoryPermissions expectedRepositoryPermissions)
+        protected void Assert()
         {
             PermissionRepository.UserHasPermissionToAccessWorkspace()
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasWorkspaceAccessPermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasWorkspaceAccessPermissions);
             PermissionRepository.UserCanEditDocuments()
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserCanEditDocuments);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserCanEditDocuments);
             PermissionRepository.UserCanExport()
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserCanExport);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserCanExport);
             PermissionRepository.UserCanImport()
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserCanImport);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserCanImport);
             PermissionRepository.UserHasArtifactTypePermission(ArtifactTypeId, ArtifactPermission.Create)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasCreatePermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasCreatePermissions);
             PermissionRepository.UserHasArtifactTypePermission(ArtifactTypeId, ArtifactPermission.Edit)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasEditPermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasEditPermissions);
             PermissionRepository.UserHasArtifactTypePermission(ArtifactTypeId, ArtifactPermission.View)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasViewPermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasViewPermissions);
             PermissionRepository.UserHasArtifactTypePermission(ArtifactTypeId, ArtifactPermission.Delete)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasDeletePermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasDeletePermissions);
             PermissionRepository.UserHasArtifactInstancePermission(ArtifactTypeId, ArtifactId, ArtifactPermission.Create)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasCreateInstancePermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasCreateInstancePermissions);
             PermissionRepository.UserHasArtifactInstancePermission(ArtifactTypeId, ArtifactId, ArtifactPermission.Edit)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasEditInstancePermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasEditInstancePermissions);
             PermissionRepository.UserHasArtifactInstancePermission(ArtifactTypeId, ArtifactId, ArtifactPermission.View)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasViewInstancePermissions);
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasViewInstancePermissions);
             PermissionRepository.UserHasArtifactInstancePermission(ArtifactTypeId, ArtifactId, ArtifactPermission.Delete)
-                .ShouldBeEquivalentTo(expectedRepositoryPermissions.UserHasDeleteInstancePermissions);
-            }
-
-        protected void SetUserWorkspaceAccessPermissions(bool permissionValue)
-        {
-            List<PermissionRef> permissions = new List<PermissionRef> {new PermissionRef()};
-            List<PermissionValue> permissionValues = new List<PermissionValue>
-            {
-                new PermissionValue
-                {
-                    PermissionID = ArtifactId,
-                    Selected = permissionValue
-                }
-            };
-
-            Proxy.PermissionManager.Mock.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
-                permissions, ArtifactId)).Returns(Task.FromResult(permissionValues));
+                .ShouldBeEquivalentTo(_expectedPermissionRepository.UserHasDeleteInstancePermissions);
         }
 
-        protected void SetUserArtifactTypePermissions(bool permissionValue)
+        protected void SetupPermissionsCheck(bool workspaceOrArtifactInstancePermissionsValue, bool artifactTypePermissionValue)
         {
-            List<PermissionRef> permissions = new List<PermissionRef> {new PermissionRef()};
-            List<PermissionValue> permissionValues = new List<PermissionValue>
-            {
-                new PermissionValue
-                {
-                    PermissionID = ArtifactId,
-                    Selected = permissionValue
-                }
-            };
-
-            Proxy.PermissionManager.Mock.Setup(x => x.GetPermissionSelectedAsync(SourceWorkspace.ArtifactId,
-                permissions)).Returns(Task.FromResult(permissionValues));
+            Proxy.PermissionManager.SetupPermissionsCheck(workspaceOrArtifactInstancePermissionsValue, artifactTypePermissionValue);
         }
 
-        internal class RepositoryPermissions
+        private void SetExpectedRepositoryPermissions(bool workspaceOrArtifactInstancePermissionsValue, bool artifactTypePermissionValue)
+        {
+            _expectedPermissionRepository.UserHasWorkspaceAccessPermissions = workspaceOrArtifactInstancePermissionsValue;
+            _expectedPermissionRepository.UserHasCreateInstancePermissions = workspaceOrArtifactInstancePermissionsValue;
+            _expectedPermissionRepository.UserHasViewInstancePermissions = workspaceOrArtifactInstancePermissionsValue;
+            _expectedPermissionRepository.UserHasEditInstancePermissions = workspaceOrArtifactInstancePermissionsValue;
+            _expectedPermissionRepository.UserHasDeleteInstancePermissions = workspaceOrArtifactInstancePermissionsValue;
+            _expectedPermissionRepository.UserHasCreatePermissions = artifactTypePermissionValue;
+            _expectedPermissionRepository.UserHasEditPermissions = artifactTypePermissionValue;
+            _expectedPermissionRepository.UserHasViewPermissions = artifactTypePermissionValue;
+            _expectedPermissionRepository.UserHasDeletePermissions = artifactTypePermissionValue;
+            _expectedPermissionRepository.UserCanEditDocuments = artifactTypePermissionValue;
+            _expectedPermissionRepository.UserCanExport = artifactTypePermissionValue;
+            _expectedPermissionRepository.UserCanImport = artifactTypePermissionValue;
+        }
+
+        private class RepositoryPermissions
         {
             internal bool UserHasWorkspaceAccessPermissions { get; set; }
             internal bool UserCanEditDocuments { get; set; }
@@ -152,7 +136,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             internal bool UserHasEditInstancePermissions { get; set; }
             internal bool UserHasViewInstancePermissions { get; set; }
             internal bool UserHasDeleteInstancePermissions { get; set; }
-
         }
     }
 

@@ -22,8 +22,8 @@ namespace Relativity.IntegrationPoints.Services
 		public IntegrationPointProfileManager(ILog logger) : base(logger)
 		{
 		}
-		
-		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
+
+        protected override Installer Installer => _installer ?? (_installer = new IntegrationPointManagerInstaller());
 
 		public void Dispose()
 		{

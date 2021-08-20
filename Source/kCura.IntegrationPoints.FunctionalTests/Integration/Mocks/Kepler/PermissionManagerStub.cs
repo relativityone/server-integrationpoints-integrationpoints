@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
 	public class PermissionManagerStub : KeplerStubBase<IPermissionManager>
 	{
-		public void SetupPermissionsCheck()
+		public void SetupPermissionsCheck(bool workspaceOrArtifactInstancePermissionsValue = true, bool artifactTypePermissionsValue = true)
 		{
 			Mock.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>()))
 				.Returns((int workspaceId, List<PermissionRef> permissions) =>
@@ -16,7 +16,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 					return Task.FromResult(permissions.Select(p => new PermissionValue
 					{
 						PermissionID = p.PermissionID,
-						Selected = true
+						Selected = artifactTypePermissionsValue
 					}).ToList());
 				});
 
@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 						new PermissionValue
 						{
 							PermissionID = artifactId,
-							Selected = true
+							Selected = workspaceOrArtifactInstancePermissionsValue
 						}
 					});
 				});
