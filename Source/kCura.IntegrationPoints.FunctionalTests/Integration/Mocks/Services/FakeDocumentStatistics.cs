@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Statistics;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.Statistics;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
@@ -16,6 +17,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         }
 
         public long ForSavedSearch(int workspaceArtifactId, int savedSearchId)
+        {
+            return 10L;
+        }
+
+        public long GetTotalFileSize(IEnumerable<int> artifactIds, int workspaceArtifactId)
+        {
+            return 10L;
+        }
+
+        public long GetTotalFileSize(IList<int> artifactIds, int workspaceArtifactId)
+        {
+            return 10L;
+        }
+
+        public long GetTotalFileSize(int productionSetId, int workspaceArtifactId)
         {
             return 10L;
         }
