@@ -32,8 +32,8 @@ namespace Relativity.Sync.Transfer
 			_parameters = parameters;
 		}
 
-		public async Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(int workspaceId, int[] documentIds,
-			QueryImagesOptions options)
+		public async Task<IEnumerable<ImageFile>> QueryImagesForDocumentsAsync(
+			int workspaceId, int[] documentIds, QueryImagesOptions options)
 		{
 			IEnumerable<ImageFile> empty = Enumerable.Empty<ImageFile>();
 
@@ -45,26 +45,21 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for image files based on options. Documents count: {numberOfDocuments}", documentIds.Length);
 
-			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
-			{
-				ImageFile[] imageFiles = options != null && options.ProductionImagePrecedence
-					? await RetrieveImagesByProductionsForDocuments(searchService, workspaceId, documentIds, options).ConfigureAwait(false)
-					: (await RetrieveOriginalImagesForDocuments(searchService, workspaceId, documentIds).ConfigureAwait(false)).Images;
+			ImageFile[] imageFiles = options != null && options.ProductionImagePrecedence
+				? await RetrieveImagesByProductionsForDocuments(workspaceId, documentIds, options).ConfigureAwait(false)
+				: (await RetrieveOriginalImagesForDocuments(workspaceId, documentIds).ConfigureAwait(false)).Images;
 
+			_logger.LogInformation("Found {numberOfImages} image files for {numberOfDocuments} documents",
+				imageFiles.Length,
+				imageFiles.Select(x => x.DocumentArtifactId).Distinct().Count());
 
-
-				_logger.LogInformation("Found {numberOfImages} image files for {numberOfDocuments} documents",
-					imageFiles.Length,
-					imageFiles.Select(x => x.DocumentArtifactId).Distinct().Count());
-
-				return imageFiles;
-			}
+			return imageFiles;
 		}
 
-		private async Task<ImageFile[]> RetrieveImagesByProductionsForDocuments(ISearchService searchService,
+		private async Task<ImageFile[]> RetrieveImagesByProductionsForDocuments(
 			int workspaceId, int[] documentIds, QueryImagesOptions options)
 		{
-			(ImageFile[] producedImageFiles, int[] documentsWithoutImages) = await GetImagesWithProductionPrecedence(searchService, workspaceId, options.ProductionIds, documentIds).ConfigureAwait(false);
+			(ImageFile[] producedImageFiles, int[] documentsWithoutImages) = await GetImagesWithProductionPrecedence(workspaceId, options.ProductionIds, documentIds).ConfigureAwait(false);
 
 			if (!producedImageFiles.Any())
 			{
@@ -75,7 +70,7 @@ namespace Relativity.Sync.Transfer
 
 			if (options.IncludeOriginalImageIfNotFoundInProductions && documentsWithoutImages.Any())
 			{
-				(originalImageFiles, documentsWithoutImages) = await RetrieveOriginalImagesForDocuments(searchService, workspaceId, documentsWithoutImages).ConfigureAwait(false);
+				(originalImageFiles, documentsWithoutImages) = await RetrieveOriginalImagesForDocuments(workspaceId, documentsWithoutImages).ConfigureAwait(false);
 			}
 
 			_logger.LogInformation("Image retrieve statistics: ProducedImages: {producedImagesCount}, OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
@@ -84,57 +79,64 @@ namespace Relativity.Sync.Transfer
 			return producedImageFiles.Concat(originalImageFiles).ToArray();
 		}
 
-		private async Task<(ImageFile[], int[])> GetImagesWithProductionPrecedence(ISearchService searchService,
+		private async Task<(ImageFile[], int[])> GetImagesWithProductionPrecedence(
 			int workspaceId, int[] productionPrecedence, int[] documentIds)
 		{
 			var result = new Dictionary<int, IEnumerable<ImageFile>>();
 
 			int[] documentsWithoutImages = documentIds;
-			foreach (int production in productionPrecedence)
+
+			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
-				DataSetWrapper dataSetWrapper = await searchService
-					.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(
-						workspaceId, production, documentsWithoutImages, _parameters.WorkflowId)
-					.ConfigureAwait(false);
-
-				if (dataSetWrapper == null)
+				foreach (int production in productionPrecedence)
 				{
-					// there are no results for this production
-					continue;
-				}
-				
-				EnumerableRowCollection<ImageFile> producedImages = dataSetWrapper.Unwrap()
-					.Tables[0]
-					.AsEnumerable()
-					.Select(x => GetImageFileFromProduction(x, production));
+					DataSetWrapper dataSetWrapper = await searchService
+						.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(
+							workspaceId, production, documentsWithoutImages, _parameters.WorkflowId)
+						.ConfigureAwait(false);
 
-				ILookup<int, ImageFile> imagesPerDocument = producedImages.ToLookup(
-					x => x.DocumentArtifactId,
-					x => x);
-
-				foreach (IGrouping<int, ImageFile> documentImages in imagesPerDocument)
-				{
-					if (!result.ContainsKey(documentImages.Key))
+					if (dataSetWrapper == null)
 					{
-						result.Add(documentImages.Key, documentImages);
+						// there are no results for this production
+						continue;
 					}
-				}
 
-				documentsWithoutImages = documentsWithoutImages.Where(x => !result.ContainsKey(x)).ToArray();
+					EnumerableRowCollection<ImageFile> producedImages = dataSetWrapper.Unwrap()
+						.Tables[0]
+						.AsEnumerable()
+						.Select(x => GetImageFileFromProduction(x, production));
 
-				if (documentsWithoutImages.Length == 0)
-				{
-					break;
+					ILookup<int, ImageFile> imagesPerDocument = producedImages.ToLookup(
+						x => x.DocumentArtifactId,
+						x => x);
+
+					foreach (IGrouping<int, ImageFile> documentImages in imagesPerDocument)
+					{
+						if (!result.ContainsKey(documentImages.Key))
+						{
+							result.Add(documentImages.Key, documentImages);
+						}
+					}
+
+					documentsWithoutImages = documentsWithoutImages.Where(x => !result.ContainsKey(x)).ToArray();
+
+					if (documentsWithoutImages.Length == 0)
+					{
+						break;
+					}
 				}
 			}
 
 			return (result.Values.SelectMany(x => x).ToArray(), documentsWithoutImages);
 		}
 
-		private async Task<(ImageFile[] Images, int[] DocumentWithoutImages)> RetrieveOriginalImagesForDocuments(
-			ISearchService searchService, int workspaceId, int[] documentIds)
+		private async Task<(ImageFile[] Images, int[] DocumentWithoutImages)> RetrieveOriginalImagesForDocuments(int workspaceId, int[] documentIds)
 		{
-			DataSetWrapper dataSet = await searchService.RetrieveImagesForSearchAsync(workspaceId, documentIds, _parameters.WorkflowId);
+			DataSetWrapper dataSet;
+			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
+			{
+				dataSet = await searchService.RetrieveImagesForSearchAsync(workspaceId, documentIds, _parameters.WorkflowId);
+			}
 
 			if (dataSet == null || dataSet.Unwrap().Tables.Count == 0)
 			{
