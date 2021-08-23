@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Installers;
+using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -15,6 +16,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -28,6 +30,9 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Services.Helpers;
+using Relativity.IntegrationPoints.Services.Repositories;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
@@ -37,6 +42,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.Lo
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.WebApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Logging;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
 using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
@@ -137,10 +143,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
+            RegisterKeplerServices();
 		}
 
 		private void OverrideRelativitySyncInstaller()
 		{
+            Container.Register(Component.For<IWindsorContainer>().Instance(Container).LifestyleSingleton().Named(nameof(Container)).IsDefault());
 			Container.Register(Component.For<ISyncOperationsWrapper, IExtendedFakeSyncOperations>()
 				.ImplementedBy<FakeSyncOperationsWrapper>()
 				.LifestyleSingleton().IsDefault());
@@ -230,7 +238,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig()).LifestyleTransient().IsDefault());
 			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory()).LifestyleTransient().IsDefault());
 		}
-		
+
+        private void RegisterKeplerServices()
+        {
+			ConsoleLogger consoleLogger = new ConsoleLogger();
+
+            typeof(API.Services).GetProperty("Helper").SetValue(this, Helper);
+
+			Container.Register(Component.For<ILog>().Instance(consoleLogger).Named("ILog").LifestyleSingleton());
+            Container.Register(Component.For<IPermissionRepositoryFactory>().ImplementedBy<PermissionRepositoryFactory>());
+            Container.Register(Component.For<IDocumentManager>().Instance(new DocumentManager(consoleLogger, 
+                Container.Resolve<IPermissionRepositoryFactory>(), Container)));
+
+            Container.Register(Component.For<IDocumentRepository>().ImplementedBy<FakeDocumentRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IProviderRepository>().ImplementedBy<FakeProviderRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IRipProviderInstaller>().ImplementedBy<FakeRipProviderInstaller>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IRipProviderUninstaller>().ImplementedBy<FakeRipProviderUninstaller>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<FakeIntegrationPointRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointProfileRepository>().ImplementedBy<FakeIntegrationPointProfileRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<FakeIntegrationPointTypeRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IJobHistoryRepository>().ImplementedBy<FakeJobHistoryRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IDocumentTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IDocumentTotalStatistics").LifestyleTransient().IsDefault());
+            Container.Register(Component.For<INativeTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeTotalStatistics").LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IImageTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageTotalStatistics").LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IImageFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageFileSizeStatistics").LifestyleTransient().IsDefault());
+            Container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeFileSizeStatistics").LifestyleTransient().IsDefault());
+		}
+
 		private void SetupGlobalSettings()
 		{
 			Config.Instance.InstanceSettingsProvider = new FakeInstanceSettingsProvider();
