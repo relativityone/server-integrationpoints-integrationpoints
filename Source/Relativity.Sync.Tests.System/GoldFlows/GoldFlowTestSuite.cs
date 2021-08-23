@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Relativity.Telemetry.APM;
 using Relativity.Services.Workspace;
@@ -15,10 +14,8 @@ using Relativity.Sync.Tests.System.Core.Runner;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Services.Objects.DataContracts;
 using FluentAssertions;
-using kCura.WinEDDS.Api;
-using kCura.WinEDDS.Service;
-using kCura.WinEDDS.Service.Export;
-using Relativity.DataExchange;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
@@ -107,7 +104,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems, Guid? jobHistoryGuid = null);
 			void AssertDocuments(string[] sourceDocumentsNames, string[] destinationDocumentsNames);
-			void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds);
+			Task AssertImagesAsync(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocuments);
 		}
 
 		private class GoldFlowTestRun : IGoldFlowTestRun
@@ -165,7 +162,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				}
 			}
 
-			public void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds)
+			public async Task AssertImagesAsync(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocuments)
 			{
 				string GetExpectedIdentifier(string controlNumber, int index)
 				{
@@ -177,32 +174,22 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					return $"{controlNumber}_{index}";
 				}
 
-				CookieContainer cookieContainer = new CookieContainer();
-				IRunningContext runningContext = new RunningContext
-				{
-					ApplicationName = "Relativity.Sync.Tests.System.GoldFlows"
-				};
-				NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext);
-				kCura.WinEDDS.Config.ProgrammaticServiceURL = AppSettings.RelativityWebApiUrl.ToString();
-
-				ILookup<int, TestImageFile> sourceWorkspaceFiles;
+				IEnumerable<TestImageFile> sourceWorkspaceFiles;
 				Dictionary<string, TestImageFile> destinationWorkspaceFiles;
 
 				Dictionary<int, string> sourceWorkspaceDocumentNames = sourceWorkspaceDocuments.ToDictionary(x => x.ArtifactID, x => x.Name);
 
-				using (ISearchManager searchManager = new SearchManager(credentials, cookieContainer))
+				using (ISearchService searchService = _goldFlowTestSuite.ServiceFactory.CreateProxy<ISearchService>())
 				{
-					DataTable dataTable = searchManager.RetrieveImagesForDocuments(sourceWorkspaceId, sourceWorkspaceDocuments.Select(x => x.ArtifactID).ToArray()).Tables[0];
-					sourceWorkspaceFiles = dataTable.AsEnumerable()
-						.Select(TestImageFile.GetFile)
-						.ToLookup(x => x.DocumentArtifactId, x => x);
+					sourceWorkspaceFiles = await GetWorkspaceImageFilesAsync(
+						searchService, sourceWorkspaceId, sourceWorkspaceDocuments).ConfigureAwait(false);
 
-					destinationWorkspaceFiles = searchManager.RetrieveImagesForDocuments(destinationWorkspaceId, destinationWorkspaceDocumentIds.Select(x => x.ArtifactID).ToArray()).Tables[0].AsEnumerable()
-						.Select(TestImageFile.GetFile)
+					destinationWorkspaceFiles = (await GetWorkspaceImageFilesAsync(searchService,
+							destinationWorkspaceId, destinationWorkspaceDocuments).ConfigureAwait(false))
 						.ToDictionary(x => x.Identifier, x => x);
 				}
 
-				foreach (IGrouping<int, TestImageFile> sourceDocumentImages in sourceWorkspaceFiles)
+				foreach (IGrouping<int, TestImageFile> sourceDocumentImages in sourceWorkspaceFiles.ToLookup(x => x.DocumentArtifactId, x => x))
 				{
 					int i = 0;
 					foreach (TestImageFile imageFile in sourceDocumentImages)
@@ -226,6 +213,17 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				}
 			}
 
+			private async Task<IEnumerable<TestImageFile>> GetWorkspaceImageFilesAsync(
+				ISearchService searchService, int workspaceId, RelativityObject[] workspaceDocumentIds)
+			{
+				DataSetWrapper dataSet = await searchService.RetrieveImagesForSearchAsync(workspaceId,
+						workspaceDocumentIds.Select(x => x.ArtifactID).ToArray(), Guid.Empty.ToString())
+					.ConfigureAwait(false);
+
+				return dataSet.Unwrap().Tables[0]
+					.AsEnumerable()
+					.Select(TestImageFile.GetFile);
+			}
 		}
 	}
 }

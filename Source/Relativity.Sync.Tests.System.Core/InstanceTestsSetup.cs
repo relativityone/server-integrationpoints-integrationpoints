@@ -1,9 +1,6 @@
 ﻿using System.Net;
-using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
-using Relativity.Services.ServiceProxy;
-using Relativity.Services.InstanceSetting;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
 using Relativity.Sync.Logging;
@@ -25,16 +22,18 @@ namespace Relativity.Sync.Tests.System.Core
 		}
 
 		[OneTimeSetUp]
-		public virtual async Task RunBeforeAnyTests()
+		public virtual void RunBeforeAnyTests()
 		{
 			SuppressCertificateCheckingIfConfigured();
 
-			await ConfigureRequiredInstanceSettingsAsync().ConfigureAwait(false);
+			RelativityFacade.Instance.RelyOn<CoreComponent>();
+			RelativityFacade.Instance.RelyOn<ApiComponent>();
+
+			ConfigureRequiredInstanceSettings();
 
 			OverrideBanzaiLogger();
 
-			RelativityFacade.Instance.RelyOn<CoreComponent>();
-			RelativityFacade.Instance.RelyOn<ApiComponent>();
+			InstallDataTransferLegacyApplication();
 		}
 
 		private static void SuppressCertificateCheckingIfConfigured()
@@ -51,36 +50,37 @@ namespace Relativity.Sync.Tests.System.Core
 			LogWriter.SetFactory(new SyncLogWriterFactory(AppSettings.UseLogger ? (ISyncLog)new ConsoleLogger() : new EmptyLogger()));
 		}
 
-		private async Task ConfigureRequiredInstanceSettingsAsync()
+		private void ConfigureRequiredInstanceSettings()
 		{
-			Logger.LogInformation("Configuring instance settings");
-			await CreateInstanceSettingIfNotExistAsync("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
-			await CreateInstanceSettingIfNotExistAsync("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True").ConfigureAwait(false);
+			Logger.LogInformation("Configuring instance settings.");
+
+			IInstanceSettingsService instanceSettingsService = RelativityFacade.Instance.Resolve<IInstanceSettingsService>();
+
+			instanceSettingsService.Require(new Testing.Framework.InstanceSetting
+			{
+				Name = "WebAPIPath",
+				Section = "kCura.IntegrationPoints",
+				ValueType = InstanceSettingValueType.Text,
+				Value = AppSettings.RelativityWebApiUrl.AbsoluteUri
+			});
+
+			instanceSettingsService.Require(new Testing.Framework.InstanceSetting
+			{
+				Name = "AdminsCanSetPasswords",
+				Section = "Relativity.Authentication",
+				ValueType = InstanceSettingValueType.Text,
+				Value = "True"
+			});
 		}
 
-		private static async Task CreateInstanceSettingIfNotExistAsync(string name, string section, ValueType valueType, string value)
+		private void InstallDataTransferLegacyApplication()
 		{
-			ServiceFactory serviceFactory = new ServiceFactoryFromAppConfig().CreateServiceFactory();
-			using (IInstanceSettingManager settingManager = serviceFactory.CreateProxy<IInstanceSettingManager>())
-			{
-				Services.Query query = new Services.Query
-				{
-					Condition = $"'Name' == '{name}' AND 'Section' == '{section}'"
-				};
-				InstanceSettingQueryResultSet settingResult = await settingManager.QueryAsync(query).ConfigureAwait(false);
+			ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
-				if (settingResult.TotalCount == 0)
-				{
-					Services.InstanceSetting.InstanceSetting setting = new Services.InstanceSetting.InstanceSetting()
-					{
-						Name = name,
-						Section = section,
-						ValueType = valueType,
-						Value = value
-					};
-					await settingManager.CreateSingleAsync(setting).ConfigureAwait(false);
-				}
-			}
+			applicationService.InstallToLibrary(AppSettings.DataTransferLegacyRAP, new LibraryApplicationInstallOptions
+			{
+				CreateIfMissing = true
+			});
 		}
 	}
 }

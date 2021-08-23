@@ -58,10 +58,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 				);
 
-			goldFlowTestRun.AssertImages(
+			await goldFlowTestRun.AssertImagesAsync(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			);
+			).ConfigureAwait(false);
 		}
 
 		public virtual async Task SyncJob_Should_RetryImages()

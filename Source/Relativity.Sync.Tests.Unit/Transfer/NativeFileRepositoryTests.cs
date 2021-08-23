@@ -4,9 +4,10 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Services.Objects;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
@@ -17,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	internal sealed class NativeFileRepositoryTests
 	{
-		private Mock<ISearchManager> _searchManager;
+		private Mock<ISearchService> _searchService;
 		private Mock<IObjectManager> _objectManager;
 
 		private NativeFileRepository _instance;
@@ -31,18 +32,16 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[SetUp]
 		public void SetUp()
 		{
-			_searchManager = new Mock<ISearchManager>();
+			_searchService = new Mock<ISearchService>();
 			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_objectManager = new Mock<IObjectManager>();
 
 			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_serviceFactory.Setup(x => x.CreateProxyAsync<ISearchService>()).ReturnsAsync(_searchService.Object);
 
+			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), Guid.NewGuid());
 
-			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
-			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
-				.Returns(Task.FromResult(_searchManager.Object));
-
-			_instance = new NativeFileRepository(searchManagerFactory.Object, new EmptyLogger());
+			_instance = new NativeFileRepository(_serviceFactory.Object, new EmptyLogger(), parameters);
 		}
 
 		[Test]
@@ -52,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int workspaceArtifactId = 123;
 			ICollection<int> documentIds = new[] { 0, 1 };
 
-			_searchManager.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
+			_searchService.Setup(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
 				.Throws(new InvalidOperationException());
 
 			// Act
@@ -69,15 +68,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int workspaceArtifactId = 123;
 			ICollection<int> documentIds = new[] { 0, 1 };
 
-			_searchManager.Setup(x => x.RetrieveNativesForSearch(workspaceArtifactId, It.Is<string>(ids => ids == string.Join(",", documentIds))))
-				.Returns(CreateSampleDataSet)
+			_searchService.Setup(x => x.RetrieveNativesForSearchAsync(workspaceArtifactId, It.Is<string>(ids => ids == string.Join(",", documentIds)), It.IsAny<string>()))
+				.ReturnsAsync(CreateSampleDataSet)
 				.Verifiable();
 
 			// Act
 			await _instance.QueryAsync(workspaceArtifactId, documentIds).ConfigureAwait(false);
 
 			// Assert
-			_searchManager.Verify();
+			_searchService.Verify();
 		}
 
 		[Test]
@@ -92,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			results.Should().BeEmpty();
-			_searchManager.Verify(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+			_searchService.Verify(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
@@ -107,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			results.Should().BeEmpty();
-			_searchManager.Verify(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+			_searchService.Verify(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 		}
 
 #pragma warning restore RG2009 // Hardcoded Numeric Value
@@ -115,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static IEnumerable<TestCaseData> TransformResponsesCorrectlyCases()
 		{
-			yield return new TestCaseData(new DataSet(), Enumerable.Empty<INativeFile>())
+			yield return new TestCaseData(new DataSetWrapper(new DataSet()), Enumerable.Empty<INativeFile>())
 			{
 				TestName = "Empty file response"
 			};
@@ -125,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				TestName = "Null file response"
 			};
 
-			DataSet response = CreateSampleDataSet();
+			DataSetWrapper response = CreateSampleDataSet();
 
 			NativeFile[] expectedNativeFiles =
 			{
@@ -140,9 +139,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			};
 		}
 
-		private static DataSet CreateSampleDataSet() => CreateSampleDataSet(null);
+		private static DataSetWrapper CreateSampleDataSet() => CreateSampleDataSet(null);
 
-		private static DataSet CreateSampleDataSet(IEnumerable<INativeFile> natives)
+		private static DataSetWrapper CreateSampleDataSet(IEnumerable<INativeFile> natives)
 		{
 			natives = natives ?? new List<INativeFile>
 			{
@@ -167,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			DataSet dataSet = new DataSet();
 			dataSet.Tables.Add(dataTable);
-			return dataSet;
+			return new DataSetWrapper(dataSet);
 		}
 
 		private static DataRow CreateRow(DataTable table, int id, string location, string fileName, long size)
@@ -183,14 +182,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 #pragma warning restore RG2009 // With the exception of zero and one, never hard-code a numeric value; always declare a constant instead
 
 		[TestCaseSource(nameof(TransformResponsesCorrectlyCases))]
-		public async Task ItShouldTransformResponsesCorrectly(DataSet response, IEnumerable<INativeFile> expected)
+		public async Task ItShouldTransformResponsesCorrectly(DataSetWrapper response, IEnumerable<INativeFile> expected)
 		{
 			// Arrange
 			const int workspaceArtifactId = 123;
 			ICollection<int> documentIds = new[] { 0, 1 };
 
-			_searchManager.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
-				.Returns(response);
+			_searchService.Setup(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+				.ReturnsAsync(response);
 
 			// Act
 			IEnumerable<INativeFile> actual = await _instance.QueryAsync(workspaceArtifactId, documentIds).ConfigureAwait(false);
@@ -212,8 +211,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			ICollection<int> documentIds = Enumerable.Range(0, numDocumentIds).ToList();
 
 			const int numFileResponses = 3;
-			_searchManager.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
-				.Returns(CreateSampleDataSet);
+			_searchService.Setup(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+				.ReturnsAsync(CreateSampleDataSet);
 
 			// Act
 			IEnumerable<INativeFile> actual = await _instance.QueryAsync(workspaceArtifactId, documentIds).ConfigureAwait(false);

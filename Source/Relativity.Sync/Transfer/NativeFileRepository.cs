@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.WinEDDS.Service.Export;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer
 {
 	internal sealed class NativeFileRepository : INativeFileRepository
 	{
-		private readonly ISearchManagerFactory _searchManagerFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly ISyncLog _logger;
+		private readonly SyncJobParameters _parameters;
 
-		public NativeFileRepository(ISearchManagerFactory searchManagerFactory, ISyncLog logger)
+		public NativeFileRepository(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger, SyncJobParameters parameters)
 		{
-			_searchManagerFactory = searchManagerFactory;
+			_serviceFactory = serviceFactory;
 			_logger = logger;
+			_parameters = parameters;
 		}
 
 		public async Task<IEnumerable<INativeFile>> QueryAsync(int workspaceId, ICollection<int> documentIds)
@@ -29,21 +33,22 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for native files. Documents count: {numberOfDocuments}", documentIds.Count);
 
-			using (ISearchManager searchManager = await _searchManagerFactory.CreateSearchManagerAsync().ConfigureAwait(false))
+			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
 				string concatenatedArtifactIds = string.Join(",", documentIds);
-				ISearchManager searchManagerForLambda = searchManager;
-				DataSet dataSet = await Task.Run(() => searchManagerForLambda.RetrieveNativesForSearch(workspaceId, concatenatedArtifactIds)).ConfigureAwait(false);
+				DataSetWrapper dataSetWrapper = await searchService.RetrieveNativesForSearchAsync(
+					workspaceId, concatenatedArtifactIds, _parameters.WorkflowId).ConfigureAwait(false);
 
-				if (dataSet == null)
+				if (dataSetWrapper == null)
 				{
-					_logger.LogWarning("SearchManager returned null data set.");
+					_logger.LogWarning("SearchService returned null data set.");
 					return empty;
 				}
 
+				DataSet dataSet = dataSetWrapper.Unwrap();
 				if (dataSet.Tables.Count == 0)
 				{
-					_logger.LogWarning("SearchManager returned empty data set.");
+					_logger.LogWarning("SearchService returned empty data set.");
 					return empty;
 				}
 

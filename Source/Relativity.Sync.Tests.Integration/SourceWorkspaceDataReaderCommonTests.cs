@@ -9,7 +9,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
@@ -138,7 +137,7 @@ namespace Relativity.Sync.Tests.Integration
 					"Failing second RetrieveResultsBlockFromExportAsync object manager call"),
 
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingSearchManagerCall(fm =>
-						fm.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>())),
+						fm.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())),
 					"Failing GetNativesForSearchAsync search manager call"),
 
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingObjectManagerCall(om =>

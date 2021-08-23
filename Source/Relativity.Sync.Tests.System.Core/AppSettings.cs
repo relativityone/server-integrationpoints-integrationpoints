@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using System.Text;
 
@@ -77,6 +78,10 @@ namespace Relativity.Sync.Tests.System.Core
 		public static int ArmCacheLocationId => int.Parse(GetConfigValue("ArmCacheLocationId"));
 		
 		public static int ArmFileRepositoryId => int.Parse(GetConfigValue("ArmFileRepositoryId"));
+
+		public static string DataTransferLegacyRAP => Path.Combine(
+			Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+			GetConfigValue("DataTransferLegacyRAP"));
 		
 		private static Uri BuildHostNamedBasedUri(string path)
 		{
