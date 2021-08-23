@@ -14,25 +14,27 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
 		public Link<IntegrationPointRunPopup, _> Run { get; private set; }
 
+		[FindByTitle("Save as a Profile")]
+		public Link<IntegrationPointSaveAsProfilePopup, _> SaveAsProfile { get; private set; }
+
 		public StatusTab Status { get; private set; }
-
-		public _ WaitUntilJobCompleted(string jobName = null)
+		
+		public _ RunIntegrationPoint(string integrationPointName)
 		{
-			return
-				Status.Table.Rows[y => y.Name == jobName].JobStatus.WaitTo.Within(600).Contain("Completed");
+			return this.Run.WaitTo.Within(60).BeVisible()
+				.Run.ClickAndGo()
+				.OK.ClickAndGo()
+				.WaitUntilJobCompleted(integrationPointName);
 		}
 
-		public static _ RunIntegrationPoint(_ integrationPointViewPage, string integrationPointName)
+		public int GetTransferredItemsCount(string integrationPointName)
 		{
-			return integrationPointViewPage.Run.WaitTo.Within(60).BeVisible().
-				Run.ClickAndGo().
-				OK.ClickAndGo().
-				WaitUntilJobCompleted(integrationPointName);
+			return Int32.Parse(this.Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
 		}
 
-		public static int GetTransferredItemsCount(_ integrationPointViewPage, string integrationPointName)
+		private _ WaitUntilJobCompleted(string jobName = null)
 		{
-			return Int32.Parse(integrationPointViewPage.Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
+			return Status.Table.Rows[y => y.Name == jobName].JobStatus.WaitTo.Within(600).Contain("Completed");
 		}
 
 		public class StatusTab : EditSection<_>

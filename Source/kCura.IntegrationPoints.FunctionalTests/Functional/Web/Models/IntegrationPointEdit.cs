@@ -16,5 +16,7 @@
 	{
 		public IntegrationPointTypes Type { get; } = IntegrationPointTypes.Export;
 		public IntegrationPointDestinations Destination { get; set; }
+
+		public string EmailRecipients { get; set; }
 	}
 }
