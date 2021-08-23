@@ -10,6 +10,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 	internal class IntegrationPointSaveAsProfilePopup : JQueryUIDialog<_>
 	{
 		[FindById("profile-name")]
+		[WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
 		public TextInput<_> ProfileName { get; private set; }
 
 		public Button<IntegrationPointViewPage, _> SaveAsProfile { get; private set; }
