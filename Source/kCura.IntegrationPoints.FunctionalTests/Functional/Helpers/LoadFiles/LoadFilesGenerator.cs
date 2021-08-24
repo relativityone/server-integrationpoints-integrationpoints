@@ -1,10 +1,15 @@
-﻿using NUnit.Framework;
-using Relativity.Services.ResourceServer;
-using Relativity.Services.ServiceProxy;
+﻿using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using ARMTestServices.Services.Interfaces;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
+using System.IO.Compression;
+using Relativity.Kepler.Transport;
+using Relativity.Services.ServiceProxy;
+using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 {
@@ -15,6 +20,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 
 		private static readonly string NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
 		private static readonly string NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
+		private static readonly string NATIVES_DAT_FILE_DIRECTORY = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles");
 
 		public static string GetOrCreateNativesLoadFile()
 		{
@@ -41,6 +47,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 
 		public static string GetOrCreateNativesDatLoadFile()
 		{
+			string test = AppDomain.CurrentDomain.BaseDirectory;
+
 			if (File.Exists(NATIVES_DAT_LOAD_FILE_PATH))
 			{
 				return NATIVES_DAT_LOAD_FILE_PATH;
@@ -56,42 +64,70 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 					{
 						nativesLoadFileWriter.WriteLine($"{native.Value}");
 					}
+					//TODO: delet extra line at the end
 				}
 			}
 
-			return NATIVES_DAT_LOAD_FILE_PATH;
+			return NATIVES_DAT_FILE_DIRECTORY;
 		}
 
-		public static void CreateDataToImportInDirectory(string username, string password)
+		public static async Task UploadDirectoryAsync(string directoryPath, string destinationPath)
         {
-			// first create data 
+			string zippedDirectory = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.zip");
+			string testData = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
+			ZipFile.CreateFromDirectory(testData, zippedDirectory);
 
-			// then upload it to RDP 
+			using (var fileShareManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IFileshareManager>())
+			using (var fileManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IFileManager>())
+			{
+				string destinationFile = Path.Combine(destinationPath, Path.GetFileName(zippedDirectory));
+
+                bool fileExists = await fileManager.FileExists(destinationFile).ConfigureAwait(false);
+                if (!fileExists)
+                {
+                    using (Stream stream = File.OpenRead(zippedDirectory))
+                    {
+                        await fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).ConfigureAwait(false);
+                    }
+                }
+            }
 
 		}
 
-		private static async Task<string> GetDirectoryPathAsync(int workspaceId, string username, string password)
+        public static async Task<string> GetFilesharePathAsync(int workspaceId)
         {
-			ServiceFactory userServiceFactory = GetServiceFactoryForUserHelper(username, password);
-
-			using (var proxy = userServiceFactory.CreateProxy<IWorkspaceManager>())
+            using (var proxy = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IWorkspaceManager>())
             {
-				WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = workspaceId };
+                WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = workspaceId };
 
 				FileShareResourceServer server = await proxy.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
 
-				return Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
-			}
-		}
+                return Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
+            }
+        }
 
-		private static ServiceFactory GetServiceFactoryForUserHelper(string username, string password)
-        {
-			var userCredential = new UsernamePasswordCredentials(username, password);
-			string RelativityBaseAdressUrlValue = $"{TestContext.Parameters["ServerBindingType"]}://{TestContext.Parameters["RelativityHostAddress"]}";
-			Uri RelativityRestUri = new Uri($"{RelativityBaseAdressUrlValue}/Relativity.Rest/api");
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(RelativityRestUri, userCredential);
-			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
-			return userServiceFactory;
-		}
-	}
+        //public static async Task<string> GetDirectoryPathAsync(int workspaceId, string username, string password)
+        //{
+        //    ServiceFactory userServiceFactory = GetServiceFactoryForUserHelper(username, password);
+
+        //    using (var proxy = userServiceFactory.CreateProxy<IWorkspaceManager>())
+        //    {
+        //        WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = workspaceId };
+
+        //        FileShareResourceServer server = await proxy.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
+
+        //        return Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
+        //    }
+        //}
+
+        //private static ServiceFactory GetServiceFactoryForUserHelper(string username, string password)
+        //{
+        //    var userCredential = new UsernamePasswordCredentials(username, password);
+        //    string RelativityBaseAdressUrlValue = $"{TestContext.Parameters["ServerBindingType"]}://{TestContext.Parameters["RelativityHostAddress"]}";
+        //    Uri RelativityRestUri = new Uri($"{RelativityBaseAdressUrlValue}/Relativity.Rest/api");
+        //    ServiceFactorySettings userSettings = new ServiceFactorySettings(RelativityRestUri, userCredential);
+        //    ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
+        //    return userServiceFactory;
+        //}
+    }
 }

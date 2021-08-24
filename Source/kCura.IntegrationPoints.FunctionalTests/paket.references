@@ -1,4 +1,5 @@
-﻿group Tests
+﻿ARMTestServices
+group Tests
 	kCura
 	kCura.Agent
 	kCura.Apps.Common.Config
@@ -28,4 +29,5 @@
 	Relativity.Testing.Framework.RingSetup
 	IntegrationPoints.MyFirstProvider
 	Relativity.Sync
+
 	

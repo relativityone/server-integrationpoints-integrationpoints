@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
         {
 			for(int i=1; i<10; i++)
             {
-				string line = String.Format("^1M_DOCS_WITH_NATIVES_000000000{0}^|^.\\NATIVES\\NATIVE_05B.GIF^|^621.00^|^NATIVE_05B.GIF^|^FOLDER_{1}^", i, i);
+				string line = String.Format("^10_DOCS_WITH_NATIVES_000000000{0}^|^.\\Natives\\AZIPPER_0007291.htm^|^206.00^|^AZIPPER_0007291.htm^|^FOLDER_{1}^", i, i);
 				NATIVES2.Add($"1M_DOCS_WITH_NATIVES_000000000{i}", line);
 			}
 
