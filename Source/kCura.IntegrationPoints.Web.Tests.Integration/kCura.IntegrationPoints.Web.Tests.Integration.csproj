@@ -45,8 +45,6 @@
     </Compile>
     <Compile Include="Context\UserContextIntegrationTests.cs" />
     <Compile Include="Context\WorkspaceContextIntegrationTests.cs" />
-    <Compile Include="Controllers\ImportProviderImageControllerTests.cs" />
-    <Compile Include="Controllers\SavedSearchQueryTests.cs" />
     <Compile Include="Helpers\ContainerInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +137,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -14,10 +14,7 @@
 			public const string CUSTODIAN = "Custodian - Single Choice";
 			public const string ISSUE_DESIGNATION = "Issue Designation";
 			public const string FOLDER_NAME = "Folder Name";
-			public const string FIELD_TYPE = "Field Type";
-			public const string FIELD_CATEGORY_ID = "Field Category ID";
-			public const string OBJECT_TYPE_ARTIFACT_TYPE_ID = "Object Type Artifact Type ID";
-			public const string ARTIFACT_ID = "Artifact ID";
+            public const string ARTIFACT_ID = "Artifact ID";
 			public const string PARENT_ARTIFACT_ID = "Parent Artifact ID";
 			public const string PRODUCTION_BEGIN_BATES = "Production::Begin Bates";
 			public const string PRODUCTION_END_BATES = "Production::End Bates";
@@ -40,12 +37,7 @@
             public const string DECIMAL = "Decimal";
             public const string FIXED_LENGTH_TEXT = "Fixed-Length Text";
             public const string LONG_TEXT = "Long Text";
-            public const string MULTIPLE_CHOICE = "Multiple Choice";
-            public const string MULTIPLE_OBJECT = "Multiple Object";
-            public const string SINGLE_CHOICE = "Single Choice";
-            public const string SINGLE_OBJECT = "Single Object";
-            public const string YES_NO = "Yes/No";
-		}
+        }
         public enum FieldMapMatchType
         {
             IsIdentifier,

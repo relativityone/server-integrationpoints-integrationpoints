@@ -108,8 +108,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Doc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.EventHandlers.Tests.Integration", "kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj", "{F983176A-DE11-4328-AEDA-81630DD0D587}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration", "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj", "{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web.Tests.Integration", "kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj", "{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Services.Tests", "Relativity.IntegrationPoints.Services.Tests\Relativity.IntegrationPoints.Services.Tests.csproj", "{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}"
@@ -330,10 +328,6 @@ Global
 		{F983176A-DE11-4328-AEDA-81630DD0D587}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F983176A-DE11-4328-AEDA-81630DD0D587}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F983176A-DE11-4328-AEDA-81630DD0D587}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -452,7 +446,6 @@ Global
 		{8DB72A8A-8638-469E-A2AA-992A728637F1} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{F983176A-DE11-4328-AEDA-81630DD0D587} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}

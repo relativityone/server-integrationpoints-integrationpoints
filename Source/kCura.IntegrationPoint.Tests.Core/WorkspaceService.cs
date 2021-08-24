@@ -58,14 +58,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public bool ImportSingleExtractedText(int workspaceArtifactID, string controlNumber, string extractedTextFilePath)
-		{
-			System.Data.DataTable documentData =
-				DocumentTestDataBuilder.GetSingleExtractedTextDocument(controlNumber, extractedTextFilePath);
-			return _importHelper.ImportMetadataFromFileWithExtractedTextInFile(workspaceArtifactID, documentData);
-		}
-
-		public void DeleteWorkspace(int artifactID)
+        public void DeleteWorkspace(int artifactID)
 		{
 			Workspace.DeleteWorkspaceAsync(artifactID).GetAwaiter().GetResult();
 		}

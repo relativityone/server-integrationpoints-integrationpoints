@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity;
 using Relativity.Kepler.Transport;

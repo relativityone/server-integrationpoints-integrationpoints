@@ -42,7 +42,6 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <None Include="paket.references" />
-    <Compile Include="RdoSynchronizerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
