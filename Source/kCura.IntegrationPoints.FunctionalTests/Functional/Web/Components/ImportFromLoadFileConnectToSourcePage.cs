@@ -3,6 +3,8 @@ using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
+using OpenQA.Selenium;
+using System.Threading;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -26,23 +28,60 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindByPrecedingDivContent]
 		[WaitFor]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
-		public Select2<string, _> WorkspaceDestinationFolder { get; private set; }
+		public Control<_> WorkspaceDestinationFolder { get; set; }
 
 		[FindByPrecedingDivContent]
 		[WaitFor]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
-		public Select2<string, _> ImportSource { get; private set; }
+		public Control<_> ImportSource { get; private set; }
 
-		[FindById("s2id_dataFileEncodingSelector")]
+		[FindByPrecedingDivContent]
 		[WaitFor]
-		public Select2<string, _> FileEncoding { get; set; }
+		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
+		public Select2<string,_> Column { get; set; }
 
-		[FindById("s2id_import-column")]
+		[FindByPrecedingDivContent]
 		[WaitFor]
-		public Select2<string, _> Column { get; set; }
-
-		[FindById("ss2id_import-quote")]
-		[WaitFor]
+		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public Select2<string, _> Quote { get; set; }
+
+
+        [FindByXPath("ul[contains(@class,'jstree-container-ul')]", Visibility = Visibility.Visible)]
+		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
+		public UnorderedList<TreeItemControl<_>, _> TreeItems { get; private set; }
+
+		public _ SetItem(params string[] itemNames)
+		{
+			var item = TreeItems[0].GetScope();
+			string ierarhy = string.Empty;
+
+			foreach (var itemName in itemNames)
+			{
+				string xpath = $"{ierarhy}//li[@role='treeitem']/a[.='{itemName}']";
+				ierarhy = $"{xpath}/..";
+
+				var textItem = item.FindElement(By.XPath(xpath));
+				textItem.Click();
+				Thread.Sleep(1000);
+				item = Driver.FindElement(By.XPath(ierarhy));
+			}
+
+			return Owner;
+		}
+
+		[ControlDefinition("li[@role='treeitem']")]
+		[WaitUntilOverlayMissing(TriggerEvents.BeforeClick, AppliesTo = TriggerScope.Children)]
+		public class TreeItemControl<TPage> : Control<TPage>
+			where TPage : PageObject<TPage>
+		{
+			[FindByClass("jstree-icon")]
+			private Clickable<TPage> TreeIcon { get; set; }
+
+			[FindByXPath("a")]
+			public Text<TPage> Text { get; private set; }
+
+			public UnorderedList<TreeItemControl<TPage>, TPage> Children { get; private set; }
+		}
+
 	}
 }

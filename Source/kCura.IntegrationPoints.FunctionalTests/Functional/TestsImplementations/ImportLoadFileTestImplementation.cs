@@ -10,6 +10,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -32,11 +33,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             }
             
             // Preparing data for LoadFile and placing it in the right location
-            string testData = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
+            LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
             string destinationPath = await LoadFilesGenerator.GetFilesharePathAsync(_testsImplementationTestFixture.Workspace.ArtifactID);
             destinationPath = Path.Combine(destinationPath, "DataTransfer\\Import");
 
-            await LoadFilesGenerator.UploadDirectoryAsync(testData, destinationPath).ConfigureAwait(false);
+            await LoadFilesGenerator.UploadDirectoryAsync(destinationPath).ConfigureAwait(false);
         }
 
         private void SetDevelopmentModeToTrue()
@@ -79,11 +80,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
             var importFromLoadFileConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLoadFile(integrationPointEditPage, integrationPointName);
+            importFromLoadFileConnectToSourcePage.WorkspaceDestinationFolder.Click().SetItem($"{_testsImplementationTestFixture.Workspace.Name}");
+            importFromLoadFileConnectToSourcePage.ImportSource.Click().SetItem("NativesLoadFile.dat");
+            importFromLoadFileConnectToSourcePage.Column.Set("| (ASCII:124)");
+            importFromLoadFileConnectToSourcePage.Quote.Set("^ (ASCII:094)");
+            var importFromLoadFileMapFieldsPage = importFromLoadFileConnectToSourcePage.Next.ClickAndGo();
+
+            importFromLoadFileMapFieldsPage.MapAllFields.Click();
+            importFromLoadFileMapFieldsPage.ApplyModel(new ImportLoadFileMapFields());
+            importFromLoadFileMapFieldsPage.NativeFilePath.Set("FILE_PATH");
+            importFromLoadFileMapFieldsPage.FolderPathInformation.Set("Folder_Path");
+
+            var integrationPointViewPage = importFromLoadFileMapFieldsPage.Save.ClickAndGo();
+
+            integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
 
             // Assert
+            int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+            int workspaceEntityCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
+            transferredItemsCount.Should().Be(workspaceEntityCount).And.Be(9);
         }
-
-        // methods to fill pages will go here 
 
         private static ImportFromLoadFileConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLoadFile(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
         {
@@ -95,19 +111,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             };
 
             return integrationPointEditPage.ApplyModel(integrationPointEdit).ImportFromLoadFileNext.ClickAndGo();
-        }
-
-        private static ImportFromLoadFileMapFieldsPage FillOutImportFromLoadFileConnectToSourcePage(ImportFromLoadFileConnectToSourcePage importFromLoadFileConnectToSourcePage)
-        {
-            return importFromLoadFileConnectToSourcePage
-               .ApplyModel(new ImportFromLoadFileConnectToSource
-               {
-                   ImportType = IntegrationPointImportTypes.DocumentLoadFile,
-                   ImportSource = @"DataTransfer\Import\NativesLoadFile.dat",
-                   WorkspaceDestinationFolder = "Sample Workspace",
-                   Column = "| (ASCII:124)",
-                   Quote = "^ (ASCII:094)"
-               }).Next.ClickAndGo();
         }
     }
 }
