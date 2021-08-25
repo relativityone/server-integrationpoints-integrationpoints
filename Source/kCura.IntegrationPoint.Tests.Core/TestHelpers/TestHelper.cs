@@ -109,10 +109,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return new WinEDDS.Service.SearchManager(credentials, new CookieContainer());
 		}
 
-		public ITestHelper CreateHelperForUser(string userName, string password) =>
-			new TestHelper(userName, password);
-
-		public void Dispose()
+        public void Dispose()
 		{
 			// empty by design
 		}

@@ -1,27 +1,21 @@
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
-using kCura.IntegrationPoint.Tests.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using Castle.MicroKernel.Resolvers;
 using kCura.IntegrationPoint.Tests.Core.Constants;
@@ -35,9 +29,6 @@ using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Agent;
-using Relativity.Services.Objects;
-using MassCreateResult = Relativity.Services.Objects.DataContracts.MassCreateResult;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -202,172 +193,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
 			return newModel;
 		}
-
-		protected IntegrationPointModel RefreshIntegrationModel(IntegrationPointModel model)
-		{
-			IntegrationPoints.Data.IntegrationPoint ip = IntegrationPointRepository.ReadWithFieldMappingAsync(model.ArtifactID)
-				.GetAwaiter().GetResult();
-			return IntegrationPointModel.FromIntegrationPoint(ip);
-		}
-
-		protected void AssignJobToAgent(int agentId, long jobId)
-		{
-			string query = $"Update [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}] SET [LockedByAgentID] = @agentId,  [NextRunTime] = GETUTCDATE() - 1 Where JobId = @JobId";
-
-			SqlParameter agentIdParam = new SqlParameter("@agentId", SqlDbType.Int) { Value = agentId };
-			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.BigInt) { Value = jobId };
-
-			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new[] { agentIdParam, jobIdParam });
-		}
-
-		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance, ChoiceRef jobTypeChoice, ChoiceRef jobStatusChoice = null, bool jobEnded = false)
-		{
-			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			IntegrationPoints.Data.IntegrationPoint integrationPoint =
-				IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
-			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, jobTypeChoice, DateTime.Now);
-
-			if (jobEnded)
-			{
-				jobHistory.EndTimeUTC = DateTime.Now;
-			}
-
-			if (jobStatusChoice != null)
-			{
-				jobHistory.JobStatus = jobStatusChoice;
-			}
-
-			if (jobEnded || jobStatusChoice != null)
-			{
-				jobHistoryService.UpdateRdo(jobHistory);
-			}
-
-			return jobHistory;
-		}
-
-		protected List<int> CreateJobHistoryErrors(int jobHistoryArtifactId, ChoiceRef errorStatus, ChoiceRef errorType, IEnumerable<string> sourceUniqueIds)
-		{
-			List<List<object>> values = sourceUniqueIds.Select(sourceUniqueId => new List<object>()
-			{
-				"Inserted Error for testing.",
-				new global::Relativity.Services.Objects.DataContracts.ChoiceRef(){Guid = errorStatus.Guids.SingleOrDefault()},
-				new global::Relativity.Services.Objects.DataContracts.ChoiceRef(){Guid = errorType.Guids.SingleOrDefault()},
-				Guid.NewGuid().ToString(),
-				sourceUniqueId,
-				"Error created from JobHistoryErrorsBatchingTests",
-				DateTime.Now
-			}).ToList();
-
-			var massCreateRequest = new MassCreateRequest()
-			{
-				ObjectType = new ObjectTypeRef()
-				{
-					Guid = ObjectTypeGuids.JobHistoryErrorGuid
-				},
-				ParentObject = new RelativityObjectRef()
-				{
-					ArtifactID = jobHistoryArtifactId
-				},
-				Fields = new[]
-				{
-					new FieldRef { Guid = JobHistoryErrorFieldGuids.ErrorGuid },
-					new FieldRef { Guid = JobHistoryErrorFieldGuids.ErrorStatusGuid },
-					new FieldRef { Guid = JobHistoryErrorFieldGuids.ErrorTypeGuid },
-					new FieldRef { Guid = JobHistoryErrorFieldGuids.NameGuid },
-					new FieldRef { Guid = JobHistoryErrorFieldGuids.SourceUniqueIDGuid },
-					new FieldRef { Guid = JobHistoryErrorFieldGuids.StackTraceGuid },
-					new FieldRef { Guid = JobHistoryErrorFieldGuids.TimestampUTCGuid }
-				},
-				ValueLists = values
-			};
-
-			using (IObjectManager objectManager = Helper.CreateProxy<IObjectManager>())
-			{
-				MassCreateResult massCreateResult = objectManager.CreateAsync(CaseContext.WorkspaceID, massCreateRequest).GetAwaiter().GetResult();
-
-				if (!massCreateResult.Success)
-				{
-					throw new Exception($"Mass create of job history errors failed: {massCreateResult.Message}");
-				}
-
-				return massCreateResult.Objects.Select(x => x.ArtifactID).ToList();
-			}
-		}
-
-		protected int GetLastScheduledJobId(int workspaceArtifactTypeId, int ripId)
-		{
-			const string query =
-				"Select Top 1 JobId From [eddsdbo].[ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]" +
-				" Where [WorkspaceID] = @WorkspaceId AND [RelatedObjectArtifactID] = @RipId AND [ScheduleRuleType] IS NOT NULL Order By JobId DESC";
-
-			SqlParameter workspaceId = new SqlParameter("@WorkspaceId", SqlDbType.Int) { Value = workspaceArtifactTypeId };
-			SqlParameter integrationPointId = new SqlParameter("@RipId", SqlDbType.Int) { Value = ripId };
-
-			return Helper.GetDBContext(-1).ExecuteSqlStatementAsScalar<int>(query, workspaceId, integrationPointId);
-		}
-
-		protected Job GetNextJobInScheduleQueue(int[] resourcePool, int integrationPointID, int workspaceID)
-		{
-			IJobService jobServiceManager = Container.Resolve<IJobService>();
-
-			var agentsIDsToUnlock = new List<int>();
-			Job job = null;
-			try
-			{
-				var stopWatch = new Stopwatch();
-				stopWatch.Start();
-				int currentAgentID = 0;
-				const int jobPickingUpTimeoutInSec = 30;
-				do
-				{
-					job = jobServiceManager.GetNextQueueJob(resourcePool, currentAgentID);
-
-					if (job == null)
-					{
-						continue;
-					}
-					else
-					{
-						Console.WriteLine($"Job to check: IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
-						if (job.RelatedObjectArtifactID == integrationPointID &&
-							job.WorkspaceID == workspaceID)
-						{
-							return job;
-						}
-						else
-						{
-							agentsIDsToUnlock.Add(currentAgentID);
-							Console.WriteLine("In the queue we have other jobs, that might means that in other tests something is not working correctly");
-							Console.WriteLine($"Job which is wrong, IP: {integrationPointID}, workspaceID: {workspaceID}, jobIP: {job.RelatedObjectArtifactID}, jobWorkspaceID: {job.WorkspaceID}");
-						}
-						currentAgentID++;
-					}
-				} while (job == null && stopWatch.Elapsed < TimeSpan.FromSeconds(jobPickingUpTimeoutInSec));
-				stopWatch.Stop();
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-			}
-			finally
-			{
-				UnlockJobs(jobServiceManager, agentsIDsToUnlock);
-			}
-
-			string exceptionMessage = job == null
-				? "Unable to find the job. Please check the integration point agent and make sure that it is turned off."
-				: "Timeout during search the job.";
-			throw new TestException(exceptionMessage);
-		}
-
-		private void UnlockJobs(IJobService jobServiceManager, IList<int> agentsIDsToUnlock)
-		{
-			foreach (var agentIdToUnlock in agentsIDsToUnlock)
-			{
-				jobServiceManager.UnlockJobs(agentIdToUnlock);
-			}
-		}
-
+        
 		private IEnumerable<SourceProvider> GetSourceProviders()
 		{
 			var queryRequest = new QueryRequest();

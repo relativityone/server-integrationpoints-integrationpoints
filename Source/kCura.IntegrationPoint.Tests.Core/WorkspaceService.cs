@@ -10,8 +10,6 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.Productions.Services;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -104,20 +102,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public async Task DeleteProductionAsync(int workspaceID, int productionID)
-		{
-			using (var objectManager = _testHelper.CreateProxy<IObjectManager>())
-			{
-				await objectManager.DeleteAsync(workspaceID, new DeleteRequest()
-				{
-					Object = new RelativityObjectRef()
-					{
-						ArtifactID = productionID
-					}
-				}).ConfigureAwait(false);
-			}
-		}
-
 		public int CreateSavedSearch(FieldEntry[] fieldEntries, int workspaceID, string savedSearchName)
 		{
 			List<FieldRef> fields = fieldEntries
@@ -125,12 +109,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				.ToList();
 
 			return CreateSavedSearch(fields, workspaceID, savedSearchName);
-		}
-
-		public int CreateSavedSearch(IEnumerable<string> fields, int workspaceID, string savedSearchName)
-		{
-			return CreateSavedSearch(fields.Select(displayName => new FieldRef(displayName)).ToList(), workspaceID,
-				savedSearchName);
 		}
 
 		private int CreateSavedSearch(List<FieldRef> fields, int workspaceID, string savedSearchName)

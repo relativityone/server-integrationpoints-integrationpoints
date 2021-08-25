@@ -16,20 +16,13 @@
 			public const string FOLDER_NAME = "Folder Name";
             public const string ARTIFACT_ID = "Artifact ID";
 			public const string PARENT_ARTIFACT_ID = "Parent Artifact ID";
-			public const string PRODUCTION_BEGIN_BATES = "Production::Begin Bates";
-			public const string PRODUCTION_END_BATES = "Production::End Bates";
 			public const string DOCUMENT_EXTENSION = "Document Extension";
 			public const string FILE_NAME = "File Name";
 			public const string NATIVE_FILE = "Native File";
 			public const string BATES_BEG = "Bates Beg";
 			public const string FILE = "File";
 			public const string FOLDER_PATH = "Folder Path";
-			public const string EMBEDDED_DATA_INFO = "Embedded Data Info";
-			public const string EMAIL_FROM = "Email From";
-			public const string SAMPLE_INDICATOR = "Sample Indicator";
-			public const string DATE_SENT = "Date Sent";
-			public const string DATE_RECEIVED = "Date Received";
-		}
+        }
 
 		public static class FieldTypeNames
 		{

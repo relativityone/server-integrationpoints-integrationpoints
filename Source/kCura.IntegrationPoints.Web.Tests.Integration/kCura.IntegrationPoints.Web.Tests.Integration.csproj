@@ -45,7 +45,6 @@
     </Compile>
     <Compile Include="Context\UserContextIntegrationTests.cs" />
     <Compile Include="Context\WorkspaceContextIntegrationTests.cs" />
-    <Compile Include="Helpers\ContainerInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

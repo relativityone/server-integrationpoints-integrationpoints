@@ -53,7 +53,6 @@
     <Compile Include="SendEmailWorkerTests.cs" />
     <Compile Include="TestHelpers\FakeSmtpServer.cs" />
     <Compile Include="TestHelpers\FakeSmtpMessage.cs" />
-    <Compile Include="TestingAgent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
