@@ -44,9 +44,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 
 		public static string GetOrCreateNativesDatLoadFile()
 		{
-			string v1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
-			string v2 = NATIVES_DAT_LOAD_FILE_PATH;
-
 			if (File.Exists(NATIVES_DAT_LOAD_FILE_PATH))
 			{
 				Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
