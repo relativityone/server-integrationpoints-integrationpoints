@@ -42,13 +42,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 			return NATIVES_LOAD_FILE_PATH;
 		}
 
-		public static void GetOrCreateNativesDatLoadFile()
+		public static string GetOrCreateNativesDatLoadFile()
 		{
-			string test = AppDomain.CurrentDomain.BaseDirectory;
+			string v1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
+			string v2 = NATIVES_DAT_LOAD_FILE_PATH;
 
 			if (File.Exists(NATIVES_DAT_LOAD_FILE_PATH))
 			{
-				return;
+				Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 			}
 
 			using (FileStream nativesLoadFileStream = new FileStream(NATIVES_DAT_LOAD_FILE_PATH, FileMode.Create))
@@ -63,13 +64,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 					}
 				}
 			}
+
+			return Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 		}
 
-		public static async Task UploadDirectoryAsync(string destinationPath)
+		public static async Task UploadDirectoryAsync(string testDataPath, string destinationPath)
         {
 			string zippedDirectory = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.zip");
-			string testData = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
-			ZipFile.CreateFromDirectory(testData, zippedDirectory);
+			ZipFile.CreateFromDirectory(testDataPath, zippedDirectory);
 
 			using (var fileShareManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IFileshareManager>())
 			using (var fileManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IFileManager>())

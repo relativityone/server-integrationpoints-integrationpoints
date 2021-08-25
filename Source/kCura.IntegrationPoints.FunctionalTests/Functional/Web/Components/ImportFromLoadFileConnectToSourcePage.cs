@@ -53,17 +53,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public _ SetItem(params string[] itemNames)
 		{
 			var item = TreeItems[0].GetScope();
-			string ierarhy = string.Empty;
+			string hierarhy = string.Empty;
 
 			foreach (var itemName in itemNames)
 			{
-				string xpath = $"{ierarhy}//li[@role='treeitem']/a[.='{itemName}']";
-				ierarhy = $"{xpath}/..";
+				string xpath = $"{hierarhy}//li[@role='treeitem']/a[.='{itemName}']";
+				hierarhy = $"{xpath}/..";
 
 				var textItem = item.FindElement(By.XPath(xpath));
 				textItem.Click();
 				Thread.Sleep(1000);
-				item = Driver.FindElement(By.XPath(ierarhy));
+				item = Driver.FindElement(By.XPath(hierarhy));
 			}
 
 			return Owner;
@@ -74,9 +74,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public class TreeItemControl<TPage> : Control<TPage>
 			where TPage : PageObject<TPage>
 		{
-			[FindByClass("jstree-icon")]
-			private Clickable<TPage> TreeIcon { get; set; }
-
 			[FindByXPath("a")]
 			public Text<TPage> Text { get; private set; }
 

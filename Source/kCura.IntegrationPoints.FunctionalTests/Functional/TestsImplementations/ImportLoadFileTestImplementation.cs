@@ -33,28 +33,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             }
             
             // Preparing data for LoadFile and placing it in the right location
-            LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
+            string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
             string destinationPath = await LoadFilesGenerator.GetFilesharePathAsync(_testsImplementationTestFixture.Workspace.ArtifactID);
             destinationPath = Path.Combine(destinationPath, "DataTransfer\\Import");
 
-            await LoadFilesGenerator.UploadDirectoryAsync(destinationPath).ConfigureAwait(false);
+            await LoadFilesGenerator.UploadDirectoryAsync(testDataPath, destinationPath).ConfigureAwait(false);
         }
 
         private void SetDevelopmentModeToTrue()
         {
-            IInstanceSettingsService instanceSettingsService = RelativityFacade.Instance.Resolve<IInstanceSettingsService>();
-
-            var developmentModeSetting = instanceSettingsService.Get("DevelopmentMode", "kCura.ARM");
-            if (developmentModeSetting == null)
-            {
-                instanceSettingsService.Create(new Testing.Framework.Models.InstanceSetting
-                {
-                    Name = "DevelopmentMode",
-                    Section = "kCura.ARM",
-                    Value = "True",
-                    ValueType = InstanceSettingValueType.TrueFalse
-                });
-            }
+            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+                .Require(new Testing.Framework.Models.InstanceSetting
+                    {
+                        Name = "DevelopmentMode",
+                        Section = "kCura.ARM",
+                        Value = "True",
+                        ValueType = InstanceSettingValueType.TrueFalse
+                    });
         }
 
         private static void InstallARMTestServicesToWorkspace()

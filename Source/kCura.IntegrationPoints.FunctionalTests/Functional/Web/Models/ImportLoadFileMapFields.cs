@@ -3,7 +3,6 @@
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 {
 	internal class ImportLoadFileMapFields
-
 	{
 		public RelativityProviderOverwrite Overwrite { get; set; }
 
