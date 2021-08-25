@@ -19,6 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 
 		private static readonly string NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
 		private static readonly string NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
+		private static readonly string NATIVES_DAT_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 
 		public static string GetOrCreateNativesLoadFile()
 		{
@@ -46,7 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 		{
 			if (File.Exists(NATIVES_DAT_LOAD_FILE_PATH))
 			{
-				Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
+				return NATIVES_DAT_LOAD_FILE_FOLDER_PATH;
 			}
 
 			using (FileStream nativesLoadFileStream = new FileStream(NATIVES_DAT_LOAD_FILE_PATH, FileMode.Create))
@@ -62,7 +63,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 				}
 			}
 
-			return Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
+			return NATIVES_DAT_LOAD_FILE_FOLDER_PATH;
 		}
 
 		public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)

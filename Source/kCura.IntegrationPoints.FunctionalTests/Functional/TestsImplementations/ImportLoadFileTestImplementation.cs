@@ -52,7 +52,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private static void InstallARMTestServicesToWorkspace()
         {
-            string rapFileLocation = Path.Combine(TestContext.Parameters["BuildToolsDirectory"], "ARMTestServices.RAP\\lib\\ARMTestServices.rap");
+            string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
 
             RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
                 .InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
