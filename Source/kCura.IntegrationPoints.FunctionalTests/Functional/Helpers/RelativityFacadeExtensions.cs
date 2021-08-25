@@ -145,6 +145,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 				Name = name,
 				ResourcePool = resourcePool,
 				TemplateWorkspace = templateWorkspace,
+				DefaultCacheLocation = resourcePool.CacheLocationServers.FirstOrDefault(),
 				WorkspaceAdminGroup = group
 			};
 		}

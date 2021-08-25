@@ -93,10 +93,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             var integrationPointViewPage = importFromLoadFileMapFieldsPage.Save.ClickAndGo();
 
-            integrationPointViewPage = IntegrationPointViewPage.RunIntegrationPoint(integrationPointViewPage, integrationPointName);
+            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
             // Assert
-            int transferredItemsCount = IntegrationPointViewPage.GetTransferredItemsCount(integrationPointViewPage, integrationPointName);
+            int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
             int workspaceEntityCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
             transferredItemsCount.Should().Be(workspaceEntityCount).And.Be(9);
         }

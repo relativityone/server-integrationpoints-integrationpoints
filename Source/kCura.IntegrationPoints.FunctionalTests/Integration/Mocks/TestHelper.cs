@@ -10,7 +10,7 @@ using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class TestHelper : IHelper, IAgentHelper, ICPHelper
+	public class TestHelper : IServiceHelper, IAgentHelper, ICPHelper
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
 
@@ -59,8 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			SecretStore.Clear();
 		}
-
-		#region Not Implemented
+        #region Not Implemented
 
 		public IDBContext GetDBContext(int caseID)
 		{

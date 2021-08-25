@@ -26,7 +26,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [FindByTitle("sn")]
         public Option<string, _> Sn { get; private set; }
 
-
         [FindById("workspace-fields")]
         public Select<_> Destination { get; private set; }
 

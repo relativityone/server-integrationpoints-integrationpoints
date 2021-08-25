@@ -1,5 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Metrics;
@@ -21,6 +23,10 @@ namespace kCura.IntegrationPoints.Web.Installers
 				Component
 					.For<SummaryPageSelector>()
 					.LifestyleSingleton(),
+				Component
+					.For<IDocumentAccumulatedStatistics>()
+					.ImplementedBy<DocumentAccumulatedStatistics>()
+					.LifestyleTransient(),
 				Component
 					.For<IFieldsRepository>()
 					.ImplementedBy<FieldsRepository>()

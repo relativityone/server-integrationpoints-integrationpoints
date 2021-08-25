@@ -1,45 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
 	[TestFixture, Category("Unit")]
-	public class ImageFileSizeStatisticsTests : TestBase
+	public class ImageFileSizeStatisticsTests : ImageStatisticsTestBase
 	{
 		private const string _PRODUCTION_SQL = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
 		private const string _SQL_TEXT = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
-
-		private const int _WORKSPACE_ID = 218772;
-
-		private IAPILog _logger;
-		private IHelper _helper;
-		private IRelativityObjectManager _rdoRepository;
-
+		
 		private ImageFileSizeStatistics _instance;
 
 		public override void SetUp()
 		{
-			_logger = Substitute.For<IAPILog>();
-			_helper = Substitute.For<IHelper>();
-			_rdoRepository = Substitute.For<IRelativityObjectManager>();
-
-			var repositoryFactory = Substitute.For<IRelativityObjectManagerFactory>();
-			repositoryFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_rdoRepository);
+			base.SetUp();
 			_helper.GetLoggerFactory().GetLogger().ForContext<ImageFileSizeStatistics>().Returns(_logger);
-
-			_instance = new ImageFileSizeStatistics(_helper, repositoryFactory);
+			_instance = new ImageFileSizeStatistics(_helper, _repositoryFactory);
 		}
 
 		[Test]
@@ -59,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			};
 
 			var queryResult = MockQueryResult(artifactIds);
-			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,
@@ -87,7 +69,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			};
 
 			var queryResult = MockQueryResult(artifactIds);
-			_rdoRepository.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
+			_relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(queryResult);
 
 			_helper.GetDBContext(_WORKSPACE_ID).ExecuteSqlStatementAsScalar<long>(
 					_SQL_TEXT,

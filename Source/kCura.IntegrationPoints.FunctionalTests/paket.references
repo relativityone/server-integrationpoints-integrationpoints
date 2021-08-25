@@ -1,4 +1,6 @@
 ﻿ARMTestServices
+LanguageExt.Core
+
 group Tests
 	kCura
 	kCura.Agent
@@ -29,5 +31,4 @@ group Tests
 	Relativity.Testing.Framework.RingSetup
 	IntegrationPoints.MyFirstProvider
 	Relativity.Sync
-
 	
