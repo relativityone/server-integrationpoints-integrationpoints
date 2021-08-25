@@ -1,6 +1,5 @@
 ﻿using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
-using System.ComponentModel;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
