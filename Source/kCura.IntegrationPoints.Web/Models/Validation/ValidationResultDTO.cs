@@ -7,12 +7,19 @@ namespace kCura.IntegrationPoints.Web.Models.Validation
 	[DataContract]
 	public class ValidationResultDTO
 	{
-		public List<ValidationErrorDTO> Errors { get; }
+		[DataMember]
+		public List<ValidationErrorDTO> Errors { get; } = new List<ValidationErrorDTO>();
+
 		public bool IsValid => !Errors.Any();
+
+		public ValidationResultDTO()
+		{
+
+		}
 
 		public ValidationResultDTO(List<ValidationErrorDTO> errors)
 		{
-			Errors = errors;
+			Errors = errors ?? new List<ValidationErrorDTO>();
 		}
 	}
 }
