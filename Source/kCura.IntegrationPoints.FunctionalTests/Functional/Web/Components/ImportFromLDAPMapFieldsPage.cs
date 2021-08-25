@@ -18,6 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         public Select<_> Source { get; private set; }
 
         [FindByTitle("cn")]
+        [WaitFor]
         public Option<string, _> Cn { get; private set; }
 
         [FindByTitle("givenname")]
