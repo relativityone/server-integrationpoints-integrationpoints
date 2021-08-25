@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
@@ -17,7 +16,5 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		T CreateProxy<T>(string username) where T : IDisposable;
 
 		ISearchManager CreateSearchManager();
-
-		ITestHelper CreateHelperForUser(string userName, string password);
-	}
+    }
 }

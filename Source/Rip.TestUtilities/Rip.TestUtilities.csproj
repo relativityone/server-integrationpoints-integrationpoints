@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="FieldMappingBuilder.cs" />
     <Compile Include="IntegrationPointModelBuilder.cs" />
-    <Compile Include="LoadFileHelper.cs" />
     <Compile Include="SavedSearchHelper.cs" />
   </ItemGroup>
   <ItemGroup>

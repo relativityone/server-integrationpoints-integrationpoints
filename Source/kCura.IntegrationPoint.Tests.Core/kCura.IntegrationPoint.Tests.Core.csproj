@@ -87,7 +87,6 @@
     <Compile Include="FluentAssertions\ComponentModelExtensions.cs" />
     <Compile Include="FluentAssertions\EitherExtensions.cs" />
     <Compile Include="FluentAssertions\WindsorContainerExtensions.cs" />
-    <Compile Include="FolderService.cs" />
     <Compile Include="ImportHelper.cs" />
     <Compile Include="InstanceSetting.cs" />
     <Compile Include="IntegrationPointsCloneHelper.cs" />

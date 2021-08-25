@@ -47,46 +47,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			return !HasErrors;
 		}
-
-		public bool ImportMetadataFromFileWithExtractedTextInFile(
-			int workspaceArtifactId, 
-			DataTable dataTable)
-		{
-			Messages.Clear();
-			ErrorMessages.Clear();
-			
-			var importApi = 
-				new ImportAPI(
-					SharedVariables.RelativityUserName, 
-					SharedVariables.RelativityPassword,
-					SharedVariables.RelativityWebApiUrl);
-
-			ImportBulkArtifactJob importJob = importApi.NewObjectImportJob((int) ArtifactType.Document);
-
-			importJob.OnMessage += ImportJobOnMessage;
-			importJob.OnComplete += ImportJobOnComplete;
-			importJob.OnFatalException += ImportJobOnFatalException;
-
-			importJob.Settings.CaseArtifactId = workspaceArtifactId;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = true;
-			importJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
-
-			importJob.Settings.DisableNativeLocationValidation = null;
-			importJob.Settings.DisableNativeValidation = null;
-			importJob.Settings.CopyFilesToDocumentRepository = false;
-			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
-
-			importJob.Settings.DestinationFolderArtifactID = Workspace.GetRootFolderArtifactIDAsync(workspaceArtifactId).GetAwaiter().GetResult();
-			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID;
-			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
-
-			importJob.SourceData.SourceData = dataTable.CreateDataReader();
-
-			importJob.Execute();
-
-			return !HasErrors;
-		}
-
+		
 		public bool ImportToProductionSet(int workspaceID, int productionID, DataTable data)
 		{
 			Messages.Clear();
