@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -27,7 +25,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IIntegrationPointService _integrationPointService;
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
-		private ISavedSearchQueryRepository _savedSearchRepository;
 
 		private const int _ADMIN_USER_ID = 9;
 
@@ -43,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			Container.Resolve<IJobService>();
-			_savedSearchRepository = _repositoryFactory.GetSavedSearchQueryRepository(SourceWorkspaceArtifactID);
 
 			DocumentService.DeleteAllDocuments(SourceWorkspaceArtifactID);
 			DocumentService.DeleteAllDocuments(TargetWorkspaceArtifactID);
@@ -99,58 +95,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
 			Assert.AreEqual(JobTypeChoices.JobHistoryRun.Name, jobHistory.JobType.Name);
 		}
-
-		[IdentifiedTest("0b87716a-5712-41a1-ab79-c98b4a07461a")]
-		[Parallelizable(ParallelScope.None)]
-		public void RunJobWithFailingValidation_ExpectError_SaveJobHistory()
-		{
-			// Arrange
-			int temporarySavedSearchId = CreateTemporarySavedSearch();
-			IntegrationPointModel integrationModel = new IntegrationPointModel
-			{
-				Destination = CreateDestinationConfig(ImportOverwriteModeEnum.OverlayOnly),
-				DestinationProvider = RelativityDestinationProviderArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateSerializedSourceConfigWithCustomParameters(TargetWorkspaceArtifactID, temporarySavedSearchId, SourceWorkspaceArtifactID, SourceConfiguration.ExportType.SavedSearch),
-				LogErrors = true,
-				Name = $"RunJobWithFailingValidation_ExpectError_SaveJobHistory {DateTime.Now:yy-MM-dd HH-mm-ss}",
-				SelectedOverwrite = "Overlay Only",
-				Map = CreateDefaultFieldMap(),
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId,
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				}
-			};
-
-			IntegrationPointModel integrationPointModel = CreateOrUpdateIntegrationPoint(integrationModel);
-			DeleteSavedSearch(SourceWorkspaceArtifactID, temporarySavedSearchId);
-
-			// Act
-			Assert.Throws<IntegrationPointValidationException>(() => _integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactID, integrationPointModel.ArtifactID, _ADMIN_USER_ID));
-
-			// Assert
-			Data.IntegrationPoint ip = _integrationPointService.ReadIntegrationPoint(integrationPointModel.ArtifactID);
-			IList<Data.JobHistory> jobHistory = _jobHistoryService.GetJobHistory(ip.JobHistory);
-			Assert.NotNull(ip.JobHistory);
-			Assert.AreEqual(JobStatusChoices.JobHistoryValidationFailed.Name, jobHistory[0].JobStatus.Name);
-		}
-
-		#region "Helpers"
-
-		private void DeleteSavedSearch(int workspaceArtifactId, int savedSearchId)
-		{
-			SavedSearch.Delete(workspaceArtifactId, savedSearchId);
-			while (_savedSearchRepository.RetrieveSavedSearch(savedSearchId) != null)
-			{
-			}
-		}
-
-		private int CreateTemporarySavedSearch()
-		{
-			return SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactID, "NewSavedSearch");
-		}
-
-		#endregion
 	}
 }
