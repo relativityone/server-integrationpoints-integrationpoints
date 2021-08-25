@@ -6,9 +6,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 	{
 		public RelativityProviderOverwrite Overwrite { get; set; }
 
-		public RelativityProviderCopyNativeFiles CopyNativeFiles { get; } = RelativityProviderCopyNativeFiles.PhysicalFiles;
+		public RelativityProviderCopyNativeFiles CopyNativeFiles { get; set; }
 
-		public YesNo UseFolderPathInformation { get; } = YesNo.Yes;
+		public YesNo UseFolderPathInformation { get; set; } 
 
 		public string NativeFilePath { get; set; }
 

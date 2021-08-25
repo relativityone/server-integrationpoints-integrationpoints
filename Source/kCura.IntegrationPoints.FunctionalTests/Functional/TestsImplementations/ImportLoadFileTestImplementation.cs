@@ -11,6 +11,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Relativity.Testing.Framework.Web.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -34,10 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             
             // Preparing data for LoadFile and placing it in the right location
             string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
-            string destinationPath = await LoadFilesGenerator.GetFilesharePathAsync(_testsImplementationTestFixture.Workspace.ArtifactID);
-            destinationPath = Path.Combine(destinationPath, "DataTransfer\\Import");
-
-            await LoadFilesGenerator.UploadDirectoryAsync(testDataPath, destinationPath).ConfigureAwait(false);
+            await LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).ConfigureAwait(false);
         }
 
         private void SetDevelopmentModeToTrue()
@@ -82,7 +80,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             var importFromLoadFileMapFieldsPage = importFromLoadFileConnectToSourcePage.Next.ClickAndGo();
 
             importFromLoadFileMapFieldsPage.MapAllFields.Click();
-            importFromLoadFileMapFieldsPage.ApplyModel(new ImportLoadFileMapFields());
+            importFromLoadFileMapFieldsPage.ApplyModel(new ImportLoadFileMapFields
+            {
+                CopyNativeFiles = RelativityProviderCopyNativeFiles.PhysicalFiles,
+                UseFolderPathInformation = YesNo.Yes
+            });
             importFromLoadFileMapFieldsPage.NativeFilePath.Set("FILE_PATH");
             importFromLoadFileMapFieldsPage.FolderPathInformation.Set("Folder_Path");
 

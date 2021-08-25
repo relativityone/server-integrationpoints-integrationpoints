@@ -68,8 +68,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 			return Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 		}
 
-		public static async Task UploadDirectoryAsync(string testDataPath, string destinationPath)
+		public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)
         {
+			string destinationPath;
+			using (var proxy = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IWorkspaceManager>())
+			{
+				WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = workspaceId };
+
+				FileShareResourceServer server = await proxy.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
+
+				destinationPath = Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
+			}
+			destinationPath = Path.Combine(destinationPath, "DataTransfer\\Import");
+
 			string zippedDirectory = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.zip");
 			ZipFile.CreateFromDirectory(testDataPath, zippedDirectory);
 
@@ -88,17 +99,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
                 }
             }
 		}
-
-        public static async Task<string> GetFilesharePathAsync(int workspaceId)
-        {
-            using (var proxy = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IWorkspaceManager>())
-            {
-                WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = workspaceId };
-
-				FileShareResourceServer server = await proxy.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
-
-                return Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
-            }
-        }
     }
 }
