@@ -23,7 +23,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		}
 
 		[IdentifiedTest("09c54ba0-04d9-4f6e-9c46-0075612582fa")]
-		[Category("test")]
 		public void LoadFromLDAP_GoldFlow()
 		{
 			_testsImplementation.ImportFromLDAPGoldFlow();
