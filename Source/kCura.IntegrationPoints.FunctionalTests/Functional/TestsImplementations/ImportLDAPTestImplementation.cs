@@ -64,9 +64,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		{
 			IntegrationPointEdit integrationPointEdit = new IntegrationPointEditImport
 			{
+				Name = integrationPointName,
 				Source = IntegrationPointSources.LDAP,
 				TransferredObject = IntegrationPointTransferredObjects.Entity,
-				Name = integrationPointName
 			};
 
 			return integrationPointEditPage.ApplyModel(integrationPointEdit).ImportFromLDAPNext.ClickAndGo();

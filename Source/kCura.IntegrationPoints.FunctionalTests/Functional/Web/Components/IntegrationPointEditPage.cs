@@ -33,6 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public RadioButtonList<YesNo, _> PromoteList { get; private set; }
 
 		[FindByPrecedingDivContent]
+		//[WaitForElement(WaitBy.Id, "sourceProvider", Until.Visible)]
 		public Select2<IntegrationPointSources, _> Source { get; private set; }
 
 		[FindByPrecedingDivContent]
