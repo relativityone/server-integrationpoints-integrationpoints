@@ -78,6 +78,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
 			{
+				Logger.LogDebug("debug test property");
 				if (ToBeRemoved)
 				{
 					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
