@@ -14,7 +14,6 @@ nuget kCura.Agent ~> 17.1
 nuget kCura.EventHandler 15.1.0
 nuget Relativity.CustomPages ~> 13.1
 nuget Relativity.Data ~> 13.1
-nuget Relativity.DataExchange.Client.SDK 1.14.3
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0.1
 nuget Relativity.API 17.1
 nuget Relativity ~> 15.1
@@ -44,6 +43,10 @@ nuget Relativity.Telemetry.Services.Interface 3000.0.1
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.Vfs.IO 1.0.24
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre.6
+
+// Import API packages
+nuget Relativity.DataExchange.Client.SDK 1.14.3
+nuget DataTransfer.Legacy
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK

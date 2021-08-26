@@ -24,6 +24,7 @@ NUGET
     Castle.Windsor (3.3.0)
       Castle.Core (>= 3.3)
     CSharpGuidelineAnalyzer (1.0.3.0)
+    DataTransfer.Legacy (0.1.32)
     DotNetSeleniumExtras.PageObjects (3.11.0)
       Selenium.WebDriver (>= 3.10)
     DotNetSeleniumExtras.WaitHelpers (3.11.0)
