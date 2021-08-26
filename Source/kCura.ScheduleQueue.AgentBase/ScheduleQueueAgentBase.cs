@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -75,24 +76,26 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			if (ToBeRemoved)
+			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
 			{
-				Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
-				return;
+				if (ToBeRemoved)
+				{
+					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
+					return;
+				}
+				bool isPreExecuteSuccessful = PreExecute();
+				NotifyAgentTab(LogCategory.Debug, "Started.");
+
+				if (isPreExecuteSuccessful)
+				{
+					ProcessQueueJobs();
+					CleanupQueueJobs();
+				}
+
+				CompleteExecution();
+
+				DidWork = true;
 			}
-
-			bool isPreExecuteSuccessful = PreExecute();
-			NotifyAgentTab(LogCategory.Debug, "Started.");
-
-			if (isPreExecuteSuccessful)
-			{
-				ProcessQueueJobs();
-				CleanupQueueJobs();
-			}
-
-			CompleteExecution();
-
-			DidWork = true;
 		}
 		
 		private bool PreExecute()
