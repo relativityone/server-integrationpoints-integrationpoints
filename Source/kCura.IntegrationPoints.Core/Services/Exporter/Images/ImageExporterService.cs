@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.WinEDDS.Service.Export;
 using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -22,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 	public class ImageExporterService : ExporterServiceBase
 	{
 		private readonly ImportSettings _settings;
-		private readonly Func<ISearchManager> _searchManagerFunc;
 
 		public ImageExporterService(
 			IDocumentRepository documentRepository,
@@ -36,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			int startAt,
 			SourceConfiguration sourceConfiguration,
 			int searchArtifactId,
-			ImportSettings settings, Func<ISearchManager> searchManagerFunc)
+			ImportSettings settings)
 			: base(
 				documentRepository,
 				relativityObjectManager,
@@ -51,7 +49,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				searchArtifactId)
 		{
 			_settings = settings;
-			_searchManagerFunc = searchManagerFunc;
 		}
 
 		public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
@@ -75,70 +72,66 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
 			var imagesResult = new List<ArtifactDTO>();
 
-			using (ISearchManager searchManager = _searchManagerFunc())
+			IDictionary<int, List<ImageFile>> documentsWithImages = new Dictionary<int, List<ImageFile>>();
+			List<int> documentsWithoutImages = new List<int>(retrievedData.Keys);
+
+			if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
 			{
-				IDictionary<int, List<ImageFile>> documentsWithImages = new Dictionary<int, List<ImageFile>>();
-				List<int> documentsWithoutImages = new List<int>(retrievedData.Keys);
+				GetImagesForDocumentsInProduction(SourceConfiguration.SourceProductionId, documentsWithImages, documentsWithoutImages);
+			}
+			else
+			{
+				ExportSettings.ProductionPrecedenceType productionPrecedenceType = GetProductionPrecedenceType();
 
-				if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet)
+				if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
 				{
-					GetImagesForDocumentsInProduction(SourceConfiguration.SourceProductionId, documentsWithImages, documentsWithoutImages, searchManager);
-				}
-				else
-				{
-					ExportSettings.ProductionPrecedenceType productionPrecedenceType = GetProductionPrecedenceType();
+					Logger.LogInformation("Processing production precedences: {productionPrecedences}", string.Join(", ", _settings.ImagePrecedence.Select(x => x.ArtifactID)));
 
-					if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
+					int[] productionsArtifactIds = _settings.ImagePrecedence.Select(x => Convert.ToInt32(x.ArtifactID)).ToArray();
+
+					foreach (var productionsArtifactId in productionsArtifactIds)
 					{
-						Logger.LogInformation("Processing production precedences: {productionPrecedences}", string.Join(", ", _settings.ImagePrecedence.Select(x => x.ArtifactID)));
-
-						int[] productionsArtifactIds = _settings.ImagePrecedence.Select(x => Convert.ToInt32(x.ArtifactID)).ToArray();
-
-						foreach (var productionsArtifactId in productionsArtifactIds)
+						GetImagesForDocumentsInProduction(productionsArtifactId, documentsWithImages, documentsWithoutImages);
+						if (documentsWithoutImages.Count == 0)
 						{
-							GetImagesForDocumentsInProduction(productionsArtifactId, documentsWithImages, documentsWithoutImages, searchManager);
-							if (documentsWithoutImages.Count == 0)
-							{
-								break;
-							}
+							break;
 						}
 					}
-
-					if (_settings.IncludeOriginalImages || productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Original)
-					{
-						ILookup<int, ImageFile> originalImageLocationsForDocuments =
-							GetOriginalImages(documentsWithoutImages.ToArray(), searchManager);
-						
-						int documentsWithImagesCount = MarkDocumentsWithImages(documentsWithImages, originalImageLocationsForDocuments, documentsWithoutImages);
-						Logger.LogInformation("Found {documentsWithImagesCount} images in original images",
-							documentsWithImagesCount);
-						Logger.LogInformation("Documents found in original images: [{documentsIds}]",
-							string.Join(", ",
-								originalImageLocationsForDocuments.Where(x => x.Any()).Select(x => x.Key)));
-					}
 				}
 
-				if (documentsWithoutImages.Any())
+				if (_settings.IncludeOriginalImages || productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Original)
 				{
-					Logger.LogInformation("Did not find images for some documents: {documentsIds}",
-						string.Join(", ", documentsWithoutImages));
-				}
+					ILookup<int, ImageFile> originalImageLocationsForDocuments = GetOriginalImages(documentsWithoutImages.ToArray());
 
-				Logger.LogInformation("Creating DTOs for images");
-				imagesResult.AddRange(
-					documentsWithImages.SelectMany(doc =>
-						doc.Value.Select(imageFile => CreateImageArtifactDto(
-								fileLocation: imageFile.Location,
-								imageFilename: imageFile.Filename,
-								documentArtifactID: doc.Key,
-								documentIdentifier: GetDocumentIdentifier(retrievedData[doc.Key]),
-								fields: GetBaseFields(retrievedData[doc.Key].FieldValues).ToList(),
-								artifactType: (int)ArtifactType.Document
-							)
+					int documentsWithImagesCount = MarkDocumentsWithImages(documentsWithImages, originalImageLocationsForDocuments, documentsWithoutImages);
+					Logger.LogInformation("Found {documentsWithImagesCount} images in original images",
+						documentsWithImagesCount);
+					Logger.LogInformation("Documents found in original images: [{documentsIds}]",
+						string.Join(", ",
+							originalImageLocationsForDocuments.Where(x => x.Any()).Select(x => x.Key)));
+				}
+			}
+
+			if (documentsWithoutImages.Any())
+			{
+				Logger.LogInformation("Did not find images for some documents: {documentsIds}",
+					string.Join(", ", documentsWithoutImages));
+			}
+
+			Logger.LogInformation("Creating DTOs for images");
+			imagesResult.AddRange(
+				documentsWithImages.SelectMany(doc =>
+					doc.Value.Select(imageFile => CreateImageArtifactDto(
+							fileLocation: imageFile.Location,
+							imageFilename: imageFile.Filename,
+							documentArtifactID: doc.Key,
+							documentIdentifier: GetDocumentIdentifier(retrievedData[doc.Key]),
+							fields: GetBaseFields(retrievedData[doc.Key].FieldValues).ToList(),
+							artifactType: (int)ArtifactType.Document
 						)
 					)
-				);
-			}
+				)
+			);
 
 			RetrievedDataCount += retrievedData.Count;
 
@@ -155,14 +148,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			return documentSlim.FieldValues.Values.First().ToString();
 		}
 
-		private void GetImagesForDocumentsInProduction(int productionsArtifactId, IDictionary<int, List<ImageFile>> documentsWithImages, List<int> documentsWithoutImages, ISearchManager searchManager)
+		private void GetImagesForDocumentsInProduction(int productionsArtifactId, IDictionary<int, List<ImageFile>> documentsWithImages, List<int> documentsWithoutImages)
 		{
 			Logger.LogInformation("Getting images for production: {productionsArtifactId}", productionsArtifactId);
 
 			ILookup<int, ImageFile> imageLocationsForDocuments = GetImageLocationsForDocumentsFromProduction(
 				documentsWithoutImages.ToArray(),
-				productionsArtifactId,
-				searchManager);
+				productionsArtifactId);
 
 
 			int documentsWithImagesCount = MarkDocumentsWithImages(documentsWithImages, imageLocationsForDocuments, documentsWithoutImages);
@@ -207,25 +199,21 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			return i;
 		}
 
-		private ILookup<int, ImageFile> GetImageLocationsForDocumentsFromProduction(int[] documentArtifactIds, int productionsArtifactId, ISearchManager searchManager)
+		private ILookup<int, ImageFile> GetImageLocationsForDocumentsFromProduction(int[] documentArtifactIds, int productionsArtifactId)
 		{
 			return FileRepository
 				.GetImagesLocationForProductionDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
 					productionsArtifactId,
-					documentArtifactIds,
-					searchManager);
+					documentArtifactIds);
 		}
 
-		private ILookup<int, ImageFile> GetOriginalImages(
-			int[] documentArtifactIds,
-			ISearchManager searchManager)
+		private ILookup<int, ImageFile> GetOriginalImages(int[] documentArtifactIds)
 		{
 			ILookup<int, ImageFile> imagesDataView = FileRepository
 				.GetImagesLocationForDocuments(
 					SourceConfiguration.SourceWorkspaceArtifactId,
-					documentArtifactIds,
-					searchManager);
+					documentArtifactIds);
 
 			return imagesDataView;
 		}
@@ -261,7 +249,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				Name = IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME,
 				Value = imageFilename
 			};
-			
+
 			List<ArtifactFieldDTO> artifactFieldDtos = fields.ToList();
 			artifactFieldDtos.Add(fileLocationField);
 			artifactFieldDtos.Add(nativeFileNameField);

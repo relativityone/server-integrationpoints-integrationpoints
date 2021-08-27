@@ -46,7 +46,7 @@ nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre.6
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.14.3
-nuget DataTransfer.Legacy
+nuget Relativity.DataTransfer.Legacy.SDK
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
