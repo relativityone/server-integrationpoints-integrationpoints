@@ -76,27 +76,27 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			var stackOfDisposables = new StackOfDisposables();
-			IDisposable disposable = Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid());
-			stackOfDisposables.Push(disposable);
+			using (IDisposable disposable = Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
+            {
+				if (ToBeRemoved)
+				{
+					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
+					return;
+				}
+				bool isPreExecuteSuccessful = PreExecute();
 
-			if (ToBeRemoved)
-			{
-				Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
-				return;
+				NotifyAgentTab(LogCategory.Debug, "Started.");
+
+				if (isPreExecuteSuccessful)
+				{
+					ProcessQueueJobs();
+					CleanupQueueJobs();
+				}
+
+				CompleteExecution();
+
+				DidWork = true;
 			}
-			bool isPreExecuteSuccessful = PreExecute();
-			NotifyAgentTab(LogCategory.Debug, "Started.");
-
-			if (isPreExecuteSuccessful)
-			{
-				ProcessQueueJobs();
-				CleanupQueueJobs();
-			}
-
-			CompleteExecution();
-
-			DidWork = true;
 		}
 		
 		private bool PreExecute()
