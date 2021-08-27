@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -76,27 +77,29 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
+			var stackOfDisposables = new StackOfDisposables();
+			IDisposable disposable = Logger.LogContextPushProperty("AgentRunCorrelationId", "yeahitworks");
+			stackOfDisposables.Push(disposable);
+
+			Logger.LogInformation("debug test property");
+
+			if (ToBeRemoved)
 			{
-				Logger.LogDebug("debug test property");
-				if (ToBeRemoved)
-				{
-					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
-					return;
-				}
-				bool isPreExecuteSuccessful = PreExecute();
-				NotifyAgentTab(LogCategory.Debug, "Started.");
-
-				if (isPreExecuteSuccessful)
-				{
-					ProcessQueueJobs();
-					CleanupQueueJobs();
-				}
-
-				CompleteExecution();
-
-				DidWork = true;
+				Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
+				return;
 			}
+			bool isPreExecuteSuccessful = PreExecute();
+			NotifyAgentTab(LogCategory.Debug, "Started.");
+
+			if (isPreExecuteSuccessful)
+			{
+				ProcessQueueJobs();
+				CleanupQueueJobs();
+			}
+
+			CompleteExecution();
+
+			DidWork = true;
 		}
 		
 		private bool PreExecute()
