@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -78,10 +77,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		public sealed override void Execute()
 		{
 			var stackOfDisposables = new StackOfDisposables();
-			IDisposable disposable = Logger.LogContextPushProperty("AgentRunCorrelationId", "yeahitworks");
+			IDisposable disposable = Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid());
 			stackOfDisposables.Push(disposable);
-
-			Logger.LogInformation("debug test property");
 
 			if (ToBeRemoved)
 			{
