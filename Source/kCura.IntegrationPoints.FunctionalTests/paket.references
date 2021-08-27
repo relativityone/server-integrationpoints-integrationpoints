@@ -1,4 +1,5 @@
-﻿LanguageExt.Core
+﻿ARMTestServices
+LanguageExt.Core
 
 group Tests
 	kCura
