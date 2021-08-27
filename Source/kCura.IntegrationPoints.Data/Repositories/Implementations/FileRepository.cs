@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
-using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
@@ -54,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return Enumerable.Empty<int>().ToLookup(x => default(int), x => default(ImageFile));
 			}
 
-			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments));
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(operationName: nameof(ISearchService.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync));
 
 			ILookup<int, ImageFile> fileLocations = ToProducedImageFilesLookup(
 				_retryHandler.ExecuteWithRetries(
@@ -84,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return Enumerable.Empty<int>().ToLookup(x => default(int), x => default(ImageFile));
 			}
 
-			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(operationName: nameof(ISearchManager.RetrieveImagesForDocuments));
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(operationName: nameof(ISearchService.RetrieveImagesForSearchAsync));
 
 			ILookup<int, ImageFile> fileLocations = ToImageFilesLookup(
 				_retryHandler.ExecuteWithRetries(
@@ -116,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			string documentIDsString = string.Join(",", documentIDs.Select(x => x.ToString()));
 
-			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(operationName: nameof(ISearchManager.RetrieveNativesForSearch));
+			IExternalServiceSimpleInstrumentation instrumentation = CreateInstrumentation(operationName: nameof(ISearchService.RetrieveNativesForSearchAsync));
 
 			List<FileDto> files = ToFileDtoList(
 				_retryHandler.ExecuteWithRetries(
@@ -196,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			return _instrumentationProvider.CreateSimple(
 				ExternalServiceTypes.KEPLER,
-				nameof(ISearchManager),
+				nameof(ISearchService),
 				operationName
 			);
 		}

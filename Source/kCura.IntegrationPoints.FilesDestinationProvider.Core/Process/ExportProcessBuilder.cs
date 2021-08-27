@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportProcessBuilder : IExportProcessBuilder
 	{
+		private readonly IServicesMgr _servicesMgr;
 		private readonly IConfigFactory _configFactory;
 		private readonly IWebApiLoginService _credentialProvider;
 		private readonly IExtendedExporterFactory _extendedExporterFactory;
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IRepositoryFactory _repositoryFactory;
 
 		public ExportProcessBuilder(
+			IServicesMgr servicesMgr,
 			IConfigFactory configFactory, 
 			ICompositeLoggingMediator loggingMediator,
 			IUserMessageNotification userMessageNotification, 
@@ -58,6 +60,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IExportServiceFactory exportServiceFactory,
 			IRepositoryFactory repositoryFactory)
 		{
+			_servicesMgr = servicesMgr;
 			_configFactory = configFactory;
 			_loggingMediator = loggingMediator;
 			_userMessageNotification = userMessageNotification;
