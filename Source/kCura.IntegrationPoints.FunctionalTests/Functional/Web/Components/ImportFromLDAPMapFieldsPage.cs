@@ -18,6 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         public Select<_> Source { get; private set; }
 
         [FindByTitle("cn")]
+        [InvokeMethod(nameof(OnMapCn), TriggerEvents.BeforeClick)]
         public Option<string, _> Cn { get; private set; }
 
         [FindByTitle("givenname")]
@@ -37,5 +38,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         [FindByTitle("Last Name [Fixed-Length Text]")]
         public Option<string, _> LastName { get; private set; }
+
+        private void OnMapCn()
+        {
+            Cn.Should.Within(20).BeVisible();
+        }
     }
 }
