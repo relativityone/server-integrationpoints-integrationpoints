@@ -9,6 +9,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional
 
 		public static int DocumentImportTimeout => int.Parse(GetConfigValue("DocumentImportTimeout"));
 
+		public static int ExistingWorkspaceArtifactId => int.Parse(GetConfigValue("ExistingWorkspaceArtifactId"));
+
 		private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
 			? TestContext.Parameters[name]
 			: ConfigurationManager.AppSettings.Get(name);

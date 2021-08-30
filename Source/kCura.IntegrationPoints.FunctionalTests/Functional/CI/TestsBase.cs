@@ -16,6 +16,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 	{
 		private readonly string _workspaceName;
 
+		private readonly int _existingWorkspaceArtifactID = TestConfig.ExistingWorkspaceArtifactId;
+
 		public Workspace Workspace { get; private set; }
 
 		protected TestsBase(string workspaceName)
@@ -27,7 +29,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			base.OnSetUpFixture();
 
-			Workspace = RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
+			Workspace = _existingWorkspaceArtifactID != 0 
+				? RelativityFacade.Instance.GetExistingWorkspace(_existingWorkspaceArtifactID) 
+				: RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
 
 			RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
 		}
@@ -35,8 +39,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		protected override void OnTearDownFixture()
 		{
 			base.OnTearDownFixture();
-
-			RelativityFacade.Instance.DeleteWorkspace(Workspace);
+			if (_existingWorkspaceArtifactID == 0)
+			{
+				RelativityFacade.Instance.DeleteWorkspace(Workspace);
+			}
+			
 		}
 
 		public void LoginAsStandardUser()

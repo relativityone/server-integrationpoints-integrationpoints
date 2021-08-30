@@ -22,6 +22,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[Term("Next")]
 		public Button<ImportFromLDAPConnectToSourcePage, _> ImportFromLDAPNext { get; private set; }
 
+		[Term("Next")]
+		public Button<ExportToLoadFileConnectToSourcePage, _> ExportToLoadFileNext { get; private set; }
+
 		[FindById("name")]
 		public TextInput<_> Name { get; private set; }
 
