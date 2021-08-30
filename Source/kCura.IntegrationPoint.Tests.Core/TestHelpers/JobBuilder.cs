@@ -75,18 +75,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return this;
 		}
 
-		public JobBuilder WithLockedByAgentId(int id)
-		{
-			_jobData[_LOCKED_BY_AGENT_ID] = id;
-			return this;
-		}
-
-		public JobBuilder WithLockedByAgentId(object value)
-		{
-			_jobData[_LOCKED_BY_AGENT_ID] = value;
-			return this;
-		}
-
 		public JobBuilder WithStopState(StopState state)
 		{
 			_jobData[_STOP_STATE] = (int)state;

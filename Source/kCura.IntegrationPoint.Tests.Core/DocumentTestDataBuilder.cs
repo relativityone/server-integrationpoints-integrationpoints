@@ -68,34 +68,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return new DocumentsTestData(foldersWithDocuments, images);
 		}
 
-		public static DataTable GetSingleExtractedTextDocument(string controlNumber, string extractedTextFilePath)
-		{
-			var table = new DataTable();
-			table.Columns.Add(TestConstants.FieldNames.CONTROL_NUMBER, typeof(string));
-			table.Columns.Add(_WORKSPACE_EXTRACTED_TEXT, typeof(string));
-			table.Rows.Add(controlNumber, extractedTextFilePath);
-			return table;
-		}
-
-		public static string GenerateRandomExtractedText(int textSizeInBytes)
-		{
-			const int minCharCode = 1;
-			const int maxCharCode = 1000;
-			const int charsCount = maxCharCode - minCharCode + 1;
-			int numberOf2ByteCharsBatches = textSizeInBytes / 2 / charsCount;
-			int numberOfCharsLeft = (textSizeInBytes / 2) % charsCount;
-			IEnumerable<char> charsSet =
-				Enumerable
-					.Range(minCharCode, maxCharCode)
-					.Select(n => (char) n);
-			IEnumerable<char> extractedTextChars =
-				Enumerable
-					.Repeat(charsSet, numberOf2ByteCharsBatches)
-					.SelectMany(x => x)
-					.Concat(charsSet.Take(numberOfCharsLeft));
-			return string.Join("", extractedTextChars);
-		}
-
 		#region Documents
 		private static DataTable CreateDataTableForDocuments()
 		{

@@ -2,6 +2,7 @@
 using Moq;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Error;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
@@ -10,7 +11,7 @@ using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class TestHelper : IHelper, IAgentHelper, ICPHelper
+	public class TestHelper : IServiceHelper, IAgentHelper, ICPHelper
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
 
@@ -28,6 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(proxy.InstanceSettingManager.Object);
 			RegisterProxyInServiceManagerMock<IGroupManager>(proxy.GroupManager.Object);
 			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(proxy.ArtifactGuidManager.Object);
+			RegisterProxyInServiceManagerMock<IErrorManager>(proxy.ErrorManager.Object);
 		}
 
 		private void RegisterProxyInServiceManagerMock<T>(T proxy) 
@@ -59,8 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			SecretStore.Clear();
 		}
-
-		#region Not Implemented
+        #region Not Implemented
 
 		public IDBContext GetDBContext(int caseID)
 		{

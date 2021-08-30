@@ -185,13 +185,16 @@
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="SerializerWithLogging.cs" />
+    <Compile Include="Statistics\DocumentsStatistics.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\DocumentAccumulatedStatistics.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IImageTotalStatistics.cs" />
     <Compile Include="Statistics\IImageFileSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\ErrorFilesSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\ImageFileSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\ImageStatisticsBase.cs" />
     <Compile Include="Statistics\Implementations\ImageTotalStatistics.cs" />
     <Compile Include="Statistics\INativeFileSizeStatistics.cs" />
     <Compile Include="Statistics\INativeTotalStatistics.cs" />
@@ -255,6 +258,7 @@
     <Compile Include="Extensions\ChoiceExtensions.cs" />
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
+    <Compile Include="Statistics\IDocumentAccumulatedStatistics.cs" />
     <Compile Include="StreamWrappers\AsciiToUnicodeStream.cs" />
     <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
     <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />

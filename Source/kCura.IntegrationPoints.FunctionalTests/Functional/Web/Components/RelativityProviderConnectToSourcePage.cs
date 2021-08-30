@@ -5,6 +5,7 @@ using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Controls;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -71,20 +72,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 			}
 
 			return Owner;
-		}
-
-		[ControlDefinition("li[@role='treeitem']")]
-		[WaitUntilOverlayMissing(TriggerEvents.BeforeClick, AppliesTo = TriggerScope.Children)]
-		public class TreeItemControl<TPage> : Control<TPage>
-			where TPage : PageObject<TPage>
-		{
-			[FindByClass("jstree-icon")]
-			private Clickable<TPage> TreeIcon { get; set; }
-
-			[FindByXPath("a")]
-			public Text<TPage> Text { get; private set; }
-
-			public UnorderedList<TreeItemControl<TPage>, TPage> Children { get; private set; }
 		}
 	}
 }

@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Constants;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -105,38 +103,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 			};
 			return map;
-		}
-
-		protected IntegrationPointModel CreateDefaultLdapIntegrationModel(string name,
-			Scheduler scheduler = null,
-			ImportOverwriteModeEnum overwrite = ImportOverwriteModeEnum.AppendOnly)
-		{
-			IntegrationPointModel model = new IntegrationPointModel()
-			{
-				SourceProvider = LdapProvider.ArtifactId,
-				Name = name,
-				DestinationProvider = RelativityDestinationProviderArtifactId,
-				SourceConfiguration = CreateDefaultLdapSourceConfig(),
-				Destination = CreateDefaultLdapDestinationConfig((int)ArtifactType.Document, overwrite),
-				Map = CreateDefaultLdapFieldMap(),
-				Scheduler = scheduler ?? new Scheduler { EnableScheduler = false },
-				Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).ArtifactId
-			};
-
-			switch (overwrite)
-			{
-				case ImportOverwriteModeEnum.AppendOnly:
-					model.SelectedOverwrite = "Append Only";
-					break;
-				case ImportOverwriteModeEnum.AppendOverlay:
-					model.SelectedOverwrite = "Append/Overlay";
-					break;
-				case ImportOverwriteModeEnum.OverlayOnly:
-					model.SelectedOverwrite = "Overlay Only";
-					break;
-			}
-
-			return model;
 		}
 
 		#endregion Helper Methods

@@ -6,7 +6,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 	{
 		[Term("Physical files")]
 		PhysicalFiles,
+		[Term("Links Only")]
 		LinksOnly,
+		[Term("No")]
 		No
 	}
 }

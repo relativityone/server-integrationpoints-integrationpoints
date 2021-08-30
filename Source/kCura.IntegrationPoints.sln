@@ -104,11 +104,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Age
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Tests.Integration", "kcura.IntegrationPoints.Core.Tests.Integration\kCura.IntegrationPoints.Core.Tests.Integration.csproj", "{8DB72A8A-8638-469E-A2AA-992A728637F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration", "kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration\kCura.IntegrationPoints.DocumentTransferProvider.Tests.Integration.csproj", "{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.EventHandlers.Tests.Integration", "kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj", "{F983176A-DE11-4328-AEDA-81630DD0D587}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration", "kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration.csproj", "{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web.Tests.Integration", "kCura.IntegrationPoints.Web.Tests.Integration\kCura.IntegrationPoints.Web.Tests.Integration.csproj", "{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}"
 EndProject
@@ -121,8 +117,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Services.Tests.Integration", "Relativity.IntegrationPoints.Services.Tests.Integration\Relativity.IntegrationPoints.Services.Tests.Integration.csproj", "{11643FBD-9006-4CEE-83DB-AEB9517C008E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Tests.Integration", "kCura.IntegrationPoints.ImportProvider.Tests.Integration\kCura.IntegrationPoints.ImportProvider.Tests.Integration.csproj", "{42F2E23D-2412-4A1B-897E-6C931BD09B29}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.UITests", "kCura.IntegrationPoints.UITests\kCura.IntegrationPoints.UITests.csproj", "{44849C37-810B-43E8-972B-12D3D0D87A7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDAPProvider.Tests", "kCura.IntegrationPoints.LDAPProvider.Tests\kCura.IntegrationPoints.LDAPProvider.Tests.csproj", "{2034058F-F57F-411A-9699-87BBD72F1598}"
 EndProject
@@ -322,18 +316,10 @@ Global
 		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DB72A8A-8638-469E-A2AA-992A728637F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F983176A-DE11-4328-AEDA-81630DD0D587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F983176A-DE11-4328-AEDA-81630DD0D587}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F983176A-DE11-4328-AEDA-81630DD0D587}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F983176A-DE11-4328-AEDA-81630DD0D587}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -358,10 +344,6 @@ Global
 		{42F2E23D-2412-4A1B-897E-6C931BD09B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42F2E23D-2412-4A1B-897E-6C931BD09B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42F2E23D-2412-4A1B-897E-6C931BD09B29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44849C37-810B-43E8-972B-12D3D0D87A7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44849C37-810B-43E8-972B-12D3D0D87A7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44849C37-810B-43E8-972B-12D3D0D87A7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44849C37-810B-43E8-972B-12D3D0D87A7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2034058F-F57F-411A-9699-87BBD72F1598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2034058F-F57F-411A-9699-87BBD72F1598}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2034058F-F57F-411A-9699-87BBD72F1598}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -450,16 +432,13 @@ Global
 		{5E44277B-5C51-4367-874B-EFA44EB2B956} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{46495BAE-3C99-40F2-A10B-9B954D6D6F74} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{8DB72A8A-8638-469E-A2AA-992A728637F1} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
-		{5DF1D698-B8C0-4BE6-BD9B-182AF56B765C} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{F983176A-DE11-4328-AEDA-81630DD0D587} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
-		{71AFF6C3-F4F9-4FAC-B08B-5FC7F32D5AFB} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{40E8E19A-0006-4087-B0D4-B3F826AC5BE0} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{B8C13A63-EFC0-49F9-9691-E1C8A85DB150} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{F556FF4E-5F7D-46D6-A343-A21ED5169F44} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{11643FBD-9006-4CEE-83DB-AEB9517C008E} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
 		{42F2E23D-2412-4A1B-897E-6C931BD09B29} = {5E44277B-5C51-4367-874B-EFA44EB2B956}
-		{44849C37-810B-43E8-972B-12D3D0D87A7F} = {87231674-824E-4158-B69B-33578B87E40E}
 		{2034058F-F57F-411A-9699-87BBD72F1598} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{4A7CFCBE-998F-4161-8072-3F5609BBD629} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}

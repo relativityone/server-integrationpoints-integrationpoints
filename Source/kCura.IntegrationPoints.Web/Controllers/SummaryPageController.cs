@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 
@@ -17,16 +18,19 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
 		private readonly SummaryPageSelector _summaryPageSelector;
+		private readonly IDocumentAccumulatedStatistics _documentAccumulatedStatistics;
 
 		public SummaryPageController(ICaseServiceContext context,
 			IProviderTypeService providerTypeService,
 			IIntegrationPointRepository integrationPointRepository,
-			SummaryPageSelector summaryPageSelector)
+			SummaryPageSelector summaryPageSelector,
+			IDocumentAccumulatedStatistics documentAccumulatedStatistics)
 		{
 			_context = context;
 			_providerTypeService = providerTypeService;
 			_integrationPointRepository = integrationPointRepository;
 			_summaryPageSelector = summaryPageSelector;
+			_documentAccumulatedStatistics = documentAccumulatedStatistics;
 		}
 
 		[HttpPost]
@@ -48,6 +52,27 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		public ActionResult SchedulerSummaryPage()
 		{
 			return PartialView("~/Views/IntegrationPoints/SchedulerSummaryPage.cshtml");
+		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
+		public ActionResult GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize)
+		{
+			return Json(_documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
+		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
+		public ActionResult GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize)
+		{
+			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
+		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
+		public ActionResult GetImagesStatisticsForProduction(int workspaceId, int productionId, bool calculateSize)
+		{
+			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId, calculateSize).GetAwaiter().GetResult());
 		}
 
 		private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)

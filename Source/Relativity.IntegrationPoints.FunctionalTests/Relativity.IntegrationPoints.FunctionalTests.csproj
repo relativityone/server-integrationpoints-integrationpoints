@@ -40,10 +40,8 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="FunctionalTestsSetupFixture.cs" />
-    <Compile Include="SyncFlowTests\ImagesCommaInNameSyncTest.cs" />
     <Compile Include="SystemTests\EventHandlers\IntegrationPointProfileMigrationEventHandlerTest.cs" />
     <Compile Include="SystemTests\IntegrationPointServices\IntegrationPointServiceTests.cs" />
-    <Compile Include="SystemTests\IntegrationPointServices\KeplerDocumentRepositoryTests.cs" />
     <Compile Include="SystemTests\JobHistory\JobHistoryManagerTests.cs" />
     <Compile Include="SystemTests\Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="SystemTests\SystemTestsSetupFixture.cs" />
@@ -120,6 +118,7 @@
       <Name>Rip.TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

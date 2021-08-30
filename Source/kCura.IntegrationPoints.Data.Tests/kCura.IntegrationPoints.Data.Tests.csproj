@@ -178,8 +178,10 @@
     <Compile Include="RetryHandlerFactoryTests.cs" />
     <Compile Include="RetryHandlerTests.cs" />
     <Compile Include="Repositories\Implementations\KeplerWorkspaceRepositoryTests.cs" />
+    <Compile Include="Statistics\DocumentAccumulatedStatisticsTests.cs" />
     <Compile Include="Statistics\DocumentTotalStatisticsTests.cs" />
     <Compile Include="Statistics\ImageFileSizeStatisticsTests.cs" />
+    <Compile Include="Statistics\ImageStatisticsTestBase.cs" />
     <Compile Include="Statistics\ImageTotalStatisticsTests.cs" />
     <Compile Include="Statistics\NativeFileSizeStatisticsTests.cs" />
     <Compile Include="Statistics\NativeTotalStatisticsTests.cs" />

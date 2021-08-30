@@ -1,12 +1,10 @@
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity;
-using Relativity.Services.Client;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Interfaces.Group.Models;
