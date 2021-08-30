@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers;
-using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
@@ -12,17 +11,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 	public class CoreServiceFactoryTests
 	{
 		private CoreServiceFactory _sut;
-		private ExportFile _exportFile;
 		private Mock<IServiceFactory> _webApiServiceFactoryMock;
 		private Mock<Func<IAuditManager>> _auditManagerFactoryMock;
-
-		private const int _EXPORT_ARTIFACT_TYPE_ID = 123;
-
+		
 		[SetUp]
 		public void SetUp()
 		{
-			_exportFile = new ExportFile(_EXPORT_ARTIFACT_TYPE_ID);
-
 			_webApiServiceFactoryMock = new Mock<IServiceFactory>();
 			_auditManagerFactoryMock = new Mock<Func<IAuditManager>>();
 
@@ -186,10 +180,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 
 		private CoreServiceFactory CreateCoreServiceFactory()
 		{
-			return new CoreServiceFactory(
-				_auditManagerFactoryMock.Object,
-				_exportFile,
-				_webApiServiceFactoryMock.Object);
+			return new CoreServiceFactory(_auditManagerFactoryMock.Object, _webApiServiceFactoryMock.Object);
 		}
 	}
 }
