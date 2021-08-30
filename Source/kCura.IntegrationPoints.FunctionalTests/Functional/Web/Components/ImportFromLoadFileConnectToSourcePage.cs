@@ -34,6 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindByPrecedingDivContent]
 		[WaitFor]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
+		[InvokeMethod(nameof(OnClickImportSource), TriggerEvents.AfterClick)]
 		public Control<_> ImportSource { get; private set; }
 
 		[FindByPrecedingDivContent]
@@ -68,6 +69,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 			}
 
 			return Owner;
+		}
+
+		private void OnClickImportSource()
+		{
+			TreeItems.Should.Within(20).BeVisible();
+			//TreeItems[0].GetScope().FindElement(By.Id(@"DataTransfer\Import\NativesLoadFile.dat_anchor"));
+			
 		}
 	}
 }

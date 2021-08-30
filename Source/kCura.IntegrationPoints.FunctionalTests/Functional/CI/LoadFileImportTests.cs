@@ -1,5 +1,6 @@
 ﻿using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using System.ComponentModel;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -21,6 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [IdentifiedTest("88bf9b08-99c4-4c30-8854-fff22c4dc213")]
+        [Category("test")]
         public void LoadNativesFromLoadFileGoldFlow()
         {
             _testImplementation.ImportNativesFromLoadFileGoldFlow();
