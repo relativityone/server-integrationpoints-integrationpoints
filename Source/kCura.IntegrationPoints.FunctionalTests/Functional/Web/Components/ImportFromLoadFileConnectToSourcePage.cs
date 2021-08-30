@@ -74,8 +74,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		private void OnClickImportSource()
 		{
 			TreeItems.Should.Within(20).BeVisible();
-			//TreeItems[0].GetScope().FindElement(By.Id(@"DataTransfer\Import\NativesLoadFile.dat_anchor"));
-			
 		}
 	}
 }
