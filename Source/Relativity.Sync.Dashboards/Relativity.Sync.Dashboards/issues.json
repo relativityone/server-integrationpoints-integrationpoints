@@ -626,5 +626,9 @@
 	{
 		"Jira": "REL-576650",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: Error occured while executing 'CreateFoldersStage'*The given key was not present in the dictionary*"
+	},
+	{
+		"Jira": "REL-589252",
+		"Exception": "*Relativity.Services.Objects.Exceptions.InvalidValueTypeException: The value of field * must be of the proper Relativity whole number format*"
 	}
 ]
