@@ -80,10 +80,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
             public UnorderedList<TreeItemControl<TPage>, TPage> Children { get; private set; }
         }
 
+        [WaitForElement(WaitBy.Class, "field-label", Until.Visible)]
         [FindByPrecedingDivContent]
         public Select2<ImageFileFormats, _> ImageFileFormat { get; private set; }
 
-
+        [WaitForElement(WaitBy.Class, "field-label", Until.Visible)]
         [FindByPrecedingDivContent]
         public Select2<DataFileFormats, _> DataFileFormat { get; private set; }
 
@@ -105,6 +106,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [FindById("export-multiple-choice-fields-as-nested")]
         public CheckBox<_> ExportMultipleChoiceFieldsAsNested { get; private set; }
 
+        [WaitForElement(WaitBy.Class, "field-label", Until.Visible)]
         [FindByPrecedingDivContent]
         public Select2<NameOutputFilesAfterOptions, _> NameOutputFilesAfter { get; private set; }
 
