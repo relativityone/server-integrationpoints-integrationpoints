@@ -5,6 +5,7 @@ kCura.Apps.Common.Utils
 LanguageExt.Core
 Relativity
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.Legacy.SDK 
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.SDK
 Relativity.Productions.Services.Interfaces

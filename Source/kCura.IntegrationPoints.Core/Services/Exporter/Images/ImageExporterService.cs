@@ -155,8 +155,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 			ILookup<int, ImageFile> imageLocationsForDocuments = GetImageLocationsForDocumentsFromProduction(
 				documentsWithoutImages.ToArray(),
 				productionsArtifactId);
-
-
+			
 			int documentsWithImagesCount = MarkDocumentsWithImages(documentsWithImages, imageLocationsForDocuments, documentsWithoutImages);
 
 			Logger.LogInformation("Found {documentsWithImagesCount} images in production {productionArtifactId}",

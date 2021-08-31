@@ -144,10 +144,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
 					.LifestyleSingleton()
 			);
-			Container.Register(Component.For<Func<ISearchManager>>()
-				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceManagerProvider>().Create<ISearchManager, SearchManagerFactory>()))
-				.LifestyleTransient()
-			);
 			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 

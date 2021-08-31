@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				else
 				{
 					LogRetrievingViewsError(workspceId, artifactTypeId);
+					throw new Exception($"No result returned when call to {nameof(ISearchService.RetrieveViewsByContextArtifactIDAsync)} method!");
 				}
 
 				return views;
