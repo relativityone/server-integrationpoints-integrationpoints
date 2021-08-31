@@ -14,34 +14,37 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     {
         public Button<IntegrationPointViewPage, _> Save { get; private set; }
 
+        public Button<_> MapAllFields { get; private set; }
+
         [FindById("source-fields")]
         public Select<_> Source { get; private set; }
 
         [FindByTitle("cn")]
-        [InvokeMethod(nameof(OnMapCn), TriggerEvents.BeforeClick)]
+        [WaitFor]
         public Option<string, _> Cn { get; private set; }
 
         [FindByTitle("givenname")]
+        [WaitFor]
         public Option<string, _> GivenName { get; private set; }
 
         [FindByTitle("sn")]
+        [WaitFor]
         public Option<string, _> Sn { get; private set; }
 
         [FindById("workspace-fields")]
+        [WaitFor]
         public Select<_> Destination { get; private set; }
 
         [FindByTitle("UniqueID [Object Identifier]")]
+        [WaitFor]
         public Option<string, _> UniqueID { get; private set; }
 
         [FindByTitle("First Name [Fixed-Length Text]")]
+        [WaitFor]
         public Option<string, _> FirstName { get; private set; }
 
         [FindByTitle("Last Name [Fixed-Length Text]")]
+        [WaitFor]
         public Option<string, _> LastName { get; private set; }
-
-        private void OnMapCn()
-        {
-            Cn.Should.Within(20).BeVisible();
-        }
     }
 }
