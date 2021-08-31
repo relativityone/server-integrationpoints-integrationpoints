@@ -137,6 +137,7 @@ namespace Relativity.Sync.Storage
         {
             _batchRdo.TotalDocumentsCount = totalDocumentsCount;
             _batchRdo.StartingIndex = startingIndex;
+            _batchRdo.Status = BatchStatus.New.GetDescription();
 
             await _rdoManager.CreateAsync(_workspaceArtifactId, _batchRdo, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
@@ -332,7 +333,7 @@ namespace Relativity.Sync.Storage
 
         private async Task<IEnumerable<IBatch>> ReadAllAsync(int syncConfigurationArtifactId)
         {
-            var batches = new ConcurrentBag<IBatch>();
+            ConcurrentBag<IBatch> batches = new ConcurrentBag<IBatch>();
             using (IObjectManager objectManager =
                 await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
@@ -355,7 +356,7 @@ namespace Relativity.Sync.Storage
 
                     Parallel.ForEach(batchIds, batchArtifactId =>
                     {
-                        var batch = new Batch(_rdoManager, _serviceFactory, _workspaceArtifactId);
+                        Batch batch = new Batch(_rdoManager, _serviceFactory, _workspaceArtifactId);
                         batch.InitializeAsync(batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
                         batches.Add(batch);
                     });
