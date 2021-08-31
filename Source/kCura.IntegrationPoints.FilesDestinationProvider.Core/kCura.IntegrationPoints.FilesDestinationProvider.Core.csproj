@@ -133,7 +133,6 @@
     <Compile Include="SharedLibrary\ICoreExporterStatusNotification.cs" />
     <Compile Include="SharedLibrary\IExporter.cs" />
     <Compile Include="SharedLibrary\IExporterFactory.cs" />
-    <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
     <Compile Include="Validation\FileDestinationProviderConfigurationValidator.cs" />
     <Compile Include="Validation\FileDestinationProviderValidationMessages.cs" />
     <Compile Include="Validation\FileDestinationProviderValidatorsFactory.cs" />
