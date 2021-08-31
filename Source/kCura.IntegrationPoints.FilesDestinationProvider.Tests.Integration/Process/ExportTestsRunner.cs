@@ -117,6 +117,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private ExportProcessBuilder CreateExportProcessBuilder(IHelper helper)
 		{
+			IServicesMgr servicesMgr = _windsorContainer.Resolve<IHelper>().GetServicesManager();
 			IUserNotification userNotification = _windsorContainer.Resolve<IUserNotification>();
 			IUserMessageNotification exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			LoggingMediatorForTestsFactory loggingMediatorFactory = _windsorContainer.Resolve<LoggingMediatorForTestsFactory>();
@@ -129,10 +130,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			configFactoryMock.Create().Returns(configMock);
 
 			IRepositoryFactory repositoryFactory = _windsorContainer.Resolve<IRepositoryFactory>();
-
 			IExportServiceFactory exportServiceFactory = _windsorContainer.Resolve<IExportServiceFactory>();
 
 			return new ExportProcessBuilder(
+				servicesMgr,
 				configFactoryMock,
 				loggingMediator,
 				exportUserNotification,
