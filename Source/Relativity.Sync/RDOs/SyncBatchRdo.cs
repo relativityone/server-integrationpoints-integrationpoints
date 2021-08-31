@@ -36,12 +36,12 @@ namespace Relativity.Sync.RDOs
 
 
 		[RdoLongField(SyncBatchGuids.MetadataBytesTransferredGuid)]
-		public long MetadataBytesTransferred { get; set; }
+		public long MetadataTransferredBytes { get; set; }
 
 		[RdoLongField(SyncBatchGuids.FilesBytesTransferredGuid)]
-		public long FilesBytesTransferred { get; set; }
+		public long FilesTransferredBytes { get; set; }
 
 		[RdoLongField(SyncBatchGuids.TotalBytesTransferredGuid)]
-		public long TotalBytesTransferred { get; set; }
+		public long TotalTransferredBytes { get; set; }
 	}
 }

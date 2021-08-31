@@ -10,6 +10,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
 
@@ -21,6 +22,7 @@ namespace Relativity.Sync.Tests.Unit
 		private BatchRepository _batchRepository;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IDateTime> _dateTime;
+		private Mock<IRdoManager> _rdoManagerMock;
 
 		private const int _WORKSPACE_ID = 433;
 		private const int _ARTIFACT_ID = 416;
@@ -46,7 +48,8 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
 			_dateTime = new Mock<IDateTime>();
-			_batchRepository = new BatchRepository(serviceFactoryMock.Object, _dateTime.Object);
+			_rdoManagerMock = new Mock<IRdoManager>();
+			_batchRepository = new BatchRepository(_rdoManagerMock.Object, serviceFactoryMock.Object, _dateTime.Object);
 
 			_objectManager = new Mock<IObjectManager>();
 			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);

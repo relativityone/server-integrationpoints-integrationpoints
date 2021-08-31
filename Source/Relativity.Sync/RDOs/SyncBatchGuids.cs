@@ -11,9 +11,9 @@
 		public const string TransferredDocumentsCountGuid = "A5618A97-48C5-441C-86DF-2867481D30AB";
 		public const string FailedDocumentsCountGuid = "4FA1CF50-B261-4157-BD2D-50619F0347D6";
 
-		public const string MetadataBytesTransferredGuid = "2BE1C011-0A0C-4A10-B77A-74BB9405A68A";
-		public const string FilesBytesTransferredGuid = "4A21D596-6961-4389-8210-8D2D8C56DBAD";
-		public const string TotalBytesTransferredGuid = "511C4B49-2E05-4DFB-BB3E-771EC0BDEFED";
+		public const string MetadataBytesTransferredGuid = "E26CF254-144C-45B4-80F8-A2238B21584A";
+		public const string FilesBytesTransferredGuid = "C427C22B-D975-4AC6-ACDD-964DB6875FC7";
+		public const string TotalBytesTransferredGuid = "51804F8F-58A5-472D-B251-45EB99C44229";
 
 		public const string StartingIndexGuid = "B56F4F70-CEB3-49B8-BC2B-662D481DDC8A";
 		public const string StatusGuid = "D16FAF24-BC87-486C-A0AB-6354F36AF38E";

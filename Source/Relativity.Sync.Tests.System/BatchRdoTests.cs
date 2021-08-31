@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 
@@ -24,7 +26,7 @@ namespace Relativity.Sync.Tests.System
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			_sut = new BatchRepository(new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
+			_sut = new BatchRepository(new TestRdoManager(Logger),new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
 
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;

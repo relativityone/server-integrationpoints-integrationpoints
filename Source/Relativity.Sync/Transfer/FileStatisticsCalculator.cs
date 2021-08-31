@@ -38,7 +38,7 @@ namespace Relativity.Sync.Transfer
 			SyncStatisticsRdo result = await CalculateFilesTotalSizeAsync(workspaceId, request,
 				batch => CalculateNativesSizeAsync(workspaceId, batch), token).ConfigureAwait(false);
 
-			return result.FilesSizeCalculated;
+			return result.CalculatedFilesSize;
 		}
 
 		public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId,
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Transfer
 			SyncStatisticsRdo result = await CalculateFilesTotalSizeAsync(workspaceId, request,
 				batch => CalculateImagesSizeAsync(workspaceId, batch, options), token).ConfigureAwait(false);
 
-			return new ImagesStatistics(result.FilesCountCalculated, result.FilesSizeCalculated);
+			return new ImagesStatistics(result.CalculatedFilesCount, result.CalculatedFilesSize);
 		}
 
 		private async Task<SyncStatisticsRdo> CalculateFilesTotalSizeAsync(int workspaceId, QueryRequest request, 
@@ -62,14 +62,14 @@ namespace Relativity.Sync.Transfer
 				syncStatistics = await InitializeDocumentsQueryAsync(workspaceId, request).ConfigureAwait(false);
 
 				_logger.LogInformation("Calculation has been initialized - {documentsRequested} documents requested.",
-					syncStatistics.DocumentsRequested);
+					syncStatistics.RequestedDocuments);
 
 				try
 				{
 					// If we have already performed the calculation for all documents, we want to short circuit.
 					// First of all, that way we are skipping unnecessary Kepler calls.
 					// But, what is more important, we are protecting from situation when RetrieveResultsBlockFromExportAsync has been already called with block size 0 which has deleted the snapshot table.
-					if (syncStatistics.DocumentsRequested != syncStatistics.DocumentsCalculated)
+					if (syncStatistics.RequestedDocuments != syncStatistics.CalculatedDocuments)
 					{
 						int batchIndex = 1;
 
@@ -83,9 +83,9 @@ namespace Relativity.Sync.Transfer
 
 							FileSizeResult result = await filesCalculationFunc(batch).ConfigureAwait(false);
 
-							syncStatistics.FilesSizeCalculated += result.FilesSize;
-							syncStatistics.FilesCountCalculated += result.FilesCount;
-							syncStatistics.DocumentsCalculated += batch.Count;
+							syncStatistics.CalculatedFilesSize += result.FilesSize;
+							syncStatistics.CalculatedFilesCount += result.FilesCount;
+							syncStatistics.CalculatedDocuments += batch.Count;
 
 							_logger.LogInformation(
 								"Calculated total files size for {documentsCount} in chunk {batchIndex}.",
@@ -96,7 +96,7 @@ namespace Relativity.Sync.Transfer
 								_logger.LogInformation(
 									"Files size calculation has been drain-stopped on {batchIndex} " +
 									"and {documentsCount} was calculated", batchIndex,
-									syncStatistics.DocumentsCalculated);
+									syncStatistics.CalculatedDocuments);
 								return syncStatistics;
 							}
 						}
@@ -155,7 +155,7 @@ namespace Relativity.Sync.Transfer
 					int exportedRecordsCount = (int)exportInitializationResults.RecordCount;
 
 					syncStatistics.RunId = exportInitializationResults.RunID;
-					syncStatistics.DocumentsRequested = exportedRecordsCount;
+					syncStatistics.RequestedDocuments = exportedRecordsCount;
 
 					await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
 				}
@@ -169,12 +169,12 @@ namespace Relativity.Sync.Transfer
 			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int blockSize = Math.Min(
-					(int)(statistics.DocumentsRequested - statistics.DocumentsCalculated),
+					(int)(statistics.RequestedDocuments - statistics.CalculatedDocuments),
 					_configuration.BatchSizeForFileQueries);
 
 				RelativityObjectSlim[] exportResultsBlock = await objectManager
 					.RetrieveResultsBlockFromExportAsync(workspaceId, statistics.RunId,
-						blockSize, (int)statistics.DocumentsCalculated)
+						blockSize, (int)statistics.CalculatedDocuments)
 					.ConfigureAwait(false);
 
 				return exportResultsBlock != null && exportResultsBlock.Any()
