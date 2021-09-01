@@ -83,16 +83,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private void SetupDataTransferLegacy()
 		{
-			RelativityApplicationManager appManager = new RelativityApplicationManager(new TestHelper());
-			appManager.ImportApplicationToLibraryAsync(Path.Combine(TestContext.Parameters["BuildToolsDirectory"], SharedVariables.DataTransferLegacyRapPath)).GetAwaiter().GetResult();
-
 			const string section = "DataTransfer.Legacy";
 			const string name = "IAPICommunicationMode";
 			const string value = "Kepler";
+
 			if (!InstanceSetting.CreateOrUpdateAsync(section, name, value).GetAwaiter().GetResult())
 			{
 				throw new Exception($"Could not set instance setting value: Section: {section} Name: {name} Value: {value}");
 			}
+
+			RelativityApplicationManager appManager = new RelativityApplicationManager(new TestHelper());
+			appManager.ImportApplicationToLibraryAsync(Path.Combine(TestContext.Parameters["BuildToolsDirectory"], SharedVariables.DataTransferLegacyRapPath)).GetAwaiter().GetResult();
 		}
 
 		private void AddWorkspaceFieldsToContext()
