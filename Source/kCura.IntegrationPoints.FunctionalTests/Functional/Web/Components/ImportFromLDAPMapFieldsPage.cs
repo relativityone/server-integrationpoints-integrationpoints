@@ -10,41 +10,43 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     [UseExternalFrame]
     [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 4, AbsenceTimeout = 30, AppliesTo = TriggerScope.Children)]
     [WaitForJQueryAjax(TriggerEvents.Init)]
+    [WaitForDocumentReadyState]
     internal class ImportFromLDAPMapFieldsPage : WorkspacePage<_>
     {
         public Button<IntegrationPointViewPage, _> Save { get; private set; }
 
+        [WaitForJQueryAjax]
         public Button<_> MapAllFields { get; private set; }
 
         [FindById("source-fields")]
         public Select<_> Source { get; private set; }
 
         [FindByTitle("cn")]
-        [WaitFor]
+        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Option<string, _> Cn { get; private set; }
 
         [FindByTitle("givenname")]
-        [WaitFor]
+        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Option<string, _> GivenName { get; private set; }
 
         [FindByTitle("sn")]
-        [WaitFor]
+        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Option<string, _> Sn { get; private set; }
 
         [FindById("workspace-fields")]
-        [WaitFor]
+        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Select<_> Destination { get; private set; }
 
         [FindByTitle("UniqueID [Object Identifier]")]
-        [WaitFor]
+        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Option<string, _> UniqueID { get; private set; }
 
         [FindByTitle("First Name [Fixed-Length Text]")]
-        [WaitFor]
+        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Option<string, _> FirstName { get; private set; }
 
         [FindByTitle("Last Name [Fixed-Length Text]")]
-        [WaitFor]
+        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Option<string, _> LastName { get; private set; }
     }
 }
