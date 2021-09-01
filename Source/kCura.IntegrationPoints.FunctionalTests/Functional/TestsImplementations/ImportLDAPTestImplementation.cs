@@ -78,6 +78,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		private static IntegrationPointViewPage SetFieldsMappkingImportFromLDAPMapFieldsPage(ImportFromLDAPMapFieldsPage importFromLDAPMapFieldsPage)
 		{
+			importFromLDAPMapFieldsPage.MapAllFields.Click();
 			importFromLDAPMapFieldsPage.Cn.DoubleClick();
 			importFromLDAPMapFieldsPage.GivenName.DoubleClick();
 			importFromLDAPMapFieldsPage.Sn.DoubleClick();
