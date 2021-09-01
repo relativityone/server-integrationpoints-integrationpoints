@@ -1,13 +1,15 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.Utility;
+using NUnit.Framework;
 using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Directory = kCura.Utility.Directory;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals
 {
@@ -41,6 +43,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			CreateTestWorkspace();
 			CreateAndImportTestData();
+			InstallDataTransferLegacy();
 
 			AddWorkspaceFieldsToContext();
 			CreateSavedSearch();
@@ -74,6 +77,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_workspaceService.ImportData(_testContext.WorkspaceID, _testContext.DocumentsTestData);
 			_folderIDRetriever.UpdateFolderIdsAsync(_testContext.WorkspaceID, _testContext.DocumentsTestData.Documents)
 				.GetAwaiter().GetResult();
+		}
+
+		private void InstallDataTransferLegacy()
+		{
+			RelativityApplicationManager appManager = new RelativityApplicationManager(new TestHelper());
+			appManager.ImportApplicationToLibraryAsync(Path.Combine(TestContext.Parameters["BuildToolsDirectory"], SharedVariables.DataTransferLegacyRapPath)).GetAwaiter().GetResult();
 		}
 
 		private void AddWorkspaceFieldsToContext()
