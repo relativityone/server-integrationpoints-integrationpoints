@@ -4,6 +4,7 @@ Relativity.IntegrationPoints.Contracts
 Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
 Relativity.Logging
+Relativity.Toggles
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
