@@ -8,6 +8,7 @@ Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
 Relativity.Productions.Services.Interfaces
+Relativity.Services.Interfaces.Private
 Relativity.Toggles
 System.Reactive
 NSubstitute

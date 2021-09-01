@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
@@ -10,6 +11,7 @@ using NUnit.Framework;
 using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Directory = kCura.Utility.Directory;
+using ValueType = Relativity.Services.InstanceSetting.ValueType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process.Internals
 {
@@ -43,7 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			CreateTestWorkspace();
 			CreateAndImportTestData();
-			InstallDataTransferLegacy();
+			SetupDataTransferLegacy();
 
 			AddWorkspaceFieldsToContext();
 			CreateSavedSearch();
@@ -79,10 +81,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				.GetAwaiter().GetResult();
 		}
 
-		private void InstallDataTransferLegacy()
+		private void SetupDataTransferLegacy()
 		{
 			RelativityApplicationManager appManager = new RelativityApplicationManager(new TestHelper());
 			appManager.ImportApplicationToLibraryAsync(Path.Combine(TestContext.Parameters["BuildToolsDirectory"], SharedVariables.DataTransferLegacyRapPath)).GetAwaiter().GetResult();
+
+			const string section = "DataTransfer.Legacy";
+			const string name = "IAPICommunicationMode";
+			const string value = "Kepler";
+			if (!InstanceSetting.CreateOrUpdateAsync(section, name, value).GetAwaiter().GetResult())
+			{
+				throw new Exception($"Could not set instance setting value: Section: {section} Name: {name} Value: {value}");
+			}
 		}
 
 		private void AddWorkspaceFieldsToContext()

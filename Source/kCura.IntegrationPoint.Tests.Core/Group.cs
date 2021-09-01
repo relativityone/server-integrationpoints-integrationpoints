@@ -62,12 +62,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			AddGroupToWorkspaceAsync(workspaceId, groupId).GetAwaiter().GetResult();
 		}
-
-		public static void RemoveGroupFromWorkspace(int workspaceId, int groupId)
-		{
-			RemoveGroupFromWorkspaceAsync(workspaceId, groupId).GetAwaiter().GetResult();
-		}
-
+		
 		private static async Task AddGroupToWorkspaceAsync(int workspaceId, int groupId)
 		{
 			using (var proxy = Helper.CreateProxy<IPermissionManager>())
