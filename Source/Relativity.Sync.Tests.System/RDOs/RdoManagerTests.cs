@@ -13,7 +13,9 @@ using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
 using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.Tests.Common.RDOs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Testing.Identification;
@@ -22,6 +24,8 @@ namespace Relativity.Sync.Tests.System.RDOs
 {
     internal class RdoManagerTests : SystemTest
     {
+        const long BigLongValue = long.MaxValue;
+
         private RdoManager _sut;
 
         [SetUp]
@@ -304,6 +308,106 @@ namespace Relativity.Sync.Tests.System.RDOs
             }
         }
 
+        [IdentifiedTest("D2E8DBEA-9F15-4D8E-AFE2-2C3784ED06D5")]
+        public async Task CreateAsync_ShouldHandleBigNumbersInLongFields()
+        {
+            // Arrange
+            WorkspaceRef workspace = await Environment.CreateWorkspaceAsync();
+            await CreaSampleRdoTypeInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
+
+            SampleRdo sampleRdo = new SampleRdo
+            {
+                LongField = BigLongValue
+            };
+            
+            // Act
+            await _sut.CreateAsync(workspace.ArtifactID, sampleRdo).ConfigureAwait(false);
+            
+            // Assert
+            using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+            {
+                var result = await objectManager.QuerySlimAsync(workspace.ArtifactID, new QueryRequest
+                {
+                    ObjectType = new ObjectTypeRef
+                    {
+                        Guid = new Guid("3E4B704D-B5D5-4BD3-B3C1-ADA89F0856ED")
+                    },
+                    Fields = new[]
+                    {
+                        new FieldRef { Name = "LongField" },
+                    }
+                }, 0, 1).ConfigureAwait(false);
+
+                var queriedObject = result.Objects.First();
+
+                sampleRdo.LongField.Should().Be(BigLongValue);
+                queriedObject.ArtifactID.Should().Be(sampleRdo.ArtifactId);
+                queriedObject.Values[0].Should().Be(BigLongValue.ToString());
+            }
+        }
+
+        [IdentifiedTest("CBD452A1-8743-470A-8DDD-64545FAFB68C")]
+        public async Task SetValuesAsync_ShouldHandleBigNumbersInLongFields()
+        {
+            // Arrange
+            WorkspaceRef workspace = await Environment.CreateWorkspaceAsync();
+
+            await CreaSampleRdoTypeInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
+
+            SampleRdo sampleRdo = new SampleRdo
+            {
+                SomeField = 5,
+            };
+            
+            int artifactId = await CreateSampleRdoObject(workspace.ArtifactID, sampleRdo).ConfigureAwait(false);
+            sampleRdo.ArtifactId = artifactId;
+            
+            // Act
+            await _sut.SetValueAsync(workspace.ArtifactID, sampleRdo, x => x.LongField, BigLongValue).ConfigureAwait(false);
+            
+            // Assert
+            using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+            {
+                var result = await objectManager.QuerySlimAsync(workspace.ArtifactID, new QueryRequest
+                {
+                    ObjectType = new ObjectTypeRef
+                    {
+                        Guid = new Guid("3E4B704D-B5D5-4BD3-B3C1-ADA89F0856ED")
+                    },
+                    Fields = new[]
+                    {
+                        new FieldRef { Name = "LongField" },
+                    }
+                }, 0, 1).ConfigureAwait(false);
+
+                var queriedObject = result.Objects.First();
+
+                sampleRdo.LongField.Should().Be(BigLongValue);
+                queriedObject.ArtifactID.Should().Be(sampleRdo.ArtifactId);
+                queriedObject.Values[0].Should().Be(BigLongValue.ToString());
+            }
+        }
+
+        [IdentifiedTest("CC7A75D9-C415-4BE6-9B78-4CDB07A6CD93")]
+        public async Task GetAsync_ShouldHandleBigNumbersInLongFields()
+        {
+            // Arrange
+            WorkspaceRef workspace = await Environment.CreateWorkspaceAsync();
+
+            await CreaSampleRdoTypeInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
+            
+            int artifactId = await CreateSampleRdoObject(workspace.ArtifactID, new SampleRdo
+            {
+                LongField = BigLongValue
+            }).ConfigureAwait(false);
+
+            // Act
+            SampleRdo sampleRdo = await _sut.GetAsync<SampleRdo>(workspace.ArtifactID, artifactId).ConfigureAwait(false);
+            
+            // Assert
+            sampleRdo.LongField.Should().Be(BigLongValue);
+        }
+
         private async Task CreaSampleRdoTypeInWorkspaceAsync(int workspaceId)
         {
             using (IObjectTypeManager objectTypeManager =
@@ -434,6 +538,15 @@ namespace Relativity.Sync.Tests.System.RDOs
                                     .First(x => x.Name == nameof(SampleRdo.OptionalTextField)).Guid
                             },
                             Value = rdo.OptionalTextField
+                        },
+                        new FieldRefValuePair
+                        {
+                            Field = new FieldRef
+                            {
+                                Guid = SampleRdo.ExpectedRdoInfo.Fields.Values
+                                    .First(x => x.Name == nameof(SampleRdo.LongField)).Guid
+                            },
+                            Value = rdo.LongField.ToString()
                         },
                     }
                 };

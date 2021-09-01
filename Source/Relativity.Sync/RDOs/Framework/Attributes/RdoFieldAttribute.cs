@@ -23,6 +23,5 @@ namespace Relativity.Sync.RDOs.Framework.Attributes
             Required = required;
             FieldGuid = Guid.Parse(fieldGuid);
         }
-
     }
 }
