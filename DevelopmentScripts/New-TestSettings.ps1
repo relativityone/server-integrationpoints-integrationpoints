@@ -121,6 +121,11 @@ if(-not $RAPDirectory)
     $PSBoundParameters['RAPDirectory'] = Join-Path $PSScriptRoot ..\Artifacts
 }
 
+if(-not $BuildToolsDirectory)
+{
+    $PSBoundParameters['BuildToolsDirectory'] = Join-Path $PSScriptRoot ..\buildtools
+}
+
 $PSBoundParameters['ChromeBinaryLocation'] = Join-Path $PSScriptRoot ..\buildtools\Relativity.Chromium.Portable\tools
 
 Remove-Item (Join-Path $PSScriptRoot ..\FunctionalTestSettings) -Force -ErrorAction SilentlyContinue

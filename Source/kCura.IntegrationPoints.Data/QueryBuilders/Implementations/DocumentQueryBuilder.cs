@@ -37,9 +37,9 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 			return this;
 		}
 
-		public DocumentQueryBuilder AddHasImagesCondition()
+		public DocumentQueryBuilder AddHasImagesCondition(int yesChoiceArtifactId)
 		{
-			string condition = $"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE {DocumentFieldsConstants.HasImagesYesGuid}";
+			string condition = $"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE {yesChoiceArtifactId}";
 			Conditions.Add(condition);
 
 			return this;
@@ -58,13 +58,13 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 			return this;
 		}
 
-		public DocumentQueryBuilder AddFields(List<Guid> fieldGuids)
+		public DocumentQueryBuilder AddField(string name)
 		{
-			Fields.AddRange(fieldGuids.Select(x => new FieldRef { Guid = x }));
+			Fields.Add(new FieldRef { Name = name });
 
 			return this;
 		}
-
+		
 		public override QueryRequest Build()
 		{
 			return new QueryRequest

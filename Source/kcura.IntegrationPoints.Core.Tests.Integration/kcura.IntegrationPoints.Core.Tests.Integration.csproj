@@ -57,17 +57,7 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Managers\TargetDocumentsTaggingManagerTests.cs" />
-    <Compile Include="ScheduledJobTests.cs" />
-    <Compile Include="Services\AgentJobManagerTests.cs" />
-    <Compile Include="Services\ChoiceServiceTests.cs" />
     <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
-    <Compile Include="Services\IntegrationPointServiceForRetryTests.cs" />
-    <Compile Include="Services\IntegrationPointServiceForPushProductionTests.cs" />
-    <Compile Include="Services\IntegrationPointServiceForRunTests.cs" />
-    <Compile Include="Services\IntegrationPointServiceForSaveTests.cs" />
-    <Compile Include="Services\IntegrationPointServiceForSchedulerTests.cs" />
-    <Compile Include="Services\IntegrationPointServiceTestsForOtherProviders.cs" />
     <Compile Include="Tagging\SourceDocumentsTaggerTests.cs" />
   </ItemGroup>
   <ItemGroup>

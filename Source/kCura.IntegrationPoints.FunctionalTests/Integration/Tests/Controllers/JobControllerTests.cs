@@ -4,18 +4,19 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Models.Validation;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Testing.Framework.Extensions;
 using Relativity.Testing.Identification;
 using SystemInterface.IO;
 
@@ -342,11 +343,49 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             loadFileParameters.LastModifiedDate.Should().Be(modifiedDate);
         }
 
+        [IdentifiedTest("7F3A7A24-AFE0-414F-A6AD-629A84218ED8")]
+        public async Task Run_ShouldResultInValidationFailed()
+        {
+            // Arrange
+            Proxy.PermissionManager.SetupPermissionsCheck(workspaceOrArtifactInstancePermissionsValue: false, artifactTypePermissionsValue: false);
+
+            int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
+            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper
+	            .CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
+            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+	            .CreateSavedSearchIntegrationPoint(destinationWorkspace);
+
+	        JobController.Payload payload = new JobController.Payload
+	        {
+		        ArtifactId = integrationPoint.ArtifactId,
+		        AppId = SourceWorkspace.ArtifactId
+	        };
+
+	        JobController sut = PrepareSut(HttpMethod.Post, "/run");
+
+	        // Act
+	        HttpResponseMessage response = await sut.Run(payload).ConfigureAwait(false);
+
+	        // Assert
+	        response.IsSuccessStatusCode.Should().BeFalse();
+	        response.Content.Should()
+		        .BeAssignableTo<ObjectContent<ValidationResultDTO>>()
+		        .Which.Value.Should().BeAssignableTo<ValidationResultDTO>()
+		        .Which.IsValid.Should().BeFalse();
+
+	        FakeRelativityInstance.Errors.Should().OnlyContain(error => error.Message == "Failed to submit integration job. Integration Point validation failed.");
+	        FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+        }
+
         private JobController PrepareSut(HttpMethod method, string requestUri)
         {
             JobController sut = Container.Resolve<JobController>();
             sut.User = GetUserClaimsPrincipal();
-            sut.Request = new HttpRequestMessage(method, requestUri);
+
+            HttpRequestMessage request = new HttpRequestMessage(method, requestUri);
+            request.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
+
+            sut.Request = request;
 
             return sut;
         }

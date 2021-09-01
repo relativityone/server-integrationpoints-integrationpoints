@@ -45,9 +45,6 @@
     </Compile>
     <Compile Include="Context\UserContextIntegrationTests.cs" />
     <Compile Include="Context\WorkspaceContextIntegrationTests.cs" />
-    <Compile Include="Controllers\ImportProviderImageControllerTests.cs" />
-    <Compile Include="Controllers\SavedSearchQueryTests.cs" />
-    <Compile Include="Helpers\ContainerInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

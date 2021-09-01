@@ -4,13 +4,12 @@ using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using Relativity.API;
-using Relativity.Data.Cache.Field;
 using Relativity.Services.Objects.DataContracts;
 using FieldMetadata = Relativity.Services.Field.FieldMetadata;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
-	public class ImageTotalStatistics : IImageTotalStatistics
+	public class ImageTotalStatistics : ImageStatisticsBase, IImageTotalStatistics
 	{
 		private const string _FOR_PRODUCTION_ERROR =
 			"Failed to retrieve total images count for production set: {productionSetId}.";
@@ -21,13 +20,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		private const string _FOR_SAVED_SEARCH_ERROR =
 			"Failed to retrieve total images count for saved search id: {savedSearchId}.";
 
-		private readonly IAPILog _logger;
-		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
-
 		public ImageTotalStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)
+			: base(relativityObjectManagerFactory, helper, helper.GetLoggerFactory().GetLogger().ForContext<ImageTotalStatistics>())
 		{
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImageTotalStatistics>();
-			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
@@ -35,8 +30,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition()
-					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
+				QueryRequest query = queryBuilder
+					.AddFolderCondition(folderId, viewId, includeSubFoldersTotals)
+					.AddHasImagesCondition(GetArtifactIdOfYesHoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult())
+					.AddField(DocumentFieldsConstants.RelativityImageCountGuid).Build();
 				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
 				return sum;
 			}
@@ -69,8 +66,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 			try
 			{
 				var queryBuilder = new DocumentQueryBuilder();
-				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition()
-					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
+				QueryRequest query = queryBuilder
+					.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition(GetArtifactIdOfYesHoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult())
+					.AddField(DocumentFieldsConstants.RelativityImageCountGuid).Build();
 				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
 				return sum;
 			}
@@ -108,7 +106,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		private long SumDocumentImages(List<RelativityObjectSlim> documents, List<FieldMetadata> fieldsMetadata)
 		{
-			return SumFieldValues(documents, fieldsMetadata, DocumentFieldsConstants.RelativityImageCount);
+			return SumFieldValues(documents, fieldsMetadata, DocumentFieldsConstants.RelativityImageCountGuid);
 		}
 
 		private long SumProductionImages(List<RelativityObjectSlim> documents, List<FieldMetadata> fieldsMetadata)

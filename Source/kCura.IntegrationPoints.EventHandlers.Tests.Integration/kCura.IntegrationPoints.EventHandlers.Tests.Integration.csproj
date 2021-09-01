@@ -48,10 +48,8 @@
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
-    <Compile Include="Installers\RegisterIntegrationPointsMetricsEventHandlerTests.cs" />
     <Compile Include="Installers\SetTypeOfExportDefaultValueCommandTests.cs" />
     <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
-    <Compile Include="IntegrationPoints\DataTransferMigrationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />

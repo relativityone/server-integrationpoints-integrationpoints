@@ -8,6 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 		Select,
 		[Term("FTP (CSV File)")]
 		FTP,
+		[Term("LDAP")]
 		LDAP,
 		LoadFile
 	}
