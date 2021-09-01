@@ -74,37 +74,31 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             // Assert
             int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
-            
             transferredItemsCount.Should().Be(_keywordSearchDocumentsCount);
         }
-
-
-        
-
 
         private static ExportToLoadFileConnectToSourcePage FillOutIntegrationPointEditPageForExportToLoadFileTest(
             IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
         {
-            IntegrationPointEdit integrationPointEdit = new IntegrationPointEditExport
+            IntegrationPointEdit pageModel = new IntegrationPointEditExport
             {
                 Name = integrationPointName,
                 Destination = IntegrationPointDestinations.LoadFile
             };
 
-            return integrationPointEditPage.ApplyModel(integrationPointEdit).ExportToLoadFileNext.ClickAndGo();
+            return integrationPointEditPage.ApplyModel(pageModel).ExportToLoadFileNext.ClickAndGo();
         }
         
         private static ExportToLoadFileDestinationInformationPage FillOutIntegrationPointConnectToSourcePageForExportToLoadFileTest(
             ExportToLoadFileConnectToSourcePage webPage )
         {
-            webPage.
-                ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
-                {
-                    StartExportAtRecord = _startExportAtRecord,
-                    SavedSearch = _savedSearch
-                });
-
-            return webPage.Next.ClickAndGo();
+            ExportToLoadFileConnectToSavedSearchSource pageModel = new ExportToLoadFileConnectToSavedSearchSource()
+            {
+                StartExportAtRecord = _startExportAtRecord,
+                SavedSearch = _savedSearch
+            };
+            
+            return webPage.ApplyModel(pageModel).Next.ClickAndGo();
         }
 
         private static IntegrationPointViewPage FillOutIntegrationPointEditPageForExportToLoadFileDestinationDetails(ExportToLoadFileDestinationInformationPage webPage, int WorkspaceArtifactID)
@@ -127,13 +121,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             webPage.ExportMultipleChoiceFieldsAsNested.Check();
             webPage.AppendOriginalFileName.Check();
 
-            return webPage.Save.ClickAndGo();
+            return webPage.Save.Wait(Until.Visible)
+                .Save.ClickAndGo();
         }
 
         private static string GetDataTransferLocationForWorkspace(int workspaceArtifactID)
         {
             string dataTransferLocationSuffix = "DataTransfer\\Export";
-
             return $".\\EDDS{workspaceArtifactID}\\{dataTransferLocationSuffix}";
         }
     }

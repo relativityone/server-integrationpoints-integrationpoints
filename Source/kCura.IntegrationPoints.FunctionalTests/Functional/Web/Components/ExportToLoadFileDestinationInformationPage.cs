@@ -8,8 +8,6 @@ using Relativity.Testing.Framework.Web.Triggers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
-
-
     using _ = ExportToLoadFileDestinationInformationPage;
 
     [UseExternalFrame]
@@ -19,8 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     internal class ExportToLoadFileDestinationInformationPage : WorkspacePage<_>
     {
         public Button<IntegrationPointViewPage, _> Save { get; private set; }
-
-
+        
         //Export Detail
         //Export Type
         [FindById("export-loadfile-checkbox")]
