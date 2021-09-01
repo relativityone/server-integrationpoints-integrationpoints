@@ -18,25 +18,8 @@ namespace Relativity.Sync.Storage
         private readonly IRdoManager _rdoManager;
         private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 
-        private static readonly Guid TransferredItemsCountGuid = new Guid(SyncBatchGuids.TransferredItemsCountGuid);
-        private static readonly Guid FailedItemsCountGuid = new Guid(SyncBatchGuids.FailedItemsCountGuid);
-
-        private static readonly Guid TotalDocumentsCountGuid = new Guid(SyncBatchGuids.TotalDocumentsCountGuid);
-
-        private static readonly Guid TransferredDocumentsCountGuid =
-            new Guid(SyncBatchGuids.TransferredDocumentsCountGuid);
-
-        private static readonly Guid FailedDocumentsCountGuid = new Guid(SyncBatchGuids.FailedDocumentsCountGuid);
-
-        private static readonly Guid MetadataBytesTransferredGuid =
-            new Guid(SyncBatchGuids.MetadataBytesTransferredGuid);
-
-        private static readonly Guid FilesBytesTransferredGuid = new Guid(SyncBatchGuids.FilesBytesTransferredGuid);
-        private static readonly Guid TotalBytesTransferredGuid = new Guid(SyncBatchGuids.TotalBytesTransferredGuid);
-
         private static readonly Guid StartingIndexGuid = new Guid(SyncBatchGuids.StartingIndexGuid);
         private static readonly Guid StatusGuid = new Guid(SyncBatchGuids.StatusGuid);
-        private static readonly Guid TaggedDocumentsCountGuid = new Guid(SyncBatchGuids.TaggedDocumentsCountGuid);
 
         internal const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
         internal static readonly Guid BatchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
@@ -125,7 +108,6 @@ namespace Relativity.Sync.Storage
         public async Task SetStartingIndexAsync(int newStartIndex)
         {
             await UpdateFieldValueAsync(x => x.StartingIndex, newStartIndex).ConfigureAwait(false);
-
         }
 
         private BatchStatus ParseStatus(string description)

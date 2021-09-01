@@ -7,7 +7,7 @@ using Moq;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Common.Stubs
 {
     internal class FakeRdoManager : IRdoManager
     {

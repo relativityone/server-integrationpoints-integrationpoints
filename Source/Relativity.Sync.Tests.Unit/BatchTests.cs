@@ -11,6 +11,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
