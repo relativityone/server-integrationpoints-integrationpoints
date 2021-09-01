@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.ChoiceQuery;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
 
@@ -15,14 +18,18 @@ namespace Relativity.Sync.Transfer
 		private readonly ISnapshotQueryConfiguration _configuration;
 		private readonly IPipelineSelector _pipelineSelector;
 		private readonly IFieldManager _fieldManager;
+		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+		protected readonly ISyncLog _logger;
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager)
+		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager, ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
 		{
 			_configuration = configuration;
 			_pipelineSelector = pipelineSelector;
 			_fieldManager = fieldManager;
+			_sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+			_logger = logger;
 		}
 
 		public Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token)
@@ -101,7 +108,7 @@ namespace Relativity.Sync.Transfer
 				{
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
-				Condition = $"{DocumentsInSavedSearch()} AND {DocumentsWithImages()}",
+				Condition = $"{DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
 				Fields = new[]
 				{
 					new FieldRef { Name = identifierField.SourceFieldName }
@@ -120,7 +127,7 @@ namespace Relativity.Sync.Transfer
 				{
 					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
 				},
-				Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()} AND {DocumentsWithImages()}",
+				Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
 				Fields = new[]
 				{
 					new FieldRef { Name = identifierField.SourceFieldName }
@@ -129,21 +136,53 @@ namespace Relativity.Sync.Transfer
 			return queryRequest;
 		}
 
-        private string DocumentsWithImages()
-		{
+        private async Task<int> GetGuidOfYesHoiceOnHasImagesAsync()
+        {
+            int choiceYesArtifactId;
+            int fieldArtifactID;
+
+            using (IObjectManager objectManager = await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IChoiceQueryManager choiceQueryManager = await _sourceServiceFactoryForAdmin.CreateProxyAsync<IChoiceQueryManager>().ConfigureAwait(false))
+			{
+                QueryResult result = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, new QueryRequest()
+                {
+                    ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Field },
+                    Condition = "'Name' == 'Has Images'",
+                }, 0, 1).ConfigureAwait(false);
+				fieldArtifactID = result.Objects.ToArray().First().ArtifactID;
+
+                List<Services.ChoiceQuery.Choice> fieldChoicesList = await choiceQueryManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, fieldArtifactID);
+                Services.ChoiceQuery.Choice yesChoice = fieldChoicesList.FirstOrDefault(choice => choice.Name == "Yes");
+
+				if(yesChoice == null)
+                {
+					_logger.LogError("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
+					throw new SyncException("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
+                }
+
+                choiceYesArtifactId = yesChoice.ArtifactID;
+            }
+
+            return choiceYesArtifactId;
+        }
+
+        private async Task<string> DocumentsWithImages()
+        {
+			int choiceArtifactId = await GetGuidOfYesHoiceOnHasImagesAsync();
+			string documentsWithOriginalImages = DocumentsWithOriginalImages(choiceArtifactId);
 			if (_configuration.ProductionImagePrecedence.Any())
 			{
 				return _configuration.IncludeOriginalImageIfNotFoundInProductions
-					? $"({DocumentsWithProducedImages} OR {DocumentsWithOriginalImages})"
+					? $"({DocumentsWithProducedImages} OR {documentsWithOriginalImages})"
 					: DocumentsWithProducedImages;
 			}
 
-			return DocumentsWithOriginalImages;
+			return documentsWithOriginalImages;
 		}
 
 		private static string DocumentsWithProducedImages => "('Production::Image Count' > 0)";
 
-		private static string DocumentsWithOriginalImages => "('Has Images' == CHOICE 5002224A-59F9-4C19-AA57-3765BDBFB676)"; // "Has Images" == "Yes"
+		private string DocumentsWithOriginalImages(int choiceArtifactId)  => $"('Has Images' == CHOICE {choiceArtifactId})"; // "Has Images" == "Yes"
 
 		private string DocumentsInSavedSearch() => $"('ArtifactId' IN SAVEDSEARCH {_configuration.DataSourceArtifactId})";
 

@@ -6,6 +6,8 @@
 
 		int DataSourceArtifactId { get; }
 
+		int SourceWorkspaceArtifactId { get; }
+
 		int[] ProductionImagePrecedence { get; }
 
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }

@@ -9,17 +9,17 @@ namespace Relativity.Sync.RDOs
 	{
 		public int ArtifactId { get; set; }
 
-		[RdoField(SyncStatisticsGuids.DocumentsCalculatedGuid, RdoFieldType.WholeNumber)]
-		public long DocumentsCalculated { get; set; }
+		[RdoLongField(SyncStatisticsGuids.CalculatedDocumentsGuid)]
+		public long CalculatedDocuments { get; set; }
 
-		[RdoField(SyncStatisticsGuids.DocumentsRequestedGuid, RdoFieldType.WholeNumber)]
-		public long DocumentsRequested { get; set; }
+		[RdoLongField(SyncStatisticsGuids.RequestedDocumentsGuid)]
+		public long RequestedDocuments { get; set; }
 
-		[RdoField(SyncStatisticsGuids.FilesSizeCalculated, RdoFieldType.WholeNumber)]
-		public long FilesSizeCalculated { get; set; }
+		[RdoLongField(SyncStatisticsGuids.CalculatedFilesSizeGuid)]
+		public long CalculatedFilesSize { get; set; }
 
-		[RdoField(SyncStatisticsGuids.FilesCountCalculated, RdoFieldType.WholeNumber)]
-		public long FilesCountCalculated { get; set; }
+		[RdoLongField(SyncStatisticsGuids.CalculatedFilesCountGuid)]
+		public long CalculatedFilesCount { get; set; }
 
 		[RdoField(SyncStatisticsGuids.RunIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
 		public Guid RunId { get; set; }

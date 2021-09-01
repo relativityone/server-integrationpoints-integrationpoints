@@ -94,7 +94,7 @@ namespace Relativity.Sync.RDOs.Framework
                 {
                     ArtifactID = rdo.ArtifactId
                 },
-                FieldValues = GetFieldRefValuePairsForSettingValue(fieldGuid, value)
+                FieldValues = GetFieldRefValuePairsForSettingValue(fieldInfo, value)
             };
             
             using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
@@ -185,6 +185,16 @@ namespace Relativity.Sync.RDOs.Framework
                         Guid.TryParse(value?.ToString(), out Guid result)
                             ? (object) result
                             : null);
+                
+                case RdoFieldType.FixedLengthText
+                    when fieldInfo.PropertyInfo.PropertyType == typeof(long):
+                    return Task.FromResult((object)long.Parse(value.ToString()));
+                
+                case RdoFieldType.FixedLengthText
+                    when fieldInfo.PropertyInfo.PropertyType == typeof(long?):
+                    return Task.FromResult(long.TryParse(value.ToString(), out long longValue) 
+                        ? (object)longValue 
+                        : null);
 
                 case RdoFieldType.LongText when IsTruncatedText(value):
                     return SafeReadLongTextFromStreamAsync(objectManager, fieldInfo, typeGuid, objectArtifactId,
@@ -246,7 +256,7 @@ namespace Relativity.Sync.RDOs.Framework
                    text.EndsWith(longTextTruncateMark, StringComparison.InvariantCulture);
         }
 
-        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValue(Guid fieldGuid, object value)
+        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValue(RdoFieldInfo fieldInfo, object value)
         {
             return new[]
             {
@@ -254,9 +264,9 @@ namespace Relativity.Sync.RDOs.Framework
                 {
                     Field = new FieldRef
                     {
-                        Guid = fieldGuid
+                        Guid = fieldInfo.Guid
                     },
-                    Value = value
+                    Value = SanitizeValueForSetter(fieldInfo, value)
                 }
             };
         }
@@ -271,10 +281,23 @@ namespace Relativity.Sync.RDOs.Framework
                 {
                     Guid = fieldInfo.Guid
                 },
-                Value = fieldInfo.PropertyInfo.GetValue(rdo)
+                Value = SanitizeValueForSetter(fieldInfo, fieldInfo.PropertyInfo.GetValue(rdo))
             });
         }
-        
+
+        private object SanitizeValueForSetter(RdoFieldInfo fieldInfo, object value)
+        {
+            switch (fieldInfo.Type)
+            {
+                case RdoFieldType.FixedLengthText
+                    when fieldInfo.PropertyInfo.PropertyType == typeof(long) || fieldInfo.PropertyInfo.PropertyType == typeof(long?):
+                    return value?.ToString();
+                
+                default:
+                    return value;
+            }
+        }
+
         private HashSet<Guid> GetFieldsGuidsFromExpressions<TRdo>(Expression<Func<TRdo, object>>[] fields)
             where TRdo : IRdoType
         {

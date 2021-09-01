@@ -163,10 +163,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			List<File> alreadyCalculatedFiles = files.GetRange(0, calculatedFilesCount).ToList();
 			SetupSyncStatistics(new SyncStatisticsRdo
 			{
-				DocumentsCalculated = alreadyCalculatedFiles.Count,
-				DocumentsRequested = files.Count,
-				FilesSizeCalculated = alreadyCalculatedFiles.Sum(x => x.Size),
-				FilesCountCalculated = alreadyCalculatedFiles.Count,
+				CalculatedDocuments = alreadyCalculatedFiles.Count,
+				RequestedDocuments = files.Count,
+				CalculatedFilesSize = alreadyCalculatedFiles.Sum(x => x.Size),
+				CalculatedFilesCount = alreadyCalculatedFiles.Count,
 				RunId = _EXPORT_RUN_ID
 			});
 
@@ -197,10 +197,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			List<File> alreadyCalculatedFiles = files.GetRange(0, calculatedFilesCount).ToList();
 			SetupSyncStatistics(new SyncStatisticsRdo
 			{
-				DocumentsCalculated = alreadyCalculatedFiles.Count,
-				DocumentsRequested = files.Count,
-				FilesSizeCalculated = alreadyCalculatedFiles.Sum(x => x.Size),
-				FilesCountCalculated = alreadyCalculatedFiles.Count,
+				CalculatedDocuments = alreadyCalculatedFiles.Count,
+				RequestedDocuments = files.Count,
+				CalculatedFilesSize = alreadyCalculatedFiles.Sum(x => x.Size),
+				CalculatedFilesCount = alreadyCalculatedFiles.Count,
 				RunId = _EXPORT_RUN_ID
 			});
 
@@ -227,10 +227,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			SetupSyncStatistics(new SyncStatisticsRdo
 			{
-				DocumentsCalculated = files.Count,
-				DocumentsRequested = files.Count,
-				FilesSizeCalculated = files.Sum(x => x.Size),
-				FilesCountCalculated = files.Count,
+				CalculatedDocuments = files.Count,
+				RequestedDocuments = files.Count,
+				CalculatedFilesSize = files.Sum(x => x.Size),
+				CalculatedFilesCount = files.Count,
 				RunId = _EXPORT_RUN_ID
 			});
 
@@ -255,10 +255,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			SetupSyncStatistics(new SyncStatisticsRdo
 			{
-				DocumentsCalculated = files.Count,
-				DocumentsRequested = files.Count,
-				FilesSizeCalculated = files.Sum(x => x.Size),
-				FilesCountCalculated = files.Count,
+				CalculatedDocuments = files.Count,
+				RequestedDocuments = files.Count,
+				CalculatedFilesSize = files.Sum(x => x.Size),
+				CalculatedFilesCount = files.Count,
 				RunId = _EXPORT_RUN_ID
 			});
 
@@ -341,9 +341,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_rdoManagerMock.Verify(x => x.SetValuesAsync(_WORKSPACE_ID,
 				It.Is<SyncStatisticsRdo>(s =>
 					s.RunId == _EXPORT_RUN_ID &&
-					s.DocumentsCalculated == files.Count &&
-					s.FilesSizeCalculated == files.Sum(f => f.Size) &&
-					s.FilesCountCalculated == files.Count)));
+					s.CalculatedDocuments == files.Count &&
+					s.CalculatedFilesSize == files.Sum(f => f.Size) &&
+					s.CalculatedFilesCount == files.Count)));
 		}
 
 		private void VerifyBatchesWasRetrieved(int batchesCount)

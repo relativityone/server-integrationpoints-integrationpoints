@@ -24,7 +24,11 @@ namespace Relativity.Sync.Transfer
 			{
 				if (_destinationFolderStructureBehavior == DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)
 				{
-					return _folderPathsMap[document.ArtifactID];
+                    if (_folderPathsMap.ContainsKey(document.ArtifactID))
+                    {
+						return _folderPathsMap[document.ArtifactID];
+					}
+					throw new SyncItemLevelErrorException($"Could not find folder for document with ID { document.ArtifactID }.");
 				}
 				return initialValue;
 			}

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.RDOs.Framework;
-using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.Common.RDOs;
 
 namespace Relativity.Sync.Tests.Unit.RDOs
 {
