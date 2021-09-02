@@ -43,6 +43,7 @@
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.Autofac.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.LongPath.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataExchange.Client.SDK.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataTransfer.Legacy.SDK.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataTransfer.MessageService.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Telemetry.Services.Interface.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.Transfer.Client.Aspera.dll</Assembly>

@@ -11,16 +11,17 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using FileNaming.CustomFileNaming;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using Relativity;
 using Relativity.DataExchange.Io;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 using IExporter = kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary.IExporter;
 using IServiceFactory = kCura.WinEDDS.Service.Export.IServiceFactory;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportProcessBuilder : IExportProcessBuilder
 	{
+		private readonly IServicesMgr _servicesMgr;
 		private readonly IConfigFactory _configFactory;
 		private readonly IWebApiLoginService _credentialProvider;
 		private readonly IExtendedExporterFactory _extendedExporterFactory;
@@ -44,20 +46,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IRepositoryFactory _repositoryFactory;
 
 		public ExportProcessBuilder(
-			IConfigFactory configFactory, 
+			IServicesMgr servicesMgr,
+			IConfigFactory configFactory,
 			ICompositeLoggingMediator loggingMediator,
-			IUserMessageNotification userMessageNotification, 
+			IUserMessageNotification userMessageNotification,
 			IUserNotification userNotification,
-			IWebApiLoginService credentialProvider, 
+			IWebApiLoginService credentialProvider,
 			IExtendedExporterFactory extendedExporterFactory,
-			IExportFileBuilder exportFileBuilder, 
-			IHelper helper, 
+			IExportFileBuilder exportFileBuilder,
+			IHelper helper,
 			IJobStatisticsService jobStatisticsService,
 			IJobInfoFactory jobHistoryFactory,
 			IDirectory directoryWrap,
 			IExportServiceFactory exportServiceFactory,
 			IRepositoryFactory repositoryFactory)
 		{
+			_servicesMgr = servicesMgr;
 			_configFactory = configFactory;
 			_loggingMediator = loggingMediator;
 			_userMessageNotification = userMessageNotification;
@@ -88,7 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 				PerformLogin(exportFile);
 				IServiceFactory serviceFactory = _exportServiceFactory.Create(exportDataContext);
-				PopulateExportFieldsSettings(exportDataContext, serviceFactory);
+				PopulateExportFieldsSettings(exportDataContext);
 
 				SetRuntimeSettings(exportFile, settings, job);
 				IExporter exporter = _extendedExporterFactory.Create(exportDataContext, serviceFactory);
@@ -126,19 +130,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.Credential = _credentialProvider.Authenticate(cookieContainer);
 		}
 
-		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext, IServiceFactory serviceFactory)
+		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext)
 		{
 			LogPopulatingFields();
-			using (ISearchManager searchManager = serviceFactory.CreateSearchManager())
-			{
-				PopulateCaseInfo(exportDataContext.ExportFile);
-				SetRdoModeSpecificSettings(exportDataContext.ExportFile);
-				SetAllExportableFields(exportDataContext.ExportFile, searchManager);
+			PopulateCaseInfo(exportDataContext.ExportFile);
+			SetRdoModeSpecificSettings(exportDataContext.ExportFile);
+			SetAllExportableFields(exportDataContext.ExportFile);
 
-				PopulateViewFields(exportDataContext.ExportFile, exportDataContext.Settings.SelViewFieldIds.Select(item => item.Key).ToList());
-				PopulateNativeFileNameViewFields(exportDataContext);
-				PopulateTextPrecedenceFields(exportDataContext.ExportFile, exportDataContext.Settings.TextPrecedenceFieldsIds);
-			}
+			PopulateViewFields(exportDataContext.ExportFile, exportDataContext.Settings.SelViewFieldIds.Select(item => item.Key).ToList());
+			PopulateNativeFileNameViewFields(exportDataContext);
+			PopulateTextPrecedenceFields(exportDataContext.ExportFile, exportDataContext.Settings.TextPrecedenceFieldsIds);
 		}
 
 		private void PopulateNativeFileNameViewFields(ExportDataContext exportDataContext)
@@ -166,9 +167,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			}
 		}
 
-		private static void SetAllExportableFields(ExportFile exportFile, ISearchManager searchManager)
+		private void SetAllExportableFields(ExportFile exportFile)
 		{
-			exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID);
+			using (ISearchService searchService = _servicesMgr.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser))
+			{
+				DataSet dataSet = searchService.RetrieveAllExportableViewFieldsAsync(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID, string.Empty).GetAwaiter().GetResult()?.Unwrap();
+
+				if (dataSet != null && dataSet.Tables.Count > 0)
+				{
+					exportFile.AllExportableFields = dataSet
+						.Tables[0]
+						.AsEnumerable()
+						.Select(dataRow => new ViewFieldInfo(dataRow))
+						.ToArray();
+				}
+			}
 		}
 
 		private void PopulateCaseInfo(ExportFile exportFile)
@@ -187,10 +200,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private static global::Relativity.DataExchange.Service.CaseInfo ConvertToDto(ICaseInfoDto caseInfo)
 		{
-			return caseInfo == null 
-				? null 
+			return caseInfo == null
+				? null
 				: new global::Relativity.DataExchange.Service.CaseInfo
-				  {
+				{
 					Name = caseInfo.Name,
 					ArtifactID = caseInfo.ArtifactID,
 					DownloadHandlerURL = caseInfo.DownloadHandlerURL,
@@ -202,7 +215,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					RootArtifactID = caseInfo.RootArtifactID,
 					AsImportAllowed = caseInfo.AsImportAllowed,
 					EnableDataGrid = caseInfo.EnableDataGrid
-				  };
+				};
 		}
 
 		private void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds)

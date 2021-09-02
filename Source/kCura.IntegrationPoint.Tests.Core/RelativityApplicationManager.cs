@@ -71,17 +71,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				await WaitForInstallCompletionWithinTimeoutAsync(currentInstallStatusGetter).ConfigureAwait(false);
 			}
 		}
-
-		public async Task<bool> IsApplicationInstalledAndUpToDateAsync(int workspaceArtifactID, Guid guid)
-		{
-			using (var applicationInstallManager = _helper.CreateProxy<IApplicationInstallManager>())
-			{
-				GetInstallStatusResponse installStatusResponse = await applicationInstallManager.GetStatusAsync(workspaceArtifactID, guid).ConfigureAwait(false);
-
-				return IsInstallSuccessfullyCompleted(installStatusResponse.InstallStatus);
-			}
-		}
-
+		
 		private string GetLocalRipRapPath()
 		{
 			return SharedVariables.RipRapFilePath;

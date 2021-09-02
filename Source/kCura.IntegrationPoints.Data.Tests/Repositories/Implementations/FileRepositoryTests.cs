@@ -11,9 +11,11 @@ using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.WinEDDS.Service.Export;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Services.Interfaces.File.Models;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
@@ -21,7 +23,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 	[TestFixture, Category("Unit")]
 	public class FileRepositoryTests
 	{
-		private Mock<ISearchManager> _searchManagerMock;
+		private Mock<ISearchService> _searchServiceMock;
+		private Mock<IServicesMgr> _servicesMgr;
 		private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
 		private Mock<IExternalServiceSimpleInstrumentation> _instrumentationSimpleProviderMock;
 		private Mock<IRetryHandler> _retryHandlerMock;
@@ -31,7 +34,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 		private const int _WORKSPACE_ID = 1001000;
 		private const string _KEPLER_SERVICE_TYPE = "Kepler";
-		private const string _KEPLER_SERVICE_NAME = nameof(ISearchManager);
+		private const string _KEPLER_SERVICE_NAME = nameof(ISearchService);
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN = "DocumentArtifactID";
 		private const string _FILE_NAME_COLUMN = "Filename";
 		private const string _LOCATION_COLUMN = "Location";
@@ -144,7 +147,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		[SetUp]
 		public void SetUp()
 		{
-			_searchManagerMock = new Mock<ISearchManager>();
+			_searchServiceMock = new Mock<ISearchService>();
+			_servicesMgr = new Mock<IServicesMgr>();
+			_servicesMgr.Setup(x => x.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser)).Returns(_searchServiceMock.Object);
 			_retryHandlerMock = new Mock<IRetryHandler>();
 			_retryHandlerFactoryMock = new Mock<IRetryHandlerFactory>();
 			_retryHandlerFactoryMock
@@ -159,7 +164,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					It.IsAny<string>()))
 				.Returns(_instrumentationSimpleProviderMock.Object);
 
-			_sut = new FileRepository(() => _searchManagerMock.Object, _instrumentationProviderMock.Object, _retryHandlerFactoryMock.Object );
+			_sut = new FileRepository(_servicesMgr.Object, _instrumentationProviderMock.Object, _retryHandlerFactoryMock.Object );
 		}
 
 		[Test]
@@ -184,7 +189,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<DataSet>(
-				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
+				operationName: nameof(ISearchService.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync)
 			);
 			AssertIfListsAreSameAsExpected(
 				_testProductionDocumentImageResponses.Select(x => x.Location).ToList(),
@@ -208,7 +213,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
+				operationName: nameof(ISearchService.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync)
 			);
 		}
 
@@ -228,7 +233,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.SelectMany(x => x).Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesForProductionDocuments)
+				operationName: nameof(ISearchService.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync)
 			);
 		}
 
@@ -276,7 +281,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
 			//assert
 			VerifyIfInstrumentationHasBeenCalled<DataSet>(
-				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
+				operationName: nameof(ISearchService.RetrieveImagesForSearchAsync)
 			);
 			AssertIfListsAreSameAsExpected(
 				_testDocumentImageResponses.Select(x => x.Location).ToList(),
@@ -296,7 +301,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
+				operationName: nameof(ISearchService.RetrieveImagesForSearchAsync)
 			);
 		}
 
@@ -312,7 +317,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			//assert
 			result.SelectMany(x => x).Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveImagesForDocuments)
+				operationName: nameof(ISearchService.RetrieveImagesForSearchAsync)
 			);
 		}
 
@@ -349,16 +354,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_retryHandlerMock
 				.Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
 				.Returns( (Func<DataSet> f, string s) => f.Invoke());
-			_searchManagerMock
-				.Setup(x => x.RetrieveNativesForSearch(_WORKSPACE_ID, documentArtifactIDsString))
-				.Returns(filesDataSet);
+			_searchServiceMock
+				.Setup(x => x.RetrieveNativesForSearchAsync(_WORKSPACE_ID, documentArtifactIDsString, string.Empty))
+				.ReturnsAsync(new DataSetWrapper(filesDataSet));
 
 			// act
 			List<FileDto> result = _sut.GetNativesForDocuments(_WORKSPACE_ID, documentArtifactIDs);
 
 			// assert
 			VerifyIfInstrumentationHasBeenCalled<DataSet>(
-				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
+				operationName: nameof(ISearchService.RetrieveNativesForSearchAsync)
 			);
 			AssertFileDtosAreIdentical(result, expectedResult);
 		}
@@ -375,7 +380,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			// assert
 			action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
+				operationName: nameof(ISearchService.RetrieveNativesForSearchAsync)
 			);
 		}
 
@@ -391,7 +396,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			// assert
 			result.Should().BeEmpty();
 			VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
-				operationName: nameof(ISearchManager.RetrieveNativesForSearch)
+				operationName: nameof(ISearchService.RetrieveNativesForSearchAsync)
 			);
 		}
 

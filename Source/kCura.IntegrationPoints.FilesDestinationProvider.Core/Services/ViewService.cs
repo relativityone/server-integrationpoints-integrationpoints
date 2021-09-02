@@ -2,49 +2,43 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Common.Extensions.DotNet;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.WinEDDS.Service.Export;
 using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
 	public class ViewService : IViewService
 	{
-		#region Constructors
-
-		public ViewService(IServiceManagerProvider serviceManagerProvider, IHelper helper)
-		{
-			_serviceManagerProvider = serviceManagerProvider;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ViewService>();
-		}
-
-		#endregion //Constructors
-
-		#region Fields
-
-		private readonly IServiceManagerProvider _serviceManagerProvider;
+		private readonly IServicesMgr _servicesMgr;
 		private readonly IAPILog _logger;
 
-		#endregion //Fields
-
-		#region Methods
-
+		public ViewService(IHelper helper)
+		{
+			_servicesMgr = helper.GetServicesManager();
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ViewService>();
+		}
+		
 		public List<ViewDTO> GetViewsByWorkspaceAndArtifactType(int workspceId, int artifactTypeId)
 		{
-			ISearchManager searchManager = _serviceManagerProvider.Create<ISearchManager, SearchManagerFactory>();
-			// Third argument has to be always False in case of RIP Export
-			DataTableCollection retTables = searchManager.RetrieveViewsByContextArtifactID(workspceId, artifactTypeId, false).Tables;
-
-			if (retTables.IsNullOrEmpty())
+			using (ISearchService searchService = _servicesMgr.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser))
 			{
-				LogRetrievingViewsError(workspceId, artifactTypeId);
-				throw new Exception($"No result returned when call to {nameof(ISearchManager.RetrieveViewsByContextArtifactID)} method!");
+				List<ViewDTO> views = new List<ViewDTO>();
+
+				DataSet dataSet = searchService.RetrieveViewsByContextArtifactIDAsync(workspceId, artifactTypeId, false, string.Empty).GetAwaiter().GetResult()?.Unwrap();
+				if (dataSet != null && dataSet.Tables.Count > 0)
+				{
+					views = ConvertToView(dataSet.Tables);
+				}
+				else
+				{
+					LogRetrievingViewsError(workspceId, artifactTypeId);
+					throw new Exception($"No result returned when call to {nameof(ISearchService.RetrieveViewsByContextArtifactIDAsync)} method!");
+				}
+
+				return views;
 			}
-			return ConvertToView(retTables);
 		}
 
 		private List<ViewDTO> ConvertToView(DataTableCollection retTables)
@@ -62,16 +56,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 				.OrderBy(view => view.Order)
 				.ToList();
 		}
-
-		#endregion //Methods
-
-		#region Logging
-
+		
 		private void LogRetrievingViewsError(int workspceId, int artifactTypeId)
 		{
 			_logger.LogError("No views returned for ArtifactType {ArtifactTypeId} in Workspace {WorkspaceId}.", artifactTypeId, workspceId);
 		}
-
-		#endregion
 	}
 }

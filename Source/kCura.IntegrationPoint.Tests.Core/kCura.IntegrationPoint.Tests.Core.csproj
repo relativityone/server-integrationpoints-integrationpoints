@@ -79,7 +79,6 @@
     <Compile Include="Extensions\SecureStringExtension.cs" />
     <Compile Include="Extensions\WindsorTestingExtensions.cs" />
     <Compile Include="Fields.cs" />
-    <Compile Include="FileShareHelper.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\ComponentsModelAssertions.cs" />
     <Compile Include="FluentAssertions\Assertions\EitherAssertions.cs" />
@@ -89,7 +88,6 @@
     <Compile Include="FluentAssertions\WindsorContainerExtensions.cs" />
     <Compile Include="ImportHelper.cs" />
     <Compile Include="InstanceSetting.cs" />
-    <Compile Include="IntegrationPointsCloneHelper.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Models\Audit.cs" />
     <Compile Include="Models\Constants\Shared\LoadFileEncodingConstants.cs" />
@@ -150,7 +148,6 @@
     <Compile Include="Models\Shared\OverwriteType.cs" />
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
-    <Compile Include="Productions\ProductionHelper.cs" />
     <Compile Include="TestCategories\Attributes\NotWorkingOnTridentAttribute.cs" />
     <Compile Include="TestHelpers\FakeHelper.cs" />
     <Compile Include="TestRdoGenerator.cs" />
@@ -170,8 +167,6 @@
     <Compile Include="PermissionValidatorTestsBase.cs" />
     <Compile Include="Placeholder.cs" />
     <Compile Include="RelativityApplicationManager.cs" />
-    <Compile Include="ResourcePoolHelper.cs" />
-    <Compile Include="ResourceServerHelper.cs" />
     <Compile Include="SavedSearch.cs" />
     <Compile Include="SharedVariables.cs" />
     <Compile Include="Status.cs" />
@@ -182,7 +177,6 @@
     <Compile Include="TestHelpers\Converters\DataRowExtensions.cs" />
     <Compile Include="TestHelpers\Dto\FileTestDto.cs" />
     <Compile Include="TestHelpers\ExceptionHelper.cs" />
-    <Compile Include="TestHelpers\ExtendedIAgentHelper.cs" />
     <Compile Include="TestHelpers\FileServiceBase.cs" />
     <Compile Include="TestHelpers\FolderWithDocumentsIdRetriever.cs" />
     <Compile Include="TestHelpers\IImagesService.cs" />
@@ -8001,6 +7995,17 @@
         </Reference>
         <Reference Include="Relativity.DataExchange.Client.SDK">
           <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

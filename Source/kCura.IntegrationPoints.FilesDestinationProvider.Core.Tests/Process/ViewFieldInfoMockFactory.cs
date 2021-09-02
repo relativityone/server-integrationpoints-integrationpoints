@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Relativity;
 using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
@@ -7,25 +8,47 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 {
 	internal static class ViewFieldInfoMockFactory
 	{
-		public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<int> expected,
-			bool addFileField = false, int fileFieldId = 0)
+		public static ViewFieldInfo[] CreateMockedViewFieldInfoArray(List<int> expected, bool addFileField = false, int fileFieldId = 0)
 		{
-			var viewFieldInfo = new List<ViewFieldInfo>();
+			DataTable dataTable = CreateMockedViewFieldInfoDataTable(expected, addFileField, fileFieldId);
+
+			ViewFieldInfo[] viewFields = dataTable
+				.AsEnumerable()
+				.Select(dataRow => new ViewFieldInfo(dataRow))
+				.ToArray();
+
+			return viewFields;
+		}
+
+		public static DataSet CreateMockedViewFieldInfoDataSet(List<int> expected, bool addFileField = false, int fileFieldId = 0)
+		{
+			DataTable dataTable = CreateMockedViewFieldInfoDataTable(expected, addFileField, fileFieldId);
+
+			DataSet dataSet = new DataSet();
+			dataSet.Tables.Add(dataTable);
+
+			return dataSet;
+		}
+
+		private static DataTable CreateMockedViewFieldInfoDataTable(List<int> expected, bool addFileField = false, int fileFieldId = 0)
+		{
 			DataTable dataTable = CreateMock();
+
 			int elemIndex = 0;
-			foreach (var i in expected)
+			foreach (int i in expected)
 			{
-				var row = dataTable.NewRow();
+				DataRow row = dataTable.NewRow();
 				row["AvfId"] = i;
 				if (addFileField && elemIndex++ == 0)
 				{
 					row["FieldTypeID"] = global::Relativity.DataExchange.Service.FieldType.File;
 					row["FieldArtifactID"] = fileFieldId;
 				}
-				viewFieldInfo.Add(new ViewFieldInfo(row));
+
+				dataTable.Rows.Add(row);
 			}
 
-			return viewFieldInfo.ToArray();
+			return dataTable;
 		}
 
 		private static DataTable CreateMock()

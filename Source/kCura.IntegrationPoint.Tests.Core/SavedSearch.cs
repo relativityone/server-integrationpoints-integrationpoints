@@ -31,17 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return await proxy.CreateSingleAsync(workspaceID, keywordSearch).ConfigureAwait(false);
 			}
 		}
-
-		public static void UpdateSavedSearchCriteria(int workspaceArtifactID, int searchArtifactID, CriteriaCollection searchCriteria)
-		{
-			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
-			{
-				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactID, searchArtifactID).Result;
-				keywordSearch.SearchCriteria = searchCriteria;
-				proxy.UpdateSingleAsync(workspaceArtifactID, keywordSearch).GetAwaiter().GetResult();
-			}
-		}
-
+		
 		public static int Create(int workspaceArtifactID, KeywordSearch search)
 		{
 			using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
