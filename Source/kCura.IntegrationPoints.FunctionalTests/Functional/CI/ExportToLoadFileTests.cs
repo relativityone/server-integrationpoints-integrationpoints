@@ -7,10 +7,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
     public class ExportToLoadFileTests : TestsBase
     {
         private ExportToLoadFileTestImplementation _testImplementation;
+
         public ExportToLoadFileTests() 
             : base(nameof(ExportToLoadFileTests))
         {
-            
             _testImplementation = new ExportToLoadFileTestImplementation(this);
         }
 
