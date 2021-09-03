@@ -55,9 +55,17 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			string correlationId = taskParameters.BatchInstance.ToString();
 
-			SendRecordsMessage(providerName, jobHistory, correlationId);
-			SendThroughputMessage(providerName, jobHistory, correlationId);
-			SendLifetimeMessage(status, providerName, correlationId);
+			if(IsJobFinished(status))
+			{
+				SendRecordsMessage(providerName, jobHistory, correlationId);
+				SendThroughputMessage(providerName, jobHistory, correlationId);
+				SendLifetimeMessage(status, providerName, correlationId);
+			}
+		}
+
+		private bool IsJobFinished(ChoiceRef status)
+		{
+			return !status.EqualsToChoice(JobStatusChoices.JobHistorySuspended);
 		}
 
 		private void SendRecordsMessage(string providerName, JobHistory jobHistory, string correlationId)

@@ -210,6 +210,21 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_messageServiceMock.Verify(x => x.Send(It.Is<JobCompletedRecordsCountMessage>(m => m.Provider == _EXPECTED_PROVIDER_NAME)), Times.Once);
 		}
 
+		[Test]
+		public void OnJobComplete_ShouldNotSendAnyMetrics_WhenJobHasBeenSuspended()
+		{
+			// Arrange
+			Job job = JobExtensions.CreateJob();
+
+			SetupJobHistoryExpectedStatus(JobStatusChoices.JobHistorySuspended);
+
+			// Act
+			_sut.OnJobComplete(job);
+
+			// Assert
+			_messageServiceMock.Verify(x => x.Send(It.IsAny<IMessage>()), Times.Never);
+		}
+
 		private void SetupJobHistoryExpectedStatus(ChoiceRef status)
 		{
 			_jobStatusUpdaterFake.Setup(x => x.GenerateStatus(It.IsAny<JobHistory>(), It.IsAny<long?>()))
