@@ -12,7 +12,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
-using NSubstitute;
+using Moq;
 using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
@@ -22,102 +22,106 @@ namespace kCura.IntegrationPoints.Core.Tests
 	[TestFixture, Category("Unit")]
 	public class JobLifetimeMetricBatchStatusTests : TestBase
 	{
-		private IMessageService _messageService;
-		private IIntegrationPointService _integrationPointService;
-		private IProviderTypeService _providerTypeService;
-		private IJobStatusUpdater _updater;
-		private IJobHistoryService _jobHistoryService;
-		private ISerializer _serializer;
-		private IDateTimeHelper _dateTimeHelper;
+		private Mock<IMessageService> _messageServiceMock;
+		private Mock<IJobHistoryService> _jobHistoryServiceFake;
+		private Mock<IDateTimeHelper> _dateTimeHelperFake;
+		private Mock<IJobStatusUpdater> _jobStatusUpdaterFake;
 
-		private Data.IntegrationPoint _integrationPoint;
-		private TaskParameters _taskParameters;
-
-		private JobLifetimeMetricBatchStatus _instance;
+		private JobLifetimeMetricBatchStatus _sut;
 
 		private const string _EXPECTED_PROVIDER_NAME = "SomeProvider";
+
+		private readonly DateTime _JOB_HISTORY_START_TIME_UTC = new DateTime(2021, 9, 3, 7, 0, 0);
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_messageService = Substitute.For<IMessageService>();
-			_integrationPointService = Substitute.For<IIntegrationPointService>();
-			_providerTypeService = Substitute.For<IProviderTypeService>();
-			_providerTypeService.GetProviderName(Arg.Any<int>(), Arg.Any<int>()).Returns(_EXPECTED_PROVIDER_NAME);
-			_updater = Substitute.For<IJobStatusUpdater>();
-			_jobHistoryService = Substitute.For<IJobHistoryService>();
-			_jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(new JobHistory() { ItemsTransferred = 0, TotalItems = 0, StartTimeUTC = DateTime.UtcNow, EndTimeUTC = DateTime.UtcNow.AddSeconds(5) });
-			_serializer = Substitute.For<ISerializer>();
-			_dateTimeHelper = Substitute.For<IDateTimeHelper>();
+			_messageServiceMock = new Mock<IMessageService>();
 
-			_integrationPoint = Substitute.For<Data.IntegrationPoint>();
-			_integrationPoint.SourceProvider.Returns(0);
-			_integrationPoint.DestinationProvider.Returns(0);
+			Mock<IIntegrationPointService> integrationPointService = new Mock<IIntegrationPointService>();
+			integrationPointService.Setup(x => x.ReadIntegrationPoint(It.IsAny<int>()))
+				.Returns(new Data.IntegrationPoint
+				{
+					SourceProvider = It.IsAny<int>(),
+					DestinationProvider = It.IsAny<int>()
+				});
 
-			_integrationPointService.ReadIntegrationPoint(Arg.Any<int>()).Returns(_integrationPoint);
+			_jobHistoryServiceFake = new Mock<IJobHistoryService>();
+			SetupJobHistory();
 
-			_taskParameters = Substitute.For<TaskParameters>();
-			_taskParameters.BatchInstance = Guid.Empty;
+			_dateTimeHelperFake = new Mock<IDateTimeHelper>();
 
-			_serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(_taskParameters);
+			Mock<IProviderTypeService> providerTypeService = new Mock<IProviderTypeService>();
+			providerTypeService.Setup(x => x.GetProviderName(It.IsAny<int>(), It.IsAny<int>()))
+				.Returns(_EXPECTED_PROVIDER_NAME);
 
-			_instance = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, _jobHistoryService, _serializer, _dateTimeHelper);
+			Mock<ISerializer> serializer = new Mock<ISerializer>();
+			serializer.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>()))
+				.Returns(new TaskParameters { BatchInstance = Guid.NewGuid() });
+
+			_jobStatusUpdaterFake = new Mock<IJobStatusUpdater>();
+
+			_sut = new JobLifetimeMetricBatchStatus(_messageServiceMock.Object, integrationPointService.Object,
+				providerTypeService.Object, _jobStatusUpdaterFake.Object, _jobHistoryServiceFake.Object, serializer.Object, _dateTimeHelperFake.Object);
 		}
 
 		[Test]
 		public void OnJobStart_SendJobStartedMessage()
 		{
-			// ARRANGE
+			// Arrange
 			Job job = JobExtensions.CreateJob();
 
-			// ACT
-			_instance.OnJobStart(job);
+			// Act
+			_sut.OnJobStart(job);
 
-			// ASSERT
-			_messageService.DidNotReceive().Send(Arg.Any<JobStartedMessage>());
+			// Assert
+			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobStartedMessage>()), Times.Never);
 		}
 
 		[Test]
 		public void OnJobComplete_SendJobFailedMessage()
 		{
-			// ARRANGE
+			// Arrange
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryErrorJobFailed);
 
-			// ACT
-			_instance.OnJobComplete(job);
+			SetupJobHistoryExpectedStatus(JobStatusChoices.JobHistoryErrorJobFailed);
 
-			// ASSERT
-			_messageService.Received().Send(Arg.Any<JobFailedMessage>());
+			// Act
+			_sut.OnJobComplete(job);
+
+			// Assert
+			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobFailedMessage>()), Times.Once);
 		}
 
 		[Test]
 		public void OnJobComplete_SendJobValidationFailedMessage()
 		{
-			// ARRANGE
+			// Arrange
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryValidationFailed);
 
-			// ACT
-			_instance.OnJobComplete(job);
+			SetupJobHistoryExpectedStatus(JobStatusChoices.JobHistoryValidationFailed);
 
-			// ASSERT
-			_messageService.Received().Send(Arg.Any<JobValidationFailedMessage>());
+			// Act
+			_sut.OnJobComplete(job);
+
+			// Assert
+			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobValidationFailedMessage>()), Times.Once);
 		}
 
 		[Test]
 		[TestCaseSource(nameof(JobCompletedStatusChoices))]
 		public void OnJobComplete_SendJobCompletedMessage(ChoiceRef status)
 		{
-			// ARRANGE
+			// Arrange
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(status);
 
-			// ACT
-			_instance.OnJobComplete(job);
+			SetupJobHistoryExpectedStatus(status);
 
-			// ASSERT
-			_messageService.Received().Send(Arg.Any<JobCompletedMessage>());
+			// Act
+			_sut.OnJobComplete(job);
+
+			// Assert
+			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobCompletedMessage>()), Times.Once);
 		}
 
 		[TestCase(50, 10)]
@@ -126,110 +130,104 @@ namespace kCura.IntegrationPoints.Core.Tests
 		[TestCase(1000, 1)]
 		public void OnJobComplete_SendThroughput(int records, double durationInSeconds)
 		{
-			// ARRANGE
+			// Arrange
 			Job job = JobExtensions.CreateJob();
-			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
-			JobHistory jobHistory = new JobHistory();
-			jobHistory.StartTimeUTC = new DateTime(2018, 1, 1, 0, 0, 0);
-			jobHistory.EndTimeUTC = jobHistory.StartTimeUTC.Value.AddSeconds(durationInSeconds);
-			jobHistory.TotalItems = records;
-			jobHistory.ItemsTransferred = records;
-			jobHistory.ItemsWithErrors = 0;
-			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
 
-			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
+			SetupJobHistory(
+				endTimeUtc: _JOB_HISTORY_START_TIME_UTC.AddSeconds(durationInSeconds),
+				totalItems: records,
+				itemsTransferred: records);
 
-			JobLifetimeMetricBatchStatus metric = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, jobHistoryService, _serializer, _dateTimeHelper);
+			SetupJobHistoryExpectedStatus(JobStatusChoices.JobHistoryCompleted);
 
-			// ACT
-			metric.OnJobComplete(job);
+			// Act
+			_sut.OnJobComplete(job);
 
-			// ASSERT
+			// Assert
 			double expectedThroughput = records / durationInSeconds;
-			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.RecordsPerSecond == expectedThroughput));
+			_messageServiceMock.Verify(x => x.Send(It.Is<JobThroughputMessage>(m => m.RecordsPerSecond == expectedThroughput)), Times.Once);
 		}
 
 		[Test]
 		public void OnJobComplete_NotSendingThroughputWhenZeroRecords()
 		{
-			// ARRANGE
+			// Arrange
 			Job job = JobExtensions.CreateJob();
-			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
-			JobHistory jobHistory = new JobHistory();
-			jobHistory.StartTimeUTC = new DateTime(2018, 1, 1, 0, 0, 0);
-			jobHistory.EndTimeUTC = jobHistory.StartTimeUTC.Value.AddSeconds(1);
-			jobHistory.TotalItems = 10;
-			jobHistory.ItemsTransferred = 0;
-			jobHistory.ItemsWithErrors = 0;
-			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
 
-			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
+			SetupJobHistory(endTimeUtc: _JOB_HISTORY_START_TIME_UTC.AddSeconds(1));
 
-			JobLifetimeMetricBatchStatus metric = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, jobHistoryService, _serializer, _dateTimeHelper);
+			SetupJobHistoryExpectedStatus(JobStatusChoices.JobHistoryCompleted);
 
-			// ACT
-			metric.OnJobComplete(job);
+			// Act
+			_sut.OnJobComplete(job);
 
-			// ASSERT
-			_messageService.DidNotReceive().Send(Arg.Any<JobThroughputMessage>());
+			// Assert
+			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobThroughputMessage>()), Times.Never);
 		}
 
 		[Test]
 		public void OnJobComplete_NullEndTimeDoesntBreakMetric()
 		{
-			// ARRANGE
-			int itemsTransfered = 10;
-			int seconds = 10;
+			// Arrange
+			const int itemsTransferred = 10;
+			const int seconds = 10;
+
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryErrorJobFailed);
-			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
-			JobHistory jobHistory = new JobHistory();
-			jobHistory.StartTimeUTC = new DateTime(2018, 1, 1, 0, 0, 0);
-			jobHistory.EndTimeUTC = null;
-			jobHistory.TotalItems = 0;
-			jobHistory.ItemsTransferred = itemsTransfered;
-			jobHistory.ItemsWithErrors = 0;
-			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
 
-			IDateTimeHelper dateTimeHelper = Substitute.For<IDateTimeHelper>();
-			dateTimeHelper.Now().Returns(jobHistory.StartTimeUTC.Value.AddSeconds(seconds));
+			SetupJobHistoryExpectedStatus(JobStatusChoices.JobHistoryErrorJobFailed);
 
-			JobLifetimeMetricBatchStatus metric = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, jobHistoryService, _serializer, dateTimeHelper);
+			SetupJobHistory(itemsTransferred: itemsTransferred);
 
-			// ACT
-			metric.OnJobComplete(job);
+			_dateTimeHelperFake.Setup(x => x.Now()).Returns(_JOB_HISTORY_START_TIME_UTC.AddSeconds(seconds));
 
-			// ASSERT
-			double expectedThroughput = (double) itemsTransfered / seconds;
-			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.RecordsPerSecond == expectedThroughput));
+			// Act
+			_sut.OnJobComplete(job);
+
+			// Assert
+			double expectedThroughput = (double)itemsTransferred / seconds;
+			_messageServiceMock.Verify(x => x.Send(It.Is<JobThroughputMessage>(m => m.RecordsPerSecond == expectedThroughput)), Times.Once);
 		}
 
 		[Test]
 		public void OnJobComplete_ShouldSendCorrectProviderName()
 		{
 			// Arrange
+			const int itemsTransferred = 10;
+
 			Job job = JobExtensions.CreateJob();
-			_updater.GenerateStatus(Arg.Any<JobHistory>()).Returns(JobStatusChoices.JobHistoryCompleted);
 
-			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
-			JobHistory jobHistory = new JobHistory();
-			jobHistory.StartTimeUTC = new DateTime(2018, 1, 1, 0, 0, 0);
-			jobHistory.EndTimeUTC = null;
-			jobHistory.TotalItems = 0;
-			jobHistory.ItemsTransferred = 10;
-			jobHistory.ItemsWithErrors = 0;
-			jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistory);
+			SetupJobHistoryExpectedStatus(JobStatusChoices.JobHistoryCompleted);
 
-			JobLifetimeMetricBatchStatus metric = new JobLifetimeMetricBatchStatus(_messageService, _integrationPointService, _providerTypeService, _updater, jobHistoryService, _serializer, _dateTimeHelper);
+			SetupJobHistory(itemsTransferred: itemsTransferred);
 
 			// Act
-			metric.OnJobComplete(job);
+			_sut.OnJobComplete(job);
 
 			// Assert
-			_messageService.Received().Send(Arg.Is<JobCompletedMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
-			_messageService.Received().Send(Arg.Is<JobThroughputMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
-			_messageService.Received().Send(Arg.Is<JobTotalRecordsCountMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
-			_messageService.Received().Send(Arg.Is<JobCompletedRecordsCountMessage>(msg => msg.Provider == _EXPECTED_PROVIDER_NAME));
+			_messageServiceMock.Verify(x => x.Send(It.Is<JobCompletedMessage>(m => m.Provider == _EXPECTED_PROVIDER_NAME)), Times.Once);
+			_messageServiceMock.Verify(x => x.Send(It.Is<JobThroughputMessage>(m => m.Provider == _EXPECTED_PROVIDER_NAME)), Times.Once);
+			_messageServiceMock.Verify(x => x.Send(It.Is<JobTotalRecordsCountMessage>(m => m.Provider == _EXPECTED_PROVIDER_NAME)), Times.Once);
+			_messageServiceMock.Verify(x => x.Send(It.Is<JobCompletedRecordsCountMessage>(m => m.Provider == _EXPECTED_PROVIDER_NAME)), Times.Once);
+		}
+
+		private void SetupJobHistoryExpectedStatus(ChoiceRef status)
+		{
+			_jobStatusUpdaterFake.Setup(x => x.GenerateStatus(It.IsAny<JobHistory>(), It.IsAny<long?>()))
+				.Returns(status);
+		}
+
+		private void SetupJobHistory(DateTime? endTimeUtc = null, int totalItems = 0, 
+			int itemsTransferred = 0, int itemsWithErrors = 0)
+		{
+			_jobHistoryServiceFake.Setup(x => x.GetRdo(It.IsAny<Guid>()))
+				.Returns(new JobHistory
+				{
+					StartTimeUTC = _JOB_HISTORY_START_TIME_UTC,
+					EndTimeUTC = endTimeUtc,
+					TotalItems = totalItems,
+					ItemsTransferred = itemsTransferred,
+					ItemsWithErrors = itemsWithErrors
+				});
 		}
 
 		private static IEnumerable<ChoiceRef> JobCompletedStatusChoices()

@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Interfaces;
@@ -35,8 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			// Arrange
 			TestAgent sut = PrepareSut();
 
-			Job job = new JobBuilder()
-				.Build();
+			Job job = JobExtensions.CreateJob();
 
 			// Act
 			sut.ProcessJob_Test(job);
@@ -53,8 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
 
-			Job job = new JobBuilder()
-				.Build();
+			Job job = JobExtensions.CreateJob();
 
 			// Act
 			sut.ProcessJob_Test(job);
