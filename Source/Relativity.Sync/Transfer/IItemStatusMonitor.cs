@@ -13,5 +13,6 @@ namespace Relativity.Sync.Transfer
 		IEnumerable<string> GetSuccessfulItemIdentifiers();
 		int ProcessedItemsCount { get; }
 		int FailedItemsCount { get; }
+		int GetArtifactId(string itemIdentifier);
 	}
 }

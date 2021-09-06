@@ -68,6 +68,16 @@ namespace Relativity.Sync.Transfer
 
 		public int FailedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Failed);
 
+		public int GetArtifactId(string itemIdentifier)
+		{
+			if (_items.ContainsKey(itemIdentifier))
+			{
+				return _items[itemIdentifier].ArtifactId;
+			}
+
+			return -1;
+		}
+
 		private class ItemInfo
 		{
 			public int ArtifactId { get; }

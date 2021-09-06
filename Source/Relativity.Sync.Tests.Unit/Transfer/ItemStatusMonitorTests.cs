@@ -286,5 +286,36 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			result.Should().NotContain(failedItemArtifactId);
 			result.Should().Contain(successfulItemIdentifier);
 		}
+
+		[Test]
+		public void ItShouldGetProperArtifactIdBasedOnIdentifier()
+		{
+			//Arrange
+			var sut = new ItemStatusMonitor();
+			sut.AddItem(_FIRST_ITEM_IDENTIFIER, _FIRST_ITEM_ARTIFACT_ID);
+			sut.AddItem(_SECOND_ITEM_IDENTIFIER, _SECOND_ITEM_ARTIFACT_ID);
+
+			//Act
+			var result = sut.GetArtifactId(_SECOND_ITEM_IDENTIFIER);
+
+			//Assert
+			result.Should().Be(_SECOND_ITEM_ARTIFACT_ID);
+		}
+
+		[Test]
+		public void ItShouldNotThrowOnGetArtifactIdWhenItemDoesNotExist()
+		{
+			//Arrange
+			var sut = new ItemStatusMonitor();
+			
+			var notExistingIdentifier = "AnyString";
+			int expectedArtifactID = -1;
+			
+			//Act
+			var result = sut.GetArtifactId(notExistingIdentifier);
+
+			//Assert
+			result.Should().Be(expectedArtifactID);
+		}
 	}
 }
