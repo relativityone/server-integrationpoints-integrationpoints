@@ -128,6 +128,8 @@ if(-not $BuildToolsDirectory)
 
 $PSBoundParameters['ChromeBinaryLocation'] = Join-Path $PSScriptRoot ..\buildtools\Relativity.Chromium.Portable\tools
 
+$PSBoundParameters['ResultsLocation'] = Join-Path $PSScriptRoot ..\Artifacts\Logs
+
 Remove-Item (Join-Path $PSScriptRoot ..\FunctionalTestSettings) -Force -ErrorAction SilentlyContinue
 Remove-Item (Join-Path $PSScriptRoot ..\FunctionalTest.runsettings) -Force -ErrorAction SilentlyContinue
 

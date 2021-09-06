@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public void OnSetUpFixture()
         {
             // Installing necessary app
-            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") != null)
+            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
             {
                 SetDevelopmentModeToTrue();
                 InstallARMTestServicesToWorkspace();
