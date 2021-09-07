@@ -62,15 +62,19 @@ task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper
 }
 
 task restore_nuget {
+    dotnet --info
 
-    foreach($o in Get-ChildItem $source_directory){
-
-       if($o.Extension -ne '.sln') {continue}
-
-        exec {
-            & $nuget_exe @('restore', $o.FullName)
+    write-host "executing get_paket"
+    exec {
+        if (& dotnet tool list -g | Select-String "paket") {
+            Write-Host -f Yellow 'Skipping install of paket. It''s already installed'
         }
-    }
+        else {
+            dotnet tool install --global Paket --version 6.0.12 --add-source 'https://relativity.jfrog.io/artifactory/api/nuget/official-nuget-remote-cache'
+        }
+    }    
+
+    exec { & paket restore }
 } 
 
 task configure_paket {
