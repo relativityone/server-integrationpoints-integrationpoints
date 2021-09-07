@@ -10,6 +10,8 @@ namespace Relativity.Sync.Telemetry.Metrics
 	{
 		private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
 
+		private static readonly string SyncVersionStatic = GetVersion();
+
 		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_CORRELATION_ID)]
 		public string CorrelationId { get; set; }
 
@@ -18,6 +20,8 @@ namespace Relativity.Sync.Telemetry.Metrics
 		public string ExecutingApplication { get; set;  }
 		
 		public string ExecutingApplicationVersion { get; set; }
+
+		public string SyncVersion => SyncVersionStatic;
 
 		public string DataSourceType { get; set; }
 
@@ -76,6 +80,11 @@ namespace Relativity.Sync.Telemetry.Metrics
 					   .GetProperties(BindingFlags.Instance | BindingFlags.Public)
 					   .Where(p => p.GetMethod != null)
 					   .ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));
+		}
+
+		private static string GetVersion()
+		{
+			return typeof(MetricBase<>).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "[file version not specified]";
 		}
 	}
 }

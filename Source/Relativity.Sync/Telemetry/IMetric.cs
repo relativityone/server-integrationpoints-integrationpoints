@@ -11,6 +11,8 @@ namespace Relativity.Sync.Telemetry
 		string ExecutingApplication { get; set;  }
 		
 		string ExecutingApplicationVersion { get; set; }
+		
+		string SyncVersion { get; }
 
 		string DataSourceType { get; set; }
 
