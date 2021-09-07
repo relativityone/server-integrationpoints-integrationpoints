@@ -32,9 +32,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public Control<_> WorkspaceDestinationFolder { get; set; }
 
 		[FindByPrecedingDivContent]
-		[WaitFor]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
-		[InvokeMethod(nameof(OnClickImportSource), TriggerEvents.AfterClick)]
+		[WaitForJQueryAjax(TriggerEvents.AfterClick)]
 		public Control<_> ImportSource { get; private set; }
 
 		[FindByPrecedingDivContent]
@@ -69,11 +68,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 			}
 
 			return Owner;
-		}
-
-		private void OnClickImportSource()
-		{
-			TreeItems.Should.Within(20).BeVisible();
 		}
 	}
 }

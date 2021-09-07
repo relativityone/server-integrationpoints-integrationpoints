@@ -14,10 +14,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testImplementation = new ImportLoadFileTestImplementation(this);
         }
 
-        protected override async void OnSetUpFixture()
+        protected override void OnSetUpFixture()
         {
             base.OnSetUpFixture();
-            await _testImplementation.OnSetUpFixture();
+            _testImplementation.OnSetUpFixture();
         }
 
         [IdentifiedTest("88bf9b08-99c4-4c30-8854-fff22c4dc213")]

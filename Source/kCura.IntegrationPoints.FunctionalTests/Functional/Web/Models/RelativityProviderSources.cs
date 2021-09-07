@@ -3,6 +3,8 @@
 	internal enum RelativityProviderSources
 	{
 		SavedSearch,
-		Production
+		Production,
+		Folder,
+		FolderAndSubfolders
 	}
 }
