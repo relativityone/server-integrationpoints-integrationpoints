@@ -20,6 +20,7 @@ using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
+using System.Reflection;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointModel.DestinationConfiguration);
 
 			ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId, 
-				Core.Constants.IntegrationPoints.APPLICATION_NAME, typeof(IntegrationPointToSyncConverter).Assembly.GetName().Version);
+				Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion(typeof(IntegrationPointToSyncConverter).Assembly));
 
 			ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
@@ -62,6 +63,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 				return await CreateDocumentSyncConfigurationAsync(builder,
 					job, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
 			}
+		}
+
+		private static Version GetVersion(Assembly assembly)
+		{
+			return Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version);
 		}
 
 		private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
