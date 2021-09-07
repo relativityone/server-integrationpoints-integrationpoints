@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Agent.Interfaces
 {
-	public interface IJobExecutor
+	internal interface IJobExecutor
 	{
 		event ExceptionEventHandler JobExecutionError;
 

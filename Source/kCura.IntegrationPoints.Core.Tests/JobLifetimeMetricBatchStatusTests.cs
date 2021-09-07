@@ -14,6 +14,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 
@@ -61,8 +62,11 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 			_jobStatusUpdaterFake = new Mock<IJobStatusUpdater>();
 
+			Mock<IAPILog> log = new Mock<IAPILog>();
+
 			_sut = new JobLifetimeMetricBatchStatus(_messageServiceMock.Object, integrationPointService.Object,
-				providerTypeService.Object, _jobStatusUpdaterFake.Object, _jobHistoryServiceFake.Object, serializer.Object, _dateTimeHelperFake.Object);
+				providerTypeService.Object, _jobStatusUpdaterFake.Object, _jobHistoryServiceFake.Object, 
+				serializer.Object, _dateTimeHelperFake.Object, log.Object);
 		}
 
 		[Test]

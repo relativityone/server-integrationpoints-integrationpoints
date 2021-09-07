@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly ISerializer _serializer;
 		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly IAPILog _log;
 
 		public JobLifetimeMetricBatchStatus(
 			IMessageService messageService, 
@@ -31,7 +33,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			IJobStatusUpdater updater, 
 			IJobHistoryService jobHistoryService, 
 			ISerializer serializer, 
-			IDateTimeHelper dateTimeHelper)
+			IDateTimeHelper dateTimeHelper,
+			IAPILog log)
 		{
 			_messageService = messageService;
 			_integrationPointService = integrationPointService;
@@ -40,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			_jobHistoryService = jobHistoryService;
 			_serializer = serializer;
 			_dateTimeHelper = dateTimeHelper;
+			_log = log;
 		}
 
 		public void OnJobStart(Job job)
@@ -51,12 +55,15 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 		{
 			string providerName = GetProviderName(job);
 			JobHistory jobHistory = GetHistory(job);
-			ChoiceRef status = _updater.GenerateStatus(jobHistory);
+			ChoiceRef status = _updater.GenerateStatus(jobHistory, job.JobId);
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			string correlationId = taskParameters.BatchInstance.ToString();
 
-			if(IsJobFinished(status))
+			_log.LogInformation("On Lifetime Metric - BatchInstance {batchInstanceId}, Status {status}",
+				correlationId, status?.Name);
+			if(IsJobEnd(status))
 			{
+				_log.LogInformation("Sending Statistics Metrics when Job End");
 				SendRecordsMessage(providerName, jobHistory, correlationId);
 				SendThroughputMessage(providerName, jobHistory, correlationId);
 			}
@@ -64,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			SendLifetimeMessage(status, providerName, correlationId);
 		}
 
-		private bool IsJobFinished(ChoiceRef status)
+		private bool IsJobEnd(ChoiceRef status)
 		{
 			return !status.EqualsToChoice(JobStatusChoices.JobHistorySuspended);
 		}
