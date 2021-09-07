@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		}
 
 		[Test]
-		public void OnJobComplete_ShouldNotSendAnyMetrics_WhenJobHasBeenSuspended()
+		public void OnJobComplete_ShouldSendJobSuspendedMetric_WhenJobHasBeenSuspended()
 		{
 			// Arrange
 			Job job = JobExtensions.CreateJob();
@@ -222,7 +222,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_sut.OnJobComplete(job);
 
 			// Assert
-			_messageServiceMock.Verify(x => x.Send(It.IsAny<IMessage>()), Times.Never);
+			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobSuspendedMessage>()), Times.Once);
 		}
 
 		private void SetupJobHistoryExpectedStatus(ChoiceRef status)

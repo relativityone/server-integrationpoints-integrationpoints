@@ -59,8 +59,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 			{
 				SendRecordsMessage(providerName, jobHistory, correlationId);
 				SendThroughputMessage(providerName, jobHistory, correlationId);
-				SendLifetimeMessage(status, providerName, correlationId);
 			}
+
+			SendLifetimeMessage(status, providerName, correlationId);
 		}
 
 		private bool IsJobFinished(ChoiceRef status)
@@ -110,6 +111,14 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 				status.EqualsToChoice(JobStatusChoices.JobHistoryStopped))
 			{
 				_messageService.Send(new JobCompletedMessage
+				{
+					Provider = providerName,
+					CorrelationID = correlationId
+				});
+			}
+			else if (status.EqualsToChoice(JobStatusChoices.JobHistorySuspended))
+			{
+				_messageService.Send(new JobSuspendedMessage
 				{
 					Provider = providerName,
 					CorrelationID = correlationId

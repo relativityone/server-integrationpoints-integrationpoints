@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 		IMessageSink<JobFailedMessage>, IMessageSink<JobValidationFailedMessage>, IMessageSink<JobTotalRecordsCountMessage>,
 		IMessageSink<JobCompletedRecordsCountMessage>, IMessageSink<JobThroughputMessage>,
 		IMessageSink<JobThroughputBytesMessage>,
-		IMessageSink<JobStatisticsMessage>, IMessageSink<JobProgressMessage>
+		IMessageSink<JobStatisticsMessage>, IMessageSink<JobProgressMessage>, IMessageSink<JobSuspendedMessage>
 	{
 		private const string _INTEGRATION_POINTS_PERFORMANCE_PREFIX = "IntegrationPoints.Performance";
 		private const string _INTEGRATION_POINTS_USAGE_PREFIX = "IntegrationPoints.Usage";
@@ -79,6 +79,15 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 			_ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
 
 			OnJobEnd(message, JobStatus.ValidationFailed);
+		}
+
+		public void OnMessage(JobSuspendedMessage message)
+		{
+			string bucket = JobSuspendedCountMetric(message);
+			_metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
+			_ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+
+			OnJobEnd(message, JobStatus.Suspended);
 		}
 
 		public void OnMessage(JobTotalRecordsCountMessage message)
@@ -319,7 +328,10 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 
 		private string JobValidationFailedCountMetric(JobMessageBase message) =>
 			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobValidationFailedCount.{message.Provider}";
-		
+
+		private string JobSuspendedCountMetric(JobMessageBase message) =>
+			$"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobSuspendedCount.{message.Provider}";
+
 		private string TotalRecordsCountMetric(JobMessageBase message) =>
 			$"{_INTEGRATION_POINTS_USAGE_PREFIX}.TotalRecords.{message.Provider}";
 
