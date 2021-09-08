@@ -92,3 +92,4 @@ group Sync
 	nuget Relativity.Services.Interfaces 11.1.170.10
 	nuget Relativity.Services.Interfaces.Private 11.1.170.10
 	nuget Relativity.Telemetry.DataContracts.Shared ~> 3000.0
+	nuget NETStandard.Library 2.0.3

@@ -6,6 +6,9 @@ kCura.Relativity.Client
 Polly
 Relativity.Toggles
 
+group Sync
+	Relativity.Sync
+
 group TestPackages
 	Moq
 	NUnit

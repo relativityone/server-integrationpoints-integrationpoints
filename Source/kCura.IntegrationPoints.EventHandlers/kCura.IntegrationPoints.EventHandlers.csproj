@@ -230,7 +230,7 @@
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
-      <Project>{C2AADDB6-21AC-4372-924C-5B82ED014313}</Project>
+      <Project>{99ee3407-05e1-4f6b-9518-77f8f0ee34af}</Project>
       <Name>kCura.IntegrationPoints.RelativitySync</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">

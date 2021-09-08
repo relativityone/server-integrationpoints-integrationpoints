@@ -128,9 +128,9 @@
           <Assembly>lib\UnitTests\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.Sync.dll</Assembly>
           <Assembly>lib\UnitTests\Autofac.dll</Assembly>
-          <Assembly>lib\UnitTests\netstandard.dll</Assembly>
-          <Assembly>lib\UnitTests\Banzai.dll</Assembly>
-          <Assembly>lib\UnitTests\Banzai.Autofac.dll</Assembly>
+          <Assembly>packages\sync\NETStandard.Library\build\netstandard2.0\ref\netstandard.dll</Assembly>
+          <Assembly>packages\sync\Banzai\lib\netstandard2.0\Banzai.dll</Assembly>
+          <Assembly>packages\sync\Banzai.Autofac\lib\netstandard2.0\Banzai.Autofac.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.LongPath.dll</Assembly>
           <Assembly>lib\UnitTests\kCura.Relativity.Client.dll</Assembly>
           <Assembly>lib\UnitTests\Relativity.DataExchange.Client.SDK.dll</Assembly>

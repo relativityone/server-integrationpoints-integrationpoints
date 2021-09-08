@@ -10,7 +10,7 @@ using Relativity.Sync.Executors.Validation;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	internal static class JobHistoryHelper
+	public static class JobHistoryHelper
 	{
 		public static async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job, IHelper helper)
 		{
