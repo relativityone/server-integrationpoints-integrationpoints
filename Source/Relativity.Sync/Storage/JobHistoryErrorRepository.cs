@@ -38,8 +38,6 @@ namespace Relativity.Sync.Storage
         public async Task<IEnumerable<int>> MassCreateAsync(int workspaceArtifactId, int jobHistoryArtifactId,
             IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
         {
-            int retries = 0;
-
             _logger.LogInformation("Mass creating item level errors count: {count}", createJobHistoryErrorDtos.Count);
 
             IReadOnlyList<IReadOnlyList<object>> values = createJobHistoryErrorDtos.Select(x => new List<object>()
@@ -94,7 +92,7 @@ namespace Relativity.Sync.Storage
 
                     return artifactIds;
                 }
-                catch (SyncException ex)
+                catch (SyncException)
                 {
                     throw new SyncException(
                         $"Maximum number of retries ({_MAX_NUMBER_OF_RETRIES}) has been reached for Mass creation of item level errors.");
