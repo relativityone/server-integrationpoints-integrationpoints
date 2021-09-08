@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
+using Polly;
+using Polly.Retry;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -13,8 +16,11 @@ namespace Relativity.Sync.Storage
 {
     internal sealed class JobHistoryErrorRepository : IJobHistoryErrorRepository
     {
-        private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
+        public double _secondsBetweenRetriesBase = 3;
 
+        private const int _MAX_NUMBER_OF_RETRIES = 3;
+        private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
+        
         private readonly IDateTime _dateTime;
         private readonly ISourceServiceFactoryForUser _serviceFactory;
         private readonly IRdoGuidConfiguration _rdoConfiguration;
@@ -32,6 +38,8 @@ namespace Relativity.Sync.Storage
         public async Task<IEnumerable<int>> MassCreateAsync(int workspaceArtifactId, int jobHistoryArtifactId,
             IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
         {
+            int retries = 0;
+
             _logger.LogInformation("Mass creating item level errors count: {count}", createJobHistoryErrorDtos.Count);
 
             IReadOnlyList<IReadOnlyList<object>> values = createJobHistoryErrorDtos.Select(x => new List<object>()
@@ -50,6 +58,7 @@ namespace Relativity.Sync.Storage
             {
                 try
                 {
+                    IEnumerable<int> artifactIds = new List<int>();
                     var request = new MassCreateRequest
                     {
                         ObjectType = GetObjectTypeRef(),
@@ -58,17 +67,38 @@ namespace Relativity.Sync.Storage
                         ValueLists = values
                     };
 
-                    MassCreateResult result =
-                        await objectManager.CreateAsync(workspaceArtifactId, request).ConfigureAwait(false);
-                    if (!result.Success)
-                    {
-                        throw new SyncException(
-                            $"Mass creation of item level errors was not successful. Message: {result.Message}");
-                    }
+                    RetryPolicy massCreateErrorsPolicy = MassCreateErrorsPolicy();
 
-                    _logger.LogInformation("Successfully mass-created item level errors: {count}",
-                        createJobHistoryErrorDtos.Count);
-                    return result.Objects.Select(x => x.ArtifactID);
+                    await massCreateErrorsPolicy.ExecuteAsync(async () =>
+                    {
+                        MassCreateResult result = await objectManager.CreateAsync(workspaceArtifactId, request)
+                            .ConfigureAwait(false);
+
+                        if (!result.Success)
+                        {
+                            throw new SyncException(
+                                $"Mass creation of item level errors was not successful. Message: {result.Message}");
+                        }
+
+                        if (result.Objects.IsNullOrEmpty() && createJobHistoryErrorDtos.Count > 0)
+                        {
+                            throw new SyncException(
+                                $"No objects were created while Mass creation of item level errors. Message: {result.Message}");
+                        }
+
+                        _logger.LogInformation("Successfully mass-created item level errors: {count}",
+                            createJobHistoryErrorDtos.Count);
+                        artifactIds = result.Objects.Select(x => x.ArtifactID);
+
+                    }).ConfigureAwait(false);
+
+                    return artifactIds;
+                }
+                catch (SyncException ex)
+                {
+                    throw new SyncException(
+                        $"Maximum number of retries ({_MAX_NUMBER_OF_RETRIES}) has been reached for Mass creation of item level errors.");
+
                 }
                 catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
                 {
@@ -78,6 +108,28 @@ namespace Relativity.Sync.Storage
                         createJobHistoryErrorDtos).ConfigureAwait(false);
                 }
             }
+        }
+
+        private RetryPolicy MassCreateErrorsPolicy()
+        {
+            RetryPolicy massCreateErrorsPolicy = Policy
+                .Handle<SyncException>()
+                .WaitAndRetryAsync(_MAX_NUMBER_OF_RETRIES, retryAttempt =>
+                    {
+                        const int maxJitterMs = 100;
+                        TimeSpan delay =
+                            TimeSpan.FromSeconds(Math.Pow(_secondsBetweenRetriesBase, retryAttempt));
+                        TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
+                        return delay + jitter;
+                    },
+                    (ex, waitTime, retryCount, context) =>
+                    {
+                        _logger.LogWarning(ex,
+                            "Encountered issue while Mass creation of item level errors, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)",
+                            retryCount, waitTime.TotalMilliseconds);
+                    });
+
+            return massCreateErrorsPolicy;
         }
 
         private async Task<IEnumerable<int>> MassCreateInBatchesAsync(int workspaceArtifactId, int jobHistoryArtifactId,
