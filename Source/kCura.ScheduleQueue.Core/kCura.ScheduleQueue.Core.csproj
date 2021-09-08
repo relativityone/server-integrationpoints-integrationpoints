@@ -75,6 +75,7 @@
     <Compile Include="Data\Queries\GetAllJobs.cs" />
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
+    <Compile Include="Data\Queries\GetNextJobWithoutResourceGroup.cs" />
     <Compile Include="Data\Queries\GetPendingJobsCount.cs" />
     <Compile Include="Data\Queries\UnlockJob.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
@@ -129,6 +130,7 @@
     <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
     <Content Include="Data\Resources\GetAllJobs.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
+    <None Include="Data\Resources\GetNextJobWithoutResourceGroup.sql" />
     <Content Include="Data\Resources\GetPendingJobsCount.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
@@ -317,6 +319,22 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.APM">
           <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Toggles">
+          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\System.Data.SqlClient.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

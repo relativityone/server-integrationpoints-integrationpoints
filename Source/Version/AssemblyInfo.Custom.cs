@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] // NSubsitute requires this to mock internal interfaces
+[assembly: InternalsVisibleTo("kCura.ScheduleQueue.Core")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints")]  //ILMerged dll
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent.Tests")]
