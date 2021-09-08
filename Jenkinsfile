@@ -34,7 +34,7 @@ properties([
 		),
 		booleanParam(
 			name: 'skipIntegrationTests',
-			defaultValue: false,
+			defaultValue: true,
 			description: 'Check if you want to skip Integrations Tests stage.'
 		),
 		booleanParam(
