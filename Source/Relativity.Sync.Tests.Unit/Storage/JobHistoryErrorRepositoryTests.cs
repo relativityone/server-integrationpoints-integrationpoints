@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -230,14 +231,15 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			Assert.ThrowsAsync<SyncException>(async () => await _sut.GetLastJobErrorAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID).ConfigureAwait(false));
 		}
 
-		[Test]
-        public void ItShouldThrowSyncExceptionWhenMassCreationResultSuccessIsFalse()
+        [TestCase(false)]
+        [TestCase(true)]
+		public void SyncExceptionThrowVerification(bool massCreateResultSuccess)
         {
 			// Arrange
             const int itemLevelErrorsCount = 3;
             IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(CreateJobHistoryErrorDto(ErrorType.Item), itemLevelErrorsCount).ToList();
 			_objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
-                .Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(request, false)));
+                .Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(massCreateResultSuccess ? null : request, massCreateResultSuccess)));
 
 			// Act
             Func<Task> action = async () => await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, itemLevelErrors).ConfigureAwait(false);
@@ -246,30 +248,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             action.Should().Throw<SyncException>();
         }
 
-        [Test]
-        public void ItShouldThrowSyncExceptionWhenMassCreationReturnsNoItemLevelErrorsWhenTheyAreExpected()
-        {
-			// Arrange
-			const int itemLevelErrorsCount = 3;
-
-            MassCreateResult massCreateResult = new MassCreateResult
-            {
-                Success = true,
-                Objects = new List<RelativityObjectRef>()
-			};
-
-			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(CreateJobHistoryErrorDto(ErrorType.Item), itemLevelErrorsCount).ToList();
-            _objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
-                .Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(massCreateResult));
-
-            // Act
-			Func<Task> action = async () => await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, itemLevelErrors).ConfigureAwait(false);
-
-            // Assert
-            action.Should().Throw<SyncException>();
-        }
-
-		private bool VerifyMassCreateRequest(MassCreateRequest request, CreateJobHistoryErrorDto dto)
+        private bool VerifyMassCreateRequest(MassCreateRequest request, CreateJobHistoryErrorDto dto)
 		{
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 			IReadOnlyList<object> valueList = request.ValueLists[0];
@@ -376,13 +355,19 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		}
 
 		private static MassCreateResult GetResultFrom(MassCreateRequest request, bool success = true)
-		{
-			List<RelativityObjectRef> objects = request.ValueLists.Select((value, index) => new RelativityObjectRef { ArtifactID = index }).ToList();
+        {
+            ReadOnlyCollection<RelativityObjectRef> objects = new ReadOnlyCollection<RelativityObjectRef>(new List<RelativityObjectRef>());
+			if (request != null)
+            {
+                objects = request.ValueLists.Select((value, index) => new RelativityObjectRef { ArtifactID = index })
+                    .ToList()
+                    .AsReadOnly();
+			}
 
-			return new MassCreateResult
+            return new MassCreateResult
 			{
 				Success = success,
-				Objects = objects.AsReadOnly()
+				Objects = objects
 			};
 		} 
 	}

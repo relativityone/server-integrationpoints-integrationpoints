@@ -65,9 +65,9 @@ namespace Relativity.Sync.Storage
                         ValueLists = values
                     };
 
-                    RetryPolicy massCreateErrorsPolicy = MassCreateErrorsPolicy();
+                    RetryPolicy massCreateRetryPolicy = GetMassCreateRetryPolicy();
 
-                    await massCreateErrorsPolicy.ExecuteAsync(async () =>
+                    await massCreateRetryPolicy.ExecuteAsync(async () =>
                     {
                         MassCreateResult result = await objectManager.CreateAsync(workspaceArtifactId, request)
                             .ConfigureAwait(false);
@@ -96,7 +96,6 @@ namespace Relativity.Sync.Storage
                 {
                     throw new SyncException(
                         $"Maximum number of retries ({_MAX_NUMBER_OF_RETRIES}) has been reached for Mass creation of item level errors.");
-
                 }
                 catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
                 {
@@ -108,15 +107,14 @@ namespace Relativity.Sync.Storage
             }
         }
 
-        private RetryPolicy MassCreateErrorsPolicy()
+        private RetryPolicy GetMassCreateRetryPolicy()
         {
-            RetryPolicy massCreateErrorsPolicy = Policy
+            RetryPolicy massCreateRetryPolicy = Policy
                 .Handle<SyncException>()
                 .WaitAndRetryAsync(_MAX_NUMBER_OF_RETRIES, retryAttempt =>
                     {
                         const int maxJitterMs = 100;
-                        TimeSpan delay =
-                            TimeSpan.FromSeconds(Math.Pow(_secondsBetweenRetriesBase, retryAttempt));
+                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(_secondsBetweenRetriesBase, retryAttempt));
                         TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
                         return delay + jitter;
                     },
@@ -127,7 +125,7 @@ namespace Relativity.Sync.Storage
                             retryCount, waitTime.TotalMilliseconds);
                     });
 
-            return massCreateErrorsPolicy;
+            return massCreateRetryPolicy;
         }
 
         private async Task<IEnumerable<int>> MassCreateInBatchesAsync(int workspaceArtifactId, int jobHistoryArtifactId,
