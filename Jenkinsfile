@@ -34,7 +34,7 @@ properties([
 		),
 		booleanParam(
 			name: 'skipIntegrationTests',
-			defaultValue: false,
+			defaultValue: true,
 			description: 'Check if you want to skip Integrations Tests stage.'
 		),
 		booleanParam(
@@ -112,10 +112,6 @@ timestamps
 			stage ('Build')
 			{
 				jenkinsHelpers.build()
-			}
-			stage ('Unit Tests')
-			{
-				jenkinsHelpers.unitTest()
 			}
 			stage ('Package')
 			{

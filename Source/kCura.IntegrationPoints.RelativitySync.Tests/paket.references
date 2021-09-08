@@ -1,4 +1,8 @@
 Relativity.API
+kCura.Apps.Common.Utils
+
+group Sync
+	Relativity.Sync
 
 group TestPackages
 	FluentAssertions

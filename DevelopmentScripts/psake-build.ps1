@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, check_configureawait, start_sonar, build_integration_points, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, copy_web_drivers, run_coverage, stop_sonar, generate_validation_message_table, sign {
+task build -depends build_initalize, build_integration_points, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, generate_validation_message_table, sign {
  
 }
 
@@ -62,15 +62,19 @@ task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper
 }
 
 task restore_nuget {
+    dotnet --info
 
-    foreach($o in Get-ChildItem $source_directory){
-
-       if($o.Extension -ne '.sln') {continue}
-
-        exec {
-            & $nuget_exe @('restore', $o.FullName)
+    write-host "executing get_paket"
+    exec {
+        if (& dotnet tool list -g | Select-String "paket") {
+            Write-Host -f Yellow 'Skipping install of paket. It''s already installed'
         }
-    }
+        else {
+            dotnet tool install --global Paket --version 6.0.12 --add-source 'https://relativity.jfrog.io/artifactory/api/nuget/official-nuget-remote-cache'
+        }
+    }    
+
+    exec { & paket restore }
 } 
 
 task configure_paket {
@@ -371,14 +375,14 @@ task copy_test_dlls_to_lib_dir -depends create_lib_dir -precondition { return -n
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.pdb",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration\bin\x64\*.xml",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.dll",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.pdb",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.config",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\net462\*.xml",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.dll",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.pdb",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.config",
-            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\net462\*.xml",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests.Integration\bin\x64\*.xml",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\*.dll",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\*.pdb",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\*.config",
+            "Source\kCura.IntegrationPoints.RelativitySync.Tests\bin\x64\*.xml",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.dll",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.config",
             "Source\kCura.IntegrationPoints.UITests\bin\x64\*.pdb",
