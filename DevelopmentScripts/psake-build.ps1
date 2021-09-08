@@ -4,7 +4,7 @@
 task default -depends build
 
 
-task build -depends build_initalize, build_integration_points, build_rip_documentation, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, generate_validation_message_table, sign {
+task build -depends build_initalize, build_integration_points, copy_dlls_to_lib_dir, copy_test_dlls_to_lib_dir, generate_validation_message_table, sign {
  
 }
 

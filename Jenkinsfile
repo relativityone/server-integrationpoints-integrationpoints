@@ -113,10 +113,6 @@ timestamps
 			{
 				jenkinsHelpers.build()
 			}
-			stage ('Unit Tests')
-			{
-				jenkinsHelpers.unitTest()
-			}
 			stage ('Package')
 			{
 				jenkinsHelpers.packageRIP()
