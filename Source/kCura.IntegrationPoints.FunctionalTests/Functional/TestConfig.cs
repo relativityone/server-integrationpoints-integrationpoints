@@ -12,6 +12,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional
 
 		public static string ARMTestServicesRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "ARMTestServices.RAP\\lib\\ARMTestServices.rap");
 
+		public static int ExistingWorkspaceArtifactId => int.Parse(GetConfigValue("ExistingWorkspaceArtifactId"));
+
 		private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
 			? TestContext.Parameters[name]
 			: ConfigurationManager.AppSettings.Get(name);

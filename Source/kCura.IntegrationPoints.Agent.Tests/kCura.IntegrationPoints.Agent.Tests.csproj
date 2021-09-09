@@ -51,6 +51,7 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
+    <Compile Include="AgentTests.cs" />
     <Compile Include="Installer\Components\EmailSenderRegistrationTests.cs" />
     <Compile Include="JobExecutorTests.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContextTests.cs" />

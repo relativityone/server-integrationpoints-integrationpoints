@@ -1,11 +1,10 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class TaskParameterHelper
+	public class TaskParameterHelper : ITaskParameterHelper
 	{
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly IGuidService _guidService;

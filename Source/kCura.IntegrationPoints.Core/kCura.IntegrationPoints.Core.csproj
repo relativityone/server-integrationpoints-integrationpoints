@@ -123,6 +123,7 @@
     <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizer.cs" />
     <Compile Include="Services\Exporter\Sanitization\UserFieldSanitizer.cs" />
     <Compile Include="Services\ISecretStoreMigrationService.cs" />
+    <Compile Include="Services\ITaskParameterHelper.cs" />
     <Compile Include="Services\JobHistory\IJobStatisticsService.cs" />
     <Compile Include="Services\Keywords\IEmailFormatter.cs" />
     <Compile Include="Services\SecretStoreMigrationService.cs" />

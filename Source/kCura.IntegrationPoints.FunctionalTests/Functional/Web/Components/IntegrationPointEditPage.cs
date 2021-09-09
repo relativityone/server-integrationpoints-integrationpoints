@@ -22,17 +22,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[Term("Next")]
 		public Button<ImportFromLDAPConnectToSourcePage, _> ImportFromLDAPNext { get; private set; }
 
+		[Term("Next")]
+		public Button<ExportToLoadFileConnectToSourcePage, _> ExportToLoadFileNext { get; private set; }
+
 		[FindById("name")]
 		public TextInput<_> Name { get; private set; }
 
 		[FindByPrecedingDivContent]
 		[WaitFor]
+		[InvokeMethod(nameof(OnSetType), TriggerEvents.AfterClickOrSet)]
 		public RadioButtonList<IntegrationPointTypes, _> Type { get; private set; }
 
 		[FindById("promoteEligible")]
 		public RadioButtonList<YesNo, _> PromoteList { get; private set; }
 
 		[FindByPrecedingDivContent]
+		[WaitFor]
+		//[WaitForElement(WaitBy.Id, "sourceProvider", Until.Visible)]
 		public Select2<IntegrationPointSources, _> Source { get; private set; }
 
 		[FindByPrecedingDivContent]
@@ -43,5 +49,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
 		[FindById("notificationEmails")]
 		public TextArea<_> EmailRecipients { get; private set; }
+
+		private void OnSetType()
+        {
+			if(Type.Get() == IntegrationPointTypes.Import)
+            {
+				Source.Should.Within(20).BeEnabled();
+            }
+        }
 	}
 }

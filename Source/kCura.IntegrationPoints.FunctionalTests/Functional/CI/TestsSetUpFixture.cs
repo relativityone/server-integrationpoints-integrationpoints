@@ -47,16 +47,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 		private static void InstallIntegrationPointsToWorkspace(int workspaceId)
 		{
-			string rapFileLocation = Path.Combine(TestContext.Parameters["RAPDirectory"], "kCura.IntegrationPoints.rap");
+            string rapFileLocation = Path.Combine(TestContext.Parameters["RAPDirectory"], "kCura.IntegrationPoints.rap");
 
-			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+            var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
-			int appId = applicationService.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
-			{
-				IgnoreVersion = true
-			});
+            int appId = applicationService.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
+            {
+                IgnoreVersion = true
+            });
 
-			applicationService.InstallToWorkspace(workspaceId, appId);
-		}
+            applicationService.InstallToWorkspace(workspaceId, appId);
+        }
 	}
 }

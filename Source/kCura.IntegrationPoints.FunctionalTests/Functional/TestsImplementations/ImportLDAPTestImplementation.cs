@@ -38,14 +38,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage, Const.LDAP.OPEN_LDAP_CONNECTION_PATH, Const.LDAP.OPEN_LDAP_USERNAME, Const.LDAP.OPEN_LDAP_PASSWORD);
 
-			importFromLDAPMapFieldsPage.Cn.DoubleClick();
-			importFromLDAPMapFieldsPage.GivenName.DoubleClick();
-			importFromLDAPMapFieldsPage.Sn.DoubleClick();
-			importFromLDAPMapFieldsPage.UniqueID.DoubleClick();
-			importFromLDAPMapFieldsPage.FirstName.DoubleClick();
-			importFromLDAPMapFieldsPage.LastName.DoubleClick();
-
-			var integrationPointViewPage = importFromLDAPMapFieldsPage.Save.ClickAndGo();
+			var integrationPointViewPage = SetFieldsMappkingImportFromLDAPMapFieldsPage(importFromLDAPMapFieldsPage);
 
 			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
@@ -64,9 +57,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 		{
 			IntegrationPointEdit integrationPointEdit = new IntegrationPointEditImport
 			{
+				Name = integrationPointName,
 				Source = IntegrationPointSources.LDAP,
 				TransferredObject = IntegrationPointTransferredObjects.Entity,
-				Name = integrationPointName
 			};
 
 			return integrationPointEditPage.ApplyModel(integrationPointEdit).ImportFromLDAPNext.ClickAndGo();
@@ -82,5 +75,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				   Password = password,
 			   }).Next.ClickAndGo();
         }
+
+		private static IntegrationPointViewPage SetFieldsMappkingImportFromLDAPMapFieldsPage(ImportFromLDAPMapFieldsPage importFromLDAPMapFieldsPage)
+		{
+			importFromLDAPMapFieldsPage.MapAllFields.Click();
+			importFromLDAPMapFieldsPage.Cn.DoubleClick();
+			importFromLDAPMapFieldsPage.GivenName.DoubleClick();
+			importFromLDAPMapFieldsPage.Sn.DoubleClick();
+			importFromLDAPMapFieldsPage.UniqueID.DoubleClick();
+			importFromLDAPMapFieldsPage.FirstName.DoubleClick();
+			importFromLDAPMapFieldsPage.LastName.DoubleClick();
+
+			return importFromLDAPMapFieldsPage.Save.ClickAndGo();
+		}
 	}
 }

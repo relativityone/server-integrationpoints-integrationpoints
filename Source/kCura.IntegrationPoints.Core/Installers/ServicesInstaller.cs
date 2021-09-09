@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 			container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifestyleTransient());
 			container.Register(Component.For<IJobTracker>().ImplementedBy<JobTracker>().LifestyleTransient());
-			container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
+			container.Register(Component.For<ITaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
 			container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifestyleTransient());
 			container.Register(Component.For<IImportApiFacade>().ImplementedBy<ImportApiFacade>().LifestyleTransient());
 			container.Register(Component.For<IImportJobFactory>().ImplementedBy<ImportJobFactory>().LifestyleTransient());
