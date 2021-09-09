@@ -65,8 +65,8 @@ namespace Relativity.Sync.Tests.System
 				StackTrace = expectedStackTrace,
 			};
 			
-			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), _dateTime, _logger);
-            instance._secondsBetweenRetriesBase = 0.1;
+			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), 
+                _dateTime, _logger, new WrapperForRandom());
 
 			// Act
 			int createdErrorArtifactId = await instance.CreateAsync(_workspace.ArtifactID, expectedJobHistoryArtifactId, createDto).ConfigureAwait(false);
@@ -101,8 +101,8 @@ namespace Relativity.Sync.Tests.System
 
 			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(itemLevelError, itemLevelErrorsCount).ToList();
 
-			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), _dateTime, _logger);
-            sut._secondsBetweenRetriesBase = 0.1;
+			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), 
+                _dateTime, _logger, new WrapperForRandom());
 
 			// Act
 			IEnumerable<int> result = await sut.MassCreateAsync(_workspace.ArtifactID, jobHistoryArtifactID, itemLevelErrors).ConfigureAwait(false);

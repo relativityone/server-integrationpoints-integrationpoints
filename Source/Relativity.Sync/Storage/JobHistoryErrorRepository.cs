@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using Polly;
 using Polly.Retry;
 using Relativity.Services.Exceptions;
@@ -16,7 +15,7 @@ namespace Relativity.Sync.Storage
 {
     internal sealed class JobHistoryErrorRepository : IJobHistoryErrorRepository
     {
-        public double _secondsBetweenRetriesBase = 3;
+        public double SecondsBetweenRetriesBase { get; set; }
 
         private const int _MAX_NUMBER_OF_RETRIES = 3;
         private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
@@ -25,14 +24,16 @@ namespace Relativity.Sync.Storage
         private readonly ISourceServiceFactoryForUser _serviceFactory;
         private readonly IRdoGuidConfiguration _rdoConfiguration;
         private readonly ISyncLog _logger;
+        private readonly IRandom _random;
 
         public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory,
-            IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger)
+            IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger, IRandom random)
         {
             _serviceFactory = serviceFactory;
             _rdoConfiguration = rdoConfiguration;
             _dateTime = dateTime;
             _logger = logger;
+            _random = random;
         }
 
         public async Task<IEnumerable<int>> MassCreateAsync(int workspaceArtifactId, int jobHistoryArtifactId,
@@ -78,7 +79,7 @@ namespace Relativity.Sync.Storage
                                 $"Mass creation of item level errors was not successful. Message: {result.Message}");
                         }
 
-                        if (result.Objects.IsNullOrEmpty() && createJobHistoryErrorDtos.Count > 0)
+                        if (result.Objects != null && result.Objects.Count < 1 && createJobHistoryErrorDtos.Count > 0)
                         {
                             throw new SyncException(
                                 $"No objects were created while Mass creation of item level errors. Message: {result.Message}");
@@ -114,14 +115,14 @@ namespace Relativity.Sync.Storage
                 .WaitAndRetryAsync(_MAX_NUMBER_OF_RETRIES, retryAttempt =>
                     {
                         const int maxJitterMs = 100;
-                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(_secondsBetweenRetriesBase, retryAttempt));
-                        TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
+                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(SecondsBetweenRetriesBase, retryAttempt));
+                        TimeSpan jitter = TimeSpan.FromMilliseconds(_random.Next(0, maxJitterMs));
                         return delay + jitter;
                     },
                     (ex, waitTime, retryCount, context) =>
                     {
                         _logger.LogWarning(ex,
-                            "Encountered issue while Mass creation of item level errors, attempting retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)",
+                            "Encountered issue while Mass creation of item level errors, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)",
                             retryCount, waitTime.TotalMilliseconds);
                     });
 

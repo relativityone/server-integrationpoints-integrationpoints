@@ -63,8 +63,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_dateTimeFake.SetupGet(x => x.UtcNow).Returns(_utcNow);
 			_objectManagerMock = new Mock<IObjectManager>();
 			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
-			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, new ConfigurationStub(), _dateTimeFake.Object, new EmptyLogger());
-            _sut._secondsBetweenRetriesBase = 0.1;
+			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, new ConfigurationStub(), _dateTimeFake.Object, new EmptyLogger(), new WrapperForRandom());
+            _sut.SecondsBetweenRetriesBase = 0.1;
         }
 
 		[Test]
