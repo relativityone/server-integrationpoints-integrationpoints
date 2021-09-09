@@ -35,16 +35,6 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID)
 		{
-			if (resourceGroupIds == null)
-			{
-				throw new ArgumentNullException(nameof(resourceGroupIds));
-			}
-			int[] resurceGroupIdsArray = resourceGroupIds.ToArray();
-			if (resurceGroupIdsArray.Length == 0)
-			{
-				throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'");
-			}
-
 			_log.LogInformation("Get next job from the queue for Agent {agentId}.", agentID);
 
 			DataRow row;
@@ -55,6 +45,13 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 			else
 			{
+				int[] resurceGroupIdsArray = resourceGroupIds?.ToArray() ?? Array.Empty<int>();
+
+				if (resurceGroupIdsArray.Length == 0)
+				{
+					throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'");
+				}
+
 				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resurceGroupIdsArray);
 			}
 
