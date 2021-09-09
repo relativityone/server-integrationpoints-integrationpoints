@@ -39,6 +39,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new GetNextJob(_queueDbContext, agentId, agentTypeId, resourceGroupArtifactId);
 		}
 
+		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId)
+		{
+			return new GetNextJobWithoutResourceGroup(_queueDbContext, agentId, agentTypeId);
+		}
+
 		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
 		{
 			return new UpdateScheduledJob(_queueDbContext, jobId, nextUtcRunTime);

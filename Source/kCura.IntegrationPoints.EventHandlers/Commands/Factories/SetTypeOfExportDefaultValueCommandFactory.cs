@@ -24,6 +24,7 @@ using Relativity.DataTransfer.MessageService;
 using System;
 using System.Linq;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, agentGuid);
 			IAgentService agentService = new AgentService(helper, queryManager, agentGuid);
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			IJobService jobService = new JobService(agentService, jobServiceDataProvider, helper);
+			IJobService jobService = new JobService(agentService, jobServiceDataProvider, ToggleProviderHelper.CreateSqlServerToggleProvider(helper), helper);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
