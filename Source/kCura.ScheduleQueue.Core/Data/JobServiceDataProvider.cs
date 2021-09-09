@@ -22,6 +22,14 @@ namespace kCura.ScheduleQueue.Core.Data
 			}
 		}
 
+		public DataRow GetNextQueueJob(int agentId, int agentTypeId)
+		{
+			using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId).Execute())
+			{
+				return GetFirstRowOrDefault(dataTable);
+			}
+		}
+
 		private DataRow GetFirstRowOrDefault(DataTable dataTable)
 		{
 			return dataTable?.Rows?.Count > 0 ? dataTable.Rows[0] : null;
