@@ -36,50 +36,7 @@
     </Compile>
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
-    </Compile>
-    <Compile Include="Agent.cs" />
-    <Compile Include="Attributes\SynchronizedTaskAttribute.cs" />
-    <Compile Include="Context\IJobContextProvider.cs" />
-    <Compile Include="Exceptions\AgentDropJobException.cs" />
-    <Compile Include="Installer\AgentAggregatedInstaller.cs" />
-    <Compile Include="Installer\AgentInstaller.cs" />
-    <Compile Include="Context\JobContextProvider.cs" />
-    <Compile Include="Installer\Components\EmailSenderRegistration.cs" />
-    <Compile Include="Interfaces\IAgentNotifier.cs" />
-    <Compile Include="Interfaces\IJobExecutor.cs" />
-    <Compile Include="Interfaces\IRelativitySyncConstrainsChecker.cs" />
-    <Compile Include="Interfaces\ITaskProvider.cs" />
-    <Compile Include="JobExecutor.cs" />
-    <Compile Include="Logging\JobLogInformation.cs" />
-    <Compile Include="Logging\ErrorService.cs" />
-    <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContext.cs" />
-    <Compile Include="RelativitySyncConstrainsChecker.cs" />
-    <Compile Include="TaskFactory\IJobSynchronizationChecker.cs" />
-    <Compile Include="TaskFactory\ITaskFactoryJobHistoryServiceFactory.cs" />
-    <Compile Include="TaskFactory\ITaskFactoryJobHistoryService.cs" />
-    <Compile Include="TaskFactory\JobSynchronizationChecker.cs" />
-    <Compile Include="TaskFactory\TaskFactoryJobHistoryServiceFactory.cs" />
-    <Compile Include="TaskFactory\TaskFactoryJobHistoryService.cs" />
-    <Compile Include="Tasks\ExportManager.cs" />
-    <Compile Include="Tasks\ExportWorker.cs" />
-    <Compile Include="Tasks\ExportServiceManager.cs" />
-    <Compile Include="Tasks\ITaskExceptionMediator.cs" />
-    <Compile Include="Tasks\ITaskExceptionService.cs" />
-    <Compile Include="Tasks\TaskExceptionMediator.cs" />
-    <Compile Include="Tasks\TaskExceptionService.cs" />
-    <Compile Include="Tasks\ImportServiceManager.cs" />
-    <Compile Include="Tasks\ITaskWithHistory.cs" />
-    <Compile Include="Tasks\SendEmailWorker.cs" />
-    <Compile Include="Tasks\ServiceManagerBase.cs" />
-    <Compile Include="Tasks\SyncEntityManagerWorker.cs" />
-    <Compile Include="TaskFactory\ITaskFactory.cs" />
-    <Compile Include="Tasks\SyncManager.cs" />
-    <Compile Include="Tasks\SyncWorker.cs" />
-    <Compile Include="TaskFactory\TaskFactory.cs" />
-    <Compile Include="Toggles\EnableSyncImageFlowToggle.cs" />
-    <Compile Include="Validation\AgentValidator.cs" />
-    <Compile Include="Tasks\TurnOnDgOptimizationToggle.cs" />
-    <Compile Include="Tasks\AgentExceptionHelper.cs" />
+    </Compile>    
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj" />
