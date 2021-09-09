@@ -35,7 +35,6 @@ namespace Relativity.Sync.KeplerFactory
                 .ConfigureAwait(false);
 
             return proxy;
-
         }
 
         private RetryPolicy GetErrorsPolicy()
