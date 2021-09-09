@@ -24,10 +24,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
-        public async Task OnSetUpFixture()
+        public void OnSetUpFixture()
         {
             // Installing necessary app
-            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") != null)
+            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
             {
                 SetDevelopmentModeToTrue();
                 InstallARMTestServicesToWorkspace();
@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             
             // Preparing data for LoadFile and placing it in the right location
             string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
-            await LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).ConfigureAwait(false);
+            LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).Wait();
         }
 
         private void SetDevelopmentModeToTrue()
@@ -73,11 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
             var importFromLoadFileConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLoadFile(integrationPointEditPage, integrationPointName);
-            importFromLoadFileConnectToSourcePage.WorkspaceDestinationFolder.Click().SetItem($"{_testsImplementationTestFixture.Workspace.Name}");
-            importFromLoadFileConnectToSourcePage.ImportSource.Click().SetItem("NativesLoadFile.dat");
-            importFromLoadFileConnectToSourcePage.Column.Set("| (ASCII:124)");
-            importFromLoadFileConnectToSourcePage.Quote.Set("^ (ASCII:094)");
-            var importFromLoadFileMapFieldsPage = importFromLoadFileConnectToSourcePage.Next.ClickAndGo();
+            var importFromLoadFileMapFieldsPage = FillOutIntegrationPointConnectToSourcePageForImportFromLoadFile(importFromLoadFileConnectToSourcePage, _testsImplementationTestFixture.Workspace.Name);
 
             importFromLoadFileMapFieldsPage.MapAllFields.Click();
             importFromLoadFileMapFieldsPage.ApplyModel(new ImportLoadFileMapFields
@@ -108,6 +104,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             };
 
             return integrationPointEditPage.ApplyModel(integrationPointEdit).ImportFromLoadFileNext.ClickAndGo();
+        }
+
+        private static ImportFromLoadFileMapFieldsPage FillOutIntegrationPointConnectToSourcePageForImportFromLoadFile(ImportFromLoadFileConnectToSourcePage importFromLoadFileConnectToSourcePage, string folderName)
+        {
+            importFromLoadFileConnectToSourcePage.WorkspaceDestinationFolder.Click().SetItem($"{folderName}");
+            importFromLoadFileConnectToSourcePage.ImportSource.Click().SetItem("NativesLoadFile.dat");
+            importFromLoadFileConnectToSourcePage.Column.Set("| (ASCII:124)");
+            importFromLoadFileConnectToSourcePage.Quote.Set("^ (ASCII:094)");
+            return importFromLoadFileConnectToSourcePage.Next.ClickAndGo();
         }
     }
 }

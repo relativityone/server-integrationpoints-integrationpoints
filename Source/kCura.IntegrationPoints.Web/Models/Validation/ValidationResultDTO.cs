@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Web.Models.Validation
 		[DataMember]
 		public List<ValidationErrorDTO> Errors { get; } = new List<ValidationErrorDTO>();
 
+		[DataMember]
 		public bool IsValid => !Errors.Any();
 
 		public ValidationResultDTO()

@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
+using kCura.IntegrationPoints.Agent.Interfaces;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<IJobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
 
-			container.Register(Component.For<RelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
+			container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
 			{

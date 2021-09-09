@@ -32,8 +32,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public Control<_> WorkspaceDestinationFolder { get; set; }
 
 		[FindByPrecedingDivContent]
-		[WaitFor]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
+		[WaitForJQueryAjax(TriggerEvents.AfterClick)]
 		public Control<_> ImportSource { get; private set; }
 
 		[FindByPrecedingDivContent]

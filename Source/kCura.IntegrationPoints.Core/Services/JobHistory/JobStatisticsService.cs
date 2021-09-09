@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly IMessageService _messageService;
 		private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
 		private readonly IWorkspaceDBContext _context;
-		private readonly TaskParameterHelper _helper;
+		private readonly ITaskParameterHelper _helper;
 		private readonly IJobStatisticsQuery _query;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IAPILog _logger;
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private ImportSettings IntegrationPointImportSettings { get; set; }
 
 		public JobStatisticsService(IJobStatisticsQuery query,
-			TaskParameterHelper taskParameterHelper,
+			ITaskParameterHelper taskParameterHelper,
 			IJobHistoryService jobHistoryService,
 			IWorkspaceDBContext context,
 			IHelper helper,
