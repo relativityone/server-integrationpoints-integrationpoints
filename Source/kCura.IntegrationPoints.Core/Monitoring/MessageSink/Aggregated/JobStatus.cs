@@ -6,6 +6,7 @@
 		Started,
 		Completed,
 		Failed,
-		ValidationFailed
+		ValidationFailed,
+		Suspended
 	}
 }

@@ -64,6 +64,7 @@
     <Compile Include="Installer\Components\EmailSenderRegistration.cs" />
     <Compile Include="Interfaces\IAgentNotifier.cs" />
     <Compile Include="Interfaces\IJobExecutor.cs" />
+    <Compile Include="Interfaces\IRelativitySyncConstrainsChecker.cs" />
     <Compile Include="Interfaces\ITaskProvider.cs" />
     <Compile Include="JobExecutor.cs" />
     <Compile Include="Logging\JobLogInformation.cs" />

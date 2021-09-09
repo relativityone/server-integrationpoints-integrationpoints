@@ -121,6 +121,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 		}
 
 		[Test]
+		public void ShouldSendJobSuspendedTest()
+		{
+			// Arrange
+			JobSuspendedMessage message = CreateMessage<JobSuspendedMessage>();
+			string expectedMetricBucket = $"IntegrationPoints.Performance.JobSuspendedCount.{_provider}";
+
+			// Act
+			_sink.OnMessage(message);
+
+			// Assert
+			_sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
+			_ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
+		}
+
+		[Test]
 		public void ShouldSendTotalRecordsTest()
 		{
 			// Arrange
