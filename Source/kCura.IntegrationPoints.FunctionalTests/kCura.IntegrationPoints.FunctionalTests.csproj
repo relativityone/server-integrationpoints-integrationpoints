@@ -114,5 +114,10 @@
     <Folder Include="Functional\Helpers\DataFiles\" />
     <Folder Include="Functional\Helpers\LoadFiles\Natives\" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="netDumbster">
+      <HintPath>..\..\packages\netDumbster\lib\net461\netDumbster.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -163,6 +164,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
 			Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
+			Container.Register(Component.For<IInstanceSettingsBundle>().ImplementedBy<FakeInstanceSettingsBundle>().LifestyleTransient());
 		}
 
 		private void RegisterScheduleAgentBase()
@@ -174,8 +176,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(c => new FakeWorkspaceDbContext(SourceWorkspace.ArtifactId, FakeRelativityInstance ))
 				.Named(nameof(FakeWorkspaceDbContext)).IsDefault());
 
-
-			Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
+            Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
 				new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspaceId)));
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
@@ -215,6 +216,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			
 				return jobContextProvider;
 			}).LifestyleSingleton().Named(nameof(FakeJobContextProvider)).IsDefault());
+
+            Container.Register(Component.For<ISmtpConfigurationProvider>()
+                .ImplementedBy<InstanceSettingsSmptConfigurationProvider>());
+            Container.Register(Component.For<ISmtpClientFactory>()
+                .ImplementedBy<SmtpClientFactory>());
+            Container.Register(Component.For<IEmailSender>()
+                .ImplementedBy<EmailSender>());
 		}
 
 		private void RegisterFakeRipServices()
