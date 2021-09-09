@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.ScheduleQueue.Core;
@@ -10,14 +11,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 {
 	public static class CorrespondingJobDeleteFactory
 	{
-		private static Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+		private static readonly Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
 		public static ICorrespondingJobDelete Create(IHelper helper)
 		{
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, _agentGuid);
 			IAgentService agentService = new AgentService(helper, queryManager, _agentGuid);
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			IJobService jobService = new JobService(agentService, jobServiceDataProvider, helper);
+			IJobService jobService = new JobService(agentService, jobServiceDataProvider, ToggleProviderHelper.CreateSqlServerToggleProvider(helper), helper);
 			return new CorrespondingJobDelete(jobService);
 		}
 	}

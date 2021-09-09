@@ -130,7 +130,7 @@
     <Compile Include="RelativityFeaturePathService.cs" />
     <Compile Include="StackOfDisposables.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
-    <Compile Include="Toggles\LoadRequiredAssembliesInKubernetesMode.cs" />
+    <Compile Include="Toggles\EnableKubernetesMode.cs" />
     <Compile Include="Utils\WorkspaceAndJobNameUtils.cs" />
     <Compile Include="WindsorContainerSetup.cs" />
   </ItemGroup>

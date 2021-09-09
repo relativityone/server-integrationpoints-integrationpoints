@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
@@ -65,7 +66,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), ToggleProviderHelper.CreateSqlServerToggleProvider(Helper), Helper);
 			}
 
 			if (_queueJobValidator == null)
@@ -76,7 +77,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			using (IDisposable disposable = Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
+			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
             {
 				if (ToBeRemoved)
 				{

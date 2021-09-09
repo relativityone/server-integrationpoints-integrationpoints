@@ -16,6 +16,8 @@ namespace kCura.ScheduleQueue.Core.Data
 
 		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
 
+		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId);
+
 		ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime);
 
 		ICommand UnlockScheduledJob(int agentId);
