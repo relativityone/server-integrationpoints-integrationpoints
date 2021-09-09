@@ -213,6 +213,7 @@ namespace Relativity.Sync.Tests.Common
 		public Guid ExportRunId { get; set; }
 
 		public int? JobHistoryToRetryId { get; set; }
+		public string SyncVersion { get; set;  }
 
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 
