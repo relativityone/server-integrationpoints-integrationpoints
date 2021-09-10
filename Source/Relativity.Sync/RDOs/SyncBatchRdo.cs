@@ -35,13 +35,13 @@ namespace Relativity.Sync.RDOs
 		public int FailedDocumentsCount { get; set; }
 
 
-		[RdoField(SyncBatchGuids.MetadataBytesTransferredGuid, RdoFieldType.WholeNumber)]
-		public long MetadataBytesTransferred { get; set; }
+		[RdoLongField(SyncBatchGuids.MetadataBytesTransferredGuid)]
+		public long MetadataTransferredBytes { get; set; }
 
-		[RdoField(SyncBatchGuids.FilesBytesTransferredGuid, RdoFieldType.WholeNumber)]
-		public long FilesBytesTransferred { get; set; }
+		[RdoLongField(SyncBatchGuids.FilesBytesTransferredGuid)]
+		public long FilesTransferredBytes { get; set; }
 
-		[RdoField(SyncBatchGuids.TotalBytesTransferredGuid, RdoFieldType.WholeNumber)]
-		public long TotalBytesTransferred { get; set; }
+		[RdoLongField(SyncBatchGuids.TotalBytesTransferredGuid)]
+		public long TotalTransferredBytes { get; set; }
 	}
 }

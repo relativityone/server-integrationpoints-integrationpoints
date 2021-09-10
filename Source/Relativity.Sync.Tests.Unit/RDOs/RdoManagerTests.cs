@@ -20,7 +20,8 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
-using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Common.RDOs;
 
 namespace Relativity.Sync.Tests.Unit.RDOs
 {

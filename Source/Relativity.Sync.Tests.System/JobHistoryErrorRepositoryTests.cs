@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -8,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.ServiceProxy;
 using Relativity.Services.Workspace;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
@@ -67,7 +65,8 @@ namespace Relativity.Sync.Tests.System
 				StackTrace = expectedStackTrace,
 			};
 			
-			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), _dateTime, _logger);
+			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), 
+                _dateTime, _logger, new WrapperForRandom());
 
 			// Act
 			int createdErrorArtifactId = await instance.CreateAsync(_workspace.ArtifactID, expectedJobHistoryArtifactId, createDto).ConfigureAwait(false);
@@ -91,7 +90,7 @@ namespace Relativity.Sync.Tests.System
 			int jobHistoryArtifactID = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
 			const int errorMsgSize = 10;
 			const int stackTraceSize = errorMsgSize * 10;
-			const int itemLevelErrosCount = 20000;
+			const int itemLevelErrorsCount = 20000;
 
 			CreateJobHistoryErrorDto itemLevelError = new CreateJobHistoryErrorDto(ErrorType.Item)
 			{
@@ -100,15 +99,16 @@ namespace Relativity.Sync.Tests.System
 				StackTrace = GetLongTextString(stackTraceSize)
 			};
 
-			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(itemLevelError, itemLevelErrosCount).ToList();
+			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(itemLevelError, itemLevelErrorsCount).ToList();
 
-			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), _dateTime, _logger);
+			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, new ConfigurationStub(), 
+                _dateTime, _logger, new WrapperForRandom());
 
 			// Act
 			IEnumerable<int> result = await sut.MassCreateAsync(_workspace.ArtifactID, jobHistoryArtifactID, itemLevelErrors).ConfigureAwait(false);
 
 			// Assert
-			result.Should().HaveCount(itemLevelErrosCount);
+			result.Should().HaveCount(itemLevelErrorsCount);
 		}
 
 		private static string GetLongTextString(int count) => new string('.', count);

@@ -207,10 +207,10 @@ namespace Relativity.Sync.Tests.System
 				_workspace.ArtifactID, syncStatisticsId).ConfigureAwait(false);
 
 			syncStatistics.RunId.Should().NotBeEmpty();
-			syncStatistics.DocumentsRequested.Should().Be(dataSet.TotalDocumentCount);
-			syncStatistics.DocumentsCalculated.Should().Be(expectedCalculatedDocumentsCount);
-			syncStatistics.FilesCountCalculated.Should().Be(expectedCalculatedDocumentsCount);
-			syncStatistics.FilesSizeCalculated.Should().BePositive();
+			syncStatistics.RequestedDocuments.Should().Be(dataSet.TotalDocumentCount);
+			syncStatistics.CalculatedDocuments.Should().Be(expectedCalculatedDocumentsCount);
+			syncStatistics.CalculatedFilesCount.Should().Be(expectedCalculatedDocumentsCount);
+			syncStatistics.CalculatedFilesSize.Should().BePositive();
 		}
 
 		private QueryRequest GetImageQueryRequest()

@@ -87,6 +87,26 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                         });
                 });
         }
+        
+        [Test]
+        public void AllRdosLongProperties_ShouldHaveLongFieldAttribute()
+        {
+            Type[] allRdoTypes = GetRdoTypesFromAssembly(typeof(IRdoType).Assembly);
+
+            allRdoTypes
+                .ForEach(t =>
+                {
+                    t.GetProperties()
+                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) &&
+                                    (p.PropertyType == typeof(long) || p.PropertyType == typeof(long?)))
+                        .ForEach(x =>
+                        {
+                            RdoLongFieldAttribute fieldAttribute = x.GetCustomAttribute<RdoLongFieldAttribute>();
+
+                            fieldAttribute.Should().NotBeNull($"All properties of types long should be decorated with {nameof(RdoLongFieldAttribute)}. Please fix {t.Name}.{x.Name}");
+                        });
+                });
+        }
 
         private static Type[] GetRdoTypesFromAssembly(Assembly assembly)
         {

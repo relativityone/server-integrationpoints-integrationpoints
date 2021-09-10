@@ -101,8 +101,9 @@ namespace Relativity.Sync.Executors
 		private void HandleItemLevelError(ItemLevelError itemLevelError)
 		{
 			_itemLevelErrorExists = true;
-
-			_logger.LogError("Item level error occurred. Source: {sourceUniqueId} Message: {errorMessage}", itemLevelError.Identifier, itemLevelError.Message);
+			
+			_logger.LogWarning("Item level error occurred. ArtifactId: {itemArtifactId} Message: {errorMessage}",
+				_syncImportBulkArtifactJob.ItemStatusMonitor.GetArtifactId(itemLevelError.Identifier), itemLevelError.Message);
 
 			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
 			AddItemLevelError(itemLevelError.Identifier, itemLevelError.Message);

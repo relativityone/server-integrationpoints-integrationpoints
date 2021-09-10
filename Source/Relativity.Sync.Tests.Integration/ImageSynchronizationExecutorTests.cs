@@ -14,6 +14,8 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
@@ -33,6 +35,8 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IFolderManager> _folderManagerMock;
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 		private Mock<IImageFileRepository> _imageFileRepository;
+		private Mock<IRdoManager> _rdoManagerMock;
+		
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
 		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
 
@@ -40,18 +44,6 @@ namespace Relativity.Sync.Tests.Integration
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
-
-		private static readonly Guid TransferredItemsCountGuid = new Guid("B2D112CA-E81E-42C7-A6B2-C0E89F32F567");
-		private static readonly Guid FailedItemsCountGuid = new Guid("DC3228E4-2765-4C3B-B3B1-A0F054E280F6");
-		private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
-		private static readonly Guid TransferredDocumentsCountGuid = new Guid("A5618A97-48C5-441C-86DF-2867481D30AB");
-		private static readonly Guid FailedDocumentsCountGuid = new Guid("4FA1CF50-B261-4157-BD2D-50619F0347D6");
-		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
-		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
-		private static readonly Guid TaggedDocumentsCountGuid = new Guid("AF3C2398-AF49-4537-9BC3-D79AE1734A8C");
-		private static readonly Guid MetadataBytesTransferredGuid = new Guid("2BE1C011-0A0C-4A10-B77A-74BB9405A68A");
-		private static readonly Guid FilesBytesTransferredGuid = new Guid("4A21D596-6961-4389-8210-8D2D8C56DBAD");
-		private static readonly Guid TotalBytesTransferredGuid = new Guid("511C4B49-2E05-4DFB-BB3E-771EC0BDEFED");
 
 		[SetUp]
 		public void SetUp()
@@ -68,6 +60,9 @@ namespace Relativity.Sync.Tests.Integration
 
 			Mock<ISemaphoreSlim> semaphoreSlim = new Mock<ISemaphoreSlim>();
 			containerBuilder.RegisterInstance(semaphoreSlim.Object).As<ISemaphoreSlim>();
+			
+			_rdoManagerMock = new Mock<IRdoManager>();
+			containerBuilder.RegisterInstance(_rdoManagerMock.Object).As<IRdoManager>();
 
 			IList<FieldMap> fieldMaps = new List<FieldMap>()
 			{
@@ -162,6 +157,7 @@ namespace Relativity.Sync.Tests.Integration
 			_objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
 				It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)), Times.Never);
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
+			_rdoManagerMock.Verify();
 		}
 
 		[Test]
@@ -230,6 +226,7 @@ namespace Relativity.Sync.Tests.Integration
 			result.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
 			_objectManagerMock.Verify();
+			_rdoManagerMock.Verify();
 		}
 
 		[Test]
@@ -271,6 +268,7 @@ namespace Relativity.Sync.Tests.Integration
 			result.Status.Should().Be(ExecutionStatus.Failed);
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
 			_objectManagerMock.Verify();
+			_rdoManagerMock.Verify();
 		}
 
 		[Test]
@@ -289,6 +287,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			// assert
 			_importBulkArtifactJob.Verify(x => x.Execute(), Times.Never);
+			_rdoManagerMock.Verify(x => x.GetAsync<SyncBatchRdo>(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
 			result.Status.Should().Be(ExecutionStatus.Canceled);
 		}
 
@@ -407,56 +406,15 @@ namespace Relativity.Sync.Tests.Integration
 				.ReturnsAsync(new QueryResultSlim { Objects = new List<RelativityObjectSlim>(), ResultCount = 0, TotalCount = 0 })
 				.Verifiable();
 
-			QueryResult readResultForBatch = CreateReadResultForBatch(totalItemsCount);
-
-			_objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(r => r.Condition == $"'ArtifactID' == {newBatchArtifactId}"), 0, 1))
-				.ReturnsAsync(readResultForBatch)
+			_rdoManagerMock.Setup(x => x.GetAsync<SyncBatchRdo>(_SOURCE_WORKSPACE_ARTIFACT_ID, newBatchArtifactId))
+				.ReturnsAsync(new SyncBatchRdo
+				{
+					ArtifactId = newBatchArtifactId,
+					TotalDocumentsCount = totalItemsCount
+				})
 				.Verifiable();
 
 			return batch;
-		}
-
-		private static QueryResult CreateReadResultForBatch(int totalDocumentsCount)
-		{
-			QueryResult readResultForBatch = new QueryResult()
-			{
-				Objects = new List<RelativityObject>()
-				{
-					new RelativityObject()
-					{
-						FieldValues = new List<FieldValuePair>()
-						{
-							CreateFieldValuePair(TotalDocumentsCountGuid, totalDocumentsCount),
-							CreateFieldValuePair(FailedDocumentsCountGuid, 0),
-							CreateFieldValuePair(TransferredDocumentsCountGuid, 0),
-							CreateFieldValuePair(FailedItemsCountGuid, 0),
-							CreateFieldValuePair(TransferredItemsCountGuid, 0),
-							CreateFieldValuePair(StartingIndexGuid, 0),
-							CreateFieldValuePair(StatusGuid, BatchStatus.New.ToString()),
-							CreateFieldValuePair(TaggedDocumentsCountGuid, 0),
-							CreateFieldValuePair(MetadataBytesTransferredGuid, 0),
-							CreateFieldValuePair(FilesBytesTransferredGuid, 0),
-							CreateFieldValuePair(TotalBytesTransferredGuid, 0)
-						}
-					}
-				}
-			};
-			return readResultForBatch;
-		}
-
-		private static FieldValuePair CreateFieldValuePair(Guid guid, object value)
-		{
-			return new FieldValuePair()
-			{
-				Field = new Field()
-				{
-					Guids = new List<Guid>()
-					{
-						guid
-					}
-				},
-				Value = value
-			};
 		}
 
 		private void SetupImageFileRepository(IList<int> documentIds)
