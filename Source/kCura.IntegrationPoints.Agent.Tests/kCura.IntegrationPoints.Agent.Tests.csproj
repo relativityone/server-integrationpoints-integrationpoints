@@ -55,6 +55,7 @@
     <Compile Include="Installer\Components\EmailSenderRegistrationTests.cs" />
     <Compile Include="JobExecutorTests.cs" />
     <Compile Include="Monitoring\ExternalServiceInstrumentationProviderWithJobContextTests.cs" />
+    <Compile Include="Monitoring\MemoryUsageReporterTest.cs" />
     <Compile Include="RelativitySyncConstrainsCheckerTests.cs" />
     <Compile Include="TaskExceptionServiceTests.cs" />
     <Compile Include="TaskExceptionMediatorTests.cs" />

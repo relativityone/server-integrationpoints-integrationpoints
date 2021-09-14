@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent
 		protected override TaskResult ProcessJob(Job job)
 		{
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
-			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL_MS, job.JobId, _RELATIVITY_SYNC_JOB_TYPE))
+			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL_MS, job.JobId, _RELATIVITY_SYNC_JOB_TYPE, Logger))
 			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
 			{
 				SetWebApiTimeout();
@@ -114,6 +114,7 @@ namespace kCura.IntegrationPoints.Agent
 					ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
 					try
 					{
+						Logger.LogInformation("Yeah, we're testing this");
 						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
 						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
 						AgentCorrelationContext correlationContext = GetCorrelationContext(job);

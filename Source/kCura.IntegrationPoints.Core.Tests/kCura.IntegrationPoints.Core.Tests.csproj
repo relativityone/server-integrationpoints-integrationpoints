@@ -46,6 +46,9 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\kCura.IntegrationPoints.Common\Metrics\RipMetrics.cs">
+      <Link>RipMetrics.cs</Link>
+    </Compile>
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
