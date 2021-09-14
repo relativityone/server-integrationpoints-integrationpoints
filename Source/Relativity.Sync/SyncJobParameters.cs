@@ -63,7 +63,19 @@ namespace Relativity.Sync
 
 		private static string GetVersion()
 		{
-			return typeof(SyncJobParameters).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "[file version not specified]";
+			string ver;
+
+			try
+			{
+				throw new ArgumentException(nameof(SyncJobParameters));
+				ver = typeof(SyncJobParameters).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+			}
+			catch (Exception)
+			{
+				ver = "[file version not specified]";
+			}
+
+			return ver;
 		}
 
 	}
