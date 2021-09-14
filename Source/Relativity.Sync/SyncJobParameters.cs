@@ -67,7 +67,6 @@ namespace Relativity.Sync
 
 			try
 			{
-				throw new ArgumentException(nameof(SyncJobParameters));
 				ver = typeof(SyncJobParameters).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 			}
 			catch (Exception)
