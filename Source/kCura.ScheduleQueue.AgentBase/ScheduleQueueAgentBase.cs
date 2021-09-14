@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
-using kCura.IntegrationPoints.Core.Helpers;
-using kCura.IntegrationPoints.Domain;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -66,7 +65,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), ToggleProviderHelper.CreateSqlServerToggleProvider(Helper), Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), ToggleProvider.Current, Helper);
 			}
 
 			if (_queueJobValidator == null)
