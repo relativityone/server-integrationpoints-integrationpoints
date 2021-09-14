@@ -24,10 +24,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             _toggleProvider = ToggleProvider.Current;
         }
 
-        protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller) : this()
+        protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller)
+	        : this()
         {
             _ripProviderInstaller = ripProviderInstaller;
-            _toggleProvider = ToggleProvider.Current;
         }
 
         internal override ISourceProviderInstaller CreateSourceProviderInstaller()
