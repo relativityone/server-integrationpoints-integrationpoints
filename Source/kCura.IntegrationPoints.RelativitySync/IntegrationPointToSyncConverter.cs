@@ -68,17 +68,10 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private Version GetVersion(Assembly assembly)
 		{
 			Version assemblyVersion;
-			try
+			if (!Version.TryParse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version, out assemblyVersion))
 			{
-				assemblyVersion = Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
+				_logger.LogWarning("Couldn't parse Version from AssemblyFileVersionAttribute");
 			}
-			catch (Exception ex)
-			{
-				assemblyVersion = new Version(0,0,0,0);
-				_logger.LogWarning("Couldn't parse Version from AssemblyFileVersionAttribute Exception: {ex.Message}", ex );
-				throw;
-			}
-
 			return assemblyVersion;
 		}
 
