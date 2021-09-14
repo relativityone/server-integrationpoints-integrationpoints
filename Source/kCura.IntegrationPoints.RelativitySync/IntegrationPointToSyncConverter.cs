@@ -65,9 +65,21 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private static Version GetVersion(Assembly assembly)
+		private Version GetVersion(Assembly assembly)
 		{
-			return Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version);
+			Version assemblyVersion;
+			try
+			{
+				assemblyVersion = Version.Parse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
+			}
+			catch (Exception ex)
+			{
+				assemblyVersion = new Version(0,0,0,0);
+				_logger.LogWarning("Couldn't parse Version from AssemblyFileVersionAttribute Exception: {ex.Message}", ex );
+				throw;
+			}
+
+			return assemblyVersion;
 		}
 
 		private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
