@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void IntegrationPointNamePreventXssInjection(string integrationPointName)
 		{
-			RunXssPreventionTestCase<IntegrationPointListPage>(
+			RunFirstPageXssPreventionTestCase<IntegrationPointListPage>(
 				p => p.NewIntegrationPoint,
 				ExportIntegrationPointEdit(
 					integrationPointName));
@@ -66,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void IntegrationPointEmailNotificationRecipientsPreventXssInjection(string emailRecipients)
 		{
-			RunXssPreventionTestCase<IntegrationPointListPage>(
+			RunFirstPageXssPreventionTestCase<IntegrationPointListPage>(
 				p => p.NewIntegrationPoint,
 				ExportIntegrationPointEdit(
 					emailRecipients: emailRecipients));
@@ -74,7 +74,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void IntegrationPointProfileNamePreventXssInjection(string integrationPointProfileName)
 		{
-			RunXssPreventionTestCase<IntegrationPointProfileListPage>(
+			RunFirstPageXssPreventionTestCase<IntegrationPointProfileListPage>(
 				p => p.NewIntegrationPointProfile,
 				ExportIntegrationPointEdit(
 					integrationPointProfileName));
@@ -82,13 +82,34 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void IntegrationPointProfileEmailNotificationRecipientsPreventXssInjection(string emailRecipients)
 		{
-			RunXssPreventionTestCase<IntegrationPointProfileListPage>(
+			RunFirstPageXssPreventionTestCase<IntegrationPointProfileListPage>(
 				p => p.NewIntegrationPointProfile,
 				ExportIntegrationPointEdit(
 					emailRecipients: emailRecipients));
 		}
 
-		private void RunXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit) 
+		public void IntegrationPointImportFromLDAPConnectionPathPreventXssInjection(string connectionPath)
+		{
+			RunLDAPXssPreventionTestCase(
+				ImportFromLDAPConnectToSource(
+					connectionPath: connectionPath));
+		}
+
+		public void IntegrationPointImportFromLDAPUsernamePreventXssInjection(string username)
+		{
+			RunLDAPXssPreventionTestCase(
+				ImportFromLDAPConnectToSource(
+					username: username));
+		}
+
+		public void IntegrationPointImportFromLDAPPasswordPreventXssInjection(string password)
+		{
+			RunLDAPXssPreventionTestCase(
+				ImportFromLDAPConnectToSource(
+					password: password));
+		}
+
+		private void RunFirstPageXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit) 
 			where T: WorkspacePage<T>, new()
 		{
 			// Arrange
@@ -105,13 +126,44 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			AssertXss();
 		}
 
-		private IntegrationPointEdit ExportIntegrationPointEdit(string name = null, string emailRecipients = "")
+		private void RunLDAPXssPreventionTestCase(ImportFromLDAPConnectToSource importFromLdapConnectToSource)
+		{
+			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
+			// Act
+			Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+				.NewIntegrationPoint.ClickAndGo()
+				.ApplyModel(new IntegrationPointEditImport
+				{
+					Name = $" XSS Integration Point - {Guid.NewGuid()}",
+					Source = IntegrationPointSources.LDAP,
+					TransferredObject = IntegrationPointTransferredObjects.Document,
+				}).ImportFromLDAPNext.ClickAndGo()
+				.ApplyModel(importFromLdapConnectToSource).Next.ClickAndGo();
+
+			// Assert
+			AssertXss();
+		}
+
+		private static IntegrationPointEdit ExportIntegrationPointEdit(string name = null, string emailRecipients = "")
 		{
 			return new IntegrationPointEditExport
 			{
 				Name = name ?? $" XSS Integration Point - {Guid.NewGuid()}",
 				Destination = IntegrationPointDestinations.Relativity,
 				EmailRecipients = emailRecipients
+			};
+		}
+
+		private static ImportFromLDAPConnectToSource ImportFromLDAPConnectToSource(
+			string connectionPath = null, string username = null, string password = null)
+		{
+			return new ImportFromLDAPConnectToSource
+			{
+				ConnectionPath = connectionPath ?? Const.LDAP.OPEN_LDAP_CONNECTION_PATH,
+				Username = username ?? Const.LDAP.OPEN_LDAP_USERNAME,
+				Password = password ?? Const.LDAP.OPEN_LDAP_PASSWORD
 			};
 		}
 
@@ -129,7 +181,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 					});
 		}
 
-		private void AssertXss()
+		private static void AssertXss()
 		{
 			object scriptResult = AtataContext.Current.Driver.ExecuteScript("return window.relativityXSS === undefined");
 			scriptResult.Should().BeAssignableTo<bool>().Which.Should().BeTrue("XSS attack should not execute malicious code");
