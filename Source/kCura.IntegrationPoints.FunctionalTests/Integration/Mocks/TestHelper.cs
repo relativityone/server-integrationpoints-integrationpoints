@@ -94,9 +94,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		}
 
 		public IInstanceSettingsBundle GetInstanceSettingBundle()
-		{
-			throw new NotImplementedException();
-		}
+        {
+            return new FakeInstanceSettingsBundle();
+        }
 
 		public IStringSanitizer GetStringSanitizer(int workspaceID)
 		{
@@ -105,7 +105,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public IAuthenticationMgr GetAuthenticationManager()
 		{
-			throw new NotImplementedException();
+			return new FakeAuthenticationMgr();
 		}
 
 		public ICSRFManager GetCSRFManager()
