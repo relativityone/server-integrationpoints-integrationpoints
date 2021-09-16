@@ -6,6 +6,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
@@ -29,11 +30,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         private const string _SMTP_USER_NAME_SETTING = "A7";
         
         [IdentifiedTest("3E578A6E-D86A-4711-93C9-DB6A1C562C65")]
-        public void SyncWorkerShouldAddSendEmailWorkerToScheduleQueue()
+        public void SyncWorkerShouldAddSendEmailTaskTypeToScheduleQueue()
         {
             // Arrange
             MyFirstProviderUtil myFirstProviderUtil = new MyFirstProviderUtil(Container, FakeRelativityInstance,
                 SourceWorkspace, Serializer);
+
             const int numberOfRecords = 1000;
             string xmlPath = myFirstProviderUtil.PrepareRecords(numberOfRecords);
             JobTest job = myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext, _EMAIL_TO_ADDRESS);
@@ -63,15 +65,36 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 // act
                 sut.Execute(job.AsJob());
 
-                receivedMessage = await fakeSmtpServer.GetFirstMessage(TimeSpan.FromSeconds(5))
+                receivedMessage = await fakeSmtpServer.GetFirstMessage(TimeSpan.FromSeconds(2))
                     .ConfigureAwait(false);
             }
 
             // Assert
             AssertReceivedMessage(receivedMessage);
         }
-        
-        private JobTest PrepareSendEmailWorkerJob()
+
+        [IdentifiedTest("30C43B6D-396E-458A-AB28-630E735FB02C")]
+        public async Task SendEmailWorkerWithBatchInstanceIdShouldSendEmailToServer()
+        {
+            // Arrange
+            FakeSmtpMessage receivedMessage;
+            JobTest job = PrepareSendEmailWorkerJob(true);
+            SendEmailWorker sut = PrepareSendEmailWorkerSut();
+
+            using (FakeSmtpServer fakeSmtpServer = FakeSmtpServer.Start(_SMTP_PORT))
+            {
+                // act
+                sut.Execute(job.AsJob());
+
+                receivedMessage = await fakeSmtpServer.GetFirstMessage(TimeSpan.FromSeconds(2))
+                    .ConfigureAwait(false);
+            }
+
+            // Assert
+            AssertReceivedMessage(receivedMessage);
+        }
+
+        private JobTest PrepareSendEmailWorkerJob(bool withBatchInstance = false)
         {
             SourceProviderTest provider =
                 SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
@@ -83,6 +106,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 
+            string jobDetails;
+
             EmailJobParameters message = new EmailJobParameters
             {
                 Subject = _EMAIL_SUBJECT,
@@ -90,7 +115,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 Emails = new[] { _EMAIL_TO_ADDRESS }
             };
 
-            job.JobDetails = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+            if (withBatchInstance)
+            {
+                TaskParameters taskParameters = new TaskParameters
+                {
+                    BatchInstance = Guid.NewGuid(),
+                    BatchParameters = message
+                };
+
+                jobDetails = Newtonsoft.Json.JsonConvert.SerializeObject(taskParameters);
+
+            }
+            else
+            {
+                jobDetails = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+            }
+            
+
+            job.JobDetails = jobDetails;
             
             return job;
         }
