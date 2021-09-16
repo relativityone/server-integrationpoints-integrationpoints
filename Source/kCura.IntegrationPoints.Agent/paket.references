@@ -7,13 +7,9 @@ Relativity.Toggles
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
-Relativity.Vfs.IO
 Relativity.DataTransfer.MessageService
 Relativity.AutomatedWorkflows.Services.Interfaces
 iTextSharp
-
-System.Reactive
-    alias System.Reactive.dll reactive
 
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
