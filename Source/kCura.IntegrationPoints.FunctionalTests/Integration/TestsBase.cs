@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
@@ -113,6 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				return jobContextProvider;
 			}).Named("TestJobContext").IsDefault());
 		}
+
 		protected virtual WindsorContainer GetContainer()
 		{
 			return new WindsorContainer();
@@ -126,9 +128,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
 			Container.Register(Component.For<RelativityInstanceTest>().UsingFactoryMethod(() => FakeRelativityInstance).LifestyleSingleton());
 
-			RegisterRelativityApiServices();
-
-			RegisterScheduleAgentBase();
+            RegisterRelativityApiServices();
+            RegisterScheduleAgentBase();
 
 			Container.Install(new AgentInstaller(Helper, new DefaultScheduleRuleFactory(Container.Resolve<ITimeService>())));
 			Container.Install(new QueryInstallers());
@@ -159,12 +160,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			Container.Register(Component.For<IToggleProvider>().ImplementedBy<FakeToggleProviderWithDefaultValue>().IsDefault());
 		}
-
+        
 		private void RegisterRelativityApiServices()
 		{
 			Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
 			Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
-			Container.Register(Component.For<IInstanceSettingsBundle>().ImplementedBy<FakeInstanceSettingsBundle>().LifestyleTransient());
 		}
 
 		private void RegisterScheduleAgentBase()
@@ -206,7 +206,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			
 				return job.AsJob();
 			}).Named(Guid.NewGuid().ToString()).IsDefault());
-			
+
 			Container.Register(Component.For<IJobContextProvider>().UsingFactoryMethod(k =>
 			{
 				Job job = k.Resolve<Job>();
@@ -216,13 +216,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			
 				return jobContextProvider;
 			}).LifestyleSingleton().Named(nameof(FakeJobContextProvider)).IsDefault());
-
-            Container.Register(Component.For<ISmtpConfigurationProvider>()
-                .ImplementedBy<InstanceSettingsSmptConfigurationProvider>());
-            Container.Register(Component.For<ISmtpClientFactory>()
-                .ImplementedBy<SmtpClientFactory>());
-            Container.Register(Component.For<IEmailSender>()
-                .ImplementedBy<EmailSender>());
 		}
 
 		private void RegisterFakeRipServices()
