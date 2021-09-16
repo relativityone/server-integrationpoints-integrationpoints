@@ -1,11 +1,11 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, _agentGuid);
 			IAgentService agentService = new AgentService(helper, queryManager, _agentGuid);
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			IJobService jobService = new JobService(agentService, jobServiceDataProvider, ToggleProviderHelper.CreateSqlServerToggleProvider(helper), helper);
+			IJobService jobService = new JobService(agentService, jobServiceDataProvider, ToggleProvider.Current, helper);
 			return new CorrespondingJobDelete(jobService);
 		}
 	}
