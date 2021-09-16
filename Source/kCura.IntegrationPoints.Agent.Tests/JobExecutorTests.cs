@@ -6,6 +6,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Interfaces;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private Mock<IAPILog> _logMock;
 		private Mock<ITaskProvider> _taskProviderFake;
 		private Mock<IJobService> _jobServiceFake;
+		private Mock<ITaskParameterHelper> _taskParameterFake;
 
 		private const string _RIP_PREFIX = "RIP.";
 
@@ -40,8 +42,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			Mock<IAgentNotifier> agentNotifier = new Mock<IAgentNotifier>();
 			_jobServiceFake = new Mock<IJobService>();
-
-			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _logMock.Object);
+			_taskParameterFake = new Mock<ITaskParameterHelper>();
+			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _taskParameterFake.Object, _logMock.Object);
 		}
 		
 		[Test]
