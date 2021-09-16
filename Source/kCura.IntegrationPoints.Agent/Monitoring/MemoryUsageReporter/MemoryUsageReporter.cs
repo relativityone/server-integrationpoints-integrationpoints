@@ -6,37 +6,31 @@ using System.Diagnostics;
 using System.Threading;
 using System.Management;
 using System.Linq;
+using kCura.IntegrationPoints.Common.Metrics;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
 	public class MemoryUsageReporter : IMemoryUsageReporter
 	{
 		private IAPM _apmClient;
-		private IAPILog _logger;
 		private Timer _timerThread;
 		private long _jobId;
 		private string _jobType;
+		private RipMetric _ripMetric;
 
 
-		public MemoryUsageReporter(IAPM apmClient, IAPILog logger = null)
+		public MemoryUsageReporter(IAPM apmClient, RipMetric ripMetric)
 		{
 			_timerThread = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
 			_apmClient = apmClient;
+			_ripMetric = ripMetric;
 		}
 
-		public IDisposable ActivateTimer(int timeInterval, long jobId, string jobType, IAPILog logger)
+		public IDisposable ActivateTimer(int timeInterval, long jobId, string jobType)
 		{
-			SetLogger(logger);
 			SetJobData(jobId, jobType);
 			_timerThread.Change(0, timeInterval);
-			_logger.LogInformation("Yeah, we've activated timer");
 			return _timerThread;
-		}
-
-		private void SetLogger(IAPILog logger)
-        {
-			_logger = logger;
-			_logger.LogInformation("Yeah, we've set the logger");
 		}
 
 		private void SetJobData(long jobId, string jobType)
@@ -59,9 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
 			LogApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
 
-			_logger.LogInformation("Yeah, hopefully we'll send apm metric in a sec");
-			_apmClient.CountOperation("Relativity.IntegrationPoints.Performance", customData: customData).Write();
-			_logger.LogInformation("IntegrationPoints.Performance.System metric: Memory Usage: {memUsage}, Job Id: {jobId}, Job Type: {jobType}", memoryUsage, _jobId, _jobType);
+			_apmClient.CountOperation("Relativity.IntegrationPoints.Performance", customData: customData, correlationID: _ripMetric.WorkflowId).Write();
 		}
 
 		private Dictionary<string, object> LogApplicationSystemStats()
