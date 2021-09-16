@@ -630,5 +630,49 @@
 	{
 		"Jira": "REL-589252",
 		"Exception": "*Relativity.Services.Objects.Exceptions.InvalidValueTypeException: The value of field * must be of the proper Relativity whole number format*"
+	},
+	{
+		"Jira": "REL-594800",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error occured while executing 'TruncateStagingTablesStage'*"
+	},
+	{
+		"Jira": "REL-594903",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.Net.WebException: The remote name could not be resolved:*"
+	},
+	{
+		"Jira": "REL-594909",
+		"Exception": "Relativity.Services.Exceptions.NotAuthorizedException: The service endpoint denied the request.*UpdateFieldValueAsync*"
+	},
+	{
+		"Jira": "REL-594929",
+		"Exception": "Relativity.Sync.SyncException: Failed to create Saved Search for promoted documents in destination workspace*Could not find a part of the path*kcura.edds.sqlserver2005searchprovider.dll*"
+	},
+	{
+		"Jira": "REL-594931",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Relativity.Transfer.TransferException: The login request using the distributed API failed.*"
+	},
+	{
+		"Jira": "REL-594937",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Object reference not set to an instance of an object.*GetSupportedByViewerData*"
+	},
+	{
+		"Jira": "REL-594939",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Server stack limit has been reached.*This exception is known to be thrown when you import too many fields.*"
+	},
+	{
+		"Jira": "REL-594942",
+		"Exception": "Relativity.Services.Exceptions.NotFoundException: Not Found.*Relativity.Sync.Storage.Batch.*ReadLastAsync*"
+	},
+	{
+		"Jira": "REL-594945",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Has Permission Read Failed*"
+	},
+	{
+		"Jira": "REL-594946",
+		"Exception": "Relativity.Services.Exceptions.NotFoundException: Not Found.*DocumentDataSourceSnapshotExecutor*"
+	},
+	{
+		"Jira": "REL-594948",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Web.Services.Protocols.SoapException: Execution Timeout Expired.*"
 	}
 ]
