@@ -12,9 +12,12 @@ using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -35,15 +38,17 @@ namespace kCura.IntegrationPoints.Agent
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
 	[Description("An agent that manages Integration Point jobs.")]
+	[WorkloadDiscovery.CustomAttributes.Path("Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Integration%20Points%20Agent/GetWorkloadAsync")]
 	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IRemovableAgent, IDisposable
 	{
 		private ErrorService _errorService;
 		private IAgentHelper _helper;
 		private IJobContextProvider _jobContextProvider;
-		private IJobExecutor _jobExecutor;
 		private const string _AGENT_NAME = "Integration Points Agent";
 		private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
 		private readonly Lazy<IWindsorContainer> _agentLevelContainer;
+
+		internal IJobExecutor JobExecutor { get; set; }
 
 		public virtual event ExceptionEventHandler JobExecutionError;
 
@@ -91,17 +96,17 @@ namespace kCura.IntegrationPoints.Agent
 		protected override void Initialize()
 		{
 			base.Initialize();
-			_jobExecutor = new JobExecutor(this, this, JobService, Logger);
-			_jobExecutor.JobExecutionError += OnJobExecutionError;
+			JobExecutor = new JobExecutor(this, this, JobService, Logger);
+			JobExecutor.JobExecutionError += OnJobExecutionError;
 		}
 
 		protected override TaskResult ProcessJob(Job job)
 		{
-			SetWebApiTimeout();
-
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
 			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
 			{
+				SetWebApiTimeout();
+
 				if (ShouldUseRelativitySync(job, ripContainerForSync))
 				{
 					ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
@@ -147,14 +152,15 @@ namespace kCura.IntegrationPoints.Agent
 			using (JobContextProvider.StartJobContext(job))
 			{
 				SendJobStartedMessage(job);
-				TaskResult result = _jobExecutor.ProcessJob(job);
+				TaskResult result = JobExecutor.ProcessJob(job);
 				return result;
 			}
 		}
 
 		private void SetWebApiTimeout()
 		{
-			TimeSpan? timeout = Config.Config.Instance.RelativityWebApiTimeout;
+			IConfig config = _agentLevelContainer.Value.Resolve<IConfig>();
+			TimeSpan? timeout = config.RelativityWebApiTimeout;
 			if (timeout.HasValue)
 			{
 				int timeoutMs = (int)timeout.Value.TotalMilliseconds;
@@ -179,26 +185,32 @@ namespace kCura.IntegrationPoints.Agent
 
 		private void SendJobStartedMessage(Job job)
 		{
-			TaskParameterHelper taskParameterHelper = _agentLevelContainer.Value.Resolve<TaskParameterHelper>();
+			ITaskParameterHelper taskParameterHelper = _agentLevelContainer.Value.Resolve<ITaskParameterHelper>();
 			IIntegrationPointService integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
+			IJobHistoryService jobHistoryService = _agentLevelContainer.Value.Resolve<IJobHistoryService>();
 			IProviderTypeService providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
 			IMessageService messageService = _agentLevelContainer.Value.Resolve<IMessageService>();
 
 			Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
-			IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-			var message = new JobStartedMessage
+
+			JobHistory jobHistory = jobHistoryService.GetRdoWithoutDocuments(batchInstanceId);
+			if(!jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended))
 			{
-				Provider = integrationPoint.GetProviderName(providerTypeService),
-				CorrelationID = batchInstanceId.ToString()
-			};
-			messageService.Send(message).GetAwaiter().GetResult();
+				IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+				var message = new JobStartedMessage
+				{
+					Provider = integrationPoint.GetProviderName(providerTypeService),
+					CorrelationID = batchInstanceId.ToString()
+				};
+				messageService.Send(message).GetAwaiter().GetResult();
+			}
 		}
 
 		private bool ShouldUseRelativitySync(Job job, IWindsorContainer ripContainerForSync)
 		{
 			try
 			{
-				RelativitySyncConstrainsChecker constrainsChecker = ripContainerForSync.Resolve<RelativitySyncConstrainsChecker>();
+				IRelativitySyncConstrainsChecker constrainsChecker = ripContainerForSync.Resolve<IRelativitySyncConstrainsChecker>();
 				return constrainsChecker.ShouldUseRelativitySync(job);
 			}
 			catch (Exception ex)

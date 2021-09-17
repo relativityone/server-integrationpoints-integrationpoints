@@ -175,6 +175,11 @@
 					});
 					return _field[0];
 				});
+
+				_fields = _fields.filter(function (field) {
+					return typeof field !== 'undefined'
+				});
+
 				return _fields;
 			};
 
@@ -284,6 +289,5 @@
 		templateID: 'exportProviderFieldsStep',
 		isForRelativityExport: true
 	});
-
 	root.points.steps.push(step);
 })(IP, ko);

@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 			container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifestyleTransient());
 			container.Register(Component.For<IJobTracker>().ImplementedBy<JobTracker>().LifestyleTransient());
-			container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
+			container.Register(Component.For<ITaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
 			container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifestyleTransient());
 			container.Register(Component.For<IImportApiFacade>().ImplementedBy<ImportApiFacade>().LifestyleTransient());
 			container.Register(Component.For<IImportJobFactory>().ImplementedBy<ImportJobFactory>().LifestyleTransient());
@@ -168,13 +168,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IIntegrationPointProviderTypeService>()
 				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
 				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
-
-			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
-			container.Register(Component
-				.For<IToggleProvider>()
-				.UsingFactoryMethod(k => ToggleProviderHelper.CreateSqlServerToggleProvider(k.Resolve<IHelper>()))
-				.LifestyleSingleton()
-			);
+			
+			container.Register(Component.For<IToggleProvider>().Instance(ToggleProvider.Current).LifestyleSingleton());
 
 			container.Register(Component.For<IFederatedInstanceManager>().ImplementedBy<FederatedInstanceManager>().LifestyleTransient());
 

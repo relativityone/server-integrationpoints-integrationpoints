@@ -90,7 +90,6 @@
     <Compile Include="Helpers\ICryptographyHelper.cs" />
     <Compile Include="Helpers\Implementations\CryptographyHelper.cs" />
     <Compile Include="Helpers\Implementations\UrlVersionDecorator.cs" />
-    <Compile Include="Helpers\ToggleProviderHelper.cs" />
     <Compile Include="Installers\Registrations\WebApiLoginServiceRegistration.cs" />
     <Compile Include="Installers\Registrations\ExportSanitizerRegistration.cs" />
     <Compile Include="Interfaces\TextSanitizer\SanitizationResult.cs" />
@@ -123,6 +122,7 @@
     <Compile Include="Services\Exporter\Sanitization\SingleObjectFieldSanitizer.cs" />
     <Compile Include="Services\Exporter\Sanitization\UserFieldSanitizer.cs" />
     <Compile Include="Services\ISecretStoreMigrationService.cs" />
+    <Compile Include="Services\ITaskParameterHelper.cs" />
     <Compile Include="Services\JobHistory\IJobStatisticsService.cs" />
     <Compile Include="Services\Keywords\IEmailFormatter.cs" />
     <Compile Include="Services\SecretStoreMigrationService.cs" />
@@ -1050,6 +1050,28 @@
         <Reference Include="mscorlib">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="System.Runtime.CompilerServices.Unsafe">
+          <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Threading.Tasks.Extensions">
+          <HintPath>..\..\packages\System.Threading.Tasks.Extensions\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>

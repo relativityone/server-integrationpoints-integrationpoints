@@ -1,21 +1,20 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent
 {
-	internal sealed class RelativitySyncConstrainsChecker
+	internal sealed class RelativitySyncConstrainsChecker : IRelativitySyncConstrainsChecker
 	{
 		private readonly IAPILog _logger;
 		private readonly IProviderTypeService _providerTypeService;
