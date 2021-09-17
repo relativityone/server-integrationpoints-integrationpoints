@@ -75,6 +75,7 @@
     <Compile Include="Commands\UpdateRelativityConfigurationCommandTests.cs" />
     <Compile Include="Context\EventHandlerWorkspaceContextServiceTests.cs" />
     <Compile Include="EncryptionManager\DefaultEncryptionManagerTests.cs" />
+    <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspaceTests.cs" />
