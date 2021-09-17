@@ -47,7 +47,6 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SetTypeOfExportDefaultValueCommandTests.cs" />
     <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
   </ItemGroup>

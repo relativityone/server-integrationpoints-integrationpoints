@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Relativity.Testing.Identification">
+      <HintPath>..\..\..\..\..\Users\marcin.sojka\.nuget\packages\relativity.testing.identification\3.5.0\lib\net462\Relativity.Testing.Identification.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -75,6 +78,7 @@
     <Compile Include="Commands\UpdateRelativityConfigurationCommandTests.cs" />
     <Compile Include="Context\EventHandlerWorkspaceContextServiceTests.cs" />
     <Compile Include="EncryptionManager\DefaultEncryptionManagerTests.cs" />
+    <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspaceTests.cs" />
