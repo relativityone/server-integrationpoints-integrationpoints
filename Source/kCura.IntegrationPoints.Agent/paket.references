@@ -7,6 +7,7 @@ Relativity.Toggles
 Relativity.DataExchange.Client.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
+Relativity.Telemetry.APM
 Relativity.Vfs.IO
 Relativity.DataTransfer.MessageService
 Relativity.AutomatedWorkflows.Services.Interfaces

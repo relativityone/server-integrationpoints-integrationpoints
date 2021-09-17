@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<IJobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
 
-            container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<MemoryUsageReporter>().LifestyleSingleton());
+			container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<MemoryUsageReporter>().LifestyleSingleton());
 
 			container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 
