@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
 				Dictionary<string, object> customData = new Dictionary<string, object>() 
 				{
-					{ "Name", "IntegrationPoints.Performance.Progress" },
+					{ "Name", "IntegrationPoints.Performance.System" },
 					{ "MemoryUsage", memoryUsage },
 					{ "JobId", _jobId },
 					{ "JobType", _jobType }
