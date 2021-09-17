@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 	internal static class IntegrationPointEditPageExtensions
 	{
 		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPoint(this IntegrationPointEditPage integrationPointEditPage,
-			string integrationPointName, Workspace destinationWorkspace, KeywordSearch savedSearch,
+			string integrationPointName, Workspace destinationWorkspace, string savedSearchName,
 			RelativityProviderOverwrite overwriteMode = RelativityProviderOverwrite.AppendOnly,
 			YesNo copyImages = YesNo.No, RelativityProviderCopyNativeFiles copyNativesMode = RelativityProviderCopyNativeFiles.No)
 		{
@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
 			var relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
 				relativityProviderConnectToSourcePage, destinationWorkspace,
-				RelativityProviderSources.SavedSearch, savedSearch.Name);
+				RelativityProviderSources.SavedSearch, savedSearchName);
 
 			var integrationPointViewPage = relativityProviderMapFieldsPage.MapAllFields
 				.Click().ApplyModel(new RelativityProviderMapFields

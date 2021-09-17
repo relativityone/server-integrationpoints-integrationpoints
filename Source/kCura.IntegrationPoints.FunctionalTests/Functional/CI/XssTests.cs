@@ -14,6 +14,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation = new XssTestsImplementation(this);
 		}
 
+		protected override void OnSetUpFixture()
+		{
+			base.OnSetUpFixture();
+
+			_testsImplementation.OnSetUpFixture();
+		}
+
 		[IdentifiedTestCase("70274A8D-0C98-4A02-A659-A1C20D323355", Const.XSS.XSS_JS)]
 		public void IntegrationPoint_Name_PreventXssInjection(string integrationPointName)
 		{

@@ -1,7 +1,10 @@
 ﻿using System.Threading;
 using Atata;
 using OpenQA.Selenium;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Controls;
 using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Interfaces;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models.ExportToLoadFileOutputSettings;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
@@ -14,12 +17,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 4, AbsenceTimeout = 30,
         AppliesTo = TriggerScope.Children)]
     [WaitForJQueryAjax(TriggerEvents.Init)]
-    internal class ExportToLoadFileDestinationInformationPage : WorkspacePage<_>
+    internal class ExportToLoadFileDestinationInformationPage : WorkspacePage<_>, IHasTreeItems<_>
     {
         public Button<IntegrationPointViewPage, _> Save { get; private set; }
-        
-        //Export Detail
-        //Export Type
+
+        #region Export Detail
+
         [FindById("export-loadfile-checkbox")]
         public CheckBox<_> LoadFile { get; private set; }
 
@@ -39,43 +42,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         public CheckBox<_> CreateExportFolder { get; private set; }
 
         [FindById("location-select")]
-        public Control<_> SelectFolder { get; private set; }
+        public Control<_> DestinationFolder { get; private set; }
 
         [FindByXPath("ul[contains(@class,'jstree-container-ul')]", Visibility = Visibility.Visible)]
         public UnorderedList<TreeItemControl<_>, _> TreeItems { get; private set; }
 
-        public _ SetItem(params string[] itemNames)
-        {
-            var item = TreeItems[0].GetScope();
-            string hierarchy = string.Empty;
-
-            foreach (var itemName in itemNames)
-            {
-                string xpath = $"{hierarchy}//li[@role='treeitem']/a[.='{itemName}']";
-                hierarchy = $"{xpath}/..";
-
-                var textItem = item.FindElement(By.XPath(xpath));
-                textItem.Click();
-                Thread.Sleep(1000);
-                item = Driver.FindElement(By.XPath(hierarchy));
-            }
-
-            return Owner;
-        }
-
-        [ControlDefinition("li[@role='treeitem']")]
-        [WaitUntilOverlayMissing(TriggerEvents.BeforeClick, AppliesTo = TriggerScope.Children)]
-        public class TreeItemControl<TPage> : Control<TPage>
-            where TPage : PageObject<TPage>
-        {
-            [FindByClass("jstree-icon")]
-            private Clickable<TPage> TreeIcon { get; set; }
-
-            [FindByXPath("a")]
-            public Text<TPage> Text { get; private set; }
-
-            public UnorderedList<TreeItemControl<TPage>, TPage> Children { get; private set; }
-        }
+        #endregion
 
         [WaitForElement(WaitBy.Class, "field-label", Until.Visible)]
         [FindByPrecedingDivContent]
@@ -110,11 +82,41 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [FindById("append-original-file-name-checkbox")]
         public CheckBox<_> AppendOriginalFileName { get; private set; }
 
+        #region IMAGE
+
         [FindByPrecedingDivContent]
         public Select2<ImageFileTypes, _> FileType { get; private set; }
 
         [FindByPrecedingDivContent]
         public Select2<ImagePrecedences, _> ImagePrecedence { get; private set; }
+
+        [FindById("subdirectory-image-prefix-input")]
+        public TextInput<_> SubdirectoryImagePrefix { get; private set; }
+
+        #endregion
+
+        #region NATIVE
+
+        [FindById("subdirectory-native-prefix-input")]
+        public TextInput<_> SubdirectoryNativePrefix { get; private set; }
+
+        #endregion
+
+        #region VOLUME
+
+        [FindById("volume-prefix-input")]
+        public TextInput<_> VolumePrefix { get; private set; }
+
+        #endregion
+
+        public _ SetDestinationFolder(int workspaceId)
+        {
+	        string dataTransferExportLocation = $".\\EDDS{workspaceId}\\DataTransfer\\Export";
+
+            return DestinationFolder
+		        .Click()
+		        .SetTreeItem(dataTransferExportLocation);
+        }
 
     }
 }

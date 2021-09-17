@@ -1,9 +1,9 @@
-﻿using Atata;
+﻿using System.Threading;
+using Atata;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
-using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -28,23 +28,20 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindById("name")]
 		public TextInput<_> Name { get; private set; }
 
-		[FindByPrecedingDivContent]
-		[WaitFor]
+		[FindById("isExportType")]
 		[InvokeMethod(nameof(OnSetType), TriggerEvents.AfterClickOrSet)]
 		public RadioButtonList<IntegrationPointTypes, _> Type { get; private set; }
 
 		[FindById("promoteEligible")]
 		public RadioButtonList<YesNo, _> PromoteList { get; private set; }
 
-		[FindByPrecedingDivContent]
-		[WaitFor]
-		//[WaitForElement(WaitBy.Id, "sourceProvider", Until.Visible)]
+		[FindById("s2id_sourceProvider")]
 		public Select2<IntegrationPointSources, _> Source { get; private set; }
 
-		[FindByPrecedingDivContent]
+		[FindById("s2id_destinationProviderType")]
 		public Select2<IntegrationPointDestinations, _> Destination { get; private set; }
 
-		[FindByPrecedingDivContent]
+		[FindById("s2id_destinationRdo")]
 		public Select2<IntegrationPointTransferredObjects, _> TransferredObject { get; private set; }
 
 		[FindById("notificationEmails")]
@@ -54,6 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         {
 			if(Type.Get() == IntegrationPointTypes.Import)
             {
+	            Thread.Sleep(1000);
 				Source.Should.Within(20).BeEnabled();
             }
         }

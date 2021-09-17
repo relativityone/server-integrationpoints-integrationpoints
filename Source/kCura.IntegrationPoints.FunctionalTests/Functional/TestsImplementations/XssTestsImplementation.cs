@@ -8,6 +8,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Models.ExportToLoadFileOutputSettings;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
@@ -21,9 +22,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 	{
 		private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
 
+		private readonly string _savedSearch = nameof(XssTestsImplementation);
+
 		public XssTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
 		{
 			_testsImplementationTestFixture = testsImplementationTestFixture;
+		}
+
+		public void OnSetUpFixture()
+		{
+			CreateSavedSearch(_savedSearch);
 		}
 
 		public void IntegrationPointSaveAsProfilePreventXssInjection(string profileName)
@@ -39,10 +47,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			const string integrationPointName = nameof(IntegrationPointSaveAsProfilePreventXssInjection);
 
-			var keywordSearch = CreateSavedSearch(nameof(IntegrationPointSaveAsProfilePreventXssInjection));
-
 			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(
-				integrationPointName, destinationWorkspace, keywordSearch);
+				integrationPointName, destinationWorkspace, _savedSearch);
 
 			// Act
 			integrationPointViewPage
@@ -136,11 +142,43 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				.NewIntegrationPoint.ClickAndGo()
 				.ApplyModel(new IntegrationPointEditImport
 				{
-					Name = $" XSS Integration Point - {Guid.NewGuid()}",
+					Name = nameof(RunLDAPXssPreventionTestCase),
 					Source = IntegrationPointSources.LDAP,
 					TransferredObject = IntegrationPointTransferredObjects.Document,
 				}).ImportFromLDAPNext.ClickAndGo()
 				.ApplyModel(importFromLdapConnectToSource).Next.ClickAndGo();
+
+			// Assert
+			AssertXss();
+		}
+
+		private void RunExportLoadFileXssPreventionTestCase(
+			Action<ExportToLoadFileDestinationInformationPage, ExportToLoadFileOutputSettingsModel> destinationInformationPageAction,
+			ExportToLoadFileOutputSettingsModel model)
+		{
+			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
+			// Act
+			var exportToLoadFileDestinationInformation =
+				Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+					.NewIntegrationPoint.ClickAndGo()
+					.ApplyModel(new IntegrationPointEditExport
+					{
+						Name = nameof(RunExportLoadFileXssPreventionTestCase),
+						Destination = IntegrationPointDestinations.LoadFile
+					}).ExportToLoadFileNext.ClickAndGo()
+					.ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
+					{
+						StartExportAtRecord = 1,
+						SavedSearch = _savedSearch
+					}).Next.ClickAndGo();
+
+			destinationInformationPageAction(exportToLoadFileDestinationInformation, model);
+
+			exportToLoadFileDestinationInformation
+				.Save.Wait(Until.Visible)
+				.Save.ClickAndGo();
 
 			// Assert
 			AssertXss();
@@ -167,9 +205,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			};
 		}
 
-		private KeywordSearch CreateSavedSearch(string name)
+		private static ExportToLoadFileOutputSettingsModel ExportToLoadFileSettingsModel(
+			string filePathUserPrefix = null, string imageSubdirectoryPrefix = null,
+			string nativeSubdirectoryPrefix = null, string textSubdirectoryPrefix = null,
+			string volumePrefix = null)
 		{
-			return RelativityFacade.Instance.Resolve<IKeywordSearchService>()
+			return null;
+		}
+
+		private void CreateSavedSearch(string name)
+		{
+			RelativityFacade.Instance.Resolve<IKeywordSearchService>()
 				.Require(_testsImplementationTestFixture.Workspace.ArtifactID,
 					new KeywordSearch
 					{
