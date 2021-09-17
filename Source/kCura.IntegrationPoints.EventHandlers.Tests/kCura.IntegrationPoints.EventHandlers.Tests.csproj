@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Relativity.Testing.Identification">
-      <HintPath>..\..\..\..\..\Users\marcin.sojka\.nuget\packages\relativity.testing.identification\3.5.0\lib\net462\Relativity.Testing.Identification.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
