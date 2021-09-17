@@ -78,6 +78,7 @@
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspaceTests.cs" />
+    <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\ConsoleBuilderTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\CorrespondingJobDeleteTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\DataTransferLocationMigrationHelperTests.cs" />
