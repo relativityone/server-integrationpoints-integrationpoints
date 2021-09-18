@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         private const string _SMTP_USER_NAME_SETTING = "A7";
         
         [IdentifiedTest("3E578A6E-D86A-4711-93C9-DB6A1C562C65")]
-        public void SyncWorkerShouldAddSendEmailTaskTypeToScheduleQueue()
+        public void SyncWorker_ShouldAddSendEmailTaskTypeToScheduleQueue()
         {
             // Arrange
             MyFirstProviderUtil myFirstProviderUtil = new MyFirstProviderUtil(Container, FakeRelativityInstance,
@@ -48,37 +48,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             // Assert
             jobHistory.ItemsTransferred.Should().Be(numberOfRecords);
-            FakeRelativityInstance.JobsInQueue.Count.ShouldBeEquivalentTo(2);
-            FakeRelativityInstance.JobsInQueue[1].TaskType.ShouldBeEquivalentTo(TaskType.SendEmailWorker.ToString());
+            FakeRelativityInstance.JobsInQueue.Should().HaveCount(2);
+            FakeRelativityInstance.JobsInQueue.Should().ContainSingle(x => x.TaskType == TaskType.SendEmailWorker.ToString());
         }
 
-        [IdentifiedTest("DD858EA0-4588-4BE2-A3FF-F8C29E1F557B")]
-        public async Task SendEmailWorkerShouldSendEmailToServer()
+        [IdentifiedTestCase("DD858EA0-4588-4BE2-A3FF-F8C29E1F557B", false)]
+        [IdentifiedTestCase("D634CE74-DCE3-4B19-AE0D-34AF622C2374", true)]
+        public async Task SendEmailWorker_ShouldSendEmailToServer(bool sendEmailWithBatchInstance)
         {
             // Arrange
             FakeSmtpMessage receivedMessage;
-            JobTest job = PrepareSendEmailWorkerJob();
-            SendEmailWorker sut = PrepareSendEmailWorkerSut();
-
-            using (FakeSmtpServer fakeSmtpServer = FakeSmtpServer.Start(_SMTP_PORT))
-            {
-                // act
-                sut.Execute(job.AsJob());
-
-                receivedMessage = await fakeSmtpServer.GetFirstMessage(TimeSpan.FromSeconds(2))
-                    .ConfigureAwait(false);
-            }
-
-            // Assert
-            AssertReceivedMessage(receivedMessage);
-        }
-
-        [IdentifiedTest("30C43B6D-396E-458A-AB28-630E735FB02C")]
-        public async Task SendEmailWorkerWithBatchInstanceIdShouldSendEmailToServer()
-        {
-            // Arrange
-            FakeSmtpMessage receivedMessage;
-            JobTest job = PrepareSendEmailWorkerJob(true);
+            JobTest job = PrepareSendEmailWorkerJob(sendEmailWithBatchInstance);
             SendEmailWorker sut = PrepareSendEmailWorkerSut();
 
             using (FakeSmtpServer fakeSmtpServer = FakeSmtpServer.Start(_SMTP_PORT))
