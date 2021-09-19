@@ -74,7 +74,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             AssertReceivedMessage(receivedMessage);
         }
 
-        private JobTest PrepareSendEmailWorkerJob(bool withBatchInstance = false)
+        private JobTest PrepareSendEmailWorkerJob(bool withBatchInstance)
         {
             SourceProviderTest provider =
                 SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
