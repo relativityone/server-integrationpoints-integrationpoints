@@ -2,7 +2,6 @@
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
-using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {

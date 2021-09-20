@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Atata;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Attributes;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
@@ -13,23 +15,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 	[WaitUntilOverlayMissing(TriggerEvents.Init, PresenceTimeout = 2)]
 	internal class IntegrationPointEditPage : WorkspacePage<_>
 	{
-		[Term("Next")]
-		public Button<RelativityProviderConnectToSourcePage, _> RelativityProviderNext { get; private set; }
-
-		[Term("Next")]
-		public Button<ImportFromLoadFileConnectToSourcePage, _> ImportFromLoadFileNext { get; private set; }
-
-		[Term("Next")]
-		public Button<ImportFromLDAPConnectToSourcePage, _> ImportFromLDAPNext { get; private set; }
-
-		[Term("Next")]
-		public Button<ExportToLoadFileConnectToSourcePage, _> ExportToLoadFileNext { get; private set; }
-
 		[FindById("name")]
 		public TextInput<_> Name { get; private set; }
 
 		[FindById("isExportType")]
-		[InvokeMethod(nameof(OnSetType), TriggerEvents.AfterClickOrSet)]
+		[WaitOnTrigger(1, TriggerEvents.AfterClickOrSet)]
 		public RadioButtonList<IntegrationPointTypes, _> Type { get; private set; }
 
 		[FindById("promoteEligible")]
@@ -47,13 +37,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindById("notificationEmails")]
 		public TextArea<_> EmailRecipients { get; private set; }
 
-		private void OnSetType()
-        {
-			if(Type.Get() == IntegrationPointTypes.Import)
-            {
-	            Thread.Sleep(1000);
-				Source.Should.Within(20).BeEnabled();
-            }
-        }
+		#region Next Button
+
+		[Term("Next")]
+		public Button<RelativityProviderConnectToSourcePage, _> RelativityProviderNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ImportFromLoadFileConnectToSourcePage, _> ImportFromLoadFileNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ImportFromLDAPConnectToSourcePage, _> ImportFromLDAPNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ExportToLoadFileConnectToSourcePage, _> ExportToLoadFileNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ImportFromFTPConnectToSourcePage, _> ImportFromFTPNext { get; private set; }
+
+		#endregion
 	}
 }

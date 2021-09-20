@@ -168,6 +168,31 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			AssertXss();
 		}
 
+		public void IntegrationPointImportFromFTPPreventXssInjection(string xssText)
+		{
+			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
+			// Act
+			Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+				.NewIntegrationPoint.ClickAndGo()
+				.ApplyModel(new IntegrationPointEditImport
+				{
+					Name = nameof(IntegrationPointImportFromFTPPreventXssInjection),
+					Source = IntegrationPointSources.FTP,
+					TransferredObject = IntegrationPointTransferredObjects.Document,
+				}).ImportFromLDAPNext.ClickAndGo()
+				.ApplyModel(new ImportFromLDAPConnectToSource
+				{
+					ConnectionPath = xssText,
+					Username = xssText,
+					Password = xssText
+				}).Next.ClickAndGo();
+
+			// Assert
+			AssertXss();
+		}
+
 		private void RunFirstPageXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit) 
 			where T: WorkspacePage<T>, new()
 		{

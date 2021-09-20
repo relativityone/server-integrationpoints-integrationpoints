@@ -81,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
 			return relativityProviderConnectToSourcePage
 				.ApplyModel(relativityProviderConnectToSource)
-				.SelectFolder.Click().SetItem($"{destinationWorkspace.Name}")
+				.SelectFolder.Click().SetTreeItem($"{destinationWorkspace.Name}")
 				.Next.ClickAndGo();
 		}
 	}

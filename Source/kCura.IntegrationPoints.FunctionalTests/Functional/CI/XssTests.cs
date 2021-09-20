@@ -62,5 +62,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			_testsImplementation.IntegrationPointExportToLoadFilePreventXssInjection(inputText);
 		}
+
+		[IdentifiedTestCase("B178B15B-95FD-4DDC-91EE-5031D695B04C", Const.XSS.XSS_JS)]
+		public void IntegrationPointImportFromFTP_PreventXssInjection(string inputText)
+		{
+			_testsImplementation.IntegrationPointImportFromFTPPreventXssInjection(inputText);
+		}
 	}
 }
