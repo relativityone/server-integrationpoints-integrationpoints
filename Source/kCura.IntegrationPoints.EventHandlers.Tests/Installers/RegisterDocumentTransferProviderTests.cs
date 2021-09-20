@@ -4,17 +4,13 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts;
-using Relativity.Testing.Identification;
-using Relativity.Toggles;
 
-namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
+namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 {
-	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
+    [TestFixture, Category("Unit")]
 	internal class RegisterDocumentTransferProviderTests
 	{
-		[IdentifiedTest("043d24ae-57bc-4716-a941-f8ce4e3d2849")]
-		[SmokeTest]
+		[Test]
 		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{
 			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider();
@@ -29,7 +25,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			Assert.IsNotNull(provider);
 			Assert.AreEqual(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME, provider.Name);
 			Assert.AreEqual(expectedUrl, provider.Url);
-
 		}
 	}
 }

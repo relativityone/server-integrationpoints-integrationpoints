@@ -117,6 +117,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				"We expected single call to emailSender because that call threw an unexpected exception.'"
 				);
 		}
+
 		private Job CreateSendEmailJob(EmailJobParameters emailJobParameters)
 		{
 			string serializedJobDetails = _serializer.Serialize(emailJobParameters);

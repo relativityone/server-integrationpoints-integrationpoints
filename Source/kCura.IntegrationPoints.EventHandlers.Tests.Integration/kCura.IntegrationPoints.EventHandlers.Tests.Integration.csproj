@@ -47,9 +47,7 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SetTypeOfExportDefaultValueCommandTests.cs" />
-    <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
@@ -138,6 +136,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
