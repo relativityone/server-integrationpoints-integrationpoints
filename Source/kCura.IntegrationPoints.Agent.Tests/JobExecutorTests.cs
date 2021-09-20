@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_taskParameterFake = new Mock<ITaskParameterHelper>();
 			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _taskParameterFake.Object, _logMock.Object);
 		}
-		
+
 		[Test]
 		public void ProcessJob_ShouldPushEmptyRootJobIdToLogContext_WhenRootJobIdIsNull()
 		{
@@ -70,13 +70,15 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			const long expectedRootJobId = 879;
 			const int expectedUserId = 9;
 			const int expectedWorkspaceId = 11;
-
+			Guid expectedWorkflowIdGuid = Guid.NewGuid();
 			Job job = new JobBuilder()
 				.WithJobId(expectedJobId)
 				.WithRootJobId(expectedRootJobId)
 				.WithSubmittedBy(expectedUserId)
 				.WithWorkspaceId(expectedWorkspaceId)
 				.Build();
+
+			_taskParameterFake.Setup(x => x.GetBatchInstance(job)).Returns(expectedWorkflowIdGuid);
 
 			// Act
 			_sut.ProcessJob(job);
@@ -87,6 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.RootJobId), expectedRootJobId);
 			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.UserId), expectedUserId);
 			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.WorkspaceId), expectedWorkspaceId);
+			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.WorkflowId), expectedWorkflowIdGuid.ToString());
 		}
 
 		[Test]
