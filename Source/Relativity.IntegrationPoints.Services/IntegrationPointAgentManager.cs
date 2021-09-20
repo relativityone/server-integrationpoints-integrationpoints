@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.Windsor;
@@ -42,21 +43,26 @@ namespace Relativity.IntegrationPoints.Services
 		{
 			using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId: -1))
 			{
-				IQueueQueryManager queueQueryManager = container.Resolve<IQueueQueryManager>();
-				int pendingJobsCount = queueQueryManager.GetPendingJobsCount().Execute();
+				int jobsCount = GetJobsCount(container.Resolve<IQueueQueryManager>());
 
 				IInstanceSettingsManager instanceSettingManager = container.Resolve<IInstanceSettingsManager>();
 				List<WorkloadSizeDefinition> workloadSizeDefinitions = GetWorkloadSizeDefinitions(instanceSettingManager);
 				
-				WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, pendingJobsCount);
+				WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, jobsCount);
 				
-				Logger.LogInformation("Selected workload size: {size} for jobs count: {count}", workloadSizeDefinition.WorkloadSize, pendingJobsCount);
+				Logger.LogInformation("Selected workload size: {size} for jobs count: {count}", workloadSizeDefinition.WorkloadSize, jobsCount);
 
 				return Task.FromResult(new Workload()
 				{
 					Size = workloadSizeDefinition.WorkloadSize
 				});
 			}
+		}
+
+		private int GetJobsCount(IQueueQueryManager queueQueryManager)
+		{
+			DataTable allJobs = queueQueryManager.GetAllJobs().Execute();
+			return allJobs.Rows.Count;
 		}
 
 		private WorkloadSizeDefinition SelectMatchingWorkloadSize(List<WorkloadSizeDefinition> definitions, int pendingJobsCount)

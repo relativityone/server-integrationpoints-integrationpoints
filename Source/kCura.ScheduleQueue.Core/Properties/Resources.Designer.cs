@@ -367,15 +367,6 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT COUNT(*) FROM [{0}] WHERE LockedByAgentID IS NULL;.
-        /// </summary>
-        internal static string GetPendingJobsCount {
-            get {
-                return ResourceManager.GetString("GetPendingJobsCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to INSERT INTO [eddsdbo].[{0}]
         ///		(
         ///			[JobID],
