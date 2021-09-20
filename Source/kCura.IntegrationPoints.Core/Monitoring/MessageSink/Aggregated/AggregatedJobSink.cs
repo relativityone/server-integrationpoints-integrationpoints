@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 			JobStatistics jobStatistics;
 			if (_jobs.TryRemove(message.CorrelationID, out jobStatistics) && CanSendJobStatistics(jobStatistics))
 			{
-				FillInMissingFields(jobStatistics, message);
+				FillInMissingFields(jobStatistics, message);	
 
 				long jobSize = jobStatistics.FileBytes + jobStatistics.MetaBytes;
 				IMetricsManager sum = _metricsManagerFactory.CreateSUMManager();
@@ -239,8 +239,10 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 				jobStatistics.CustomData.Remove(JobStatistics.AVERAGE_METADATA_THROUGHPUT_NAME);
 				jobStatistics.CustomData.Remove(JobStatistics.LAST_THROUGHPUT_CHECK_NAME);
 
-				long tempJobSize = long.Parse("1111111111111");
-				_metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.JobStatistics", tempJobSize, jobStatistics);
+				_logger.LogInformation($"JobSize info: {jobSize}");
+				_logger.LogInformation("In aggregate job sink");
+				_metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.Test", jobSize, jobStatistics);
+				_metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
 			}
 		}
 
