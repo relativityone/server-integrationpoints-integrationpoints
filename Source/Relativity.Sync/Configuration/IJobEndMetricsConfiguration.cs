@@ -16,7 +16,7 @@
 
 		DestinationLocationType DestinationType { get; }
 
-		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+		ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; }
 
 		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
 	}

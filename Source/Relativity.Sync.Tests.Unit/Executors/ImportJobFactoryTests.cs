@@ -56,6 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
 
 			_imageConfigurationMock.SetupGet(x => x.IdentifierColumn).Returns(_IMAGE_IDENTIFIER_DISPLAY_NAME);
+			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
 		}
 
 		[Test]

@@ -10,6 +10,6 @@
 
 		int DestinationWorkspaceArtifactId { get; }
 
-		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+		ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; }
 	}
 }

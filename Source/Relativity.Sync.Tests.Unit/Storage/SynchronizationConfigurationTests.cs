@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -21,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, Guid.NewGuid());
-			_syncConfig = new SynchronizationConfiguration(_configuration.Object, syncJobParameters, new JSONSerializer(), new EmptyLogger());
+			_syncConfig = new SynchronizationConfiguration(_configuration.Object, syncJobParameters);
 		}
 
 		[Test]

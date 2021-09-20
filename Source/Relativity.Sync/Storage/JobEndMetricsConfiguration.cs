@@ -16,7 +16,7 @@ namespace Relativity.Sync.Storage
 		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue(x => x.ImportOverwriteMode)));
 		public DataSourceType DataSourceType => (DataSourceType)(Enum.Parse(typeof(DataSourceType), _cache.GetFieldValue(x => x.DataSourceType)));
 		public DestinationLocationType DestinationType => (DestinationLocationType)(Enum.Parse(typeof(DestinationLocationType), _cache.GetFieldValue(x => x.DataDestinationType)));
-		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
+		public ImportNativeFileCopyMode? ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
 		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode).GetEnumFromDescription<ImportImageFileCopyMode>();
 
 		public JobEndMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
