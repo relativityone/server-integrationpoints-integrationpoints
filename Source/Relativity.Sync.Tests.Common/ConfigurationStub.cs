@@ -145,8 +145,8 @@ namespace Relativity.Sync.Tests.Common
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
 
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
-
-		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
+		
+		public ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; set; }
 
 		public int IdentityFieldId { get; set; }
 
