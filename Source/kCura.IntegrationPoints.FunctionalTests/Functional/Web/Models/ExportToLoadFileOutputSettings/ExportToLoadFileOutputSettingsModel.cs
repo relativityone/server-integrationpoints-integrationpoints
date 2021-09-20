@@ -11,5 +11,11 @@
         public string SubdirectoryImagePrefix { get; set; }
 
         public string SubdirectoryNativePrefix { get; set; }
+
+        public string TextPrecedence { get; set; }
+
+        public string SubdirectoryTextPrefix { get; set; }
+
+        public FilePaths FilePath { get; set; }
     }
 }

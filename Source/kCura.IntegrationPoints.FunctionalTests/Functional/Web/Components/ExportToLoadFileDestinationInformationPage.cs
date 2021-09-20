@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using Atata;
-using OpenQA.Selenium;
+﻿using Atata;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Controls;
 using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
@@ -60,14 +58,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [FindByPrecedingDivContent]
         public Select2<DataFileEncodings, _> DataFileEncoding { get; private set; }
 
-        public UnorderedList<RadioControl<_>, _> FilePath { get; private set; }
+        [FindByPrecedingDivContent]
+        public RadioButtonList<FilePaths, _> FilePath { get; private set; }
 
-        public class RadioControl<TPage> : Control<TPage>
-            where TPage : PageObject<TPage>
-        {
-            private RadioButton<TPage> radioButton { get; set; }
-            public Label<TPage> label { get; private set; }
-        }
+        [FindById("filePathUserprefix_2")]
+        public TextInput<_> UserPrefix { get; private set; }
 
         [FindById("include-native-files-path-checkbox")]
         public CheckBox<_> IncludeNativeFilesPath { get; private set; }
@@ -102,10 +97,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         #endregion
 
+        #region TEXT
+
+        [FindById("subdirectory-text-prefix-input")]
+        public TextInput<_> SubdirectoryTextPrefix { get; private set; }
+
+        #endregion
+
         #region VOLUME
 
         [FindById("volume-prefix-input")]
-        public TextInput<_> VolumePrefix { get; private set; }
+        public TextInput<_> SubdirectoryVolumePrefix { get; private set; }
 
         #endregion
 
@@ -118,5 +120,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		        .SetTreeItem(dataTransferExportLocation);
         }
 
+        public _ SetUserPrefix(string userPrefix)
+        {
+	        return UserPrefix.Set(userPrefix);
+        }
     }
 }

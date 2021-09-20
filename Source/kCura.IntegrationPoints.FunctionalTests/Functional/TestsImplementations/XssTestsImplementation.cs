@@ -115,6 +115,55 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 					password: password));
 		}
 
+		public void IntegrationPointExportToLoadFilePreventXssInjection(string xssText)
+		{
+			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
+			// Act
+			var exportToLoadFilePage =
+				Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+					.NewIntegrationPoint.ClickAndGo()
+					.ApplyModel(new IntegrationPointEditExport
+					{
+						Name = nameof(IntegrationPointExportToLoadFilePreventXssInjection),
+						Destination = IntegrationPointDestinations.LoadFile
+					}).ExportToLoadFileNext.ClickAndGo()
+					.ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
+					{
+						StartExportAtRecord = 1,
+						SavedSearch = _savedSearch
+					}).Next.ClickAndGo();
+
+			exportToLoadFilePage.Natives.Check();
+			exportToLoadFilePage.Images.Check();
+			exportToLoadFilePage.TextFieldsAsFiles.Check();
+
+			exportToLoadFilePage.SetDestinationFolder(_testsImplementationTestFixture.Workspace.ArtifactID);
+
+			exportToLoadFilePage.ApplyModel(new ExportToLoadFileOutputSettingsModel
+			{
+				FilePath = FilePaths.UserPrefix,
+				SubdirectoryImagePrefix = xssText,
+				SubdirectoryNativePrefix = xssText,
+				SubdirectoryTextPrefix = xssText
+			});
+
+			exportToLoadFilePage.SetUserPrefix(xssText);
+
+			exportToLoadFilePage.ApplyModel(new VolumeSubdirectoryDetailsModel
+			{
+				SubdirectoryVolumePrefix = xssText
+			});
+
+			exportToLoadFilePage
+				.Save.Wait(Until.Visible)
+				.Save.ClickAndGo();
+
+			// Assert
+			AssertXss();
+		}
+
 		private void RunFirstPageXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit) 
 			where T: WorkspacePage<T>, new()
 		{
@@ -152,38 +201,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			AssertXss();
 		}
 
-		private void RunExportLoadFileXssPreventionTestCase(
-			Action<ExportToLoadFileDestinationInformationPage, ExportToLoadFileOutputSettingsModel> destinationInformationPageAction,
-			ExportToLoadFileOutputSettingsModel model)
-		{
-			// Arrange
-			_testsImplementationTestFixture.LoginAsStandardUser();
-
-			// Act
-			var exportToLoadFileDestinationInformation =
-				Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-					.NewIntegrationPoint.ClickAndGo()
-					.ApplyModel(new IntegrationPointEditExport
-					{
-						Name = nameof(RunExportLoadFileXssPreventionTestCase),
-						Destination = IntegrationPointDestinations.LoadFile
-					}).ExportToLoadFileNext.ClickAndGo()
-					.ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
-					{
-						StartExportAtRecord = 1,
-						SavedSearch = _savedSearch
-					}).Next.ClickAndGo();
-
-			destinationInformationPageAction(exportToLoadFileDestinationInformation, model);
-
-			exportToLoadFileDestinationInformation
-				.Save.Wait(Until.Visible)
-				.Save.ClickAndGo();
-
-			// Assert
-			AssertXss();
-		}
-
 		private static IntegrationPointEdit ExportIntegrationPointEdit(string name = null, string emailRecipients = "")
 		{
 			return new IntegrationPointEditExport
@@ -203,14 +220,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				Username = username ?? Const.LDAP.OPEN_LDAP_USERNAME,
 				Password = password ?? Const.LDAP.OPEN_LDAP_PASSWORD
 			};
-		}
-
-		private static ExportToLoadFileOutputSettingsModel ExportToLoadFileSettingsModel(
-			string filePathUserPrefix = null, string imageSubdirectoryPrefix = null,
-			string nativeSubdirectoryPrefix = null, string textSubdirectoryPrefix = null,
-			string volumePrefix = null)
-		{
-			return null;
 		}
 
 		private void CreateSavedSearch(string name)

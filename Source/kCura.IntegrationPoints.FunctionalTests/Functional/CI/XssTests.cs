@@ -68,5 +68,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			_testsImplementation.IntegrationPointImportFromLDAPPasswordPreventXssInjection(password);
 		}
+
+		[IdentifiedTestCase("B7D6C9BE-0615-4C98-B69A-F6F9CDF19D71", Const.XSS.XSS_JS)]
+		public void IntegrationPointExportToLoadFile_PreventXssInjection(string inputText)
+		{
+			_testsImplementation.IntegrationPointExportToLoadFilePreventXssInjection(inputText);
+		}
 	}
 }
