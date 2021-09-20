@@ -76,7 +76,6 @@
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
     <Compile Include="Data\Queries\GetNextJobWithoutResourceGroup.cs" />
-    <Compile Include="Data\Queries\GetPendingJobsCount.cs" />
     <Compile Include="Data\Queries\UnlockJob.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
     <Compile Include="Data\Queries\DeleteJob.cs" />

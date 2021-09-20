@@ -37,9 +37,7 @@ namespace kCura.ScheduleQueue.Core.Data
 		ICommand CleanupJobQueueTable();
 
 		IQuery<DataTable> GetAllJobs();
-
-		IQuery<int> GetPendingJobsCount();
-
+		
 		IQuery<int> UpdateStopState(IList<long> jobIds, StopState state);
 
 		IQuery<DataTable> GetJobByRelatedObjectIdAndTaskType(int workspaceId, int relatedObjectArtifactId,
