@@ -52,21 +52,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		}
 
 		[IdentifiedTestCase("B97A4280-9EB5-4008-8AB0-30CAB7C3C27F", Const.XSS.XSS_JS)]
-		public void IntegrationPointImportLDAP_ConnectionPath_PreventXssInjection(string connectionPath)
+		public void IntegrationPointImportLDAP_PreventXssInjection(string inputText)
 		{
-			_testsImplementation.IntegrationPointImportFromLDAPConnectionPathPreventXssInjection(connectionPath);
-		}
-
-		[IdentifiedTestCase("BEE023E1-FE12-490B-8CBE-9E52304EB582", Const.XSS.XSS_JS)]
-		public void IntegrationPointImportLDAP_Username_PreventXssInjection(string username)
-		{
-			_testsImplementation.IntegrationPointImportFromLDAPUsernamePreventXssInjection(username);
-		}
-
-		[IdentifiedTestCase("9488437B-89AA-4801-A7AE-BCBD17A83AB8", Const.XSS.XSS_JS)]
-		public void IntegrationPointImportLDAP_Password_PreventXssInjection(string password)
-		{
-			_testsImplementation.IntegrationPointImportFromLDAPPasswordPreventXssInjection(password);
+			_testsImplementation.IntegrationPointImportFromLDAPPreventXssInjection(inputText);
 		}
 
 		[IdentifiedTestCase("B7D6C9BE-0615-4C98-B69A-F6F9CDF19D71", Const.XSS.XSS_JS)]

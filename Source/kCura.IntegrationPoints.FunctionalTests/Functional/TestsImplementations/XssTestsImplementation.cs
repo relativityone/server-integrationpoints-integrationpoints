@@ -94,25 +94,29 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 					emailRecipients: emailRecipients));
 		}
 
-		public void IntegrationPointImportFromLDAPConnectionPathPreventXssInjection(string connectionPath)
+		public void IntegrationPointImportFromLDAPPreventXssInjection(string xssText)
 		{
-			RunLDAPXssPreventionTestCase(
-				ImportFromLDAPConnectToSource(
-					connectionPath: connectionPath));
-		}
+			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
 
-		public void IntegrationPointImportFromLDAPUsernamePreventXssInjection(string username)
-		{
-			RunLDAPXssPreventionTestCase(
-				ImportFromLDAPConnectToSource(
-					username: username));
-		}
+			// Act
+			Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+				.NewIntegrationPoint.ClickAndGo()
+				.ApplyModel(new IntegrationPointEditImport
+				{
+					Name = nameof(IntegrationPointImportFromLDAPPreventXssInjection),
+					Source = IntegrationPointSources.LDAP,
+					TransferredObject = IntegrationPointTransferredObjects.Document,
+				}).ImportFromLDAPNext.ClickAndGo()
+				.ApplyModel(new ImportFromLDAPConnectToSource
+				{
+					ConnectionPath = xssText,
+					Username = xssText,
+					Password = xssText
+				}).Next.ClickAndGo();
 
-		public void IntegrationPointImportFromLDAPPasswordPreventXssInjection(string password)
-		{
-			RunLDAPXssPreventionTestCase(
-				ImportFromLDAPConnectToSource(
-					password: password));
+			// Assert
+			AssertXss();
 		}
 
 		public void IntegrationPointExportToLoadFilePreventXssInjection(string xssText)
@@ -181,26 +185,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			AssertXss();
 		}
 
-		private void RunLDAPXssPreventionTestCase(ImportFromLDAPConnectToSource importFromLdapConnectToSource)
-		{
-			// Arrange
-			_testsImplementationTestFixture.LoginAsStandardUser();
-
-			// Act
-			Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-				.NewIntegrationPoint.ClickAndGo()
-				.ApplyModel(new IntegrationPointEditImport
-				{
-					Name = nameof(RunLDAPXssPreventionTestCase),
-					Source = IntegrationPointSources.LDAP,
-					TransferredObject = IntegrationPointTransferredObjects.Document,
-				}).ImportFromLDAPNext.ClickAndGo()
-				.ApplyModel(importFromLdapConnectToSource).Next.ClickAndGo();
-
-			// Assert
-			AssertXss();
-		}
-
 		private static IntegrationPointEdit ExportIntegrationPointEdit(string name = null, string emailRecipients = "")
 		{
 			return new IntegrationPointEditExport
@@ -208,17 +192,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				Name = name ?? $" XSS Integration Point - {Guid.NewGuid()}",
 				Destination = IntegrationPointDestinations.Relativity,
 				EmailRecipients = emailRecipients
-			};
-		}
-
-		private static ImportFromLDAPConnectToSource ImportFromLDAPConnectToSource(
-			string connectionPath = null, string username = null, string password = null)
-		{
-			return new ImportFromLDAPConnectToSource
-			{
-				ConnectionPath = connectionPath ?? Const.LDAP.OPEN_LDAP_CONNECTION_PATH,
-				Username = username ?? Const.LDAP.OPEN_LDAP_USERNAME,
-				Password = password ?? Const.LDAP.OPEN_LDAP_PASSWORD
 			};
 		}
 
