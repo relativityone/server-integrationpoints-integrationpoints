@@ -1,26 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
-using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core.Core;
-using Moq;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.Tests.Integration.Helpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Utils;
 using Relativity.Services.Choice;
@@ -31,127 +19,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 	[IdentifiedTestFixture("BA0C4AD6-6236-4235-BEBB-CB1084A978E9")]
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncWorkerMyFirstProviderTests : TestsBase
-	{
-		private SyncWorker PrepareSut(Action<FakeJobImport> importAction)
-		{
-			Container.Register(Component.For<IDataSourceProvider>()
-				.ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>()
-				.Named(MyFirstProvider.Provider.GlobalConstants.FIRST_PROVIDER_GUID));
+    {
+        private MyFirstProviderUtil _myFirstProviderUtil;
 
-			Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport(importAction))
-				.LifestyleSingleton());
+        public override void SetUp()
+        {
+            base.SetUp();
 
-			SyncWorker sut = Container.Resolve<SyncWorker>();
-			return sut;
+            _myFirstProviderUtil = new MyFirstProviderUtil(Container, FakeRelativityInstance,
+                SourceWorkspace, Serializer);
 		}
-
-		private JobTest PrepareJob(string xmlPath, out JobHistoryTest jobHistory)
-		{
-			AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
-			SourceProviderTest provider =
-				SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
-
-			IntegrationPointTest integrationPoint =
-				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider,
-					identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
-
-			integrationPoint.SourceProvider = provider.ArtifactId;
-			integrationPoint.SourceConfiguration = xmlPath;
-
-			JobTest job =
-				FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
-			jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
-
-			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-			string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("//Name").Select(x => x.Value).ToArray();
-
-			taskParameters.BatchParameters = recordsIds;
-
-			job.JobDetails = Serializer.Serialize(taskParameters);
-			job.LockedByAgentID = agent.ArtifactId;
-			job.RootJobId = JobId.Next;
-
-			InsertBatchToJobTrackerTable(job, jobHistory);
-
-			RegisterJobContext(job);
-
-			return job;
-		}
-
-		private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
-		{
-			string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
-
-			
-			if(!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
-			{
-				FakeRelativityInstance.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
-			}
-
-			FakeRelativityInstance.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = job.JobId });
-		}
-
-		/// <summary>
-		/// Creates <see cref="numberOfBatches"/> jobs in queue for the same IntegrationPoint and returns one of them
-		/// </summary>
-		private JobTest PrepareJobs(string xmlPath, int numberOfBatches)
-		{
-			FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-
-			SourceProviderTest provider =
-				SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
-
-			IntegrationPointTest integrationPoint =
-				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider,
-					identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
-
-			integrationPoint.SourceProvider = provider.ArtifactId;
-			integrationPoint.SourceConfiguration = xmlPath;
-			JobTest job =
-				FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace,
-					integrationPoint);
-
-			SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
-
-			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-			string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("//Name").Select(x => x.Value)
-				.ToArray();
-
-			taskParameters.BatchParameters = recordsIds;
-
-			job.JobDetails = Serializer.Serialize(taskParameters);
-
-			for (int i = 1; i < numberOfBatches; i++)
-			{
-				JobTest newJob =
-					FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace,
-						integrationPoint);
-
-				newJob.JobDetails = job.JobDetails; // link all jobs together with BatchInstance
-			}
-
-			RegisterJobContext(job);
-
-			return job;
-		}
-
-		private string PrepareRecords(int numberOfRecords)
-		{
-			string xml = new MyFirstProviderXmlGenerator().GenerateRecords(numberOfRecords);
-			string tmpPath = Path.GetTempFileName();
-			File.WriteAllText(tmpPath, xml);
-			return tmpPath;
-		}
-
+		
 		[IdentifiedTest("BCF72894-224F-4DB7-985F-0C53C93D153D")]
 		public void SyncWorker_ShouldImportData()
 		{
 			// Arrange
 			const int numberOfRecords = 1000;
-			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(); });
+			string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
+			JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) => { importJob.Complete(); });
 
 			jobHistory.TotalItems = 2000;
 
@@ -171,9 +57,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			agent.ToBeRemoved = true;
 
 			const int numberOfRecords = 1000;
-			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-			SyncWorker sut = PrepareSut((importJob) => { throw new Exception("IAPI should not be run"); });
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
+            JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) => { throw new Exception("IAPI should not be run"); });
 
 			jobHistory.TotalItems = 2000;
 
@@ -191,9 +77,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		{
 			// Arrange
 			const int numberOfRecords = 420;
-			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
-			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(); });
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
+            JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) => { importJob.Complete(); });
 
 			jobHistory.TotalItems = 2000;
 
@@ -212,13 +98,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			const int numberOfRecords = 100;
 			const int drainStopAfterImporting = 50;
 
-			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
+            JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
 
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
-			SyncWorker sut = PrepareSut((importJob) =>
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) =>
 			{
 				importJob.Complete(maxTransferredItems: drainStopAfterImporting);
 
@@ -229,7 +115,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			sut.Execute(job.AsJob());
 
 			// Assert
-			List<string> remainingItems = GetRemainingItems(job);
+			List<string> remainingItems = _myFirstProviderUtil.GetRemainingItems(job);
 
 			remainingItems.Count.Should().Be(numberOfRecords - drainStopAfterImporting);
 			remainingItems.Should().BeEquivalentTo(Enumerable
@@ -247,15 +133,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			const int numberOfRecords = 100;
 			const int numberOfErrors = 100;
 
-			SetupWorkspaceDbContextMock_AsNotLastBatch();
+            _myFirstProviderUtil.SetupWorkspaceDbContextMock_AsNotLastBatch();
 
-			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
+            JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
 			jobHistory.TotalItems = 1000;
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
-			SyncWorker sut = PrepareSut((importJob) =>
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) =>
 			{
 				importJob.Complete(numberOfItemLevelErrors: numberOfErrors);
 
@@ -278,13 +164,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			const int drainStopAfterImporting = 50;
 			const int numberOfBatches = 3;
 
-			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJobs(xmlPath, numberOfBatches);
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
+            JobTest job = _myFirstProviderUtil.PrepareJobs(xmlPath, numberOfBatches, RegisterJobContext);
 			FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
-			SyncWorker sut = PrepareSut((importJob) =>
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) =>
 			{
 				importJob.Complete(maxTransferredItems: drainStopAfterImporting);
 
@@ -314,14 +200,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			statisticsQuery.AlreadyFailedItems = initialErroredItems;
 			statisticsQuery.AlreadyTransferredItems = initialTransferredItems;
 
-			string xmlPath = PrepareRecords(numberOfRecords);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
+            JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
 
 			jobHistory.JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistorySuspendedGuid });
 			jobHistory.ItemsTransferred = initialTransferredItems;
 			jobHistory.ItemsWithErrors = initialErroredItems;
 
-			SyncWorker sut = PrepareSut((importJob) => { importJob.Complete(maxTransferredItems: numberOfRecords + numberOfErrors, numberOfItemLevelErrors: numberOfErrors); });
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) => { importJob.Complete(maxTransferredItems: numberOfRecords + numberOfErrors, numberOfItemLevelErrors: numberOfErrors); });
 
 			// Act
 			var syncManagerJob = job.AsJob();
@@ -407,15 +293,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			int transferredItems, int itemLevelErrors, bool drainStopRequested, Guid expectedJobHistoryStatus, StopState expectedStopState)
 		{
 			// Arrange
-			string xmlPath = PrepareRecords(TOTAL_NUMBER_OF_RECORDS);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(TOTAL_NUMBER_OF_RECORDS);
+            JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
 			jobHistory.TotalItems = 5000;
 
 			IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 
-			PrepareOtherJobs(job, jobHistory, otherJobs);
+			_myFirstProviderUtil.PrepareOtherJobs(job, jobHistory, otherJobs);
 
-			SyncWorker sut = PrepareSut((importJob) =>
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) =>
 			{
 				importJob.Complete(transferredItems, itemLevelErrors);
 
@@ -436,27 +322,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.ItemsWithErrors.Should().Be(itemLevelErrors);
 		}
 
-		private void PrepareOtherJobs(JobTest job, JobHistoryTest jobHistory, JobTest[] otherJobs)
-		{
-			foreach(var otherJob in otherJobs)
-			{
-				otherJob.RootJobId = job.RootJobId;
-				otherJob.WorkspaceID = job.WorkspaceID;
-
-				FakeRelativityInstance.JobsInQueue.Add(otherJob);
-
-				InsertBatchToJobTrackerTable(otherJob, jobHistory);
-			}
-		}
-
 		[IdentifiedTest("5C618B8A-D8F5-4BD8-B83A-CC9A289093BF")]
 		public void SyncWorker_ShouldMarkJobAsFailedOnIAPIException()
 		{
 			// Arrange
-			string xmlPath = PrepareRecords(TOTAL_NUMBER_OF_RECORDS);
-			JobTest job = PrepareJob(xmlPath, out JobHistoryTest jobHistory);
+            string xmlPath = _myFirstProviderUtil.PrepareRecords(TOTAL_NUMBER_OF_RECORDS);
+            JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
 
-			SyncWorker sut = PrepareSut((importJob) => { throw new Exception(); });
+			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) => { throw new Exception(); });
 
 			// Act & Assert
 			Action act = () => sut.Execute(job.AsJob());
@@ -466,39 +339,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryErrorJobFailedGuid);
             FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
 		}
-
-		private List<string> GetRemainingItems(JobTest job)
-		{
-			TaskParameters paramaters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-			List<string> remainingItems = (paramaters.BatchParameters as JArray).ToObject<List<string>>();
-			return remainingItems;
-		}
-
-		private void SetupWorkspaceDbContextMock_AsNotLastBatch()
-		{
-			Mock<IWorkspaceDBContext> dbContextMock = new Mock<IWorkspaceDBContext>();
-			dbContextMock.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Returns(1);
-			dbContextMock.Setup(_ =>
-					_.ExecuteNonQuerySQLStatement(It.IsAny<string>(), It.IsAny<IEnumerable<SqlParameter>>()))
-				.Returns(0);
-
-
-			DataTable dataTable = new DataTable();
-			dataTable.Columns.Add("");
-			dataTable.Rows.Add(new object());
-			dbContextMock.Setup(x =>
-				x.ExecuteSqlStatementAsDataTable(It.IsAny<string>(), It.IsAny<IEnumerable<SqlParameter>>()))
-				.Returns(dataTable);
-
-			dbContextMock.Setup(_ => _.ExecuteSqlStatementAsScalar<int>(It.IsAny<string>(),
-					It.IsAny<IEnumerable<SqlParameter>>()))
-				.Returns((string sql, IEnumerable<SqlParameter> sqlParams) =>
-				{
-					return sqlParams.Any(p => p.ParameterName.Contains("batchIsFinished")) ? 1 : 0;
-				});
-
-			Container.Register(Component.For<IWorkspaceDBContext>().Instance(dbContextMock.Object).LifestyleSingleton()
-				.IsDefault());
-		}
+		
 	}
 }
