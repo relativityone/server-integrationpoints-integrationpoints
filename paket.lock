@@ -435,7 +435,7 @@ NUGET
     NUnit3TestAdapter (3.13.0)
     NUnitExtras.HierarchicalCategories (1.3.0)
       NUnit (>= 3.7)
-    Polly (5.7.0)
+    Polly (5.9.0)
     Relativity (15.4.13)
     Relativity.API (17.1.0)
     Relativity.AutomatedWorkflows.Services.Interfaces (0.1.1-pre.6)
