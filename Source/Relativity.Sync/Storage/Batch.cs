@@ -55,7 +55,7 @@ namespace Relativity.Sync.Storage
 
         public int StartingIndex => _batchRdo.StartingIndex;
 
-        public BatchStatus Status => ParseStatus(_batchRdo.Status);
+        public BatchStatus Status => _batchRdo.Status;
 
         public async Task SetFailedItemsCountAsync(int failedItemsCount)
         {
@@ -80,8 +80,7 @@ namespace Relativity.Sync.Storage
 
         public async Task SetStatusAsync(BatchStatus status)
         {
-            string statusDescription = status.GetDescription();
-            await UpdateFieldValueAsync(x => x.Status, statusDescription).ConfigureAwait(false);
+            await UpdateFieldValueAsync(x => x.Status, status).ConfigureAwait(false);
         }
 
         public async Task SetMetadataBytesTransferredAsync(long metadataBytesTransferred)
@@ -119,7 +118,7 @@ namespace Relativity.Sync.Storage
         {
             _batchRdo.TotalDocumentsCount = totalDocumentsCount;
             _batchRdo.StartingIndex = startingIndex;
-            _batchRdo.Status = BatchStatus.New.GetDescription();
+            _batchRdo.Status = BatchStatus.New;
 
             await _rdoManager.CreateAsync(_workspaceArtifactId, _batchRdo, syncConfigurationArtifactId)
                 .ConfigureAwait(false);

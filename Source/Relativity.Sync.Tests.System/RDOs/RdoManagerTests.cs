@@ -14,6 +14,7 @@ using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Tests.Common.RDOs;
 using Relativity.Sync.Tests.System.Core;
@@ -108,7 +109,8 @@ namespace Relativity.Sync.Tests.System.RDOs
             var sampleRdo = new SampleRdo
             {
                 SomeField = 5,
-                OptionalTextField = "Enova (not) Rocks"
+                OptionalTextField = "Enova (not) Rocks",
+                ImportNativeFileCopyMode = ImportNativeFileCopyMode.SetFileLinks
             };
 
             // Act
@@ -128,7 +130,8 @@ namespace Relativity.Sync.Tests.System.RDOs
                     Fields = new[]
                     {
                         new FieldRef {Name = "SomeField"},
-                        new FieldRef {Name = "OptionalTextField"}
+                        new FieldRef {Name = "OptionalTextField"},
+                        new FieldRef {Name = "ImportNativeFileCopyMode"}
                     }
                 }, 0, 1);
 
@@ -137,6 +140,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                 createdObject.ArtifactID.Should().Be(sampleRdo.ArtifactId);
                 createdObject.Values[0].Should().Be(sampleRdo.SomeField);
                 createdObject.Values[1].Should().Be(sampleRdo.OptionalTextField);
+                createdObject.Values[2].Should().Be(sampleRdo.ImportNativeFileCopyMode.GetDescription());
             }
         }
 
@@ -151,7 +155,8 @@ namespace Relativity.Sync.Tests.System.RDOs
             var sampleRdo = new SampleRdo
             {
                 SomeField = 5,
-                OptionalTextField = "Enova (not) Rocks"
+                OptionalTextField = "Enova (not) Rocks",
+                ImportNativeFileCopyMode = ImportNativeFileCopyMode.SetFileLinks
             };
             var artifactId = await CreateSampleRdoObject(workspace.ArtifactID, sampleRdo).ConfigureAwait(false);
 
@@ -161,6 +166,7 @@ namespace Relativity.Sync.Tests.System.RDOs
             result.ArtifactId.Should().Be(artifactId);
             result.SomeField.Should().Be(sampleRdo.SomeField);
             result.OptionalTextField.Should().Be(sampleRdo.OptionalTextField);
+            result.ImportNativeFileCopyMode.Should().Be(ImportNativeFileCopyMode.SetFileLinks);
         }
 
         [IdentifiedTest("3B9FA78E-36C2-465D-8792-523C92F08250")]
@@ -548,6 +554,15 @@ namespace Relativity.Sync.Tests.System.RDOs
                             },
                             Value = rdo.LongField.ToString()
                         },
+                        new FieldRefValuePair
+                        {
+                            Field = new FieldRef
+                            {
+                                Guid = SampleRdo.ExpectedRdoInfo.Fields.Values
+                                    .First(x => x.Name == nameof(SampleRdo.ImportNativeFileCopyMode)).Guid
+                            },
+                            Value = rdo.ImportNativeFileCopyMode.GetDescription()
+                        }
                     }
                 };
 

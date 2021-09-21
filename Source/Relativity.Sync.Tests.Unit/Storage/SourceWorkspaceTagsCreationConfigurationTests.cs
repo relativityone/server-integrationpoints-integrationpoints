@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -24,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			SyncJobParameters syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
-			_config = new SourceWorkspaceTagsCreationConfiguration(_configuration.Object, syncJobParameters);
+			_config = new SourceWorkspaceTagsCreationConfiguration(_configuration, syncJobParameters);
 		}
 
 		[Test]
@@ -72,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			await _config.SetDestinationWorkspaceTagArtifactIdAsync(artifactId).ConfigureAwait(false);
 
 			// assert
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.DestinationWorkspaceTagArtifactId))), artifactId));
+			_configurationRdo.DestinationWorkspaceTagArtifactId.Should().Be(artifactId);
 			_config.IsDestinationWorkspaceTagArtifactIdSet.Should().BeTrue();
 		}
 

@@ -32,15 +32,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
-			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
+			var instance = new NotificationConfiguration(_configuration, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
 			bool actualResult = instance.SendEmails;
 
 			// Assert
 			actualResult.Should().BeTrue();
-			
-			_configuration.Verify(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>()), Times.Once);
 		}
 
 		[Test]
@@ -48,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
-			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
+			var instance = new NotificationConfiguration(_configuration, syncJobParameters, _syncServiceManagerMock.Object);
 			_configurationRdo.EmailNotificationRecipients = null;
 			
 
@@ -57,7 +55,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualResult.Should().BeFalse();
-			_configuration.Verify(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>()), Times.Once);
 		}
 
 		[Test]
@@ -65,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
-			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
+			var instance = new NotificationConfiguration(_configuration, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
 			const int numberOfCalls = 2;
@@ -77,7 +74,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			// Assert
 			actualEmailRecipients.Should().NotBeNullOrEmpty();
-			_configuration.Verify(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>()), Times.Once);
 		}
 
 		[Test]
@@ -85,7 +81,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// Arrange
 			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
-			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
+			var instance = new NotificationConfiguration(_configuration, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
 			IEnumerable<string> actualEmailRecipients = instance.GetEmailRecipients();
@@ -94,7 +90,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			int expectedNumberOfRecipients = TestEmailRecipients.Length - 1;    // removing one empty entry
 			actualEmailRecipients.Should().NotBeNullOrEmpty();
 			actualEmailRecipients.Should().HaveCount(expectedNumberOfRecipients);
-			_configuration.Verify(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>()), Times.Once);
 		}
 
 		[Test]
@@ -117,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				.Returns(objectManagerMock.Object);
 
 			var syncJobParameters = FakeHelper.CreateSyncJobParameters();
-			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
+			var instance = new NotificationConfiguration(_configuration, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
 			int actualDestinationWorkspaceArtifactId = instance.DestinationWorkspaceArtifactId;
@@ -130,7 +125,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			actualJobHistoryArtifactId.Should().Be(expectedJobHistoryArtifactId);
 			actualJobName.Should().Be(expectedJobName);
 			actualSourceWorkspaceTag.Should().Be(expectedSourceWorkspaceTag);
-			_configuration.Verify();
 		}
 
 		[Test]
@@ -142,7 +136,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 			var syncJobParameters = new SyncJobParameters(syncConfigurationId, workspaceId, It.IsAny<Guid>());
 			_syncServiceManagerMock = new Mock<ISyncServiceManager>();
-			var instance = new NotificationConfiguration(_configuration.Object, syncJobParameters, _syncServiceManagerMock.Object);
+			var instance = new NotificationConfiguration(_configuration, syncJobParameters, _syncServiceManagerMock.Object);
 
 			// Act
 			int actualSourceWorkspaceArtifactId = instance.SourceWorkspaceArtifactId;

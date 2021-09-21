@@ -13,6 +13,6 @@ namespace Relativity.Sync.Configuration
 
 		IList<FieldMap> GetFieldMappings();
 
-		ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; }
+		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 	}
 }

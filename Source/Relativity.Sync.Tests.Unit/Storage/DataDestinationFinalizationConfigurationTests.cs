@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void Setup()
 		{
-			_instance = new DataDestinationFinalizationConfiguration(_configuration.Object);
+			_instance = new DataDestinationFinalizationConfiguration(_configuration);
 		}
 
 		[Test]

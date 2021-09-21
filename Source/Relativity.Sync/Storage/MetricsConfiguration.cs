@@ -20,9 +20,9 @@ namespace Relativity.Sync.Storage
 		
 		public string ExecutingApplicationVersion => _cache.GetFieldValue(x => x.ExecutingApplicationVersion);
 
-		public string DataSourceType => _cache.GetFieldValue(x => x.DataSourceType);
+		public DataSourceType DataSourceType => _cache.GetFieldValue(x => x.DataSourceType);
 
-		public string DataDestinationType => _cache.GetFieldValue(x => x.DataDestinationType);
+		public DestinationLocationType DataDestinationType => _cache.GetFieldValue(x => x.DataDestinationType);
 
 		public bool ImageImport => _cache.GetFieldValue(x => x.ImageImport);
 

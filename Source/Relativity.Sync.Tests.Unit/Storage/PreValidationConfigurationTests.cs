@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_sut = new PreValidationConfiguration(_configuration.Object);
+			_sut = new PreValidationConfiguration(_configuration);
 		}
 
 		[Test]

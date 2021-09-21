@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			// Arrange
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
-			expectedSyncConfiguration.ImageFileCopyMode = "Copy";
+			expectedSyncConfiguration.ImageFileCopyMode =ImportImageFileCopyMode.CopyFiles;
 
 			ISyncContext syncContext =
 				new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
@@ -100,17 +100,17 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 		private static IEnumerable<object[]> OverwriteModeDataSource => new List<object[]>()
 		{
-			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly), "AppendOnly", "Use Field Settings"},
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly),ImportOverwriteMode.AppendOnly, FieldOverlayBehavior.UseFieldSettings},
 			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) {FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues},
-				"AppendOverlay", "Replace Values"},
+				ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.ReplaceValues},
 			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
-				"AppendOverlay", "Merge Values"},
-			new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), "OverlayOnly", "Use Field Settings"}
+				ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.MergeValues},
+			new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings}
 		};
 
 		[TestCaseSource(nameof(OverwriteModeDataSource))]
 		public async Task Create_ImageSyncConfigurationWithOverwriteAppendOnly(
-			OverwriteOptions overwriteOptions, string expectedOverwriteMode, string expectedFieldsOverlay)
+			OverwriteOptions overwriteOptions, ImportOverwriteMode expectedOverwriteMode, FieldOverlayBehavior expectedFieldsOverlay)
 		{
 			// Arrange
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
@@ -223,16 +223,16 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			return new SyncConfigurationRdo
 			{
 				RdoArtifactTypeId = 10,
-				DataSourceType = "SavedSearch",
+				DataSourceType =  DataSourceType.SavedSearch,
 				DataSourceArtifactId = _savedSearchId,
 				DestinationWorkspaceArtifactId = DestinationWorkspaceId,
 				DataDestinationArtifactId = _destinationFolderId,
-				DataDestinationType = "Folder",
-				ImportOverwriteMode = "AppendOnly",
-				FieldOverlayBehavior = "Use Field Settings",
+				DataDestinationType = DestinationLocationType.Folder,
+				ImportOverwriteMode = ImportOverwriteMode.AppendOnly,
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
 				JobHistoryId = JobHistory.ArtifactID,
 				ImageImport = true,
-				ImageFileCopyMode = "Link",
+				ImageFileCopyMode = ImportImageFileCopyMode.SetFileLinks,
 				IncludeOriginalImages = true,
 
 				FieldsMapping = new JSONSerializer().Serialize(fieldsMappingToSerialize)

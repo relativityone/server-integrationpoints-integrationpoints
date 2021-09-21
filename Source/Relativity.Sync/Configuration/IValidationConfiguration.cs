@@ -22,7 +22,7 @@ namespace Relativity.Sync.Configuration
 
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 
-		ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; }
+		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 
 		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
 		

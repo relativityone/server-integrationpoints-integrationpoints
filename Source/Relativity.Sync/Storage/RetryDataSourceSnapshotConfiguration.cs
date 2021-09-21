@@ -14,8 +14,8 @@ namespace Relativity.Sync.Storage
 
 		public ImportOverwriteMode ImportOverwriteMode
 		{
-			get => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), Cache.GetFieldValue<string>(x => x.ImportOverwriteMode)));
-			set => Cache.UpdateFieldValueAsync(x => x.ImportOverwriteMode, value.ToString());
+			get => Cache.GetFieldValue(x => x.ImportOverwriteMode);
+			set => Cache.UpdateFieldValueAsync(x => x.ImportOverwriteMode, value);
 		}
 	}
 }

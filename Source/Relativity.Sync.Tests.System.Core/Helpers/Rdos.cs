@@ -8,6 +8,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.User;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Utils;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common;
@@ -372,24 +373,24 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			{
 				CreateSavedSearchInDestination =  configurationStub.CreateSavedSearchForTags,
 				DataDestinationArtifactId = configurationStub.DestinationFolderArtifactId,
-				DataDestinationType = "Folder",
+				DataDestinationType = DestinationLocationType.Folder,
 				DataSourceArtifactId =  configurationStub.SavedSearchArtifactId,
-				DataSourceType =  "SavedSearch",
-				DestinationFolderStructureBehavior = configurationStub.DestinationFolderStructureBehavior.ToString(),
+				DataSourceType =  DataSourceType.SavedSearch,
+				DestinationFolderStructureBehavior = configurationStub.DestinationFolderStructureBehavior,
 				FolderPathSourceFieldName = configurationStub.FolderPathSourceFieldName,
 				DestinationWorkspaceArtifactId = configurationStub.DestinationWorkspaceArtifactId,
 				EmailNotificationRecipients = configurationStub.GetNotificationEmails(),
 				FieldsMapping = serializer.Serialize(configurationStub.GetFieldMappings()),
-				FieldOverlayBehavior = configurationStub.FieldOverlayBehavior.GetDescription(),
-				ImportOverwriteMode = configurationStub.ImportOverwriteMode.GetDescription(),
+				FieldOverlayBehavior = configurationStub.FieldOverlayBehavior,
+				ImportOverwriteMode = configurationStub.ImportOverwriteMode,
 				MoveExistingDocuments = configurationStub.MoveExistingDocuments,
-				NativesBehavior = configurationStub.ImportNativeFileCopyMode.GetDescription(),
+				NativesBehavior = configurationStub.ImportNativeFileCopyMode,
 				RdoArtifactTypeId = (int)ArtifactType.Document,
 				JobHistoryId = configurationStub.JobHistoryArtifactId,
 				JobHistoryToRetryId = configurationStub.JobHistoryToRetryId,
 				ImageImport = configurationStub.ImageImport,
 				IncludeOriginalImages = configurationStub.ProductionImagePrecedence is null || configurationStub.IncludeOriginalImageIfNotFoundInProductions,
-				ImageFileCopyMode = configurationStub.ImportImageFileCopyMode.GetDescription(),
+				ImageFileCopyMode = configurationStub.ImportImageFileCopyMode,
 				ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
 
 				//Drain-Stop

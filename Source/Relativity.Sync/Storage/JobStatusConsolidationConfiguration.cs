@@ -9,8 +9,6 @@ namespace Relativity.Sync.Storage
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		private static readonly Guid JobHistoryGuid = new Guid("5D8F7F01-25CF-4246-B2E2-C05882539BB2");
-
 		public JobStatusConsolidationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
