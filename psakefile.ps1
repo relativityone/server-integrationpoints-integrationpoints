@@ -44,12 +44,12 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
+Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
     Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
 }
 
-Task NightlyTest -Description "Run Nightly tests that require a deployed environment." {
+Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
     Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
