@@ -103,6 +103,7 @@ group Tests
 	nuget Relativity.IntegrationPoints.Contracts 1.0.8-pre.3
 	nuget Relativity.OutsideIn 2021.3.1 content: none 			//Relativity.DataExchange.Client.SDK
 	nuget FluentAssertions 4.19.4
+	nuget Polly 5.9
 	nuget Moq 4.5.3
 	nuget Relativity.Testing.Identification 3.5.0
 	nuget System.Reactive 4.4.1
