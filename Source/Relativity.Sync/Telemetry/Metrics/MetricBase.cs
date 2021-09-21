@@ -9,7 +9,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 		where T : IMetric, new()
 	{
 		private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
-
+		
 		[Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_CORRELATION_ID)]
 		public string CorrelationId { get; set; }
 
@@ -18,6 +18,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 		public string ExecutingApplication { get; set;  }
 		
 		public string ExecutingApplicationVersion { get; set; }
+		public string SyncVersion { get; set; }
 
 		public string DataSourceType { get; set; }
 
@@ -77,5 +78,6 @@ namespace Relativity.Sync.Telemetry.Metrics
 					   .Where(p => p.GetMethod != null)
 					   .ToDictionary(p => p, p => p.GetCustomAttribute<MetricAttribute>()));
 		}
+
 	}
 }

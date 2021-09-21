@@ -98,6 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			string correlationId = Guid.NewGuid().ToString();
 			const string executingAppName = "SomeApp";
 			const string executingAppVersion = "1.2.3.4";
+			const string syncVersion = "1.2.3.5";
 			const string dataSourceType = "SavedSearch";
 			const string dataDestinationType = "Folder";
 			int? jobHistoryToRetry = 123;
@@ -106,6 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			_metricsConfigurationFake.SetupGet(x => x.CorrelationId).Returns(correlationId);
 			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplication).Returns(executingAppName);
 			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplicationVersion).Returns(executingAppVersion);
+			_metricsConfigurationFake.SetupGet(x => x.SyncVersion).Returns(syncVersion);
 			_metricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(dataSourceType);
 			_metricsConfigurationFake.SetupGet(x => x.DataDestinationType).Returns(dataDestinationType);
 			_metricsConfigurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(jobHistoryToRetry);
@@ -118,6 +120,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			metric.CorrelationId.Should().Be(correlationId);
 			metric.ExecutingApplication.Should().Be(executingAppName);
 			metric.ExecutingApplicationVersion.Should().Be(executingAppVersion);
+			metric.SyncVersion.Should().Be(syncVersion);
 			metric.DataSourceType.Should().Be(dataSourceType);
 			metric.DataDestinationType.Should().Be(dataDestinationType);
 			metric.IsRetry.Should().Be(true);

@@ -52,7 +52,7 @@ namespace Relativity.Sync.Storage
             (DestinationFolderStructureBehavior) Enum.Parse(typeof(DestinationFolderStructureBehavior),
                 _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior));
 
-        public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior)
+        public ImportNativeFileCopyMode? ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior)
             .GetEnumFromDescription<ImportNativeFileCopyMode>();
 
         public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode)

@@ -145,8 +145,8 @@ namespace Relativity.Sync.Tests.Common
 		public ImportOverwriteMode ImportOverwriteMode { get; set; }
 
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
-
-		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
+		
+		public ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; set; }
 
 		public int IdentityFieldId { get; set; }
 
@@ -213,6 +213,7 @@ namespace Relativity.Sync.Tests.Common
 		public Guid ExportRunId { get; set; }
 
 		public int? JobHistoryToRetryId { get; set; }
+		public string SyncVersion { get; set;  }
 
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 

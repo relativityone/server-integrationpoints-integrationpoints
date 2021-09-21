@@ -5,10 +5,13 @@ namespace Relativity.Sync.Storage
 	internal sealed class MetricsConfiguration : IMetricsConfiguration
 	{
 		private readonly IConfiguration _cache;
+		private readonly SyncJobParameters _syncJobParameters;
 
-		public MetricsConfiguration(IConfiguration cache)
+
+		public MetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
+			_syncJobParameters = syncJobParameters;
 		}
 
 		public string CorrelationId => _cache.GetFieldValue(x => x.CorrelationId);
@@ -24,5 +27,7 @@ namespace Relativity.Sync.Storage
 		public bool ImageImport => _cache.GetFieldValue(x => x.ImageImport);
 
 		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
+
+		public string SyncVersion => _syncJobParameters.SyncBuildVersion;
 	}
 }

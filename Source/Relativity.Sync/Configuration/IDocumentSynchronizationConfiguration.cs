@@ -8,7 +8,7 @@
 
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 
-		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+		ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; }
 
 		string FileSizeColumn { get; set; }
 

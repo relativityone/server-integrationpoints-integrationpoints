@@ -15,5 +15,7 @@
 		bool ImageImport { get; }
 
 		int? JobHistoryToRetryId { get; }
+
+		string SyncVersion { get; }
 	}
 }
