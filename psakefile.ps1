@@ -40,15 +40,17 @@ Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
 }
 
 Task Test -Description "Run tests that don't require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "UnitTestResults.xml"
-    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit" -OutputFile $LogPath -WithCoverage
-
-    $LogPath = Join-Path $LogsDir "CI_IntegrationTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
+    $LogPath = Join-Path $LogsDir "TestResults.xml"
+    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
+    Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+}
+
+Task NightlyTest -Description "Run Nightly tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
     Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
 
