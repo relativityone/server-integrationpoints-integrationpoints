@@ -1,9 +1,9 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Interfaces;
+using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -16,6 +16,7 @@ using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
+using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 	{
 		private Mock<IMessageService> _messageServiceMock = new Mock<IMessageService>();
 		private Mock<IJobHistoryService> _jobHistoryServiceFake = new Mock<IJobHistoryService>();
+		private Mock<IMemoryUsageReporter> _memoryUsageReporter = new Mock<IMemoryUsageReporter>();
 
 		private IWindsorContainer _container;
 
@@ -52,6 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			TestAgent sut = PrepareSut();
 
 			SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
+			SetupMemoryUsageReporter();
 
 			Job job = JobExtensions.CreateJob();
 
@@ -98,10 +101,12 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			RegisterMock(taskParameterHelper);
 			RegisterMock(integrationPointService);
 			RegisterMock(_jobHistoryServiceFake);
+			RegisterMock(_memoryUsageReporter);
 			RegisterMock(providerTypeService);
 			RegisterMock(_messageServiceMock);
 
 			SetupJobHistoryStatus(JobStatusChoices.JobHistoryPending);
+			SetupMemoryUsageReporter();
 
 			return new TestAgent(_container);
 		}
@@ -119,6 +124,17 @@ namespace kCura.IntegrationPoints.Agent.Tests
 					JobStatus = jobStatus
 				});
 		}
+
+		private void SetupMemoryUsageReporter()
+		{
+			_memoryUsageReporter.Setup(x => x.ActivateTimer(1000, 123456789, "jobType"))
+				.Returns(new Timer(state => ExecuteMock(), null, Timeout.Infinite, Timeout.Infinite));
+		}
+
+		private void ExecuteMock()
+        {
+			// sending metrics to APM is already being tested in MemoryUsageReporterTest
+        }
 
 		private class TestAgent : Agent
 		{
