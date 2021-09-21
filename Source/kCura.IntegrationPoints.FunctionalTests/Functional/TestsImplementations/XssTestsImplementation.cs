@@ -181,12 +181,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 					Name = nameof(IntegrationPointImportFromFTPPreventXssInjection),
 					Source = IntegrationPointSources.FTP,
 					TransferredObject = IntegrationPointTransferredObjects.Document,
-				}).ImportFromLDAPNext.ClickAndGo()
-				.ApplyModel(new ImportFromLDAPConnectToSource
+				}).ImportFromFTPNext.ClickAndGo()
+				.ApplyModel(new ImportFromFTPConnectToSource
 				{
-					ConnectionPath = xssText,
+					Host = xssText,
 					Username = xssText,
-					Password = xssText
+					Password = xssText,
+					CSVFilePath = xssText
 				}).Next.ClickAndGo();
 
 			// Assert

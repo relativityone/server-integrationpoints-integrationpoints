@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using Atata;
+﻿using Atata;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Attributes;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Triggers;
@@ -19,6 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public TextInput<_> Name { get; private set; }
 
 		[FindById("isExportType")]
+		[WaitForElement(WaitBy.Id, "isExportType", Until.Visible)]
 		[WaitOnTrigger(1, TriggerEvents.AfterClickOrSet)]
 		public RadioButtonList<IntegrationPointTypes, _> Type { get; private set; }
 
