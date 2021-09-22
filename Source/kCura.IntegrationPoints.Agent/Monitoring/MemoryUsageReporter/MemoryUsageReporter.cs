@@ -16,6 +16,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 		private long _jobId;
 		private string _jobType;
 		private IRipMetrics _ripMetric;
+		private string _workflowId;
+		private static string _METRIC_NAME = "Relativity.IntegrationPoints.Performance.System";
 
 
 		public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric)
@@ -26,18 +28,18 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 			_timerThread = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
 		}
 
-		public IDisposable ActivateTimer(int timeInterval, long jobId, string jobType)
+		public IDisposable ActivateTimer(int timeInterval, long jobId, string jobDetails, string jobType)
 		{
-
-			SetJobData(jobId, jobType);
+			SetJobData(jobId, jobType, jobDetails);
 			_timerThread.Change(0, timeInterval);
 			return _timerThread;
 		}
 
-		private void SetJobData(long jobId, string jobType)
+		private void SetJobData(long jobId, string jobType, string jobDetails)
         {
 			_jobId = jobId;
 			_jobType = jobType;
+			_workflowId = jobDetails;
         }
 
 		private void Execute()
@@ -45,16 +47,17 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 			long memoryUsage = ProcessMemoryHelper.GetCurrentProcessMemoryUsage();
 
 			Dictionary<string, object> customData = new Dictionary<string, object>()
-				{
-					{ "MemoryUsage", memoryUsage },
-					{ "JobId", _jobId },
-					{ "JobType", _jobType }
-				};
+			{
+				{ "MemoryUsage", memoryUsage },
+				{ "JobId", _jobId },
+				{ "JobType", _jobType },
+				{ "WorkflowId", _workflowId}
+			};
 
 			ProcessMemoryHelper.LogApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
 
-			_logger.LogInformation("Sending metric \"Relativity.IntegrationPoints.Performance.System\" with properties: {@MetricProperties} and correlationID: {@CorrelationId}", customData.ToString(), _ripMetric.GetWorkflowId());
-			_apmClient.CountOperation("IntegrationPoints.Performance.System", correlationID: _ripMetric.GetWorkflowId(), customData: customData).Write();
+			_logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_NAME, customData, _ripMetric.GetWorkflowId());
+			_apmClient.CountOperation(_METRIC_NAME, correlationID: _workflowId, customData: customData).Write();
 		}
 	}
 }

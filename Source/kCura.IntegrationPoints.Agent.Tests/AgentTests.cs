@@ -47,14 +47,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobStartedMessage>()), Times.Once);
 		}
 
-		[Test]
+        [Test]
 		public void ProcessJob_ShouldNotSendStartMetric_WhenJobWasResumed()
 		{
 			// Arrange
 			TestAgent sut = PrepareSut();
 
 			SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
-			SetupMemoryUsageReporter();
 
 			Job job = JobExtensions.CreateJob();
 
@@ -63,6 +62,27 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			// Assert
 			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobStartedMessage>()), Times.Never);
+		}
+
+		[Test]
+		public void ProcessJob_ShouldActivateTimer_AtTheBeginningOfProcessing()
+		{
+			// Arrange
+			TestAgent sut = PrepareSut();
+
+			SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
+
+			Job job = JobExtensions.CreateJob();
+
+			// Act
+			sut.ProcessJob_Test(job);
+
+			// Assert
+			_memoryUsageReporter.Verify(x => x.ActivateTimer(
+				It.Is<int>(timeInterval => timeInterval == 30000), 
+				It.IsAny<long>(), 
+				It.IsAny<string>(), 
+				It.Is<string>(jobType => jobType =="Relativity.Sync")), Times.Once);
 		}
 
 		private TestAgent PrepareSut()
@@ -106,7 +126,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			RegisterMock(_messageServiceMock);
 
 			SetupJobHistoryStatus(JobStatusChoices.JobHistoryPending);
-			SetupMemoryUsageReporter();
 
 			return new TestAgent(_container);
 		}
@@ -124,17 +143,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 					JobStatus = jobStatus
 				});
 		}
-
-		private void SetupMemoryUsageReporter()
-		{
-			_memoryUsageReporter.Setup(x => x.ActivateTimer(1000, 123456789, "jobType"))
-				.Returns(new Timer(state => ExecuteMock(), null, Timeout.Infinite, Timeout.Infinite));
-		}
-
-		private void ExecuteMock()
-        {
-			// sending metrics to APM is already being tested in MemoryUsageReporterTest
-        }
 
 		private class TestAgent : Agent
 		{

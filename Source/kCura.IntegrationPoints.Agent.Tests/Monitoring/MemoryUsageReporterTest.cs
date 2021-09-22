@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IAPM> _apmMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IRipMetrics> _ripMetricMock;
+        private Mock<ICounterMeasure> _counterMeasure;
         private MemoryUsageReporter _sut;
 
         [SetUp]
@@ -32,6 +33,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     It.IsAny<IEnumerable<ISink>>()))
                 .Returns(Mock.Of<ICounterMeasure>());
 
+            _counterMeasure = new Mock<ICounterMeasure>();
+
             _loggerMock = new Mock<IAPILog>();
 
             _ripMetricMock = new Mock<IRipMetrics>();
@@ -41,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         }
 
         [Test]
-        public void ItShouldReportMemoryUsageStats()
+        public void Execute_ShouldSendMetrics_AfterTimerActivating()
         {
             // Arrange
             List<string> valuesToBeSend = new List<string>() 
@@ -49,19 +52,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 "MemoryUsage",
                 "JobId",
                 "JobType",
+                "WorkflowId",
                 "SystemProcessMemory",
                 "AppDomainMemory",
                 "AppDomainLifetimeTotalAllocatedMemory",
                 "PrivateMemoryBytes",
                 "SystemFreeMemoryPercent"
             };
-            string metricName = "IntegrationPoints.Performance.System";
-            string logMessage = "Sending metric \"Relativity.IntegrationPoints.Performance.System\" with properties: {@MetricProperties} and correlationID: {@CorrelationId}";
+            string metricName = "Relativity.IntegrationPoints.Performance.System";
+            string logMessage = "Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}";
             AppDomain.MonitoringIsEnabled = true;
 
             // Act
-            IDisposable temp = _sut.ActivateTimer(1000, 1111111111111, "jobType");
-            Thread.Sleep(3000);
+            IDisposable temp = _sut.ActivateTimer(1000, 1111111111111, "jobDetails", "jobType");
+            Thread.Sleep(500);
             
             // Assert
             _apmMock.Verify(x => x.CountOperation(
@@ -77,7 +81,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _loggerMock.Verify(x => x.LogInformation(
                 It.Is<string>(message => message == logMessage),
                 It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object>>(),
                 It.IsAny<string>()));
+
+            _counterMeasure.Verify(x => x.Write());
         }
 
         private bool CheckIfHasAllValues(Dictionary<string, object> dict, List<string> values) 
