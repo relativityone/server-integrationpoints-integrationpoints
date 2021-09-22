@@ -100,6 +100,7 @@
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
     <Compile Include="IQuery.cs" />
+    <Compile Include="IQueueQueryManager.cs" />
     <Compile Include="LoadFileInfo.cs" />
     <Compile Include="Installers\HelpersRegistration.cs" />
     <Compile Include="Installers\RepositoryRegistration.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
     <Compile Include="Statistics\IDocumentAccumulatedStatistics.cs" />
+    <Compile Include="StopState.cs" />
     <Compile Include="StreamWrappers\AsciiToUnicodeStream.cs" />
     <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
     <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />

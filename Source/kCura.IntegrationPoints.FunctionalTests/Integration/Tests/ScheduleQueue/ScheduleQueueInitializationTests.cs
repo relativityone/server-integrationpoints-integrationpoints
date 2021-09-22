@@ -1,4 +1,4 @@
-﻿using kCura.ScheduleQueue.Core.Data;
+﻿using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;

@@ -1,6 +1,6 @@
 ﻿using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core.Extensions
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;

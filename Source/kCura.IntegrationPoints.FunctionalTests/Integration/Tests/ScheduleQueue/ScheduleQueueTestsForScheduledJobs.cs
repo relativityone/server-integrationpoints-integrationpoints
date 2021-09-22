@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;

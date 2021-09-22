@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core
 {

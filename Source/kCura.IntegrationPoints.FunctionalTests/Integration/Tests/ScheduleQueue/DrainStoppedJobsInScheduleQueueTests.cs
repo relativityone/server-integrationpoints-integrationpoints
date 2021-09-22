@@ -1,7 +1,5 @@
-﻿using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data;
-using Relativity.API;
+﻿using kCura.IntegrationPoints.Data;
+using kCura.ScheduleQueue.Core;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;

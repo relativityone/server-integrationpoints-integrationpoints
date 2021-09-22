@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
 
-namespace kCura.ScheduleQueue.Core.Data
+namespace kCura.IntegrationPoints.Data
 {
 	public interface IQueueQueryManager
 	{
