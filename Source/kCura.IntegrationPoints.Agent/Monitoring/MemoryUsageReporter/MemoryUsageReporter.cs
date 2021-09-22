@@ -17,7 +17,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 		private string _jobType;
 		private IRipMetrics _ripMetric;
 		private string _workflowId;
-		private static string _METRIC_NAME = "Relativity.IntegrationPoints.Performance.System";
+		private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
+		private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
 
 		public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric)
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
 			ProcessMemoryHelper.LogApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
 
-			_logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_NAME, customData, _ripMetric.GetWorkflowId());
+			_logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());
 			_apmClient.CountOperation(_METRIC_NAME, correlationID: _workflowId, customData: customData).Write();
 		}
 	}
