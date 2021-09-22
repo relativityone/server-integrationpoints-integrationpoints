@@ -1,5 +1,5 @@
 ﻿using Atata;
-using Relativity.IntegrationPoints.Tests.Functional.Web.Attributes;
+using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
@@ -16,21 +16,22 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindById("name")]
 		public TextInput<_> Name { get; private set; }
 
-		[FindById("isExportType")]
-		[WaitForElement(WaitBy.Id, "isExportType", Until.Visible)]
-		[WaitOnTrigger(1, TriggerEvents.AfterClickOrSet)]
+		[FindByPrecedingDivContent]
+		[WaitFor]
+		[InvokeMethod(nameof(OnSetType), TriggerEvents.AfterClickOrSet)]
 		public RadioButtonList<IntegrationPointTypes, _> Type { get; private set; }
 
 		[FindById("promoteEligible")]
 		public RadioButtonList<YesNo, _> PromoteList { get; private set; }
 
-		[FindById("s2id_sourceProvider")]
+		[FindByPrecedingDivContent]
+		[WaitFor]
 		public Select2<IntegrationPointSources, _> Source { get; private set; }
 
-		[FindById("s2id_destinationProviderType")]
+		[FindByPrecedingDivContent]
 		public Select2<IntegrationPointDestinations, _> Destination { get; private set; }
 
-		[FindById("s2id_destinationRdo")]
+		[FindByPrecedingDivContent]
 		public Select2<IntegrationPointTransferredObjects, _> TransferredObject { get; private set; }
 
 		[FindById("notificationEmails")]
@@ -54,5 +55,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public Button<ImportFromFTPConnectToSourcePage, _> ImportFromFTPNext { get; private set; }
 
 		#endregion
+
+		private void OnSetType()
+		{
+			if (Type.Get() == IntegrationPointTypes.Import)
+			{
+				Source.Should.Within(20).BeEnabled();
+			}
+		}
 	}
 }

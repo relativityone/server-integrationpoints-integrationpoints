@@ -1,7 +1,4 @@
 ﻿using Atata;
-using OpenQA.Selenium;
-using System.Threading;
-using Relativity.IntegrationPoints.Tests.Functional.Web.Attributes;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
@@ -26,7 +23,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
 		[FindByPrecedingDivContent]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
-		[WaitOnTrigger(1, TriggerEvents.AfterClickOrSet)]
 		public Select2<RelativityProviderSources, _> Source { get; private set; }
 
 		[FindByPrecedingDivContent]
