@@ -109,11 +109,6 @@ namespace Relativity.Sync.Storage
             await UpdateFieldValueAsync(x => x.StartingIndex, newStartIndex).ConfigureAwait(false);
         }
 
-        private BatchStatus ParseStatus(string description)
-        {
-            return description.GetEnumFromDescription<BatchStatus>();
-        }
-
         private async Task CreateAsync(int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex)
         {
             _batchRdo.TotalDocumentsCount = totalDocumentsCount;

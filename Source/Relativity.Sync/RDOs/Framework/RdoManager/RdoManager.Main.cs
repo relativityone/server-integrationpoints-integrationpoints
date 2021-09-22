@@ -297,16 +297,23 @@ namespace Relativity.Sync.RDOs.Framework
             switch (fieldInfo.Type)
             {
                 case RdoFieldType.FixedLengthText
-                    when fieldInfo.PropertyInfo.PropertyType == typeof(long) ||
-                         fieldInfo.PropertyInfo.PropertyType == typeof(long?):
+                    when IsLongOrNullableLong(fieldInfo):
                     return value?.ToString();
 
                 case RdoFieldType.FixedLengthText when fieldInfo.PropertyInfo.PropertyType.IsEnum:
-                    return value is null || value.ToString() == "" ? null : EnumExtensions.GetDescription(value, fieldInfo.PropertyInfo.PropertyType.ExtractTypeIfNullable());
+                    return (value is null || value.ToString() == "") 
+                        ? null 
+                        : EnumExtensions.GetDescription(value, fieldInfo.PropertyInfo.PropertyType.ExtractTypeIfNullable());
                 
                 default:
                     return value;
             }
+        }
+
+        private static bool IsLongOrNullableLong(RdoFieldInfo fieldInfo)
+        {
+            return fieldInfo.PropertyInfo.PropertyType == typeof(long) ||
+                   fieldInfo.PropertyInfo.PropertyType == typeof(long?);
         }
 
         private HashSet<Guid> GetFieldsGuidsFromExpressions<TRdo>(Expression<Func<TRdo, object>>[] fields)
