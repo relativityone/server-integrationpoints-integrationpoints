@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new DestinationWorkspaceSavedSearchCreationConfiguration(_configuration.Object);
+			_instance = new DestinationWorkspaceSavedSearchCreationConfiguration(_configuration);
 		}
 
 		[Test]
@@ -85,11 +85,14 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[Test]
 		public async Task ItShouldUpdateSavedSearchArtifactId()
 		{
+			// Arrange
 			const int artifactId = 589632;
 
+			// Act
 			await _instance.SetSavedSearchInDestinationArtifactIdAsync(artifactId).ConfigureAwait(false);
-
-			_configuration.Verify(x => x.UpdateFieldValueAsync(It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SavedSearchInDestinationArtifactId))), artifactId), Times.Once);
+			
+			// Assert
+			_configurationRdo.SavedSearchInDestinationArtifactId.Should().Be(artifactId);
 		}
 	}
 }

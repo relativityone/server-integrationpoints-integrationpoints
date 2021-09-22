@@ -83,10 +83,8 @@ namespace Relativity.Sync.Tests.Common
 		{
 			_emailNotificationRecipients = emailNotificationRecipients;
 		}
-
-		string IMetricsConfiguration.DataSourceType => DataSourceType.ToString();
-
-		public string DataDestinationType { get; }
+		
+		public DestinationLocationType DataDestinationType { get; }
 
 		public int SourceWorkspaceArtifactId { get; set; }
 
@@ -146,7 +144,7 @@ namespace Relativity.Sync.Tests.Common
 
 		public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 		
-		public ImportNativeFileCopyMode? ImportNativeFileCopyMode { get; set; }
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
 
 		public int IdentityFieldId { get; set; }
 

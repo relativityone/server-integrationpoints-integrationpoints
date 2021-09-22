@@ -7,6 +7,7 @@ using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -79,25 +80,25 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			{
 				CreateSavedSearchInDestination = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.CreateSavedSearchInDestinationGuid)),
 				DataDestinationArtifactId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.DataDestinationArtifactIdGuid)),
-				DataDestinationType = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DataDestinationTypeGuid)),
+				DataDestinationType = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DataDestinationTypeGuid)).GetEnumFromDescription<DestinationLocationType>(),
 				DataSourceArtifactId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.DataSourceArtifactIdGuid)),
-				DataSourceType = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DataSourceTypeGuid)),
-				DestinationFolderStructureBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DestinationFolderStructureBehaviorGuid)),
+				DataSourceType = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DataSourceTypeGuid)).GetEnumFromDescription<DataSourceType>(),
+				DestinationFolderStructureBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.DestinationFolderStructureBehaviorGuid)).GetEnumFromDescription<DestinationFolderStructureBehavior>(),
 				DestinationWorkspaceArtifactId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.DestinationWorkspaceArtifactIdGuid)),
 				EmailNotificationRecipients = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.EmailNotificationRecipientsGuid)),
 				FieldsMapping = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.FieldMappingsGuid)),
-				FieldOverlayBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.FieldOverlayBehaviorGuid)),
+				FieldOverlayBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.FieldOverlayBehaviorGuid)).GetEnumFromDescription<FieldOverlayBehavior>(),
 				FolderPathSourceFieldName = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.FolderPathSourceFieldNameGuid)),
-				ImportOverwriteMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImportOverwriteModeGuid)),
+				ImportOverwriteMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImportOverwriteModeGuid)).GetEnumFromDescription<ImportOverwriteMode>(),
 				MoveExistingDocuments = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.MoveExistingDocumentsGuid)),
-				NativesBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.NativesBehaviorGuid)),
+				NativesBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.NativesBehaviorGuid)).GetEnumFromDescription<ImportNativeFileCopyMode>(),
 				RdoArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.RdoArtifactTypeIdGuid)),
 				JobHistoryToRetryId = ReadSyncConfigurationValue<int?>(configuration, new Guid(SyncRdoGuids.JobHistoryToRetryIdGuid)),
 				JobHistoryId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.JobHistoryIdGuid)),
 				ImageImport = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.ImageImportGuid)),
 				IncludeOriginalImages = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.IncludeOriginalImagesGuid)),
 				ProductionImagePrecedence = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ProductionImagePrecedenceGuid)),
-				ImageFileCopyMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImageFileCopyModeGuid))
+				ImageFileCopyMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImageFileCopyModeGuid)).GetEnumFromDescription<ImportImageFileCopyMode>()
 			};
 		}
 	}

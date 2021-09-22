@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			_serializer = new JSONSerializer();
 
-			_sut = new ImageJobStartMetricsConfiguration(_configuration.Object, _serializer, new SyncJobParameters(1, _SOURCE_WORKSPACE_ARTIFACT_ID, _WORKFLOW_ID));
+			_sut = new ImageJobStartMetricsConfiguration(_configuration, _serializer, new SyncJobParameters(1, _SOURCE_WORKSPACE_ARTIFACT_ID, _WORKFLOW_ID));
 		}
 
 		[Test]

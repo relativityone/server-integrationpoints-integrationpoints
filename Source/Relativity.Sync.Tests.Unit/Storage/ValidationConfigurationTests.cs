@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_fieldMappings = new Mock<IFieldMappings>();
 			SyncJobParameters jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<Guid>());
 			_syncServiceManagerMock = new Mock<ISyncServiceManager>();
-			_sut = new ValidationConfiguration(_configuration.Object, _fieldMappings.Object, jobParameters, _syncServiceManagerMock.Object);
+			_sut = new ValidationConfiguration(_configuration, _fieldMappings.Object, jobParameters, _syncServiceManagerMock.Object);
 		}
 
 		[Test]
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveFieldOverlayBehavior()
 		{
 			const FieldOverlayBehavior expected = FieldOverlayBehavior.UseFieldSettings;
-			_configurationRdo.FieldOverlayBehavior = expected.ToString();
+			_configurationRdo.FieldOverlayBehavior = expected;
 			
 			_sut.FieldOverlayBehavior.Should().Be(expected);
 		}
@@ -101,7 +101,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveImportOverwriteMode()
 		{
 			ImportOverwriteMode expected = ImportOverwriteMode.AppendOverlay;
-			_configurationRdo.ImportOverwriteMode = expected.ToString();
+			_configurationRdo.ImportOverwriteMode = expected;
 			
 			_sut.ImportOverwriteMode.Should().Be(expected);
 		}
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ItShouldRetrieveDestinationFolderStructureBehavior()
 		{
 			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
-			_configurationRdo.DestinationFolderStructureBehavior = expected.ToString();
+			_configurationRdo.DestinationFolderStructureBehavior = expected;
 			
 			_sut.DestinationFolderStructureBehavior.Should().Be(expected);
 		}

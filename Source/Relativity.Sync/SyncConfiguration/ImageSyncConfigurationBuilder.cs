@@ -19,11 +19,11 @@ namespace Relativity.Sync.SyncConfiguration
 
 			SyncConfiguration.ImageImport = true;
 			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
-			SyncConfiguration.DataSourceType = options.DataSourceType.ToString();
+			SyncConfiguration.DataSourceType = options.DataSourceType;
 			SyncConfiguration.DataSourceArtifactId = options.DataSourceId;
-			SyncConfiguration.DataDestinationType = options.DestinationLocationType.ToString();
+			SyncConfiguration.DataDestinationType = options.DestinationLocationType;
 			SyncConfiguration.DataDestinationArtifactId = options.DestinationLocationId;
-			SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode.GetDescription();
+			SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode;
 			SyncConfiguration.IncludeOriginalImages = true;
 		}
 

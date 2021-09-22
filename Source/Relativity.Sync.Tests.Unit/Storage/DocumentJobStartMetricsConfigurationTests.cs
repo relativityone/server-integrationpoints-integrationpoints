@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
 
-			_sut = new DocumentJobStartMetricsConfiguration(_configuration.Object, parameters);
+			_sut = new DocumentJobStartMetricsConfiguration(_configuration, parameters);
 		}
 
 		[Test]

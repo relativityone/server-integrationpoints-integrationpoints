@@ -111,18 +111,18 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 		private static IEnumerable<object[]> OverwriteModeDataSource => new List<object[]>()
 		{
-			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly), "AppendOnly", "Use Field Settings"},
+			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly), ImportOverwriteMode.AppendOnly, FieldOverlayBehavior.UseFieldSettings},
 			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) {FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues},
-				"AppendOverlay", "Replace Values"},
+				ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.ReplaceValues},
 			new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
-				"AppendOverlay", "Merge Values"},
-			new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), "OverlayOnly", "Use Field Settings"}
+				ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.MergeValues},
+			new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings}
 		};
 
 		[TestCaseSource(nameof(OverwriteModeDataSource))]
 		[IdentifiedTest("26F1771E-3BCC-41C3-8BC2-BB3C2947A82A")]
 		public async Task Create_DocumentSyncConfigurationWithOverwriteAppendOnly(
-			OverwriteOptions overwriteOptions, string expectedOverwriteMode, string expectedFieldsOverlay)
+			OverwriteOptions overwriteOptions, ImportOverwriteMode expectedOverwriteMode, FieldOverlayBehavior expectedFieldsOverlay)
 		{
 			// Arrange
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
@@ -151,7 +151,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			// Arrange
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
-			expectedSyncConfiguration.DestinationFolderStructureBehavior = "RetainSourceWorkspaceStructure";
+			expectedSyncConfiguration.DestinationFolderStructureBehavior =
+				DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure;
 			expectedSyncConfiguration.MoveExistingDocuments = true;
 
 			ISyncContext syncContext =
@@ -182,7 +183,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			int documentFolderPathFieldId = await ReadFieldByName(SourceWorkspaceId, documentFolderPathName).ConfigureAwait(false);
 
 			SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
-			expectedSyncConfiguration.DestinationFolderStructureBehavior = "ReadFromField";
+			expectedSyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.ReadFromField;
 			expectedSyncConfiguration.FolderPathSourceFieldName = documentFolderPathName;
 			expectedSyncConfiguration.MoveExistingDocuments = true;
 
@@ -264,15 +265,15 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			return new SyncConfigurationRdo
 			{
 				RdoArtifactTypeId = 10,
-				DataSourceType = "SavedSearch",
+				DataSourceType = DataSourceType.SavedSearch,
 				DataSourceArtifactId = _savedSearchId,
 				DestinationWorkspaceArtifactId = DestinationWorkspaceId,
 				DataDestinationArtifactId = _destinationFolderId,
-				DataDestinationType = "Folder",
-				DestinationFolderStructureBehavior = "None",
-				ImportOverwriteMode = "AppendOnly",
-				FieldOverlayBehavior = "Use Field Settings",
-				NativesBehavior = "None",
+				DataDestinationType = DestinationLocationType.Folder,
+				DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None,
+				ImportOverwriteMode = ImportOverwriteMode.AppendOnly,
+				FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
+				NativesBehavior = ImportNativeFileCopyMode.DoNotImportNativeFiles,
 				JobHistoryId = JobHistory.ArtifactID,
 
 				FieldsMapping = new JSONSerializer().Serialize(fieldsMappingToSerialize)
