@@ -1,5 +1,5 @@
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
-using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services
 {

@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Extensions
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;

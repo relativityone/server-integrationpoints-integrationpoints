@@ -15,6 +15,7 @@ using Relativity.Telemetry.Services.Metrics;
 using System;
 using System.IO.Packaging;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
 {

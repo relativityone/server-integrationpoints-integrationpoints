@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {

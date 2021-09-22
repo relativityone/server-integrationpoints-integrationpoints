@@ -1,5 +1,4 @@
-﻿
-using kCura.ScheduleQueue.Core;
+﻿using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 {

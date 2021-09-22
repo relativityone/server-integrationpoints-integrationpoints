@@ -1,4 +1,5 @@
-﻿using kCura.ScheduleQueue.Core;
+﻿using kCura.IntegrationPoints.Data;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Interfaces
 {

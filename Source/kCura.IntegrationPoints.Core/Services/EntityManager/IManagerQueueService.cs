@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Services.EntityManager
