@@ -4,9 +4,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -28,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				BatchSize = _BATCH_SIZE
 			};
 
-			_instance = new SnapshotPartitionConfiguration(_configuration.Object, syncJobParameters, configuration, new EmptyLogger());
+			_instance = new SnapshotPartitionConfiguration(_configuration, syncJobParameters, configuration, new EmptyLogger());
 		}
 
 		[Test]

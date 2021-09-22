@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using IConfiguration = Relativity.Sync.Storage.IConfiguration;
@@ -65,21 +64,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_fieldMappingsMock.Verify(x => x.GetFieldMappings());
 		}
 		
-		[TestCase(null, null)]
-		[TestCase("", null)]
-		[TestCase("Copy", ImportNativeFileCopyMode.CopyFiles)]
-		public void ImportNativeFileCopyMode_ShouldProperlyDeserialize(string valueStr, ImportNativeFileCopyMode? expected)
-		{
-			// arrange
-			_cacheFake.Setup(cache => cache.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>())).Returns(valueStr);
-
-			// act
-			ImportNativeFileCopyMode? actual = _sut.ImportNativeFileCopyMode;
-
-			// assert
-			actual.Should().Be(expected);
-		}
-
 		private FieldConfiguration PrepareSut()
 		{
 			return new FieldConfiguration(_cacheFake.Object, _fieldMappingsMock.Object, _syncJobParameters);

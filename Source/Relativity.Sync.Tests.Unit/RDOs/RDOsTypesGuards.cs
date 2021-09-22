@@ -108,6 +108,25 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 });
         }
 
+        [Test]
+        public void AllRdosEnumProperties_ShouldHaveEnumFieldAttribute()
+        {
+            Type[] allRdoTypes = GetRdoTypesFromAssembly(typeof(IRdoType).Assembly);
+
+            allRdoTypes
+                .ForEach(t =>
+                {
+                    t.GetProperties()
+                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) && p.PropertyType.IsEnum)
+                        .ForEach(x =>
+                        {
+                            RdoEnumFieldAttribute fieldAttribute = x.GetCustomAttribute<RdoEnumFieldAttribute>();
+
+                            fieldAttribute.Should().NotBeNull($"All enum properties should be decorated with {nameof(RdoLongFieldAttribute)}. Please fix {t.Name}.{x.Name}");
+                        });
+                });
+        }
+
         private static Type[] GetRdoTypesFromAssembly(Assembly assembly)
         {
             Type iRdoType = typeof(IRdoType);

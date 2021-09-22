@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Relativity.Sync.Utils;
 using Moq;
@@ -25,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit
         {
             _serializer = new Mock<ISerializer>();
 
-            _instance = new FieldMappings(_configuration.Object, _serializer.Object, new EmptyLogger());
+            _instance = new FieldMappings(_configuration, _serializer.Object, new EmptyLogger());
            
             _configurationRdo.FieldsMapping = _FIELD_MAP;
         }
@@ -56,7 +55,6 @@ namespace Relativity.Sync.Tests.Unit
             _instance.GetFieldMappings();
 
             // ASSERT
-            _configuration.Verify(x => x.GetFieldValue(It.IsAny<Func<SyncConfigurationRdo, string>>()), Times.Once);
             _serializer.Verify(x => x.Deserialize<List<FieldMap>>(_FIELD_MAP), Times.Once);
         }
 

@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
 			_objectManager = new Mock<IObjectManager>();
 			_sycJobParameters = FakeHelper.CreateSyncJobParameters();
-			_instance = new PermissionsCheckConfiguration(_configuration.Object, _sycJobParameters,_sourceServiceFactory.Object);
+			_instance = new PermissionsCheckConfiguration(_configuration, _sycJobParameters,_sourceServiceFactory.Object);
 		}
 
 		[Test]

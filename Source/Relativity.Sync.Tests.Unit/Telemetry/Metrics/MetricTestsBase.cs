@@ -5,7 +5,6 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
-using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
@@ -99,8 +98,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			const string executingAppName = "SomeApp";
 			const string executingAppVersion = "1.2.3.4";
 			const string syncVersion = "1.2.3.5";
-			const string dataSourceType = "SavedSearch";
-			const string dataDestinationType = "Folder";
+			const DataSourceType dataSourceType = DataSourceType.SavedSearch;
+			const DestinationLocationType dataDestinationType = DestinationLocationType.Folder;
 			int? jobHistoryToRetry = 123;
 			const bool imagePush = true;
 
@@ -121,8 +120,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			metric.ExecutingApplication.Should().Be(executingAppName);
 			metric.ExecutingApplicationVersion.Should().Be(executingAppVersion);
 			metric.SyncVersion.Should().Be(syncVersion);
-			metric.DataSourceType.Should().Be(dataSourceType);
-			metric.DataDestinationType.Should().Be(dataDestinationType);
+			metric.DataSourceType.Should().Be(dataSourceType.GetDescription());
+			metric.DataDestinationType.Should().Be(dataDestinationType.GetDescription());
 			metric.IsRetry.Should().Be(true);
 			metric.FlowName.Should().Be("Images");
 		}

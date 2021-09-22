@@ -1,4 +1,5 @@
 ﻿using System;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
 
@@ -21,8 +22,8 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.RdoArtifactTypeIdGuid, RdoFieldType.WholeNumber)]
         public int RdoArtifactTypeId { get; set; }
 
-        [RdoField(SyncRdoGuids.DataSourceTypeGuid, RdoFieldType.FixedLengthText)]
-        public string DataSourceType { get; set; }
+        [RdoEnumField(SyncRdoGuids.DataSourceTypeGuid)]
+        public DataSourceType DataSourceType { get; set; }
 
         [RdoField(SyncRdoGuids.DataSourceArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int DataSourceArtifactId { get; set; }
@@ -33,11 +34,11 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.DataDestinationArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int DataDestinationArtifactId { get; set; }
 
-        [RdoField(SyncRdoGuids.DataDestinationTypeGuid, RdoFieldType.FixedLengthText)]
-        public string DataDestinationType { get; set; }
+        [RdoEnumField(SyncRdoGuids.DataDestinationTypeGuid)]
+        public DestinationLocationType DataDestinationType { get; set; }
 
-        [RdoField(SyncRdoGuids.DestinationFolderStructureBehaviorGuid, RdoFieldType.FixedLengthText)]
-        public string DestinationFolderStructureBehavior { get; set; }
+        [RdoEnumField(SyncRdoGuids.DestinationFolderStructureBehaviorGuid)]
+        public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
 
         [RdoField(SyncRdoGuids.FolderPathSourceFieldNameGuid, RdoFieldType.FixedLengthText)]
         public string FolderPathSourceFieldName { get; set; }
@@ -48,11 +49,11 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.SavedSearchInDestinationArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int SavedSearchInDestinationArtifactId { get; set; }
 
-        [RdoField(SyncRdoGuids.ImportOverwriteModeGuid, RdoFieldType.FixedLengthText)]
-        public string ImportOverwriteMode { get; set; }
+        [RdoEnumField(SyncRdoGuids.ImportOverwriteModeGuid)]
+        public ImportOverwriteMode ImportOverwriteMode { get; set; }
 
-        [RdoField(SyncRdoGuids.FieldOverlayBehaviorGuid, RdoFieldType.FixedLengthText)]
-        public string FieldOverlayBehavior { get; set; }
+        [RdoEnumField(SyncRdoGuids.FieldOverlayBehaviorGuid)]
+        public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
 
         [RdoField(SyncRdoGuids.FieldMappingsGuid, RdoFieldType.LongText)]
         public string FieldsMapping { get; set; }
@@ -60,8 +61,8 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.MoveExistingDocumentsGuid, RdoFieldType.YesNo)]
         public bool MoveExistingDocuments { get; set; }
 
-        [RdoField(SyncRdoGuids.NativesBehaviorGuid, RdoFieldType.FixedLengthText)]
-        public string NativesBehavior { get; set; }
+        [RdoEnumField(SyncRdoGuids.NativesBehaviorGuid)]
+        public ImportNativeFileCopyMode NativesBehavior { get; set; } = ImportNativeFileCopyMode.DoNotImportNativeFiles;
 
         [RdoField(SyncRdoGuids.ImageImportGuid, RdoFieldType.YesNo)]
         public bool ImageImport { get; set; }
@@ -72,8 +73,8 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.ProductionImagePrecedenceGuid, RdoFieldType.LongText)]
         public string ProductionImagePrecedence { get; set; }
 
-        [RdoField(SyncRdoGuids.ImageFileCopyModeGuid, RdoFieldType.FixedLengthText)]
-        public string ImageFileCopyMode { get; set; }
+        [RdoEnumField(SyncRdoGuids.ImageFileCopyModeGuid)]
+        public ImportImageFileCopyMode ImageFileCopyMode { get; set; } = ImportImageFileCopyMode.DoNotImportImageFiles;
 
         [RdoField(SyncRdoGuids.EmailNotificationRecipientsGuid, RdoFieldType.LongText)]
         public string EmailNotificationRecipients { get; set; }

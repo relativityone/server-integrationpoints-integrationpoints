@@ -148,7 +148,7 @@ namespace Relativity.Sync.Tests.Integration
 		public void ItShouldBuildAllSpecialFieldColumnsDependingOnDestinationFolderStructureBehavior(DestinationFolderStructureBehavior folderStructureBehavior)
 		{
 			// Arrange
-			IEnumerable<FieldInfoDto> expectedSpecialFieldColumns = SpecialFields(folderStructureBehavior, _configuration.ImportNativeFileCopyMode.Value);
+			IEnumerable<FieldInfoDto> expectedSpecialFieldColumns = SpecialFields(folderStructureBehavior, _configuration.ImportNativeFileCopyMode);
 			_configuration.DestinationFolderStructureBehavior = folderStructureBehavior;
 
 			// Act
@@ -199,7 +199,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			// Arrange
 			IEnumerable<FieldInfoDto> expectedDocumentFields = MappedDocumentFields();
-			IEnumerable<FieldInfoDto> expectedSpecialFields = SpecialFields(folderStructureBehavior, _configuration.ImportNativeFileCopyMode.Value);
+			IEnumerable<FieldInfoDto> expectedSpecialFields = SpecialFields(folderStructureBehavior, _configuration.ImportNativeFileCopyMode);
 			List<FieldInfoDto> expectedAllFields = AssignIndicesToDocumentFields(expectedDocumentFields.Concat(expectedSpecialFields)).ToList();
 
 			_configuration.DestinationFolderStructureBehavior = folderStructureBehavior;

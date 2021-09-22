@@ -26,13 +26,13 @@ namespace Relativity.Sync.SyncConfiguration
 			_fieldsMappingBuilder = fieldsMappingBuilder;
 
 			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
-			SyncConfiguration.DataSourceType = DataSourceType.SavedSearch.ToString();
-			SyncConfiguration.DataDestinationType = DestinationLocationType.Folder.ToString();
-			SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None.ToString();
+			SyncConfiguration.DataSourceType = DataSourceType.SavedSearch;
+			SyncConfiguration.DataDestinationType = DestinationLocationType.Folder;
+			SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;
 
 			SyncConfiguration.DataSourceArtifactId = options.SavedSearchId;
 			SyncConfiguration.DataDestinationArtifactId = options.DestinationFolderId;
-			SyncConfiguration.NativesBehavior = options.CopyNativesMode.GetDescription();
+			SyncConfiguration.NativesBehavior = options.CopyNativesMode;
 		}
 
 		public IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options)
@@ -117,7 +117,7 @@ namespace Relativity.Sync.SyncConfiguration
 			DestinationFolderStructureCleanup();
 
 			SyncConfiguration.DestinationFolderStructureBehavior = 
-				_destinationFolderStructureOptions.DestinationFolderStructure.ToString();
+				_destinationFolderStructureOptions.DestinationFolderStructure;
 
 			if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
 			{
@@ -144,7 +144,7 @@ namespace Relativity.Sync.SyncConfiguration
 		
 		private void DestinationFolderStructureCleanup()
 		{
-			SyncConfiguration.DestinationFolderStructureBehavior = null;
+			SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;
 			SyncConfiguration.FolderPathSourceFieldName = null;
 			SyncConfiguration.MoveExistingDocuments = false;
 		}

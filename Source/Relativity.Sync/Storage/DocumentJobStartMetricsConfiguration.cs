@@ -11,7 +11,7 @@ namespace Relativity.Sync.Storage
 		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
-		public ImportNativeFileCopyMode? ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
 
 		public DocumentJobStartMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{

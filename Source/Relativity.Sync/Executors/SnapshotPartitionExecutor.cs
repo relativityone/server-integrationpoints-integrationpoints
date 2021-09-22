@@ -35,6 +35,11 @@ namespace Relativity.Sync.Executors
 			if (batch != null)
 			{
 				numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalDocumentsCount;
+				_logger.LogInformation("Last batch was not null. Starting partitioning at index {index}", numberOfRecordsIncludedInBatches);
+			}
+			else
+			{
+				_logger.LogInformation("Partitioning from start");
 			}
 
 			Snapshot snapshot = new Snapshot(configuration.TotalRecordsCount, configuration.BatchSize, numberOfRecordsIncludedInBatches);

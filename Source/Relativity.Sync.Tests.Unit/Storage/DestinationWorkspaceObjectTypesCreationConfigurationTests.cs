@@ -1,11 +1,6 @@
-﻿using System;
-using FluentAssertions;
-using Moq;
+﻿using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
-using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -16,7 +11,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_instance = new DestinationWorkspaceObjectTypesCreationConfiguration(_configuration.Object);
+			_instance = new DestinationWorkspaceObjectTypesCreationConfiguration(_configuration);
 		}
 
 		[Test]
