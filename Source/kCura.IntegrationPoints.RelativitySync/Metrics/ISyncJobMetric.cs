@@ -1,6 +1,7 @@
 ﻿using kCura.ScheduleQueue.Core;
 using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {

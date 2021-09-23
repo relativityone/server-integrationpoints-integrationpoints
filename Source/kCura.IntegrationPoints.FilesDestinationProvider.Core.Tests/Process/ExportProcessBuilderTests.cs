@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
+using kCura.IntegrationPoints.Data;
 using kCura.WinEDDS;
 using Relativity.DataExchange.Io;
 using Relativity.DataExchange.Service;

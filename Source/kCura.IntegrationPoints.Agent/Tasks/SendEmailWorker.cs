@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.Email.Dto;
 using kCura.IntegrationPoints.Email.Exceptions;

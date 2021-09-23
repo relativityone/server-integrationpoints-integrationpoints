@@ -1,7 +1,5 @@
-﻿
-using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {

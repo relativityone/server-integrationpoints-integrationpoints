@@ -8,6 +8,7 @@ using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using System;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring
 {

@@ -2,6 +2,7 @@
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using NUnit.Framework;

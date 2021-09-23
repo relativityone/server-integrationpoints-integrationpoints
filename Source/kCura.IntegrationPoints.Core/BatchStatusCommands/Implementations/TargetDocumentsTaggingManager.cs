@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Tagging;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;

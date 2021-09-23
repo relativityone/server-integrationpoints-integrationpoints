@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;

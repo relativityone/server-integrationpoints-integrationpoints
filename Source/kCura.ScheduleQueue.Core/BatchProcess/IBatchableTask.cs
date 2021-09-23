@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core.BatchProcess
 {
