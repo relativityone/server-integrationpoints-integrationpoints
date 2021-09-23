@@ -1,5 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Repositories;
-using kCura.ScheduleQueue.Core;
+﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {

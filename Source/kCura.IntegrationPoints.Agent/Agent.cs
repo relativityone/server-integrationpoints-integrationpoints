@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Agent
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
 	[Description("An agent that manages Integration Point jobs.")]
+	[WorkloadDiscovery.CustomAttributes.Path("Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Integration%20Points%20Agent/GetWorkloadAsync")]
 	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IRemovableAgent, IDisposable
 	{
 		private ErrorService _errorService;
@@ -97,7 +98,7 @@ namespace kCura.IntegrationPoints.Agent
 		protected override void Initialize()
 		{
 			base.Initialize();
-			JobExecutor = new JobExecutor(this, this, JobService, Logger);
+			JobExecutor = new JobExecutor(this, this, JobService, _agentLevelContainer.Value.Resolve<ITaskParameterHelper>(), Logger);
 			JobExecutor.JobExecutionError += OnJobExecutionError;
 		}
 
@@ -171,8 +172,12 @@ namespace kCura.IntegrationPoints.Agent
 			}
 		}
 
-		private static AgentCorrelationContext GetCorrelationContext(Job job)
+		private AgentCorrelationContext GetCorrelationContext(Job job)
 		{
+			ITaskParameterHelper taskParameterHelper = _agentLevelContainer.Value.Resolve<ITaskParameterHelper>();
+			Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+			string correlationId = batchInstanceId.ToString();
+
 			var correlationContext = new AgentCorrelationContext
 			{
 				JobId = job.JobId,
@@ -180,7 +185,8 @@ namespace kCura.IntegrationPoints.Agent
 				WorkspaceId = job.WorkspaceID,
 				UserId = job.SubmittedBy,
 				IntegrationPointId = job.RelatedObjectArtifactID,
-				ActionName = _RELATIVITY_SYNC_JOB_TYPE
+				ActionName = _RELATIVITY_SYNC_JOB_TYPE,
+				WorkflowId = correlationId
 			};
 			return correlationContext;
 		}

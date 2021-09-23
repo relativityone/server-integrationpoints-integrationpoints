@@ -39,6 +39,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new GetNextJob(_queueDbContext, agentId, agentTypeId, resourceGroupArtifactId);
 		}
 
+		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId)
+		{
+			return new GetNextJobWithoutResourceGroup(_queueDbContext, agentId, agentTypeId);
+		}
+
 		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
 		{
 			return new UpdateScheduledJob(_queueDbContext, jobId, nextUtcRunTime);
@@ -85,12 +90,7 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			return new GetAllJobs(_queueDbContext);
 		}
-
-		public IQuery<int> GetPendingJobsCount()
-		{
-			return new GetPendingJobsCount(_queueDbContext);
-		}
-
+		
 		public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
 		{
 			return new UpdateStopState(_queueDbContext, jobIds, state);

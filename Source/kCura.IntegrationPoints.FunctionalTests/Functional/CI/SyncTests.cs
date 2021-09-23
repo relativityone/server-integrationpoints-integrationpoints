@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Relativity.Testing.Identification;
+﻿using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 
@@ -30,6 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.OnTearDownFixture();
 		}
 
+		[TestType.Critical]
 		[IdentifiedTest("b0afe8eb-e898-4763-9f95-e998f220b421")]
 		public void SavedSearch_NativesAndMetadata_GoldFlow()
 		{

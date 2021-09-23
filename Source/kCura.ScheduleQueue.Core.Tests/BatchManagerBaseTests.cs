@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Tests;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using NSubstitute;
 using NUnit.Framework;

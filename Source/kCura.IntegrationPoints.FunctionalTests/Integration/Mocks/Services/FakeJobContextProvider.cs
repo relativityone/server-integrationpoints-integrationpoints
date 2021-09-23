@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Agent.Context;
-using kCura.ScheduleQueue.Core;
 using System;
 using System.Reactive.Disposables;
+using kCura.IntegrationPoints.Data;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {

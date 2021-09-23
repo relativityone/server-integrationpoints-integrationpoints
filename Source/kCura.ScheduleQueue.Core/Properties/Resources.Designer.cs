@@ -339,11 +339,30 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [LockedByAgentID] = @AgentID)
+        ///BEGIN
+        ///	--This Agent has stopped before finalizing this job previously
+        ///	--So, pick it up again and finish it.
+        ///	SELECT TOP (1)
+        ///				[JobID],
+        ///				[RootJobID],
+        ///				[ParentJobID],
+        ///				[AgentTypeID],
+        ///				[LockedByAgentID],
+        ///				[WorkspaceID],
+        ///				[RelatedObjectArtifactID],
+        ///				[TaskType],
+        ///				[NextRunTime],
+        ///				[LastRunTime],
+        ///				[ScheduleRuleType],
+        ///				[ScheduleRule],
+        ///				[JobDetails],
+        ///				[JobFlags],
+        ///				[Subm [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string GetPendingJobsCount {
+        internal static string GetNextJobWithoutResourceGroup {
             get {
-                return ResourceManager.GetString("GetPendingJobsCount", resourceCulture);
+                return ResourceManager.GetString("GetNextJobWithoutResourceGroup", resourceCulture);
             }
         }
         

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
 
-namespace kCura.ScheduleQueue.Core.Data
+namespace kCura.IntegrationPoints.Data
 {
 	public interface IQueueQueryManager
 	{
@@ -15,6 +13,8 @@ namespace kCura.ScheduleQueue.Core.Data
 		IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid);
 
 		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
+
+		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId);
 
 		ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime);
 
@@ -35,9 +35,7 @@ namespace kCura.ScheduleQueue.Core.Data
 		ICommand CleanupJobQueueTable();
 
 		IQuery<DataTable> GetAllJobs();
-
-		IQuery<int> GetPendingJobsCount();
-
+		
 		IQuery<int> UpdateStopState(IList<long> jobIds, StopState state);
 
 		IQuery<DataTable> GetJobByRelatedObjectIdAndTaskType(int workspaceId, int relatedObjectArtifactId,

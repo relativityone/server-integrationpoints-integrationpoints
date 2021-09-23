@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core.ScheduleRules
 {

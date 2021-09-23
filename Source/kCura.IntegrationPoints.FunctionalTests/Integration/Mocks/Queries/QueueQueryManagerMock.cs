@@ -63,6 +63,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			return new ValueReturnQuery<DataTable>(nextJob.AsTable());
 		}
 
+		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId)
+		{
+			return GetNextJob(agentId, agentTypeId, Array.Empty<int>());
+		}
+
 		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
 		{
 			return new ActionCommand(() =>

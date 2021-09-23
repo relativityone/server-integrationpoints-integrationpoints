@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using FluentAssertions;
@@ -37,11 +38,17 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 			_containerFake.Setup(x => x.Resolve<IInstanceSettingsManager>()).Returns(_instanceSettingsManagerFake.Object);
 		}
 
-		private IntegrationPointAgentManager PrepareSut(int pendingJobsCount = 0, string workloadSizeInstanceSettingValue = "")
+		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "")
 		{
-			Mock<IQuery<int>> fakeGetPendingJobsCount = new Mock<IQuery<int>>();
-			fakeGetPendingJobsCount.Setup(x => x.Execute()).Returns(pendingJobsCount);
-			_queueQueryManagerFake.Setup(x => x.GetPendingJobsCount()).Returns(fakeGetPendingJobsCount.Object);
+			Mock<IQuery<DataTable>> fakeGetAllJobs = new Mock<IQuery<DataTable>>();
+			DataTable allJobs = new DataTable();
+			for (int i = 0; i < jobsCount; i++)
+			{
+				allJobs.Rows.Add(allJobs.NewRow());
+			}
+
+			fakeGetAllJobs.Setup(x => x.Execute()).Returns(allJobs);
+			_queueQueryManagerFake.Setup(x => x.GetAllJobs()).Returns(fakeGetAllJobs.Object);
 
 			_instanceSettingsManagerFake.Setup(x => x.GetWorkloadSizeSettings()).Returns(workloadSizeInstanceSettingValue);
 
@@ -76,7 +83,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 			{
 				new IntegrationPointAgentManager.WorkloadSizeDefinition(minJobsCount: 3, maxJobsCount: 6, workloadSize: WorkloadSize.S)
 			};
-			IntegrationPointAgentManager sut = PrepareSut(pendingJobsCount: 4, workloadSizeInstanceSettingValue: JsonConvert.SerializeObject(customSettings));
+			IntegrationPointAgentManager sut = PrepareSut(jobsCount: 4, workloadSizeInstanceSettingValue: JsonConvert.SerializeObject(customSettings));
 
 			// Act
 			Workload workload = await sut.GetWorkloadAsync().ConfigureAwait(false);
@@ -93,7 +100,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 			{
 				new IntegrationPointAgentManager.WorkloadSizeDefinition(minJobsCount: 3, maxJobsCount: 4, workloadSize: WorkloadSize.S)
 			};
-			IntegrationPointAgentManager sut = PrepareSut(pendingJobsCount: 1, workloadSizeInstanceSettingValue: JsonConvert.SerializeObject(customSettings));
+			IntegrationPointAgentManager sut = PrepareSut(jobsCount: 1, workloadSizeInstanceSettingValue: JsonConvert.SerializeObject(customSettings));
 
 			// Act
 			Workload workload = await sut.GetWorkloadAsync().ConfigureAwait(false);
@@ -106,7 +113,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		public async Task GetWorkloadAsync_ShouldReturnDefaultValue_WhenRetrievingInstanceSettingValueFails()
 		{
 			// Arrange
-			IntegrationPointAgentManager sut = PrepareSut(pendingJobsCount: 1, workloadSizeInstanceSettingValue: "[{Invalid Json]");
+			IntegrationPointAgentManager sut = PrepareSut(jobsCount: 1, workloadSizeInstanceSettingValue: "[{Invalid Json]");
 
 			// Act
 			Workload workload = await sut.GetWorkloadAsync().ConfigureAwait(false);

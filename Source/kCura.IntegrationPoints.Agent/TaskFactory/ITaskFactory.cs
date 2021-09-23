@@ -1,4 +1,4 @@
-﻿using Castle.Windsor;
+﻿using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 

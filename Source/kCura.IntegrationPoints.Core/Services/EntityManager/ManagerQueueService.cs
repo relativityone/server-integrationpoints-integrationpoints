@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;

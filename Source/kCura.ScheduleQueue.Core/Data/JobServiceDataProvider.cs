@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
@@ -17,6 +17,14 @@ namespace kCura.ScheduleQueue.Core.Data
 		public DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resourceGroupIdsArray)
 		{
 			using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId, resourceGroupIdsArray).Execute())
+			{
+				return GetFirstRowOrDefault(dataTable);
+			}
+		}
+
+		public DataRow GetNextQueueJob(int agentId, int agentTypeId)
+		{
+			using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId).Execute())
 			{
 				return GetFirstRowOrDefault(dataTable);
 			}

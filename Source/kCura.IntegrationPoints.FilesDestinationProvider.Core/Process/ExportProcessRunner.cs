@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core;

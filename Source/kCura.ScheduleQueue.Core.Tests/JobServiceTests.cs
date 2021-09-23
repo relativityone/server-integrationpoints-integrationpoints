@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Tests;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Toggles;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
@@ -20,7 +20,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 	public class JobServiceTests : TestBase
 	{
 		private IAgentService _agentService;
-		private IJobServiceDataProvider _mockDataProvider;
+		private IJobServiceDataProvider _dataProviderMock;
+		private IToggleProvider _toggleProviderMock;
 		private const int _AGENT_TYPE_ID = 4239;
 		private const int _JOB_FLAGS = 48923;
 		private const int _RELATED_OBJECT_ARTIFACT_ID = 432;
@@ -54,7 +55,9 @@ namespace kCura.ScheduleQueue.Core.Tests
 
 		public override void SetUp()
 		{
-			_mockDataProvider = Substitute.For<IJobServiceDataProvider>();
+			_dataProviderMock = Substitute.For<IJobServiceDataProvider>();
+			_toggleProviderMock = Substitute.For<IToggleProvider>();
+			_toggleProviderMock.IsEnabled<EnableKubernetesMode>().Returns(false);
 		}
 
 		[Test]
@@ -62,11 +65,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var agentId = 1;
 			var resourceGroupIds = new[] { 1, 2 };
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			Job job = service.GetNextQueueJob(resourceGroupIds, agentId);
 
-			_mockDataProvider.Received().GetNextQueueJob(agentId, Arg.Any<int>(), Arg.Any<int[]>());
+			_dataProviderMock.Received().GetNextQueueJob(agentId, Arg.Any<int>(), Arg.Any<int[]>());
 			Assert.IsNull(job);
 		}
 
@@ -75,29 +78,36 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var agentId = 1;
 			var resourceGroupIds = new[] { 1, 2 };
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
+			IJobServiceDataProvider dataProvider = _dataProviderMock;
 			dataProvider.GetNextQueueJob(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int[]>()).Returns(GetMockJobDataRow());
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			Job job = service.GetNextQueueJob(resourceGroupIds, agentId);
 
 			Assert.AreEqual(job.JobId, _MOCK_JOB_ID);
 		}
-
-		[Test]
-		public void GetNextQueueJob_ResourceGroupIdsIsNull_ThrowsArgumentNullException()
-		{
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
-
-			Assert.Throws<ArgumentNullException>(() => service.GetNextQueueJob(null, 1));
-		}
-
+		
 		[Test]
 		public void GetNextQueueJob_ResourceGroupIdsEmpty_ThrowsArgumentException()
 		{
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			Assert.Throws<ArgumentException>(() => service.GetNextQueueJob(new List<int>(), 1));
+		}
+
+		[Test]
+		public void GetNextQueueJob_ShouldGetNextJob_WhenInKubernetesMode()
+		{
+			// arrange
+			const int agentId = 1;
+			_toggleProviderMock.IsEnabled<EnableKubernetesMode>().Returns(true);
+			var sut = PrepareSut();
+
+			// act
+			sut.GetNextQueueJob(null, agentId);
+
+			// assert
+			_dataProviderMock.Received().GetNextQueueJob(agentId, _goldFlowAgentTypeId);
 		}
 
 		[Test]
@@ -105,7 +115,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			Job job = GetMockJob();
 			IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRuleReturning(_mockScheduleRuleReturnDate);
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			DateTime? returnedDate = service.GetJobNextUtcRunDateTime(job, scheduleRuleFactory, new TaskResult());
 
@@ -117,7 +127,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			Job job = GetMockJob();
 			IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRuleReturning(null);
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			DateTime? returnedDate = service.GetJobNextUtcRunDateTime(job, scheduleRuleFactory, new TaskResult());
 
@@ -128,7 +138,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetNextJobUtcRunDateTime_JobIsNull_ReturnsNull()
 		{
 			IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRuleReturning(_mockScheduleRuleReturnDate);
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			DateTime? returnedDate = service.GetJobNextUtcRunDateTime(null, scheduleRuleFactory, new TaskResult());
 
@@ -141,7 +151,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Job job = GetMockJob();
 			var scheduleFactory = Substitute.For<IScheduleRuleFactory>();
 			scheduleFactory.Deserialize(Arg.Any<Job>()).Returns(_ => null);
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			DateTime? returnedDate = service.GetJobNextUtcRunDateTime(job, scheduleFactory, new TaskResult());
 
@@ -151,7 +161,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		[Test]
 		public void GetJobNextUtcRunDateTime_ScheduleRuleFactoryNull_ThrowsArgumentNullException()
 		{
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			Assert.Throws<ArgumentNullException>(() => service.GetJobNextUtcRunDateTime(null, null, new TaskResult()));
 		}
@@ -162,11 +172,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Job job = GetMockJob();
 			IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRuleReturning(_mockScheduleRuleReturnDate);
 
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			FinalizeJobResult result = service.FinalizeJob(job, scheduleRuleFactory, new TaskResult());
 
-			_mockDataProvider.Received().CreateNewAndDeleteOldScheduledJob(_MOCK_JOB_ID, _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _TASK_TYPE.ToString(),
+			_dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(_MOCK_JOB_ID, _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _TASK_TYPE.ToString(),
 				_nextRunTime, _agentService.AgentTypeInformation.AgentTypeID, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), 0, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
 			Assert.AreEqual(result.JobState, JobLogState.Deleted);
@@ -177,11 +187,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			Job job = GetMockJob();
 			IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRuleReturning(null);
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			FinalizeJobResult result = service.FinalizeJob(job, scheduleRuleFactory, new TaskResult());
 
-			_mockDataProvider.Received().DeleteJob(_MOCK_JOB_ID);
+			_dataProviderMock.Received().DeleteJob(_MOCK_JOB_ID);
 			Assert.AreEqual(result.JobState, JobLogState.Deleted);
 		}
 
@@ -189,7 +199,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void FinalizeJob_JobIsNull_ResultStateFinished()
 		{
 			IScheduleRuleFactory scheduleFactory = CreateScheduleRuleFactoryWithRuleReturning(_mockScheduleRuleReturnDate);
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			FinalizeJobResult result = service.FinalizeJob(null, scheduleFactory, new TaskResult());
 
@@ -199,7 +209,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		[Test]
 		public void FinalizeJob_ScheduleRuleFactoryNull_ThrowsArgumentNullException()
 		{
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			Assert.Throws<ArgumentNullException>(() => service.FinalizeJob(null, null, new TaskResult()));
 		}
@@ -208,24 +218,23 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void UnlockJobs_GoldFlow()
 		{
 			int agentId = 345;
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			service.UnlockJobs(agentId);
 
-			_mockDataProvider.Received().UnlockScheduledJob(agentId);
+			_dataProviderMock.Received().UnlockScheduledJob(agentId);
 		}
 
 		[Test]
 		public void CreateJob_ScheduleRuleReturnsDate_ReturnsValidJob()
 		{
 			string taskTypeString = _TASK_TYPE.ToString();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+			_dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
 					_AGENT_TYPE_ID, null, null, _MOCK_JOB_DETAILS, _JOB_FLAGS, _SUBMITTED_BY, _ROOT_JOB_ID,
 					_PARENT_JOB_ID)
 				.ReturnsForAnyArgs(GetMockJobDataRow());
 			IScheduleRule scheduleRule = CreateScheduleRuleReturning(_mockScheduleRuleReturnDate);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 
 			Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
@@ -239,23 +248,22 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void CreateJob_ScheduleRuleReturnsNullQueryReturnsJob_ReturnsJobDeletesJob()
 		{
 			string taskTypeString = _TASK_TYPE.ToString();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
 			DataTable dataTable = GetDataTableWithRow();
-			dataProvider.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+			_dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
 					_AGENT_TYPE_ID, null, null, _MOCK_JOB_DETAILS, _JOB_FLAGS, _SUBMITTED_BY, _ROOT_JOB_ID,
 					_PARENT_JOB_ID)
 				.ReturnsForAnyArgs(GetMockJobDataRow());
-			dataProvider.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
+			_dataProviderMock.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
 				.ReturnsForAnyArgs(dataTable);
 			IScheduleRule scheduleRule = CreateScheduleRuleReturning(null);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 
 			Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
 				_MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
 
-			dataProvider.Received().DeleteJob(_MOCK_JOB_ID);
+			_dataProviderMock.Received().DeleteJob(_MOCK_JOB_ID);
 			Assert.AreEqual(job.JobDetails, _MOCK_JOB_DETAILS);
 		}
 
@@ -265,17 +273,16 @@ namespace kCura.ScheduleQueue.Core.Tests
 			string taskTypeString = _TASK_TYPE.ToString();
 			var scheduleRule = CreateScheduleRuleReturning(null);
 			DataTable dataTable = JobHelper.CreateEmptyJobDataTable();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
+			_dataProviderMock.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
 				.ReturnsForAnyArgs(dataTable);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 
 			Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
 				_MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
 
-			dataProvider.DidNotReceive().DeleteJob(Arg.Any<long>());
+			_dataProviderMock.DidNotReceive().DeleteJob(Arg.Any<long>());
 			Assert.IsNull(job);
 		}
 
@@ -283,15 +290,14 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void CreateJob_CreateJobReturnsJobDataRow_ReturnsProperJob()
 		{
 			string taskTypeString = _TASK_TYPE.ToString();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
 			DataTable dataTable = GetDataTableWithRow();
-			dataProvider.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+			_dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
 					_AGENT_TYPE_ID, null, null, _MOCK_JOB_DETAILS, _JOB_FLAGS, _SUBMITTED_BY, _ROOT_JOB_ID,
 					_PARENT_JOB_ID)
 				.ReturnsForAnyArgs(GetMockJobDataRow());
-			dataProvider.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
+			_dataProviderMock.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
 				.ReturnsForAnyArgs(dataTable);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 
 			Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
@@ -306,10 +312,9 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			string taskTypeString = _TASK_TYPE.ToString();
 			DataTable dataTable = JobHelper.CreateEmptyJobDataTable();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
+			_dataProviderMock.GetJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<List<string>>())
 				.ReturnsForAnyArgs(dataTable);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
 				_MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
@@ -320,20 +325,19 @@ namespace kCura.ScheduleQueue.Core.Tests
 		[Test]
 		public void DeleteJob_RunsDelete()
 		{
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			service.DeleteJob(_MOCK_JOB_ID);
 
-			_mockDataProvider.Received().DeleteJob(_MOCK_JOB_ID);
+			_dataProviderMock.Received().DeleteJob(_MOCK_JOB_ID);
 		}
 
 		[Test]
 		public void GetJob_QueryReturnsDataRow_ReturnsJob()
 		{
 			DataRow row = GetMockJobDataRow();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.GetJob(_MOCK_JOB_ID).Returns(row);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			_dataProviderMock.GetJob(_MOCK_JOB_ID).Returns(row);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			Job job = service.GetJob(_MOCK_JOB_ID);
 
@@ -343,9 +347,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		[Test]
 		public void GetJob_QueryReturnsNull_ReturnsNull()
 		{
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.GetJob(_MOCK_JOB_ID).Returns(_ => null);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			_dataProviderMock.GetJob(_MOCK_JOB_ID).Returns(_ => null);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			Job job = service.GetJob(_MOCK_JOB_ID);
 
@@ -355,12 +358,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 		[Test]
 		public void GetJobs_ProperIntegrationPointId_ReturnsListOfJobs()
 		{
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
 			DataTable dataTable = GetDataTableWithRow();
 			dataTable.Rows.Add(GetMockJobDataRow(dataTable));
-			dataProvider.GetJobsByIntegrationPointId(_RELATED_OBJECT_ARTIFACT_ID)
+			_dataProviderMock.GetJobsByIntegrationPointId(_RELATED_OBJECT_ARTIFACT_ID)
 				.ReturnsForAnyArgs(dataTable);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			IList<Job> result = service.GetJobs(3);
 
@@ -372,9 +374,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var taskTypes = new List<string> { "TaskName" };
 			DataTable dataTable = GetDataTableWithRow();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.GetJobs(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<List<string>>()).Returns(dataTable);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			_dataProviderMock.GetJobs(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<List<string>>()).Returns(dataTable);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			IEnumerable<Job> result = service.GetScheduledJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypes);
 
@@ -386,9 +387,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var taskTypes = new List<string> { "TaskName" };
 			DataTable dataTable = JobHelper.CreateEmptyJobDataTable();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.GetJobs(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<List<string>>()).Returns(dataTable);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			_dataProviderMock.GetJobs(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<List<string>>()).Returns(dataTable);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			IEnumerable<Job> result = service.GetScheduledJobs(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypes);
 
@@ -399,9 +399,8 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void GetAllScheduledJobs()
 		{
 			DataTable dataTable = GetDataTableWithRow();
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.GetAllJobs().Returns(dataTable);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			_dataProviderMock.GetAllJobs().Returns(dataTable);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			// ACT
 			IEnumerable<Job> result = service.GetAllScheduledJobs();
@@ -414,13 +413,12 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var jobIds = new List<long> { 1, 2 };
 			var stopState = StopState.None;
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.UpdateStopState(Arg.Any<IList<long>>(), Arg.Any<StopState>()).Returns(26);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			_dataProviderMock.UpdateStopState(Arg.Any<IList<long>>(), Arg.Any<StopState>()).Returns(26);
+			var service = new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 
 			service.UpdateStopState(jobIds, stopState);
 
-			dataProvider.Received().UpdateStopState(Arg.Any<List<long>>(), Arg.Any<StopState>());
+			_dataProviderMock.Received().UpdateStopState(Arg.Any<List<long>>(), Arg.Any<StopState>());
 		}
 
 		[Test]
@@ -428,11 +426,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var jobIds = new List<long>();
 			var stopState = StopState.None;
-			var service = new JobService(_agentService, _mockDataProvider, _mockEmptyDbHelper);
+			var service = PrepareSut();
 
 			service.UpdateStopState(jobIds, stopState);
 
-			_mockDataProvider.DidNotReceiveWithAnyArgs().UpdateStopState(Arg.Any<List<long>>(), Arg.Any<StopState>());
+			_dataProviderMock.DidNotReceiveWithAnyArgs().UpdateStopState(Arg.Any<List<long>>(), Arg.Any<StopState>());
 		}
 
 		[Test]
@@ -440,11 +438,15 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			var jobIds = new List<long> { 1, 2 };
 			var stopState = StopState.None;
-			IJobServiceDataProvider dataProvider = _mockDataProvider;
-			dataProvider.UpdateStopState(Arg.Any<IList<long>>(), Arg.Any<StopState>()).Returns(0);
-			var service = new JobService(_agentService, dataProvider, _mockEmptyDbHelper);
+			_dataProviderMock.UpdateStopState(Arg.Any<IList<long>>(), Arg.Any<StopState>()).Returns(0);
+			var service = PrepareSut();
 
 			Assert.Throws<InvalidOperationException>(() => service.UpdateStopState(jobIds, stopState));
+		}
+
+		private JobService PrepareSut()
+		{
+			return new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
 		}
 
 		private static DataRow GetMockJobDataRow(DataTable dataTable = null)

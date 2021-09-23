@@ -1,12 +1,10 @@
-﻿extern alias reactive;
-
-using System;
+﻿using System;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
-using Disposable = reactive::System.Reactive.Disposables.Disposable;
 
 namespace kCura.IntegrationPoints.Agent.Context
 {
-	public class JobContextProvider : IJobContextProvider
+	public class JobContextProvider : IJobContextProvider, IDisposable
 	{
 		private Job _job;
 
@@ -21,7 +19,7 @@ namespace kCura.IntegrationPoints.Agent.Context
 
 			_job = job;
 
-			return Disposable.Create(() => _job = null);
+			return this;
 		}
 
 		public Job Job
@@ -34,6 +32,11 @@ namespace kCura.IntegrationPoints.Agent.Context
 				}
 				return _job;
 			}
+		}
+
+		public void Dispose()
+		{
+			_job = null;
 		}
 	}
 }

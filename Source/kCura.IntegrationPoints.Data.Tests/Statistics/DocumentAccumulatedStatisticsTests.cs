@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		}
 
 		[Test]
-		public async Task GetNativesStatisticsForSavedSearchAsync_ShouldCalculateStatisticsWithSize()
+		public async Task GetNativesStatisticsForSavedSearchAsync_ShouldCalculateStatistics()
 		{
 			// Arrange
 			const int savedSearchArtifactId = 222;
@@ -62,36 +62,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_nativeFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IEnumerable<int>>(), _WORKSPACE_ID)).Returns(nativesSize);
 
 			// Act
-			DocumentsStatistics actual = await _sut.GetNativesStatisticsForSavedSearchAsync(_WORKSPACE_ID, savedSearchArtifactId, true).ConfigureAwait(false);
+			DocumentsStatistics actual = await _sut.GetNativesStatisticsForSavedSearchAsync(_WORKSPACE_ID, savedSearchArtifactId).ConfigureAwait(false);
 
 			// Assert
 			actual.DocumentsCount.Should().Be(documents.Count);
 			actual.TotalNativesCount.Should().Be(nativesCount);
 			actual.TotalNativesSizeBytes.Should().Be(nativesSize);
 		}
-
-		[Test]
-		public async Task GetNativesStatisticsForSavedSearchAsync_ShouldCalculateStatisticsWithoutSize()
-		{
-			// Arrange
-			const int savedSearchArtifactId = 222;
-			const int nativesCount = 2;
-
-			List<RelativityObject> documents = Enumerable.Concat(
-				Enumerable.Repeat(CreateDocumentWithHasNativeField(true), nativesCount),
-				Enumerable.Repeat(CreateDocumentWithHasNativeField(false), 3)).ToList();
-
-			SetupObjectManagerForNatives(savedSearchArtifactId, documents);
-
-			// Act
-			DocumentsStatistics actual = await _sut.GetNativesStatisticsForSavedSearchAsync(_WORKSPACE_ID, savedSearchArtifactId, false).ConfigureAwait(false);
-
-			// Assert
-			actual.DocumentsCount.Should().Be(documents.Count);
-			actual.TotalNativesCount.Should().Be(nativesCount);
-			actual.TotalNativesSizeBytes.Should().Be(0);
-		}
-
+		
 		[Test]
 		public async Task GetImagesStatisticsForSavedSearchAsync_ShouldCalculateStatisticsWithSize()
 		{
@@ -117,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
 			actual.TotalImagesSizeBytes.Should().Be(imagesSize);
 		}
-
+		
 		[Test]
 		public async Task GetImagesStatisticsForSavedSearchAsync_ShouldCalculateStatisticsWithoutSize()
 		{
@@ -160,38 +138,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_imageFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(productionArtifactId, _WORKSPACE_ID)).Returns(imagesSize);
 
 			// Act
-			DocumentsStatistics actual = await _sut.GetImagesStatisticsForProductionAsync(_WORKSPACE_ID, productionArtifactId, true).ConfigureAwait(false);
+			DocumentsStatistics actual = await _sut.GetImagesStatisticsForProductionAsync(_WORKSPACE_ID, productionArtifactId).ConfigureAwait(false);
 
 			// Assert
 			actual.DocumentsCount.Should().Be(documents.Count);
 			actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
 			actual.TotalImagesSizeBytes.Should().Be(imagesSize);
 		}
-
-		[Test]
-		public async Task GetImagesStatisticsForProductionAsync_ShouldCalculateStatisticsWithoutSize()
-		{
-			// Arrange
-			const int productionArtifactId = 222;
-			const int documentsWithImagesCount = 2;
-			const int imagesPerDocumentCount = 5;
-
-			List<RelativityObject> documents = Enumerable.Concat(
-				Enumerable.Repeat(CreateDocumentWithProducedImages(imagesPerDocumentCount), documentsWithImagesCount),
-				Enumerable.Repeat(CreateDocumentWithProducedImages(0), 4)
-			).ToList();
-
-			SetupObjectManagerForProducedImages(productionArtifactId, documents);
-
-			// Act
-			DocumentsStatistics actual = await _sut.GetImagesStatisticsForProductionAsync(_WORKSPACE_ID, productionArtifactId, true).ConfigureAwait(false);
-
-			// Assert
-			actual.DocumentsCount.Should().Be(documents.Count);
-			actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
-			actual.TotalImagesSizeBytes.Should().Be(0);
-		}
-
+		
 		private RelativityObject CreateDocumentWithHasNativeField(bool hasNative)
 		{
 			return new RelativityObject()

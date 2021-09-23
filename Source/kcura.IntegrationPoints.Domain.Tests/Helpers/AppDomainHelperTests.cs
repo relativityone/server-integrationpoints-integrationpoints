@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         public void CreateNewDomainShallRunInKubernetesModeWhenToggleIsTrue()
         {
             // Arrange
-            _toggleProviderFake.Setup(x => x.IsEnabled<LoadRequiredAssembliesInKubernetesMode>()).Returns(true);
+            _toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(true);
             
             // Act
             AppDomain appDomain = _sut.CreateNewDomain();

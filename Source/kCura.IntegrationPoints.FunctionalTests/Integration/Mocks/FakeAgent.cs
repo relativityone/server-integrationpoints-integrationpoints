@@ -2,10 +2,8 @@
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent;
-using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
@@ -14,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using kCura.IntegrationPoints.Data;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {

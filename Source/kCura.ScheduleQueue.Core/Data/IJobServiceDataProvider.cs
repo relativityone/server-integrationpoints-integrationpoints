@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
@@ -9,6 +9,7 @@ namespace kCura.ScheduleQueue.Core.Data
     {
         DataTable GetJobsByIntegrationPointId(long integrationPointId);
         DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resurceGroupIdsArray);
+        DataRow GetNextQueueJob(int agentId, int agentTypeId);
         void UpdateScheduledJob(long jobId, DateTime nextUtcRunDateTime);
 
 	    void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,

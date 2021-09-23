@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
 using System;
-using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
 using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.Toggles;
@@ -22,13 +21,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             _logggerLazy = new Lazy<IAPILog>(
                 () => Helper.GetLoggerFactory().GetLogger().ForContext<InternalSourceProviderInstaller>()
             );
-            _toggleProvider = ToggleProviderHelper.CreateSqlServerToggleProvider(Helper);
+            _toggleProvider = ToggleProvider.Current;
         }
 
-        protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller) : this()
+        protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller)
+	        : this()
         {
             _ripProviderInstaller = ripProviderInstaller;
-            _toggleProvider = ToggleProviderHelper.CreateSqlServerToggleProvider(Helper);
         }
 
         internal override ISourceProviderInstaller CreateSourceProviderInstaller()

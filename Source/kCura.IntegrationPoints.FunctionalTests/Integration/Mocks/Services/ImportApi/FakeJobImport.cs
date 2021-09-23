@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.Relativity.DataReaderClient;
-using kCura.Utility.Extensions;
 using Moq;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi

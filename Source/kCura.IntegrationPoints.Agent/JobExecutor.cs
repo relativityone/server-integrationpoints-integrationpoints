@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -25,11 +27,12 @@ namespace kCura.IntegrationPoints.Agent
 		private readonly ITaskProvider _taskProvider;
 		private readonly IAgentNotifier _agentNotifier;
 		private readonly IJobService _jobService;
+		private readonly ITaskParameterHelper _taskParameterHelper;
 		private IAPILog _logger { get; }
 
 		public event ExceptionEventHandler JobExecutionError;
 
-		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, IAPILog logger)
+		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, ITaskParameterHelper taskParameterHelper, IAPILog logger)
 		{
 			if (taskProvider == null)
 			{
@@ -54,6 +57,7 @@ namespace kCura.IntegrationPoints.Agent
 			_taskProvider = taskProvider;
 			_agentNotifier = agentNotifier;
 			_jobService = jobService;
+			_taskParameterHelper = taskParameterHelper;
 			_logger = logger;
 		}
 
@@ -64,13 +68,17 @@ namespace kCura.IntegrationPoints.Agent
 				throw new ArgumentNullException(nameof(job));
 			}
 
+			Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
+			string correlationId = batchInstanceId.ToString();
+
 			var correlationContext = new AgentCorrelationContext
 			{
 				JobId = job.JobId,
 				RootJobId = job.RootJobId,
 				WorkspaceId = job.WorkspaceID,
 				UserId = job.SubmittedBy,
-				IntegrationPointId = job.RelatedObjectArtifactID
+				IntegrationPointId = job.RelatedObjectArtifactID,
+				WorkflowId = correlationId
 			};
 
 			using (_logger.LogContextPushProperties(correlationContext))
