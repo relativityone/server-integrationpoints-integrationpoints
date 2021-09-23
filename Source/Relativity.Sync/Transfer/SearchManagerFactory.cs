@@ -58,7 +58,7 @@ namespace Relativity.Sync.Transfer
 			{
 				ApplicationName = _syncJobParameters.SyncApplicationName
 			};
-			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AuthConstants._RELATIVITY_BEARER_USERNAME, authToken, cookieContainer, runningContext);
+			NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AuthConstants._RELATIVITY_BEARER_USERNAME, authToken, cookieContainer, runningContext, () => _syncJobParameters.WorkflowId);
 
 			return new SearchManager(credentials, cookieContainer);
 		}
