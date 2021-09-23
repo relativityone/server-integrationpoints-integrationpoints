@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent
 		private IJobContextProvider _jobContextProvider;
 		private const string _AGENT_NAME = "Integration Points Agent";
 		private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
-		private const int _TIMER_INTERVAL_MS = 30 * 1000;
+		private const int _TIMER_INTERVAL_S = 30;
 		private readonly Lazy<IWindsorContainer> _agentLevelContainer;
 
 		internal IJobExecutor JobExecutor { get; set; }
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Agent
 		protected override TaskResult ProcessJob(Job job)
 		{
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
-			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL_MS, job.JobId, job.JobDetails.Split('"')[3], _RELATIVITY_SYNC_JOB_TYPE))
+			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL_S, job.JobId, job.JobDetails.Split('"')[3], _RELATIVITY_SYNC_JOB_TYPE))
 			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
 			{
 				SetWebApiTimeout();

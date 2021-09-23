@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Management;
+﻿using System.Diagnostics;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
@@ -15,45 +11,5 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             _CurrentProcess = Process.GetCurrentProcess();
             return _CurrentProcess.PrivateMemorySize64;
         }
-
-		public static Dictionary<string, object> LogApplicationSystemStats()
-		{
-			var memoryProcess = AppDomain.MonitoringSurvivedProcessMemorySize / (1024 * 1024);
-			var AppDomainCurrentMemory = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize / (1024 * 1024);
-			var AppDomainLifetimeTotalAllocatedMemory = AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize / (1024 * 1024);
-			var currentProcess = Process.GetCurrentProcess();
-			long memoryUsage = currentProcess.PrivateMemorySize64 / (1024 * 1024);
-
-			Dictionary<string, object> appSystemStats = new Dictionary<string, object>()
-				{
-					{ "SystemProcessMemory", memoryProcess },
-					{ "AppDomainMemory", AppDomainCurrentMemory },
-					{ "AppDomainLifetimeTotalAllocatedMemory", AppDomainLifetimeTotalAllocatedMemory },
-					{ "PrivateMemoryBytes", memoryUsage },
-					{ "SystemFreeMemoryPercent",  LogSystemPerformanceStats()}
-				};
-
-			return appSystemStats;
-
-		}
-
-		private static double LogSystemPerformanceStats()
-		{
-			var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
-
-			var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new {
-				FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
-				TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
-			}).FirstOrDefault();
-
-			if (memoryValues != null)
-			{
-				var percent = (memoryValues.TotalVisibleMemorySize - memoryValues.FreePhysicalMemory) / memoryValues.TotalVisibleMemorySize;
-
-				return percent * 100;
-			}
-
-			return 0;
-		}
 	}
 }

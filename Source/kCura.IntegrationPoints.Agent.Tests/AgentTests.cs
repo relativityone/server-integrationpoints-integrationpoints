@@ -16,6 +16,7 @@ using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
+using System.Reactive.Concurrency;
 using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests
@@ -79,10 +80,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			// Assert
 			_memoryUsageReporter.Verify(x => x.ActivateTimer(
-				It.Is<int>(timeInterval => timeInterval == 30000), 
+				It.Is<int>(timeInterval => timeInterval == 30), 
 				It.IsAny<long>(), 
 				It.IsAny<string>(), 
-				It.Is<string>(jobType => jobType =="Relativity.Sync")), Times.Once);
+				It.Is<string>(jobType => jobType =="Relativity.Sync"),
+				It.IsAny<IScheduler>()), Times.Once);
 		}
 
 		private TestAgent PrepareSut()
