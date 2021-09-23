@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Agent
 		protected override void Initialize()
 		{
 			base.Initialize();
-			JobExecutor = new JobExecutor(this, this, JobService, Logger);
+			JobExecutor = new JobExecutor(this, this, JobService, _agentLevelContainer.Value.Resolve<ITaskParameterHelper>(), Logger);
 			JobExecutor.JobExecutionError += OnJobExecutionError;
 		}
 
@@ -169,8 +169,12 @@ namespace kCura.IntegrationPoints.Agent
 			}
 		}
 
-		private static AgentCorrelationContext GetCorrelationContext(Job job)
+		private AgentCorrelationContext GetCorrelationContext(Job job)
 		{
+			ITaskParameterHelper taskParameterHelper = _agentLevelContainer.Value.Resolve<ITaskParameterHelper>();
+			Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+			string correlationId = batchInstanceId.ToString();
+
 			var correlationContext = new AgentCorrelationContext
 			{
 				JobId = job.JobId,
@@ -178,7 +182,8 @@ namespace kCura.IntegrationPoints.Agent
 				WorkspaceId = job.WorkspaceID,
 				UserId = job.SubmittedBy,
 				IntegrationPointId = job.RelatedObjectArtifactID,
-				ActionName = _RELATIVITY_SYNC_JOB_TYPE
+				ActionName = _RELATIVITY_SYNC_JOB_TYPE,
+				WorkflowId = correlationId
 			};
 			return correlationContext;
 		}
