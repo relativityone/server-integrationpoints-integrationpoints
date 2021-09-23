@@ -45,8 +45,8 @@
     <Reference Include="kCura.Apps.Common.Utils, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.EventHandler, Version=17.1.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.EventHandler.17.1.9\lib\net462\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=11.0.105.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.EventHandler.11.0.105.1\lib\net462\kCura.EventHandler.dll</HintPath>
     </Reference>
     <Reference Include="kCura.EventHandler">
       <HintPath>..\..\packages\kCura.EventHandler\lib\net462\kCura.EventHandler.dll</HintPath>
