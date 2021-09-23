@@ -182,7 +182,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				{
 					ApplicationName = "Relativity.Sync.Tests.System.GoldFlows"
 				};
-				NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext);
+				NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext, () => "");
 				kCura.WinEDDS.Config.ProgrammaticServiceURL = AppSettings.RelativityWebApiUrl.ToString();
 
 				ILookup<int, TestImageFile> sourceWorkspaceFiles;
