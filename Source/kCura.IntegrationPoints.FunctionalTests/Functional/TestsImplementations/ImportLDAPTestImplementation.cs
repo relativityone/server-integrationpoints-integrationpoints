@@ -47,6 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			int workspaceEntityCount = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
 			transferredItemsCount.Should().Be(workspaceEntityCount).And.Be(13);
 		}
+
 		private static void InstallLegalHoldToWorkspace(int workspaceId)
 		{
 			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();

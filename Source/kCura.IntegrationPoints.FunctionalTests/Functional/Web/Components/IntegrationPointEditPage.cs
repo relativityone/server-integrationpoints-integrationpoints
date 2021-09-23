@@ -1,9 +1,9 @@
 ﻿using Atata;
+using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
-using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -13,18 +13,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 	[WaitUntilOverlayMissing(TriggerEvents.Init, PresenceTimeout = 2)]
 	internal class IntegrationPointEditPage : WorkspacePage<_>
 	{
-		[Term("Next")]
-		public Button<RelativityProviderConnectToSourcePage, _> RelativityProviderNext { get; private set; }
-
-		[Term("Next")]
-		public Button<ImportFromLoadFileConnectToSourcePage, _> ImportFromLoadFileNext { get; private set; }
-
-		[Term("Next")]
-		public Button<ImportFromLDAPConnectToSourcePage, _> ImportFromLDAPNext { get; private set; }
-
-		[Term("Next")]
-		public Button<ExportToLoadFileConnectToSourcePage, _> ExportToLoadFileNext { get; private set; }
-
 		[FindById("name")]
 		public TextInput<_> Name { get; private set; }
 
@@ -38,7 +26,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
 		[FindByPrecedingDivContent]
 		[WaitFor]
-		//[WaitForElement(WaitBy.Id, "sourceProvider", Until.Visible)]
 		public Select2<IntegrationPointSources, _> Source { get; private set; }
 
 		[FindByPrecedingDivContent]
@@ -50,12 +37,31 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindById("notificationEmails")]
 		public TextArea<_> EmailRecipients { get; private set; }
 
+		#region Next Button
+
+		[Term("Next")]
+		public Button<RelativityProviderConnectToSourcePage, _> RelativityProviderNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ImportFromLoadFileConnectToSourcePage, _> ImportFromLoadFileNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ImportFromLDAPConnectToSourcePage, _> ImportFromLDAPNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ExportToLoadFileConnectToSourcePage, _> ExportToLoadFileNext { get; private set; }
+
+		[Term("Next")]
+		public Button<ImportFromFTPConnectToSourcePage, _> ImportFromFTPNext { get; private set; }
+
+		#endregion
+
 		private void OnSetType()
-        {
-			if(Type.Get() == IntegrationPointTypes.Import)
-            {
+		{
+			if (Type.Get() == IntegrationPointTypes.Import)
+			{
 				Source.Should.Within(20).BeEnabled();
-            }
-        }
+			}
+		}
 	}
 }

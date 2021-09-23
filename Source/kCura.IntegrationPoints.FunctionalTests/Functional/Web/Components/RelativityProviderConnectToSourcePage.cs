@@ -1,11 +1,10 @@
 ﻿using Atata;
-using OpenQA.Selenium;
-using System.Threading;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Controls;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Interfaces;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -15,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 	[WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, AbsenceTimeout = 30, AppliesTo = TriggerScope.Children)]
 	[WaitForJQueryAjax(TriggerEvents.Init)]
 
-	internal class RelativityProviderConnectToSourcePage : WorkspacePage<_>
+	internal class RelativityProviderConnectToSourcePage : WorkspacePage<_>, IHasTreeItems<_>
 	{
 		public Button<RelativityProviderMapFieldsPage, _> Next { get; private set; }
 
@@ -54,24 +53,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindById("select2-chosen-4")]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public Clickable<_> DestinationWorkspaceDropDown { get; private set; }
-
-		public _ SetItem(params string[] itemNames)
-		{
-			var item = TreeItems[0].GetScope();
-			string ierarhy = string.Empty;
-
-			foreach (var itemName in itemNames)
-			{
-				string xpath = $"{ierarhy}//li[@role='treeitem']/a[.='{itemName}']";
-				ierarhy = $"{xpath}/..";
-
-				var textItem = item.FindElement(By.XPath(xpath));
-				textItem.Click();
-				Thread.Sleep(1000);
-				item = Driver.FindElement(By.XPath(ierarhy));
-			}
-
-			return Owner;
-		}
 	}
 }
