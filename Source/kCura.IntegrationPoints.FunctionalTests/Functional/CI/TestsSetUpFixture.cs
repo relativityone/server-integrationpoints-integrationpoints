@@ -40,6 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		public void TearDown()
 		{
 			AtataContext.Current?.Dispose();
+			CopyScreenshotsToBase();
 		}
 
 		private static bool TemplateWorkspaceExists()
@@ -58,5 +59,27 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
+
+		public static void CopyScreenshotsToBase()
+		{
+			string screenshotExtension = "*.png";
+			string basePath = GetBaseArchiveDirectoryPath();
+			string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
+				SearchOption.AllDirectories);
+			TestContext.Progress.Log($"Found {screenshotsPaths.Length}");
+
+			if (screenshotsPaths.Length > 0)
+			{
+				foreach (var filePath in screenshotsPaths)
+				{
+					string fileName = Path.GetFileName(filePath);
+					TestContext.Progress.Log($"Copying screenshot: {fileName}");
+					File.Copy(filePath, $"{basePath}\\{fileName}");
+				}
+			}
+		}
+		
+		private static string GetBaseArchiveDirectoryPath() => Path.Combine(TestContext.CurrentContext.WorkDirectory, "Artifacts", "Logs");
+
 	}
 }
