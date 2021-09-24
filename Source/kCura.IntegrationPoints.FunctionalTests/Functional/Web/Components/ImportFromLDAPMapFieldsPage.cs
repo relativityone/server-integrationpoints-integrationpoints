@@ -15,9 +15,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     {
         public Button<IntegrationPointViewPage, _> Save { get; private set; }
 
-        [WaitForJQueryAjax]
-        public Button<_> MapAllFields { get; private set; }
-
         [FindById("source-fields")]
         public Select<_> Source { get; private set; }
 
