@@ -216,7 +216,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			return new IntegrationPointEditExport
 			{
 				Name = name ?? $" XSS Integration Point - {Guid.NewGuid()}",
-				Destination = IntegrationPointDestinations.Dupa,
+				Destination = IntegrationPointDestinations.Relativity,
 				EmailRecipients = emailRecipients
 			};
 		}
