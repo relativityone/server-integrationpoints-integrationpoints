@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
@@ -26,6 +27,7 @@ using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
@@ -105,7 +107,7 @@ namespace kCura.IntegrationPoints.Agent
 		protected override TaskResult ProcessJob(Job job)
 		{
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
-			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL_S, job.JobId, job.JobDetails.Split('"')[3], _RELATIVITY_SYNC_JOB_TYPE))
+			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL_S, job.JobId, GetCorrelationId(job, ripContainerForSync.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE))
 			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
 			{
 				SetWebApiTimeout();
@@ -158,6 +160,20 @@ namespace kCura.IntegrationPoints.Agent
 				TaskResult result = JobExecutor.ProcessJob(job);
 				return result;
 			}
+		}
+		private string GetCorrelationId(Job job, ISerializer serializer)
+		{
+			string result = string.Empty;
+			try
+			{
+				TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
+				result = taskParameters.BatchInstance.ToString();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogWarning(ex, "Error occured while retrieving batch instance for job: {jobId}", job.JobId);
+			}
+			return result;
 		}
 
 		private void SetWebApiTimeout()

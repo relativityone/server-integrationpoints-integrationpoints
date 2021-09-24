@@ -83,8 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				It.Is<int>(timeInterval => timeInterval == 30), 
 				It.IsAny<long>(), 
 				It.IsAny<string>(), 
-				It.Is<string>(jobType => jobType =="Relativity.Sync"),
-				It.IsAny<IScheduler>()), Times.Once);
+				It.Is<string>(jobType => jobType =="Relativity.Sync")), Times.Once);
 		}
 
 		private TestAgent PrepareSut()

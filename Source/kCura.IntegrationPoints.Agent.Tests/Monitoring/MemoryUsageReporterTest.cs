@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IRipMetrics> _ripMetricMock;
         private Mock<ICounterMeasure> _counterMeasure;
         private MemoryUsageReporter _sut;
+        private TestScheduler _testScheduler;
 
         [SetUp]
         public void SetUp()
@@ -39,21 +40,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _ripMetricMock = new Mock<IRipMetrics>();
             _ripMetricMock.Setup(x => x.GetWorkflowId()).Returns("workflowId");
 
-            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object);
+            _testScheduler = new TestScheduler();
+            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _testScheduler);
         }
 
         [Test]
-        public void Execute_ShouldSendMetricsExpectedNymberOfTimes_AfterTimerActivation()
+        public void Execute_ShouldSendMetricsExpectedNumberOfTimes_AfterTimerActivation()
         {
             // Arrange
             AppDomain.MonitoringIsEnabled = true;
-            var testScheduler = new TestScheduler();
             const int timesToBeInvoked = 5;
             const long jobId = 1111111111111;
 
             // Act
-            IDisposable temp = _sut.ActivateTimer(1, jobId, "jobDetails", "jobType", testScheduler);
-            testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
+            using(_sut.ActivateTimer(1, jobId, "jobDetails", "jobType"))
+            {
+                _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
+            }
 
             // Assert
             _apmMock.Verify(x => x.CountOperation(
@@ -73,6 +76,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<string>()), Times.Exactly(timesToBeInvoked));
 
             _counterMeasure.Verify(x => x.Write(), Times.Exactly(timesToBeInvoked));
+
         }
 
         [Test]
@@ -95,18 +99,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Throws<Exception>()
                 .Returns(_counterMeasure.Object);
 
-            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object);
+            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _testScheduler);
 
             AppDomain.MonitoringIsEnabled = true;
-            var testScheduler = new TestScheduler();
             const int timesToBeInvoked = 5;
             const int numberOfErrors = 2;
             const long jobId = 1111111111111;
             const string errorMessage = "An error occured in Execute while sending APM metric";
 
             // Act
-            IDisposable temp = sutWithErrors.ActivateTimer(1, jobId, "jobDetails", "jobType", testScheduler);
-            testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
+            using (sutWithErrors.ActivateTimer(1, jobId, "jobDetails", "jobType"))
+            {
+                _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
+            }
 
             // Assert
             apmMockWithErrors.Verify(x => x.CountOperation(
@@ -152,11 +157,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             string logMessage = "Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}";
             AppDomain.MonitoringIsEnabled = true;
 
-            var testScheduler = new TestScheduler();
-
             // Act
-            IDisposable temp = _sut.ActivateTimer(1, 1111111111111, "jobDetails", "jobType", testScheduler);
-            testScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            using (_sut.ActivateTimer(1, 1111111111111, "jobDetails", "jobType"))
+            {
+                _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+            }
 
             // Assert
             _apmMock.Verify(x => x.CountOperation(

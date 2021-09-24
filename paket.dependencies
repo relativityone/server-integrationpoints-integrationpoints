@@ -87,6 +87,8 @@ nuget Selenium.WebDriver.GeckoDriver 0.24.0
 nuget Serilog 1.5.14	
 nuget Serilog.Sinks.Seq 1.5.36
 nuget ARMTestServices 1.1.1
+nuget Microsoft.Reactive.Testing 4.4.1
+nuget System.Runtime.InteropServices.WindowsRuntime
 
 group Tests
 	framework: auto-detect
