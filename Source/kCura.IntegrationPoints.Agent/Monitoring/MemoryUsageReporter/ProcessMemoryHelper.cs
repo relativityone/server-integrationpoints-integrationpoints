@@ -6,17 +6,14 @@ using System.Management;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
-    public static class ProcessMemoryHelper
+    public class ProcessMemoryHelper: IProcessMemoryHelper
     {
-        private static Process _CurrentProcess;
-
-        public static long GetCurrentProcessMemoryUsage()
+        public long GetCurrentProcessMemoryUsage()
         {
-            _CurrentProcess = Process.GetCurrentProcess();
-            return _CurrentProcess.PrivateMemorySize64;
+            return Process.GetCurrentProcess().PrivateMemorySize64;
         }
 
-		public static Dictionary<string, object> LogApplicationSystemStats()
+		public Dictionary<string, object> LogApplicationSystemStats()
 		{
 			var memoryProcess = AppDomain.MonitoringSurvivedProcessMemorySize / (1024 * 1024);
 			var AppDomainCurrentMemory = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize / (1024 * 1024);
@@ -37,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
 		}
 
-		private static double LogSystemPerformanceStats()
+		private double LogSystemPerformanceStats()
 		{
 			var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
 

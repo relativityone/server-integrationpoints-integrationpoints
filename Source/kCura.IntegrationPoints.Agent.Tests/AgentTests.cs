@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Interfaces;
@@ -11,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
@@ -95,6 +97,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			Mock<IJobContextProvider> jobContextProvider = new Mock<IJobContextProvider>();
 
+			Mock<ISerializer> serializer = new Mock<ISerializer>();
+			serializer.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>())).Returns(
+				new TaskParameters
+                {
+					BatchInstance = Guid.NewGuid()
+                });
+
 			Mock<IConfig> config = new Mock<IConfig>();
 			config.SetupGet(x => x.RelativityWebApiTimeout).Returns((TimeSpan?)null);
 
@@ -117,6 +126,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			RegisterMock(jobExecutor);
 			RegisterMock(jobContextProvider);
+			RegisterMock(serializer);
 			RegisterMock(config);
 			RegisterMock(relativitySyncConstrainsChecker);
 			RegisterMock(taskParameterHelper);

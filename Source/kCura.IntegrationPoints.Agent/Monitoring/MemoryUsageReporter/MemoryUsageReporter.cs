@@ -15,14 +15,16 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 		private IAPILog _logger;
 		private IRipMetrics _ripMetric;
 		private IScheduler _timerScheduler;
+		private IProcessMemoryHelper _processMemoryHelper;
 
 		private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
 		private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
 
-		public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IScheduler scheduler = null)
+		public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper ,IScheduler scheduler = null)
 		{
 			_timerScheduler = scheduler ?? Scheduler.Default;
+			_processMemoryHelper = processMemoryHelper;
 			_apmClient = apmClient;
 			_logger = logger;
 			_ripMetric = ripMetric;
@@ -39,7 +41,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 		{
             try
             {
-				long memoryUsage = ProcessMemoryHelper.GetCurrentProcessMemoryUsage();
+				long memoryUsage = _processMemoryHelper.GetCurrentProcessMemoryUsage();
 
 				Dictionary<string, object> customData = new Dictionary<string, object>()
 				{
@@ -49,7 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 					{ "WorkflowId", workflowId}
 				};
 
-				ProcessMemoryHelper.LogApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
+				_processMemoryHelper.LogApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
 
 				_apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
 				_logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());

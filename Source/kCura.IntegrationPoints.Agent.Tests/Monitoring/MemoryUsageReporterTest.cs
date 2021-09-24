@@ -17,14 +17,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IAPILog> _loggerMock;
         private Mock<IRipMetrics> _ripMetricMock;
         private Mock<ICounterMeasure> _counterMeasure;
+        private Mock<IProcessMemoryHelper> _processMemoryHelper;
         private MemoryUsageReporter _sut;
         private TestScheduler _testScheduler;
+        private const string _jobDetails = "jobDetails";
+        private const string _jobType = "jobId";
+        private const long _jobId = 123456789;
+        private const int _dummyMemorySize = 12345;
 
         [SetUp]
         public void SetUp()
         {
             _counterMeasure = new Mock<ICounterMeasure>();
+            _loggerMock = new Mock<IAPILog>();
+            _ripMetricMock = new Mock<IRipMetrics>();
             _apmMock = new Mock<IAPM>();
+            _processMemoryHelper = new Mock<IProcessMemoryHelper>();
+            _testScheduler = new TestScheduler();
+
             _apmMock.Setup(x => x.CountOperation(It.IsAny<string>(),
                     It.IsAny<Guid>(),
                     It.IsAny<string>(),
@@ -35,13 +45,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     It.IsAny<IEnumerable<ISink>>()))
                 .Returns(_counterMeasure.Object);
 
-            _loggerMock = new Mock<IAPILog>();
-
-            _ripMetricMock = new Mock<IRipMetrics>();
             _ripMetricMock.Setup(x => x.GetWorkflowId()).Returns("workflowId");
 
-            _testScheduler = new TestScheduler();
-            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _testScheduler);
+            _processMemoryHelper.Setup(x => x.GetCurrentProcessMemoryUsage()).Returns(_dummyMemorySize);
+            _processMemoryHelper.Setup(x => x.LogApplicationSystemStats()).Returns(
+                new Dictionary<string, object>()
+                {
+                    { "SystemProcessMemoryInMB", _dummyMemorySize },
+                    { "AppDomainMemoryInMB", _dummyMemorySize },
+                    { "AppDomainLifetimeTotalAllocatedMemoryInMB", _dummyMemorySize },
+                    { "PrivateMemoryInMB", _dummyMemorySize },
+                    { "SystemFreeMemoryPercent",  _dummyMemorySize}
+                });
+
+            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _testScheduler);
         }
 
         [Test]
@@ -50,10 +67,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             // Arrange
             AppDomain.MonitoringIsEnabled = true;
             const int timesToBeInvoked = 5;
-            const long jobId = 1111111111111;
 
             // Act
-            using(_sut.ActivateTimer(1, jobId, "jobDetails", "jobType"))
+            using(_sut.ActivateTimer(1, _jobId, _jobDetails, _jobType))
             {
                 _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
             }
@@ -99,16 +115,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Throws<Exception>()
                 .Returns(_counterMeasure.Object);
 
-            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _testScheduler);
+            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _testScheduler);
 
             AppDomain.MonitoringIsEnabled = true;
             const int timesToBeInvoked = 5;
             const int numberOfErrors = 2;
-            const long jobId = 1111111111111;
             const string errorMessage = "An error occured in Execute while sending APM metric";
 
             // Act
-            using (sutWithErrors.ActivateTimer(1, jobId, "jobDetails", "jobType"))
+            using (sutWithErrors.ActivateTimer(1, _jobId, _jobDetails, _jobType))
             {
                 _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
             }
@@ -141,24 +156,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void Execute_ShouldSendMetricsWithExpectedData_AfterTimerActivating()
         {
             // Arrange
-            List<string> valuesToBeSend = new List<string>() 
-            {
-                "MemoryUsage",
-                "JobId",
-                "JobType",
-                "WorkflowId",
-                "SystemProcessMemoryInMB",
-                "AppDomainMemoryInMB",
-                "AppDomainLifetimeTotalAllocatedMemoryInMB",
-                "PrivateMemoryInMB",
-                "SystemFreeMemoryPercent"
-            };
             string metricName = "IntegrationPoints.Performance.System";
             string logMessage = "Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}";
             AppDomain.MonitoringIsEnabled = true;
 
             // Act
-            using (_sut.ActivateTimer(1, 1111111111111, "jobDetails", "jobType"))
+            using (_sut.ActivateTimer(1, _jobId, _jobDetails, _jobType))
             {
                 _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
             }
@@ -171,7 +174,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<string>(),
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
-                It.Is<Dictionary<string, object>>(dictionary => CheckIfHasAllValues(dictionary, valuesToBeSend)),
+                It.Is<Dictionary<string, object>>(dictionary => CheckIfHasAllValues(dictionary)),
                 It.IsAny<IEnumerable<ISink>>()), Times.Once);
 
             _loggerMock.Verify(x => x.LogInformation(
@@ -183,11 +186,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _counterMeasure.Verify(x => x.Write(), Times.Once);
         }
 
-        private bool CheckIfHasAllValues(Dictionary<string, object> dict, List<string> values) 
+        private bool CheckIfHasAllValues(Dictionary<string, object> dict) 
         {
-            foreach (string val in values)
+            Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
             {
-                if (!dict.ContainsKey(val))
+                { "MemoryUsage", _dummyMemorySize},
+                { "JobId", _jobId},
+                { "JobType", _jobType},
+                { "WorkflowId", _jobDetails},
+                { "SystemProcessMemoryInMB", _dummyMemorySize },
+                { "AppDomainMemoryInMB", _dummyMemorySize },
+                { "AppDomainLifetimeTotalAllocatedMemoryInMB", _dummyMemorySize },
+                { "PrivateMemoryInMB", _dummyMemorySize },
+                { "SystemFreeMemoryPercent",  _dummyMemorySize}
+            };
+
+            foreach (var val in valuesToBeSend)
+            {
+                if (!dict.ContainsKey(val.Key) && (dict[val.Key] != val.Value))
                 {
                     return false;
                 }   
