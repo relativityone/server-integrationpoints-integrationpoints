@@ -70,15 +70,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			{
 				string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
 					SearchOption.AllDirectories);
-				TestContext.Progress.Log($"Found {screenshotsPaths.Length}");
+				TestContext.Progress.Log($"Found {screenshotsPaths.Length} screenshot(s)");
 
 				if (screenshotsPaths.Length > 0)
 				{
 					foreach (var filePath in screenshotsPaths)
 					{
 						string fileName = Path.GetFileName(filePath);
-						TestContext.Progress.Log($"Copying screenshot: {fileName}");
-						File.Copy(filePath, $"{basePath}\\{fileName}");
+						string directoryFullPath = new FileInfo(filePath).DirectoryName;
+						string directoryName = new FileInfo(directoryFullPath).Name;
+						TestContext.Progress.Log($"Copying screenshot: {filePath}");
+						File.Copy(filePath, $"{basePath}\\{directoryName}_{fileName}",true);
 					}
 				}
 			}
