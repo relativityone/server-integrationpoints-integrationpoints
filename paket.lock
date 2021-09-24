@@ -362,9 +362,15 @@ NUGET
       SSH.NET (>= 2016.0)
       System.Reactive (>= 4.0)
     SSH.NET (2016.0.0)
-    System.Reactive (4.0.0)
+    System.Reactive (4.4.1)
+      System.Threading.Tasks.Extensions (>= 4.5.4)
+      System.ValueTuple (>= 4.5)
     System.Reactive.Linq (4.0.0)
       System.Reactive (>= 4.0)
+    System.Runtime.CompilerServices.Unsafe (4.5.3)
+    System.Threading.Tasks.Extensions (4.5.4)
+      System.Runtime.CompilerServices.Unsafe (>= 4.5.3)
+    System.ValueTuple (4.5.0)
 
 GROUP Tests
 STRATEGY: MIN

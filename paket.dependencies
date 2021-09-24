@@ -141,3 +141,4 @@ group Sync
 	nuget Relativity.Kepler 2.14.3
 	nuget Relativity.Services.Interfaces 13.2.5
 	nuget Relativity.Telemetry.APM 2019.1.1
+	nuget System.Reactive 4.4.1
