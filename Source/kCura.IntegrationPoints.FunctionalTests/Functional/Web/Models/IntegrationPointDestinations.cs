@@ -7,6 +7,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 		[Term("Select Destination...")]
 		SelectDestination,
 		LoadFile,
-		Relativity
+		Relativity,
+		Dupa
 	}
 }

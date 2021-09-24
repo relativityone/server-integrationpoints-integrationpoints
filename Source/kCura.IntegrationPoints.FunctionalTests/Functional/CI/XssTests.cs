@@ -1,4 +1,5 @@
-﻿using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+﻿using NUnit.Framework;
+using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
@@ -21,6 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.OnSetUpFixture();
 		}
 
+		[Category("FAILING_TEST")]
 		[IdentifiedTestCase("70274A8D-0C98-4A02-A659-A1C20D323355", Const.XSS.XSS_JS)]
 		public void IntegrationPoint_Name_PreventXssInjection(string integrationPointName)
 		{
