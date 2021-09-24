@@ -1,4 +1,5 @@
-﻿using Atata;
+﻿using System;
+using Atata;
 using System.IO;
 using NUnit.Framework;
 using Relativity.Testing.Framework;
@@ -64,18 +65,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			string screenshotExtension = "*.png";
 			string basePath = GetBaseArchiveDirectoryPath();
-			string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
-				SearchOption.AllDirectories);
-			TestContext.Progress.Log($"Found {screenshotsPaths.Length}");
-
-			if (screenshotsPaths.Length > 0)
+			
+			try
 			{
-				foreach (var filePath in screenshotsPaths)
+				string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
+					SearchOption.AllDirectories);
+				TestContext.Progress.Log($"Found {screenshotsPaths.Length}");
+
+				if (screenshotsPaths.Length > 0)
 				{
-					string fileName = Path.GetFileName(filePath);
-					TestContext.Progress.Log($"Copying screenshot: {fileName}");
-					File.Copy(filePath, $"{basePath}\\{fileName}");
+					foreach (var filePath in screenshotsPaths)
+					{
+						string fileName = Path.GetFileName(filePath);
+						TestContext.Progress.Log($"Copying screenshot: {fileName}");
+						File.Copy(filePath, $"{basePath}\\{fileName}");
+					}
 				}
+			}
+			catch (DirectoryNotFoundException ex)
+			{
+				TestContext.Progress.Log($"Could not found path with screenshots {basePath}", ex);
 			}
 		}
 		
