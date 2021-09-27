@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating if source workspace does not contain invalid characters. {sourceWorkspaceArtifactId}", configuration.SourceWorkspaceArtifactId);
+			_logger.LogInformation("Validating if source workspace does not contain invalid characters. Workspace Artifact ID: {sourceWorkspaceArtifactId}", configuration.SourceWorkspaceArtifactId);
 			ValidationResult result = new ValidationResult();
 			try
 			{
