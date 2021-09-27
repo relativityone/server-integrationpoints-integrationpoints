@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.ScheduleQueue.Core.Core;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -16,7 +15,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-	[IdentifiedTestFixture("BA0C4AD6-6236-4235-BEBB-CB1084A978E9")]
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncWorkerMyFirstProviderTests : TestsBase
     {
@@ -312,8 +310,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			});
 
 			// Act
-			var syncManagerJob = job.AsJob();
-			sut.Execute(syncManagerJob);
+			Job syncWorkerJob = job.AsJob();
+			sut.Execute(syncWorkerJob);
 
 			// Assert
 			FakeRelativityInstance.JobsInQueue.First(x => x.JobId == job.JobId).StopState.Should().Be(expectedStopState);

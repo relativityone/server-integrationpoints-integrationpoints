@@ -39,7 +39,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             _workspaceArtifactId = _testsImplementationTestFixture.Workspace.ArtifactID;
             string integrationPointName = nameof(ExportToLoadFileTestImplementation);
 
-            
             KeywordSearch keywordSearch = new KeywordSearch
             {
                 Name = _savedSearch,
@@ -108,13 +107,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             webPage.Natives.Check();
             webPage.Images.Check();
 
-            webPage.SelectFolder.Click().SetItem(GetDataTransferLocationForWorkspace(WorkspaceArtifactID));
-            webPage.ApplyModel(new ExportToLoadFileOutputSettingsModel()
-            {
-                ImageFileFormat = ImageFileFormats.Opticon,
-                DataFileFormat = DataFileFormats.Relativity,
-                NameOutputFilesAfter = NameOutputFilesAfterOptions.Identifier
-            });
+            webPage.SetDestinationFolder(WorkspaceArtifactID);
+            webPage.ApplyModel(new ExportToLoadFileOutputSettingsModel());
 
             webPage.IncludeNativeFilesPath.Should.BeChecked();
             webPage.OverwriteFiles.Check();
@@ -123,12 +117,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             return webPage.Save.Wait(Until.Visible)
                 .Save.ClickAndGo();
-        }
-
-        private static string GetDataTransferLocationForWorkspace(int workspaceArtifactID)
-        {
-            string dataTransferLocationSuffix = "DataTransfer\\Export";
-            return $".\\EDDS{workspaceArtifactID}\\{dataTransferLocationSuffix}";
         }
     }
 }

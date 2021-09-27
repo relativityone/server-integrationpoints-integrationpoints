@@ -2,7 +2,6 @@
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
-using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -18,19 +17,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindById("configurationFrame")]
 		public Frame<_> ConfigurationFrame { get; private set; }
 
-		[FindByPrecedingDivContent]
+		[FindById("connectionPath")]
+		[WaitForElement(WaitBy.Id, "connectionPath", Until.Visible)]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public TextInput<_> ConnectionPath { get; private set; }
 
-		[FindByPrecedingDivContent]
+		[FindById("s2id_authentication")]
+		[WaitForElement(WaitBy.Id, "s2id_authentication", Until.Visible)]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public Select2<IntegrationPointAuthentication, _> Authentication { get; private set; }
 
-		[FindByPrecedingDivContent]
+		[FindById("connectionUsername")]
+		[WaitForElement(WaitBy.Id, "connectionUsername", Until.Visible)]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public TextInput<_> Username { get; private set; }
 
-		[FindByPrecedingDivContent]
+		[FindById("connectionPassword")]
+		[WaitForElement(WaitBy.Id, "connectionPassword", Until.Visible)]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public PasswordInput<_> Password { get; private set; }
 	}

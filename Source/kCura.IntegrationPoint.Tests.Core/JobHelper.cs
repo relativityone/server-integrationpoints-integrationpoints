@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 
 	    public static DataRow CreateJobDataRow(long jobId, long? rootJobId, long? parentJobId, int agentTypeId,
-	        int lockedByAgentId, int workspaceId, int relatedObjectArtifactId, TaskType taskType, DateTime nextRunTime,
+	        int? lockedByAgentId, int workspaceId, int relatedObjectArtifactId, TaskType taskType, DateTime nextRunTime,
 	        DateTime? lastRunTime, string jobDetails, int jobFlags, DateTime submittedDate, int submittedBy,
 	        string scheduleRuleType, string serializedScheduleRule, StopState stopState, DataTable dt = null)
 	    {
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	        if (parentJobId.HasValue) row["ParentJobID"] = parentJobId;
 	        else row["ParentJobID"] = DBNull.Value;
 	        row["AgentTypeID"] = agentTypeId;
-	        row["LockedByAgentID"] = lockedByAgentId;
+	        row["LockedByAgentID"] = (object)lockedByAgentId ?? DBNull.Value;
 	        row["WorkspaceID"] = workspaceId;
 	        row["RelatedObjectArtifactID"] = relatedObjectArtifactId;
 	        row["TaskType"] = taskType.ToString();

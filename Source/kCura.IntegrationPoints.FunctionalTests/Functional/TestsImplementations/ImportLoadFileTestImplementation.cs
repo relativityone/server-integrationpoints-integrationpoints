@@ -11,6 +11,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
 using Relativity.Testing.Framework.Web.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
@@ -27,10 +28,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public void OnSetUpFixture()
         {
             // Installing necessary app
+            SetDevelopmentModeToTrue();
             if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
             {
-                SetDevelopmentModeToTrue();
-                InstallARMTestServicesToWorkspace();
+	            InstallARMTestServicesToWorkspace();
             }
             
             // Preparing data for LoadFile and placing it in the right location
@@ -108,8 +109,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private static ImportFromLoadFileMapFieldsPage FillOutIntegrationPointConnectToSourcePageForImportFromLoadFile(ImportFromLoadFileConnectToSourcePage importFromLoadFileConnectToSourcePage, string folderName)
         {
-            importFromLoadFileConnectToSourcePage.WorkspaceDestinationFolder.Click().SetItem($"{folderName}");
-            importFromLoadFileConnectToSourcePage.ImportSource.Click().SetItem("NativesLoadFile.dat");
+            importFromLoadFileConnectToSourcePage.WorkspaceDestinationFolder.Click().SetTreeItem($"{folderName}");
+            importFromLoadFileConnectToSourcePage.ImportSource.Click().SetTreeItem("NativesLoadFile.dat");
             importFromLoadFileConnectToSourcePage.Column.Set("| (ASCII:124)");
             importFromLoadFileConnectToSourcePage.Quote.Set("^ (ASCII:094)");
             return importFromLoadFileConnectToSourcePage.Next.ClickAndGo();

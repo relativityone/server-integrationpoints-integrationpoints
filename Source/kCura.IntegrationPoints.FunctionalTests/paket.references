@@ -1,5 +1,6 @@
 ﻿ARMTestServices
 LanguageExt.Core
+Microsoft.AspNet.Mvc
 
 group Tests
 	kCura

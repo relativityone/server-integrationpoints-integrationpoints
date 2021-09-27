@@ -1,0 +1,1 @@
+SELECT [JobID] FROM {1}

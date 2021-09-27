@@ -100,6 +100,8 @@
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
     <Compile Include="IIntegrationPointSerializer.cs" />
     <Compile Include="IQuery.cs" />
+    <Compile Include="IQueueQueryManager.cs" />
+    <Compile Include="Job.cs" />
     <Compile Include="LoadFileInfo.cs" />
     <Compile Include="Installers\HelpersRegistration.cs" />
     <Compile Include="Installers\RepositoryRegistration.cs" />
@@ -110,7 +112,7 @@
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Queries\CreateJobTrackingEntry.cs" />
-    <Compile Include="Queries\GetProcessingSyncWorkerBatches.cs" />
+    <Compile Include="Queries\GetJobIdsFromTrackingEntry.cs" />
     <Compile Include="Queries\IJobTrackerQueryManager.cs" />
     <Compile Include="Queries\JobTrackerQueryManager.cs" />
     <Compile Include="Queries\RemoveEntryAndCheckBatchStatus.cs" />
@@ -259,6 +261,7 @@
     <Compile Include="GetArtifactForMassAction.cs" />
     <Compile Include="IEddsDBContext.cs" />
     <Compile Include="Statistics\IDocumentAccumulatedStatistics.cs" />
+    <Compile Include="StopState.cs" />
     <Compile Include="StreamWrappers\AsciiToUnicodeStream.cs" />
     <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
     <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />
@@ -349,7 +352,7 @@
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
-    <Content Include="Resources\GetProcessingSyncWorkerBatches.sql" />
+    <Content Include="Resources\GetJobIdsFromTrackingEntry.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />

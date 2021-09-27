@@ -2,6 +2,7 @@
 using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 
@@ -102,6 +103,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		public JobBuilder WithScheduleRuleType(string scheduleRuleType)
 		{
 			_jobData[_SCHEDULE_RULE_TYPE] = scheduleRuleType;
+			return this;
+		}
+
+		public JobBuilder WithLockedByAgentId(int? lockedByAgentId)
+		{
+			_jobData[_LOCKED_BY_AGENT_ID] = (object)lockedByAgentId ?? DBNull.Value;
 			return this;
 		}
 

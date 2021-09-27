@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks

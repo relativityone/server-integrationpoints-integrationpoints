@@ -16,7 +16,6 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-    [IdentifiedTestFixture("C4243B32-D40D-4922-B45A-9A0276393CAE")]
     [TestExecutionCategory.CI, TestLevel.L1]
     public class SendEmailWorkerTests : TestsBase
     {

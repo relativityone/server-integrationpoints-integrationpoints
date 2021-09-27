@@ -43,7 +43,6 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Context\UserContextIntegrationTests.cs" />
     <Compile Include="Context\WorkspaceContextIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>

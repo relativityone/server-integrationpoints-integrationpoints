@@ -233,6 +233,15 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT [JobID] FROM {1}.
+        /// </summary>
+        internal static string GetJobIdsFromTrackingEntry {
+            get {
+                return ResourceManager.GetString("GetJobIdsFromTrackingEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT COUNT(JobID) FROM [{0}] WHERE (JobID = @RootJobID OR RootJobID=@RootJobID).
         /// </summary>
         internal static string GetJobsCount {
@@ -257,19 +266,6 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string GetObjectTypes {
             get {
                 return ResourceManager.GetString("GetObjectTypes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to select q.LockedByAgentID, q.StopState
-        ///from [EDDS].[eddsdbo].[{0}] as q
-        ///inner join {1} as s
-        ///on q.JobID = s.JobID
-        ///where q.RootJobID = @jobID.
-        /// </summary>
-        internal static string GetProcessingSyncWorkerBatches {
-            get {
-                return ResourceManager.GetString("GetProcessingSyncWorkerBatches", resourceCulture);
             }
         }
         

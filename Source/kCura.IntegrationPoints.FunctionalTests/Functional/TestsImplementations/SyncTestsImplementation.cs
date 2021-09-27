@@ -73,7 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
 			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(integrationPointName,
-				destinationWorkspace, keywordSearch, copyNativesMode: RelativityProviderCopyNativeFiles.PhysicalFiles);
+				destinationWorkspace, keywordSearch.Name, copyNativesMode: RelativityProviderCopyNativeFiles.PhysicalFiles);
 
 			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
