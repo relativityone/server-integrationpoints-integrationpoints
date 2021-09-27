@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             return Process.GetCurrentProcess().PrivateMemorySize64;
         }
 
-		public Dictionary<string, object> LogApplicationSystemStats()
+		public Dictionary<string, object> GetApplicationSystemStats()
 		{
 			var memoryProcess = AppDomain.MonitoringSurvivedProcessMemorySize / (1024 * 1024);
 			var AppDomainCurrentMemory = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize / (1024 * 1024);

@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
     {
         long GetCurrentProcessMemoryUsage();
 
-        Dictionary<string, object> LogApplicationSystemStats();
+        Dictionary<string, object> GetApplicationSystemStats();
     }
 }

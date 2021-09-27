@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _ripMetricMock.Setup(x => x.GetWorkflowId()).Returns("workflowId");
 
             _processMemoryHelper.Setup(x => x.GetCurrentProcessMemoryUsage()).Returns(_dummyMemorySize);
-            _processMemoryHelper.Setup(x => x.LogApplicationSystemStats()).Returns(
+            _processMemoryHelper.Setup(x => x.GetApplicationSystemStats()).Returns(
                 new Dictionary<string, object>()
                 {
                     { "SystemProcessMemoryInMB", _dummyMemorySize },
@@ -73,6 +73,39 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             {
                 _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
             }
+
+            // Assert
+            _apmMock.Verify(x => x.CountOperation(
+                It.IsAny<string>(),
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<int?>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<IEnumerable<ISink>>()), Times.Exactly(timesToBeInvoked));
+
+            _loggerMock.Verify(x => x.LogInformation(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<string>()), Times.Exactly(timesToBeInvoked));
+
+            _counterMeasure.Verify(x => x.Write(), Times.Exactly(timesToBeInvoked));
+        }
+
+        [Test]
+        public void Execute_ShouldStopSendingMetrics_AfterDisposingSubscription()
+        {
+            // Arrange
+            AppDomain.MonitoringIsEnabled = true;
+            const int timesToBeInvoked = 5;
+
+            // Act
+            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
+            subscription.Dispose();
+            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
 
             // Assert
             _apmMock.Verify(x => x.CountOperation(
