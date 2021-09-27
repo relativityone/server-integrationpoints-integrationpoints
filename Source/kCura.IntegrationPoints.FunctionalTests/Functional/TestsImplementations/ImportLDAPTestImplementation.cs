@@ -63,7 +63,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				TransferredObject = IntegrationPointTransferredObjects.Entity,
 			};
 
-			return integrationPointEditPage.ApplyModel(integrationPointEdit).ImportFromLDAPNext.ClickAndGo();
+			integrationPointEditPage.ApplyModel(integrationPointEdit);
+
+			return integrationPointEditPage.ImportFromLDAPNext.ClickAndGo();
 		}
 
         private static ImportFromLDAPMapFieldsPage FillOutImportFromLDAPConnectToSourcePage(ImportFromLDAPConnectToSourcePage importFromLDAPConnectToSourcePage, string connectionPath, string username, string password)
