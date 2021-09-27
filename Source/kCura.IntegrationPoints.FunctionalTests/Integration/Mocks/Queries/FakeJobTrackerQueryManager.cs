@@ -33,23 +33,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			});
 		}
 
-		public IQuery<DataTable> GetProcessingSyncWorkerBatches(string tableName, int workspaceId, long rootJobId)
+		public IQuery<DataTable> GetJobIdsFromTrackingEntry(string tableName, int workspaceId, long rootJobId)
 		{
 			DataTable dt = new DataTable();
 
 			dt.Columns.AddRange(new DataColumn[]
 			{
-				new DataColumn("LockedByAgentId", typeof(int)) { AllowDBNull = true },
-				new DataColumn("StopState", typeof(int)),
+				new DataColumn() {ColumnName = "JobID", DataType = typeof(long)}
 			});
 
-			var processingSyncWorkerBatches = _relativity.JobsInQueue.Join(_relativity.JobTrackerResourceTables[tableName],
-				x => x.JobId, x => x.JobId, (job, batch) => new { LockedByAgentId = job.LockedByAgentID, StopState = job.StopState });
-			foreach(var processingBatch in processingSyncWorkerBatches)
+			foreach (JobTrackerTest jobTrackerRow in _relativity.JobTrackerResourceTables[tableName])
 			{
 				DataRow row = dt.NewRow();
-				row["LockedByAgentId"] = (object)processingBatch.LockedByAgentId ?? DBNull.Value;
-				row["StopState"] = processingBatch.StopState;
+				row["JobID"] = jobTrackerRow.JobId;
 
 				dt.Rows.Add(row);
 			}

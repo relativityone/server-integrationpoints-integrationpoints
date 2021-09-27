@@ -310,8 +310,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			});
 
 			// Act
-			var syncManagerJob = job.AsJob();
-			sut.Execute(syncManagerJob);
+			Job syncWorkerJob = job.AsJob();
+			sut.Execute(syncWorkerJob);
 
 			// Assert
 			FakeRelativityInstance.JobsInQueue.First(x => x.JobId == job.JobId).StopState.Should().Be(expectedStopState);

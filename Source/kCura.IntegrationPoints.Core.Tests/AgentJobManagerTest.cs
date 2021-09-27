@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private IJobService _jobService;
 		private IIntegrationPointSerializer _serializer;
 		private IJobTrackerQueryManager _jobTrackerQueryManager;
+		private IQueueQueryManager _queueQueryManager;
 		private IHelper _helper;
 		private JobTracker _jobTracker;
 		private JobResourceTracker _jobResource;
@@ -47,7 +48,8 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_jobService = Substitute.For<IJobService>();
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_jobTrackerQueryManager = Substitute.For<IJobTrackerQueryManager>();
-			_jobResource = new JobResourceTracker(_jobTrackerQueryManager);
+			_queueQueryManager = Substitute.For<IQueueQueryManager>();
+			_jobResource = new JobResourceTracker(_jobTrackerQueryManager, _queueQueryManager);
 			_jobTracker = new JobTracker(_jobResource);
 			_manager = new AgentJobManager(_context, _jobService, _helper, _serializer, _jobTracker);
 		}

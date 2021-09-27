@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-	public class GetProcessingSyncWorkerBatches : IQuery<DataTable>
+	public class GetJobIdsFromTrackingEntry : IQuery<DataTable>
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IWorkspaceDBContext _context;
@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		private readonly int _workspaceId;
 		private readonly long _rootJobId;
 
-		public GetProcessingSyncWorkerBatches(IRepositoryFactory repositoryFactory, IWorkspaceDBContext context,
+		public GetJobIdsFromTrackingEntry(IRepositoryFactory repositoryFactory, IWorkspaceDBContext context,
 			string tableName, int workspaceId, long rootJobId)
 		{
 			_repositoryFactory = repositoryFactory;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 			IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(_workspaceId, string.Empty, string.Empty);
 			string scratchTableFullName = string.Format("{0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), _tableName);
 
-			string sql = string.Format(Resources.Resource.GetProcessingSyncWorkerBatches, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME, scratchTableFullName);
+			string sql = string.Format(Resources.Resource.GetJobIdsFromTrackingEntry, GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME, scratchTableFullName);
 			IList<SqlParameter> sqlParams = new List<SqlParameter>
 			{
 				new SqlParameter("@jobID", _rootJobId)
