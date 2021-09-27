@@ -151,6 +151,7 @@
     <Compile Include="Models\RelativityProviderModel.cs" />
     <Compile Include="Models\Shared\ImagePrecedence.cs" />
     <Compile Include="Productions\ProductionHelper.cs" />
+    <Compile Include="Queries\ValueReturnQuery.cs" />
     <Compile Include="TestCategories\Attributes\NotWorkingOnTridentAttribute.cs" />
     <Compile Include="TestHelpers\FakeHelper.cs" />
     <Compile Include="TestRdoGenerator.cs" />
@@ -7779,6 +7780,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

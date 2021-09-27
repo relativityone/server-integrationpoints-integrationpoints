@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.Data.Queries
 
 		IQuery<int> RemoveEntryAndCheckBatchStatus(string tableName, int workspaceId, long jobId, bool isBatchFinished);
 
-		IQuery<DataTable> GetProcessingSyncWorkerBatches(string tableName, int workspaceId, long rootJobId);
+		IQuery<DataTable> GetJobIdsFromTrackingEntry(string tableName, int workspaceId, long rootJobId);
 	}
 }

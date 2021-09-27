@@ -106,6 +106,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return this;
 		}
 
+		public JobBuilder WithLockedByAgentId(int? lockedByAgentId)
+		{
+			_jobData[_LOCKED_BY_AGENT_ID] = (object)lockedByAgentId ?? DBNull.Value;
+			return this;
+		}
+
 		private void InitializeWithDefaultData()
 		{
 			DataTable table = new DataTable();

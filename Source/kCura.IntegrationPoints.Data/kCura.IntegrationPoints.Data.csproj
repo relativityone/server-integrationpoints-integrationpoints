@@ -112,7 +112,7 @@
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Queries\CreateJobTrackingEntry.cs" />
-    <Compile Include="Queries\GetProcessingSyncWorkerBatches.cs" />
+    <Compile Include="Queries\GetJobIdsFromTrackingEntry.cs" />
     <Compile Include="Queries\IJobTrackerQueryManager.cs" />
     <Compile Include="Queries\JobTrackerQueryManager.cs" />
     <Compile Include="Queries\RemoveEntryAndCheckBatchStatus.cs" />
@@ -352,7 +352,7 @@
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
-    <Content Include="Resources\GetProcessingSyncWorkerBatches.sql" />
+    <Content Include="Resources\GetJobIdsFromTrackingEntry.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
