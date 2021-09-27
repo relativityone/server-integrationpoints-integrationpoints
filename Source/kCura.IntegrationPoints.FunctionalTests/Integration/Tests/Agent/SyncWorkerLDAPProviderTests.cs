@@ -12,11 +12,9 @@ using Relativity.Testing.Identification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.ScheduleQueue.Core.Core;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-	[IdentifiedTestFixture("55CAA9A3-B9CE-4A69-9CC9-ED931EE9EB81")]
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncWorkerLDAPProviderTests : TestsBase
 	{
