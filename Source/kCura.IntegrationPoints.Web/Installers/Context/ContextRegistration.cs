@@ -1,6 +1,5 @@
 ﻿using Castle.Windsor;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Web.Context.WorkspaceContext;
 
 namespace kCura.IntegrationPoints.Web.Installers.Context
 {
