@@ -193,7 +193,8 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs.");
+				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
+				_jobService.UnlockJobs(AgentID);
 			}
 		}
 

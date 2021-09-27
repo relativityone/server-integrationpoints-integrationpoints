@@ -16,6 +16,7 @@ using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
+using FluentAssertions;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -60,6 +61,24 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			// Assert
 			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobStartedMessage>()), Times.Never);
+		}
+
+		[Test]
+		public void ProcessJob_ShouldNotThrow_WhenJobHistoryDoesNotExist()
+		{
+			// Arrange
+			TestAgent sut = PrepareSut();
+
+			_jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(_BATCH_INSTANCE_GUID))
+				.Returns((JobHistory)null);
+
+			Job job = JobExtensions.CreateJob();
+
+			// Act
+			Action action = () => sut.ProcessJob_Test(job);
+
+			// Assert
+			action.ShouldNotThrow();
 		}
 
 		private TestAgent PrepareSut()

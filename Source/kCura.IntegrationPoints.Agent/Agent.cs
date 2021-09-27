@@ -31,6 +31,7 @@ using kCura.ScheduleQueue.Core.TimeMachine;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
+using Relativity.Services.Choice;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
@@ -190,25 +191,42 @@ namespace kCura.IntegrationPoints.Agent
 
 		private void SendJobStartedMessage(Job job)
 		{
-			ITaskParameterHelper taskParameterHelper = _agentLevelContainer.Value.Resolve<ITaskParameterHelper>();
-			IIntegrationPointService integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
-			IJobHistoryService jobHistoryService = _agentLevelContainer.Value.Resolve<IJobHistoryService>();
-			IProviderTypeService providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
-			IMessageService messageService = _agentLevelContainer.Value.Resolve<IMessageService>();
-
-			Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
-
-			JobHistory jobHistory = jobHistoryService.GetRdoWithoutDocuments(batchInstanceId);
-			if(!jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended))
+			try
 			{
-				IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-				var message = new JobStartedMessage
+				ITaskParameterHelper taskParameterHelper = _agentLevelContainer.Value.Resolve<ITaskParameterHelper>();
+				IIntegrationPointService integrationPointService = _agentLevelContainer.Value.Resolve<IIntegrationPointService>();
+				IProviderTypeService providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
+				IMessageService messageService = _agentLevelContainer.Value.Resolve<IMessageService>();
+
+				Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+				if (!IsJobResumed(batchInstanceId))
 				{
-					Provider = integrationPoint.GetProviderName(providerTypeService),
-					CorrelationID = batchInstanceId.ToString()
-				};
-				messageService.Send(message).GetAwaiter().GetResult();
+					IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+					var message = new JobStartedMessage
+					{
+						Provider = integrationPoint.GetProviderName(providerTypeService),
+						CorrelationID = batchInstanceId.ToString()
+					};
+					messageService.Send(message).GetAwaiter().GetResult();
+				}
 			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Exception occurred during sending Job Start metric for JobId {jobId}", job.JobId);
+			}
+		}
+
+		private bool IsJobResumed(Guid batchInstanceId)
+		{
+			IJobHistoryService jobHistoryService = _agentLevelContainer.Value.Resolve<IJobHistoryService>();
+			JobHistory jobHistory = jobHistoryService.GetRdoWithoutDocuments(batchInstanceId);
+			ChoiceRef jobHistoryStatus = jobHistory?.JobStatus;
+			if (jobHistoryStatus == null)
+			{
+				return false;
+			}
+
+			return jobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended);
 		}
 
 		private bool ShouldUseRelativitySync(Job job, IWindsorContainer ripContainerForSync)
