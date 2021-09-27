@@ -88,6 +88,7 @@ nuget Serilog 1.5.14
 nuget Serilog.Sinks.Seq 1.5.36
 nuget ARMTestServices 1.1.1
 nuget Microsoft.Reactive.Testing 4.4.1
+nuget System.Threading.Tasks.Extensions
 nuget System.Runtime.InteropServices.WindowsRuntime
 
 group Tests
