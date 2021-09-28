@@ -218,7 +218,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				List<T> output = null;
 				int retrievedResults = 0;
 				int totalResults;
-
+				
+				Guid logGuid = Guid.NewGuid();
+				
 				do
 				{
 					Stopwatch sw = Stopwatch.StartNew();
@@ -236,7 +238,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 							ElapsedTime = sw.ElapsedMilliseconds,
 							StackTrace = Environment.StackTrace,
 							QueryStartIndex = retrievedResults + 1,
-							QueryCondition = q.Condition
+							QueryCondition = q.Condition,
+							LogGuid = logGuid
 						});
 					}
 					

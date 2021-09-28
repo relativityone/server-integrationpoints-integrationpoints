@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
@@ -57,23 +56,25 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
-		public ActionResult GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, CancellationToken token)
+		public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId)
 		{
-			return Json(_documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, token).GetAwaiter().GetResult());
+			DocumentsStatistics result = await
+				_documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
+			return Json(result);
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
-		public ActionResult GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, CancellationToken token)
+		public ActionResult GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize)
 		{
-			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize, token).GetAwaiter().GetResult());
+			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
 		}
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
-		public ActionResult GetImagesStatisticsForProduction(int workspaceId, int productionId, CancellationToken token)
+		public ActionResult GetImagesStatisticsForProduction(int workspaceId, int productionId)
 		{
-			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId, token).GetAwaiter().GetResult());
+			return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).GetAwaiter().GetResult());
 		}
 
 		private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)
