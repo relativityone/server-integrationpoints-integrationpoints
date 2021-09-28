@@ -28,6 +28,7 @@ using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 using kCura.IntegrationPoints.Agent.Interfaces;
+using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
@@ -61,6 +62,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			ConfigureContainer(container);
 
 			container.Register(Component.For<IJobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
+
+			container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<MemoryUsageReporter>().LifestyleSingleton());
+
+			container.Register(Component.For<IProcessMemoryHelper>().ImplementedBy<ProcessMemoryHelper>().LifestyleSingleton());
 
 			container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 

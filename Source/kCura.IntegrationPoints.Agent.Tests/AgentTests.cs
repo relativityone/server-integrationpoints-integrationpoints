@@ -1,9 +1,10 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Interfaces;
+using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -11,11 +12,13 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
+using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -24,6 +27,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 	{
 		private Mock<IMessageService> _messageServiceMock = new Mock<IMessageService>();
 		private Mock<IJobHistoryService> _jobHistoryServiceFake = new Mock<IJobHistoryService>();
+		private Mock<IMemoryUsageReporter> _memoryUsageReporter = new Mock<IMemoryUsageReporter>();
 
 		private IWindsorContainer _container;
 
@@ -45,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobStartedMessage>()), Times.Once);
 		}
 
-		[Test]
+        [Test]
 		public void ProcessJob_ShouldNotSendStartMetric_WhenJobWasResumed()
 		{
 			// Arrange
@@ -62,6 +66,27 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobStartedMessage>()), Times.Never);
 		}
 
+		[Test]
+		public void ProcessJob_ShouldActivateTimer_AtTheBeginningOfProcessing()
+		{
+			// Arrange
+			TestAgent sut = PrepareSut();
+
+			SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
+
+			Job job = JobExtensions.CreateJob();
+
+			// Act
+			sut.ProcessJob_Test(job);
+
+			// Assert
+			_memoryUsageReporter.Verify(x => x.ActivateTimer(
+				It.Is<int>(timeInterval => timeInterval == 30*1000), 
+				It.IsAny<long>(), 
+				It.IsAny<string>(), 
+				It.Is<string>(jobType => jobType =="Relativity.Sync")), Times.Once);
+		}
+
 		private TestAgent PrepareSut()
 		{
 			_container = new WindsorContainer();
@@ -70,6 +95,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			jobExecutor.Setup(x => x.ProcessJob(It.IsAny<Job>())).Returns(new TaskResult());
 
 			Mock<IJobContextProvider> jobContextProvider = new Mock<IJobContextProvider>();
+
+			Mock<ISerializer> serializer = new Mock<ISerializer>();
+			serializer.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>())).Returns(
+				new TaskParameters
+                {
+					BatchInstance = Guid.NewGuid()
+                });
 
 			Mock<IConfig> config = new Mock<IConfig>();
 			config.SetupGet(x => x.RelativityWebApiTimeout).Returns((TimeSpan?)null);
@@ -93,11 +125,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			RegisterMock(jobExecutor);
 			RegisterMock(jobContextProvider);
+			RegisterMock(serializer);
 			RegisterMock(config);
 			RegisterMock(relativitySyncConstrainsChecker);
 			RegisterMock(taskParameterHelper);
 			RegisterMock(integrationPointService);
 			RegisterMock(_jobHistoryServiceFake);
+			RegisterMock(_memoryUsageReporter);
 			RegisterMock(providerTypeService);
 			RegisterMock(_messageServiceMock);
 
