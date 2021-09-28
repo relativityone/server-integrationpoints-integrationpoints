@@ -567,7 +567,7 @@ NUGET
     System.Threading.Tasks.Extensions (4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.3)
     System.ValueTuple (4.5.0)
-    SystemWrapper.Interfaces (0.19.0.115)
+    SystemWrapper.Interfaces (0.25.0.186)
     WebGrease (1.6.0)
       Antlr (>= 3.4.1.9004)
       Newtonsoft.Json (>= 5.0.4)
