@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                 {
                     List<int> documentsWithImagesArtifactIDs = documents.Where(x =>
                     {
-                        Choice choice = (Choice)x.Values[0];
+                        dynamic choice = x.Values[0];
                         return choice.Name == DocumentFieldsConstants.HasImagesYesChoiceName;
                     }).Select(x => x.ArtifactID).ToList();
 
