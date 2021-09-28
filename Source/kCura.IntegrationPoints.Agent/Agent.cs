@@ -5,10 +5,12 @@ using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
@@ -25,6 +27,7 @@ using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
@@ -47,6 +50,7 @@ namespace kCura.IntegrationPoints.Agent
 		private IJobContextProvider _jobContextProvider;
 		private const string _AGENT_NAME = "Integration Points Agent";
 		private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
+		private const int _TIMER_INTERVAL = 30*1000;
 		private readonly Lazy<IWindsorContainer> _agentLevelContainer;
 
 		internal IJobExecutor JobExecutor { get; set; }
@@ -104,6 +108,7 @@ namespace kCura.IntegrationPoints.Agent
 		protected override TaskResult ProcessJob(Job job)
 		{
 			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
+			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId, GetCorrelationId(job, ripContainerForSync.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE))
 			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
 			{
 				SetWebApiTimeout();
@@ -156,6 +161,20 @@ namespace kCura.IntegrationPoints.Agent
 				TaskResult result = JobExecutor.ProcessJob(job);
 				return result;
 			}
+		}
+		private string GetCorrelationId(Job job, ISerializer serializer)
+		{
+			string result = string.Empty;
+			try
+			{
+				TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
+				result = taskParameters.BatchInstance.ToString();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogWarning(ex, "Error occured while retrieving batch instance for job: {jobId}", job.JobId);
+			}
+			return result;
 		}
 
 		private void SetWebApiTimeout()
