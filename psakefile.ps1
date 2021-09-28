@@ -122,10 +122,6 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
 }
 
-Task RegTest -Description "Run custom tests based on specified filter on regression environment" {
-    Invoke-MyTest
-}
-
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {
     Invoke-MyTest
 }

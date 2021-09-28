@@ -6,6 +6,8 @@ param(
     [Switch] $EmptySUT
 )
 
+Get-ChildItem env:
+
 if($EmptySUT)
 {
     throw "Hopper has been saved"
