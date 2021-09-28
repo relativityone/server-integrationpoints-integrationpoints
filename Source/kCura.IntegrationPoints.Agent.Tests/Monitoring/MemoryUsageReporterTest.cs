@@ -1,12 +1,12 @@
 ﻿using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Common.Metrics;
-using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<ICounterMeasure> _counterMeasure;
         private Mock<IProcessMemoryHelper> _processMemoryHelper;
         private MemoryUsageReporter _sut;
-        private TestScheduler _testScheduler;
         private const string _jobDetails = "jobDetails";
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
@@ -33,7 +32,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _ripMetricMock = new Mock<IRipMetrics>();
             _apmMock = new Mock<IAPM>();
             _processMemoryHelper = new Mock<IProcessMemoryHelper>();
-            _testScheduler = new TestScheduler();
 
             _apmMock.Setup(x => x.CountOperation(It.IsAny<string>(),
                     It.IsAny<Guid>(),
@@ -58,54 +56,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "SystemFreeMemoryPercent",  _dummyMemorySize}
                 });
 
-            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _testScheduler);
+            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object);
         }
 
         [Test]
-        public void Execute_ShouldSendMetricsExpectedNumberOfTimes_AfterTimerActivation()
+        public void Execute_ShouldSendMetrics_AfterTimerActivation()
         {
             // Arrange
             AppDomain.MonitoringIsEnabled = true;
-            const int timesToBeInvoked = 5;
-
-            // Act
-            using(_sut.ActivateTimer(1, _jobId, _jobDetails, _jobType))
-            {
-                _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
-            }
-
-            // Assert
-            _apmMock.Verify(x => x.CountOperation(
-                It.IsAny<string>(),
-                It.IsAny<Guid>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>(),
-                It.IsAny<int?>(),
-                It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<IEnumerable<ISink>>()), Times.Exactly(timesToBeInvoked));
-
-            _loggerMock.Verify(x => x.LogInformation(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<string>()), Times.Exactly(timesToBeInvoked));
-
-            _counterMeasure.Verify(x => x.Write(), Times.Exactly(timesToBeInvoked));
-        }
-
-        [Test]
-        public void Execute_ShouldStopSendingMetrics_AfterDisposingSubscription()
-        {
-            // Arrange
-            AppDomain.MonitoringIsEnabled = true;
-            const int timesToBeInvoked = 5;
 
             // Act
             IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
-            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
-            subscription.Dispose();
-            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
+            Thread.Sleep(100);
 
             // Assert
             _apmMock.Verify(x => x.CountOperation(
@@ -116,16 +78,48 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<IEnumerable<ISink>>()), Times.Exactly(timesToBeInvoked));
+                It.IsAny<IEnumerable<ISink>>()));
 
             _loggerMock.Verify(x => x.LogInformation(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<string>()), Times.Exactly(timesToBeInvoked));
+                It.IsAny<string>()));
 
-            _counterMeasure.Verify(x => x.Write(), Times.Exactly(timesToBeInvoked));
+            _counterMeasure.Verify(x => x.Write());
 
+            subscription.Dispose();
+        }
+
+        [Test]
+        public void Execute_ShouldNotSendMetrics_AfterDisposingTimer()
+        {
+            // Arrange
+            AppDomain.MonitoringIsEnabled = true;
+
+            // Act
+            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            subscription.Dispose();
+            Thread.Sleep(100);
+
+            // Assert
+            _apmMock.Verify(x => x.CountOperation(
+                It.IsAny<string>(),
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<int?>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<IEnumerable<ISink>>()), Times.Never);
+
+            _loggerMock.Verify(x => x.LogInformation(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<string>()), Times.Never);
+
+            _counterMeasure.Verify(x => x.Write(), Times.Never);
         }
 
         [Test]
@@ -142,24 +136,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     It.IsAny<int?>(),
                     It.IsAny<Dictionary<string, object>>(),
                     It.IsAny<IEnumerable<ISink>>()))
-                .Returns(_counterMeasure.Object)
                 .Throws<Exception>()
                 .Returns(_counterMeasure.Object)
                 .Throws<Exception>()
+                .Returns(_counterMeasure.Object)
                 .Returns(_counterMeasure.Object);
 
-            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _testScheduler);
+            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object);
 
             AppDomain.MonitoringIsEnabled = true;
-            const int timesToBeInvoked = 5;
-            const int numberOfErrors = 2;
+            int metricsProperlySend = 3;
+            int metricsWithError = 2;
             const string errorMessage = "An error occured in Execute while sending APM metric";
 
             // Act
-            using (sutWithErrors.ActivateTimer(1, _jobId, _jobDetails, _jobType))
-            {
-                _testScheduler.AdvanceBy(TimeSpan.FromSeconds(timesToBeInvoked).Ticks);
-            }
+            IDisposable subscription = sutWithErrors.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            Thread.Sleep(100);
 
             // Assert
             apmMockWithErrors.Verify(x => x.CountOperation(
@@ -170,19 +162,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<IEnumerable<ISink>>()), Times.Exactly(timesToBeInvoked));
+                It.IsAny<IEnumerable<ISink>>()), Times.AtLeast(metricsProperlySend));
 
             _loggerMock.Verify(x => x.LogInformation(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<string>()), Times.Exactly(timesToBeInvoked - numberOfErrors));
+                It.IsAny<string>()), Times.AtLeast(metricsProperlySend));
 
             _loggerMock.Verify(x => x.LogError(
                 It.IsAny<Exception>(),
-                It.Is<string>(mess => mess == errorMessage)), Times.Exactly(numberOfErrors));
+                It.Is<string>(mess => mess == errorMessage)), Times.AtLeast(metricsWithError));
 
-            _counterMeasure.Verify(x => x.Write(), Times.Exactly(timesToBeInvoked- numberOfErrors));
+            _counterMeasure.Verify(x => x.Write());
         }
 
         [Test]
@@ -194,10 +186,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             AppDomain.MonitoringIsEnabled = true;
 
             // Act
-            using (_sut.ActivateTimer(1, _jobId, _jobDetails, _jobType))
-            {
-                _testScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-            }
+            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            Thread.Sleep(10);
 
             // Assert
             _apmMock.Verify(x => x.CountOperation(
@@ -208,18 +198,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
                 It.Is<Dictionary<string, object>>(dictionary => CheckIfHasAllValues(dictionary)),
-                It.IsAny<IEnumerable<ISink>>()), Times.Once);
+                It.IsAny<IEnumerable<ISink>>()));
 
             _loggerMock.Verify(x => x.LogInformation(
                 It.Is<string>(message => message == logMessage),
                 It.IsAny<string>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<string>()), Times.Once);
+                It.IsAny<string>()));
 
-            _counterMeasure.Verify(x => x.Write(), Times.Once);
+            _counterMeasure.Verify(x => x.Write());
         }
 
-        private bool CheckIfHasAllValues(Dictionary<string, object> dict) 
+        private bool CheckIfHasAllValues(Dictionary<string, object> dict)
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
             {
@@ -239,7 +229,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 if (!dict.ContainsKey(val.Key) && (dict[val.Key] != val.Value))
                 {
                     return false;
-                }   
+                }
             }
             return true;
         }

@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Common.Metrics;
 using Relativity.API;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
+using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
@@ -14,27 +13,24 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 		private IAPM _apmClient;
 		private IAPILog _logger;
 		private IRipMetrics _ripMetric;
-		private IScheduler _timerScheduler;
 		private IProcessMemoryHelper _processMemoryHelper;
 
 		private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
 		private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
 
-		public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper ,IScheduler scheduler = null)
+		public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper)
 		{
-			_timerScheduler = scheduler ?? Scheduler.Default;
 			_processMemoryHelper = processMemoryHelper;
 			_apmClient = apmClient;
 			_logger = logger;
 			_ripMetric = ripMetric;
 		}
 
-		public IDisposable ActivateTimer(int timeIntervalInSeconds, long jobId, string jobDetails, string jobType)
+		public IDisposable ActivateTimer(int timeInterval, long jobId, string jobDetails, string jobType)
 		{
-			return Observable.Timer(dueTime: TimeSpan.Zero, period: TimeSpan.FromSeconds(timeIntervalInSeconds), scheduler: _timerScheduler)
-				.Do(x => Execute(jobId, jobDetails, jobType))
-				.Subscribe();
+			Timer _timerThread = new Timer(state => Execute(jobId, jobDetails, jobType), null, 0, timeInterval);
+			return _timerThread;
 		}
 
 		private void Execute(long jobId, string workflowId, string jobType)

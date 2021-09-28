@@ -11,11 +11,6 @@ Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
 Relativity.AutomatedWorkflows.Services.Interfaces
-Microsoft.Reactive.Testing
-System.Reactive
-System.Runtime.CompilerServices.Unsafe
-System.Runtime.InteropServices.WindowsRuntime
-System.Threading.Tasks.Extensions
 iTextSharp
 
 Relativity.Kepler.Service

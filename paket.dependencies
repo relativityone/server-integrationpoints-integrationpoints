@@ -87,9 +87,6 @@ nuget Selenium.WebDriver.GeckoDriver 0.24.0
 nuget Serilog 1.5.14	
 nuget Serilog.Sinks.Seq 1.5.36
 nuget ARMTestServices 1.1.1
-nuget Microsoft.Reactive.Testing 4.4.1
-nuget System.Threading.Tasks.Extensions 4.5.4 redirects: force
-nuget System.Runtime.InteropServices.WindowsRuntime
 
 group Tests
 	framework: auto-detect
@@ -127,7 +124,6 @@ group Tests
 	nuget Selenium.Support 4.0.0-beta4
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
 	nuget Relativity.Sync 0.8.51
-	nuget System.Threading.Tasks.Extensions 4.5.4 redirects: force
 
 group Sync
 	framework: auto-detect
@@ -143,4 +139,3 @@ group Sync
 	nuget Relativity.Kepler 2.14.3
 	nuget Relativity.Services.Interfaces 13.2.5
 	nuget Relativity.Telemetry.APM 2019.1.1
-	nuget System.Reactive 4.4.1

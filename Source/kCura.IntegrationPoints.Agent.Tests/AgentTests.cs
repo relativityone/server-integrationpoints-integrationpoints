@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			// Assert
 			_memoryUsageReporter.Verify(x => x.ActivateTimer(
-				It.Is<int>(timeInterval => timeInterval == 30), 
+				It.Is<int>(timeInterval => timeInterval == 30*1000), 
 				It.IsAny<long>(), 
 				It.IsAny<string>(), 
 				It.Is<string>(jobType => jobType =="Relativity.Sync")), Times.Once);
