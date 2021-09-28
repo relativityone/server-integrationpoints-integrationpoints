@@ -6,8 +6,6 @@ param(
     [Switch] $EmptySUT
 )
 
-Get-ChildItem env:
-
 if($EmptySUT)
 {
     throw "Hopper has been saved"
@@ -15,4 +13,4 @@ if($EmptySUT)
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) Compile, Package, MyTest -Configuration Release -TestFilter $TestFilter
+&($TaskRunner) Compile, Package, FunctionalTest -Configuration Release -TestFilter $TestFilter
