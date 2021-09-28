@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Data.UtilityDTO;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects.DataContracts;
 
@@ -27,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Retrieves all results, always starts at index 0
 		/// </summary>
 		/// <returns></returns>
-		Task<IEnumerable<RelativityObjectSlim>> GetAllResultsAsync();
+		Task<IEnumerable<RelativityObjectSlim>> GetAllResultsAsync(CancellationToken token = default(CancellationToken));
 
 		/// <summary>
 		/// Export Initialization result
