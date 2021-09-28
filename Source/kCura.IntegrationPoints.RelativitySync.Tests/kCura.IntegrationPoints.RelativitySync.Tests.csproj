@@ -484,37 +484,37 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="FaspManager">
-          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\FaspManager.dll</HintPath>
+          <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.DataTransfer.Nodes">
-          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+          <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client">
-          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Aspera">
-          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Core">
-          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.FileShare">
-          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Http">
-          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -557,42 +557,6 @@
       <ItemGroup>
         <Reference Include="System.Reactive.Linq">
           <HintPath>..\..\packages\sync\System.Reactive.Linq\lib\net46\System.Reactive.Linq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="mscorlib">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Runtime.CompilerServices.Unsafe">
-          <HintPath>..\..\packages\sync\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Threading.Tasks.Extensions">
-          <HintPath>..\..\packages\sync\System.Threading.Tasks.Extensions\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.ValueTuple">
-          <HintPath>..\..\packages\sync\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

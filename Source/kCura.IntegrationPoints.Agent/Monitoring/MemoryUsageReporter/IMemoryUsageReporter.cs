@@ -1,6 +1,4 @@
-﻿using Relativity.API;
-using System;
-using System.Reactive.Concurrency;
+﻿using System;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {

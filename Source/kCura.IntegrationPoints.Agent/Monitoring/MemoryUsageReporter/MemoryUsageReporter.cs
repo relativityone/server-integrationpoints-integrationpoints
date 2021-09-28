@@ -27,10 +27,9 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 			_ripMetric = ripMetric;
 		}
 
-		public IDisposable ActivateTimer(int timeInterval, long jobId, string jobDetails, string jobType)
+		public IDisposable ActivateTimer(int timeIntervalMilliseconds, long jobId, string jobDetails, string jobType)
 		{
-			Timer _timerThread = new Timer(state => Execute(jobId, jobDetails, jobType), null, 0, timeInterval);
-			return _timerThread;
+			return new Timer(state => Execute(jobId, jobDetails, jobType), null, 0, timeIntervalMilliseconds);
 		}
 
 		private void Execute(long jobId, string workflowId, string jobType)

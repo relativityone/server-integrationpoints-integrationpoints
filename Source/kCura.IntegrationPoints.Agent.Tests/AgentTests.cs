@@ -18,7 +18,6 @@ using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
-using System.Reactive.Concurrency;
 using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests
