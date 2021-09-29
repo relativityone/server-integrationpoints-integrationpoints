@@ -71,17 +71,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
 					SearchOption.AllDirectories);
 				TestContext.Progress.Log($"Found {screenshotsPaths.Length} screenshot(s)");
-
-				if (screenshotsPaths.Length > 0)
+				
+				foreach (var filePath in screenshotsPaths)
 				{
-					foreach (var filePath in screenshotsPaths)
-					{
-						string fileName = Path.GetFileName(filePath);
-						string directoryFullPath = new FileInfo(filePath).DirectoryName;
-						string directoryName = new FileInfo(directoryFullPath).Name;
-						TestContext.Progress.Log($"Copying screenshot: {filePath}");
-						File.Copy(filePath, $"{basePath}\\{directoryName}_{fileName}",true);
-					}
+					string fileName = Path.GetFileName(filePath);
+					string directoryName = Directory.GetParent(fileName).Name;
+					string newFileName = $"{directoryName}_{fileName}";
+					TestContext.Progress.Log($"Copying screenshot: {filePath}");
+					string destFileName = Path.Combine(basePath, newFileName);
+					File.Copy(filePath, destFileName, true);
 				}
 			}
 			catch (DirectoryNotFoundException ex)
