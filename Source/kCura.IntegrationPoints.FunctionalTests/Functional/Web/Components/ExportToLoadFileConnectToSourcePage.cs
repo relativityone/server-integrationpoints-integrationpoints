@@ -21,6 +21,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         [WaitForElement(WaitBy.Class, "field-label", Until.Visible)]
         [FindByPrecedingDivContent]
+        [WaitForJQueryAjax(TriggerEvents.AfterClick)]
         public Select2<string, _> SavedSearch { get; private set; }
 
         [WaitForElement(WaitBy.Class, "field-label", Until.Visible)]
