@@ -11,6 +11,8 @@ using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
@@ -49,6 +51,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			
 			_exportQueryResultFake.Setup(x => x.GetAllResultsAsync(It.IsAny<CancellationToken>()))
 				.Returns((() => Task.FromResult(Documents)));
+
+			_exportQueryResultFake.SetupGet(x => x.ExportResult)
+				.Returns(() => new ExportInitializationResults
+					{ FieldData = new List<FieldMetadata>(), RecordCount = Documents.Count(), RunID = Guid.NewGuid() });
 
 			_sut = new DocumentAccumulatedStatistics(_objectManagerFactoryFake.Object, _nativeFileSizeStatisticsFake.Object, _imageFileSizeStatisticsFake.Object, _loggerFake.Object);
 		}
