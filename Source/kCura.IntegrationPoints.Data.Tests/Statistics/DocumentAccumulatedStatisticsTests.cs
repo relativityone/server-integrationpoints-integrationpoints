@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.Factories;
@@ -10,6 +11,8 @@ using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
@@ -17,21 +20,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 	[TestFixture, Category("Unit")]
 	public class DocumentAccumulatedStatisticsTests
 	{
-		private const int _WORKSPACE_ID = 1111;
-
-		private readonly Guid _hasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
-		private readonly Guid _relativityImageCountGuid = new Guid("D726B2D9-4192-43DF-86EF-27D36560931A");
-		private readonly Guid _productionImageCountFieldGuid = new Guid("D92B5B06-CDF0-44BA-B365-A2396F009C73");
-		private readonly string _hasImagesFieldName = "Has Images";
-
-		private Mock<IRelativityObjectManagerFactory> _objectManagerFactoryFake;
-		private Mock<IRelativityObjectManager> _objectManagerFake;
-		private Mock<INativeFileSizeStatistics> _nativeFileSizeStatisticsFake;
-		private Mock<IImageFileSizeStatistics> _imageFileSizeStatisticsFake;
-		private Mock<IAPILog> _loggerFake;
 
 		private DocumentAccumulatedStatistics _sut;
+		private Mock<IAPILog> _loggerFake;
+		private Mock<IImageFileSizeStatistics> _imageFileSizeStatisticsFake;
+		private Mock<INativeFileSizeStatistics> _nativeFileSizeStatisticsFake;
+		private Mock<IRelativityObjectManager> _objectManagerFake;
+		private Mock<IExportQueryResult> _exportQueryResultFake;
 
+		private Mock<IRelativityObjectManagerFactory> _objectManagerFactoryFake;
+		private const int _WORKSPACE_ID = 1111;
+
+		public IEnumerable<RelativityObjectSlim> Documents { get; set; }
+		
 		[SetUp]
 		public void SetUp()
 		{
@@ -42,6 +43,18 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_nativeFileSizeStatisticsFake = new Mock<INativeFileSizeStatistics>();
 			_imageFileSizeStatisticsFake = new Mock<IImageFileSizeStatistics>();
 			_loggerFake = new Mock<IAPILog>();
+			_exportQueryResultFake = new Mock<IExportQueryResult>();
+
+			_objectManagerFake.Setup(x =>
+					x.QueryWithExportAsync(It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(_exportQueryResultFake.Object);
+			
+			_exportQueryResultFake.Setup(x => x.GetAllResultsAsync(It.IsAny<CancellationToken>()))
+				.Returns((() => Task.FromResult(Documents)));
+
+			_exportQueryResultFake.SetupGet(x => x.ExportResult)
+				.Returns(() => new ExportInitializationResults
+					{ FieldData = new List<FieldMetadata>(), RecordCount = Documents.Count(), RunID = Guid.NewGuid() });
 
 			_sut = new DocumentAccumulatedStatistics(_objectManagerFactoryFake.Object, _nativeFileSizeStatisticsFake.Object, _imageFileSizeStatisticsFake.Object, _loggerFake.Object);
 		}
@@ -54,11 +67,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int nativesSize = 33333;
 			const int nativesCount = 2;
 
-			List<RelativityObject> documents = Enumerable.Concat(
+			List<RelativityObjectSlim> documents = Enumerable.Concat(
 				Enumerable.Repeat(CreateDocumentWithHasNativeField(true), nativesCount),
 				Enumerable.Repeat(CreateDocumentWithHasNativeField(false), 3)).ToList();
 
-			SetupObjectManagerForNatives(savedSearchArtifactId, documents);
+			_exportQueryResultFake.Setup(x => x.GetAllResultsAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(documents);
+			
 			_nativeFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IEnumerable<int>>(), _WORKSPACE_ID)).Returns(nativesSize);
 
 			// Act
@@ -79,23 +94,24 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int documentsWithImagesCount = 2;
 			const int imagesPerDocumentCount = 5;
 
-			List<RelativityObject> documents = Enumerable.Concat(
+			Documents = Enumerable.Concat(
 				Enumerable.Repeat(CreateDocumentWithImages(true, imagesPerDocumentCount), documentsWithImagesCount),
 				Enumerable.Repeat(CreateDocumentWithImages(false, 0), 4)
-				).ToList();
-
-			SetupObjectManagerForImages(savedSearchArtifactId, documents);
+				);
+		
+			
 			_imageFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IList<int>>(), _WORKSPACE_ID)).Returns(imagesSize);
 
 			// Act
 			DocumentsStatistics actual = await _sut.GetImagesStatisticsForSavedSearchAsync(_WORKSPACE_ID, savedSearchArtifactId, true).ConfigureAwait(false);
 
 			// Assert
-			actual.DocumentsCount.Should().Be(documents.Count);
+			actual.DocumentsCount.Should().Be(Documents.Count());
 			actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
 			actual.TotalImagesSizeBytes.Should().Be(imagesSize);
 		}
-		
+
+
 		[Test]
 		public async Task GetImagesStatisticsForSavedSearchAsync_ShouldCalculateStatisticsWithoutSize()
 		{
@@ -104,18 +120,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int documentsWithImagesCount = 2;
 			const int imagesPerDocumentCount = 5;
 
-			List<RelativityObject> documents = Enumerable.Concat(
+			Documents = Enumerable.Concat(
 				Enumerable.Repeat(CreateDocumentWithImages(true, imagesPerDocumentCount), documentsWithImagesCount),
 				Enumerable.Repeat(CreateDocumentWithImages(false, 0), 4)
-			).ToList();
-
-			SetupObjectManagerForImages(savedSearchArtifactId, documents);
+			);
 
 			// Act
 			DocumentsStatistics actual = await _sut.GetImagesStatisticsForSavedSearchAsync(_WORKSPACE_ID, savedSearchArtifactId, false).ConfigureAwait(false);
 
 			// Assert
-			actual.DocumentsCount.Should().Be(documents.Count);
+			actual.DocumentsCount.Should().Be(Documents.Count());
 			actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
 			actual.TotalImagesSizeBytes.Should().Be(0);
 		}
@@ -129,128 +143,57 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int documentsWithImagesCount = 2;
 			const int imagesPerDocumentCount = 5;
 
-			List<RelativityObject> documents = Enumerable.Concat(
+			Documents = Enumerable.Concat(
 				Enumerable.Repeat(CreateDocumentWithProducedImages(imagesPerDocumentCount), documentsWithImagesCount),
 				Enumerable.Repeat(CreateDocumentWithProducedImages(0), 4)
 			).ToList();
 
-			SetupObjectManagerForProducedImages(productionArtifactId, documents);
 			_imageFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(productionArtifactId, _WORKSPACE_ID)).Returns(imagesSize);
 
 			// Act
 			DocumentsStatistics actual = await _sut.GetImagesStatisticsForProductionAsync(_WORKSPACE_ID, productionArtifactId).ConfigureAwait(false);
 
 			// Assert
-			actual.DocumentsCount.Should().Be(documents.Count);
+			actual.DocumentsCount.Should().Be(Documents.Count());
 			actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
 			actual.TotalImagesSizeBytes.Should().Be(imagesSize);
 		}
 		
-		private RelativityObject CreateDocumentWithHasNativeField(bool hasNative)
+		private RelativityObjectSlim CreateDocumentWithHasNativeField(bool hasNative)
 		{
-			return new RelativityObject()
+			return new RelativityObjectSlim()
 			{
-				FieldValues = new List<FieldValuePair>()
+				Values = new List<object>
 				{
-					new FieldValuePair()
-					{
-						Field = new Field()
-						{
-							Guids = new List<Guid>()
-							{
-								_hasNativeFieldGuid
-							}
-						},
-						Value = hasNative
-					}
+					hasNative
 				}
 			};
 		}
 
-		private RelativityObject CreateDocumentWithImages(bool hasImages, int imagesCount)
+		private RelativityObjectSlim CreateDocumentWithImages(bool hasImages, int imagesCount)
 		{
-			return new RelativityObject()
+			return new RelativityObjectSlim
 			{
-				FieldValues = new List<FieldValuePair>()
+				Values = new List<object>
 				{
-					new FieldValuePair()
+					new Choice()
 					{
-						Field = new Field()
-						{
-							Name = _hasImagesFieldName
-						},
-						Value = new Choice()
-						{
-							Name = hasImages ? "Yes" : "No"
-						}
+						Name = hasImages ? "Yes" : "No"
 					},
-					new FieldValuePair()
-					{
-						Field = new Field()
-						{
-							Name = "Relativity Image Count",
-							Guids = new List<Guid>()
-							{
-								_relativityImageCountGuid
-							}
-						},
-						Value = imagesCount
-					}
+					imagesCount
 				}
 			};
 		}
 
-		private RelativityObject CreateDocumentWithProducedImages(int imagesCount)
+		private RelativityObjectSlim CreateDocumentWithProducedImages(int imagesCount)
 		{
-			return new RelativityObject()
+			return new RelativityObjectSlim
 			{
-				FieldValues = new List<FieldValuePair>()
+				Values = new List<object>
 				{
-					new FieldValuePair()
-					{
-						Field = new Field()
-						{
-							Guids = new List<Guid>()
-							{
-								_productionImageCountFieldGuid
-							}
-						},
-						Value = imagesCount
-					}
+					imagesCount
 				}
 			};
 		}
-
-		private void SetupObjectManagerForNatives(int savedSearchArtifactId, List<RelativityObject> documents)
-		{
-			_objectManagerFake
-				.Setup(x => x.Query(It.Is<QueryRequest>(request =>
-						request.Condition.Equals($"'ArtifactId' IN SAVEDSEARCH {savedSearchArtifactId}", StringComparison.InvariantCultureIgnoreCase) &&
-						request.Fields.Single().Guid == _hasNativeFieldGuid),
-					ExecutionIdentity.CurrentUser))
-				.Returns(documents);
-		}
-
-		private void SetupObjectManagerForImages(int savedSearchArtifactId, List<RelativityObject> documents)
-		{
-			_objectManagerFake
-				.Setup(x => x.Query(It.Is<QueryRequest>(request =>
-						request.Condition.Equals($"'ArtifactId' IN SAVEDSEARCH {savedSearchArtifactId}", StringComparison.InvariantCultureIgnoreCase) &&
-						request.Fields.Any(field => field.Guid == _relativityImageCountGuid) &&
-						request.Fields.Any(field => field.Name == _hasImagesFieldName)),
-					ExecutionIdentity.CurrentUser))
-				.Returns(documents);
-		}
-
-		private void SetupObjectManagerForProducedImages(int productionArtifactId, List<RelativityObject> documents)
-		{
-			_objectManagerFake
-				.Setup(x => x.Query(It.Is<QueryRequest>(request =>
-						request.Condition.Equals($"'ProductionSet' == OBJECT {productionArtifactId}", StringComparison.InvariantCultureIgnoreCase) &&
-						request.Fields.Any(field => field.Guid == _productionImageCountFieldGuid)),
-					ExecutionIdentity.CurrentUser))
-				.Returns(documents);
-		}
-
 	}
 }
