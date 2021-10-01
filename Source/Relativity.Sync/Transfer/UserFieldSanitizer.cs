@@ -42,7 +42,7 @@ namespace Relativity.Sync.Transfer
 				return initialValue;
 			}
 
-			int userArtifactId = GetUserArtifactIdFromField(initialValue);
+			int userArtifactId = GetUserArtifactIdFromInitialValue(initialValue);
 			string cacheKey = $"{nameof(UserFieldSanitizer)}_{userArtifactId}";
 
 			int instanceUserArtifactId = GetInstanceUserArtifactId(userArtifactId, workspaceArtifactId);
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Transfer
 			return instanceUserQueryResult?.DataResults?.SingleOrDefault()?.Email;
 		}
 
-		private int GetUserArtifactIdFromField(object initialValue)
+		private int GetUserArtifactIdFromInitialValue(object initialValue)
 		{
 			UserInfo userFieldValue;
 			try
