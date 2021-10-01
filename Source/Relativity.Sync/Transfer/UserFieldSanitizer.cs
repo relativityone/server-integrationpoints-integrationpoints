@@ -8,6 +8,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
 using Newtonsoft.Json;
+using Relativity.Sync.DbContext;
 
 namespace Relativity.Sync.Transfer
 {
@@ -19,15 +20,19 @@ namespace Relativity.Sync.Transfer
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		private readonly IMemoryCache _memoryCache;
+		private readonly IEddsDbContext _eddsDbContext;
+		private readonly ISyncLog _log;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 		private readonly CacheItemPolicy _memoryCacheItemPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) };
 
 		public RelativityDataType SupportedType { get; } = RelativityDataType.User;
 
-		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache)
+		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache, IEddsDbContext eddsDbContext, ISyncLog log)
 		{
 			_serviceFactory = serviceFactory;
 			_memoryCache = memoryCache;
+			_eddsDbContext = eddsDbContext;
+			_log = log;
 		}
 
 		public async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
