@@ -166,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public async Task SanitizeAsync_ShouldThrowInvalidExportFieldValueException_WhenUserDoesNotExist()
+		public async Task SanitizeAsync_ShouldThrowSyncItemLevelErrorException_WhenUserDoesNotExist()
 		{
 			// Arrange
 			const int nonExistingUserArtifactId = 1;
@@ -178,7 +178,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), initialValue);
 
 			// Assert
-			await sanitizeAsync.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false);
+			await sanitizeAsync.Should().ThrowAsync<SyncItemLevelErrorException>().ConfigureAwait(false);
 		}
 
 		[Test]
@@ -228,7 +228,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				It.IsAny<string>(), initialValue);
 
 			// Assert
-			await sanitizeAsync.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false);
+			await sanitizeAsync.Should().ThrowAsync<Exception>();
 
 			_userInfoManagerMock.Verify(
 				x => x.RetrieveUsersBy(instanceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, restoredUserArtifactId)),
@@ -261,7 +261,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				It.IsAny<string>(), initialValue);
 
 			// Assert
-			await sanitizeAsync.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false);
+			await sanitizeAsync.Should().ThrowAsync<Exception>();
 
 			_userInfoManagerMock.Verify(
 				x => x.RetrieveUsersBy(instanceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, restoredUserArtifactId)),
