@@ -56,9 +56,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
-		public ActionResult GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId)
+		public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId)
 		{
-			return Json(_documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).GetAwaiter().GetResult());
+			DocumentsStatistics result = await
+				_documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
+			return Json(result);
 		}
 
 		[HttpPost]

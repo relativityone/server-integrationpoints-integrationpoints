@@ -46,7 +46,13 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+    
+    $Env:Branch
+    if($Env:Branch -eq 'master') {
+        Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
+    } else {
+        Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+    }
 }
 
 Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
@@ -120,10 +126,6 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
 
     $LogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
-}
-
-Task RegTest -Description "Run custom tests based on specified filter on regression environment" {
-    Invoke-MyTest
 }
 
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {

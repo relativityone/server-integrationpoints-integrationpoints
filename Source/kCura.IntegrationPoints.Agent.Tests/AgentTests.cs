@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_messageServiceMock.Verify(x => x.Send(It.IsAny<JobStartedMessage>()), Times.Once);
 		}
 
-		[Test]
+        [Test]
 		public void ProcessJob_ShouldNotSendStartMetric_WhenJobWasResumed()
 		{
 			// Arrange

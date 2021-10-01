@@ -14,6 +14,11 @@ namespace kCura.IntegrationPoints.Common.Metrics
 			_sinks = sinks;
 		}
 
+		public string GetWorkflowId()
+        {
+			return _workflowId.ToString();
+        }
+
 		public void PointInTimeDouble(string name, double value, Dictionary<string, object> customData)
 		{
 			foreach (IRipMetricsSink sink in _sinks)
