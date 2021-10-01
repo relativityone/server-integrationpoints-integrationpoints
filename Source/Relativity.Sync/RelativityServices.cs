@@ -29,6 +29,7 @@ namespace Relativity.Sync
 		/// <inheritdoc />
 		public Uri AuthenticationUri { get; }
 
+		/// <inheritdoc />
 		public IDBContext GetEddsDbContext()
 		{
 			return _helper.GetDBContext(-1);
