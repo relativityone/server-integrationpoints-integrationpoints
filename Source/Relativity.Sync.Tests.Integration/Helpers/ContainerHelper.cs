@@ -122,7 +122,9 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
 
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
-			return new RelativityServices(apm, servicesMgr.Object, authenticationUri);
+
+			IHelper helper = Mock.Of<IHelper>();
+			return new RelativityServices(apm, servicesMgr.Object, authenticationUri, helper);
 		}
 
 		public static void MockSearchManagerFactory(ContainerBuilder containerBuilder)

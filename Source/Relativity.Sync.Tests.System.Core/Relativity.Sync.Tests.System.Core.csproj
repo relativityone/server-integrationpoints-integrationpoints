@@ -34,6 +34,7 @@
 	</ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
+    <PackageReference Include="kCura.NUnit.Integration" Version="13.0.29.11" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
   </ItemGroup>
   <!-- Third Party Packages -->
@@ -49,5 +50,8 @@
   </ItemGroup>
 	<ItemGroup>
 		<Reference Include="System.Web.Services" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Helpers\DbContext\" />
 	</ItemGroup>
 </Project>

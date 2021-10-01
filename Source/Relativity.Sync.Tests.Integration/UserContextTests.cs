@@ -83,7 +83,8 @@ namespace Relativity.Sync.Tests.Integration
 			IAPM apm = Mock.Of<IAPM>();
 			ISyncServiceManager servicesMgr = Mock.Of<ISyncServiceManager>();
 			Uri authenticationUri = new Uri(_INSTANCE_URL);
-			IRelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri);
+			IHelper helper = Mock.Of<IHelper>();
+			IRelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri, helper);
 			_containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
 		}
 
