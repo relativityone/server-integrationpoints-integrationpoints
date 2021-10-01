@@ -89,10 +89,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			// Assert
 			_memoryUsageReporter.Verify(x => x.ActivateTimer(
-				It.Is<int>(timeInterval => timeInterval == 30 * 1000),
-				It.IsAny<long>(),
-				It.IsAny<string>(),
-				It.Is<string>(jobType => jobType == "Relativity.Sync")), Times.Once);
+				It.Is<int>(timeInterval => timeInterval == 30*1000), 
+				It.IsAny<long>(), 
+				It.IsAny<string>(), 
+				It.Is<string>(jobType => jobType =="Relativity.Sync")), Times.Once);
 		}
 
 		[Test]
@@ -125,9 +125,9 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			Mock<ISerializer> serializer = new Mock<ISerializer>();
 			serializer.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>())).Returns(
 				new TaskParameters
-				{
+                {
 					BatchInstance = Guid.NewGuid()
-				});
+                });
 
 			Mock<IConfig> config = new Mock<IConfig>();
 			config.SetupGet(x => x.RelativityWebApiTimeout).Returns((TimeSpan?)null);
