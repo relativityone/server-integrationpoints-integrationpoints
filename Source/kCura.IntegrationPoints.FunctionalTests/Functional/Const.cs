@@ -8,6 +8,8 @@
 		public const string INTEGRATION_POINTS_AGENT_TYPE_NAME = "Integration Points Agent";
 		public const int INTEGRATION_POINTS_AGENT_RUN_INTERVAL = 5;
 
+		public const string INTEGRATION_POINT_NAME_FOR_LOADFILE_IMPORT_IMAGES = "TEST_FOR_LOADFILE_IMPORT_IMAGES";
+
 		public static class XSS
 		{
 			public const string XSS_JS = "';window.relativityXss=true;";
