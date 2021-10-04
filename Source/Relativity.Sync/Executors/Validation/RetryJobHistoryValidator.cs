@@ -28,7 +28,7 @@ namespace Relativity.Sync.Executors.Validation
 
 			if (configuration.JobHistoryToRetryId != null)
 			{
-				_logger.LogVerbose("Validating JobHistoryToRetry {artifactId} exists", configuration.JobHistoryToRetryId.Value);
+				_logger.LogInformation("Validating JobHistoryToRetry Artifact ID: {artifactId} exists", configuration.JobHistoryToRetryId.Value);
 
 				try
 				{

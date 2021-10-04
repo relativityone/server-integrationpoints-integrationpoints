@@ -674,5 +674,13 @@
 	{
 		"Jira": "REL-594948",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Web.Services.Protocols.SoapException: Execution Timeout Expired.*"
+	},
+	{
+		"Jira": "REL-600272",
+		"Exception": "Relativity.Sync.SyncException: Failed to create Saved Search for promoted documents in destination workspace *Relativity.Services.Exceptions.ServiceException: Could not find a part of the path *kcura.edds.dtsearchprovider.dll*"
+	},
+	{
+		"Jira": "REL-600286",
+		"Exception": "Relativity.Sync.Executors.RelativitySourceJobTagRepositoryException:*Create Ancestry Failed*"
 	}
 ]
