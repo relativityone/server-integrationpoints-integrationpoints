@@ -9,6 +9,8 @@ using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
 using Newtonsoft.Json;
 using Relativity.Sync.DbContext;
+using Relativity.Sync.Toggles;
+using Relativity.Toggles;
 
 namespace Relativity.Sync.Transfer
 {
@@ -22,17 +24,20 @@ namespace Relativity.Sync.Transfer
 		private readonly IMemoryCache _memoryCache;
 		private readonly IEddsDbContext _eddsDbContext;
 		private readonly ISyncLog _log;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 		private readonly CacheItemPolicy _memoryCacheItemPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) };
 
 		public RelativityDataType SupportedType { get; } = RelativityDataType.User;
 
-		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache, IEddsDbContext eddsDbContext, ISyncLog log)
+		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache,
+			IEddsDbContext eddsDbContext, ISyncLog log, IToggleProvider toggleProvider)
 		{
 			_serviceFactory = serviceFactory;
 			_memoryCache = memoryCache;
 			_eddsDbContext = eddsDbContext;
 			_log = log;
+			_toggleProvider = toggleProvider;
 		}
 
 		public async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
@@ -45,8 +50,9 @@ namespace Relativity.Sync.Transfer
 			int userArtifactId = GetUserArtifactIdFromInitialValue(initialValue);
 			string cacheKey = $"{nameof(UserFieldSanitizer)}_{userArtifactId}";
 
-			int instanceUserArtifactId = GetInstanceUserArtifactId(userArtifactId, workspaceArtifactId);
-			
+			int instanceUserArtifactId = await _toggleProvider.IsEnabledAsync<DisableUserMapWithSQL>().ConfigureAwait(false)
+				? userArtifactId : GetInstanceUserArtifactId(userArtifactId, workspaceArtifactId);
+
 			string cacheUserEmail = _memoryCache.Get<string>(cacheKey);
 			if (!String.IsNullOrEmpty(cacheUserEmail))
 			{

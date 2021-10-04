@@ -12,7 +12,9 @@ using Moq;
 using NUnit.Framework;
 using FluentAssertions;
 using Relativity.Sync.DbContext;
+using Relativity.Sync.Toggles;
 using Relativity.Sync.Utils;
+using Relativity.Toggles;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -22,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IMemoryCache> _memoryCacheStub;
 		private Mock<IUserInfoManager> _userInfoManagerMock;
 		private Mock<IEddsDbContext> _eddsDbContextFake;
+		private Mock<IToggleProvider> _toggleProviderFake;
 
 		private UserFieldSanitizer _sut;
 
@@ -43,8 +46,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_eddsDbContextFake = new Mock<IEddsDbContext>();
 
+			_toggleProviderFake = new Mock<IToggleProvider>();
+
 			_sut = new UserFieldSanitizer(serviceFactory.Object, _memoryCacheStub.Object,
-				_eddsDbContextFake.Object, syncLog.Object);
+				_eddsDbContextFake.Object, syncLog.Object, _toggleProviderFake.Object);
 		}
 
 		[Test]
@@ -262,6 +267,40 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			await sanitizeAsync.Should().ThrowAsync<Exception>();
+
+			_userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(instanceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, restoredUserArtifactId)),
+					It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
+
+			_userInfoManagerMock.Verify(
+				x => x.RetrieveUsersBy(workspaceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, restoredUserArtifactId)),
+					It.IsAny<int>(), It.IsAny<int>()),
+				Times.Once);
+		}
+
+		[Test]
+		public async Task SanitizeAsync_ShouldGetEmailForInitialValueAndNotMapUser_WhenToggleIsEnabled()
+		{
+			// Arrange
+			const int instanceArtifactId = -1;
+			const int workspaceArtifactId = 100;
+
+			const int restoredUserArtifactId = 9;
+			object initialValue = GetInitialValue(restoredUserArtifactId);
+
+			_toggleProviderFake.Setup(x => x.IsEnabledAsync<DisableUserMapWithSQL>())
+				.ReturnsAsync(true);
+
+			// Act
+			Func<Task> sanitizeAsync = () => _sut.SanitizeAsync(
+				workspaceArtifactId, It.IsAny<string>(), It.IsAny<string>(),
+				It.IsAny<string>(), initialValue);
+
+			// Assert
+			await sanitizeAsync.Should().ThrowAsync<Exception>();
+
+			_eddsDbContextFake.Verify(x => x.ExecuteSqlStatementAsScalar<int>(It.IsAny<string>()), Times.Never);
 
 			_userInfoManagerMock.Verify(
 				x => x.RetrieveUsersBy(instanceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, restoredUserArtifactId)),
