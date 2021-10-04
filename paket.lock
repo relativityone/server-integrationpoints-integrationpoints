@@ -1,7 +1,7 @@
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Antlr (3.5.0.2)
     ARMTestServices (1.1.1)
     AutoMapper (4.2.1)
@@ -292,7 +292,7 @@ GROUP Sync
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Autofac (4.9.4)
     Banzai (3.0.3)
     Banzai.Autofac (3.0.3)
@@ -366,7 +366,7 @@ GROUP Tests
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Antlr (3.5.0.2)
     Atata (1.6.0)
       Atata.WebDriverExtras (>= 1.3)
