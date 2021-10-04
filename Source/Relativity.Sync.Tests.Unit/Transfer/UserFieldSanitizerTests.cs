@@ -96,6 +96,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Assert
 			sanitizedValue.Should().Be(expectedUserEmail);
 
+			_eddsDbContextFake.Verify(x => x.ExecuteSqlStatementAsScalar<int>(It.IsAny<string>()), Times.Never);
+
 			_userInfoManagerMock.Verify(
 				x => x.RetrieveUsersBy(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()),
 				Times.Never);

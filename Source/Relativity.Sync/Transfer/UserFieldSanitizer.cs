@@ -48,15 +48,26 @@ namespace Relativity.Sync.Transfer
 			}
 
 			int userArtifactId = GetUserArtifactIdFromInitialValue(initialValue);
-			string cacheKey = $"{nameof(UserFieldSanitizer)}_{userArtifactId}";
 
-			int instanceUserArtifactId = await _toggleProvider.IsEnabledAsync<DisableUserMapWithSQL>().ConfigureAwait(false)
-				? userArtifactId : GetInstanceUserArtifactId(userArtifactId, workspaceArtifactId);
+			string cacheKey = $"{nameof(UserFieldSanitizer)}_{userArtifactId}";
 
 			string cacheUserEmail = _memoryCache.Get<string>(cacheKey);
 			if (!String.IsNullOrEmpty(cacheUserEmail))
 			{
 				return cacheUserEmail;
+			}
+
+			int instanceUserArtifactId;
+			if (await _toggleProvider.IsEnabledAsync<DisableUserMapWithSQL>().ConfigureAwait(false))
+			{
+				_log.LogInformation("DisableUserMapWithSQL is enabled - rewrite UserArtifactId to InstanceArtifactId: {userArtifactId}", userArtifactId);
+				instanceUserArtifactId = userArtifactId;
+			}
+			else
+			{
+				_log.LogInformation("Read Instance Level UserId from UserCaseUser for UserArtifactId {userArtifactId}", userArtifactId);
+				instanceUserArtifactId = GetInstanceUserArtifactId(userArtifactId, workspaceArtifactId);
+				_log.LogInformation("Read Instance Level UserId: {instanceUserArtifactId}", instanceUserArtifactId);
 			}
 
 			using (IUserInfoManager userInfoManager = await _serviceFactory.CreateProxyAsync<IUserInfoManager>().ConfigureAwait(false))
