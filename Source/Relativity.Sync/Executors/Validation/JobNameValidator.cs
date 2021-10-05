@@ -21,7 +21,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating job name.");
+			_logger.LogInformation("Validating job name.");
 
 			ValidationResult result = new ValidationResult();
 

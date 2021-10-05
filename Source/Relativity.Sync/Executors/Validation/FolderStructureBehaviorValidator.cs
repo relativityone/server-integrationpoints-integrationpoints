@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating folder structure behavior");
+			_logger.LogInformation("Validating folder structure behavior");
 
 			ValidationResult result = new ValidationResult();
 

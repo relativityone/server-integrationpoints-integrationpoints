@@ -1,5 +1,6 @@
 ﻿using Relativity.Telemetry.APM;
 using System;
+using Relativity.API;
 
 namespace Relativity.Sync
 {
@@ -22,5 +23,10 @@ namespace Relativity.Sync
 		///     Relativity authentication endpoint address
 		/// </summary>
 		ISyncServiceManager ServicesMgr { get; }
+
+		/// <summary>
+		///     Relativity EDDS DbContext
+		/// </summary>
+		IDBContext GetEddsDbContext();
 	}
 }

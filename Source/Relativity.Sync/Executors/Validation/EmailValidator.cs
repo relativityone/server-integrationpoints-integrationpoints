@@ -32,7 +32,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating notification emails format.");
+			_logger.LogInformation("Validating notification emails format.");
 
 			ValidationResult validationResult = new ValidationResult();
 

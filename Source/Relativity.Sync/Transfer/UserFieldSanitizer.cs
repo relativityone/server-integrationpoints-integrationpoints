@@ -8,6 +8,9 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
 using Newtonsoft.Json;
+using Relativity.Sync.DbContext;
+using Relativity.Sync.Toggles;
+using Relativity.Toggles;
 
 namespace Relativity.Sync.Transfer
 {
@@ -19,15 +22,22 @@ namespace Relativity.Sync.Transfer
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
 		private readonly IMemoryCache _memoryCache;
+		private readonly IEddsDbContext _eddsDbContext;
+		private readonly ISyncLog _log;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 		private readonly CacheItemPolicy _memoryCacheItemPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) };
 
 		public RelativityDataType SupportedType { get; } = RelativityDataType.User;
 
-		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache)
+		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache,
+			IEddsDbContext eddsDbContext, ISyncLog log, IToggleProvider toggleProvider)
 		{
 			_serviceFactory = serviceFactory;
 			_memoryCache = memoryCache;
+			_eddsDbContext = eddsDbContext;
+			_log = log;
+			_toggleProvider = toggleProvider;
 		}
 
 		public async Task<object> SanitizeAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName, object initialValue)
@@ -37,7 +47,8 @@ namespace Relativity.Sync.Transfer
 				return initialValue;
 			}
 
-			int userArtifactId = GetUserArtifactId(initialValue);
+			int userArtifactId = GetUserArtifactIdFromInitialValue(initialValue);
+
 			string cacheKey = $"{nameof(UserFieldSanitizer)}_{userArtifactId}";
 
 			string cacheUserEmail = _memoryCache.Get<string>(cacheKey);
@@ -46,16 +57,29 @@ namespace Relativity.Sync.Transfer
 				return cacheUserEmail;
 			}
 
+			int instanceUserArtifactId;
+			if (await _toggleProvider.IsEnabledAsync<DisableUserMapWithSQL>().ConfigureAwait(false))
+			{
+				_log.LogInformation("DisableUserMapWithSQL is enabled - rewrite UserArtifactId to InstanceArtifactId: {userArtifactId}", userArtifactId);
+				instanceUserArtifactId = userArtifactId;
+			}
+			else
+			{
+				_log.LogInformation("Read Instance Level UserId from UserCaseUser for UserArtifactId {userArtifactId}", userArtifactId);
+				instanceUserArtifactId = GetInstanceUserArtifactId(userArtifactId, workspaceArtifactId);
+				_log.LogInformation("Read Instance Level UserId: {instanceUserArtifactId}", instanceUserArtifactId);
+			}
+
 			using (IUserInfoManager userInfoManager = await _serviceFactory.CreateProxyAsync<IUserInfoManager>().ConfigureAwait(false))
 			{
-				string instanceUserEmail = await GetUserEmailAsync(userInfoManager, -1, userArtifactId).ConfigureAwait(false);
+				string instanceUserEmail = await GetUserEmailAsync(userInfoManager, -1, instanceUserArtifactId).ConfigureAwait(false);
 				if (!string.IsNullOrEmpty(instanceUserEmail))
 				{
 					_memoryCache.Add(cacheKey, instanceUserEmail, _memoryCacheItemPolicy);
 					return instanceUserEmail;
 				}
 
-				string workspaceUserEmail = await GetUserEmailAsync(userInfoManager, workspaceArtifactId, userArtifactId).ConfigureAwait(false);
+				string workspaceUserEmail = await GetUserEmailAsync(userInfoManager, workspaceArtifactId, instanceUserArtifactId).ConfigureAwait(false);
 				if (!string.IsNullOrEmpty(workspaceUserEmail))
 				{
 					_memoryCache.Add(cacheKey, workspaceUserEmail, _memoryCacheItemPolicy);
@@ -63,7 +87,7 @@ namespace Relativity.Sync.Transfer
 				}
 			}
 
-			throw new InvalidExportFieldValueException($"Could not retrieve info for user with ArtifactID {userArtifactId}. " +
+			throw new SyncItemLevelErrorException($"Could not retrieve info for user with ArtifactID {userArtifactId}. " +
 				"If this workspace was restored using ARM, verify if user has been properly mapped during workspace restore.");
 		}
 
@@ -78,7 +102,7 @@ namespace Relativity.Sync.Transfer
 			return instanceUserQueryResult?.DataResults?.SingleOrDefault()?.Email;
 		}
 
-		private int GetUserArtifactId(object initialValue)
+		private int GetUserArtifactIdFromInitialValue(object initialValue)
 		{
 			UserInfo userFieldValue;
 			try
@@ -91,6 +115,32 @@ namespace Relativity.Sync.Transfer
 			}
 
 			return userFieldValue.ArtifactID;
+		}
+
+		private int GetInstanceUserArtifactId(int userArtifactId, int workspaceArtifactId)
+		{
+			try
+			{
+				string sqlStatement =
+					$"SELECT [UserArtifactId] FROM [eddsdbo].[UserCaseUser] WHERE [CaseUserArtifactID] = {userArtifactId} AND [CaseArtifactID] = {workspaceArtifactId}";
+				int instanceUserArtifactId = _eddsDbContext.ExecuteSqlStatementAsScalar<int>(sqlStatement);
+
+				if (instanceUserArtifactId == 0)
+				{
+					_log.LogWarning("Invalid InstanceUserArtifactID: {instanceUserArtifactId} was returned for UserArtifactId {userArtifactId}",
+						instanceUserArtifactId, userArtifactId);
+					return userArtifactId;
+				}
+
+				return instanceUserArtifactId;
+			}
+			catch (Exception e)
+			{
+				_log.LogError(e, "Expection was thrown when reading Instance User Artifact ID from UserCaseUser for User: {userArtifactId} and Workspace: {workspaceArtifactId}",
+					userArtifactId, workspaceArtifactId);
+			}
+
+			return userArtifactId;
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public bool Validate(string workspaceName, int workspaceArtifactId, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating workspace name.");
+			_logger.LogInformation("Validating workspace name.");
 			bool isWorkspaceNameValid = !workspaceName.Contains(_WORKSPACE_INVALID_NAME_CHAR);
 			if (!isWorkspaceNameValid)
 			{

@@ -163,7 +163,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 			int productionId = await Environment.CreateProductionAsync(workspaceId, productionName).ConfigureAwait(false);
 
-			var dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
 			await ImportHelper.ImportDataAsync(workspaceId, dataTableWrapper, productionId).ConfigureAwait(false);
 
 			return new ProductionDto {ArtifactId = productionId, Name = productionName};
