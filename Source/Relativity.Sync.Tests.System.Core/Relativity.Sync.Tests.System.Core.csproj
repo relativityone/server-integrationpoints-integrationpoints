@@ -51,7 +51,4 @@
 	<ItemGroup>
 		<Reference Include="System.Web.Services" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Helpers\DbContext\" />
-	</ItemGroup>
 </Project>

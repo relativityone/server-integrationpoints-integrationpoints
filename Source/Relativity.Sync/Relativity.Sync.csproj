@@ -36,6 +36,7 @@
   <Import Project="..\..\DevelopmentScripts\Build.Sign.targets" />
   <!-- Relativity Packages with Release Versioning Schema -->
   <ItemGroup>
+    <PackageReference Include="kCura" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
