@@ -5,7 +5,6 @@
   </PropertyGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
-    <PackageReference Update="kCura" Version="[13.1.0]" />
     <PackageReference Update="Relativity" Version="[15.*,16)" />
     <PackageReference Update="Relativity.Services.Interfaces" Version="[13.2.5]" />
     <PackageReference Update="Relativity.Services.Interfaces.Private" Version="[13.1.4]" />
