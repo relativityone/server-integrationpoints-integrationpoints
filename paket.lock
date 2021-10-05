@@ -1,7 +1,7 @@
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Antlr (3.5.0.2)
     ARMTestServices (1.1.1)
     AutoMapper (4.2.1)
@@ -292,7 +292,7 @@ GROUP Sync
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Autofac (4.9.4)
     Banzai (3.0.3)
     Banzai.Autofac (3.0.3)
@@ -331,7 +331,7 @@ NUGET
       Relativity.Kepler.Service (>= 2.7)
       Relativity.Services.DataContracts (>= 13.2.5)
     Relativity.Services.Interfaces.Private (13.1.4)
-    Relativity.Sync (0.8.0-pre.56)
+    Relativity.Sync (0.8.58)
       Autofac (>= 4.9.4 < 5.0)
       Banzai.Autofac (>= 3.0.3 < 4.0)
       Castle.Core (>= 3.3)
@@ -348,10 +348,12 @@ NUGET
       Relativity.Telemetry.APM (>= 2019.1.1 < 2019.2)
       Relativity.Telemetry.DataContracts.Shared (>= 3000.0.1)
       Relativity.Telemetry.Services.Interface (3000.0.1)
+      Relativity.Toggles (>= 1.0.1)
       System.Reactive.Linq (4.0)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (3000.0.1)
     Relativity.Telemetry.Services.Interface (3000.0.1)
+    Relativity.Toggles (1.0.1)
     Relativity.Transfer.Client (7.3.8)
       Newtonsoft.Json (>= 6.0.8)
       Polly (>= 5.3.1)
@@ -366,7 +368,7 @@ GROUP Tests
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Antlr (3.5.0.2)
     Atata (1.6.0)
       Atata.WebDriverExtras (>= 1.3)
@@ -485,7 +487,7 @@ NUGET
       Relativity.Kepler.Service (>= 2.7)
       Relativity.Services.DataContracts (>= 13.2.5)
     Relativity.Services.Interfaces.Private (13.1.4)
-    Relativity.Sync (0.8.0-pre.56)
+    Relativity.Sync (0.8.58)
       Autofac (>= 4.9.4 < 5.0)
       Banzai.Autofac (>= 3.0.3 < 4.0)
       Castle.Core (>= 3.3)
@@ -502,6 +504,7 @@ NUGET
       Relativity.Telemetry.APM (>= 2019.1.1 < 2019.2)
       Relativity.Telemetry.DataContracts.Shared (>= 3000.0.1)
       Relativity.Telemetry.Services.Interface (3000.0.1)
+      Relativity.Toggles (>= 1.0.1)
       System.Reactive.Linq (4.0)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (3000.0.1)
