@@ -7,9 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.API.Context;
-using Relativity.Sync.Tests.System.Core.Helpers;
 
-namespace Relativity.Sync.Tests.System.Core
+namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	public class TestDbContext : IDBContext
 	{
@@ -214,22 +213,22 @@ namespace Relativity.Sync.Tests.System.Core
 			throw new NotImplementedException();
 		}
 
-		public DataSet ExecuteSqlStatementAsDataSet(string sqlStatement)
+		public global::System.Data.DataSet ExecuteSqlStatementAsDataSet(string sqlStatement)
 		{
 			throw new NotImplementedException();
 		}
 
-		public DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, IEnumerable<SqlParameter> parameters)
+		public global::System.Data.DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, IEnumerable<SqlParameter> parameters)
 		{
 			throw new NotImplementedException();
 		}
 
-		public DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, int timeoutValue)
+		public global::System.Data.DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, int timeoutValue)
 		{
 			throw new NotImplementedException();
 		}
 
-		public DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, IEnumerable<SqlParameter> parameters, int timeoutValue)
+		public global::System.Data.DataSet ExecuteSqlStatementAsDataSet(string sqlStatement, IEnumerable<SqlParameter> parameters, int timeoutValue)
 		{
 			throw new NotImplementedException();
 		}
