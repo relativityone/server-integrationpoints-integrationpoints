@@ -150,8 +150,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             const string errorMessage = "An error occured in Execute while sending APM metric";
 
             // Act
-            IDisposable subscription = sutWithErrors.ActivateTimer(1, _jobId, _jobDetails, _jobType);
-            Thread.Sleep(100);
+            sutWithErrors.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            Thread.Sleep(1000);
 
             // Assert
             apmMockWithErrors.Verify(x => x.CountOperation(
