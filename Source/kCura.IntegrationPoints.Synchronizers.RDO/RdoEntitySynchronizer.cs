@@ -208,16 +208,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					//if no Full Name, do not insert record
 					importRow = null;
-					GenerateImportRowError("Entity is missing firstname and lastname. Record will be skipped.");
+					GenerateImportRowError((string)importRow[UniqueIDSourceFieldId], "Entity is missing firstname and lastname. Record will be skipped.");
 				}
 			}
 			return importRow;
 		}
 
-		private void GenerateImportRowError(string errorMessage)
+		private void GenerateImportRowError(string sourceFieldId, string errorMessage)
 		{
-			RaiseDocumentErrorEvent(String.Empty, errorMessage);
-            _logger.LogError(errorMessage);
+			RaiseDocumentErrorEvent(sourceFieldId, errorMessage);
+            _logger.LogError($"There was a problem with record: {sourceFieldId}.{errorMessage}.");
 		}
 
 		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data,
