@@ -206,9 +206,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 				else
 				{
+                    string sourceFieldId = importRow[UniqueIDSourceFieldId] as string ?? String.Empty;
+					GenerateImportRowError(sourceFieldId, "Entity is missing firstname and lastname. Record will be skipped.");
 					//if no Full Name, do not insert record
 					importRow = null;
-					GenerateImportRowError((string)importRow[UniqueIDSourceFieldId], "Entity is missing firstname and lastname. Record will be skipped.");
 				}
 			}
 			return importRow;
