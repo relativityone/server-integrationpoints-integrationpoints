@@ -34,7 +34,6 @@
 	</ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
-    <PackageReference Include="kCura.NUnit.Integration" Version="12.1.179.18" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
   </ItemGroup>
   <!-- Third Party Packages -->

@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			IAPM apm = new NullAPM();
 
-			IHelper helper = new IntegrationHelper();
+			IHelper helper = new TestHelper();
 
 			IRelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), AppSettings.RelativityUrl, helper);
 

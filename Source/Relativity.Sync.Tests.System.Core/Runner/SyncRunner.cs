@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.System.Core.Runner
@@ -33,7 +34,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			_logger = logger;
 			_apmClient = apmClient;
 
-			_helper = new IntegrationHelper();
+			_helper = new TestHelper();
 		}
 
 		/// <summary>
