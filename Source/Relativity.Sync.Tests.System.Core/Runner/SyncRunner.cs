@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
+using Relativity.API;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.System.Core.Runner
@@ -18,6 +18,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		private readonly Uri _relativityUri;
 		private readonly ISyncLog _logger;
 		private readonly IAPM _apmClient;
+		private readonly IHelper _helper;
 
 		/// <summary>
 		/// Default constructor
@@ -32,6 +33,8 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			_relativityUri = relativityUri;
 			_logger = logger;
 			_apmClient = apmClient;
+
+			_helper = new TestHelper();
 		}
 
 		/// <summary>
@@ -99,7 +102,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
 
 			var jobFactory = new SyncJobFactory();
-			var relativityServices = new RelativityServices(_apmClient, _serviceManager, relativityUri);
+			var relativityServices = new RelativityServices(_apmClient, _serviceManager, relativityUri, _helper);
 
 
 			return jobFactory.Create(containerBuilder.Build(), parameters, relativityServices, _logger);
