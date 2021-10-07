@@ -53,11 +53,7 @@ namespace Relativity.Sync.Tests.System
                 .ConfigureAwait(false);
 
             // Assert
-            sourceCaseTag.SourceWorkspaceArtifactId.Should().Be(createdSourceCaseTag.SourceWorkspaceArtifactId);
-            sourceCaseTag.ArtifactId.Should().Be(createdSourceCaseTag.ArtifactId);
-            sourceCaseTag.Name.Should().BeEquivalentTo(createdSourceCaseTag.Name);
-            sourceCaseTag.SourceInstanceName.Should().BeEquivalentTo(createdSourceCaseTag.SourceInstanceName);
-            sourceCaseTag.SourceWorkspaceName.Should().BeEquivalentTo(createdSourceCaseTag.SourceWorkspaceName);
+            sourceCaseTag.Should().BeEquivalentTo(createdSourceCaseTag);
         }
     }
 }
