@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					}
 				}
 			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None, It.IsAny<IProgress<ProgressReport>>()))
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(queryResult);
 
 			// act
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void ItShouldRethrowExceptionWhenObjectManagerQueryFails()
 		{
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None, It.IsAny<IProgress<ProgressReport>>()))
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Throws<InvalidOperationException>();
 
 			// act
@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			{
 				Objects = Enumerable.Empty<RelativityObject>().ToList()
 			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None, It.IsAny<IProgress<ProgressReport>>()))
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(queryResult);
 
 			// act

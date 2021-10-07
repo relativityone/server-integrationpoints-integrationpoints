@@ -97,10 +97,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult()));
+				1
+                )).Returns(Task.FromResult(new QueryResult()));
 			
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
@@ -112,9 +110,7 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>()
+				1
 			)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
@@ -167,10 +163,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult
+				1
+                )).Returns(Task.FromResult(new QueryResult
 			{
 				ObjectType = new ObjectType
 				{
@@ -215,9 +209,7 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>()
+				1
 			)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
@@ -271,10 +263,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult
+				1
+                )).Returns(Task.FromResult(new QueryResult
 			{
 				ObjectType = new ObjectType
 				{
@@ -317,9 +307,7 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>()
+				1
 			)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
@@ -398,10 +386,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Throws<ServiceException>();
+				1
+                )).Throws<ServiceException>();
 
 			// Act
 			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -437,10 +423,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult()));
+				1
+                )).Returns(Task.FromResult(new QueryResult()));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
@@ -483,10 +467,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult()));
+				1
+                )).Returns(Task.FromResult(new QueryResult()));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
@@ -498,9 +480,7 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>()
+				1
 			)).Throws<ServiceException>();
 
 			SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
@@ -539,10 +519,8 @@ namespace Relativity.Sync.Tests.Integration
 				destinationWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>())
-			).Returns(Task.FromResult(new QueryResult()));
+				1
+                )).Returns(Task.FromResult(new QueryResult()));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
 				destinationWorkspaceArtifactId,
@@ -554,9 +532,7 @@ namespace Relativity.Sync.Tests.Integration
 				sourceWorkspaceArtifactId,
 				It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
 				0,
-				1,
-				CancellationToken.None,
-				It.IsAny<IProgress<ProgressReport>>()
+				1
 			)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
 			_objectManagerMock.Setup(x => x.CreateAsync(
@@ -595,10 +571,8 @@ namespace Relativity.Sync.Tests.Integration
 					-1,
 					It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture))),
 					It.IsAny<int>(),
-					It.IsAny<int>(),
-					CancellationToken.None,
-					It.IsAny<IProgress<ProgressReport>>()))
-					.Returns(Task.FromResult(new QueryResult()));
+					It.IsAny<int>()
+                    )).Returns(Task.FromResult(new QueryResult()));
 
 			// Act
 			ExecutionResult result =
@@ -629,10 +603,8 @@ namespace Relativity.Sync.Tests.Integration
 					-1,
 					It.Is<QueryRequest>(y => y.Condition.Contains(sourceWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture))),
 					It.IsAny<int>(),
-					It.IsAny<int>(),
-					CancellationToken.None,
-					It.IsAny<IProgress<ProgressReport>>()))
-					.Returns(Task.FromResult(new QueryResult()));
+					It.IsAny<int>()
+                    )).Returns(Task.FromResult(new QueryResult()));
 
 			// Act
 			ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
