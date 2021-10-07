@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
 
 				try
 				{
-					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+					queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length).ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{

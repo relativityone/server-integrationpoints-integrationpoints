@@ -7,7 +7,6 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors

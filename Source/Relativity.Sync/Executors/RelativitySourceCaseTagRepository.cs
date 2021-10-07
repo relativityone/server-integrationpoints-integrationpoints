@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -79,7 +78,7 @@ namespace Relativity.Sync.Executors
 				{
 					const int start = 0;
 					const int length = 1;
-					queryResult = await objectManager.QueryAsync(destinationWorkspaceArtifactId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+					queryResult = await objectManager.QueryAsync(destinationWorkspaceArtifactId, request, start, length).ConfigureAwait(false);
 				}
 				catch (ServiceException ex)
 				{

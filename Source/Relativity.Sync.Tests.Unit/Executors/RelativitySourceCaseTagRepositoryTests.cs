@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -37,8 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sut = new RelativitySourceCaseTagRepository(serviceFactory.Object, new EmptyLogger());
 		}
 
-
-		[Test]
+        [Test]
 		public async Task ItShouldReadExistingDestinationWorkspaceTag()
 		{
 			Guid caseIdFieldNameGuid = new Guid("90c3472c-3592-4c5a-af01-51e23e7f89a5");
@@ -75,8 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			};
 
 			queryResult.Objects.Add(relativityObject);
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// act
 			RelativitySourceCaseTag tag = await _sut.ReadAsync(0, 0, string.Empty, CancellationToken.None).ConfigureAwait(false);
@@ -93,8 +90,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldReturnNullWhenReadingNotExistingTag()
 		{
 			QueryResult queryResult = new QueryResult();
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
 			// act
 			RelativitySourceCaseTag tag = await _sut.ReadAsync(0, 0, string.Empty, CancellationToken.None).ConfigureAwait(false);
@@ -106,8 +102,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void ItShouldThrowRepositoryExceptionWhenReadServiceCallFails()
 		{
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).Throws<ServiceException>();
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).Throws<ServiceException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ReadAsync(0, 0, string.Empty, CancellationToken.None).ConfigureAwait(false);
@@ -119,8 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public void ItShouldThrowRepositoryExceptionWhenReadFails()
 		{
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-				CancellationToken.None, It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// act
 			Func<Task> action = async () => await _sut.ReadAsync(0, 0, string.Empty, CancellationToken.None).ConfigureAwait(false);
