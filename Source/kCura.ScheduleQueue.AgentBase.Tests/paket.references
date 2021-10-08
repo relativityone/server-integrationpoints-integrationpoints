@@ -5,3 +5,4 @@ kCura.Apps.Common.Utils
 FluentAssertions
 Moq
 NUnit
+Relativity.Toggles
