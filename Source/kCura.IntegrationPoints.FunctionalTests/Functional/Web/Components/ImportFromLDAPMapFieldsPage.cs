@@ -13,10 +13,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     [WaitForDocumentReadyState]
     internal class ImportFromLDAPMapFieldsPage : WorkspacePage<_>
     {
+        [WaitUntilEnabled]
+        [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
         public Button<IntegrationPointViewPage, _> Save { get; private set; }
-
-        [WaitForJQueryAjax]
-        public Button<_> MapAllFields { get; private set; }
 
         [FindById("source-fields")]
         public Select<_> Source { get; private set; }

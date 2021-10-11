@@ -18,21 +18,29 @@ using NUnit.Framework;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
-using System.Threading;
+using FluentAssertions;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
 	[TestFixture, Category("Unit")]
 	public class AgentTests
 	{
-		private Mock<IMessageService> _messageServiceMock = new Mock<IMessageService>();
-		private Mock<IJobHistoryService> _jobHistoryServiceFake = new Mock<IJobHistoryService>();
-		private Mock<IMemoryUsageReporter> _memoryUsageReporter = new Mock<IMemoryUsageReporter>();
+		private Mock<IMessageService> _messageServiceMock;
+		private Mock<IJobHistoryService> _jobHistoryServiceFake;
+		private Mock<IMemoryUsageReporter> _memoryUsageReporter;
 
 		private IWindsorContainer _container;
 
 		private const string _PROVIDER_NAME = "TestProvider";
 		private readonly Guid _BATCH_INSTANCE_GUID = Guid.NewGuid();
+
+		[SetUp]
+		public void SetUp()
+		{
+			_messageServiceMock = new Mock<IMessageService>();
+			_jobHistoryServiceFake = new Mock<IJobHistoryService>();
+			_memoryUsageReporter = new Mock<IMemoryUsageReporter>();
+		}
 
 		[Test]
 		public void ProcessJob_ShouldSendStartMetric_WhenJobHasBeenStarted()
@@ -85,6 +93,24 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				It.IsAny<long>(), 
 				It.IsAny<string>(), 
 				It.Is<string>(jobType => jobType =="Relativity.Sync")), Times.Once);
+		}
+
+		[Test]
+		public void ProcessJob_ShouldNotThrow_WhenJobHistoryDoesNotExist()
+		{
+			// Arrange
+			TestAgent sut = PrepareSut();
+
+			_jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(_BATCH_INSTANCE_GUID))
+				.Returns((JobHistory)null);
+
+			Job job = JobExtensions.CreateJob();
+
+			// Act
+			Action action = () => sut.ProcessJob_Test(job);
+
+			// Assert
+			action.ShouldNotThrow();
 		}
 
 		private TestAgent PrepareSut()

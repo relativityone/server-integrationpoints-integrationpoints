@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -102,6 +103,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			sut.VerifyJobsWereNotProcessed(jobsInQueue);
 
 			FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
+		}
+
+		[IdentifiedTest("0B9C8AC9-B23F-4920-A124-6295D7E7201B")]
+		public void Agent_ShouldUnlockTheJob_WhenUnexpectedExceptionHasBeenThrown()
+		{
+			// Arrange
+			JobTest job = PrepareJob();
+
+			var jobsInQueue = new[] { job.JobId };
+
+			var sut = PrepareSut();
+
+			sut.ProcessJobMockFunc = j => throw new Exception(); 
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			FakeRelativityInstance.Helpers.JobHelper
+				.VerifyJobsAreNotLockedByAgent(sut.AgentID, jobsInQueue);
 		}
 
 		private FakeAgent PrepareSut()
