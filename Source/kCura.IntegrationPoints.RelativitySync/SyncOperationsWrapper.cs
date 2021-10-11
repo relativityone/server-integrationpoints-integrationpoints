@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public IRelativityServices CreateRelativityServices()
 		{
 			return new RelativityServices(_apmMetrics, _syncServiceManager, 
-				ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri(), _helper);
+				ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri());
 		}
 
 		public ISyncLog CreateSyncLog()
