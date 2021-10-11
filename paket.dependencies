@@ -91,7 +91,7 @@ nuget ARMTestServices 1.1.1
 group Tests
 	framework: auto-detect
 	strategy: min
-	source https://proget.kcura.corp/nuget/NuGet
+	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	nuget kCura 13.1.0
 	nuget kCura.Agent ~> 17.1
 	nuget kCura.Apps.Common.Config 2.1.9
@@ -124,6 +124,7 @@ group Tests
 	nuget Selenium.Support 4.0.0-beta4
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
 	nuget Relativity.Sync 0.8.51
+	nuget SystemWrapper.Interfaces 0.25.0.186
 
 group Sync
 	framework: auto-detect
