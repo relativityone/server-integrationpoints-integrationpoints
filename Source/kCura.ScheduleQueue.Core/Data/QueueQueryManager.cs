@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using Relativity.API;
 
@@ -114,6 +113,11 @@ namespace kCura.ScheduleQueue.Core.Data
 		public ICommand UpdateJobDetails(long jobId, string jobDetails)
 		{
 			return new UpdateJobDetails(_queueDbContext, jobId, jobDetails);
+		}
+
+		public IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId)
+		{
+			return new CheckAllSyncWorkerBatchesAreFinished(_queueDbContext, rootJobId);
 		}
 	}
 }

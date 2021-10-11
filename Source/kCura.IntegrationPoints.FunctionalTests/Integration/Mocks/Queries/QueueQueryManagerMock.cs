@@ -4,8 +4,6 @@ using System.Data;
 using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
@@ -245,6 +243,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 					job.JobDetails = jobDetails;
 				}
 			});
+		}
+
+		public IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId)
+		{
+			throw new NotImplementedException();
 		}
 
 		#region Test Verification

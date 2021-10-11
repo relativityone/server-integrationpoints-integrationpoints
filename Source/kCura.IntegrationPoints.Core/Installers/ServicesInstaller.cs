@@ -118,8 +118,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ITabService>().ImplementedBy<TabService>().LifestyleTransient());
 			container.Register(Component.For<ISynchronizerFactory>().ImplementedBy<GeneralWithEntityRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IProviderFactory>().ImplementedBy<DefaultProviderFactory>().DependsOn(new { windsorContainer = container }).LifestyleTransient());
-			container.Register(Component.For<IManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
-			container.Register(Component.For<IEntityManagerQueryManager>().ImplementedBy<EntityManagerQueryManager>().LifestyleTransient().Named(nameof(EntityManagerQueryManager)));
 			container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<EntityManagerLinksSanitizer>().LifestyleTransient().Named(nameof(EntityManagerLinksSanitizer)));
 			container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleSingleton());
 			container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());

@@ -90,6 +90,22 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UPDATE 
+        ///				[eddsdbo].[{0}]
+        ///SET
+        ///				[LockedByAgentID] = NULL
+        ///FROM 
+        ///				[eddsdbo].[{0}] WITH (UPDLOCK, ROWLOCK)
+        ///WHERE
+        ///				[JobID] = @JobID.
+        /// </summary>
+        internal static string CheckAllSyncWorkerBatchesAreFinished {
+            get {
+                return ResourceManager.GetString("CheckAllSyncWorkerBatchesAreFinished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to --If an agent was deleted while a job was running and not completed, we remove the agent lock
         ///--from the job so that another agent can pick it up.
         ///
