@@ -50,7 +50,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             }
 
             // Preparing data for LoadFile and placing it in the right location
-            // TEMPORARY COMMENTED!
             string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
             LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).Wait();
 
