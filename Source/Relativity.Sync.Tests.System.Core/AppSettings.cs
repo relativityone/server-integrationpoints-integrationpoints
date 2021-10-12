@@ -78,10 +78,6 @@ namespace Relativity.Sync.Tests.System.Core
 		public static int ArmCacheLocationId => int.Parse(GetConfigValue("ArmCacheLocationId"));
 		
 		public static int ArmFileRepositoryId => int.Parse(GetConfigValue("ArmFileRepositoryId"));
-
-		public static string DataTransferLegacyRAP => Path.Combine(
-			Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-			GetConfigValue("DataTransferLegacyRAP"));
 		
 		private static Uri BuildHostNamedBasedUri(string path)
 		{
