@@ -2,13 +2,13 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Toggles;
 
@@ -38,11 +38,22 @@ namespace kCura.IntegrationPoints.Agent
 		public bool ShouldUseRelativitySync(Job job)
 		{
 			_logger.LogDebug("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
-			try
+			
+            try
 			{
+                if (IsEnableSyncNonDocumentFlowToggleEnabled())
+                {
+                    _logger.LogInformation(
+                        $"Non-Document objects import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncNonDocumentFlowToggle)} is enabled. IntegrationPointId: {{integrationPointId}}",
+                        job.JobId, job.RelatedObjectArtifactID);
+
+                    return false;
+                }
+
 				IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
 				ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
 					integrationPoint.DestinationProvider ?? 0);
+				
 				if (providerType == ProviderType.Relativity)
 				{
 					SourceConfiguration sourceConfiguration =
@@ -52,7 +63,7 @@ namespace kCura.IntegrationPoints.Agent
 
 					if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
 					{
-						if (importSettings.ImageImport && !IsSyncImageFlowToggleEnabled())
+                        if (importSettings.ImageImport && !IsSyncImageFlowToggleEnabled())
 						{
 							_logger.LogInformation(
 								$"Old image import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncImageFlowToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
@@ -80,22 +91,33 @@ namespace kCura.IntegrationPoints.Agent
 			}
 		}
 
+        private bool IsEnableSyncNonDocumentFlowToggleEnabled()
+        {
+            return IsToggleEnabled<EnableSyncNonDocumentFlowToggle>();
+		}
+
+
 		private bool IsSyncImageFlowToggleEnabled()
-		{
-			_logger.LogDebug($"Checking if {nameof(EnableSyncImageFlowToggle)} is enabled.");
+        {
+            return IsToggleEnabled<EnableSyncImageFlowToggle>();
+        }
 
-			try
-			{
-				bool isEnabled = _toggleProvider.IsEnabled<EnableSyncImageFlowToggle>();
-				_logger.LogInformation($"Confirmed that {nameof(EnableSyncImageFlowToggle)} is {(isEnabled ? "enabled" : "disabled")}.");
-				return isEnabled;
+        private bool IsToggleEnabled<T>() where T: IToggle
+        {
+            _logger.LogDebug($"Checking if {nameof(T)} is enabled.");
 
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Checking if {nameof(EnableSyncImageFlowToggle)} is enabled operation failed.");
-				throw;
-			}
+            try
+            {
+                bool isEnabled = _toggleProvider.IsEnabled<IToggle>();
+                _logger.LogInformation($"Confirmed that {nameof(T)} is {(isEnabled ? "enabled" : "disabled")}.");
+                return isEnabled;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Checking if {nameof(T)} is enabled operation failed.");
+                throw;
+            }
 		}
 
 		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
