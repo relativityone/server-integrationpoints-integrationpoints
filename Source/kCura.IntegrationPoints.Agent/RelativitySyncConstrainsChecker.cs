@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Agent
 
             try
             {
-                bool isEnabled = _toggleProvider.IsEnabled<IToggle>();
+                bool isEnabled = _toggleProvider.IsEnabled<T>();
                 _logger.LogInformation($"Confirmed that {nameof(T)} is {(isEnabled ? "enabled" : "disabled")}.");
                 return isEnabled;
 
