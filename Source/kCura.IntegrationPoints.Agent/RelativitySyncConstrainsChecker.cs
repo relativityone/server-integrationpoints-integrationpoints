@@ -41,15 +41,6 @@ namespace kCura.IntegrationPoints.Agent
 			
             try
 			{
-                if (IsEnableSyncNonDocumentFlowToggleEnabled())
-                {
-                    _logger.LogInformation(
-                        $"Non-Document objects import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncNonDocumentFlowToggle)} is enabled. IntegrationPointId: {{integrationPointId}}",
-                        job.JobId, job.RelatedObjectArtifactID);
-
-                    return false;
-                }
-
 				IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
 				ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
 					integrationPoint.DestinationProvider ?? 0);
@@ -63,7 +54,16 @@ namespace kCura.IntegrationPoints.Agent
 
 					if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
 					{
-                        if (importSettings.ImageImport && !IsSyncImageFlowToggleEnabled())
+                        if (IsEnableSyncNonDocumentFlowToggleEnabled())
+                        {
+                            _logger.LogInformation(
+                                $"Non-Document objects import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncNonDocumentFlowToggle)} is enabled. IntegrationPointId: {{integrationPointId}}",
+                                job.JobId, job.RelatedObjectArtifactID);
+
+                            return false;
+                        }
+
+						if (importSettings.ImageImport && !IsSyncImageFlowToggleEnabled())
 						{
 							_logger.LogInformation(
 								$"Old image import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncImageFlowToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
