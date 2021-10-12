@@ -2,6 +2,7 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -82,6 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			_toggleProvider = new Mock<IToggleProvider>();
 			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncImageFlowToggle>()).Returns(true);
+			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncNonDocumentFlowToggle>()).Returns(false);
 
 			_jobHistoryService = new Mock<IJobHistoryService>();
 
@@ -150,7 +152,21 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			return result;
 		}
 
+        [TestCase(false, ExpectedResult = true)]
+        [TestCase(true, ExpectedResult = false)]
+        public bool ShouldUseRelativitySync_ShouldRespectEnableSyncNonDocumentFlowToggle(bool toggleEnabled)
+        {
+            // Arrange
+            _sourceConfiguration.TypeOfExport = SourceConfiguration.ExportType.SavedSearch;
 
+            _toggleProvider.Setup(x => x.IsEnabled<EnableSyncNonDocumentFlowToggle>()).Returns(toggleEnabled);
+
+            // Act
+            bool result = _instance.ShouldUseRelativitySync(_job);
+
+            // Assert
+            return result;
+        }
 
 		[TestCase(ProviderType.FTP)]
 		[TestCase(ProviderType.ImportLoadFile)]
