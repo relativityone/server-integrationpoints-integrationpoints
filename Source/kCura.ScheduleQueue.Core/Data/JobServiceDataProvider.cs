@@ -34,14 +34,7 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			return dataTable?.Rows?.Count > 0 ? dataTable.Rows[0] : null;
 		}
-
-		public void UpdateScheduledJob(long jobId, DateTime nextUtcRunDateTime)
-		{
-			_queryManager
-				.UpdateScheduledJob(jobId, nextUtcRunDateTime)
-				.Execute();
-		}
-
+		
 		public void UnlockScheduledJob(int agentId)
 		{
 			_queryManager
@@ -138,6 +131,13 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			_queryManager
 				.CleanupJobQueueTable()
+				.Execute();
+		}
+
+		public void CleanupScheduledJobsQueue()
+		{
+			_queryManager
+				.CleanupScheduledJobsQueue()
 				.Execute();
 		}
 	}

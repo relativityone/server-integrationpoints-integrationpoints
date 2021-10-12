@@ -11,6 +11,7 @@ using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
@@ -20,6 +21,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private Mock<IJobService> _jobServiceMock;
 		private Mock<IQueueJobValidator> _queueJobValidatorFake;
 		private Mock<IQueueQueryManager> _queryManager;
+		private Mock<IToggleProvider> _toggleProviderFake;
 
 		[Test]
 		public void Execute_ShouldProcessJobInQueue()
@@ -162,8 +164,10 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 			_queryManager = new Mock<IQueueQueryManager>();
 
+			_toggleProviderFake = new Mock<IToggleProvider>();
+
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
-				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, emptyLog.Object)
+				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, _toggleProviderFake.Object, emptyLog.Object)
 			{
 				JobResult = jobStatus
 			};
@@ -190,8 +194,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		{
 			public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IAPILog log = null) 
-				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, log)
+				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog log = null) 
+				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, toggleProvider, log)
 			{
 				//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
 				typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)

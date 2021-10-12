@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Toggles;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -19,9 +20,14 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IQueueQueryManager _queryManager;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
+		private IToggleProvider _toggleProvider;
+
 		private const int _MAX_MESSAGE_LENGTH = 10000;
+
 		private readonly Guid _agentGuid;
+		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
+
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
 			[LogCategory.Debug] = 20,
@@ -34,26 +40,29 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
+			_toggleProvider = toggleProvider;
 			_queryManager = queryManager;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
+
+			_agentId = new Lazy<int>(GetAgentID);
 
 			_loggerLazy = logger != null
 				? new Lazy<IAPILog>(() => logger)
 				: new Lazy<IAPILog>(InitializeLogger);
 		}
+
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
 
 		protected virtual void Initialize()
 		{
 			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
-
-
+			
 			if (_queryManager == null)
 			{
 				_queryManager = new QueueQueryManager(Helper, _agentGuid);
@@ -72,6 +81,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			if (_queueJobValidator == null)
 			{
 				_queueJobValidator = new QueueJobValidator(Helper);
+			}
+
+			if (_toggleProvider == null)
+			{
+				_toggleProvider = ToggleProvider.Current;
 			}
 		}
 
@@ -189,13 +203,13 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				if (ToBeRemoved)
 				{
-					_jobService.UnlockJobs(AgentID); // what if exception
+					_jobService.UnlockJobs(_agentId.Value); // what if exception
 				}
 			}
 			catch (Exception ex)
 			{
 				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
-				_jobService.UnlockJobs(AgentID);
+				_jobService.UnlockJobs(_agentId.Value);
 			}
 		}
 
@@ -253,7 +267,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			try
 			{
-				return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), AgentID);
+				return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
 			}
 			catch (Exception ex)
 			{
@@ -279,8 +293,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
-		protected void NotifyAgentTab(LogCategory category, string message,
-			string detailmessage = null)
+		protected void NotifyAgentTab(LogCategory category, string message, string detailmessage = null)
 		{
 			string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
 			switch (category)
@@ -303,8 +316,20 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
-		protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null,
-			string details = null);
+		protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null);
+
+		private int GetAgentID()
+		{
+			if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
+			{
+				// we can omit some less relevant bits representing years (https://stackoverflow.com/a/2695525/1579824)
+				return Math.Abs((int)(DateTime.Now.Ticks >> 23));
+			}
+			else
+			{
+				return AgentID;
+			}
+		}
 
 		private IAPILog InitializeLogger()
 		{
@@ -369,15 +394,9 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void LogJobInformation(Job job)
 		{
-			Logger.LogInformation("Job {jobId} has been picked up from the queue. Job Information: " +
-			                    "WorkspaceID: {workspaceId} " +
-			                    "RelatedObjectArtifactID: {relatedObjectArtifactId} " +
-			                    "Task types: {taskType} " +
-			                    "Submitted by: {submittedBy} " +
-								"Details: {jobDetails}" +
-								"StopState: {stopState}",
-					job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, job.SubmittedBy, job.JobDetails, job.StopState);
+			Logger.LogInformation("Job ID {jobId} has been picked up from the queue by Agent ID {agentId}. Job Information: {@job}", job.JobId, _agentId, job.RemoveSensitiveData());
 		}
+
 		#endregion
 	}
 }

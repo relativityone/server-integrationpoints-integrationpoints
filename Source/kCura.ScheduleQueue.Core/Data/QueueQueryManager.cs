@@ -43,12 +43,7 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			return new GetNextJobWithoutResourceGroup(_queueDbContext, agentId, agentTypeId);
 		}
-
-		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
-		{
-			return new UpdateScheduledJob(_queueDbContext, jobId, nextUtcRunTime);
-		}
-
+		
 		public ICommand UnlockScheduledJob(int agentId)
 		{
 			return new UnlockScheduledJob(_queueDbContext, agentId);
@@ -84,6 +79,11 @@ namespace kCura.ScheduleQueue.Core.Data
 		public ICommand CleanupJobQueueTable()
 		{
 			return new CleanupJobQueueTable(_queueDbContext);
+		}
+
+		public ICommand CleanupScheduledJobsQueue()
+		{
+			return new CleanupScheduledJobsQueue(_queueDbContext);
 		}
 
 		public IQuery<DataTable> GetAllJobs()

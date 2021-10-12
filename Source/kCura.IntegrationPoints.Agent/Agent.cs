@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
@@ -35,13 +34,14 @@ using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
+using Relativity.Toggles;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
 {
 	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
-	[Description("An agent that manages Integration Point jobs.")]
+	[System.ComponentModel.Description("An agent that manages Integration Point jobs.")]
 	[WorkloadDiscovery.CustomAttributes.Path("Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Integration%20Points%20Agent/GetWorkloadAsync")]
 	public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IRemovableAgent, IDisposable
 	{
@@ -72,9 +72,8 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected Agent(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IAPILog logger = null) 
-			: base(agentGuid, agentService, 
-				jobService, scheduleRuleFactory, queueJobValidator, queryManager, logger)
+				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog logger = null) 
+			: base(agentGuid, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, toggleProvider, logger)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);

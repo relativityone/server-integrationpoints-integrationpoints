@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Data;
+using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -26,9 +27,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public FakeAgent(IWindsorContainer container, AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IAPILog logger = null, bool shouldRunOnce = true)
+				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog logger = null, bool shouldRunOnce = true)
 			: base(agent.AgentGuid, agentService, jobService, scheduleRuleFactory,
-				queueJobValidator, queryManager, logger)
+				queueJobValidator, queryManager, toggleProvider, logger)
 		{
 			_shouldRunOnce = shouldRunOnce;
 			_container = container;
