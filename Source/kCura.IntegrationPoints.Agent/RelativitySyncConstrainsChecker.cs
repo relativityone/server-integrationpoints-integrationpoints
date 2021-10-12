@@ -96,7 +96,6 @@ namespace kCura.IntegrationPoints.Agent
             return IsToggleEnabled<EnableSyncNonDocumentFlowToggle>();
 		}
 
-
 		private bool IsSyncImageFlowToggleEnabled()
         {
             return IsToggleEnabled<EnableSyncImageFlowToggle>();

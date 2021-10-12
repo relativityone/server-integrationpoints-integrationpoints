@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Common.Toggles
 {
-    [DefaultValue(true)]
+    [DefaultValue(false)]
     public class EnableSyncNonDocumentFlowToggle : IToggle
     {
     }
