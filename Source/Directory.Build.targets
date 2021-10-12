@@ -6,9 +6,9 @@
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
     <PackageReference Update="Relativity" Version="[15.*,16)" />
-    <PackageReference Update="Relativity.Services.Interfaces" Version="[13.2.5]" />
-    <PackageReference Update="Relativity.Services.Interfaces.Private" Version="[13.1.4]" />
-    <PackageReference Update="Relativity.Services.DataContracts" Version="[13.2.5]" />
+    <PackageReference Update="Relativity.Services.Interfaces" Version="[13.5.0, 14.0.0)" />
+    <PackageReference Update="Relativity.Services.Interfaces.Private" Version="[13.0.0, 14.0.0)" />
+    <PackageReference Update="Relativity.Services.DataContracts" Version="[13.5.0, 14.0.0)" />
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <!-- Changing version here also requires changing version in assembly binding present in system tests app.config -->
