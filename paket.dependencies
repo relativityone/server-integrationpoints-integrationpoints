@@ -1,7 +1,6 @@
 framework: net462
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
-source c:\LocalNuget
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.2.1
@@ -94,7 +93,6 @@ group Tests
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
-	source c:\LocalNuget
 	
 	nuget kCura 14.2.5
 	nuget kCura.Agent ~> 17.1
@@ -127,16 +125,15 @@ group Tests
 	nuget Relativity.Testing.Framework.RingSetup 0.11.0
 	nuget Selenium.Support 4.0.0-beta4
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
-    nuget Relativity.Sync 0.1.5-local
+    nuget Relativity.Sync 0.8.0-pre.62
 	nuget SystemWrapper.Interfaces 0.25.0.186
 
 group Sync
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
-	source c:\LocalNuget
 	
-    nuget Relativity.Sync 0.1.5-local
+    nuget Relativity.Sync 0.8.0-pre.62
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
