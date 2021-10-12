@@ -32,9 +32,7 @@ namespace Relativity.Sync.Tests.System.Core
 			ConfigureRequiredInstanceSettings();
 
 			OverrideBanzaiLogger();
-
-			InstallDataTransferLegacyApplication();
-		}
+        }
 
 		private static void SuppressCertificateCheckingIfConfigured()
 		{
@@ -72,15 +70,5 @@ namespace Relativity.Sync.Tests.System.Core
 				Value = "True"
 			});
 		}
-
-		private void InstallDataTransferLegacyApplication()
-		{
-			ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
-
-			applicationService.InstallToLibrary(AppSettings.DataTransferLegacyRAP, new LibraryApplicationInstallOptions
-			{
-				CreateIfMissing = true
-			});
-		}
-	}
+    }
 }
