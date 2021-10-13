@@ -133,3 +133,29 @@ The actual logic for event handling needs to be implemented inside `integration-
 
 - <https://einstein.kcura.com/display/DV/Converting+Relativity+Dynamic+Objects+to+Relativity+Forms>
 - <https://platform.relativity.com/RelativityOne/Content/Relativity_Forms/Relativity_Forms_API.htm>
+
+## REL-595056 [RIP] [Forms] Research UI interaction events chain in IP summary page
+
+When integrationPoint job is selected then integrationPointHub.js is loaded. 
+When it is created IntegrationPointDataHub object is created. IntegrationPointDataHub 
+periodically (every 5s) checks buttons state on the backend side and sends their states
+to the frontend. In frontend hub.client.updateIntegrationPointData function is called 
+and it updates buttons states and events that will be invoked in case of clicking 
+Integration Point UI buttons.
+
+On the backed side in IntegrationPointDataHub class update interval is made by 
+UpdateTimeElapsed method assignment to ElapsedEventHandler event. When 5s elapsed 
+(updateInterval field) UpdateTimeElapsed method is invoked. Then for every key in tasks
+(that is set in AddTask method when page is loaded) UpdateIntegrationPointDataAsync and 
+UpdateIntegrationPointJobStatusTableAsync methods are called. In both methods 
+"Clients.Group(key.ToString())" can be found. Dynamic objects that will be invoked 
+after this statement is invocation of function in _integrationPointHub.js, 
+ie. hub.client.updateIntegrationPointData.
+
+Frontend functions that are called when some button is clicked can be found in 
+relativity-provider-view.js. When some button is clicked then function from this file 
+is invoked and it invokes methods in JobController class. The names of frontend 
+functions that will be invoked when some button is clicked are defined in 
+OnClickEventConstructor class and are updated after every call of 
+IntegrationPointDataHub.UpdateTimerElapsed -> UpdateIntegrationPointDataAsync -> 
+OnClickEventConstructor.GetOnClickEvents.
