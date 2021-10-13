@@ -107,9 +107,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					.Execute();
 				if (!isPrimaryBatchWorkComplete)
 				{
-					LogOtherSyncWorkerBatchesAreInProgress(job);
-					Guid batchInstance = Serializer.Deserialize<TaskParameters>(job.JobDetails).BatchInstance;
-					new TaskJobSubmitter(JobManager, JobService, job, TaskType.SyncEntityManagerWorker, batchInstance).SubmitJob(jobParameters);
+					LogOtherSyncWorkerBatchesAreInProgress(job, BatchInstance);
+					
+					new TaskJobSubmitter(JobManager, JobService, job, TaskType.SyncEntityManagerWorker, BatchInstance).SubmitJob(jobParameters);
 					return;
 				}
 
@@ -225,6 +225,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private EntityManagerJobParameters GetParameters(Job job)
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+			BatchInstance = taskParameters.BatchInstance;
+
 			EntityManagerJobParameters jobParameters;
 			if (taskParameters.BatchParameters is JObject)
 			{
@@ -537,10 +539,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogInformation("Start reconfiguring import API settings for: {entityManagerFieldArtifactID}", entityManagerFieldArtifactID);
 		}
 
-		private void LogOtherSyncWorkerBatchesAreInProgress(Job job)
+		private void LogOtherSyncWorkerBatchesAreInProgress(Job job, Guid batchInstance)
 		{
-			_logger.LogInformation("Other SyncWorker batches for {rootJobId} are still in progress. Job {jobId} is re-submitted to the queue.",
-				job.RootJobId, job.JobId);
+			_logger.LogInformation("Other SyncWorker batches for {rootJobId} are still in progress. " +
+			                       "Job {jobId} is re-submitted to the queue with batchInstance {batchInstance}",
+				job.RootJobId, job.JobId, batchInstance);
 		}
 
 		#endregion
