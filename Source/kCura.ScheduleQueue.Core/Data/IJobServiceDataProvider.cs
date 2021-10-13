@@ -10,7 +10,6 @@ namespace kCura.ScheduleQueue.Core.Data
         DataTable GetJobsByIntegrationPointId(long integrationPointId);
         DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resurceGroupIdsArray);
         DataRow GetNextQueueJob(int agentId, int agentTypeId);
-        void UpdateScheduledJob(long jobId, DateTime nextUtcRunDateTime);
 
 	    void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
 		    string taskType,
@@ -30,6 +29,7 @@ namespace kCura.ScheduleQueue.Core.Data
 	    DataTable GetAllJobs();
 		int UpdateStopState(IList<long> jobIds, StopState state);
         void CleanupJobQueueTable();
+        void CleanupScheduledJobsQueue();
         void UnlockScheduledJob(int agentId);
 
         /// <summary>

@@ -15,9 +15,7 @@ namespace kCura.IntegrationPoints.Data
 		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
 
 		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId);
-
-		ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime);
-
+		
 		ICommand UnlockScheduledJob(int agentId);
 
 		ICommand UnlockJob(long jobId);
@@ -33,6 +31,8 @@ namespace kCura.IntegrationPoints.Data
 			string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
 		ICommand CleanupJobQueueTable();
+
+		ICommand CleanupScheduledJobsQueue();
 
 		IQuery<DataTable> GetAllJobs();
 		
