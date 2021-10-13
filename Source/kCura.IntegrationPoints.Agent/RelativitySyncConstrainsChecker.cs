@@ -2,7 +2,6 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Toggles;
-using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
