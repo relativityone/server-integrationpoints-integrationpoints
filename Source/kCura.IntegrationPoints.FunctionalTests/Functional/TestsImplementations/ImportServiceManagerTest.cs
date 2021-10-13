@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoints.Data;
-using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Functional.DataModels;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
@@ -57,7 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetIntegrationPointsConstantsAsync().GetAwaiter().GetResult();
         }
 
-        public async Task<int> RunIntegrationPointAndCheckCorectness()
+        public async Task RunIntegrationPointAndCheckCorectness()
         {
             IntegrationPointModel integrationPoint = GetIntegrationPointAsync();
             await _ripApi.CreateIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID).ConfigureAwait(false);
