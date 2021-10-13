@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Toggles;
 using kCura.ScheduleQueue.Core;
@@ -21,6 +22,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IToggleProvider _toggleProvider;
+		private IDateTime _dateTime;
 
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
@@ -40,13 +42,14 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IDateTime dateTime = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
 			_toggleProvider = toggleProvider;
+			_dateTime = dateTime;
 			_queryManager = queryManager;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
@@ -86,6 +89,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			if (_toggleProvider == null)
 			{
 				_toggleProvider = ToggleProvider.Current;
+			}
+
+			if (_dateTime == null)
+			{
+				_dateTime = new DateTimeWrapper();
 			}
 		}
 
@@ -318,12 +326,12 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null);
 
-		private int GetAgentID()
+		protected int GetAgentID()
 		{
 			if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
 			{
 				// we can omit some less relevant bits representing years (https://stackoverflow.com/a/2695525/1579824)
-				return Math.Abs((int)(DateTime.Now.Ticks >> 23));
+				return Math.Abs((int)(_dateTime.UtcNow.Ticks >> 23));
 			}
 			else
 			{

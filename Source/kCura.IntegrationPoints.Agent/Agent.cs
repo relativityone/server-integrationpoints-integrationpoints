@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -72,8 +73,8 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected Agent(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog logger = null) 
-			: base(agentGuid, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, toggleProvider, logger)
+				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IDateTime dateTime = null, IAPILog logger = null) 
+			: base(agentGuid, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, toggleProvider, dateTime, logger)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
