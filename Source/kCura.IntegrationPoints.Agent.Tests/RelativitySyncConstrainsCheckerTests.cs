@@ -149,8 +149,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			return result;
 		}
 
-        [TestCase(false, ExpectedResult = true)]
-        [TestCase(true, ExpectedResult = false)]
+        [TestCase(false, ExpectedResult = false)]
+        [TestCase(true, ExpectedResult = true)]
         public bool ShouldUseRelativitySync_ShouldRespectEnableSyncNonDocumentFlowToggle(bool toggleEnabled)
         {
             // Arrange

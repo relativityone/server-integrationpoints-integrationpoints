@@ -53,16 +53,16 @@ namespace kCura.IntegrationPoints.Agent
 
 					if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
 					{
-                        if (IsEnableSyncNonDocumentFlowToggleEnabled())
+                        if (IsToggleEnabled<EnableSyncNonDocumentFlowToggle>())
                         {
                             _logger.LogInformation(
                                 $"Non-Document objects import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncNonDocumentFlowToggle)} is enabled. IntegrationPointId: {{integrationPointId}}",
                                 job.JobId, job.RelatedObjectArtifactID);
 
-                            return false;
+                            return true;
                         }
 
-						if (importSettings.ImageImport && !IsSyncImageFlowToggleEnabled())
+						if (importSettings.ImageImport && !IsToggleEnabled<EnableSyncImageFlowToggle>())
 						{
 							_logger.LogInformation(
 								$"Old image import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncImageFlowToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Agent
 							return false;
 						}
 
-						_logger.LogInformation(
+                        _logger.LogInformation(
 							"Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}",
 							job.JobId, job.RelatedObjectArtifactID);
 						return true;
@@ -89,16 +89,6 @@ namespace kCura.IntegrationPoints.Agent
 				return false;
 			}
 		}
-
-        private bool IsEnableSyncNonDocumentFlowToggleEnabled()
-        {
-            return IsToggleEnabled<EnableSyncNonDocumentFlowToggle>();
-		}
-
-		private bool IsSyncImageFlowToggleEnabled()
-        {
-            return IsToggleEnabled<EnableSyncImageFlowToggle>();
-        }
 
         private bool IsToggleEnabled<T>() where T: IToggle
         {
