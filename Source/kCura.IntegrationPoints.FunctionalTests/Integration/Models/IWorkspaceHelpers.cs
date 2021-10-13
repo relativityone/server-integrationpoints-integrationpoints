@@ -7,6 +7,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         DestinationProviderHelper DestinationProviderHelper { get; }
         SourceProviderHelper SourceProviderHelper { get; }
         IntegrationPointHelper IntegrationPointHelper { get; }
+        IntegrationPointProfileHelper IntegrationPointProfileHelper { get; }
         IntegrationPointTypeHelper IntegrationPointTypeHelper { get; }
         JobHistoryHelper JobHistoryHelper { get; }
         FieldsMappingHelper FieldsMappingHelper { get; }

@@ -70,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public FakeUser User { get; set; }
 
 		public ISerializer Serializer { get; set; }
-		
+
 		[SetUp]
 		public virtual void SetUp()
 		{
