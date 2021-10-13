@@ -8,10 +8,8 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
@@ -82,6 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			_toggleProvider = new Mock<IToggleProvider>();
 			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncImageFlowToggle>()).Returns(true);
+			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncNonDocumentFlowToggle>()).Returns(false);
 
 			_jobHistoryService = new Mock<IJobHistoryService>();
 
@@ -150,7 +149,21 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			return result;
 		}
 
+        [TestCase(false, ExpectedResult = true)]
+        [TestCase(true, ExpectedResult = true)]
+        public bool ShouldUseRelativitySync_ShouldRespectEnableSyncNonDocumentFlowToggle(bool toggleEnabled)
+        {
+            // Arrange
+            _sourceConfiguration.TypeOfExport = SourceConfiguration.ExportType.SavedSearch;
 
+			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncNonDocumentFlowToggle>()).Returns(toggleEnabled);
+
+            // Act
+            bool result = _instance.ShouldUseRelativitySync(_job);
+
+            // Assert
+            return result;
+        }
 
 		[TestCase(ProviderType.FTP)]
 		[TestCase(ProviderType.ImportLoadFile)]
