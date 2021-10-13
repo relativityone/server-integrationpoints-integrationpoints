@@ -149,14 +149,14 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			return result;
 		}
 
-        [TestCase(false, ExpectedResult = false)]
+        [TestCase(false, ExpectedResult = true)]
         [TestCase(true, ExpectedResult = true)]
         public bool ShouldUseRelativitySync_ShouldRespectEnableSyncNonDocumentFlowToggle(bool toggleEnabled)
         {
             // Arrange
             _sourceConfiguration.TypeOfExport = SourceConfiguration.ExportType.SavedSearch;
 
-            _toggleProvider.Setup(x => x.IsEnabled<EnableSyncNonDocumentFlowToggle>()).Returns(toggleEnabled);
+			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncNonDocumentFlowToggle>()).Returns(toggleEnabled);
 
             // Act
             bool result = _instance.ShouldUseRelativitySync(_job);
