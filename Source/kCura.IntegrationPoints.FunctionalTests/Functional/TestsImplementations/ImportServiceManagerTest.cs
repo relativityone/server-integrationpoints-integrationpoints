@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using FluentAssertions;
+using kCura.IntegrationPoints.Data;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Functional.DataModels;
@@ -64,7 +65,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID).ConfigureAwait(false);
             await WaitForJobToFinishSuccessfullyAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 250);
             List<RelativityObject> workspaceDocs = GetAllDocumentsFromWorkspace(SourceWorkspace.ArtifactID);
-            return workspaceDocs.Count;
+            workspaceDocs.Count.Should().Be(10);
         }
 
         private static void InstallARMTestServicesToWorkspace()
