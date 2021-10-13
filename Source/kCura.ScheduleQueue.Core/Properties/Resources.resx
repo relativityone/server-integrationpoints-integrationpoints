@@ -157,9 +157,6 @@
   <data name="UnlockScheduledJob" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\resources\unlockscheduledjob.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="UpdateScheduledJob" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\data\resources\updatescheduledjob.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="UpdateStopState" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Data\Resources\UpdateStopState.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -171,5 +168,8 @@
   </data>
   <data name="GetNextJobWithoutResourceGroup" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Data\Resources\GetNextJobWithoutResourceGroup.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="CleanupScheduledJobsQueue" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Data\Resources\CleanupScheduledJobsQueue.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

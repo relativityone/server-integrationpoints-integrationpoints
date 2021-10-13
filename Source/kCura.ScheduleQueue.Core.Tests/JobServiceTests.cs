@@ -444,6 +444,49 @@ namespace kCura.ScheduleQueue.Core.Tests
 			Assert.Throws<InvalidOperationException>(() => service.UpdateStopState(jobIds, stopState));
 		}
 
+		[TestCase(true)]
+		[TestCase(false)]
+		public void CleanupJobQueueTable_ShouldAlwaysCleanupScheduledJobsQueue(bool enableKubernetesMode)
+		{
+			// arrange
+			_toggleProviderMock.IsEnabled<EnableKubernetesMode>().Returns(enableKubernetesMode);
+			var sut = PrepareSut();
+
+			// act
+			sut.CleanupJobQueueTable();
+
+			// assert
+			_dataProviderMock.Received().CleanupScheduledJobsQueue();
+		}
+
+		[Test]
+		public void CleanupJobQueueTable_ShouldNotCleanupJobQueueTable_WhenInKubernetesMode()
+		{
+			// arrange
+			_toggleProviderMock.IsEnabled<EnableKubernetesMode>().Returns(true);
+			var sut = PrepareSut();
+
+			// act
+			sut.CleanupJobQueueTable();
+
+			// assert
+			_dataProviderMock.DidNotReceive().CleanupJobQueueTable();
+		}
+
+		[Test]
+		public void CleanupJobQueueTable_ShouldCleanupJobQueueTable_WhenNotInKubernetesMode()
+		{
+			// arrange
+			_toggleProviderMock.IsEnabled<EnableKubernetesMode>().Returns(false);
+			var sut = PrepareSut();
+
+			// act
+			sut.CleanupJobQueueTable();
+
+			// assert
+			_dataProviderMock.Received().CleanupJobQueueTable();
+		}
+
 		private JobService PrepareSut()
 		{
 			return new JobService(_agentService, _dataProviderMock, _toggleProviderMock, _mockEmptyDbHelper);
