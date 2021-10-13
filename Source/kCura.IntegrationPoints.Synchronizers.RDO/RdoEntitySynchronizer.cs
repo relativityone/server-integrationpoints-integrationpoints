@@ -218,7 +218,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void GenerateImportRowError(string sourceFieldId, string errorMessage)
 		{
 			RaiseDocumentErrorEvent(sourceFieldId, errorMessage);
-            _logger.LogError($"There was a problem with record: {sourceFieldId}.{errorMessage}.");
+			_logger.LogWarning("There was a problem with record: {sanitizedSourceFieldId}. {errorMessage}", SanitizeString(sourceFieldId), errorMessage );
+		}
+
+		private string SanitizeString(string sensitiveString)
+		{
+			int lettersToShow = 2;
+			//because how sensitive can be 4 letters word?
+			if (sensitiveString.Length <= lettersToShow * 2)
+			{
+				return sensitiveString;
+			}
+			return sensitiveString.Substring(0, lettersToShow) + "..." + sensitiveString.Substring(sensitiveString.Length - lettersToShow);
 		}
 
 		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data,

@@ -160,6 +160,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			});
 		}
 
+		public ICommand CleanupScheduledJobsQueue()
+		{
+			return ActionCommand.Empty;
+		}
+
 		public IQuery<DataTable> GetAllJobs()
 		{
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
@@ -168,12 +173,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
-
-		public IQuery<int> GetPendingJobsCount()
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
 		{
 			int affectedRows = 0;
