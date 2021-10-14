@@ -5,11 +5,11 @@ using System.Reflection;
 using Microsoft.VisualBasic.FileIO;
 using Relativity.IntegrationPoints.Contracts.Models;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData
+namespace Relativity.IntegrationPoints.Tests.Common.LDAP.TestData
 {
 	public abstract class TestDataBase
 	{
-		private const string _RELATIVE_TEST_DATA_PATH = @"Integration\Tests\LDAP\TestData";
+		private const string _RELATIVE_TEST_DATA_PATH = @"Common\LDAP\TestData";
 
 		private readonly string _TEST_DATA_PATH = Path.Combine(
 			new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName,
@@ -18,6 +18,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData
 		public readonly string UniqueId;
 
 		public readonly IList<IDictionary<string, object>> Data;
+
+		public abstract string OU { get; }
 
 		public FieldEntry IdentifierFieldEntry => new FieldEntry
 		{

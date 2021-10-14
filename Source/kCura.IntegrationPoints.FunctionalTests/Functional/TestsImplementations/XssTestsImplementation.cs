@@ -4,6 +4,7 @@ using System.Linq;
 using Atata;
 using FluentAssertions;
 using OpenQA.Selenium;
+using Relativity.IntegrationPoints.Tests.Common;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
@@ -245,7 +246,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				.Logs
 				.GetLog(LogType.Browser)
 				.Where(x => x.Level == OpenQA.Selenium.LogLevel.Severe)
-				.Where(x => x.Message.Contains($"/{Const.INTEGRATION_POINTS_APPLICATION_GUID}/"))
+				.Where(x => x.Message.Contains($"/{GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID}/"))
 				.Select(x => x.Message));
 			errors.Should().BeNullOrWhiteSpace("XSS attack should not cause JavaScript errors");
 		}

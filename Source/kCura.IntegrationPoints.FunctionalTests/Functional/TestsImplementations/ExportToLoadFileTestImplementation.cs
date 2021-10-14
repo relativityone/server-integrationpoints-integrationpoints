@@ -20,8 +20,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         private static readonly string _savedSearch = nameof(ExportToLoadFilesNativesGoldFlow);
         private static readonly int _startExportAtRecord = 1;
         private int _workspaceArtifactId;
-        private int _keywordSearchDocumentsCount = 5;
-
 
         public ExportToLoadFileTestImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
@@ -35,7 +33,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public void ExportToLoadFilesNativesGoldFlow()
         {
-            _testsImplementationTestFixture.LoginAsStandardUser();
+            // Arrange
+            const int expectedSearchDocumentsCount = 5;
+
+			_testsImplementationTestFixture.LoginAsStandardUser();
             _workspaceArtifactId = _testsImplementationTestFixture.Workspace.ArtifactID;
             string integrationPointName = nameof(ExportToLoadFileTestImplementation);
 
@@ -73,7 +74,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             // Assert
             int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
-            transferredItemsCount.Should().Be(_keywordSearchDocumentsCount);
+            transferredItemsCount.Should().Be(expectedSearchDocumentsCount);
         }
 
         private static ExportToLoadFileConnectToSourcePage FillOutIntegrationPointEditPageForExportToLoadFileTest(
@@ -89,7 +90,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         }
         
         private static ExportToLoadFileDestinationInformationPage FillOutIntegrationPointConnectToSourcePageForExportToLoadFileTest(
-            ExportToLoadFileConnectToSourcePage webPage )
+            ExportToLoadFileConnectToSourcePage webPage)
         {
             ExportToLoadFileConnectToSavedSearchSource pageModel = new ExportToLoadFileConnectToSavedSearchSource()
             {

@@ -1,6 +1,6 @@
-﻿using Atata;
-using System.IO;
-using NUnit.Framework;
+﻿using System;
+using System.Threading;
+using Atata;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
@@ -9,7 +9,6 @@ using Relativity.Testing.Framework.Web.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
 using Relativity.Testing.Framework.Web.Models;
@@ -29,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
             // Installing necessary app
             SetDevelopmentModeToTrue();
-            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
+            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get(Const.Application.ART_TEST_SERVICES_APPLICATION_NAME) == null)
             {
 	            InstallARMTestServicesToWorkspace();
             }
@@ -70,8 +69,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             string integrationPointName = nameof(ImportNativesFromLoadFileGoldFlow);
 
             // Act 
-            var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
-            var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+            var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+	            .NewIntegrationPoint.ClickAndGo();
 
             var importFromLoadFileConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLoadFile(integrationPointEditPage, integrationPointName);
             var importFromLoadFileMapFieldsPage = FillOutIntegrationPointConnectToSourcePageForImportFromLoadFile(importFromLoadFileConnectToSourcePage, _testsImplementationTestFixture.Workspace.Name);
@@ -97,6 +96,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private static ImportFromLoadFileConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLoadFile(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
         {
+	        integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+
+	        Thread.Sleep(TimeSpan.FromSeconds(2));
+
             IntegrationPointEdit integrationPointEdit = new IntegrationPointEditImport
             {
                 Source = IntegrationPointSources.LoadFile,

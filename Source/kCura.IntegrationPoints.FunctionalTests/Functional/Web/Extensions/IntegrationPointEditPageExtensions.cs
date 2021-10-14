@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Atata;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
@@ -78,6 +79,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			}
 			relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
 			relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;
+
+			relativityProviderConnectToSourcePage.Source.Set(source);
+
+			Thread.Sleep(TimeSpan.FromSeconds(2));
 
 			return relativityProviderConnectToSourcePage
 				.ApplyModel(relativityProviderConnectToSource)
