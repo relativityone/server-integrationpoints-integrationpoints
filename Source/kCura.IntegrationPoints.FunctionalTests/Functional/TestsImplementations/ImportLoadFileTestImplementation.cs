@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
             // Installing necessary app
             SetDevelopmentModeToTrue();
-            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get(Const.Application.ART_TEST_SERVICES_APPLICATION_NAME) == null)
+            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get(Const.Application.ARM_TEST_SERVICES_APPLICATION_NAME) == null)
             {
 	            InstallARMTestServicesToWorkspace();
             }
