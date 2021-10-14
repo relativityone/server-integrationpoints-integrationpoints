@@ -46,5 +46,7 @@ namespace kCura.IntegrationPoints.Data
 		IQuery<DataTable> GetJob(long jobId);
 
 		ICommand UpdateJobDetails(long jobId, string jobDetails);
+
+		IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId);
 	}
 }
