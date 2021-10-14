@@ -47,7 +47,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
     
-    $Env:Branch
+    Get-ChildItem Env:
     if($Env:Branch -eq 'master') {
         Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
     } else {
