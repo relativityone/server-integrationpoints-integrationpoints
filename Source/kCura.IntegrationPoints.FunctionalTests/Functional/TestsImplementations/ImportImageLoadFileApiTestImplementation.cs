@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Functional.DataModels;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
@@ -9,20 +10,19 @@ using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Search;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
-using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Relativity.IntegrationPoints.Tests.Functional.Const;
 using Choice = Relativity.Services.ChoiceQuery.Choice;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
-    internal class ImportServiceManagerTest
+    internal class ImportImageLoadFileApiTestImplementation
     {
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
 
@@ -37,45 +37,38 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public Workspace SourceWorkspace => _testsImplementationTestFixture.Workspace;
 
-        public ImportServiceManagerTest(ITestsImplementationTestFixture testsImplementationTestFixture)
+        public ImportImageLoadFileApiTestImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
             _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
         public void OnSetUpFixture()
         {
-            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
-            {
-                InstallARMTestServicesToWorkspace();
-            }
-
-            // Preparing data for LoadFile and placing it in the right location
             string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
             LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).Wait();
-
-            GetIntegrationPointsConstantsAsync().GetAwaiter().GetResult();
         }
 
         public async Task RunIntegrationPointAndCheckCorectness()
         {
-            IntegrationPointModel integrationPoint = GetIntegrationPointAsync();
+            // Arrange
+            int numberOfDocs = 10;
+            string hasImagesFieldName = "Has Images";
+            string hasImagesFieldValue = "Yes";
+            IntegrationPointModel integrationPoint = await GetIntegrationPointAsync();
             await _ripApi.CreateIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID).ConfigureAwait(false);
 
+            // Act
             int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID).ConfigureAwait(false);
-            await WaitForJobToFinishSuccessfullyAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 250);
+            await _ripApi.WaitForJobToFinishSuccessfullyAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 250);
             List<RelativityObject> workspaceDocs = GetAllDocumentsFromWorkspace(SourceWorkspace.ArtifactID);
-            workspaceDocs.Count.Should().Be(10);
-        }
 
-        private static void InstallARMTestServicesToWorkspace()
-        {
-            string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
-
-            RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
-                .InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
-                {
-                    CreateIfMissing = true
-                });
+            //Assert
+            workspaceDocs.Count.Should().Be(numberOfDocs);
+            foreach (var doc in workspaceDocs)
+            {
+                var hasImages = doc.FieldValues.Find(x => x.Field.Name == hasImagesFieldName);
+                hasImages.Value.ShouldBeEquivalentTo(new { Value = hasImagesFieldValue }, options => options.ExcludingMissingMembers());
+            }
         }
 
         private List<RelativityObject> GetAllDocumentsFromWorkspace(int workspaceId)
@@ -93,33 +86,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             }
         }
 
-        private Task WaitForJobToFinishSuccessfullyAsync(int integrationPointId, int workspaceId, int checkDelayInMs = 500)
+        public async Task<IntegrationPointModel> GetIntegrationPointAsync()
         {
-            return WaitForJobStatus(integrationPointId, workspaceId, status =>
-                status == JobStatusChoices.JobHistoryCompleted.Name, checkDelayInMs);
-        }
+            _workspaceDestinationFolder = await GetRootFolderArtifactIdAsync(SourceWorkspace.ArtifactID);
 
-        private async Task WaitForJobStatus(int jobHistoryId, int workspaceId, Func<string, bool> waitUntil, int checkDelayInMs)
-        {
-            string status = await _ripApi.GetJobHistoryStatus(jobHistoryId, workspaceId);
-            while (!waitUntil(status))
-            {
-                await Task.Delay(checkDelayInMs);
-                status = await _ripApi.GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
-            }
-        }
-
-        public IntegrationPointModel GetIntegrationPointAsync()
-        {
             var sourceConfiguration = new ImportSourceConfigurationModel()
             {
                 HasColumnName = "true",
                 EncodingType = "utf-8",
-                AsciiColumn = 20,
-                AsciiQuote = 254,
-                AsciiNewLine = 174,
-                AsciiMultiLine = 59,
-                AsciiNestedValue = 92,
+                AsciiColumn = ImportLoadFile.ASCII_COLUMN,
+                AsciiQuote = ImportLoadFile.ASCII_QUOTE,
+                AsciiNewLine = ImportLoadFile.ASCII_NEWLINE,
+                AsciiMultiLine = ImportLoadFile.ASCII_MULTILINE,
+                AsciiNestedValue = ImportLoadFile.ASCII_NESTEDVALUE,
                 WorkspaceId = SourceWorkspace.ArtifactID.ToString(),
                 ImportType = (int)ImportSourceConfigurationModel.ImportTypeEnum.ImageLoadFile,
                 LoadFile = "DataTransfer\\Import\\ImagesLoadFile.opt",
@@ -128,30 +107,27 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 ImageImport = true,
                 ForProduction = false,
                 AutoNumberImages = "false",
-                ImportOverwriteMode = "AppendOnly",
-                //IdentityFieldId = 1003667, //no idea what is this
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly.ToString(),
                 ExtractedTextFieldContainsFilePath = "false",
                 ExtractedTextFileEncoding = "UTF-8",
                 CopyFilesToDocumentRepository = "true",
                 SelectedCaseFileRepoPath = "\\\\emttest\\DefaultFileRepository\\",
-                ImportNativeFileCopyMode = "CopyFiles"
+                ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles.ToString()
             };
 
             var destinationConfiguration = new ImportDestinationConfigurationModel()
             {
                 artifactTypeID = (int)ArtifactType.Document,
-                //destinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
                 CaseArtifactId = SourceWorkspace.ArtifactID,
                 ImageImport = true,
                 ForProduction = false,
                 AutoNumberImages = "false",
-                ImportOverwriteMode = "AppendOnly",
-                //IdentityFieldId = 1003667, //no idea what is this
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly.ToString(),
                 ExtractedTextFieldContainsFilePath = "false",
                 ExtractedTextFileEncoding = "UTF-8",
                 CopyFilesToDocumentRepository = "true",
                 SelectedCaseFileRepoPath = "\\\\emttest\\DefaultFileRepository\\",
-                ImportNativeFileCopyMode = "CopyFiles",
+                ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles.ToString(),
                 WorkspaceId = SourceWorkspace.ArtifactID.ToString(),
                 ImportType = (int) ImportDestinationConfigurationModel.ImportTypeEnum.ImageLoadFile,
                 LoadFile = "DataTransfer\\Import\\ImagesLoadFile.opt",
@@ -159,11 +135,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 DestinationFolderArtifactId = _workspaceDestinationFolder.ToString()
             };
 
+            _sourceProviderId = await GetSourceProviderAsync(SourceWorkspace.ArtifactID);
+            _destinationProviderId = await GetDestinationProviderIdAsync(SourceWorkspace.ArtifactID);
+            _integrationPointTypeId = await GetIntegrationPointTypeAsync(SourceWorkspace.ArtifactID, "Import");
+            _choices = await GetChoicesOnFieldAsync(SourceWorkspace.ArtifactID, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).ConfigureAwait(false);
+            string name = "TEST_FOR_LOADFILE_IMPORT_IMAGES";
             return new IntegrationPointModel
             {
                 SourceConfiguration = sourceConfiguration,
                 DestinationConfiguration = destinationConfiguration,
-                Name = Const.INTEGRATION_POINT_NAME_FOR_LOADFILE_IMPORT_IMAGES,
+                Name = name,
                 DestinationProvider = _destinationProviderId,
                 SourceProvider = _sourceProviderId,
                 Type = _integrationPointTypeId,
@@ -190,36 +171,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             using (IArtifactGuidManager guidManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IArtifactGuidManager>())
             {
                 return await guidManager.ReadSingleArtifactIdAsync(workspaceArtifactId, fieldGuid).ConfigureAwait(false);
-            }
-        }
-
-        private async Task GetIntegrationPointsConstantsAsync()
-        {
-            _sourceProviderId = await GetSourceProviderAsync(SourceWorkspace.ArtifactID);
-            _destinationProviderId = await GetDestinationProviderIdAsync(SourceWorkspace.ArtifactID);
-            _integrationPointTypeId = await GetIntegrationPointTypeAsync(SourceWorkspace.ArtifactID, "Import");
-            _workspaceDestinationFolder = await GetRootFolderArtifactIdAsync(SourceWorkspace.ArtifactID);
-            _choices = await GetChoicesOnFieldAsync(SourceWorkspace.ArtifactID, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).ConfigureAwait(false);
-        }
-
-        private async Task<int> GetFieldArtifactIdByItsNameAsync(int workspaceId, string name)
-        {
-            using (IKeywordSearchManager keywordSearchManager = RelativityFacade.Instance.GetComponent<ApiComponent>()
-                .ServiceFactory.GetServiceProxy<IKeywordSearchManager>())
-            {
-                Relativity.Services.Query request = new Relativity.Services.Query
-                {
-                    Condition = $"(('Name' == '{name}'))"
-                };
-                KeywordSearchQueryResultSet result =
-                    await keywordSearchManager.QueryAsync(workspaceId, request).ConfigureAwait(false);
-                if (result.TotalCount == 0)
-                {
-                    throw new InvalidOperationException(
-                        $"Cannot find saved search '{name}' in workspace {workspaceId}");
-                }
-
-                return result.Results.First().Artifact.ArtifactID;
             }
         }
 
@@ -269,7 +220,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 return result.Objects.Single().ArtifactID;
             }
         }
-
         private async Task<int> GetIntegrationPointTypeAsync(int workspaceId, string typeName)
         {
             QueryRequest query = new QueryRequest()
@@ -287,6 +237,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 return result.Objects.Single().ArtifactID;
             }
         }
-
     }
 }

@@ -35,6 +35,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			int workspaceId = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME).ArtifactID;
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
+
+			if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
+			{
+				InstallARMTestServicesToWorkspace();
+			}
 		}
 
 		[OneTimeTearDown]
@@ -60,6 +65,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
+
+		private static void InstallARMTestServicesToWorkspace()
+		{
+			string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
+
+			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+				.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
+				{
+					CreateIfMissing = true
+				});
+		}
 
 		public static void CopyScreenshotsToBase()
 		{

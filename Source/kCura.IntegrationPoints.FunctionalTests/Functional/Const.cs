@@ -8,8 +8,6 @@
 		public const string INTEGRATION_POINTS_AGENT_TYPE_NAME = "Integration Points Agent";
 		public const int INTEGRATION_POINTS_AGENT_RUN_INTERVAL = 5;
 
-		public const string INTEGRATION_POINT_NAME_FOR_LOADFILE_IMPORT_IMAGES = "TEST_FOR_LOADFILE_IMPORT_IMAGES";
-
 		public static class XSS
 		{
 			public const string XSS_JS = "';window.relativityXss=true;";
@@ -20,6 +18,15 @@
 			public const string OPEN_LDAP_USERNAME = "cn=admin,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
 			public const string OPEN_LDAP_PASSWORD = "Test1234!";
 			public const string OPEN_LDAP_CONNECTION_PATH = "rip-openldap-cvnx78s.eastus.azurecontainer.io/ou=Human Resources,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
+		}
+
+		public static class ImportLoadFile
+		{
+			public const int ASCII_COLUMN = 20;
+			public const int ASCII_QUOTE = 254;
+			public const int ASCII_NEWLINE = 174;
+			public const int ASCII_MULTILINE = 59;
+			public const int ASCII_NESTEDVALUE = 92;
 		}
 	}
 }

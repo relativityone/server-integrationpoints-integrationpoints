@@ -1,17 +1,18 @@
 ﻿using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
+using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
     [TestType.MainFlow]
     public class LoadFileImageImportApiTests : TestsBase
     {
-        private readonly ImportServiceManagerTest _importServiceTest;
+        private readonly ImportImageLoadFileApiTestImplementation _importServiceTest;
 
         public LoadFileImageImportApiTests() : base(nameof(LoadFileImageImportApiTests))
         {
-            _importServiceTest = new ImportServiceManagerTest(this);
+            _importServiceTest = new ImportImageLoadFileApiTestImplementation(this);
         }
 
         [OneTimeSetUp]
@@ -28,9 +29,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [IdentifiedTest("b7d92b95-acbf-46fd-a424-749b13167f23")]
-        public void TestImportServiceManager()
+        public async Task TestImportServiceManager()
         {
-            _importServiceTest.RunIntegrationPointAndCheckCorectness().ConfigureAwait(false);
+            await _importServiceTest.RunIntegrationPointAndCheckCorectness().ConfigureAwait(false);
         }
     }
 }
