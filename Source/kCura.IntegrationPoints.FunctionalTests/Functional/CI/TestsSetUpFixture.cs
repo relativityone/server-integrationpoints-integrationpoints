@@ -36,6 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
 
+			SetDevelopmentModeToTrue();
 			if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
 			{
 				InstallARMTestServicesToWorkspace();
@@ -74,6 +75,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
 				{
 					CreateIfMissing = true
+				});
+		}
+
+		private void SetDevelopmentModeToTrue()
+		{
+			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+				.Require(new Testing.Framework.Models.InstanceSetting
+				{
+					Name = "DevelopmentMode",
+					Section = "kCura.ARM",
+					Value = "True",
+					ValueType = InstanceSettingValueType.TrueFalse
 				});
 		}
 
