@@ -159,3 +159,26 @@ functions that will be invoked when some button is clicked are defined in
 OnClickEventConstructor class and are updated after every call of 
 IntegrationPointDataHub.UpdateTimerElapsed -> UpdateIntegrationPointDataAsync -> 
 OnClickEventConstructor.GetOnClickEvents.
+
+ConsoleEventHandler
+
+Detailed information about ConsoleEventHandler can be read in link below:
+https://platform.relativity.com/RelativityOne/Content/Customizing_workflows/Console_event_handlers.htm
+
+ConsoleEventHandler is invoked periodically because IntegrationPointDataHub object periodically invokes UpdateTimerElapsed => UpdateIntegrationPointJobStatusTableAsync. In this method hub.client.updateIntegrationPointJobStatusTable front end function is invoked. This function invokes load function which invokes GetConsole method. GetConsole method is called twice. 1st time when pageEvent = pageEvent.Load and 2nd time when it is pageEvent.PreRender. Go to link below to read about pageEvent states:
+https://www.javatpoint.com/asp-net-life-cycle 
+
+When GetConsole is invoked ButtonStateBuilder creates buttons states and gets OnClickEvents 
+Strange thing is that when some button is clicked ConsoleEventHandler.OnButtonClick method is not invoked.
+
+PageInteractionEventHandler
+
+PageInteractionEventHandler inherits from EventHandler.PageInteractionEventHandler. Go to link below for EventHandler.PageInteractionEventHandler details:
+https://platform.relativity.com/RelativityOne/Content/Customizing_workflows/Page_Interaction_event_handlers.htm
+RIP has 2 classes whose inherits from PageInteractionEventHandler: 
+
+•	IntegrationPointPageInteractionEventHandler
+•	IntegrationPointProfilePageInteractionEventHandler
+
+PageInteractionEventHandler is invoked periodically, every time when load function is invoked, and it updates css and javascript files.
+Children classes overrides CommonScriptsFactory method with specific IntegrationPointFieldGuidsConstants 

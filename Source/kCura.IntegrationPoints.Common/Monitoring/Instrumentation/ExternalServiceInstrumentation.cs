@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
 			}
 			catch (Exception ex)
 			{
-				_logger?.LogWarning(ex, "Error occured while sending metric message.");
+				_logger?.LogWarning(ex, "Error occurred while sending metric message.");
 			}
 		}
 	}
