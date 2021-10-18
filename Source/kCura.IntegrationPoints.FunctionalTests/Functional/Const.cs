@@ -19,5 +19,14 @@
 			public const string OPEN_LDAP_PASSWORD = "Test1234!";
 			public const string OPEN_LDAP_CONNECTION_PATH = "rip-openldap-cvnx78s.eastus.azurecontainer.io/ou=Human Resources,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
 		}
+
+		public static class ImportLoadFile
+		{
+			public const int ASCII_COLUMN = 20;
+			public const int ASCII_QUOTE = 254;
+			public const int ASCII_NEWLINE = 174;
+			public const int ASCII_MULTILINE = 59;
+			public const int ASCII_NESTEDVALUE = 92;
+		}
 	}
 }
