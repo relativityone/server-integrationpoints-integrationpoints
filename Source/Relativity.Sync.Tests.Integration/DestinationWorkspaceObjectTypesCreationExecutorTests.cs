@@ -294,10 +294,9 @@ namespace Relativity.Sync.Tests.Integration
 
 		private void SetupReadingObjectType(int objectTypeArtifactId, Guid objectTypeGuid, string formattedParameters)
 		{
-			_objectManager.Setup(otm => otm.ReadAsync(_WORKSPACE_ID, It.Is<ReadRequest>(r => r.Object.Guid == objectTypeGuid))).ReturnsAsync(new ReadResult
-			{
-				Object = new RelativityObject {ArtifactID = objectTypeArtifactId}
-			}).Verifiable($"Service '{nameof(IObjectTypeManager)}.{nameof(IObjectTypeManager.ReadAsync)}' did not receive expected read call. {formattedParameters}");
+			_artifactGuidManager
+				.Setup(otm => otm.ReadSingleArtifactIdAsync(_WORKSPACE_ID, objectTypeGuid)).ReturnsAsync(objectTypeArtifactId)
+				.Verifiable($"Service '{nameof(IObjectTypeManager)}.{nameof(IObjectTypeManager.ReadAsync)}' did not receive expected read call. {formattedParameters}");
 		}
 
 		private void SetupQueryingObjectTypeByName(int objectTypeArtifactId, string objectTypeName, bool objectTypeExists)

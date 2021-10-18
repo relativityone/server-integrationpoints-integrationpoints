@@ -47,14 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int artifactId = 2;
 			_artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(true);
-			ReadResult readResult = new ReadResult()
-			{
-				Object = new RelativityObject()
-				{
-					ArtifactID = artifactId
-				}
-			};
-			_objectManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.Is<ReadRequest>(request => request.Object.Guid == _guid))).ReturnsAsync(readResult);
+			_artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _guid)).ReturnsAsync(artifactId);
 
 			// act
 			int actualArtifactId = await _instance.EnsureObjectTypeExistsAsync(_WORKSPACE_ID, _guid, new ObjectTypeRequest()).ConfigureAwait(false);
