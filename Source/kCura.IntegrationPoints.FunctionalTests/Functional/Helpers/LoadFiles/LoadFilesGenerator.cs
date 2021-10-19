@@ -19,9 +19,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 
 		private static readonly string NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
 		private static readonly string NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
-		private static readonly string IMAGES_OPT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\ImageLoadFiles\ImagesLoadFile.opt");
+		private static readonly string IMAGES_OPT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesLoadFile.opt");
 		private static readonly string NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
-		private static readonly string IMAGES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\ImageLoadFiles");
+		private static readonly string IMAGES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\Images");
 
 		public static string GetOrCreateNativesLoadFile()
 		{
@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 				{
 					for (int i=0; i<10; i++)
 					{
-						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\Images\\IMAGE_62K.tif,Y,,", i);
+						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
 						optLoadFileWriter.WriteLine(line);
 					}
 				}

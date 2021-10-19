@@ -61,6 +61,12 @@
     <None Update="Functional\Helpers\DataFiles\kcura.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Functional\Helpers\Images\IMAGE_62K.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\Images\IMAGE_66K.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007291.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
