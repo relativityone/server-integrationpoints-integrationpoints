@@ -7,7 +7,6 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
@@ -31,7 +30,7 @@ namespace Relativity.Sync.Executors
 				if (guidExists)
 				{
 					_logger.LogVerbose("Object type with GUID {objectTypeGuid} already exists.", objectTypeGuid);
-					return await ReadObjectTypeAsync(workspaceArtifactId, objectTypeGuid).ConfigureAwait(false);
+					return await artifactGuidManager.ReadSingleArtifactIdAsync(workspaceArtifactId, objectTypeGuid).ConfigureAwait(false);
 				}
 				else
 				{
@@ -89,23 +88,6 @@ namespace Relativity.Sync.Executors
 			{
 				ObjectTypeResponse objectType = await objectTypeManager.ReadAsync(workspaceArtifactId, objectTypeArtifactI).ConfigureAwait(false);
 				return objectType.ArtifactTypeID;
-			}
-		}
-
-		private async Task<int> ReadObjectTypeAsync(int workspaceArtifactId, Guid guid)
-		{
-			_logger.LogVerbose("Reading artifact ID of object type with GUID: {guid}", guid);
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				ReadRequest request = new ReadRequest()
-				{
-					Object = new RelativityObjectRef()
-					{
-						Guid = guid
-					}
-				};
-				ReadResult result = await objectManager.ReadAsync(workspaceArtifactId, request).ConfigureAwait(false);
-				return result.Object.ArtifactID;
 			}
 		}
 	}

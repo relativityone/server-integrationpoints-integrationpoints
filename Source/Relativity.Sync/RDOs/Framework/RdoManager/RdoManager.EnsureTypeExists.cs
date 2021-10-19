@@ -11,7 +11,6 @@ using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Interfaces.Tab;
-using Relativity.Services.Interfaces.Tab.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
