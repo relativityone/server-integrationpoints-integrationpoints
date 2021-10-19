@@ -7,14 +7,12 @@ namespace Relativity.Sync
 	/// <inheritdoc />
 	public sealed class RelativityServices : IRelativityServices
 	{
-		private readonly IHelper _helper;
-
 		/// <summary>
 		///     Constructor
 		/// </summary>
 		public RelativityServices(IAPM apm, ISyncServiceManager servicesMgr, Uri authenticationUri, IHelper helper)
 		{
-			_helper = helper;
+			Helper = helper;
 			APM = apm;
 			ServicesMgr = servicesMgr;
 			AuthenticationUri = authenticationUri;
@@ -27,12 +25,15 @@ namespace Relativity.Sync
 		public ISyncServiceManager ServicesMgr { get; }
 
 		/// <inheritdoc />
+		public IHelper Helper { get; }
+
+		/// <inheritdoc />
 		public Uri AuthenticationUri { get; }
 
 		/// <inheritdoc />
 		public IDBContext GetEddsDbContext()
 		{
-			return _helper.GetDBContext(-1);
+			return Helper.GetDBContext(-1);
 		}
 
 	}

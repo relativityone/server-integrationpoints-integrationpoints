@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Relativity.AutomatedWorkflows.SDK;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
-using Relativity.AutomatedWorkflows.Services.Interfaces;
-using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
+using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
 
 namespace Relativity.Sync.Executors
 {
@@ -14,12 +12,12 @@ namespace Relativity.Sync.Executors
 		private const string _ERROR_MESSAGE = "Error occured while executing Automated Workflows trigger: {0} for workspace artifact ID : {1}";
 		
 		private readonly ISyncLog _logger;
-		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
+		private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
 
-		public AutomatedWorkflowExecutor(ISyncLog logger, IDestinationServiceFactoryForAdmin serviceFactory)
+		public AutomatedWorkflowExecutor(ISyncLog logger, IAutomatedWorkflowsManager automatedWorkflowsManager)
 		{
 			_logger = logger;
-			_serviceFactory = serviceFactory;
+			_automatedWorkflowsManager = automatedWorkflowsManager;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CompositeCancellationToken token)
@@ -43,10 +41,7 @@ namespace Relativity.Sync.Executors
 					State = state
 				};
 				
-				using (IAutomatedWorkflowsService triggerProcessor = await _serviceFactory.CreateProxyAsync<IAutomatedWorkflowsService>().ConfigureAwait(false))
-				{
-					await triggerProcessor.SendTriggerAsync(configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, body).ConfigureAwait(false);
-				}
+				await _automatedWorkflowsManager.SendTriggerAsync(configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, body).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{

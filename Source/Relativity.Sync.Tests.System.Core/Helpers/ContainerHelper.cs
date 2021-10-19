@@ -2,6 +2,7 @@
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
 

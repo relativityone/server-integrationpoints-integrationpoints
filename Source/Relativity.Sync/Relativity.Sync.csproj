@@ -48,7 +48,8 @@
     <PackageReference Include="Relativity.Telemetry.APM" Version="[2019.1.1,2019.2.0)" />
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3000.0.1" />
     <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3000.0.1]" />
-    <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="[0.1.1-pre.6]" />
+    <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.10.0-pre.1" />
+    <PackageReference Include="Relativity.AutomatedWorkflows.SDK" Version="0.10.0-pre.1" />
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
