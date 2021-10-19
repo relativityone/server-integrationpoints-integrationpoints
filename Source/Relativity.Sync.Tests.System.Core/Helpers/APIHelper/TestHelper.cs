@@ -2,7 +2,7 @@
 using Moq;
 using Relativity.API;
 
-namespace Relativity.Sync.Tests.System.Core.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 {
 	public class TestHelper : IHelper
 	{
@@ -17,12 +17,17 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public ILogFactory GetLoggerFactory()
 		{
-			return new Mock<ILogFactory>().Object;
+			var log = new APILog();
+
+			var logFactory = new Mock<ILogFactory>();
+			logFactory.Setup(x => x.GetLogger()).Returns(log);
+
+			return logFactory.Object;
 		}
 
 		public IServicesMgr GetServicesManager()
 		{
-			return new Mock<IServicesMgr>().Object;
+			return new ServicesMgrStub();
 		}
 
 		#region Not Implemented

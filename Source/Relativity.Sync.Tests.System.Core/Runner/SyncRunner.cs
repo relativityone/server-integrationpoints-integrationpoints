@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.System.Core.Runner
