@@ -34,6 +34,6 @@ namespace Relativity.Sync.Executors.Validation
 			}
 		}
 
-		public override bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsDocumentPipeline();
+		public override bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsDocumentPipeline() || pipeline.IsNonDocumentPipeline();
 	}
 }
