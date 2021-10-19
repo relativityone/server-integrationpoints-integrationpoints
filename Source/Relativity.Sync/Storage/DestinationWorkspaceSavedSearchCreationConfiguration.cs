@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {

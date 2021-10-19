@@ -1,5 +1,4 @@
-﻿using System;
-using Relativity.Sync.Configuration;
+﻿using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
@@ -13,11 +12,11 @@ namespace Relativity.Sync.Storage
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 
-		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue(x => x.ImportOverwriteMode)));
-		public DataSourceType DataSourceType => (DataSourceType)(Enum.Parse(typeof(DataSourceType), _cache.GetFieldValue(x => x.DataSourceType)));
-		public DestinationLocationType DestinationType => (DestinationLocationType)(Enum.Parse(typeof(DestinationLocationType), _cache.GetFieldValue(x => x.DataDestinationType)));
-		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
-		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode).GetEnumFromDescription<ImportImageFileCopyMode>();
+		public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);
+		public DataSourceType DataSourceType =>  _cache.GetFieldValue(x => x.DataSourceType);
+		public DestinationLocationType DestinationType => _cache.GetFieldValue(x => x.DataDestinationType);
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
+		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode);
 
 		public JobEndMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{

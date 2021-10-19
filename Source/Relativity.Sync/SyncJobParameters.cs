@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync
 {
@@ -55,8 +57,25 @@ namespace Relativity.Sync
 		{
 			SyncConfigurationArtifactId = syncConfigurationArtifactId;
 			WorkspaceId = workspaceId;
-			SyncBuildVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			SyncBuildVersion = GetVersion();
 			WorkflowId = workflowId.ToString();
 		}
+
+		private static string GetVersion()
+		{
+			string ver;
+
+			try
+			{
+				ver = typeof(SyncJobParameters).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+			}
+			catch (Exception)
+			{
+				ver = "[file version not specified]";
+			}
+
+			return ver;
+		}
+
 	}
 }

@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             _fieldMappings = new Mock<IFieldMappings>();
 
-            _instance = new DataSourceSnapshotConfiguration(_configuration.Object, _fieldMappings.Object,
+            _instance = new DataSourceSnapshotConfiguration(_configuration, _fieldMappings.Object,
                 new SyncJobParameters(1, _WORKSPACE_ID, _WORKFLOW_ID));
         }
 
@@ -93,14 +93,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             await _instance.SetSnapshotDataAsync(snapshotId, totalRecordsCount).ConfigureAwait(false);
 
             // Assert
-            _configuration.Verify(x =>
-                x.UpdateFieldValueAsync(
-                    It.Is<RdoExpressionGuidNullable>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotId))),
-                    (Guid?)snapshotId));
-            _configuration.Verify(x =>
-                x.UpdateFieldValueAsync(
-                    It.Is<RdoExpressionInt>(e => MatchMemberName(e, nameof(SyncConfigurationRdo.SnapshotRecordsCount))),
-                    totalRecordsCount));
+            _configurationRdo.SnapshotId.Should().Be(snapshotId);
         }
     }
 }

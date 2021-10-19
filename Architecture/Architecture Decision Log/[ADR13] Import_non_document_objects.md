@@ -33,6 +33,7 @@ As a side note, having that functionality implemented will be also helpful in su
 - Destination location on second step. Currently there are two options: Folder and Production Set. This can be hidden completely for non-document objects, or we can replace it with destination Object Type selection. This might be useful in case selected Object Type in source has different name in destination. We can even go further and implement functionality that allows user to ad-hoc create Object Type hierarchy in destination in case it's missing (similar to creating Production Set). Advantage is that Object Type will already exist when user goes to the 3rd step, so we can auto-map fields that are included in a View (using a button similar to "Map Saved Search"). Potential disadvantage is that this process will not be a part of Sync job (however still can be implemented in Relativity.Sync.dll to be fully decoupled from RIP).
 - Create Saved Search on second step should be hidden for non-document objects.
 - Copy Images, Copy Native Files and Use Folder Path Information on 3rd step - should be hidden.
+- Overlay Identifier - on fields mapping step. This should allow user to select a field that will be used to identify object to overlay.
 
 ## Sync Architectural changes
 
@@ -48,6 +49,8 @@ Another question is if we want to tag trasferred objects (both in source and des
 - In destination - `Relativity Source Case` and `Relativity Source Job`
 
  Again, in that case those fields should be created in source and destination Object Types. This also needs to be discussed with the team and PM.
+
+ 13/09/2021 update: team decided that retries and tagging are out of scope of MVP.
 
 ### RdoObjectTypesCreationExecutor
 
@@ -74,6 +77,8 @@ First of all, we will need to extend `ImportJobFactory` class and add new method
 More information about configuring ImportAPI: <https://github.com/relativitydev/import-api-samples>
 
 We should also create new implementation of `ISourceWorkspaceDataReader` along with Batch Data Reader, Field Manager and Row Values Builder for non-document objects implementation. We can re-use existing sanitizers for all field types.
+
+Important: take into account relations between objects (for example Entities to Managers linking).
 
 ### Sync Pipelines
 

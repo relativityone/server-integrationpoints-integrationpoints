@@ -261,7 +261,7 @@ namespace Relativity.Sync.Tests.System.Core
 						{
 							CreateIfMissing = true,
 							FileName = Path.ChangeExtension(appFileName, "rap"),
-							IgnoreVersion = false,
+							IgnoreVersion = true,
 							RefreshCustomPages = false
 						};
 						await applicationLibraryManager.UpdateAsync(-1, keplerStream, updateLibraryApplicationRequest).ConfigureAwait(false);

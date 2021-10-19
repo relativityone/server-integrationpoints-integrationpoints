@@ -5,6 +5,7 @@ using System.Reflection;
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.DbContext;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
@@ -14,6 +15,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
 using Relativity.Telemetry.APM;
+using Relativity.Toggles;
 
 namespace Relativity.Sync
 {
@@ -42,6 +44,14 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
 			containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
+
+			containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance();
+
+			containerBuilder.Register(c =>
+			{
+				IDBContext dbContext = relativityServices.GetEddsDbContext();
+				return new EddsDbContext(dbContext);
+			}).As<IEddsDbContext>().InstancePerLifetimeScope();
 
 			const string command = "command";
 			containerBuilder.RegisterGeneric(typeof(Command<>)).Named(command, typeof(ICommand<>));

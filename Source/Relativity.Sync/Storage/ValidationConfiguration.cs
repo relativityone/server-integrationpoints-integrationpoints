@@ -42,21 +42,15 @@ namespace Relativity.Sync.Storage
 
         public Guid JobHistoryObjectTypeGuid => _cache.GetFieldValue(x => x.JobHistoryType);
 
-        public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode) Enum.Parse(typeof(ImportOverwriteMode),
-            _cache.GetFieldValue(x => x.ImportOverwriteMode));
+        public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);
 
-        public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior)
-            .GetEnumFromDescription<FieldOverlayBehavior>();
+        public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior);
 
-        public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-            (DestinationFolderStructureBehavior) Enum.Parse(typeof(DestinationFolderStructureBehavior),
-                _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior));
+        public DestinationFolderStructureBehavior DestinationFolderStructureBehavior => _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior);
 
-        public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior)
-            .GetEnumFromDescription<ImportNativeFileCopyMode>();
+        public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
 
-        public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode)
-            .GetEnumFromDescription<ImportImageFileCopyMode>();
+        public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode);
 
         public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 

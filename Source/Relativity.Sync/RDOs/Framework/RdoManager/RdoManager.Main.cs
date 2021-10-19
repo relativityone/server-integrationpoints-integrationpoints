@@ -5,11 +5,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Castle.Components.DictionaryAdapter.Xml;
 using Polly;
 using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace Relativity.Sync.RDOs.Framework
@@ -45,7 +47,7 @@ namespace Relativity.Sync.RDOs.Framework
 
             if (parentObjectId != null)
             {
-                request.ParentObject = new RelativityObjectRef {ArtifactID = parentObjectId.Value};
+                request.ParentObject = new RelativityObjectRef { ArtifactID = parentObjectId.Value };
             }
 
             using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
@@ -82,7 +84,8 @@ namespace Relativity.Sync.RDOs.Framework
             }
         }
 
-        public async Task SetValueAsync<TRdo, TValue>(int workspaceId, TRdo rdo, Expression<Func<TRdo, TValue>> expression, TValue value) where TRdo : IRdoType
+        public async Task SetValueAsync<TRdo, TValue>(int workspaceId, TRdo rdo,
+            Expression<Func<TRdo, TValue>> expression, TValue value) where TRdo : IRdoType
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
             Guid fieldGuid = _rdoGuidProvider.GetGuidFromFieldExpression(expression);
@@ -96,18 +99,18 @@ namespace Relativity.Sync.RDOs.Framework
                 },
                 FieldValues = GetFieldRefValuePairsForSettingValue(fieldInfo, value)
             };
-            
+
             using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
             {
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
                 fieldInfo.PropertyInfo.SetValue(rdo, value);
-                
+
                 _logger.LogDebug("Set field {field} on object {artifactId} in workspace {workspaceId}",
                     fieldGuid, rdo.ArtifactId, workspaceId);
             }
         }
 
-       public async Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId,
+        public async Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId,
             params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType, new()
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
@@ -148,14 +151,14 @@ namespace Relativity.Sync.RDOs.Framework
 
                 if (queryResultObject != null)
                 {
-                    result = new TRdo {ArtifactId = queryResultObject.ArtifactID};
+                    result = new TRdo { ArtifactId = queryResultObject.ArtifactID };
 
                     foreach (var (fieldInfo, i) in fieldsToQuery.Select((x, i) => (x, i)))
                     {
                         object value = await SanitizeValueAsync(objectManager, queryResultObject.Values[i], fieldInfo,
                                 typeInfo.TypeGuid, artifactId, workspaceId)
                             .ConfigureAwait(false);
-                        
+
                         fieldInfo.PropertyInfo.SetValue(result, value);
                     }
                 }
@@ -183,18 +186,21 @@ namespace Relativity.Sync.RDOs.Framework
                     when fieldInfo.PropertyInfo.PropertyType == typeof(Guid?):
                     return Task.FromResult(
                         Guid.TryParse(value?.ToString(), out Guid result)
-                            ? (object) result
+                            ? (object)result
                             : null);
-                
+
                 case RdoFieldType.FixedLengthText
                     when fieldInfo.PropertyInfo.PropertyType == typeof(long):
                     return Task.FromResult((object)long.Parse(value.ToString()));
-                
+
                 case RdoFieldType.FixedLengthText
                     when fieldInfo.PropertyInfo.PropertyType == typeof(long?):
-                    return Task.FromResult(long.TryParse(value.ToString(), out long longValue) 
-                        ? (object)longValue 
+                    return Task.FromResult(long.TryParse(value.ToString(), out long longValue)
+                        ? (object)longValue
                         : null);
+                
+                case RdoFieldType.FixedLengthText when fieldInfo.PropertyInfo.PropertyType.IsEnum:
+                    return Task.FromResult(EnumExtensions.GetEnumFromDescription(value?.ToString(), fieldInfo.PropertyInfo.PropertyType.ExtractTypeIfNullable()));
 
                 case RdoFieldType.LongText when IsTruncatedText(value):
                     return SafeReadLongTextFromStreamAsync(objectManager, fieldInfo, typeGuid, objectArtifactId,
@@ -210,7 +216,7 @@ namespace Relativity.Sync.RDOs.Framework
             _logger.LogVerbose(
                 "Streaming text for field {fieldGuid} of object with ArtifactId {objectArtifactId} in workspace {workspaceId}",
                 fieldInfo.Guid, objectArtifactId, workspaceId);
-            
+
             const int maxNumberOfRetries = 2;
             const int maxWaitTime = 500;
 
@@ -230,12 +236,12 @@ namespace Relativity.Sync.RDOs.Framework
                 Guid = rdoTypeGuid,
                 ArtifactID = objectArtifactId
             };
-            
+
             var fieldRef = new FieldRef
             {
                 Guid = longTextFieldGuid
             };
-            
+
             using (IKeplerStream longTextResult = await objectManager
                 .StreamLongTextAsync(workspaceId, exportObject, fieldRef).ConfigureAwait(false))
             using (Stream longTextStream = await longTextResult.GetStreamAsync().ConfigureAwait(false))
@@ -256,7 +262,8 @@ namespace Relativity.Sync.RDOs.Framework
                    text.EndsWith(longTextTruncateMark, StringComparison.InvariantCulture);
         }
 
-        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValue(RdoFieldInfo fieldInfo, object value)
+        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValue(RdoFieldInfo fieldInfo,
+            object value)
         {
             return new[]
             {
@@ -290,12 +297,23 @@ namespace Relativity.Sync.RDOs.Framework
             switch (fieldInfo.Type)
             {
                 case RdoFieldType.FixedLengthText
-                    when fieldInfo.PropertyInfo.PropertyType == typeof(long) || fieldInfo.PropertyInfo.PropertyType == typeof(long?):
+                    when IsLongOrNullableLong(fieldInfo):
                     return value?.ToString();
+
+                case RdoFieldType.FixedLengthText when fieldInfo.PropertyInfo.PropertyType.IsEnum:
+                    return (value is null || value.ToString() == "") 
+                        ? null 
+                        : EnumExtensions.GetDescription(value, fieldInfo.PropertyInfo.PropertyType.ExtractTypeIfNullable());
                 
                 default:
                     return value;
             }
+        }
+
+        private static bool IsLongOrNullableLong(RdoFieldInfo fieldInfo)
+        {
+            return fieldInfo.PropertyInfo.PropertyType == typeof(long) ||
+                   fieldInfo.PropertyInfo.PropertyType == typeof(long?);
         }
 
         private HashSet<Guid> GetFieldsGuidsFromExpressions<TRdo>(Expression<Func<TRdo, object>>[] fields)

@@ -18,7 +18,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public override async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating field mappings");
+			_logger.LogInformation("Validating field mappings");
 
 			try
 			{

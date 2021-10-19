@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private JobStatusConsolidationConfiguration PrepareSut(int syncConfigurationArtifactId)
 		{
 			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, _WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
-			var sut = new JobStatusConsolidationConfiguration(_configuration.Object, syncJobParameters);
+			var sut = new JobStatusConsolidationConfiguration(_configuration, syncJobParameters);
 			return sut;
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		protected ValidationMessage ValidateUniqueIdentifier(IList<FieldMap> mappedFields, bool onlyIdentifierShouldBeMapped = false)
 		{
-			_logger.LogVerbose("Validating unique identifier");
+			_logger.LogInformation("Validating unique identifier");
 
 			bool isIdentifierMapped = mappedFields.Any(x => x.FieldMapType == FieldMapType.Identifier &&
 															x.SourceField != null &&
@@ -86,7 +87,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		protected ValidationMessage ValidateFieldOverlayBehavior(IValidationConfiguration configuration)
 		{
-			_logger.LogVerbose("Validating field overlay behavior");
+			_logger.LogInformation("Validating field overlay behavior");
 
 			ValidationMessage validationMessage = null;
 
@@ -101,7 +102,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		protected async Task<ValidationMessage> ValidateDestinationFieldsAsync(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating fields in destination workspace");
+			_logger.LogInformation("Validating fields in destination workspace");
 
 			ValidationMessage validationMessage = null;
 
@@ -118,7 +119,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		protected async Task<ValidationMessage> ValidateSourceFieldsAsync(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
 		{
-			_logger.LogVerbose("Validating fields in source workspace");
+			_logger.LogInformation("Validating fields in source workspace");
 
 			ValidationMessage validationMessage = null;
 

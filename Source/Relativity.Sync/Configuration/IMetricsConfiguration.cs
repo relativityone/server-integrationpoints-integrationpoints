@@ -8,12 +8,14 @@
 		
 		string ExecutingApplicationVersion { get; }
 
-		string DataSourceType { get; }
+		DataSourceType DataSourceType { get; }
 
-		string DataDestinationType { get; }
+		DestinationLocationType DataDestinationType { get; }
 
 		bool ImageImport { get; }
 
 		int? JobHistoryToRetryId { get; }
+
+		string SyncVersion { get; }
 	}
 }

@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void SetUp()
 		{
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, Guid.NewGuid());
-			_syncConfig = new SynchronizationConfiguration(_configuration.Object, syncJobParameters, new JSONSerializer(), new EmptyLogger());
+			_syncConfig = new SynchronizationConfiguration(_configuration, syncJobParameters);
 		}
 
 		[Test]
@@ -115,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void DestinationFolderStructureBehavior_ShouldReturnDestinationFolderStructureBehavior()
 		{
 			DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
-			_configurationRdo.DestinationFolderStructureBehavior = expected.ToString();
+			_configurationRdo.DestinationFolderStructureBehavior = expected;
 
 			// act
 			DestinationFolderStructureBehavior actual = _syncConfig.DestinationFolderStructureBehavior;
@@ -158,7 +158,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			// ARRANGE
 			ImportImageFileCopyMode imageCopyMode = ImportImageFileCopyMode.CopyFiles;
-			_configurationRdo.ImageFileCopyMode = imageCopyMode.ToString();
+			_configurationRdo.ImageFileCopyMode = imageCopyMode;
 
 			// ACT
 			ImportImageFileCopyMode actualImportImageFileCopyMode = _syncConfig.ImportImageFileCopyMode;

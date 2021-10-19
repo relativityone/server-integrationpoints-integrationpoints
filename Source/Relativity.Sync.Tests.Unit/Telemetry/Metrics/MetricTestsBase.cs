@@ -5,7 +5,6 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
-using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
@@ -98,14 +97,16 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			string correlationId = Guid.NewGuid().ToString();
 			const string executingAppName = "SomeApp";
 			const string executingAppVersion = "1.2.3.4";
-			const string dataSourceType = "SavedSearch";
-			const string dataDestinationType = "Folder";
+			const string syncVersion = "1.2.3.5";
+			const DataSourceType dataSourceType = DataSourceType.SavedSearch;
+			const DestinationLocationType dataDestinationType = DestinationLocationType.Folder;
 			int? jobHistoryToRetry = 123;
 			const bool imagePush = true;
 
 			_metricsConfigurationFake.SetupGet(x => x.CorrelationId).Returns(correlationId);
 			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplication).Returns(executingAppName);
 			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplicationVersion).Returns(executingAppVersion);
+			_metricsConfigurationFake.SetupGet(x => x.SyncVersion).Returns(syncVersion);
 			_metricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(dataSourceType);
 			_metricsConfigurationFake.SetupGet(x => x.DataDestinationType).Returns(dataDestinationType);
 			_metricsConfigurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(jobHistoryToRetry);
@@ -118,8 +119,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			metric.CorrelationId.Should().Be(correlationId);
 			metric.ExecutingApplication.Should().Be(executingAppName);
 			metric.ExecutingApplicationVersion.Should().Be(executingAppVersion);
-			metric.DataSourceType.Should().Be(dataSourceType);
-			metric.DataDestinationType.Should().Be(dataDestinationType);
+			metric.SyncVersion.Should().Be(syncVersion);
+			metric.DataSourceType.Should().Be(dataSourceType.GetDescription());
+			metric.DataDestinationType.Should().Be(dataDestinationType.GetDescription());
 			metric.IsRetry.Should().Be(true);
 			metric.FlowName.Should().Be("Images");
 		}

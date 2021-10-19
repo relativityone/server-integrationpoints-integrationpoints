@@ -101,7 +101,7 @@ namespace Relativity.Sync.Transfer
 
 		private IBatchDataReader EmptyDataReader()
 		{
-			_logger.LogVerbose("Creating empty data reader.");
+			_logger.LogInformation("Creating empty data reader.");
 			return new EmptyBatchDataReader();
 		}
 
@@ -111,7 +111,7 @@ namespace Relativity.Sync.Transfer
 			try
 			{
 				batch = await _exportBatcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
-				_logger.LogVerbose("Export API batch read.");
+				_logger.LogInformation("Export API batch read. Items count: {count}", batch?.Length);
 			}
 			catch (Exception ex)
 			{

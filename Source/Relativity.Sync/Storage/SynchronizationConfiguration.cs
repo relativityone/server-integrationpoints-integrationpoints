@@ -1,8 +1,5 @@
 ﻿using System;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
@@ -13,16 +10,11 @@ namespace Relativity.Sync.Storage
 
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
-		private readonly ISerializer _serializer;
-		private readonly ISyncLog _syncLog;
-
-
-		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISerializer serializer, ISyncLog syncLog)
+		
+		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{
 			_cache = cache;
 			_syncJobParameters = syncJobParameters;
-			_serializer = serializer;
-			_syncLog = syncLog;
 		}
 
 		public char MultiValueDelimiter => (char) _ASCII_RECORD_SEPARATOR;
@@ -55,14 +47,13 @@ namespace Relativity.Sync.Storage
 		public int DataSourceArtifactId => _cache.GetFieldValue(x => x.DataSourceArtifactId);
 		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
-		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>
-			(DestinationFolderStructureBehavior)(Enum.Parse(typeof(DestinationFolderStructureBehavior), _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior)));
-		public ImportOverwriteMode ImportOverwriteMode => (ImportOverwriteMode)(Enum.Parse(typeof(ImportOverwriteMode), _cache.GetFieldValue(x => x.ImportOverwriteMode)));
-		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior).GetEnumFromDescription<FieldOverlayBehavior>();
-		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior).GetEnumFromDescription<ImportNativeFileCopyMode>();
+		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>_cache.GetFieldValue(x => x.DestinationFolderStructureBehavior);
+		public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);
+		public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior);
+		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
 
 		public bool ImageImport => _cache.GetFieldValue(x => x.ImageImport);
-		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode).GetEnumFromDescription<ImportImageFileCopyMode>();
+		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode);
 
 		// Below settings are set in SynchronizationExecutor.
 

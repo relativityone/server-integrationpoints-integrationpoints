@@ -77,7 +77,6 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int totalDocumentsCount = 1123;
 			const int startingIndex = 532;
-			const string statusDescription = "Completed With Errors";
 			const BatchStatus status = BatchStatus.CompletedWithErrors;
 			const int failedItemsCount = 111;
 			const int transferredItemsCount = 222;
@@ -93,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit
 				ArtifactId = _ARTIFACT_ID,
 				TotalDocumentsCount = totalDocumentsCount,
 				StartingIndex = startingIndex,
-				Status = statusDescription,
+				Status = status,
 				FailedItemsCount = failedItemsCount,
 				TransferredItemsCount = transferredItemsCount,
 				TaggedDocumentsCount = taggedDocumentsCount,
@@ -255,8 +254,6 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task SetStatusAsync_ShouldUpdateStatus()
 		{
 			const BatchStatus status = BatchStatus.InProgress;
-			const string expectedStatusDescription = "In Progress";
-
 			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
 			// ACT
@@ -265,7 +262,7 @@ namespace Relativity.Sync.Tests.Unit
 			// ASSERT
 			batch.Status.Should().Be(status);
 
-			_fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.Status, expectedStatusDescription));
+			_fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.Status, status));
 		}
 
 		[Test]

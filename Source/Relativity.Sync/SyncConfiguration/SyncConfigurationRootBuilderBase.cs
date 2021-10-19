@@ -41,8 +41,8 @@ namespace Relativity.Sync.SyncConfiguration
                 
                 DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId,
                 JobHistoryId =  syncContext.JobHistoryId,
-                ImportOverwriteMode = ImportOverwriteMode.AppendOnly.GetDescription(),
-                FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings.GetDescription()
+                ImportOverwriteMode = ImportOverwriteMode.AppendOnly,
+                FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings
             };
             SetRdoFields();
         }
@@ -89,8 +89,8 @@ namespace Relativity.Sync.SyncConfiguration
 
         public void OverwriteMode(OverwriteOptions options)
         {
-            SyncConfiguration.ImportOverwriteMode = options.OverwriteMode.ToString();
-            SyncConfiguration.FieldOverlayBehavior = options.FieldsOverlayBehavior.GetDescription();
+            SyncConfiguration.ImportOverwriteMode = options.OverwriteMode;
+            SyncConfiguration.FieldOverlayBehavior = options.FieldsOverlayBehavior;
         }
 
         public void EmailNotifications(EmailNotificationsOptions options)

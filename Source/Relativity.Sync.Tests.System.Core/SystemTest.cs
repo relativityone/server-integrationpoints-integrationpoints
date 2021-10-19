@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
+using Relativity.Sync.Authentication;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 using User = Relativity.Services.User.User;
@@ -36,6 +40,8 @@ namespace Relativity.Sync.Tests.System.Core
 			Environment = new TestEnvironment();
 			ImportHelper = new ImportHelper(ServiceFactory);
 			Logger = TestLogHelper.GetLogger();
+
+			await SetRelativityWebApiCredentialsProviderAsync();
 
 			Logger.LogInformation("Invoking ChildSuiteSetup");
 			await ChildSuiteSetup().ConfigureAwait(false);
@@ -163,7 +169,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 			int productionId = await Environment.CreateProductionAsync(workspaceId, productionName).ConfigureAwait(false);
 
-			var dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
 			await ImportHelper.ImportDataAsync(workspaceId, dataTableWrapper, productionId).ConfigureAwait(false);
 
 			return new ProductionDto {ArtifactId = productionId, Name = productionName};
@@ -172,6 +178,13 @@ namespace Relativity.Sync.Tests.System.Core
 		protected virtual void Dispose(bool disposing)
 		{
 			Environment?.Dispose();
+		}
+
+		private static async Task SetRelativityWebApiCredentialsProviderAsync()
+		{
+			IContainer container = ContainerHelper.Create(new ConfigurationStub());
+			IAuthTokenGenerator authTokenGenerator = container.Resolve<IAuthTokenGenerator>();
+			await authTokenGenerator.GetAuthTokenAsync(userId: 9);
 		}
 
 		public void Dispose()

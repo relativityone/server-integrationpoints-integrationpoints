@@ -4,7 +4,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
@@ -22,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_configurationRdo.JobHistoryToRetryId = _JOB_HISTORY_TO_RETRY_ARTIFACT_ID;
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
-			_sut = new JobEndMetricsConfiguration(_configuration.Object, syncJobParameters);
+			_sut = new JobEndMetricsConfiguration(_configuration, syncJobParameters);
 		}
 
 		[Test]
@@ -55,10 +54,10 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			jobHistoryToRetryId.Should().Be(_JOB_HISTORY_TO_RETRY_ARTIFACT_ID);
 		}
 
-		[TestCase("AppendOnly", ImportOverwriteMode.AppendOnly)]
-		[TestCase("OverlayOnly", ImportOverwriteMode.OverlayOnly)]
-		[TestCase("AppendOverlay", ImportOverwriteMode.AppendOverlay)]
-		public void ImportOverwriteMode_ShouldReturnProperValue(string valueInConfiguration, ImportOverwriteMode expectedValue)
+		[TestCase( ImportOverwriteMode.AppendOnly, ImportOverwriteMode.AppendOnly)]
+		[TestCase(ImportOverwriteMode.OverlayOnly, ImportOverwriteMode.OverlayOnly)]
+		[TestCase(ImportOverwriteMode.AppendOverlay, ImportOverwriteMode.AppendOverlay)]
+		public void ImportOverwriteMode_ShouldReturnProperValue(ImportOverwriteMode valueInConfiguration, ImportOverwriteMode expectedValue)
 		{
 			// Arrange
 			_configurationRdo.ImportOverwriteMode = valueInConfiguration;
@@ -70,9 +69,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			importOverwriteMode.Should().Be(expectedValue);
 		}
 
-		[TestCase("Production", DataSourceType.Production)]
-		[TestCase("SavedSearch", DataSourceType.SavedSearch)]
-		public void DataSourceType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
+		[TestCase(DataSourceType.Production, DataSourceType.Production)]
+		[TestCase(DataSourceType.SavedSearch, DataSourceType.SavedSearch)]
+		public void DataSourceType_ShouldReturnProperValue(DataSourceType valueInConfiguration, DataSourceType expectedValue)
 		{
 			// Arrange
 			_configurationRdo.DataSourceType = valueInConfiguration;
@@ -84,24 +83,24 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			dataSourceType.Should().Be(expectedValue);
 		}
 
-		[TestCase("Folder", DestinationLocationType.Folder)]
-		[TestCase("ProductionSet", DestinationLocationType.ProductionSet)]
-		public void DestinationType_ShouldReturnProperValue(string valueInConfiguration, DataSourceType expectedValue)
+		[TestCase(DestinationLocationType.Folder, DestinationLocationType.Folder)]
+		[TestCase(DestinationLocationType.ProductionSet, DestinationLocationType.ProductionSet)]
+		public void DestinationType_ShouldReturnProperValue(DestinationLocationType valueInConfiguration, DataSourceType expectedValue)
 		{
 			// Arrange
 			_configurationRdo.DataDestinationType = valueInConfiguration;
 
 			// Act
-			var destinationType = _sut.DestinationType;
+			DestinationLocationType destinationType = _sut.DestinationType;
 
 			// Assert
 			destinationType.Should().Be(expectedValue);
 		}
 
-		[TestCase("Copy", ImportNativeFileCopyMode.CopyFiles)]
-		[TestCase("Link", ImportNativeFileCopyMode.SetFileLinks)]
-		[TestCase("None", ImportNativeFileCopyMode.DoNotImportNativeFiles)]
-		public void ImportNativeFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportNativeFileCopyMode expectedValue)
+		[TestCase(ImportNativeFileCopyMode.CopyFiles, ImportNativeFileCopyMode.CopyFiles)]
+		[TestCase(ImportNativeFileCopyMode.SetFileLinks, ImportNativeFileCopyMode.SetFileLinks)]
+		[TestCase(ImportNativeFileCopyMode.DoNotImportNativeFiles, ImportNativeFileCopyMode.DoNotImportNativeFiles)]
+		public void ImportNativeFileCopyMode_ShouldReturnProperValue(ImportNativeFileCopyMode valueInConfiguration, ImportNativeFileCopyMode expectedValue)
 		{
 			// Arrange
 			_configurationRdo.NativesBehavior = valueInConfiguration;
@@ -113,9 +112,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			nativeFileCopyMode.Should().Be(expectedValue);
 		}
 
-		[TestCase("Copy", ImportImageFileCopyMode.CopyFiles)]
-		[TestCase("Link", ImportImageFileCopyMode.SetFileLinks)]
-		public void ImportImageFileCopyMode_ShouldReturnProperValue(string valueInConfiguration, ImportImageFileCopyMode expectedValue)
+		[TestCase(ImportImageFileCopyMode.CopyFiles, ImportImageFileCopyMode.CopyFiles)]
+		[TestCase(ImportImageFileCopyMode.SetFileLinks, ImportImageFileCopyMode.SetFileLinks)]
+		public void ImportImageFileCopyMode_ShouldReturnProperValue(ImportImageFileCopyMode valueInConfiguration, ImportImageFileCopyMode expectedValue)
 		{
 			// Arrange
 			_configurationRdo.ImageFileCopyMode = valueInConfiguration;
