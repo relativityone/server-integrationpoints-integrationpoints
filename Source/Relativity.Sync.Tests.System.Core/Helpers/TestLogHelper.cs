@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using Relativity.API;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
@@ -15,6 +11,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return AppSettings.UseLogger
 				? (Debugger.IsAttached ? (ISyncLog)new DebugLogger() : new ConsoleLogger())
 				: new EmptyLogger();
+		}
+
+		public static IAPILog GetAPILogger()
+		{
+			return Debugger.IsAttached ? (IAPILog)new DebugLogger() : new ConsoleLogger();
 		}
 	}
 }
