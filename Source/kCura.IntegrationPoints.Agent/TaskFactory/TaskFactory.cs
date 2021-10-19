@@ -127,6 +127,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		{
 			_logger.LogInformation("Attempting to create task {TaskType} for job {JobId}.", job.TaskType, job.JobId);
 		}
+
 		private void LogCreateTaskSyncCheck(Job job, TaskType taskType)
 		{
 			_logger.LogInformation("Creating job specific manger/worker class in task factory. Job: {JobId}, Task Type: {TaskType}", job.JobId, taskType);

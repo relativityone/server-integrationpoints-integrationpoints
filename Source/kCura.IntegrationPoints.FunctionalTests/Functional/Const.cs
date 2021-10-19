@@ -16,5 +16,14 @@
 		{
 			public const string XSS_JS = "';window.relativityXss=true;";
 		}
+
+		public static class ImportLoadFile
+		{
+			public const int ASCII_COLUMN = 20;
+			public const int ASCII_QUOTE = 254;
+			public const int ASCII_NEWLINE = 174;
+			public const int ASCII_MULTILINE = 59;
+			public const int ASCII_NESTEDVALUE = 92;
+		}
 	}
 }

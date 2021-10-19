@@ -245,6 +245,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			});
 		}
 
+		public IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId)
+		{
+			bool tasksFinished = !_db.JobsInQueue.Exists(x => x.RootJobId == rootJobId && x.TaskType == "SyncWorker");
+
+			return new ValueReturnQuery<bool>(tasksFinished);
+		}
+
 		#region Test Verification
 
 		public void ShouldCreateQueueTable()

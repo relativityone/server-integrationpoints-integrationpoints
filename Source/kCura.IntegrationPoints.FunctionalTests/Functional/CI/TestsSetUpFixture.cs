@@ -35,6 +35,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			int workspaceId = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME).ArtifactID;
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
+
+			SetDevelopmentModeToTrue();
+			if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
+			{
+				InstallARMTestServicesToWorkspace();
+			}
 		}
 
 		[OneTimeTearDown]
@@ -60,6 +66,29 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
+
+		private static void InstallARMTestServicesToWorkspace()
+		{
+			string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
+
+			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+				.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
+				{
+					CreateIfMissing = true
+				});
+		}
+
+		private void SetDevelopmentModeToTrue()
+		{
+			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+				.Require(new Testing.Framework.Models.InstanceSetting
+				{
+					Name = "DevelopmentMode",
+					Section = "kCura.ARM",
+					Value = "True",
+					ValueType = InstanceSettingValueType.TrueFalse
+				});
+		}
 
 		public static void CopyScreenshotsToBase()
 		{
