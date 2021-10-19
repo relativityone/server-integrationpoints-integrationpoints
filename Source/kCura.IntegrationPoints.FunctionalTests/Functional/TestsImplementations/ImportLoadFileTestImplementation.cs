@@ -1,4 +1,6 @@
-﻿using Atata;
+﻿using System;
+using System.Threading;
+using Atata;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Web.Navigation;
@@ -22,9 +24,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         }
 
         public void OnSetUpFixture()
-        {            
-            // Preparing data for LoadFile and placing it in the right location
-            string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
+        {
+	        string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
             LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).Wait();
         }
 
@@ -36,8 +37,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             string integrationPointName = nameof(ImportNativesFromLoadFileGoldFlow);
 
             // Act 
-            var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
-            var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+            var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+	            .NewIntegrationPoint.ClickAndGo();
 
             var importFromLoadFileConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLoadFile(integrationPointEditPage, integrationPointName);
             var importFromLoadFileMapFieldsPage = FillOutIntegrationPointConnectToSourcePageForImportFromLoadFile(importFromLoadFileConnectToSourcePage, _testsImplementationTestFixture.Workspace.Name);
@@ -63,6 +64,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private static ImportFromLoadFileConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLoadFile(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
         {
+	        integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+
+	        Thread.Sleep(TimeSpan.FromSeconds(2));
+
             IntegrationPointEdit integrationPointEdit = new IntegrationPointEditImport
             {
                 Source = IntegrationPointSources.LoadFile,

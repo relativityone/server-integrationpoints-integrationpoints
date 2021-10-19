@@ -52,7 +52,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 		{
 			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
-			var app = applicationService.Get(Const.INTEGRATION_POINTS_APPLICATION_NAME);
+			var app = applicationService.Get(Const.Application.INTEGRATION_POINTS_APPLICATION_NAME);
 
 			if(!applicationService.IsInstalledInWorkspace(Workspace.ArtifactID, app.ArtifactID))
 			{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
+using GlobalConst = Relativity.IntegrationPoints.Tests.Common.GlobalConst;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
@@ -17,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		{
 			Name = $"Fake Destination Provider";
 			Identifier = Guid.NewGuid().ToString();
-			ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID;
+			ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID;
 		}
 
 		public override List<Guid> Guids => new List<Guid>();

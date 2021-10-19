@@ -27,6 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
 		[FindByPrecedingDivContent]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
+		[WaitFor(Until.Visible, TriggerEvents.BeforeAccess, AbsenceTimeout = 20)]
 		public Select2<string, _> SavedSearch { get; private set; }
 
 		[FindByPrecedingDivContent]

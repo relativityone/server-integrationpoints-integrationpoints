@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData
+namespace Relativity.IntegrationPoints.Tests.Common.LDAP.TestData
 {
 	public class JumpCloudUsersTestData : TestDataBase
 	{
@@ -25,5 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData
 		}
 
 		public new IEnumerable<string> EntryIds => Data.Select(x => x["username"].ToString());
+
+		public override string OU => "ou=Users";
 	}
 }

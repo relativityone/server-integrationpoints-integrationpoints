@@ -7,11 +7,11 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData;
 using Relativity.Testing.Identification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
