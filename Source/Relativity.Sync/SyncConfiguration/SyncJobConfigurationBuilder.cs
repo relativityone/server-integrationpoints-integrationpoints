@@ -40,7 +40,7 @@ namespace Relativity.Sync.SyncConfiguration
                 options, _rdoOptions, new RdoManager(new EmptyLogger(), _servicesMgr, new RdoGuidProvider()));
         }
 
-        public INonDocumentSyncConfigurationBuilder ConfigureNonDocument(NonDocumentSyncOptions options)
+        public INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options)
         {
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
                 _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, _servicesMgr);

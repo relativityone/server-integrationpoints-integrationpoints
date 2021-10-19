@@ -24,6 +24,6 @@ namespace Relativity.Sync.SyncConfiguration
 		/// </summary>
 		/// <param name="options">Non-document objects synchronization options</param>
 		/// <returns></returns>
-		INonDocumentSyncConfigurationBuilder ConfigureNonDocument(NonDocumentSyncOptions options);
+		INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options);
 	}
 }
