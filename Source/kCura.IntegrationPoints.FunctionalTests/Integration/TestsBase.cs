@@ -24,6 +24,9 @@ using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.IntegrationPoints.Web.Installers;
+using kCura.IntegrationPoints.Web.Installers.Context;
+using kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -47,6 +50,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Logging;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
+using HelpersRegistration = kCura.IntegrationPoints.Web.Installers.HelpersRegistration;
 using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
@@ -139,6 +143,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Install(new LdapProviderInstaller());
 			Container.Install(new RelativitySyncInstaller());
 			Container.Install(new ImportInstaller());
+            IntegrationPointsServicesRegistration.AddIntegrationPointsServices(Container);
+            ContextRegistration.AddContext(Container);
+            HelpersRegistration.AddHelpers(Container);
+			InfrastructureRegistration.AddInfrastructure(Container);
+			ControllersRegistration.AddControllers(Container);
 
 			OverrideRipServicesInstaller();
 			OverrideRelativitySyncInstaller();
