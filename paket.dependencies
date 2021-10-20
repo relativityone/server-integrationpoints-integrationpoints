@@ -125,7 +125,7 @@ group Tests
 	nuget Relativity.Testing.Framework.RingSetup 0.11.0
 	nuget Selenium.Support 4.0.0-beta4
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
-    nuget Relativity.Sync 0.8.0-pre.62
+	nuget Relativity.Sync 0.8.0-pre.62
 	nuget SystemWrapper.Interfaces 0.25.0.186
 
 group Sync

@@ -133,3 +133,52 @@ The actual logic for event handling needs to be implemented inside `integration-
 
 - <https://einstein.kcura.com/display/DV/Converting+Relativity+Dynamic+Objects+to+Relativity+Forms>
 - <https://platform.relativity.com/RelativityOne/Content/Relativity_Forms/Relativity_Forms_API.htm>
+
+## REL-595056 [RIP] [Forms] Research UI interaction events chain in IP summary page
+
+When integrationPoint job is selected then integrationPointHub.js is loaded. 
+When it is created IntegrationPointDataHub object is created. IntegrationPointDataHub 
+periodically (every 5s) checks buttons state on the backend side and sends their states
+to the frontend. In frontend hub.client.updateIntegrationPointData function is called 
+and it updates buttons states and events that will be invoked in case of clicking 
+Integration Point UI buttons.
+
+On the backed side in IntegrationPointDataHub class update interval is made by 
+UpdateTimeElapsed method assignment to ElapsedEventHandler event. When 5s elapsed 
+(updateInterval field) UpdateTimeElapsed method is invoked. Then for every key in tasks
+(that is set in AddTask method when page is loaded) UpdateIntegrationPointDataAsync and 
+UpdateIntegrationPointJobStatusTableAsync methods are called. In both methods 
+"Clients.Group(key.ToString())" can be found. Dynamic objects that will be invoked 
+after this statement is invocation of function in _integrationPointHub.js, 
+ie. hub.client.updateIntegrationPointData.
+
+Frontend functions that are called when some button is clicked can be found in 
+relativity-provider-view.js. When some button is clicked then function from this file 
+is invoked and it invokes methods in JobController class. The names of frontend 
+functions that will be invoked when some button is clicked are defined in 
+OnClickEventConstructor class and are updated after every call of 
+IntegrationPointDataHub.UpdateTimerElapsed -> UpdateIntegrationPointDataAsync -> 
+OnClickEventConstructor.GetOnClickEvents.
+
+ConsoleEventHandler
+
+Detailed information about ConsoleEventHandler can be read in link below:
+https://platform.relativity.com/RelativityOne/Content/Customizing_workflows/Console_event_handlers.htm
+
+ConsoleEventHandler is invoked periodically because IntegrationPointDataHub object periodically invokes UpdateTimerElapsed => UpdateIntegrationPointJobStatusTableAsync. In this method hub.client.updateIntegrationPointJobStatusTable front end function is invoked. This function invokes load function which invokes GetConsole method. GetConsole method is called twice. 1st time when pageEvent = pageEvent.Load and 2nd time when it is pageEvent.PreRender. Go to link below to read about pageEvent states:
+https://www.javatpoint.com/asp-net-life-cycle 
+
+When GetConsole is invoked ButtonStateBuilder creates buttons states and gets OnClickEvents 
+Strange thing is that when some button is clicked ConsoleEventHandler.OnButtonClick method is not invoked.
+
+PageInteractionEventHandler
+
+PageInteractionEventHandler inherits from EventHandler.PageInteractionEventHandler. Go to link below for EventHandler.PageInteractionEventHandler details:
+https://platform.relativity.com/RelativityOne/Content/Customizing_workflows/Page_Interaction_event_handlers.htm
+RIP has 2 classes whose inherits from PageInteractionEventHandler: 
+
+•	IntegrationPointPageInteractionEventHandler
+•	IntegrationPointProfilePageInteractionEventHandler
+
+PageInteractionEventHandler is invoked periodically, every time when load function is invoked, and it updates css and javascript files.
+Children classes overrides CommonScriptsFactory method with specific IntegrationPointFieldGuidsConstants 

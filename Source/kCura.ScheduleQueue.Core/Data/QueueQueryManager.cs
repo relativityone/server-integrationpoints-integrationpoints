@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using Relativity.API;
 
@@ -43,12 +42,7 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			return new GetNextJobWithoutResourceGroup(_queueDbContext, agentId, agentTypeId);
 		}
-
-		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
-		{
-			return new UpdateScheduledJob(_queueDbContext, jobId, nextUtcRunTime);
-		}
-
+		
 		public ICommand UnlockScheduledJob(int agentId)
 		{
 			return new UnlockScheduledJob(_queueDbContext, agentId);
@@ -86,6 +80,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new CleanupJobQueueTable(_queueDbContext);
 		}
 
+		public ICommand CleanupScheduledJobsQueue()
+		{
+			return new CleanupScheduledJobsQueue(_queueDbContext);
+		}
+
 		public IQuery<DataTable> GetAllJobs()
 		{
 			return new GetAllJobs(_queueDbContext);
@@ -114,6 +113,11 @@ namespace kCura.ScheduleQueue.Core.Data
 		public ICommand UpdateJobDetails(long jobId, string jobDetails)
 		{
 			return new UpdateJobDetails(_queueDbContext, jobId, jobDetails);
+		}
+
+		public IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId)
+		{
+			return new CheckAllSyncWorkerBatchesAreFinished(_queueDbContext, rootJobId);
 		}
 	}
 }

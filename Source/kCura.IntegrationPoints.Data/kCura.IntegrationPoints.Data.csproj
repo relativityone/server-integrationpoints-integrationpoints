@@ -116,14 +116,11 @@
     <Compile Include="Queries\IJobTrackerQueryManager.cs" />
     <Compile Include="Queries\JobTrackerQueryManager.cs" />
     <Compile Include="Queries\RemoveEntryAndCheckBatchStatus.cs" />
-    <Compile Include="Queries\DeleteEntityManagerLinksByLockedJobId.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="Queries\IJobStatisticsQuery.cs" />
     <Compile Include="Queries\InsertDataToEntityManagerResourceTable.cs" />
-    <Compile Include="Queries\IEntityManagerQueryManager.cs" />
     <Compile Include="Queries\JobStatistics.cs" />
-    <Compile Include="Queries\EntityManagerQueryManager.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IDestinationProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IIntegrationPointsCompletedJobsQueryBuilder.cs" />
@@ -184,6 +181,11 @@
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IJobRepository.cs" />
     <Compile Include="ResourcePoolContext.cs" />
+    <Compile Include="Resources\Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="SerializerWithLogging.cs" />
@@ -208,7 +210,6 @@
     <Compile Include="Repositories\ISavedSearchQueryRepository.cs" />
     <Compile Include="Migrations\AddReplaceWebAPIWithExportCoreSetting.cs" />
     <Compile Include="Models\AuditElement.cs" />
-    <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IDestinationProviderRepository.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
@@ -276,19 +277,12 @@
     <Compile Include="Migrations\MigrationRunner.cs" />
     <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
     <Compile Include="Queries\JobResourceTracker.cs" />
-    <Compile Include="Queries\GetJobEntityManagerLinks.cs" />
-    <Compile Include="Queries\CreateEntityManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="Queries\JobStatisticsQuery.cs" />
     <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\IWorkspaceRepository.cs" />
     <Compile Include="ResourceDbProvider.cs" />
-    <Compile Include="Resources\Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
     <Compile Include="GeneratedDTOs.Extended.cs">
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
@@ -336,18 +330,14 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AddReplaceWebAPIWithExportCoreSetting.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
-    <Content Include="Resources\DeleteEntityManagerLinksByLockedJobId.sql" />
-    <Content Include="Resources\GetJobsCount.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />
-    <Content Include="Resources\GetJobEntityManagerLinks.sql" />
-    <Content Include="Resources\CreateEntityManagerResourceTable.sql" />
     <Content Include="Resources\GetApplicationBinaries.sql" />
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />

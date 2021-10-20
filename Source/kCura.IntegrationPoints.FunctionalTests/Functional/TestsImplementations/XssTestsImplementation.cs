@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Atata;
 using FluentAssertions;
 using OpenQA.Selenium;
+using Relativity.IntegrationPoints.Tests.Common;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
@@ -100,20 +102,25 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			_testsImplementationTestFixture.LoginAsStandardUser();
 
 			// Act
-			Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-				.NewIntegrationPoint.ClickAndGo()
-				.ApplyModel(new IntegrationPointEditImport
-				{
-					Name = nameof(IntegrationPointImportFromLDAPPreventXssInjection),
-					Source = IntegrationPointSources.LDAP,
-					TransferredObject = IntegrationPointTransferredObjects.Document,
-				}).ImportFromLDAPNext.ClickAndGo()
-				.ApplyModel(new ImportFromLDAPConnectToSource
-				{
-					ConnectionPath = xssText,
-					Username = xssText,
-					Password = xssText
-				}).Next.ClickAndGo();
+			var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+				.NewIntegrationPoint.ClickAndGo();
+
+			integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+
+			Thread.Sleep(TimeSpan.FromSeconds(2));
+
+			integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
+			{
+				Name = nameof(IntegrationPointImportFromLDAPPreventXssInjection),
+				Source = IntegrationPointSources.LDAP,
+				TransferredObject = IntegrationPointTransferredObjects.Document,
+			}).ImportFromLDAPNext.ClickAndGo()
+			.ApplyModel(new ImportFromLDAPConnectToSource
+			{
+				ConnectionPath = xssText,
+				Username = xssText,
+				Password = xssText
+			}).Next.ClickAndGo();
 
 			// Assert
 			AssertXss();
@@ -174,21 +181,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			_testsImplementationTestFixture.LoginAsStandardUser();
 
 			// Act
-			Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-				.NewIntegrationPoint.ClickAndGo()
-				.ApplyModel(new IntegrationPointEditImport
-				{
-					Name = nameof(IntegrationPointImportFromFTPPreventXssInjection),
-					Source = IntegrationPointSources.FTP,
-					TransferredObject = IntegrationPointTransferredObjects.Document,
-				}).ImportFromFTPNext.ClickAndGo()
-				.ApplyModel(new ImportFromFTPConnectToSource
-				{
-					Host = xssText,
-					Username = xssText,
-					Password = xssText,
-					CSVFilePath = xssText
-				}).Next.ClickAndGo();
+			var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+				.NewIntegrationPoint.ClickAndGo();
+
+			integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+
+			Thread.Sleep(TimeSpan.FromSeconds(2));
+
+			integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
+			{
+				Name = nameof(IntegrationPointImportFromFTPPreventXssInjection),
+				Source = IntegrationPointSources.FTP,
+				TransferredObject = IntegrationPointTransferredObjects.Document,
+			}).ImportFromFTPNext.ClickAndGo()
+			.ApplyModel(new ImportFromFTPConnectToSource
+			{
+				Host = xssText,
+				Username = xssText,
+				Password = xssText,
+				CSVFilePath = xssText
+			}).Next.ClickAndGo();
 
 			// Assert
 			AssertXss();
@@ -245,7 +257,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 				.Logs
 				.GetLog(LogType.Browser)
 				.Where(x => x.Level == OpenQA.Selenium.LogLevel.Severe)
-				.Where(x => x.Message.Contains($"/{Const.INTEGRATION_POINTS_APPLICATION_GUID}/"))
+				.Where(x => x.Message.Contains($"/{GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID}/"))
 				.Select(x => x.Message));
 			errors.Should().BeNullOrWhiteSpace("XSS attack should not cause JavaScript errors");
 		}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -83,6 +84,32 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                     .ConfigureAwait(false);
 
                 return (result.Objects.FirstOrDefault()?.FieldValues.FirstOrDefault()?.Value as Choice)?.Name;
+            }
+        }
+
+        public Task WaitForJobToFinishSuccessfullyAsync(int integrationPointId, int workspaceId, int checkDelayInMs = 500)
+        {
+            Task waitForJobStatus = Task.Run(() => WaitForJobStatus(integrationPointId, workspaceId, status =>
+                status == JobStatusChoices.JobHistoryCompleted.Name, checkDelayInMs));
+            
+            int waitingTimeout = 300;
+            if (!waitForJobStatus.Wait(TimeSpan.FromSeconds(waitingTimeout)))
+            {
+                throw new Exception($"Waiting for job to finish importing successfully timeout ({waitingTimeout}) exceeded.");
+            }
+            else
+            {
+                return waitForJobStatus;
+            }
+        }
+
+        private async Task WaitForJobStatus(int jobHistoryId, int workspaceId, Func<string, bool> waitUntil, int checkDelayInMs)
+        {
+            string status = await GetJobHistoryStatus(jobHistoryId, workspaceId);
+            while (!waitUntil(status))
+            {
+                await Task.Delay(checkDelayInMs);
+                status = await GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
             }
         }
     }
