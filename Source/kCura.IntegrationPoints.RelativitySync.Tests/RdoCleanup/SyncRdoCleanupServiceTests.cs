@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoints.RelativitySync.RdoCleanup;
 using Moq;
 using NUnit.Framework;
@@ -86,5 +87,16 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
 			_objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, batchObjectTypeId), Times.Once());
 			_objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, configurationObjectTypeId), Times.Once());
 		}
+
+        [Test]
+        public void DeleteSyncRdosAsync_ShouldNotThrowExceptionWhenObjectManagerThrowsException()
+        {
+			// Arrange
+            _objectManager.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByCriteriaRequest>()))
+                .Throws(new Exception());
+
+			// Act + Assert
+			Assert.DoesNotThrowAsync(async () => await _sut.DeleteSyncRdosAsync(_WORKSPACE_ID).ConfigureAwait(false));
+        }
 	}
 }
