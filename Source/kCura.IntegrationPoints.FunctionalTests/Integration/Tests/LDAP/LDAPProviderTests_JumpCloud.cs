@@ -5,7 +5,8 @@ using FluentAssertions;
 using kCura.IntegrationPoints.LDAPProvider;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData;
+using Relativity.IntegrationPoints.Tests.Common;
+using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Utils;
 using Relativity.Testing.Identification;
 
@@ -87,14 +88,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 		{
 			LDAPSettings settings = new LDAPSettings
 			{
-				ConnectionPath = Const.LDAP._JUMP_CLOUD_CONNECTION_PATH(port),
+				ConnectionPath = GlobalConst.LDAP._JUMP_CLOUD_CONNECTION_PATH(port),
 				ConnectionAuthenticationType = authType,
 			};
 
 			LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
 			{
-				UserName = Const.LDAP._JUMP_CLOUD_USER,
-				Password = Const.LDAP._JUMP_CLOUD_PASSWORD
+				UserName = GlobalConst.LDAP._JUMP_CLOUD_USER,
+				Password = GlobalConst.LDAP._JUMP_CLOUD_PASSWORD
 			};
 
 			return new DataSourceProviderConfiguration(

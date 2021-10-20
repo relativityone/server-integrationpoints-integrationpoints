@@ -68,6 +68,7 @@
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
     <Compile Include="Data\JobServiceDataProvider.cs" />
     <Compile Include="Data\Queries\AddStopStateColumnToQueueTable.cs" />
+    <Compile Include="Data\Queries\CheckAllSyncWorkerBatchesAreFinished.cs" />
     <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
     <Compile Include="Data\Queries\CleanupScheduledJobsQueue.cs" />
     <Compile Include="Data\Queries\CreateScheduledJob.cs" />
@@ -131,6 +132,7 @@
     <Content Include="Data\Resources\GetPendingJobsCount.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
+    <Content Include="Data\Resources\CheckAllSyncWorkerBatchesAreFinished.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />
     <Content Include="Data\Resources\DeleteJob.sql" />
     <Content Include="Data\Resources\GetJobByID.sql" />

@@ -7,8 +7,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 {
 	public static class Const
 	{
-		public const string INTEGRATION_POINTS_APP_GUID = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
-		
 		public static class Agent
 		{
 			public static readonly Guid RELATIVITY_INTEGRATION_POINTS_AGENT_GUID =
@@ -22,22 +20,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public static class Provider
 		{
-			public const string _FAKE_PROVIDER = "9A33EBEA-B4F9-4427-8AD4-5D4F35F0405A";
 			public const string _MY_FIRST_PROVIDER = "C9DE331D-2DCA-4F78-85BD-91493D0B9B37";
-
-			public static readonly Guid FakeProviderGuid = new Guid(_FAKE_PROVIDER);
 		}
 
 		public static class LDAP
 		{
-			public const string _OPEN_LDAP_USER = "cn=admin,dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
-			public const string _OPEN_LDAP_PASSWORD = "Test1234!";
-			public static string _OPEN_LDAP_CONNECTION_PATH(string ou) => $"rip-openldap-cvnx78s.eastus.azurecontainer.io/{ou},dc=rip-openldap-cvnx78s,dc=eastus,dc=azurecontainer,dc=io";
-
-			public const string _JUMP_CLOUD_USER = "uid=admin,ou=Users,o=609287decb206e4f6ef9beb5,dc=jumpcloud,dc=com";
-			public const string _JUMP_CLOUD_PASSWORD = "Test1234!";
-			public static string _JUMP_CLOUD_CONNECTION_PATH(int? port) => "ldap.jumpcloud.com" + (port == null ? string.Empty : $":{port}") + "/ou=Users,o=609287decb206e4f6ef9beb5,dc=jumpcloud,dc=com";
-
 			public static readonly int _ENTITY_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
 		}
 
