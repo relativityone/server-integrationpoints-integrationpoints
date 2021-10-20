@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.API.Context;
 
-namespace Relativity.Sync.Tests.System.Core.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 {
 	public class TestDbContext : IDBContext
 	{

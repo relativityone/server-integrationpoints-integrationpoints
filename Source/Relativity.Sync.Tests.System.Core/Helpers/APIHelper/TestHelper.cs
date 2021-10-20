@@ -1,7 +1,8 @@
 ﻿using System;
+using Moq;
 using Relativity.API;
 
-namespace Relativity.Sync.Tests.System.Core.Helpers
+namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 {
 	public class TestHelper : IHelper
 	{
@@ -14,19 +15,22 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			return new TestDbContext(caseID);
 		}
 
-		#region Not Implemented
+		public ILogFactory GetLoggerFactory()
+		{
+			var logFactory = new Mock<ILogFactory>();
+			logFactory.Setup(x => x.GetLogger()).Returns(TestLogHelper.GetAPILogger);
+
+			return logFactory.Object;
+		}
 
 		public IServicesMgr GetServicesManager()
 		{
-			throw new NotImplementedException();
+			return new ServicesMgrStub();
 		}
+
+		#region Not Implemented
 
 		public IUrlHelper GetUrlHelper()
-		{
-			throw new NotImplementedException();
-		}
-
-		public ILogFactory GetLoggerFactory()
 		{
 			throw new NotImplementedException();
 		}

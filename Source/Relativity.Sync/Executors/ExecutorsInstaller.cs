@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Autofac;
+using Relativity.AutomatedWorkflows.SDK;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
@@ -35,6 +36,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
+			builder.RegisterType<AutomatedWorkflowsManager>().As<IAutomatedWorkflowsManager>();
 
 			builder.RegisterType<DocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IDocumentJobStartMetricsConfiguration>>();
 			builder.RegisterType<DocumentJobStartMetricsExecutor>().As<IExecutor<IDocumentJobStartMetricsConfiguration>>();

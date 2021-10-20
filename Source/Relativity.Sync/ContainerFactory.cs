@@ -34,6 +34,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
 			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<ISyncServiceManager>();
 			containerBuilder.RegisterInstance(relativityServices.APM).As<IAPM>();
+			containerBuilder.RegisterInstance(relativityServices.Helper).As<IHelper>();
 			containerBuilder.RegisterType<WorkspaceGuidService>().As<IWorkspaceGuidService>().SingleInstance();
 			containerBuilder.RegisterType<SyncExecutionContextFactory>().As<ISyncExecutionContextFactory>();
 			containerBuilder.RegisterType<AppDomainWrapper>().As<IAppDomain>();

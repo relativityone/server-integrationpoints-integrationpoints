@@ -25,6 +25,11 @@ namespace Relativity.Sync
 		ISyncServiceManager ServicesMgr { get; }
 
 		/// <summary>
+		///     Interface with helper methods to programmatically interact with Relativity
+		/// </summary>
+		IHelper Helper { get; }
+
+		/// <summary>
 		///     Relativity EDDS DbContext
 		/// </summary>
 		IDBContext GetEddsDbContext();

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace Relativity.Sync.Tests.System.Core
 {
-	internal sealed class ConsoleLogger : ISyncLog
+	internal sealed class ConsoleLogger : ISyncLog, IAPILog
 	{
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
@@ -86,6 +88,26 @@ namespace Relativity.Sync.Tests.System.Core
 			Console.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
 			TestContext.Progress.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
 			Console.Out.Flush();
+		}
+
+		public IAPILog ForContext<T>()
+		{
+			return this;
+		}
+
+		public IAPILog ForContext(Type source)
+		{
+			return this;
+		}
+
+		public IAPILog ForContext(string propertyName, object value, bool destructureObjects)
+		{
+			return this;
+		}
+
+		public IDisposable LogContextPushProperty(string propertyName, object obj)
+		{
+			return Disposable.Empty;
 		}
 	}
 }
