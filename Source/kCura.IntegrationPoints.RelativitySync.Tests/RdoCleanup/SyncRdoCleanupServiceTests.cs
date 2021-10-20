@@ -95,8 +95,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
             _objectManager.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByCriteriaRequest>()))
                 .Throws(new Exception());
 
-			// Act + Assert
-			Assert.DoesNotThrowAsync(async () => await _sut.DeleteSyncRdosAsync(_WORKSPACE_ID).ConfigureAwait(false));
-        }
+			// Act
+            Func<Task> action = async () => await _sut.DeleteSyncRdosAsync(_WORKSPACE_ID).ConfigureAwait(false);
+
+			// Assert
+            action.ShouldNotThrow();
+		}
 	}
 }
