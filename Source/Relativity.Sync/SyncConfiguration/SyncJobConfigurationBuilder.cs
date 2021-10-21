@@ -39,5 +39,15 @@ namespace Relativity.Sync.SyncConfiguration
             return new ImageSyncConfigurationBuilder(_syncContext, _servicesMgr, fieldsMappingBuilder, _serializer,
                 options, _rdoOptions, new RdoManager(new EmptyLogger(), _servicesMgr, new RdoGuidProvider()));
         }
+
+        public INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options)
+        {
+            IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
+                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, _servicesMgr);
+            
+            return new NonDocumentSyncConfigurationBuilder(_syncContext, _servicesMgr,
+                fieldsMappingBuilder, _serializer, options, _rdoOptions,
+                new RdoManager(new EmptyLogger(), _servicesMgr, new RdoGuidProvider()));
+        }
     }
 }

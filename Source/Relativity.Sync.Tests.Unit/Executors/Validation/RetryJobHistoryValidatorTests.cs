@@ -144,6 +144,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
 		[TestCase(typeof(SyncImageRunPipeline), false)]
 		[TestCase(typeof(SyncImageRetryPipeline), true)]
+		[TestCase(typeof(SyncNonDocumentRunPipeline), false)]
 		[EnsureAllPipelineTestCase(0)]
 		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
 		{

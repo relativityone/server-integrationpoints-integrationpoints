@@ -28,6 +28,6 @@ namespace Relativity.Sync.Pipelines.Extensions
 				|| pipelineType == typeof(SyncImageRetryPipeline);
 		}
 
-
+		public static bool IsNonDocumentPipeline(this ISyncPipeline pipeline) => pipeline is SyncNonDocumentRunPipeline;
 	}
 }

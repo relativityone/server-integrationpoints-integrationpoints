@@ -13,6 +13,11 @@
 		/// <summary>
 		/// Specifies production as data source type.
 		/// </summary>
-		Production
+		Production,
+	
+		/// <summary>
+		/// Specifies RDO view as data source type
+		/// </summary>
+		View
 	}
 }
