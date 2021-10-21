@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			ProductionDto production = await CreateAndImportProductionAsync(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset).ConfigureAwait(false);
 			TridentHelper.UpdateFilePathToLocalIfNeeded(_goldFlowTestSuite.SourceWorkspace.ArtifactID, _dataset);
 
-			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync((sourceWorkspace, destinationWorkspace, config) => 
+			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync((sourceWorkspace, destinationWorkspace, config) =>
 				ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, config, production.ArtifactId)).ConfigureAwait(false);
 
 			// Act
@@ -57,10 +57,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			await goldFlowTestRun.AssertImagesAsync(
+			goldFlowTestRun.AssertImages(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			).ConfigureAwait(false);
+			);
 		}
 
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration, int productionId)

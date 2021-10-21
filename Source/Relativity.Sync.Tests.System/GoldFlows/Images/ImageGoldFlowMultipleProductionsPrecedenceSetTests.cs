@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			await ImportTestDataAsync(_dataSet.DocumentsWithOriginalImagesDataSet, DataTableFactory.CreateImageImportDataTable).ConfigureAwait(false);
 			await ImportTestDataAsync(_dataSet.DocumentsWithoutImagesDataSet, DataTableFactory.CreateNativesImportDataTable).ConfigureAwait(false);
 		}
-		
+
 		[IdentifiedTest("a768c7c7-d34c-4902-9fe3-c2536e72286c")]
 		[TestType.MainFlow]
 		public async Task SyncJob_ShouldSyncImagesWithLinks_WhenImagePrecedenceFromOneProductionIsSelected()
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			IList<RelativityObject> expectedDocumentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID,
 				$"'Production::Image Count' > 0 AND 'Production::ProductionSet' == '{_production.Name}'").ConfigureAwait(false);
 
-			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync((sourceWorkspace, destinationWorkspace, config) => 
+			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync((sourceWorkspace, destinationWorkspace, config) =>
 				ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, config, _production.ArtifactId, false)).ConfigureAwait(false);
 
 			// Act
@@ -66,10 +66,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			await goldFlowTestRun.AssertImagesAsync(
+			goldFlowTestRun.AssertImages(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, expectedDocumentsWithImagesInDestinationWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			).ConfigureAwait(false);
+			);
 		}
 
 		[IdentifiedTest("6176e481-2a75-4654-af46-096f24bb6bfe")]
@@ -101,13 +101,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			await goldFlowTestRun.AssertImagesAsync(
+			goldFlowTestRun.AssertImages(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, expectedDocumentsWithImagesInDestinationWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			).ConfigureAwait(false);
+			);
 		}
 
-		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration, 
+		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration,
 			int productionId, bool includeOriginalIfProductionNotFound)
 		{
 			configuration.FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings;

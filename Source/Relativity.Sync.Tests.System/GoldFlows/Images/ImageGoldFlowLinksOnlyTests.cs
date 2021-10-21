@@ -58,10 +58,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			await goldFlowTestRun.AssertImagesAsync(
+			goldFlowTestRun.AssertImages(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
 				goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			).ConfigureAwait(false);
+			);
 		}
 
 		[IdentifiedTest("C8B0E268-CC1C-4E0F-97BC-EE1CDE657AA5")]
@@ -94,12 +94,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
 			);
 
-			await pushImagesWithLinksJob.AssertImagesAsync(
+			pushImagesWithLinksJob.AssertImages(
 				_goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
 				pushMetadataOnlyJob.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-			).ConfigureAwait(false);
+			);
 		}
-		
+
 		private async Task ConfigureTestRunForImagesWithLinksOnlyAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
 		{
 			await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
@@ -108,7 +108,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			configuration.ImportImageFileCopyMode = ImportImageFileCopyMode.SetFileLinks;
 			configuration.ImageImport = true;
 		}
-		
+
 		private async Task ConfigureTestRunForMetadataOnlyAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
 		{
 			await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
