@@ -54,6 +54,8 @@
     <Compile Include="Helpers\LongPathFileHelper.cs" />
     <Compile Include="Installer\CoreServicesForExportRegistration.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
+    <Compile Include="Services\WebAPIViewService .cs" />
+    <Compile Include="Services\WebAPIExportFieldsService.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="SharedLibrary\IFactoryConfigBuilder.cs" />
     <Compile Include="SharedLibrary\ExporterFactoryConfig.cs" />
     <Compile Include="SharedLibrary\LoadFileExportConfig.cs" />
+    <Compile Include="SharedLibrary\SearchManagerFactory.cs" />
     <Compile Include="Utilities\CommaSeparatedNumbersToArrayConverter.cs" />
     <Compile Include="Validation\Parts\DocumentExportSettingsValidator.cs" />
     <Compile Include="Validation\Parts\ExportFileValidator.cs" />

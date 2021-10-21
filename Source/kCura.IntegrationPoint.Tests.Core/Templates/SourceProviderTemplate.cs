@@ -1,3 +1,4 @@
+using System;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
@@ -25,6 +26,9 @@ using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -139,6 +143,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					.For<IExternalServiceInstrumentationProvider>()
 					.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
 					.LifestyleSingleton()
+			);
+			Container.Register(Component.For<Func<ISearchManager>>()
+				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceManagerProvider>().Create<ISearchManager, SearchManagerFactory>()))
+				.LifestyleTransient()
 			);
 			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());

@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_instrumentationProvider = instrumentationProvider;
 		}
 
-		public ILookup<int, ImageFile> GetImagesLocationForProductionDocuments(int workspaceId, int productionId, int[] documentIDs)
+		public ILookup<int, ImageFile> GetImagesLocationForProductionDocuments(int workspaceId, int productionId, int[] documentIDs, ISearchManager searchManager = null)
 		{
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fileLocations;
 		}
 
-		public ILookup<int, ImageFile> GetImagesLocationForDocuments(int workspaceID, int[] documentIDs)
+		public ILookup<int, ImageFile> GetImagesLocationForDocuments(int workspaceID, int[] documentIDs, ISearchManager searchManager = null)
 		{
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 
@@ -104,7 +105,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fileLocations;
 		}
 
-		public List<FileDto> GetNativesForDocuments(int workspaceID, int[] documentIDs)
+		public List<FileDto> GetNativesForDocuments(int workspaceID, int[] documentIDs, ISearchManager searchManager = null)
 		{
 			ThrowWhenNullArgument(documentIDs, nameof(documentIDs));
 

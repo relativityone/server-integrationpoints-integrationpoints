@@ -19,6 +19,7 @@ using System.Linq;
 using System.Net;
 using FileNaming.CustomFileNaming;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
+using kCura.IntegrationPoints.Core.Services;
 using Relativity;
 using Relativity.DataExchange.Io;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private readonly IUserNotification _userNotification;
 		private readonly IExportServiceFactory _exportServiceFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IExportFieldsService _exportFieldsService;
 
 		public ExportProcessBuilder(
 			IServicesMgr servicesMgr,
@@ -59,7 +61,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			IJobInfoFactory jobHistoryFactory,
 			IDirectory directoryWrap,
 			IExportServiceFactory exportServiceFactory,
-			IRepositoryFactory repositoryFactory)
+			IRepositoryFactory repositoryFactory,
+			IExportFieldsService exportFieldsService)
 		{
 			_servicesMgr = servicesMgr;
 			_configFactory = configFactory;
@@ -74,6 +77,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			_directory = directoryWrap;
 			_exportServiceFactory = exportServiceFactory;
 			_repositoryFactory = repositoryFactory;
+			_exportFieldsService = exportFieldsService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
 		}
 
@@ -169,19 +173,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void SetAllExportableFields(ExportFile exportFile)
 		{
-			using (ISearchService searchService = _servicesMgr.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser))
-			{
-				DataSet dataSet = searchService.RetrieveAllExportableViewFieldsAsync(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID, string.Empty).GetAwaiter().GetResult()?.Unwrap();
-
-				if (dataSet != null && dataSet.Tables.Count > 0)
-				{
-					exportFile.AllExportableFields = dataSet
-						.Tables[0]
-						.AsEnumerable()
-						.Select(dataRow => new ViewFieldInfo(dataRow))
-						.ToArray();
-				}
-			}
+			exportFile.AllExportableFields = _exportFieldsService.RetrieveAllExportableViewFields(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID, string.Empty);
 		}
 
 		private void PopulateCaseInfo(ExportFile exportFile)

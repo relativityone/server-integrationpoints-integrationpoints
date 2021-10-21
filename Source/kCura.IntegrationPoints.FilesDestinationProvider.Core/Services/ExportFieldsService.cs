@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.WinEDDS;
 using Relativity.API;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -86,6 +87,25 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			}
 
 			return fields;
+		}
+
+		public ViewFieldInfo[] RetrieveAllExportableViewFields(int workspaceID, int artifactTypeID, string correlationID)
+		{
+			using (ISearchService searchService = _servicesMgr.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser))
+			{
+				DataSet dataSet = searchService.RetrieveAllExportableViewFieldsAsync(workspaceID, artifactTypeID, correlationID).GetAwaiter().GetResult()?.Unwrap();
+
+				if (dataSet != null && dataSet.Tables.Count > 0)
+				{
+					return dataSet
+						.Tables[0]
+						.AsEnumerable()
+						.Select(dataRow => new ViewFieldInfo(dataRow))
+						.ToArray();
+				}
+
+				return null;
+			}
 		}
 
 		private bool ContainsTable(DataSet dataSet)

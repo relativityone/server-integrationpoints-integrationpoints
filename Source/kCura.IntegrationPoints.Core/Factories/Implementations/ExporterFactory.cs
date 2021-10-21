@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
@@ -6,13 +7,16 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -24,6 +28,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		private readonly IRelativityObjectManager _relativityObjectManager;
 		private readonly IFileRepository _fileRepository;
 		private readonly ISerializer _serializer;
+		private readonly Func<ISearchManager> _searchManager;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly IAPILog _logger;
 
 		public ExporterFactory(
@@ -32,6 +38,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			IFolderPathReaderFactory folderPathReaderFactory,
 			IRelativityObjectManager relativityObjectManager,
 			IFileRepository fileRepository,
+			Func<ISearchManager> searchManager,
+			IToggleProvider toggleProvider,
 			ISerializer serializer)
 		{
 			_repositoryFactory = repositoryFactory;
@@ -39,7 +47,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_folderPathReaderFactory = folderPathReaderFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_fileRepository = fileRepository;
+			_searchManager = searchManager;
 			_serializer = serializer;
+			_toggleProvider = toggleProvider;
 			_logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
 		}
 
@@ -126,19 +136,39 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			}
 
 			const int startAtRecord = 0;
-			return new ImageExporterService(
-				documentRepository,
-				_relativityObjectManager,
-				_repositoryFactory,
-				_fileRepository,
-				jobStopManager,
-				_helper,
-				_serializer,
-				mappedFiles,
-				startAtRecord,
-				sourceConfiguration,
-				searchArtifactId,
-				settings);
+			if (_toggleProvider.IsEnabled<EnableKeplerizedImportAPIToggle>())
+			{
+				return new ImageExporterService(
+					documentRepository,
+					_relativityObjectManager,
+					_repositoryFactory,
+					_fileRepository,
+					jobStopManager,
+					_helper,
+					_serializer,
+					mappedFiles,
+					startAtRecord,
+					sourceConfiguration,
+					searchArtifactId,
+					settings);
+			}
+			else
+			{
+				return new WebAPIImageExporterService(
+					documentRepository,
+					_relativityObjectManager,
+					_repositoryFactory,
+					_fileRepository,
+					jobStopManager,
+					_helper,
+					_serializer,
+					mappedFiles,
+					startAtRecord,
+					sourceConfiguration,
+					searchArtifactId,
+					settings,
+					_searchManager);
+			}
 		}
 		
 		private void LogBuildExporterExecutionWithParameters(

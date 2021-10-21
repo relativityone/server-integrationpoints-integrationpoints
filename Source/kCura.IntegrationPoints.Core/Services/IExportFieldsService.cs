@@ -1,4 +1,5 @@
-﻿using Relativity.IntegrationPoints.Contracts.Models;
+﻿using kCura.WinEDDS;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -9,5 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		FieldEntry[] GetDefaultViewFields(int workspaceArtifactID, int viewArtifactID, int artifactTypeID, bool isProduction);
 
 		FieldEntry[] GetAllExportableLongTextFields(int workspaceArtifactID, int artifactTypeID);
+		
+		ViewFieldInfo[] RetrieveAllExportableViewFields(int workspaceID, int artifactTypeID, string correlationID);
 	}
 }
