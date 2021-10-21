@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 		{
 			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspace.ArtifactID).ConfigureAwait(false);
 
-			List<FieldMap> identifierMapping = await GetIdentifierMappingAsync(_workspace.ArtifactID, _workspace.ArtifactID)
+			List<FieldMap> identifierMapping = await GetDocumentIdentifierMappingAsync(_workspace.ArtifactID, _workspace.ArtifactID)
 				.ConfigureAwait(false);
 
 			ConfigurationStub configuration = new ConfigurationStub

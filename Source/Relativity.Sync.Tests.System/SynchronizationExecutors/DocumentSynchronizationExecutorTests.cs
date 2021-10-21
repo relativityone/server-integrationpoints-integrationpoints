@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			// Arrange		
 			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
-				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+				=> GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			Dataset dataSet = Dataset.NativesAndExtractedText;
 
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			// Arrange
 			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
-				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+				=> GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			Dataset dataSet = Dataset.NativesAndExtractedText;
 
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			// Arrange
 			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
-				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+				=> GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			Dataset dataSet = Dataset.NativesAndExtractedText;
 
@@ -139,7 +139,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			const int _USER_FIELD_ID = 1039900;
 			const string _USER_FIELD_DISPLAY_NAME = "Relativity Sync Test User";
 
-			var fieldMap = GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+			var fieldMap = GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 			fieldMap.Add(new FieldMap
 			{
 				SourceField = new FieldEntry { DisplayName = _USER_FIELD_DISPLAY_NAME, FieldIdentifier = _USER_FIELD_ID, IsIdentifier = false },

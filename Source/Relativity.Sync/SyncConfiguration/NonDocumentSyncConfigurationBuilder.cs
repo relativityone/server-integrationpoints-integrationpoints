@@ -1,5 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
@@ -10,14 +13,18 @@ namespace Relativity.Sync.SyncConfiguration
 {
     internal class NonDocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, INonDocumentSyncConfigurationBuilder
     {
-        private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
+	    private readonly ISyncContext _syncContext;
+	    private readonly ISyncServiceManager _servicesMgr;
+	    private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
         private Action<IFieldsMappingBuilder> _fielsdMappingAction;
 
         public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, NonDocumentSyncOptions options,
             RdoOptions rdoOptions, RdoManager rdoManager) : base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
         {
-            _fieldsMappingBuilder = fieldsMappingBuilder;
+	        _syncContext = syncContext;
+	        _servicesMgr = servicesMgr;
+	        _fieldsMappingBuilder = fieldsMappingBuilder;
 
             SyncConfiguration.RdoArtifactTypeId = options.RdoArtifactTypeId;
             SyncConfiguration.DataSourceType = DataSourceType.View;
@@ -42,9 +49,26 @@ namespace Relativity.Sync.SyncConfiguration
             }
         }
 
-        private Task ValidateViewExistsAsync()
+        private async Task ValidateViewExistsAsync()
         {
-            throw new System.NotImplementedException();
+	        using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+	        {
+		        QueryRequest request = new QueryRequest()
+		        {
+			        ObjectType = new ObjectTypeRef()
+			        {
+				        ArtifactTypeID = (int)ArtifactType.View
+			        },
+			        Condition = $"'ArtifactID' == {SyncConfiguration.DataSourceArtifactId}"
+		        };
+
+		        QueryResult queryResult = await objectManager.QueryAsync(_syncContext.SourceWorkspaceId, request, 0, 1).ConfigureAwait(false);
+
+		        if (queryResult.TotalCount == 0)
+		        {
+			        throw new InvalidSyncConfigurationException($"View Artifact ID: {SyncConfiguration.DataSourceArtifactId} does not exist in workspace {_syncContext.SourceWorkspaceId}");
+		        }
+	        }
         }
 
         public INonDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingAction)

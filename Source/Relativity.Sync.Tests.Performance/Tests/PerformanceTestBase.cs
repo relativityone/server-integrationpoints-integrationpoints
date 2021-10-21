@@ -247,7 +247,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
 			Configuration.SavedSearchArtifactId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).ConfigureAwait(false);
 			Configuration.DataSourceArtifactId = Configuration.SavedSearchArtifactId;
-			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
+			IEnumerable<FieldMap> fieldsMapping = mapping ?? await GetDocumentIdentifierMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
 			Configuration.SetFieldMappings(fieldsMapping.ToList());
 
 			Logger.LogInformation("Create Job History...");
