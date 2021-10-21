@@ -172,7 +172,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
 			container.Register(Component
 				.For<IToggleProvider>()
-				.UsingFactoryMethod(k => ToggleProviderHelper.CreateSqlServerToggleProvider(k.Resolve<IHelper>()))
+				.Instance(ToggleProvider.Current)
 				.LifestyleSingleton()
 			);
 

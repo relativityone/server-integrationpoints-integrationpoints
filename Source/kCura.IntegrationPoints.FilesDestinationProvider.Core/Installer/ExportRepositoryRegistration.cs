@@ -2,6 +2,8 @@
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Installers.Extensions;
+using kCura.IntegrationPoints.Core.Toggles;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
@@ -18,11 +20,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 				.LifestyleTransient()
 			);
 
-			container.Register(
-				Component.For<IFileRepository>()
-					.ImplementedBy<FileRepository>()
-					.LifestyleTransient()
-			);
+			container
+				.RegisterWithToggle<IFileRepository, EnableKeplerizedImportAPIToggle, FileRepository, WebAPIFileRepository>(c => c.LifestyleTransient());
+
 			return container;
 		}
 	}

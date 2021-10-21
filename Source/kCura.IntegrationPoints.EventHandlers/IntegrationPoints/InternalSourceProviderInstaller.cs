@@ -22,13 +22,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             _logggerLazy = new Lazy<IAPILog>(
                 () => Helper.GetLoggerFactory().GetLogger().ForContext<InternalSourceProviderInstaller>()
             );
-            _toggleProvider = ToggleProviderHelper.CreateSqlServerToggleProvider(Helper);
+            _toggleProvider = ToggleProvider.Current;
         }
 
         protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller) : this()
         {
             _ripProviderInstaller = ripProviderInstaller;
-            _toggleProvider = ToggleProviderHelper.CreateSqlServerToggleProvider(Helper);
         }
 
         internal override ISourceProviderInstaller CreateSourceProviderInstaller()

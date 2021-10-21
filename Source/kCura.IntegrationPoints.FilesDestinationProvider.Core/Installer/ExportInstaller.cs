@@ -1,7 +1,10 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Installers.Extensions;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Toggles;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -36,8 +39,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 			container.Register(Component.For<IFactoryConfigBuilder>().ImplementedBy<FactoryConfigBuilder>().LifestyleTransient());
 			container.Register(Component.For<IExtendedExporterFactory>().ImplementedBy<ExtendedExporterFactory>().LifestyleTransient());
 
-			container.Register(Component.For<IExportFieldsService>().ImplementedBy<ExportFieldsService>().LifestyleTransient());
-			container.Register(Component.For<IViewService>().ImplementedBy<ViewService>().LifestyleTransient());
+			container
+				.RegisterWithToggle<IExportFieldsService, EnableKeplerizedImportAPIToggle, ExportFieldsService, WebAPIExportFieldsService>(c => c.LifestyleTransient());
+			container
+				.RegisterWithToggle<IViewService, EnableKeplerizedImportAPIToggle, ViewService, WebAPIViewService>(c => c.LifestyleTransient());
+
 			container.Register(Component.For<IExportInitProcessService>().ImplementedBy<ExportInitProcessService>().LifestyleTransient());
 			container.Register(Component.For<IIntegrationPointValidationService>().ImplementedBy<FileDestinationProviderConfigurationValidator>().Named($"{nameof(FileDestinationProviderConfigurationValidator)}+{nameof(IIntegrationPointValidationService)}").LifestyleTransient());
 

@@ -29,6 +29,8 @@ using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Core.Installers.Extensions;
+using kCura.IntegrationPoints.Core.Toggles;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -148,7 +150,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceManagerProvider>().Create<ISearchManager, SearchManagerFactory>()))
 				.LifestyleTransient()
 			);
-			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
+			Container
+				.RegisterWithToggle<IFileRepository, EnableKeplerizedImportAPIToggle, FileRepository, WebAPIFileRepository>(c => c.LifestyleTransient());
+
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
 #pragma warning disable 618
