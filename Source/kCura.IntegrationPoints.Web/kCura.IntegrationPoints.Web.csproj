@@ -210,6 +210,12 @@
     <Compile Include="WindsorServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LogConfig.xml">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="web.config">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.svg">
       <Link>Content\fonts\fluid-ui.svg</Link>
     </Content>
@@ -611,9 +617,6 @@
     <Content Include="Scripts\select2.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Scripts\es6-shim.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

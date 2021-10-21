@@ -11,6 +11,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
+using Moq.Language;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Toggles;
@@ -208,7 +209,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 		private void SetupJobQueue(params Job[] jobs)
 		{
-			var sequenceSetup = _jobServiceMock.SetupSequence(x => x.GetNextQueueJob(
+			ISetupSequentialResult<Job> sequenceSetup = _jobServiceMock.SetupSequence(x => x.GetNextQueueJob(
 				It.IsAny<IEnumerable<int>>(), It.IsAny<int>()));
 
 			foreach (var job in jobs)
