@@ -20,7 +20,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using FluentAssertions;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.WinEDDS;
 using Relativity.DataExchange.Io;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
@@ -66,8 +68,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		private JobStatisticsService _jobStatisticsService;
 		private IServiceFactory _serviceFactory;
 		private IRepositoryFactory _repositoryFactory;
-		private ISearchService _searchServiceFake;
-		private IServicesMgr _servicesMgrFake;
+		private IExportFieldsService _exportFieldsService;
 
 		private ExportProcessBuilder _sut;
 
@@ -109,20 +110,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			exportServiceFactory.Create(Arg.Any<ExportDataContext>()).Returns(_serviceFactory);
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 
-			_searchServiceFake = Substitute.For<ISearchService>();
-			_servicesMgrFake = Substitute.For<IServicesMgr>();
-			_servicesMgrFake.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser).Returns(_searchServiceFake);
-
 			var helper = Substitute.For<IHelper>();
 
 			_loggingMediator.LoggingMediators.Returns(new List<ILoggingMediator>());
 
+			_exportFieldsService = Substitute.For<IExportFieldsService>();
+
 			MockExportFile();
 
-			MockSearchServiceReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoDataSet(AllExportableAvfIds.Keys.ToList(), addFileField: true));
+			MockSearchServiceReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), addFileField: true));
 
 			_sut = new ExportProcessBuilder(
-				_servicesMgrFake,
 				configFactory,
 				_loggingMediator,
 				_userMessageNotification,
@@ -135,7 +133,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				jobInfoFactoryMock,
 				directoryWrap,
 				exportServiceFactory,
-				_repositoryFactory
+				_repositoryFactory,
+				_exportFieldsService
 			);
 
 			_job = JobExtensions.CreateJob();
@@ -177,18 +176,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-		public void ItShouldCreateAndDisposeSearchManager()
+		public void ItShouldSetAllExportFields()
 		{
-			_searchServiceFake
-				.RetrieveAllExportableViewFieldsAsync(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID, string.Empty)
-				.Returns(new DataSetWrapper(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoDataSet(AllExportableAvfIds.Keys.ToList())));
-			
+			// Arrange
+			var expectedExportableFields =
+				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList());
+
+			_exportFieldsService.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID,
+					_exportFile.ArtifactTypeID, string.Empty)
+				.Returns(expectedExportableFields);
+
+			// Act
 			_sut.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
 			}, _job);
 			
-			_searchServiceFake.Received().Dispose();
+			// Assert
+			_exportFile.AllExportableFields.ShouldAllBeEquivalentTo(expectedExportableFields);
 		}
 
 		[Test]
@@ -282,7 +287,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			{
 				SelViewFieldIds = expectedFilteredFields
 			};
-			var expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoDataSet(expectedFilteredFields.Keys.Concat(notExpectedFilteredFields.Keys).ToList());
+			var expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(expectedFilteredFields.Keys.Concat(notExpectedFilteredFields.Keys).ToList());
 
 			MockSearchServiceReturnValue(expected);
 
@@ -314,7 +319,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				TextPrecedenceFieldsIds = textPrecedenceFieldsIdsExpected
 			};
 			settings.SelViewFieldIds.Add(textPrecedenceFieldsIdsExpected[0], new FieldEntry());
-			DataSet expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoDataSet(textPrecedenceFieldsIdsExpected.Concat(textPrecedenceFieldsIdsNotExpected).ToList());
+			ViewFieldInfo[] expected = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(textPrecedenceFieldsIdsExpected.Concat(textPrecedenceFieldsIdsNotExpected).ToList());
 
 			MockSearchServiceReturnValue(expected);
 
@@ -379,7 +384,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			// arrange
 			var exportableFieldIds = new List<int> { 1, 2, 3, 4, 5, 6 };
-			MockSearchServiceReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoDataSet(exportableFieldIds));
+			MockSearchServiceReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(exportableFieldIds));
 
 			var expectedFieldIds = new Dictionary<int, FieldEntry>
 			{
@@ -405,7 +410,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			const int fieldArtifactId = 123456;
 
-			DataSet fieldInfos = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoDataSet(AllExportableAvfIds.Keys.ToList(), true, fieldArtifactId);
+			ViewFieldInfo[] fieldInfos = ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), true, fieldArtifactId);
 
 			MockSearchServiceReturnValue(fieldInfos);
 
@@ -429,11 +434,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), true, fieldArtifactId);
 		}
 
-		private void MockSearchServiceReturnValue(DataSet expectedExportableFields)
+		private void MockSearchServiceReturnValue(ViewFieldInfo[] expectedExportableFields)
 		{
-			_searchServiceFake
-				.RetrieveAllExportableViewFieldsAsync(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID, string.Empty)
-				.Returns(new DataSetWrapper(expectedExportableFields));
+			_exportFieldsService
+				.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID, string.Empty)
+				.Returns(expectedExportableFields);
 		}
 	}
 }
