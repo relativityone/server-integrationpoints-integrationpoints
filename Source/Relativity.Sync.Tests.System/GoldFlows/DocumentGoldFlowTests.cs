@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;
 			configuration.MoveExistingDocuments = false;
 
-			IEnumerable<FieldMap> identifierMapping = await GetIdentifierMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			IEnumerable<FieldMap> identifierMapping = await GetDocumentIdentifierMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
 			configuration.SetFieldMappings(identifierMapping.Concat(extractedTextMapping).ToList());

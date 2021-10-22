@@ -218,7 +218,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
 		async Task<SyncConfigurationRdo> CreateDefaultExpectedConfigurationAsync(List<FieldMap> expectedFieldsMapping = null)
 		{
-			var fieldsMappingToSerialize = expectedFieldsMapping ?? await GetIdentifierMappingAsync(SourceWorkspaceId, DestinationWorkspaceId).ConfigureAwait(false);
+			var fieldsMappingToSerialize = expectedFieldsMapping ?? await GetDocumentIdentifierMappingAsync(SourceWorkspaceId, DestinationWorkspaceId).ConfigureAwait(false);
 
 			return new SyncConfigurationRdo
 			{

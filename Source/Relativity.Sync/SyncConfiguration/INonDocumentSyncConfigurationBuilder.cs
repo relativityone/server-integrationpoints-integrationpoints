@@ -6,7 +6,7 @@ namespace Relativity.Sync.SyncConfiguration
     /// <summary>
     /// Provides methods for configuring non-document objects specific flow
     /// </summary>
-    public interface INonDocumentSyncConfigurationBuilder
+    public interface INonDocumentSyncConfigurationBuilder : ISyncConfigurationRootBuilder
     {
         /// <summary>
         /// Configures fields mapping.

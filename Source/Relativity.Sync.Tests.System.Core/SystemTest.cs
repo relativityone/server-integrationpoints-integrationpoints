@@ -65,11 +65,16 @@ namespace Relativity.Sync.Tests.System.Core
 			return Task.CompletedTask;
 		}
 
-		protected async Task<List<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId)
+		protected async Task<List<FieldMap>> GetDocumentIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId)
+		{
+			return await GetIdentifierMappingAsync(sourceWorkspaceId, _DOCUMENT_ARTIFACT_TYPE_ID, targetWorkspaceId);
+		}
+
+		protected async Task<List<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int artifactTypeId, int targetWorkspaceId)
 		{
 			using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
-				QueryRequest query = PrepareIdentifierFieldsQueryRequest();
+				QueryRequest query = PrepareIdentifierFieldsQueryRequest(artifactTypeId);
 				QueryResult sourceQueryResult = await objectManager.QueryAsync(sourceWorkspaceId, query, 0, 1).ConfigureAwait(false);
 				QueryResult destinationQueryResult = await objectManager.QueryAsync(targetWorkspaceId, query, 0, 1).ConfigureAwait(false);
 
@@ -92,11 +97,10 @@ namespace Relativity.Sync.Tests.System.Core
 						FieldMapType = FieldMapType.Identifier
 					}
 				};
-
 			}
 		}
 
-		private QueryRequest PrepareIdentifierFieldsQueryRequest()
+		private QueryRequest PrepareIdentifierFieldsQueryRequest(int artifactTypeId)
 		{
 			int fieldArtifactTypeID = (int)ArtifactType.Field;
 			QueryRequest queryRequest = new QueryRequest()
@@ -105,7 +109,7 @@ namespace Relativity.Sync.Tests.System.Core
 				{
 					ArtifactTypeID = fieldArtifactTypeID
 				},
-				Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Is Identifier' == true",
+				Condition = $"'FieldArtifactTypeID' == {artifactTypeId} and 'Is Identifier' == true",
 				Fields = new[] { new FieldRef { Name = "Name" } },
 				IncludeNameInQueryResult = true
 			};

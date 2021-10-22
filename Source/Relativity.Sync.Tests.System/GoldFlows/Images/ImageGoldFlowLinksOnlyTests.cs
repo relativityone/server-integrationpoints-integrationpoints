@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 		private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
 		{
 			configuration.FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings;
-			IList<FieldMap> identifierMapping = await GetIdentifierMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
+			IList<FieldMap> identifierMapping = await GetDocumentIdentifierMappingAsync(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
 			configuration.SetFieldMappings(identifierMapping);
 		}
 	}
