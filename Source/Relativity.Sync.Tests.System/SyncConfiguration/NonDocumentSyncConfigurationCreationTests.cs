@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			action.Should().Throw<InvalidSyncConfigurationException>();
 		}
 
-		SyncConfigurationRdo CreateDefaultExpectedConfiguration(int viewArtifactId)
+		private SyncConfigurationRdo CreateDefaultExpectedConfiguration(int viewArtifactId)
 		{
 			return new SyncConfigurationRdo
 			{
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			};
 		}
 
-		async Task<int> GetDefaultViewAsync()
+		private async Task<int> GetDefaultViewAsync()
 		{
 			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
