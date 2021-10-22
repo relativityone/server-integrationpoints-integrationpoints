@@ -155,6 +155,7 @@
     <Compile Include="Repositories\Implementations\ErrorRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\ExportQueryResultTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\WebAPIFileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />

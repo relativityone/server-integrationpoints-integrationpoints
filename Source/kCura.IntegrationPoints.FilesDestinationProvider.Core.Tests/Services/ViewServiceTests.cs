@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
-using kCura.Utility.Extensions;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
