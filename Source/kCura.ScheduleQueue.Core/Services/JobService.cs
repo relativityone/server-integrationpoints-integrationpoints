@@ -4,23 +4,28 @@ using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Toggles;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.Core.Services
 {
 	public class JobService : IJobService
 	{
+		private readonly IToggleProvider _toggleProvider;
 		private readonly IAPILog _log;
 
-		public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IHelper dbHelper)
+		public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IToggleProvider toggleProvider, IHelper dbHelper)
 		{
 			AgentService = agentService;
 			_log = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
 			DataProvider = dataProvider;
+			_toggleProvider = toggleProvider;
 		}
 
 		protected IJobServiceDataProvider DataProvider { get; set; }
@@ -31,19 +36,26 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID)
 		{
-			if (resourceGroupIds == null)
-			{
-				throw new ArgumentNullException(nameof(resourceGroupIds));
-			}
-			int[] resurceGroupIdsArray = resourceGroupIds.ToArray();
-			if (resurceGroupIdsArray.Length == 0)
-			{
-				throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'");
-			}
-
 			_log.LogInformation("Get next job from the queue for Agent {agentId}.", agentID);
 
-			DataRow row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resurceGroupIdsArray);
+			DataRow row;
+
+			if (_toggleProvider.IsEnabled<EnableKubernetesMode>())
+			{
+				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID);
+			}
+			else
+			{
+				int[] resurceGroupIdsArray = resourceGroupIds?.ToArray() ?? Array.Empty<int>();
+
+				if (resurceGroupIdsArray.Length == 0)
+				{
+					throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'");
+				}
+
+				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resurceGroupIdsArray);
+			}
+
 			return CreateJob(row);
 		}
 
@@ -310,8 +322,18 @@ namespace kCura.ScheduleQueue.Core.Services
 		
 		public void CleanupJobQueueTable()
 		{
-			LogOnCleanJobQueTable();
-			DataProvider.CleanupJobQueueTable();
+			_log.LogDebug("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));
+
+			DataProvider.CleanupScheduledJobsQueue();
+
+			if (_toggleProvider.IsEnabled<EnableKubernetesMode>())
+			{
+				_log.LogInformation($"Queue table won't be cleaned up because {nameof(EnableKubernetesMode)} is toggled on.");
+			}
+			else
+			{
+				DataProvider.CleanupJobQueueTable();
+			}
 		}
 
 		public void FinalizeDrainStoppedJob(Job job)
@@ -395,12 +417,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				"Attempting to retrieve jobs for Integration Point with ID: {integrationPointID} in {TypeName}", integrationPointId,
 				nameof(JobService));
 		}
-
-		public void LogOnCleanJobQueTable()
-		{
-			_log.LogDebug("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));
-		}
-
+		
 		private void LogOnCreatedScheduledJob(Job job)
 		{
 			_log.LogInformation("Scheduled Job has been created:\n {@job}", job);

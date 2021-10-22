@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.BatchProcess

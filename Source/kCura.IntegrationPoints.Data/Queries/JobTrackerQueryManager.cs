@@ -19,9 +19,9 @@ namespace kCura.IntegrationPoints.Data.Queries
 			return new CreateJobTrackingEntry(_repositoryFactory, _context, tableName, workspaceId, jobId);
 		}
 
-		public IQuery<DataTable> GetProcessingSyncWorkerBatches(string tableName, int workspaceId, long rootJobId)
+		public IQuery<DataTable> GetJobIdsFromTrackingEntry(string tableName, int workspaceId, long rootJobId)
 		{
-			return new GetProcessingSyncWorkerBatches(_repositoryFactory, _context, tableName, workspaceId, rootJobId);
+			return new GetJobIdsFromTrackingEntry(_repositoryFactory, _context, tableName, workspaceId, rootJobId);
 		}
 
 		public IQuery<int> RemoveEntryAndCheckBatchStatus(string tableName, int workspaceId, long jobId, bool isBatchFinished)

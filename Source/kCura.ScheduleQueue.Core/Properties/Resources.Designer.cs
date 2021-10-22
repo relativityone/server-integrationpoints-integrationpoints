@@ -90,6 +90,22 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UPDATE 
+        ///				[eddsdbo].[{0}]
+        ///SET
+        ///				[LockedByAgentID] = NULL
+        ///FROM 
+        ///				[eddsdbo].[{0}] WITH (UPDLOCK, ROWLOCK)
+        ///WHERE
+        ///				[JobID] = @JobID.
+        /// </summary>
+        internal static string CheckAllSyncWorkerBatchesAreFinished {
+            get {
+                return ResourceManager.GetString("CheckAllSyncWorkerBatchesAreFinished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to --If an agent was deleted while a job was running and not completed, we remove the agent lock
         ///--from the job so that another agent can pick it up.
         ///
@@ -108,6 +124,23 @@ namespace kCura.ScheduleQueue.Core.Properties {
         internal static string CleanupJobQueueTable {
             get {
                 return ResourceManager.GetString("CleanupJobQueueTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --If a scheduled job exists in the queue, but the workspace that created that job no longer exists,
+        ///--delete the job from the queue.
+        ///
+        ///DELETE FROM [eddsdbo].[{0}] WITH(UPDLOCK, READPAST, ROWLOCK)
+        ///WHERE [LockedByAgentID] IS NULL AND [WorkspaceID] NOT IN (
+        ///	SELECT [ArtifactID]
+        ///	FROM [eddsdbo].[Case] WITH(NOLOCK)
+        ///)
+        ///.
+        /// </summary>
+        internal static string CleanupScheduledJobsQueue {
+            get {
+                return ResourceManager.GetString("CleanupScheduledJobsQueue", resourceCulture);
             }
         }
         
@@ -339,11 +372,32 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to BEGIN
+        ///	UPDATE [eddsdbo].[{0}]
+        ///	SET
+        ///			[LockedByAgentID]	= @AgentID,
+        ///			[StopState] = 0
+        ///	OUTPUT 
+        ///			INSERTED.[JobID],
+        ///			INSERTED.[RootJobID],
+        ///			INSERTED.[ParentJobID],
+        ///			INSERTED.[AgentTypeID],
+        ///			INSERTED.[LockedByAgentID],
+        ///			INSERTED.[WorkspaceID],
+        ///			INSERTED.[RelatedObjectArtifactID],
+        ///			INSERTED.[TaskType],
+        ///			INSERTED.[NextRunTime],
+        ///			INSERTED.[LastRunTime],
+        ///			INSERTED.[ScheduleRuleType],
+        ///			INSERTED.[ScheduleRule],
+        ///			INSERTED.[JobDetails],
+        ///			INSERTED.[JobFlags],
+        ///			INSERTED.[SubmittedDate],
+        ///		 [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string GetPendingJobsCount {
+        internal static string GetNextJobWithoutResourceGroup {
             get {
-                return ResourceManager.GetString("GetPendingJobsCount", resourceCulture);
+                return ResourceManager.GetString("GetNextJobWithoutResourceGroup", resourceCulture);
             }
         }
         
@@ -426,21 +480,6 @@ namespace kCura.ScheduleQueue.Core.Properties {
         internal static string UpdateJobDetails {
             get {
                 return ResourceManager.GetString("UpdateJobDetails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to UPDATE	
-        ///					[eddsdbo].[{0}] 
-        ///SET 
-        ///					[NextRunTime] = @NextRunTime, 
-        ///					[LockedByAgentID] = NULL 
-        ///WHERE 
-        ///					[JobID] = @JobID.
-        /// </summary>
-        internal static string UpdateScheduledJob {
-            get {
-                return ResourceManager.GetString("UpdateScheduledJob", resourceCulture);
             }
         }
         

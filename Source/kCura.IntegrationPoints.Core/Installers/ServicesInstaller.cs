@@ -82,8 +82,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IPluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
 			container.Register(Component.For<IWindsorContainerSetup>().ImplementedBy<WindsorContainerSetup>().LifestyleSingleton());
 			container.Register(Component.For<IProviderFactoryLifecycleStrategy>().ImplementedBy<ProviderFactoryLifecycleStrategy>());
-			container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>().LifestyleSingleton());
-			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleSingleton());
+			container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>().LifestyleTransient());
+			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleTransient());
 			container.Register(Component.For<IAppDomainHelper>().ImplementedBy<AppDomainHelper>().LifestyleSingleton());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
@@ -118,8 +118,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ITabService>().ImplementedBy<TabService>().LifestyleTransient());
 			container.Register(Component.For<ISynchronizerFactory>().ImplementedBy<GeneralWithEntityRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IProviderFactory>().ImplementedBy<DefaultProviderFactory>().DependsOn(new { windsorContainer = container }).LifestyleTransient());
-			container.Register(Component.For<IManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
-			container.Register(Component.For<IEntityManagerQueryManager>().ImplementedBy<EntityManagerQueryManager>().LifestyleTransient().Named(nameof(EntityManagerQueryManager)));
 			container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<EntityManagerLinksSanitizer>().LifestyleTransient().Named(nameof(EntityManagerLinksSanitizer)));
 			container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleSingleton());
 			container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
@@ -168,13 +166,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IIntegrationPointProviderTypeService>()
 				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
 				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
-
-			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
-			container.Register(Component
-				.For<IToggleProvider>()
-				.Instance(ToggleProvider.Current)
-				.LifestyleSingleton()
-			);
+			
+			container.Register(Component.For<IToggleProvider>().Instance(ToggleProvider.Current).LifestyleSingleton());
 
 			container.Register(Component.For<IFederatedInstanceManager>().ImplementedBy<FederatedInstanceManager>().LifestyleTransient());
 

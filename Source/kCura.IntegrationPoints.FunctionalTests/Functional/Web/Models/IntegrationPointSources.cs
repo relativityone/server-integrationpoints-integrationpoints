@@ -10,6 +10,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 		FTP,
 		[Term("LDAP")]
 		LDAP,
+		[Term("Load File")]
 		LoadFile
 	}
 }

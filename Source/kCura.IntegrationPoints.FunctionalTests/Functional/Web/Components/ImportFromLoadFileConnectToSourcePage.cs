@@ -3,9 +3,8 @@ using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
-using OpenQA.Selenium;
-using System.Threading;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Controls;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Interfaces;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -14,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 	[UseExternalFrame]
 	[WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, AbsenceTimeout = 30, AppliesTo = TriggerScope.Children)]
 	[WaitForJQueryAjax(TriggerEvents.Init)]
-	internal class ImportFromLoadFileConnectToSourcePage : WorkspacePage<_>
+	internal class ImportFromLoadFileConnectToSourcePage : WorkspacePage<_>, IHasTreeItems<_>
 	{
 		public Button<ImportFromLoadFileMapFieldsPage, _> Next { get; private set; }
 
@@ -50,24 +49,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [FindByXPath("ul[contains(@class,'jstree-container-ul')]", Visibility = Visibility.Visible)]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public UnorderedList<TreeItemControl<_>, _> TreeItems { get; private set; }
-
-		public _ SetItem(params string[] itemNames)
-		{
-			var item = TreeItems[0].GetScope();
-			string hierarhy = string.Empty;
-
-			foreach (var itemName in itemNames)
-			{
-				string xpath = $"{hierarhy}//li[@role='treeitem']/a[.='{itemName}']";
-				hierarhy = $"{xpath}/..";
-
-				var textItem = item.FindElement(By.XPath(xpath));
-				textItem.Click();
-				Thread.Sleep(1000);
-				item = Driver.FindElement(By.XPath(hierarhy));
-			}
-
-			return Owner;
-		}
 	}
 }

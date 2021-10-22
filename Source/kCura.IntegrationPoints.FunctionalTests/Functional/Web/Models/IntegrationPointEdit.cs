@@ -3,6 +3,8 @@
 	internal abstract class IntegrationPointEdit
 	{
 		public string Name { get; set; }
+
+		public string EmailRecipients { get; set; }
 	}
 
 	internal class IntegrationPointEditImport: IntegrationPointEdit
@@ -16,7 +18,5 @@
 	{
 		public IntegrationPointTypes Type { get; } = IntegrationPointTypes.Export;
 		public IntegrationPointDestinations Destination { get; set; }
-
-		public string EmailRecipients { get; set; }
 	}
 }

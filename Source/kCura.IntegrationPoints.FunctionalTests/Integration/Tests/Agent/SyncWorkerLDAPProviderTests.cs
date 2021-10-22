@@ -7,16 +7,14 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData;
 using Relativity.Testing.Identification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.ScheduleQueue.Core.Core;
+using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-	[IdentifiedTestFixture("55CAA9A3-B9CE-4A69-9CC9-ED931EE9EB81")]
 	[TestExecutionCategory.CI, TestLevel.L1]
 	public class SyncWorkerLDAPProviderTests : TestsBase
 	{

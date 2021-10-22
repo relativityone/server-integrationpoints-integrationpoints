@@ -17,6 +17,8 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -112,6 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				return jobContextProvider;
 			}).Named("TestJobContext").IsDefault());
 		}
+
 		protected virtual WindsorContainer GetContainer()
 		{
 			return new WindsorContainer();
@@ -125,9 +128,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
 			Container.Register(Component.For<RelativityInstanceTest>().UsingFactoryMethod(() => FakeRelativityInstance).LifestyleSingleton());
 
-			RegisterRelativityApiServices();
-
-			RegisterScheduleAgentBase();
+            RegisterRelativityApiServices();
+            RegisterScheduleAgentBase();
 
 			Container.Install(new AgentInstaller(Helper, new DefaultScheduleRuleFactory(Container.Resolve<ITimeService>())));
 			Container.Install(new QueryInstallers());
@@ -158,7 +160,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			Container.Register(Component.For<IToggleProvider>().ImplementedBy<FakeToggleProviderWithDefaultValue>().IsDefault());
 		}
-
+        
 		private void RegisterRelativityApiServices()
 		{
 			Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
@@ -174,8 +176,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(c => new FakeWorkspaceDbContext(SourceWorkspace.ArtifactId, FakeRelativityInstance ))
 				.Named(nameof(FakeWorkspaceDbContext)).IsDefault());
 
-
-			Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
+            Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
 				new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspaceId)));
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
@@ -183,8 +184,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			Container.Register(Component.For<IJobTrackerQueryManager>().ImplementedBy<FakeJobTrackerQueryManager>()
 				.Named(nameof(FakeJobTrackerQueryManager)).IsDefault());
-			Container.Register(Component.For<IEntityManagerQueryManager>().ImplementedBy<FakeEntityManagerQueryManager>()
-				.Named(nameof(FakeEntityManagerQueryManager)).IsDefault());
 
 			Container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().UsingFactoryMethod(c =>
 				new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueueQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
@@ -205,7 +204,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			
 				return job.AsJob();
 			}).Named(Guid.NewGuid().ToString()).IsDefault());
-			
+
 			Container.Register(Component.For<IJobContextProvider>().UsingFactoryMethod(k =>
 			{
 				Job job = k.Resolve<Job>();

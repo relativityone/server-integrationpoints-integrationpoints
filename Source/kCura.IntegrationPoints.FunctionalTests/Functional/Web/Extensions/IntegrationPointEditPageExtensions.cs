@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Atata;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
@@ -11,7 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 	internal static class IntegrationPointEditPageExtensions
 	{
 		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPoint(this IntegrationPointEditPage integrationPointEditPage,
-			string integrationPointName, Workspace destinationWorkspace, KeywordSearch savedSearch,
+			string integrationPointName, Workspace destinationWorkspace, string savedSearchName,
 			RelativityProviderOverwrite overwriteMode = RelativityProviderOverwrite.AppendOnly,
 			YesNo copyImages = YesNo.No, RelativityProviderCopyNativeFiles copyNativesMode = RelativityProviderCopyNativeFiles.No)
 		{
@@ -19,7 +20,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
 			var relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
 				relativityProviderConnectToSourcePage, destinationWorkspace,
-				RelativityProviderSources.SavedSearch, savedSearch.Name);
+				RelativityProviderSources.SavedSearch, savedSearchName);
 
 			var integrationPointViewPage = relativityProviderMapFieldsPage.MapAllFields
 				.Click().ApplyModel(new RelativityProviderMapFields
@@ -79,9 +80,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
 			relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;
 
+			relativityProviderConnectToSourcePage.Source.Set(source);
+
+			Thread.Sleep(TimeSpan.FromSeconds(2));
+
 			return relativityProviderConnectToSourcePage
 				.ApplyModel(relativityProviderConnectToSource)
-				.SelectFolder.Click().SetItem($"{destinationWorkspace.Name}")
+				.SelectFolder.Click().SetTreeItem($"{destinationWorkspace.Name}")
 				.Next.ClickAndGo();
 		}
 	}

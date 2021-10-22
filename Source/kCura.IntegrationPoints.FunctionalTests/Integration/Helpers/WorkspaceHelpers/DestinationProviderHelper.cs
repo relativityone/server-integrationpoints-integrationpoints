@@ -1,4 +1,5 @@
-﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
+﻿using Relativity.IntegrationPoints.Tests.Common;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
@@ -12,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var provider =  new DestinationProviderTest()
 			{
-				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
+				ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY_NAME
 			};
@@ -26,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 			var destinationProvider = new DestinationProviderTest()
 			{
-				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
+				ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.LOADFILE,
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.LOADFILE_NAME
 			};

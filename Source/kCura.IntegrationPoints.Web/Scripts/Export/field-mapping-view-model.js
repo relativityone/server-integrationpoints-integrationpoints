@@ -72,7 +72,7 @@
           self.mappedFields,
           self.mappedFields,
           self.availableFields
-        );
+		);
 		self.sortAvailableFieldsAsc();
 	};
 

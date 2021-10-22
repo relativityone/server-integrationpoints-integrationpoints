@@ -2,15 +2,14 @@
 using System.Diagnostics;
 using System.Reflection;
 using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Interfaces;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using Moq;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -24,6 +23,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private Mock<IAPILog> _logMock;
 		private Mock<ITaskProvider> _taskProviderFake;
 		private Mock<IJobService> _jobServiceFake;
+		private Mock<ITaskParameterHelper> _taskParameterFake;
 
 		private const string _RIP_PREFIX = "RIP.";
 
@@ -40,10 +40,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			Mock<IAgentNotifier> agentNotifier = new Mock<IAgentNotifier>();
 			_jobServiceFake = new Mock<IJobService>();
-
-			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _logMock.Object);
+			_taskParameterFake = new Mock<ITaskParameterHelper>();
+			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _taskParameterFake.Object, _logMock.Object);
 		}
-		
+
 		[Test]
 		public void ProcessJob_ShouldPushEmptyRootJobIdToLogContext_WhenRootJobIdIsNull()
 		{
@@ -68,13 +68,15 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			const long expectedRootJobId = 879;
 			const int expectedUserId = 9;
 			const int expectedWorkspaceId = 11;
-
+			Guid expectedWorkflowIdGuid = Guid.NewGuid();
 			Job job = new JobBuilder()
 				.WithJobId(expectedJobId)
 				.WithRootJobId(expectedRootJobId)
 				.WithSubmittedBy(expectedUserId)
 				.WithWorkspaceId(expectedWorkspaceId)
 				.Build();
+
+			_taskParameterFake.Setup(x => x.GetBatchInstance(job)).Returns(expectedWorkflowIdGuid);
 
 			// Act
 			_sut.ProcessJob(job);
@@ -85,6 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.RootJobId), expectedRootJobId);
 			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.UserId), expectedUserId);
 			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.WorkspaceId), expectedWorkspaceId);
+			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.WorkflowId), expectedWorkflowIdGuid.ToString());
 		}
 
 		[Test]

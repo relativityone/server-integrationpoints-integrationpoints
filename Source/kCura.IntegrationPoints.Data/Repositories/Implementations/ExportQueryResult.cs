@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using Relativity.API;
@@ -61,18 +62,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 
 		/// <inheritdoc />
-		public async Task<IEnumerable<RelativityObjectSlim>> GetAllResultsAsync()
+		public async Task<IEnumerable<RelativityObjectSlim>> GetAllResultsAsync(CancellationToken token = default(CancellationToken))
 		{
 			using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(_executionIdentity))
 			{
-				return (await GetBlockFromExportInternalAsync((int)_exportResult.RecordCount, 0, client).ConfigureAwait(false)).ToArray();
+				return (await GetBlockFromExportInternalAsync((int)_exportResult.RecordCount, 0, client, token).ConfigureAwait(false)).ToArray();
 			}
 		}
 
 		/// <inheritdoc />
 		public ExportInitializationResults ExportResult => _exportResult;
 
-		private async Task<IEnumerable<RelativityObjectSlim>> GetBlockFromExportInternalAsync(int resultsBlockSize, int startIndex, IObjectManagerFacade client)
+		private async Task<IEnumerable<RelativityObjectSlim>> GetBlockFromExportInternalAsync(int resultsBlockSize,
+			int startIndex, IObjectManagerFacade client, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (_exportResult.RecordCount == 0)
 			{
@@ -87,6 +89,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				RelativityObjectSlim[] partialResults;
 				do
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+					
 					partialResults = await client
 						.RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, _exportResult.RunID,
 							remainingObjectsCount, startIndex)

@@ -1,4 +1,5 @@
-﻿using Atata;
+﻿using System;
+using Atata;
 using System.IO;
 using NUnit.Framework;
 using Relativity.Testing.Framework;
@@ -34,12 +35,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			int workspaceId = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME).ArtifactID;
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
+
+			SetDevelopmentModeToTrue();
+			if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
+			{
+				InstallARMTestServicesToWorkspace();
+			}
 		}
 
 		[OneTimeTearDown]
 		public void TearDown()
 		{
 			AtataContext.Current?.Dispose();
+			CopyScreenshotsToBase();
 		}
 
 		private static bool TemplateWorkspaceExists()
@@ -58,5 +66,58 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
+
+		private static void InstallARMTestServicesToWorkspace()
+		{
+			string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
+
+			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+				.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
+				{
+					CreateIfMissing = true
+				});
+		}
+
+		private void SetDevelopmentModeToTrue()
+		{
+			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+				.Require(new Testing.Framework.Models.InstanceSetting
+				{
+					Name = "DevelopmentMode",
+					Section = "kCura.ARM",
+					Value = "True",
+					ValueType = InstanceSettingValueType.TrueFalse
+				});
+		}
+
+		public static void CopyScreenshotsToBase()
+		{
+			string screenshotExtension = "*.png";
+			string basePath = GetBaseArchiveDirectoryPath();
+			
+			try
+			{
+				string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
+					SearchOption.AllDirectories);
+				TestContext.Progress.Log($"Found {screenshotsPaths.Length} screenshot(s)");
+				
+				foreach (var filePath in screenshotsPaths)
+				{
+					string fileName = Path.GetFileName(filePath);
+					string directoryName = Directory.GetParent(fileName).Name;
+					string newFileName = $"{directoryName}_{fileName}";
+					TestContext.Progress.Log($"Copying screenshot: {filePath}");
+					string destFileName = Path.Combine(basePath, newFileName);
+					File.Copy(filePath, destFileName, true);
+				}
+			}
+			catch (DirectoryNotFoundException ex)
+			{
+				TestContext.Progress.Log($"Could not found path with screenshots {basePath}", ex);
+			}
+		}
+		
+		private static string GetBaseArchiveDirectoryPath() => Path.Combine(TestContext.CurrentContext.WorkDirectory, "Artifacts", "Logs");
+
 	}
 }

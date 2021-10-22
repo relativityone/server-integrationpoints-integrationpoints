@@ -39,17 +39,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SyncEntityManagerWorker : SyncWorker
 	{
 		private readonly IAPILog _logger;
-		private readonly IManagerQueueService _managerQueueService;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IRelativityObjectManager _relativityObjectManager;
+		private readonly IQueueQueryManager _queueQueryManager;
+
 		private IEnumerable<FieldMap> _entityManagerFieldMap;
 		private List<EntityManagerMap> _entityManagerMap;
 		private bool _managerFieldIdIsBinary;
 		private IEnumerable<FieldMap> _managerFieldMap;
 		private string _newKeyManagerFieldID;
 		private string _oldKeyManagerFieldID;
-
-		private int _workspaceArtifactId;
 
 		public SyncEntityManagerWorker(
 			ICaseServiceContext caseServiceContext, 
@@ -60,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryService jobHistoryService, 
 			IJobHistoryErrorService jobHistoryErrorService, 
 			IJobManager jobManager,
-			IManagerQueueService managerQueueService, 
+			IQueueQueryManager queueQueryManager, 
 			IJobStatisticsService statisticsService, 
 			IManagerFactory managerFactory,
 			IJobService jobService, 
@@ -83,7 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				providerTypeService,
 				integrationPointRepository)
 		{
-			_managerQueueService = managerQueueService;
+			_queueQueryManager = queueQueryManager;
 			_repositoryFactory = repositoryFactory;
 			_relativityObjectManager = relativityObjectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncEntityManagerWorker>();
@@ -93,33 +92,31 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
+				EntityManagerJobParameters jobParameters = GetParameters(job);
+
 				LogExecuteTaskStart(job);
 				
-				//get all job parameters
-				EntityManagerJobParameters jobParameters = GetParameters(job);
 				SetIntegrationPoint(job);
 				SetJobHistory();
-				_workspaceArtifactId = job.WorkspaceID;
 
 				ConfigureJobStopManager(job, true);
 
-				//check if all tasks are done for this batch yet
-				bool isPrimaryBatchWorkComplete = _managerQueueService.AreAllTasksOfTheBatchDone(job, new[] { TaskType.SyncEntityManagerWorker.ToString() });
+				bool isPrimaryBatchWorkComplete = _queueQueryManager
+					.CheckAllSyncWorkerBatchesAreFinished(
+						job.RootJobId ?? job.JobId)
+					.Execute();
 				if (!isPrimaryBatchWorkComplete)
 				{
+					LogOtherSyncWorkerBatchesAreInProgress(job, BatchInstance);
+					
 					new TaskJobSubmitter(JobManager, JobService, job, TaskType.SyncEntityManagerWorker, BatchInstance).SubmitJob(jobParameters);
 					return;
 				}
 
-				string destinationManagerUniqueIdFieldDisplayName = GetDestinationManagerUniqueIdFieldDisplayName();
 				IDictionary<string, string> managersLookup = new Dictionary<string, string>();
 
 				if (SourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.LDAP, StringComparison.InvariantCultureIgnoreCase))
 				{
-					//update common queue for this job using passed Entity/Manager links and get the next unprocessed links
-					_entityManagerMap = _managerQueueService.GetEntityManagerLinksToProcess(job, BatchInstance,
-						_entityManagerMap);
-
 					//if no links to process - exit
 					if (!_entityManagerMap.Any())
 					{
@@ -156,12 +153,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					.Distinct()
 					.ToArray();
 
-				IDictionary<string, int> managerArtifactIDs = GetImportedManagerArtifactIDs(destinationManagerUniqueIdFieldDisplayName, managerUniqueIDs);
+				IDictionary<string, int> managerArtifactIDs = GetImportedManagerArtifactIDs(managerUniqueIDs);
 				_entityManagerMap.ForEach(x => x.ManagerArtifactID =
 							x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID) ? managerArtifactIDs[x.NewManagerID] : 0);
 
 				//change import api settings to be able to overlay and set Entity/Manager links
-				int entityManagerFieldArtifactID = GetEntityManagerFieldArtifactID();
+				int entityManagerFieldArtifactID = GetEntityManagerFieldArtifactID(job.WorkspaceID);
 				string newDestinationConfiguration = ReconfigureImportAPISettings(entityManagerFieldArtifactID);
 
 				//run import api to link corresponding Managers to Entity
@@ -218,8 +215,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				job.JobDetails = Serializer.Serialize(taskParameters);
 				JobService.UpdateJobDetails(job);
-
-				_managerQueueService.DeleteEntityManagerLinksByLockedJobId(job, BatchInstance);
 			}
 			else
 			{
@@ -231,6 +226,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			BatchInstance = taskParameters.BatchInstance;
+
 			EntityManagerJobParameters jobParameters;
 			if (taskParameters.BatchParameters is JObject)
 			{
@@ -347,9 +343,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return managersData.ToDictionary(x => (string)x[managerIdentifiedFieldName], x => (string)x[identifierFieldName]);
 		}
 
-		private IDictionary<string, int> GetImportedManagerArtifactIDs(string uniqueFieldName, string[] managerUniqueIDs)
+		private IDictionary<string, int> GetImportedManagerArtifactIDs(string[] managerUniqueIDs)
 		{
 			LogGetImportedManagerArtifactIDsStart();
+
+			string uniqueFieldName = GetDestinationManagerUniqueIdFieldDisplayName();
 
 			string ids = string.Join(",", managerUniqueIDs.Select(x => $"'{x}'"));
 
@@ -386,12 +384,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return managerIDs;
 		}
 		
-		private int GetEntityManagerFieldArtifactID()
+		private int GetEntityManagerFieldArtifactID(int workspaceArtifactId)
 		{
 			try
 			{
 				LogGetEntityManagerFieldArtifactIdStart();
-				IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(_workspaceArtifactId);
+				IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(workspaceArtifactId);
 
 				int artifactID = fieldQueryRepository.ReadArtifactID(new Guid(EntityFieldGuids.Manager));
 				LogGetEntityManagerFieldArtifactIdSuccessfulEnd(artifactID);
@@ -539,6 +537,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void LogReconfigureImportApiSettingsStart(int entityManagerFieldArtifactID)
 		{
 			_logger.LogInformation("Start reconfiguring import API settings for: {entityManagerFieldArtifactID}", entityManagerFieldArtifactID);
+		}
+
+		private void LogOtherSyncWorkerBatchesAreInProgress(Job job, Guid batchInstance)
+		{
+			_logger.LogInformation("Other SyncWorker batches for {rootJobId} are still in progress. " +
+			                       "Job {jobId} is re-submitted to the queue with batchInstance {batchInstance}",
+				job.RootJobId, job.JobId, batchInstance);
 		}
 
 		#endregion

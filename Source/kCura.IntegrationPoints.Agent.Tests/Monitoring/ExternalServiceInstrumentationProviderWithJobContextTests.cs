@@ -14,6 +14,7 @@ using Relativity.DataTransfer.MessageService;
 using System;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {

@@ -19,7 +19,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 
 		private static readonly string NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
 		private static readonly string NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
-		private static readonly string NATIVES_DAT_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
+		private static readonly string IMAGES_OPT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesLoadFile.opt");
+		private static readonly string NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
+		private static readonly string IMAGES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\Images");
 
 		public static string GetOrCreateNativesLoadFile()
 		{
@@ -47,7 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 		{
 			if (File.Exists(NATIVES_DAT_LOAD_FILE_PATH))
 			{
-				return NATIVES_DAT_LOAD_FILE_FOLDER_PATH;
+				return NATIVES_FOR_LOAD_FILE_FOLDER_PATH;
 			}
 
 			using (FileStream nativesLoadFileStream = new FileStream(NATIVES_DAT_LOAD_FILE_PATH, FileMode.Create))
@@ -62,8 +64,28 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 					}
 				}
 			}
+			return NATIVES_FOR_LOAD_FILE_FOLDER_PATH;
+		}
 
-			return NATIVES_DAT_LOAD_FILE_FOLDER_PATH;
+		public static string GetOrCreateNativesOptLoadFile()
+		{
+			if (File.Exists(IMAGES_OPT_LOAD_FILE_PATH))
+			{
+				return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
+			}
+
+			using (FileStream optLoadFileStream = new FileStream(IMAGES_OPT_LOAD_FILE_PATH, FileMode.Create))
+			{
+				using (StreamWriter optLoadFileWriter = new StreamWriter(optLoadFileStream))
+				{
+					for (int i=0; i<10; i++)
+					{
+						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
+						optLoadFileWriter.WriteLine(line);
+					}
+				}
+			}
+			return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
 		}
 
 		public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)

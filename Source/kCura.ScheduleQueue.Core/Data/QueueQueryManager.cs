@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data.Queries;
 using Relativity.API;
 
@@ -39,11 +38,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new GetNextJob(_queueDbContext, agentId, agentTypeId, resourceGroupArtifactId);
 		}
 
-		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
+		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId)
 		{
-			return new UpdateScheduledJob(_queueDbContext, jobId, nextUtcRunTime);
+			return new GetNextJobWithoutResourceGroup(_queueDbContext, agentId, agentTypeId);
 		}
-
+		
 		public ICommand UnlockScheduledJob(int agentId)
 		{
 			return new UnlockScheduledJob(_queueDbContext, agentId);
@@ -81,16 +80,16 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new CleanupJobQueueTable(_queueDbContext);
 		}
 
+		public ICommand CleanupScheduledJobsQueue()
+		{
+			return new CleanupScheduledJobsQueue(_queueDbContext);
+		}
+
 		public IQuery<DataTable> GetAllJobs()
 		{
 			return new GetAllJobs(_queueDbContext);
 		}
-
-		public IQuery<int> GetPendingJobsCount()
-		{
-			return new GetPendingJobsCount(_queueDbContext);
-		}
-
+		
 		public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
 		{
 			return new UpdateStopState(_queueDbContext, jobIds, state);
@@ -114,6 +113,11 @@ namespace kCura.ScheduleQueue.Core.Data
 		public ICommand UpdateJobDetails(long jobId, string jobDetails)
 		{
 			return new UpdateJobDetails(_queueDbContext, jobId, jobDetails);
+		}
+
+		public IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId)
+		{
+			return new CheckAllSyncWorkerBatchesAreFinished(_queueDbContext, rootJobId);
 		}
 	}
 }

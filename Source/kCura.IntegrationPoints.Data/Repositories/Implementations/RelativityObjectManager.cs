@@ -5,14 +5,17 @@ using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.StreamWrappers;
 using Relativity.Kepler.Transport;
 using Relativity.Services.DataContracts.DTOs.Results;
+using Renci.SshNet.Security.Cryptography.Ciphers.Modes;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
@@ -26,6 +29,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly int _workspaceArtifactId;
 		private readonly IAPILog _logger;
 		private readonly IObjectManagerFacadeFactory _objectManagerFacadeFactory;
+		private const long QUERY_LOGGING_TIME_THRESHOLD = 5000;
 
 		internal RelativityObjectManager(
 			int workspaceArtifactId,
@@ -214,13 +218,31 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				List<T> output = null;
 				int retrievedResults = 0;
 				int totalResults;
-
+				
+				Guid logGuid = Guid.NewGuid();
+				
 				do
 				{
+					Stopwatch sw = Stopwatch.StartNew();
+					
 					QueryResult partialResult = await client
 						.QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, _BATCH_SIZE)
 						.ConfigureAwait(false);
 
+					sw.Stop();
+
+					if (sw.ElapsedMilliseconds > QUERY_LOGGING_TIME_THRESHOLD)
+					{
+						_logger.LogInformation("Partial query time was over the threshold: {details}", new
+						{
+							ElapsedTime = sw.ElapsedMilliseconds,
+							StackTrace = Environment.StackTrace,
+							QueryStartIndex = retrievedResults + 1,
+							QueryCondition = q.Condition,
+							LogGuid = logGuid
+						});
+					}
+					
 					totalResults = partialResult.TotalCount;
 					if (output == null)
 					{

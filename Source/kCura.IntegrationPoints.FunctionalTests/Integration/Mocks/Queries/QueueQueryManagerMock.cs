@@ -4,8 +4,6 @@ using System.Data;
 using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
@@ -61,6 +59,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			nextJob.StopState = 0;
 
 			return new ValueReturnQuery<DataTable>(nextJob.AsTable());
+		}
+
+		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId)
+		{
+			return GetNextJob(agentId, agentTypeId, Array.Empty<int>());
 		}
 
 		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
@@ -157,6 +160,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			});
 		}
 
+		public ICommand CleanupScheduledJobsQueue()
+		{
+			return ActionCommand.Empty;
+		}
+
 		public IQuery<DataTable> GetAllJobs()
 		{
 			var dataTable = DatabaseSchema.ScheduleQueueSchema();
@@ -165,12 +173,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
-
-		public IQuery<int> GetPendingJobsCount()
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
 		{
 			int affectedRows = 0;
@@ -240,6 +243,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 					job.JobDetails = jobDetails;
 				}
 			});
+		}
+
+		public IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId)
+		{
+			bool tasksFinished = !_db.JobsInQueue.Exists(x => x.RootJobId == rootJobId && x.TaskType == "SyncWorker");
+
+			return new ValueReturnQuery<bool>(tasksFinished);
 		}
 
 		#region Test Verification

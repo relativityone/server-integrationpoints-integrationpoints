@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using Relativity.Services.Choice;

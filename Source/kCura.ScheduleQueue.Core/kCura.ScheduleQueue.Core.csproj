@@ -63,26 +63,25 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Const.cs" />
     <Compile Include="Core\AgentTypeInformation.cs" />
-    <Compile Include="Core\StopState.cs" />
     <Compile Include="Core\TaskParameters.cs" />
     <Compile Include="Data\IJobServiceDataProvider.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
-    <Compile Include="Data\IQueueQueryManager.cs" />
     <Compile Include="Data\JobServiceDataProvider.cs" />
     <Compile Include="Data\Queries\AddStopStateColumnToQueueTable.cs" />
+    <Compile Include="Data\Queries\CheckAllSyncWorkerBatchesAreFinished.cs" />
     <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
+    <Compile Include="Data\Queries\CleanupScheduledJobsQueue.cs" />
     <Compile Include="Data\Queries\CreateScheduledJob.cs" />
     <Compile Include="Data\Queries\GetAllJobs.cs" />
     <Compile Include="Data\Queries\GetJobByRelatedObjectIdAndTaskType.cs" />
     <Compile Include="Data\Queries\GetJobsByIntegrationPointId.cs" />
-    <Compile Include="Data\Queries\GetPendingJobsCount.cs" />
+    <Compile Include="Data\Queries\GetNextJobWithoutResourceGroup.cs" />
     <Compile Include="Data\Queries\UnlockJob.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
     <Compile Include="Data\Queries\DeleteJob.cs" />
     <Compile Include="Data\Queries\GetJob.cs" />
     <Compile Include="Data\Queries\CreateNewAndDeleteOldScheduledJob.cs" />
     <Compile Include="Data\Queries\UpdateJobDetails.cs" />
-    <Compile Include="Data\Queries\UpdateScheduledJob.cs" />
     <Compile Include="Data\Queries\GetAgentTypeInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />
     <Compile Include="Data\Queries\UpdateStopState.cs" />
@@ -96,7 +95,6 @@
     <Compile Include="Interfaces\FinalizeJobResult.cs" />
     <Compile Include="Interfaces\IJobService.cs" />
     <Compile Include="Interfaces\ITask.cs" />
-    <Compile Include="Core\Job.cs" />
     <Compile Include="Core\LogCategory.cs" />
     <Compile Include="Interfaces\JobLogState.cs" />
     <Compile Include="Interfaces\TaskResult.cs" />
@@ -127,11 +125,14 @@
   <ItemGroup>
     <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
     <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
+    <Content Include="Data\Resources\CleanupScheduledJobsQueue.sql" />
     <Content Include="Data\Resources\GetAllJobs.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
+    <None Include="Data\Resources\GetNextJobWithoutResourceGroup.sql" />
     <Content Include="Data\Resources\GetPendingJobsCount.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
+    <Content Include="Data\Resources\CheckAllSyncWorkerBatchesAreFinished.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />
     <Content Include="Data\Resources\DeleteJob.sql" />
     <Content Include="Data\Resources\GetJobByID.sql" />
@@ -139,7 +140,6 @@
     <Content Include="Data\Resources\UnlockJob.sql" />
     <Content Include="Data\Resources\UpdateJobDetails.sql" />
     <Content Include="Data\Resources\UpdateStopState.sql" />
-    <Content Include="Data\Resources\UpdateScheduledJob.sql" />
     <Content Include="Data\Resources\GetAgentTypeInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />
     <Content Include="Data\Resources\GetNextJob.sql" />
@@ -317,6 +317,22 @@
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.APM">
           <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Toggles">
+          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Data.SqlClient">
+          <HintPath>..\..\packages\Relativity.Toggles\lib\net462\System.Data.SqlClient.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

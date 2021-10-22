@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using kCura.ScheduleQueue.Core.Data;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Services

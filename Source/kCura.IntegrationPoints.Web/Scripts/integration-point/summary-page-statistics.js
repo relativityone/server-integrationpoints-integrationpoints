@@ -1,4 +1,4 @@
-﻿var IP = IP || {};
+var IP = IP || {};
 
 var SavedSearchStatistics = function (sourceConfiguration, destinationConfiguration) {
 	var self = this;
@@ -73,8 +73,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				url: IP.utils.generateWebURL('SummaryPage/GetNativesStatisticsForSavedSearch'),
 				data: JSON.stringify({
 					workspaceId: workspaceId,
-					savedSearchId: savedSearchId,
-					calculateSize: self.destinationConfiguration.importNativeFileCopyMode === 'CopyFiles'
+					savedSearchId: savedSearchId
 				}),
 				success: function (data) {
 					self.documents(data.DocumentsCount);
@@ -125,8 +124,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 				url: IP.utils.generateWebURL('SummaryPage/GetImagesStatisticsForProduction'),
 				data: JSON.stringify({
 					workspaceId: workspaceId,
-					productionId: productionId,
-					calculateSize: self.importNatives
+					productionId: productionId
 				}),
 				success: function (data) {
 					self.documents(data.DocumentsCount);

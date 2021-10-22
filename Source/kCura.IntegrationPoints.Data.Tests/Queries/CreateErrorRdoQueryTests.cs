@@ -10,7 +10,7 @@ using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Data.Tests.Queries
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class CreateErrorRdoQueryTests
 	{
 		private Mock<IAPILog> _logger;

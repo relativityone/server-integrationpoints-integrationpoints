@@ -206,26 +206,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 				else
 				{
+                    string sourceFieldId = importRow[UniqueIDSourceFieldId] as string ?? String.Empty;
+					GenerateImportRowError(sourceFieldId, "Entity is missing firstname and lastname. Record will be skipped.");
 					//if no Full Name, do not insert record
 					importRow = null;
-					GenerateImportRowError(row, fieldMap, "Entity is missing firstname and lastname. Record will be skipped.");
 				}
 			}
 			return importRow;
 		}
 
-		private void GenerateImportRowError(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, string errorMessage)
+		private void GenerateImportRowError(string sourceFieldId, string errorMessage)
 		{
-			string rowId = string.Empty;
+			RaiseDocumentErrorEvent(sourceFieldId, errorMessage);
+			_logger.LogWarning("There was a problem with record: {sanitizedSourceFieldId}. {errorMessage}", SanitizeString(sourceFieldId), errorMessage );
+		}
 
-			FieldMap idMap = fieldMap?.FirstOrDefault(map => map.FieldMapType == FieldMapTypeEnum.Identifier);
-			if (idMap != null)
+		private string SanitizeString(string sensitiveString)
+		{
+			int lettersToShow = 2;
+			//because how sensitive can be 4 letters word?
+			if (sensitiveString.Length <= lettersToShow * 2)
 			{
-				rowId = row[idMap.SourceField] as string ?? string.Empty;
-				RaiseDocumentErrorEvent(rowId, errorMessage);
+				return sensitiveString;
 			}
-
-			_logger.LogError("There was a problem with record: {rowId}.{errorMessage}", rowId, errorMessage);
+			return sensitiveString.Substring(0, lettersToShow) + "..." + sensitiveString.Substring(sensitiveString.Length - lettersToShow);
 		}
 
 		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data,

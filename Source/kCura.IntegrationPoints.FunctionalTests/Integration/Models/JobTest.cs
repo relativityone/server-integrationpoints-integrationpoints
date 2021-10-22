@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using Autofac;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
@@ -87,7 +86,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			row["RootJobID"] = (object)RootJobId ?? DBNull.Value;
 			row["ParentJobID"] = (object)ParentJobId ?? DBNull.Value;
 			row["AgentTypeID"] = AgentTypeID;
-			row["LockedByAgentID"] = DBNull.Value;
+			row["LockedByAgentID"] = (object)LockedByAgentID ?? DBNull.Value;
 			row["WorkspaceID"] = WorkspaceID;
 			row["RelatedObjectArtifactID"] = RelatedObjectArtifactID;
 			row["TaskType"] = TaskType;

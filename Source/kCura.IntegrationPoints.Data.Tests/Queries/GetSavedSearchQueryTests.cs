@@ -10,7 +10,7 @@ using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoints.Data.Tests.Queries
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class GetSavedSearchQueryTests
 	{
 		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;

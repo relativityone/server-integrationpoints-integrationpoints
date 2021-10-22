@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
@@ -22,18 +22,19 @@ namespace kCura.ScheduleQueue.Core.Data
 			}
 		}
 
+		public DataRow GetNextQueueJob(int agentId, int agentTypeId)
+		{
+			using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId).Execute())
+			{
+				return GetFirstRowOrDefault(dataTable);
+			}
+		}
+
 		private DataRow GetFirstRowOrDefault(DataTable dataTable)
 		{
 			return dataTable?.Rows?.Count > 0 ? dataTable.Rows[0] : null;
 		}
-
-		public void UpdateScheduledJob(long jobId, DateTime nextUtcRunDateTime)
-		{
-			_queryManager
-				.UpdateScheduledJob(jobId, nextUtcRunDateTime)
-				.Execute();
-		}
-
+		
 		public void UnlockScheduledJob(int agentId)
 		{
 			_queryManager
@@ -130,6 +131,13 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			_queryManager
 				.CleanupJobQueueTable()
+				.Execute();
+		}
+
+		public void CleanupScheduledJobsQueue()
+		{
+			_queryManager
+				.CleanupScheduledJobsQueue()
 				.Execute();
 		}
 	}

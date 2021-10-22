@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.Domain.Logging
 		public long JobId { get; set; }
 		public long? RootJobId { get; set; }
 		public long? IntegrationPointId { get; set; }
+		public string WorkflowId { get; set; }
 
 		public override Dictionary<string, object> ToDictionary()
 		{
@@ -14,6 +15,7 @@ namespace kCura.IntegrationPoints.Domain.Logging
 			baseProperties.Add(nameof(JobId), JobId);
 			baseProperties.Add(nameof(RootJobId), RootJobId);
 			baseProperties.Add(nameof(IntegrationPointId), IntegrationPointId);
+			baseProperties.Add(nameof(WorkflowId), WorkflowId);
 			return baseProperties;
 		}
 
@@ -27,6 +29,7 @@ namespace kCura.IntegrationPoints.Domain.Logging
 			JobId = GetValueOrDefault<long>(dictionary, nameof(JobId));
 			RootJobId = GetValueOrDefault<long?>(dictionary, nameof(RootJobId));
 			IntegrationPointId = GetValueOrDefault<long?>(dictionary, nameof(IntegrationPointId));
+			WorkflowId = GetValueOrDefault<string>(dictionary, nameof(WorkflowId));
 		}
 	}
 }

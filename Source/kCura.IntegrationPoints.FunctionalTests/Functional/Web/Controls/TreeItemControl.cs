@@ -8,6 +8,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Controls
 	public class TreeItemControl<TPage> : Control<TPage>
 			where TPage : PageObject<TPage>
 	{
+		[FindByClass("jstree-icon")]
+		private Clickable<TPage> TreeIcon { get; set; }
+
 		[FindByXPath("a")]
 		public Text<TPage> Text { get; private set; }
 

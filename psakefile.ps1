@@ -25,6 +25,8 @@ Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 
+    Get-ChildItem Env:
+
     dotnet --info
     exec { msbuild @($Solution,
         ("/target:Build"),
@@ -40,25 +42,23 @@ Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
 }
 
 Task Test -Description "Run tests that don't require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "UnitTestResults.xml"
-    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit" -OutputFile $LogPath -WithCoverage
-
-    $LogPath = Join-Path $LogsDir "CI_IntegrationTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
+    $LogPath = Join-Path $LogsDir "TestResults.xml"
+    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Depends OneTimeTestsSetup -Description "Run tests that require a deployed environment." {
+Task FunctionalTest -Description "Run tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests) && cat != NotWorkingOnTrident" -OutputFile $LogPath
-
-    $LogPath = Join-Path $LogsDir "CI_FunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath -WithCoverage
+    
+    if($Env:BRANCH_NAME -eq 'master') {
+        Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
+    } else {
+        Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+    }
 }
 
-
-Task CIFunctionalTest -Description "Run tests that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "CIFunctionalTestResults.xml"
-    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
+Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
+    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -127,10 +127,6 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
 
     $LogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
-}
-
-Task RegTest -Description "Run custom tests based on specified filter on regression environment" {
-    Invoke-MyTest
 }
 
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {

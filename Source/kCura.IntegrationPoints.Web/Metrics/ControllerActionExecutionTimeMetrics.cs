@@ -20,12 +20,12 @@ namespace kCura.IntegrationPoints.Web.Metrics
 			TimeSpan duration = _dateTimeHelper.Now() - startTime;
 			long responseTimeInMs = (long)duration.TotalMilliseconds;
 
-			_ripMetrics.TimedOperation(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME, duration, new Dictionary<string, object>()
-			{
-				{ "ActionURL", url },
-				{ "ResponseTimeMs", responseTimeInMs },
-				{ "Method", method }
-			});
-		}
+            _ripMetrics.TimedOperation(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME, duration, new Dictionary<string, object>()
+            {
+                { "ActionURL", url },
+                { "ResponseTimeMs", responseTimeInMs },
+                { "Method", method }
+            });
+        }
 	}
 }

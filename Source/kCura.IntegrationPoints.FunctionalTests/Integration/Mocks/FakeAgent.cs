@@ -2,10 +2,8 @@
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent;
-using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
@@ -14,6 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Data;
+using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -27,9 +28,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public FakeAgent(IWindsorContainer container, AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IAPILog logger = null, bool shouldRunOnce = true)
+				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog logger = null, IDateTime dateTime = null, bool shouldRunOnce = true)
 			: base(agent.AgentGuid, agentService, jobService, scheduleRuleFactory,
-				queueJobValidator, queryManager, logger)
+				queueJobValidator, queryManager, toggleProvider, dateTime, logger)
 		{
 			_shouldRunOnce = shouldRunOnce;
 			_container = container;

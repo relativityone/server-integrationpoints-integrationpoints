@@ -20,6 +20,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testImplementation.OnSetUpFixture();
         }
 
+        [TestType.Critical]
         [IdentifiedTest("88bf9b08-99c4-4c30-8854-fff22c4dc213")]
         public void LoadNativesFromLoadFileGoldFlow()
         {

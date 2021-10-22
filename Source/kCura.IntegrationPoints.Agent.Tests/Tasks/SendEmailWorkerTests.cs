@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Email.Exceptions;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
@@ -117,6 +118,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				"We expected single call to emailSender because that call threw an unexpected exception.'"
 				);
 		}
+
 		private Job CreateSendEmailJob(EmailJobParameters emailJobParameters)
 		{
 			string serializedJobDetails = _serializer.Serialize(emailJobParameters);

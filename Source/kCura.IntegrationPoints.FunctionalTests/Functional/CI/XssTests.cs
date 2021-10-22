@@ -14,6 +14,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation = new XssTestsImplementation(this);
 		}
 
+		protected override void OnSetUpFixture()
+		{
+			base.OnSetUpFixture();
+
+			_testsImplementation.OnSetUpFixture();
+		}
+
 		[IdentifiedTestCase("70274A8D-0C98-4A02-A659-A1C20D323355", Const.XSS.XSS_JS)]
 		public void IntegrationPoint_Name_PreventXssInjection(string integrationPointName)
 		{
@@ -42,6 +49,24 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		public void IntegrationPoint_SaveAsProfile_PreventXssInjection(string profileName)
 		{
 			_testsImplementation.IntegrationPointSaveAsProfilePreventXssInjection(profileName);
+		}
+
+		[IdentifiedTestCase("B97A4280-9EB5-4008-8AB0-30CAB7C3C27F", Const.XSS.XSS_JS)]
+		public void IntegrationPointImportLDAP_PreventXssInjection(string inputText)
+		{
+			_testsImplementation.IntegrationPointImportFromLDAPPreventXssInjection(inputText);
+		}
+
+		[IdentifiedTestCase("B7D6C9BE-0615-4C98-B69A-F6F9CDF19D71", Const.XSS.XSS_JS)]
+		public void IntegrationPointExportToLoadFile_PreventXssInjection(string inputText)
+		{
+			_testsImplementation.IntegrationPointExportToLoadFilePreventXssInjection(inputText);
+		}
+
+		[IdentifiedTestCase("B178B15B-95FD-4DDC-91EE-5031D695B04C", Const.XSS.XSS_JS)]
+		public void IntegrationPointImportFromFTP_PreventXssInjection(string inputText)
+		{
+			_testsImplementation.IntegrationPointImportFromFTPPreventXssInjection(inputText);
 		}
 	}
 }

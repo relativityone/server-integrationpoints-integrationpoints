@@ -75,9 +75,11 @@
     <Compile Include="Commands\UpdateRelativityConfigurationCommandTests.cs" />
     <Compile Include="Context\EventHandlerWorkspaceContextServiceTests.cs" />
     <Compile Include="EncryptionManager\DefaultEncryptionManagerTests.cs" />
+    <Compile Include="Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Installers\UpdateJobHistoryDestinationWorkspaceTests.cs" />
+    <Compile Include="IntegrationPoints\ConsoleEventHandlerTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\ConsoleBuilderTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\CorrespondingJobDeleteTests.cs" />
     <Compile Include="IntegrationPoints\Helpers\DataTransferLocationMigrationHelperTests.cs" />
@@ -582,37 +584,37 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="FaspManager">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\FaspManager.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.DataTransfer.Nodes">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Aspera">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Core">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.FileShare">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Http">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -656,6 +658,28 @@
         <Reference Include="mscorlib">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="System.Runtime.CompilerServices.Unsafe">
+          <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Threading.Tasks.Extensions">
+          <HintPath>..\..\packages\System.Threading.Tasks.Extensions\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>

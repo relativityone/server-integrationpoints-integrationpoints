@@ -88,32 +88,6 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SET ANSI_NULLS ON
-        ///SET QUOTED_IDENTIFIER ON
-        ///
-        ///--Do cleanup first - delete old tables (over 72 hours old)
-        ///DECLARE @table varchar(255) 
-        ///DECLARE @dropCommand varchar(300) 
-        ///
-        ///DECLARE tableCursor CURSOR FOR 
-        ///		SELECT &apos;{0}.&apos;+QUOTENAME(t.name) 
-        ///		FROM {1}.[sys].[tables] AS t 
-        ///		INNER JOIN {1}.[sys].[schemas] AS s 
-        ///		ON t.[schema_id] = s.[schema_id] 
-        ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72
-        ///		AND t.name LIKE &apos;RIP_EntityManager_%&apos;
-        ///
-        ///OPEN tableCursor 
-        ///FETCH next FROM tableCursor INTO @table 
-        /// [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CreateEntityManagerResourceTable {
-            get {
-                return ResourceManager.GetString("CreateEntityManagerResourceTable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to IF OBJECT_ID(N&apos;{0}.[{1}]&apos;,N&apos;U&apos;) IS NULL
         ///BEGIN
         ///	CREATE TABLE {0}.[{1}] 
@@ -136,19 +110,6 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string CreateJobTrackingEntry {
             get {
                 return ResourceManager.GetString("CreateJobTrackingEntry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DELETE FROM 
-        ///	{0}.[{1}]
-        ///WHERE
-        ///	[LockedByJobID] = @JobID
-        ///.
-        /// </summary>
-        internal static string DeleteEntityManagerLinksByLockedJobId {
-            get {
-                return ResourceManager.GetString("DeleteEntityManagerLinksByLockedJobId", resourceCulture);
             }
         }
         
@@ -198,46 +159,11 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to --bypass duplicate records
-        ///UPDATE	{0}.[{1}]
-        ///SET
-        ///				[LockedByJobID]	= -1
-        ///FROM 
-        ///				{0}.[{1}] t1 
-        ///JOIN
-        ///				(
-        ///					SELECT * FROM {0}.[{1}] WHERE NOT [LockedByJobID] IS NULL
-        ///				) t2
-        ///	ON		t1.[EntityID] = t2.[EntityID] AND t1.[ManagerID] = t2.[ManagerID] 
-        ///WHERE
-        ///				t1.[LockedByJobID] IS NULL
-        ///				
-        ///
-        ///--get next batch
-        ///UPDATE			{0}.[{1}]
-        ///SET
-        ///				[LockedByJobID]	= @JobID
-        ///OUTPUT 
-        ///				INSERTED.[EntityID],
-        ///				INSERTED.[ManagerID]
-        ///FROM 
-        ///				{0}.[{1}] t1
-        ///WHERE
-        ///				t1.[LockedByJobID] IS NULL
-        ///.
+        ///   Looks up a localized string similar to SELECT [JobID] FROM {1}.
         /// </summary>
-        internal static string GetJobEntityManagerLinks {
+        internal static string GetJobIdsFromTrackingEntry {
             get {
-                return ResourceManager.GetString("GetJobEntityManagerLinks", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT COUNT(JobID) FROM [{0}] WHERE (JobID = @RootJobID OR RootJobID=@RootJobID).
-        /// </summary>
-        internal static string GetJobsCount {
-            get {
-                return ResourceManager.GetString("GetJobsCount", resourceCulture);
+                return ResourceManager.GetString("GetJobIdsFromTrackingEntry", resourceCulture);
             }
         }
         
@@ -257,19 +183,6 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string GetObjectTypes {
             get {
                 return ResourceManager.GetString("GetObjectTypes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to select q.LockedByAgentID, q.StopState
-        ///from [EDDS].[eddsdbo].[{0}] as q
-        ///inner join {1} as s
-        ///on q.JobID = s.JobID
-        ///where q.RootJobID = @jobID.
-        /// </summary>
-        internal static string GetProcessingSyncWorkerBatches {
-            get {
-                return ResourceManager.GetString("GetProcessingSyncWorkerBatches", resourceCulture);
             }
         }
         

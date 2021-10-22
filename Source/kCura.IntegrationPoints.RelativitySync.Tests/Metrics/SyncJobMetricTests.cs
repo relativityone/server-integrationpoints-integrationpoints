@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Relativity.API;
 using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
 {

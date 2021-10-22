@@ -124,14 +124,8 @@
   <data name="AddWebApiConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>addwebapiconfig.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="CreateEntityManagerResourceTable" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>createentitymanagerresourcetable.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="CreateJobTrackingEntry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>createjobtrackingentry.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="DeleteEntityManagerLinksByLockedJobId" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>DeleteEntityManagerLinksByLockedJobId.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GetApplicationBinaries" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getapplicationbinaries.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -142,17 +136,11 @@
   <data name="GetArtifactIDByGuid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getartifactidbyguid.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="GetJobEntityManagerLinks" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>getjobentitymanagerlinks.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="GetJobsCount" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>getjobscount.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="GetJobIdsFromTrackingEntry" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>GetJobIdsFromTrackingEntry.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="GetObjectTypes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getobjecttypes.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="GetProcessingSyncWorkerBatches" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>getprocessingsyncworkerbatches.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="RemoveEntryAndCheckBatchStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>removeentryandcheckbatchstatus.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

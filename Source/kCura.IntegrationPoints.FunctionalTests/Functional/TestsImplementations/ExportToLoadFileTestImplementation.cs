@@ -20,8 +20,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         private static readonly string _savedSearch = nameof(ExportToLoadFilesNativesGoldFlow);
         private static readonly int _startExportAtRecord = 1;
         private int _workspaceArtifactId;
-        private int _keywordSearchDocumentsCount = 5;
-
 
         public ExportToLoadFileTestImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
@@ -35,11 +33,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public void ExportToLoadFilesNativesGoldFlow()
         {
-            _testsImplementationTestFixture.LoginAsStandardUser();
+            // Arrange
+            const int expectedSearchDocumentsCount = 5;
+
+			_testsImplementationTestFixture.LoginAsStandardUser();
             _workspaceArtifactId = _testsImplementationTestFixture.Workspace.ArtifactID;
             string integrationPointName = nameof(ExportToLoadFileTestImplementation);
 
-            
             KeywordSearch keywordSearch = new KeywordSearch
             {
                 Name = _savedSearch,
@@ -74,7 +74,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             // Assert
             int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
-            transferredItemsCount.Should().Be(_keywordSearchDocumentsCount);
+            transferredItemsCount.Should().Be(expectedSearchDocumentsCount);
         }
 
         private static ExportToLoadFileConnectToSourcePage FillOutIntegrationPointEditPageForExportToLoadFileTest(
@@ -90,7 +90,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         }
         
         private static ExportToLoadFileDestinationInformationPage FillOutIntegrationPointConnectToSourcePageForExportToLoadFileTest(
-            ExportToLoadFileConnectToSourcePage webPage )
+            ExportToLoadFileConnectToSourcePage webPage)
         {
             ExportToLoadFileConnectToSavedSearchSource pageModel = new ExportToLoadFileConnectToSavedSearchSource()
             {
@@ -108,13 +108,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             webPage.Natives.Check();
             webPage.Images.Check();
 
-            webPage.SelectFolder.Click().SetItem(GetDataTransferLocationForWorkspace(WorkspaceArtifactID));
-            webPage.ApplyModel(new ExportToLoadFileOutputSettingsModel()
-            {
-                ImageFileFormat = ImageFileFormats.Opticon,
-                DataFileFormat = DataFileFormats.Relativity,
-                NameOutputFilesAfter = NameOutputFilesAfterOptions.Identifier
-            });
+            webPage.SetDestinationFolder(WorkspaceArtifactID);
+            webPage.ApplyModel(new ExportToLoadFileOutputSettingsModel());
 
             webPage.IncludeNativeFilesPath.Should.BeChecked();
             webPage.OverwriteFiles.Check();
@@ -123,12 +118,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             return webPage.Save.Wait(Until.Visible)
                 .Save.ClickAndGo();
-        }
-
-        private static string GetDataTransferLocationForWorkspace(int workspaceArtifactID)
-        {
-            string dataTransferLocationSuffix = "DataTransfer\\Export";
-            return $".\\EDDS{workspaceArtifactID}\\{dataTransferLocationSuffix}";
         }
     }
 }
