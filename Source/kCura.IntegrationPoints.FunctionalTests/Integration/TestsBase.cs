@@ -143,11 +143,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Install(new LdapProviderInstaller());
 			Container.Install(new RelativitySyncInstaller());
 			Container.Install(new ImportInstaller());
-            IntegrationPointsServicesRegistration.AddIntegrationPointsServices(Container);
-            ContextRegistration.AddContext(Container);
-            HelpersRegistration.AddHelpers(Container);
-			InfrastructureRegistration.AddInfrastructure(Container);
-			ControllersRegistration.AddControllers(Container);
 
 			OverrideRipServicesInstaller();
 			OverrideRelativitySyncInstaller();

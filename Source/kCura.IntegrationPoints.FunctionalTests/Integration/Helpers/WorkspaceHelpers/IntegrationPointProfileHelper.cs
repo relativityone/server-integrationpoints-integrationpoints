@@ -76,5 +76,50 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			return integrationPoint;
 		}
+
+		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointWithDeserializableSourceConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+		{
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
+			integrationPointProfile.SourceConfiguration = _serializer.Serialize(new 
+			{
+				SourceWorkspaceArtifactId = Workspace.ArtifactId,
+				TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
+				TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
+				SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
+				Filler = new String(Enumerable.Repeat('-', longTextLimit).ToArray())
+			});
+
+			return integrationPointProfile;
+		}
+
+		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointWithDeserializableFieldMappings(WorkspaceTest destinationWorkspace, int longTextLimit)
+		{
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace);
+			fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
+			fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
+			integrationPointProfile.FieldMappings = _serializer.Serialize(fieldsMapping);
+
+			return integrationPointProfile;
+		}
+
+		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointWithDeserializableDestinationConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+		{
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			FolderTest destinationFolder = destinationWorkspace.Folders.First();
+			integrationPointProfile.DestinationConfiguration = _serializer.Serialize(new
+			{
+				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+				ArtifactTypeId = (int)ArtifactType.Document,
+				DestinationFolderArtifactId = destinationFolder.ArtifactId,
+				CaseArtifactId = destinationWorkspace.ArtifactId,
+				WebServiceURL = @"//some/service/url/relativity",
+				Filler = new String(Enumerable.Repeat('-', longTextLimit).ToArray())
+			});
+
+			return integrationPointProfile;
+		}
 	}
 }

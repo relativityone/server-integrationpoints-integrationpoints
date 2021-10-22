@@ -85,6 +85,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupDocumentFields();
             SetupSavedSearch();
             SetupIntegrationPointLongTextStreaming();
+            SetupIntegrationPointProfile();
+            SetupIntegrationPointProfileLongTextStreaming();
             SetupWorkspace();
             SetupArtifact();
             SetupObjectType();

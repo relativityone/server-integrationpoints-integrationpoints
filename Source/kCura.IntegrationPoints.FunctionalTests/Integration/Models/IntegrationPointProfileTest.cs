@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public class IntegrationPointProfileTest : RdoTestBase
     {
-		public static Guid FieldsMappingGuid { get; } = new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7");
+		public static Guid FieldsMappingGuid { get; } = new Guid("8ae37734-29d1-4441-b5d8-483134f98818");
 
 		public DateTime? NextScheduledRuntimeUTC { get; set; }
 
@@ -64,7 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Next Scheduled Runtime (UTC)",
 							Guids = new List<Guid>()
 							{
-								new Guid("5b1c9986-f166-40e4-a0dd-a56f185ff30b")
+								new Guid("a3c48572-4ec7-4e06-b57f-1c1681cd07d1")
 							}
 						},
 						Value = NextScheduledRuntimeUTC
@@ -88,7 +88,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Enable Scheduler",
 							Guids = new List<Guid>()
 							{
-								new Guid("bcdafc41-311e-4b66-8084-4a8e0f56ca00")
+								new Guid("bc2e19fd-c95c-4f1c-b4a9-1692590cef8e")
 							}
 						},
 						Value = EnableScheduler
@@ -100,7 +100,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Source Configuration",
 							Guids = new List<Guid>()
 							{
-								new Guid("b5000e91-82bd-475a-86e9-32fefc04f4b8")
+								new Guid("9ed96d44-7767-46f5-a67f-28b48b155ff2")
 							}
 						},
 						Value = SourceConfiguration
@@ -112,7 +112,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Destination Configuration",
 							Guids = new List<Guid>()
 							{
-								new Guid("b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a")
+								new Guid("5d9e425a-b59c-4119-9ceb-73665a5e7049")
 							}
 						},
 						Value = DestinationConfiguration
@@ -124,7 +124,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Source Provider",
 							Guids = new List<Guid>()
 							{
-								new Guid("dc902551-2c9c-4f41-a917-41f4a3ef7409")
+								new Guid("60d3de54-f0d5-4744-a23f-a17609edc537")
 							}
 						},
 						Value = SourceProvider
@@ -136,7 +136,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Schedule Rule",
 							Guids = new List<Guid>()
 							{
-								new Guid("000f25ef-d714-4671-8075-d2a71cac396b")
+								new Guid("35b6c8b8-5b0c-4660-bfdd-226e424edeb5")
 							}
 						},
 						Value = ScheduleRule
@@ -148,7 +148,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Overwrite Fields",
 							Guids = new List<Guid>()
 							{
-								new Guid("0cae01d8-0dc3-4852-9359-fb954215c36f")
+								new Guid("e0a14a2c-0bb6-47ad-a34f-26400258a761")
 							}
 						},
 						Value = OverwriteFields
@@ -160,7 +160,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Destination Provider",
 							Guids = new List<Guid>()
 							{
-								new Guid("d6f4384a-0d2c-4eee-aab8-033cc77155ee")
+								new Guid("7d9e7944-bf13-4c4f-a9eb-5f60e683ec0c")
 							}
 						},
 						Value = DestinationProvider
@@ -172,7 +172,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "LogErrors",
 							Guids = new List<Guid>()
 							{
-								new Guid("0319869e-37aa-499c-a95b-6d8d0e96a711")
+								new Guid("b582f002-00fe-4c44-b721-859dd011d4fd")
 							}
 						},
 						Value = LogErrors
@@ -184,7 +184,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "EmailNotificationRecipients",
 							Guids = new List<Guid>()
 							{
-								new Guid("1bac59db-f7bf-48e0-91d4-18cf09ff0e39")
+								new Guid("b72f5bb9-2e07-45f0-903a-b20d3a17958c")
 							}
 						},
 						Value = EmailNotificationRecipients
@@ -196,7 +196,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Type",
 							Guids = new List<Guid>()
 							{
-								new Guid("e646016e-5df6-4440-b218-18a00926d002")
+								new Guid("8999dd19-c67c-43e3-88c0-edc989e224cc")
 							}
 						},
 						Value = Type
@@ -208,7 +208,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Promote Eligible",
 							Guids = new List<Guid>()
 							{
-								new Guid("bf85f332-8c8f-4c69-86fd-6ce4c567ebf9")
+								new Guid("4997cdb4-d8b0-4eaa-8768-061d82aaaccf")
 							}
 						},
 						Value = PromoteEligible
@@ -220,7 +220,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 							Name = "Name",
 							Guids = new List<Guid>()
 							{
-								new Guid("d534f433-dd92-4a53-b12d-bf85472e6d7a")
+								new Guid("ad0552e0-4511-4507-a60d-23c0c6d05972")
 							}
 						},
 						Value = Name
