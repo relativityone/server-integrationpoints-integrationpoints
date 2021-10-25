@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices;
 using kCura.IntegrationPoints.Web.Models;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -59,9 +60,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void GetAll_ShouldReturnSuccessStatusCode()
         {
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPoint(destinationWorkspace);
+            IntegrationPointProfileTest integrationPointProfileFirst = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPoint(destinationWorkspace);
+            IntegrationPointProfileTest integrationPointProfileSecond = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPoint(destinationWorkspace);
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, "/getall");
             var response = sut.GetAll();
+            var objectContent = response.Content as ObjectContent;
+            var result = (List<IntegrationPointProfileModel>)objectContent?.Value;
+            foreach(var res in result)
+            {
+                var original = res.ArtifactID == integrationPointProfileFirst.ArtifactId ? integrationPointProfileFirst : integrationPointProfileSecond;
+                AssertIntegrationPointProfilesMatches(original, res);
+            }
             response.IsSuccessStatusCode.Should().BeTrue();
         }
 
@@ -73,6 +82,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             int integrationPointProfileArtifactId = integrationPointProfile.ArtifactId;
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, $"/{integrationPointProfileArtifactId}");
             var response = sut.Get(integrationPointProfile.ArtifactId);
+            var objectContent = response.Content as ObjectContent;
+            var result = (IntegrationPointProfileModel)objectContent?.Value;
+            AssertIntegrationPointProfilesMatches(integrationPointProfile, result);
             response.IsSuccessStatusCode.Should().BeTrue();
         }
 
@@ -118,7 +130,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var result = (IntegrationPointProfileModel)objectContent?.Value;
 
             response.IsSuccessStatusCode.Should().BeTrue();
-            AssertFieldDeserializationDoesNotThrow<IDictionary<string, string>>(result.Map);
+            AssertFieldDeserializationDoesNotThrow<FieldMap[]>(result.Map);
         }
 
         protected ClaimsPrincipal GetUserClaimsPrincipal() => new ClaimsPrincipal(new[]
@@ -138,8 +150,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
         private void AssertFieldDeserializationDoesNotThrow<T>(string fieldTextValue)
         {
+            int len = fieldTextValue.Length;
             Action deserializeSourceConfig = () => Serializer.Deserialize<T>(fieldTextValue);
             deserializeSourceConfig.ShouldNotThrow();
+        }
+
+        private void AssertIntegrationPointProfilesMatches(IntegrationPointProfileTest initial, IntegrationPointProfileModel result)
+        {
+            result.ArtifactID.Should().Be(initial.ArtifactId);
+            result.Map.Should().Be(initial.FieldMappings);
+            result.SourceProvider.Should().Be(initial.SourceProvider);
+            result.DestinationProvider.Should().Be(initial.DestinationProvider);
+            result.SourceConfiguration.Should().Be(initial.SourceConfiguration);
+            result.Destination.Should().Be(initial.DestinationConfiguration);
+            result.Type.Should().Be(initial.Type);
         }
     }
 }
