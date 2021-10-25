@@ -682,5 +682,9 @@
 	{
 		"Jira": "REL-600286",
 		"Exception": "Relativity.Sync.Executors.RelativitySourceJobTagRepositoryException:*Create Ancestry Failed*"
+	},
+	{
+		"Jira": "REL-609259",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: Violation of PRIMARY KEY constraint*Cannot insert duplicate key in object 'EDDSDBO.JobHistoryError'.*"
 	}
 ]
