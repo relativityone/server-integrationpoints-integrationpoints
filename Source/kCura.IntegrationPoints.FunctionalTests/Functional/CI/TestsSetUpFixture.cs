@@ -36,11 +36,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
 
-			SetDevelopmentModeToTrue();
-			if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
-			{
-				InstallARMTestServicesToWorkspace();
-			}
+			InstallARMTestServices();
+
+			InstallDataTransferLegacy();
 		}
 
 		[OneTimeTearDown]
@@ -67,18 +65,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
 
-		private static void InstallARMTestServicesToWorkspace()
+		private static void InstallARMTestServices()
 		{
-			string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
+			SetDevelopmentModeToTrue();
 
 			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
-				.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
-				{
-					CreateIfMissing = true
-				});
+				.InstallToLibrary(TestConfig.ARMTestServicesRapFileLocation, 
+					new LibraryApplicationInstallOptions
+					{
+						CreateIfMissing = true
+					});
 		}
 
-		private void SetDevelopmentModeToTrue()
+		private static void SetDevelopmentModeToTrue()
 		{
 			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
 				.Require(new Testing.Framework.Models.InstanceSetting
@@ -90,11 +89,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				});
 		}
 
-		public static void CopyScreenshotsToBase()
+		private static void InstallDataTransferLegacy()
+		{
+			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+				.InstallToLibrary(TestConfig.DataTransferLegacyRapFileLocation,
+					new LibraryApplicationInstallOptions { IgnoreVersion = true });
+		}
+
+		private static void CopyScreenshotsToBase()
 		{
 			string screenshotExtension = "*.png";
-			string basePath = GetBaseArchiveDirectoryPath();
-			
+			string basePath = TestConfig.LogsDirectoryPath;
+
 			try
 			{
 				string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
@@ -116,8 +122,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				TestContext.Progress.Log($"Could not found path with screenshots {basePath}", ex);
 			}
 		}
-		
-		private static string GetBaseArchiveDirectoryPath() => Path.Combine(TestContext.CurrentContext.WorkDirectory, "Artifacts", "Logs");
-
 	}
 }
