@@ -34,6 +34,7 @@ using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using Relativity.AutomatedWorkflows.SDK;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -147,6 +148,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
 			IRetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(helper.GetLoggerFactory().GetLogger().ForContext<RetryHandlerFactory>());
 
+			IAutomatedWorkflowsManager automatedWorkflowsManager = new AutomatedWorkflowsManager(helper);
+
 			_instanceUnderTest = new ImportServiceManager(
 				helper,
 				retryHandlerFactory,
@@ -164,7 +167,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				_importFileLocationService,
 				agentValidator,
 				integrationPointRepository,
-				jobStatusUpdater
+				jobStatusUpdater,
+				automatedWorkflowsManager
 			);
 		}
 

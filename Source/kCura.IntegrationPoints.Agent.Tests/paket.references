@@ -11,6 +11,7 @@ Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
 Relativity.AutomatedWorkflows.Services.Interfaces
+Relativity.AutomatedWorkflows.SDK
 iTextSharp
 
 Relativity.Kepler.Service
