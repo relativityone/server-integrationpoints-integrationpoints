@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			const int _BATCH_SIZE = 2;
 
 			List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
-				=> GetIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+				=> GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
 			SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
 				.ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)

@@ -17,15 +17,38 @@ namespace Relativity.Sync.Pipelines
 
 		public ISyncPipeline GetPipeline()
 		{
-			return _selectedPipeline ?? (_selectedPipeline = GetPipelineInternal(IsRetryJob(), IsImageJob()));
+			return _selectedPipeline ?? (_selectedPipeline = GetPipelineInternal(IsDocumentTransfer(), IsRetryJob(), IsImageJob()));
 		}
 
-		private ISyncPipeline GetPipelineInternal(bool isRetryJob, bool isImageJob)
+		private ISyncPipeline GetPipelineInternal(bool isDocumentTransfer, bool isRetryJob, bool isImageJob)
 		{
-			_logger.LogInformation("Getting pipeline for parameters: {isRetryJob}, {isImageJob}", isRetryJob, isImageJob);
+			_logger.LogInformation("Getting pipeline for parameters: {isDocumentTransfer}, {isRetryJob}, {isImageJob}", isDocumentTransfer, isRetryJob, isImageJob);
 
 			ISyncPipeline selectedPipeline;
 
+			if (isDocumentTransfer)
+			{
+				selectedPipeline = GetDocumentPipeline(isRetryJob, isImageJob);
+			}
+			else
+			{
+				selectedPipeline = new SyncNonDocumentRunPipeline();
+			}
+
+			const string messageTemplate = "Selected pipeline of type: {pipelineType}";
+
+			_logger.LogInformation(messageTemplate, selectedPipeline.GetType().Name);
+			return selectedPipeline;
+		}
+
+		private bool IsDocumentTransfer()
+		{
+			return _pipelineSelectorConfiguration.RdoArtifactTypeId == (int)ArtifactType.Document;
+		}
+
+		private static ISyncPipeline GetDocumentPipeline(bool isRetryJob, bool isImageJob)
+		{
+			ISyncPipeline selectedPipeline;
 			switch (isImageJob)
 			{
 				case (false) when isRetryJob:
@@ -42,9 +65,6 @@ namespace Relativity.Sync.Pipelines
 					break;
 			}
 
-			const string messageTemplate = "Selected pipeline of type: {pipelineType}";
-
-			_logger.LogInformation(messageTemplate, selectedPipeline.GetType().Name);
 			return selectedPipeline;
 		}
 

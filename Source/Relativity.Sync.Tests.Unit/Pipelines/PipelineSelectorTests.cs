@@ -11,70 +11,73 @@ using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Tests.Unit.Pipelines
 {
-	[TestFixture]
-	public class PipelineSelectorTests
-	{
-		private Mock<IPipelineSelectorConfiguration> _configurationMock;
-		private PipelineSelector _sut;
-		private Mock<ISyncLog> _loggerMock;
+    [TestFixture]
+    public class PipelineSelectorTests
+    {
+        private Mock<IPipelineSelectorConfiguration> _configurationMock;
+        private PipelineSelector _sut;
+        private Mock<ISyncLog> _loggerMock;
 
-		[SetUp]
-		public void Setup()
-		{
-			_configurationMock = new Mock<IPipelineSelectorConfiguration>();
-			_loggerMock = new Mock<ISyncLog>();
+        [SetUp]
+        public void Setup()
+        {
+            _configurationMock = new Mock<IPipelineSelectorConfiguration>();
+            _loggerMock = new Mock<ISyncLog>();
 
-			_sut = new PipelineSelector(_configurationMock.Object, _loggerMock.Object);
-		}
+            _configurationMock.SetupGet((x => x.RdoArtifactTypeId))
+                .Returns((int)ArtifactType.Document);
 
-		[Test]
-		public void GetPipeline_Should_ReturnSyncDocumentRunPipeline()
-		{
-			// Act
-			var pipeline = _sut.GetPipeline();
+            _sut = new PipelineSelector(_configurationMock.Object, _loggerMock.Object);
+        }
 
-			// Assert
-			pipeline.GetType().Should().Be<SyncDocumentRunPipeline>();
-		}
+        [Test]
+        public void GetPipeline_Should_ReturnSyncDocumentRunPipeline()
+        {
+            // Act
+            var pipeline = _sut.GetPipeline();
 
-		[Test]
-		public void GetPipeline_Should_ReturnSyncDocumentRetryPipeline_When_JobHistoryToRetryIsSet()
-		{
-			// Arrange
-			_configurationMock.SetupGet(x => x.JobHistoryToRetryId).Returns(1);
+            // Assert
+            pipeline.GetType().Should().Be<SyncDocumentRunPipeline>();
+        }
 
-			// Act
-			var pipeline = _sut.GetPipeline();
+        [Test]
+        public void GetPipeline_Should_ReturnSyncDocumentRetryPipeline_When_JobHistoryToRetryIsSet()
+        {
+            // Arrange
+            _configurationMock.SetupGet(x => x.JobHistoryToRetryId).Returns(1);
 
-			// Assert
-			pipeline.GetType().Should().Be<SyncDocumentRetryPipeline>();
-		}
+            // Act
+            var pipeline = _sut.GetPipeline();
 
-		[Test]
-		public void GetPipeline_Should_ReturnSyncImageRetryPipeline_When_JobHistoryToRetryIsSet_And_IsImageJob()
-		{
-			// Arrange
-			_configurationMock.SetupGet(x => x.JobHistoryToRetryId).Returns(1);
-			_configurationMock.SetupGet(x => x.IsImageJob).Returns(true);
+            // Assert
+            pipeline.GetType().Should().Be<SyncDocumentRetryPipeline>();
+        }
 
-			// Act
-			var pipeline = _sut.GetPipeline();
+        [Test]
+        public void GetPipeline_Should_ReturnSyncImageRetryPipeline_When_JobHistoryToRetryIsSet_And_IsImageJob()
+        {
+            // Arrange
+            _configurationMock.SetupGet(x => x.JobHistoryToRetryId).Returns(1);
+            _configurationMock.SetupGet(x => x.IsImageJob).Returns(true);
 
-			// Assert
-			pipeline.GetType().Should().Be<SyncImageRetryPipeline>();
-		}
+            // Act
+            var pipeline = _sut.GetPipeline();
 
-		[Test]
-		public void GetPipeline_Should_ReturnSyncImageRunPipeline_When_IsImageJob()
-		{
-			// Arrange
-			_configurationMock.SetupGet(x => x.IsImageJob).Returns(true);
+            // Assert
+            pipeline.GetType().Should().Be<SyncImageRetryPipeline>();
+        }
 
-			// Act
-			var pipeline = _sut.GetPipeline();
+        [Test]
+        public void GetPipeline_Should_ReturnSyncImageRunPipeline_When_IsImageJob()
+        {
+            // Arrange
+            _configurationMock.SetupGet(x => x.IsImageJob).Returns(true);
 
-			// Assert
-			pipeline.GetType().Should().Be<SyncImageRunPipeline>();
-		}
-	}
+            // Act
+            var pipeline = _sut.GetPipeline();
+
+            // Assert
+            pipeline.GetType().Should().Be<SyncImageRunPipeline>();
+        }
+    }
 }

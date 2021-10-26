@@ -6,5 +6,6 @@ namespace Relativity.Sync.Configuration
 	{
 		int? JobHistoryToRetryId { get; }
 		bool IsImageJob { get; }
+		int RdoArtifactTypeId { get; }
 	}
 }

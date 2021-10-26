@@ -18,6 +18,8 @@ namespace Relativity.Sync.Storage
 
 		public bool IsImageJob => _cache.GetFieldValue(x => x.ImageImport);
 
+		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
+
 		public void Dispose()
 		{
 			_cache?.Dispose();

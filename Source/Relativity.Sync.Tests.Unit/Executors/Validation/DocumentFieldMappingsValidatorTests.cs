@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private JSONSerializer _jsonSerializer;
 		private List<FieldMap> _fieldMappings;
 
-		private DocumentFieldMappingValidator _sut;
+		private FieldMappingValidator _sut;
 
 		private const int _TEST_DEST_WORKSPACE_ARTIFACT_ID = 202567;
 		private const int _TEST_SOURCE_WORKSPACE_ARTIFACT_ID = 101234;
@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _fieldMappings.Select(x => x.SourceField));
 			SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _fieldMappings.Select(x => x.DestinationField));
 
-			_sut = new DocumentFieldMappingValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
+			_sut = new FieldMappingValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
 		}
 
 
@@ -270,6 +270,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[TestCase(typeof(SyncDocumentRetryPipeline), true)]
 		[TestCase(typeof(SyncImageRunPipeline), false)]
 		[TestCase(typeof(SyncImageRetryPipeline), false)]
+		[TestCase(typeof(SyncNonDocumentRunPipeline), true)]
 		[EnsureAllPipelineTestCase(0)]
 		public void ShouldExecute_ShouldReturnCorrectValue(Type pipelineType, bool expectedResult)
 		{

@@ -29,6 +29,11 @@ namespace Relativity.Sync.Tests.Common
 				return GetSyncImageRunPipelineExpectedNodes();
 			}
 
+			if (pipelineType == typeof(SyncNonDocumentRunPipeline))
+			{
+				return GetSyncNonDocumentRunPipelineExpectedNodes();
+			}
+
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");
 		}
 
@@ -131,6 +136,36 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
 				new[] {typeof(IRetryDataSourceSnapshotConfiguration)},
+				new[]
+				{
+					typeof(IDocumentJobStartMetricsConfiguration),
+					typeof(ISourceWorkspaceTagsCreationConfiguration),
+					typeof(IDestinationWorkspaceTagsCreationConfiguration),
+					typeof(IDataDestinationInitializationConfiguration)
+				},
+				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
+				new[] {typeof(ISnapshotPartitionConfiguration)},
+				new[] {typeof(IDocumentSynchronizationConfiguration)},
+				new[] {typeof(IDataDestinationFinalizationConfiguration)},
+				new[] {typeof(IJobStatusConsolidationConfiguration)},
+				new[]
+				{
+					typeof(INotificationConfiguration),
+					typeof(IAutomatedWorkflowTriggerConfiguration)
+				},
+				new[] {typeof(IJobCleanupConfiguration)}
+			};
+		}
+		
+		private static List<Type[]> GetSyncNonDocumentRunPipelineExpectedNodes()
+		{
+			return new List<Type[]>
+			{
+				new[] {typeof(IPreValidationConfiguration)},
+				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
+				new[] {typeof(IPermissionsCheckConfiguration)},
+				new[] {typeof(IValidationConfiguration)},
+				new[] {typeof(IDataSourceSnapshotConfiguration)},
 				new[]
 				{
 					typeof(IDocumentJobStartMetricsConfiguration),
