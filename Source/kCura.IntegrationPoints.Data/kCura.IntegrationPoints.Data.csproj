@@ -157,6 +157,7 @@
     <Compile Include="Repositories\Implementations\CachedChoiceRepository.cs" />
     <Compile Include="Repositories\Implementations\ChoiceRepository.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryException.cs" />
+    <Compile Include="Repositories\Implementations\FileRepositoryWrapper.cs" />
     <Compile Include="Repositories\Implementations\SecretsRepository.cs" />
     <Compile Include="Repositories\Implementations\WebAPIFileRepository.cs" />
     <Compile Include="Repositories\IRepositoryWithMassUpdate.cs" />
@@ -267,6 +268,7 @@
     <Compile Include="StreamWrappers\AsciiToUnicodeStream.cs" />
     <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
     <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />
+    <Compile Include="Toggles\EnableKeplerizedImportAPIToggle.cs" />
     <Compile Include="WorkspaceDBContext.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />

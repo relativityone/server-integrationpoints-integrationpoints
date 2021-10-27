@@ -69,7 +69,6 @@
     <Compile Include="Helpers\RelativePathDirectoryTreeProviderTests.cs" />
     <Compile Include="Helpers\SavedSearchesTreeTestHelper.cs" />
     <Compile Include="Helpers\UrlVersionDecoratorTests.cs" />
-    <Compile Include="Installers\Extensions\WindsorContainerExtensionsTests.cs" />
     <Compile Include="Installers\Registrations\ExportSanitizerRegistrationTests.cs" />
     <Compile Include="Installers\Registrations\WebApiLoginServiceRegistrationTests.cs" />
     <Compile Include="JobLifetimeMetricBatchStatusTests.cs" />

@@ -90,7 +90,6 @@
     <Compile Include="Helpers\ICryptographyHelper.cs" />
     <Compile Include="Helpers\Implementations\CryptographyHelper.cs" />
     <Compile Include="Helpers\Implementations\UrlVersionDecorator.cs" />
-    <Compile Include="Installers\Extensions\WindsorContainerExtensions.cs" />
     <Compile Include="Installers\Registrations\WebApiLoginServiceRegistration.cs" />
     <Compile Include="Installers\Registrations\ExportSanitizerRegistration.cs" />
     <Compile Include="Interfaces\TextSanitizer\SanitizationResult.cs" />
@@ -132,7 +131,6 @@
     <Compile Include="Tagging\ISourceDocumentsTagger.cs" />
     <Compile Include="Tagging\SourceDocumentsTagger.cs" />
     <Compile Include="Telemetry\MetricsBucket.cs" />
-    <Compile Include="Toggles\EnableKeplerizedImportAPIToggle.cs" />
     <Compile Include="Validation\IAgentValidator.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Helpers\Implementations\DateTimeUtcHelper.cs" />

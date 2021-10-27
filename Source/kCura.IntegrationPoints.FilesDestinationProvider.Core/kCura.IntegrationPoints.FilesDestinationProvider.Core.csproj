@@ -54,6 +54,8 @@
     <Compile Include="Helpers\LongPathFileHelper.cs" />
     <Compile Include="Installer\CoreServicesForExportRegistration.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
+    <Compile Include="Services\ExportFieldsServiceWrapper.cs" />
+    <Compile Include="Services\ViewServiceWrapper.cs" />
     <Compile Include="Services\WebAPIViewService .cs" />
     <Compile Include="Services\WebAPIExportFieldsService.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />

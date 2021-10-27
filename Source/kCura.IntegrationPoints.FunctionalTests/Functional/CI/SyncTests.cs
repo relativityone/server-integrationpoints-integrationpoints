@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Toggles;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Toggles;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
@@ -12,15 +11,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 	[TestType.UI, TestType.MainFlow]
 	public class SyncTests : TestsBase
 	{
-		private readonly IToggleProvider _toggleProvider;
-
 		private readonly SyncTestsImplementation _testsImplementation;
 
 		public SyncTests()
 			: base(nameof(SyncTests))
 		{
 			_testsImplementation = new SyncTestsImplementation(this);
-			_toggleProvider = SqlToggleProvider.Create();
 		}
 
 		protected override void OnSetUpFixture()
@@ -53,15 +49,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		[IdentifiedTest("0AB920A7-7F1A-4C72-82A7-F1A1CEB42863")]
 		public async Task Production_Images_WithKeplerizedImportAPI()
 		{
+			IToggleProvider toggleProvider = SqlToggleProvider.Create();
 			try
 			{
-				await _toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(true).ConfigureAwait(false);
+				await toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(true).ConfigureAwait(false);
 
 				_testsImplementation.ProductionImagesGoldFlow();
 			}
 			finally
 			{
-				await _toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(false).ConfigureAwait(false);
+				await toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(false).ConfigureAwait(false);
 			}
 		}
 	}
