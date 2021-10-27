@@ -126,7 +126,7 @@ group Tests
 	nuget Relativity.Testing.Framework.RingSetup 0.11.0
 	nuget Selenium.Support 4.0.0-beta4
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
-	nuget Relativity.Sync 0.8.0-pre.74
+	nuget Relativity.Sync 0.8.75
 	nuget SystemWrapper.Interfaces 0.25.0.186
 	nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
 	nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
@@ -136,7 +136,7 @@ group Sync
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-    nuget Relativity.Sync 0.8.0-pre.74
+    nuget Relativity.Sync 0.8.75
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
