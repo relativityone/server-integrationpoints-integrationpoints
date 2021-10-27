@@ -11,6 +11,8 @@ Relativity.DataExchange.Client.SDK
 Relativity.Toggles
 iTextSharp
 
+Relativity.AutomatedWorkflows.SDK
+
 Relativity.Kepler.Service
     exclude kCura.Vendor.Castle.Core.dll
     exclude kCura.Vendor.Castle.Windsor.dll
