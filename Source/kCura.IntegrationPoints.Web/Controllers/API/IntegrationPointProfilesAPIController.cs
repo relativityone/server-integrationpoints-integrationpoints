@@ -114,7 +114,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
 							Guid.Empty, nameHash))
 						{
-							return SaveIntegrationPointProfile(workspaceID, model);
+							HttpResponseMessage mess = SaveIntegrationPointProfile(workspaceID, model);
+							return mess;
 						}
 					}
 				}

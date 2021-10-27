@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
+using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
@@ -63,6 +64,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				Guid = new Guid(EntityFieldGuids.FullName),
 				IsIdentifier = false,
 				Name = "Full Name"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = (int)ArtifactType.Document,
+				Guid = IntegrationPointProfileFieldGuids.OverwriteFieldsGuid,
+				IsIdentifier = false,
+				Name = "Overwrite Fields"
 			});
 			workspace.Fields.Add(new FieldTest
 			{

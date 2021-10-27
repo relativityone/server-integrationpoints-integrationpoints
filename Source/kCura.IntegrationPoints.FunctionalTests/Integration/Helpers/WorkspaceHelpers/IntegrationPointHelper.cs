@@ -241,6 +241,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
+		public kCura.IntegrationPoints.Core.Models.IntegrationPointModel CreateSavedSearchIntegrationPointModel(WorkspaceTest destinationWorkspace)
+        {
+			IntegrationPointTest integrationPoint = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			return new kCura.IntegrationPoints.Core.Models.IntegrationPointModel
+            {
+				Name = integrationPoint.Name,
+				ArtifactID = integrationPoint.ArtifactId,
+				SelectedOverwrite = integrationPoint.OverwriteFields == null ? string.Empty : integrationPoint.OverwriteFields.Name,
+				SourceProvider = integrationPoint.SourceProvider.GetValueOrDefault(0),
+				Destination = integrationPoint.DestinationConfiguration,
+				SourceConfiguration = integrationPoint.SourceConfiguration,
+				DestinationProvider = integrationPoint.DestinationProvider.GetValueOrDefault(0),
+				Type = integrationPoint.Type.GetValueOrDefault(0),
+				Scheduler = new kCura.IntegrationPoints.Core.Models.Scheduler(integrationPoint.EnableScheduler.GetValueOrDefault(false), integrationPoint.ScheduleRule),
+				NotificationEmails = integrationPoint.EmailNotificationRecipients ?? string.Empty,
+				LogErrors = integrationPoint.LogErrors.GetValueOrDefault(false),
+				NextRun = integrationPoint.NextScheduledRuntimeUTC,
+				Map = integrationPoint.FieldMappings
+			};
+		}
+
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
 			foreach (IntegrationPointTest integrationPoint in Workspace.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())

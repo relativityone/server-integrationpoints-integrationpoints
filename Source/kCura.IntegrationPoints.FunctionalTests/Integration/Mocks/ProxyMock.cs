@@ -18,7 +18,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public ArtifactGuidManagerStub ArtifactGuidManager { get; set; }
 
 		public ErrorManagerStub ErrorManager { get; set; }
-		
+
+		public ChoiceQueryManagerStub ChoiceQueryManager { get; set; }
+
+		public APMManagerStub APMManager { get; set; }
+
+		public MetricsManagerStub MetricsManager { get; set; }
+
 		public ProxyMock(TestContext context)
 		{
 			ObjectManager = new ObjectManagerStub();
@@ -28,6 +34,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			GroupManager = new GroupManagerStub(context.User);
 			ArtifactGuidManager = new ArtifactGuidManagerStub();
 			ErrorManager = new ErrorManagerStub();
+			ChoiceQueryManager = new ChoiceQueryManagerStub();
+			APMManager = new APMManagerStub();
+			MetricsManager = new MetricsManagerStub();
 		}
 
 		public void Setup(RelativityInstanceTest relativity)
@@ -36,6 +45,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			WorkspaceManager.Setup(relativity);
 			ArtifactGuidManager.Setup(relativity);
 			ErrorManager.Setup(relativity);
+			ChoiceQueryManager.Setup(relativity);
+			APMManager.Setup(relativity);
+			MetricsManager.Setup(relativity);
 
 			SetupFixedMocks();
 		}
@@ -48,7 +60,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			GroupManager.SetupGroupManager();
 			ArtifactGuidManager.SetupArtifactGuidManager();
 			ErrorManager.SetupErrorManager();
+			ChoiceQueryManager.SetupArtifactGuidManager();
 			ObjectManager.Setup();
+			APMManager.SetupAPMManagerStub();
+			MetricsManager.SetupMetricsManagerStub();
 		}
 	}
 }

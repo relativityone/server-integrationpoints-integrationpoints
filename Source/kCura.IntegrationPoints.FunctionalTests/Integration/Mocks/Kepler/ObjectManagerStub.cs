@@ -113,6 +113,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 newRdo.LoadRelativityObjectByGuid<JobHistoryErrorTest>(objectCreationInfo.CreatedObject);
                 workspace.JobHistoryErrors.Add(newRdo);
 			}
+            else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointProfileGuid)
+            {
+                var newRdo = new IntegrationPointProfileTest();
+                newRdo.LoadRelativityObjectByGuid<IntegrationPointProfileTest>(objectCreationInfo.CreatedObject);
+                workspace.IntegrationPointProfiles.Add(newRdo);
+            }
             else
             {
                 Debugger.Break();
@@ -278,6 +284,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     Field = new Field
                     {
                         Name = x.Field.Name,
+                        Guids = x.Field.Guid.HasValue ? new List<Guid> { x.Field.Guid.Value } : new List<Guid>()
                     },
                     Value = x.Value
                 }).ToList(),

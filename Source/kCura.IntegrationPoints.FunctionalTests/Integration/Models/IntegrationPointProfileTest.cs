@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string EmailNotificationRecipients { get; set; }
 
-		public int? Type { get; set; }
+		public int Type { get; set; }
 
 		public bool? PromoteEligible { get; set; }
 

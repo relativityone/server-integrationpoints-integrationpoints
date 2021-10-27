@@ -1,5 +1,6 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -120,6 +121,29 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			});
 
 			return integrationPointProfile;
+		}
+
+		public IntegrationPointProfileModel CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
+		{
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			IntegrationPointProfileModel integrationPointProfileModel = new IntegrationPointProfileModel
+			{
+				Name = integrationPointProfile.Name,
+				SelectedOverwrite = integrationPointProfile.OverwriteFields == null ? string.Empty : integrationPointProfile.OverwriteFields.Name,
+				SourceProvider = integrationPointProfile.SourceProvider.GetValueOrDefault(0),
+				Destination = integrationPointProfile.DestinationConfiguration,
+				SourceConfiguration = integrationPointProfile.SourceConfiguration,
+				DestinationProvider = integrationPointProfile.DestinationProvider.GetValueOrDefault(0),
+				Type = integrationPointProfile.Type,
+				Scheduler = new Scheduler(integrationPointProfile.EnableScheduler.GetValueOrDefault(false), integrationPointProfile.ScheduleRule),
+				NotificationEmails = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
+				LogErrors = integrationPointProfile.LogErrors.GetValueOrDefault(false),
+				NextRun = integrationPointProfile.NextScheduledRuntimeUTC,
+				Map = integrationPointProfile.FieldMappings
+			};
+
+			Workspace.IntegrationPointProfiles.Remove(integrationPointProfile);
+			return integrationPointProfileModel;
 		}
 	}
 }

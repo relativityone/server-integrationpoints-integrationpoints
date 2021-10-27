@@ -47,6 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
             return GetArtifacts(IntegrationPoints)
                 .Concat(GetArtifacts(IntegrationPointTypes))
+                .Concat(GetArtifacts(IntegrationPointProfiles))
                 .Concat(GetArtifacts(JobHistory))
                 .Concat(GetArtifacts(JobHistoryErrors))
                 .Concat(GetArtifacts(SourceProviders))

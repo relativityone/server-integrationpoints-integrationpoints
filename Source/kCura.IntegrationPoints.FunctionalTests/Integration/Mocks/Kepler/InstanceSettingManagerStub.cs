@@ -30,7 +30,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 				RipInstanceSettings.FRIENDLY_INSTANCE_NAME,
 				RipInstanceSettings.RELATIVITY_AUTHENTICATION_SECTION,
 				settings => settings.FriendlyInstanceName);
-			
+
+			SetupInstanceSettingInternal(_context.InstanceSettings,
+				RipInstanceSettings.LONG_TEXT_LIMIT_NAME,
+				RipInstanceSettings.LONG_TEXT_LIMIT_SECTION,
+				settings => settings.MaximumNumberOfCharactersSupportedByLongText);
+
 			SetupInstanceSettingInternal(_context.InstanceSettings,
 				RipInstanceSettings.ALLOW_NO_SNAPSHOT_IMPORT,
 				RipInstanceSettings.RELATIVITY_CORE_SECTION,
