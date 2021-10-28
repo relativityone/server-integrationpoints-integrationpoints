@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		public ServiceFactory ServiceFactory { get; }
 
 		public WorkspaceRef SourceWorkspace { get; }
-		
+
 		private GoldFlowTestSuite(TestEnvironment environment, User user, ServiceFactory serviceFactory, WorkspaceRef sourceWorkspace)
 		{
 			_environment = environment;
@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					.GetJobHistoryAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, _configuration.JobHistoryArtifactId, jobHistoryGuid.Value)
 					.ConfigureAwait(false);
 				int itemsTransferred = (int)jobHistory["Items Transferred"].Value;
-				int totalItems = (int) jobHistory["Total Items"].Value;
+				int totalItems = (int)jobHistory["Total Items"].Value;
 
 				using (var objectManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<IObjectManager>())
 				{
@@ -154,7 +154,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				itemsTransferred.Should().Be(expectedItemsTransferred);
 				totalItems.Should().Be(expectedTotalItems);
 			}
-			
+
 			public void AssertDocuments(string[] sourceDocumentsNames, string[] destinationDocumentsNames)
 			{
 				var destinationDocumentsNamesSet = new HashSet<string>(destinationDocumentsNames);

@@ -8,8 +8,6 @@ using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Configuration;
-using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Services;
-
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {

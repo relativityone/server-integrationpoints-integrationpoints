@@ -9,7 +9,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
@@ -137,13 +136,18 @@ namespace Relativity.Sync.Tests.Integration
 						om.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.Is<int>(x => x == 200), It.Is<int>(x => x == 300))),
 					"Failing second RetrieveResultsBlockFromExportAsync object manager call"),
 
-				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingSearchManagerCall(fm =>
-						fm.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>())),
+				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingSearchServiceCall(fm =>
+						fm.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())),
 					"Failing GetNativesForSearchAsync search manager call"),
+                
+                new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingSearchManagerCall(fm =>
+                        fm.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>())),
+                    "Failing GetNativesForSearchAsync search manager call"),
 
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingObjectManagerCall(om =>
 						om.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.Name == "Field"), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())),
 					"Failing QuerySlimAsync object manager call")
+
 			};
 
 			return failureActionAndNamePairs.Select(fa => new TestCaseData(fa.Item1) { TestName = fa.Item2 });

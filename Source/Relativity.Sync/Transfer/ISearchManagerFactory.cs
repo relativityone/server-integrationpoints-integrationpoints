@@ -3,8 +3,8 @@ using kCura.WinEDDS.Service.Export;
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface ISearchManagerFactory
-	{
-		Task<ISearchManager> CreateSearchManagerAsync();
-	}
+    internal interface ISearchManagerFactory
+    {
+        Task<ISearchManager> CreateSearchManagerAsync();
+    }
 }

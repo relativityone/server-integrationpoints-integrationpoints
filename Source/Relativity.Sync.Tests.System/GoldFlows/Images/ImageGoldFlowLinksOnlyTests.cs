@@ -99,7 +99,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 				pushMetadataOnlyJob.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
 			);
 		}
-		
+
 		private async Task ConfigureTestRunForImagesWithLinksOnlyAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
 		{
 			await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
@@ -108,7 +108,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 			configuration.ImportImageFileCopyMode = ImportImageFileCopyMode.SetFileLinks;
 			configuration.ImageImport = true;
 		}
-		
+
 		private async Task ConfigureTestRunForMetadataOnlyAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)
 		{
 			await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);

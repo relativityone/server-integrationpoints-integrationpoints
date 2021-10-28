@@ -38,20 +38,20 @@ namespace Relativity.Sync.Transfer
 		{
 			RetryPolicy reLoginPolicy = Policy
 				.Handle<SoapException>(ex => ex.ToString().Contains("NeedToReLoginException"))
-				.Retry(_MAX_NUMBER_OF_RELOGINS, 
+				.Retry(_MAX_NUMBER_OF_RELOGINS,
 					(ex, retryCount, context) =>
-				{
-					IChangeProxyTarget changeProxyTarget = invocation as IChangeProxyTarget;
-					if (changeProxyTarget != null)
 					{
-						ISearchManager newSearchManagerInstance = _searchManagerFactoryAsync().GetAwaiter().GetResult();
-						changeProxyTarget.ChangeInvocationTarget(newSearchManagerInstance);
-					}
-					else
-					{
-						throw new SyncException($"Cannot change proxy target. Make sure ProxyGenerator is created using CreateInterfaceProxyWithTargetInterface method.");
-					}
-				});
+						IChangeProxyTarget changeProxyTarget = invocation as IChangeProxyTarget;
+						if (changeProxyTarget != null)
+						{
+							ISearchManager newSearchManagerInstance = _searchManagerFactoryAsync().GetAwaiter().GetResult();
+							changeProxyTarget.ChangeInvocationTarget(newSearchManagerInstance);
+						}
+						else
+						{
+							throw new SyncException($"Cannot change proxy target. Make sure ProxyGenerator is created using CreateInterfaceProxyWithTargetInterface method.");
+						}
+					});
 
 			return reLoginPolicy.Execute(() =>
 			{
