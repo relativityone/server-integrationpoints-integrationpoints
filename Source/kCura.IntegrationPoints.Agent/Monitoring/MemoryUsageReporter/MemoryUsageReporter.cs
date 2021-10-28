@@ -2,59 +2,64 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using kCura.IntegrationPoints.Common.Metrics;
 using Relativity.API;
 using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
-	public class MemoryUsageReporter : IMemoryUsageReporter
-	{
-		private IAPM _apmClient;
-		private IAPILog _logger;
-		private IRipMetrics _ripMetric;
-		private IProcessMemoryHelper _processMemoryHelper;
+    public class MemoryUsageReporter : IMemoryUsageReporter
+    {
+        private IAPM _apmClient;
+        private IAPILog _logger;
+        private IRipMetrics _ripMetric;
+        private IProcessMemoryHelper _processMemoryHelper;
+        private IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
 
-		private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
-		private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
+        private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
+        private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
 
-		public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper)
-		{
-			_processMemoryHelper = processMemoryHelper;
-			_apmClient = apmClient;
-			_logger = logger;
-			_ripMetric = ripMetric;
-		}
+        public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper, IAppDomainMonitoringEnabler appDomainMonitoringEnabler)
+        {
+            _processMemoryHelper = processMemoryHelper;
+            _apmClient = apmClient;
+            _logger = logger;
+            _ripMetric = ripMetric;
+            _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
+        }
 
-		public IDisposable ActivateTimer(int timeIntervalMilliseconds, long jobId, string jobDetails, string jobType)
-		{
-			return new Timer(state => Execute(jobId, jobDetails, jobType), null, 0, timeIntervalMilliseconds);
-		}
+        public IDisposable ActivateTimer(int timeIntervalMilliseconds, long jobId, string jobDetails, string jobType)
+        {
+            return _appDomainMonitoringEnabler.EnableMonitoring()
+                ? new Timer(state => Execute(jobId, jobDetails, jobType), null, 0, timeIntervalMilliseconds)
+                : Disposable.Empty;
+        }
 
-		private void Execute(long jobId, string workflowId, string jobType)
-		{
+        private void Execute(long jobId, string workflowId, string jobType)
+        {
             try
             {
-				long memoryUsage = _processMemoryHelper.GetCurrentProcessMemoryUsage();
+                long memoryUsage = _processMemoryHelper.GetCurrentProcessMemoryUsage();
 
-				Dictionary<string, object> customData = new Dictionary<string, object>()
-				{
-					{ "MemoryUsage", memoryUsage },
-					{ "JobId", jobId },
-					{ "JobType", jobType },
-					{ "WorkflowId", workflowId}
-				};
+                Dictionary<string, object> customData = new Dictionary<string, object>()
+                {
+                    { "MemoryUsage", memoryUsage },
+                    { "JobId", jobId },
+                    { "JobType", jobType },
+                    { "WorkflowId", workflowId}
+                };
 
-				_processMemoryHelper.GetApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
+                _processMemoryHelper.GetApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
 
-				_apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
-				_logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());
-			}
-			catch (Exception ex)
-            {
-				_logger.LogError(ex, "An error occured in Execute while sending APM metric");
+                _apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
+                _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());
             }
-		}
-	}
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured in Execute while sending APM metric");
+            }
+        }
+    }
 }
