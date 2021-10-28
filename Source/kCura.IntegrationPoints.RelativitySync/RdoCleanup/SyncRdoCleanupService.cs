@@ -69,8 +69,7 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to mass delete objects of type: '{guid}'", objectTypeGuid);
-				throw;
-			}
+            }
 		}
 
 		private async Task DeleteObjectTypeAsync(int workspaceId, Guid objectTypeGuid)
@@ -89,8 +88,7 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, "Failed to delete Object Type GUID: '{guid}'", objectTypeGuid);
-					throw;
-				}
+                }
 			}
 		}
 	}
