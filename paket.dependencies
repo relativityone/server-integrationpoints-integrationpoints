@@ -14,8 +14,8 @@ nuget kCura.EventHandler ~> 17.1
 nuget Relativity.CustomPages ~> 17.1
 nuget Relativity.Data ~> 40.8
 nuget Relativity.Telemetry.DataContracts.Shared 3000.0.1
-nuget Relativity.API 17.1
-nuget Relativity ~> 40.8
+nuget Relativity.API 17.1.9
+nuget Relativity 40.8.29
 
 //Relativity Services packages
 nuget Relativity.Services.DataContracts 13.5.0
@@ -28,9 +28,9 @@ nuget kCura.FreeImage 3.17.0.1
 nuget kCura.LongPath 1.0.20
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-nuget Relativity.Kepler 2.14.3
+nuget Relativity.Kepler 2.15.3
 nuget Relativity.Kepler.Service
-nuget Relativity.Kepler.Client 2.14.3
+nuget Relativity.Kepler.Client 2.15.3
 nuget Relativity.Logging 3000.0.1
 nuget Relativity.Logging.Interfaces 3000.0.1
 nuget Relativity.OAuth2Client 1.5.2
@@ -41,7 +41,8 @@ nuget Relativity.Telemetry.APM 2019.1.1
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3000.0.1
 nuget Relativity.Toggles 1.0.1
-nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.1.1-pre.6
+nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
+nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.14.3
@@ -100,8 +101,8 @@ group Tests
 	nuget kCura 14.2.5
 	nuget kCura.Agent ~> 17.1
 	nuget kCura.Apps.Common.Config 2.1.9
-	nuget Relativity.API 17.1
-	nuget Relativity ~> 40.8
+	nuget Relativity.API 17.1.9
+	nuget Relativity 40.8.29
 	nuget Relativity.Toggles 1.0.1
 	nuget Relativity.Services.Interfaces.Private ~> 14.0.1
 	nuget Relativity.DataTransfer.MessageService ~> 10.2.0
@@ -117,8 +118,8 @@ group Tests
 	nuget Newtonsoft.Json 12.0.3 redirects: force
 	nuget NUnit 3.13.2 redirects: force
 	nuget NUnit3TestAdapter 3.13
-	nuget Relativity.Kepler 2.14.3
-	nuget Relativity.Kepler.Client 2.14.3
+	nuget Relativity.Kepler 2.15.3
+	nuget Relativity.Kepler.Client 2.15.3
 	nuget Relativity.Logging.Interfaces 3000.0.1
 	nuget Relativity.Telemetry.Services.Interface 3000.0.1
 	nuget Relativity.Services.Interfaces 13.5.0
@@ -128,22 +129,24 @@ group Tests
 	nuget Relativity.Testing.Framework.RingSetup 0.11.0
 	nuget Selenium.Support 4.0.0-beta4
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
-	nuget Relativity.Sync 0.8.0-pre.62
+	nuget Relativity.Sync 0.8.75
 	nuget SystemWrapper.Interfaces 0.25.0.186
+	nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
+	nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
 
 group Sync
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-    nuget Relativity.Sync 0.8.0-pre.62
+    nuget Relativity.Sync 0.8.75
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
 	nuget Banzai ~> 3.0
 	nuget kCura.Apps.Common.Utils 2.1.9
-	nuget Relativity.Kepler 2.14.3
+	nuget Relativity.Kepler 2.15.3
 	nuget Relativity.Services.Interfaces 13.5.0
 	nuget Relativity.Telemetry.APM 2019.1.1
 	nuget SystemWrapper.Interfaces 0.25.0.186

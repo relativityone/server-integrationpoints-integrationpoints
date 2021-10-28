@@ -1746,12 +1746,17 @@
       <ArtifactId>5511033</ArtifactId>
       <Keywords />
       <Name>Relativity.DataTransfer.Legacy.SDK.dll</Name>
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5511188</ArtifactId>
+      <Keywords />
+      <Name>Relativity.AutomatedWorkflows.SDK.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2021-08-27T09:20:42.6905311Z</ExtractionDate>
+  <ExtractionDate>2021-10-27T09:42:25.367058Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11812,7 +11817,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.13</Version>
+  <Version>12.2.15.14</Version>
   <SchemaVersion>11.3.10.14</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
