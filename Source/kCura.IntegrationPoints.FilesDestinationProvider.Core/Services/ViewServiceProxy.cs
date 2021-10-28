@@ -8,11 +8,11 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
-	public class ViewServiceWrapper : IViewService
+	public class ViewServiceProxy : IViewService
 	{
 		private readonly IViewService _viewService;
 
-		public ViewServiceWrapper(IToggleProvider toggleProvider, IHelper helper, IServiceManagerProvider serviceManagerProvider)
+		public ViewServiceProxy(IToggleProvider toggleProvider, IHelper helper, IServiceManagerProvider serviceManagerProvider)
 		{
 			_viewService = toggleProvider.IsEnabled<EnableKeplerizedImportAPIToggle>()
 				? (IViewService)new ViewService(helper)

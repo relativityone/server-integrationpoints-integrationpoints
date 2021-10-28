@@ -152,23 +152,21 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 					searchArtifactId,
 					settings);
 			}
-			else
-			{
-				return new WebAPIImageExporterService(
-					documentRepository,
-					_relativityObjectManager,
-					_repositoryFactory,
-					_fileRepository,
-					jobStopManager,
-					_helper,
-					_serializer,
-					mappedFiles,
-					startAtRecord,
-					sourceConfiguration,
-					searchArtifactId,
-					settings,
-					_searchManager);
-			}
+
+			return new WebAPIImageExporterService(
+				documentRepository,
+				_relativityObjectManager,
+				_repositoryFactory,
+				_fileRepository,
+				jobStopManager,
+				_helper,
+				_serializer,
+				mappedFiles,
+				startAtRecord,
+				sourceConfiguration,
+				searchArtifactId,
+				settings,
+				_searchManager);
 		}
 		
 		private void LogBuildExporterExecutionWithParameters(

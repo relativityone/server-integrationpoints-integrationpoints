@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 
 			container.Register(
 				Component.For<IFileRepository>()
-					.ImplementedBy<FileRepositoryWrapper>()
+					.ImplementedBy<FileRepositoryProxy>()
 					.LifestyleTransient()
 			);
 

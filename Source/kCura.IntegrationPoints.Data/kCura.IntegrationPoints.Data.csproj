@@ -157,7 +157,7 @@
     <Compile Include="Repositories\Implementations\CachedChoiceRepository.cs" />
     <Compile Include="Repositories\Implementations\ChoiceRepository.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryException.cs" />
-    <Compile Include="Repositories\Implementations\FileRepositoryWrapper.cs" />
+    <Compile Include="Repositories\Implementations\FileRepositoryProxy.cs" />
     <Compile Include="Repositories\Implementations\SecretsRepository.cs" />
     <Compile Include="Repositories\Implementations\WebAPIFileRepository.cs" />
     <Compile Include="Repositories\IRepositoryWithMassUpdate.cs" />

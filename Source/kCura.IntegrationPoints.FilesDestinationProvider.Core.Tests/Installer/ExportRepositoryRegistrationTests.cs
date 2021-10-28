@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 			sut.AddExportRepositories();
 
 			//assert
-			sut.Should().HaveRegisteredProperImplementation<IFileRepository, FileRepositoryWrapper>();
+			sut.Should().HaveRegisteredProperImplementation<IFileRepository, FileRepositoryProxy>();
 		}
 
 		private static void RegisterDependencies(IWindsorContainer container)

@@ -12,11 +12,11 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class FileRepositoryWrapper : IFileRepository
+	public class FileRepositoryProxy : IFileRepository
 	{
 		private readonly IFileRepository _fileRepository;
 
-		public FileRepositoryWrapper(IToggleProvider toggleProvider, Func<ISearchManager> searchManagerFactory, IServicesMgr servicesMgr,
+		public FileRepositoryProxy(IToggleProvider toggleProvider, Func<ISearchManager> searchManagerFactory, IServicesMgr servicesMgr,
 			IExternalServiceInstrumentationProvider instrumentationProvider, IRetryHandlerFactory retryHandlerFactory)
 		{
 			_fileRepository = toggleProvider.IsEnabled<EnableKeplerizedImportAPIToggle>()

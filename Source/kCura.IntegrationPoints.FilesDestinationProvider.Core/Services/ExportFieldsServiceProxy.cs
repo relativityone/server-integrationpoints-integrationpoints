@@ -8,11 +8,11 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 {
-	public class ExportFieldsServiceWrapper : IExportFieldsService
+	public class ExportFieldsServiceProxy : IExportFieldsService
 	{
 		private readonly IExportFieldsService _exportFieldsService;
 
-		public ExportFieldsServiceWrapper(IToggleProvider toggleProvider,
+		public ExportFieldsServiceProxy(IToggleProvider toggleProvider,
 			IServicesMgr servicesMgr, IServiceManagerProvider serviceManagerProvider)
 		{
 			_exportFieldsService = toggleProvider.IsEnabled<EnableKeplerizedImportAPIToggle>()

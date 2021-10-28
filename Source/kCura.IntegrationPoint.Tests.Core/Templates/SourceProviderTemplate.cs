@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.UsingFactoryMethod(k => (Func<ISearchManager>)(() => k.Resolve<IServiceManagerProvider>().Create<ISearchManager, SearchManagerFactory>()))
 				.LifestyleTransient()
 			);
-			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepositoryWrapper>().LifestyleTransient());
+			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepositoryProxy>().LifestyleTransient());
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 

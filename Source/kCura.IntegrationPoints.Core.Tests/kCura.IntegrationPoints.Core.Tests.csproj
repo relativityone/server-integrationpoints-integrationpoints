@@ -87,7 +87,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectTypeTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
-    <Compile Include="Services\Exporter\Images\WebAPIImageExporterService.cs" />
+    <Compile Include="Services\Exporter\Images\WebAPIImageExporterServiceTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\ChoiceTreeToStringConverterTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\ExportDataSanitizerTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\MultipleChoiceFieldSanitizerTests.cs" />
