@@ -11,7 +11,7 @@ using Relativity.Logging;
 using Relativity.Services;
 using Relativity.Services.Permission;
 
-namespace Relativity.IntegrationPoints.Tests.Integration
+namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 {
     public abstract class KeplerSecurityTestBase : TestsBase
     {

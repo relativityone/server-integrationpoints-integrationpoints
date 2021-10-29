@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using Relativity.IntegrationPoints.Services.Helpers;
+using Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity;
 using Relativity.Services;
 using Relativity.Services.Permission;
 
@@ -13,28 +14,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private Dictionary<string, bool> _setPermissions = new Dictionary<string, bool>();
 
-        private static string GetWorkspaceKey(int workspaceId) => GetPermissionKey(new PermissionRef()
-            {
-                ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Case),
-                PermissionType = PermissionType.View
-            }, -1, workspaceId);
-
-        private static string GetPermissionKey(PermissionModel permissionModel, int workspaceId, int? instanceId = null) =>
-            $"{permissionModel.ObjectTypeGuid};{ArtifactPermissionToPermissionType(permissionModel.ArtifactPermission).Name};{workspaceId};{instanceId}";
-
-        private static string GetPermissionTypeDescription(ArtifactTypeIdentifier permissionRefArtifactType)
-        {
-            if (permissionRefArtifactType.Guids.Any())
-            {
-                return permissionRefArtifactType.Guids.First().ToString();
-            }
-
-            return permissionRefArtifactType.ID.ToString();
-        }
-        
-        private static string GetPermissionKey(PermissionRef permissionRef, int workspaceId, int? instanceId = null) =>
-            $"{GetPermissionTypeDescription(permissionRef.ArtifactType)};{permissionRef.PermissionType.Name};{workspaceId};{instanceId}";
-        
         public PermissionManagerStub()
         {
             Mock.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>()))
@@ -118,5 +97,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     throw new System.Exception("Invalid ArtifactPermission");
             }
         }
+        
+        private static string GetWorkspaceKey(int workspaceId) => GetPermissionKey(new PermissionRef()
+        {
+            ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Case),
+            PermissionType = PermissionType.View
+        }, -1, workspaceId);
+
+        private static string GetPermissionKey(PermissionModel permissionModel, int workspaceId, int? instanceId = null) =>
+            $"{permissionModel.ObjectTypeGuid};{ArtifactPermissionToPermissionType(permissionModel.ArtifactPermission).Name};{workspaceId};{instanceId}";
+
+        private static string GetPermissionTypeDescription(ArtifactTypeIdentifier permissionRefArtifactType)
+        {
+            if (permissionRefArtifactType.Guids.Any())
+            {
+                return permissionRefArtifactType.Guids.First().ToString();
+            }
+
+            return permissionRefArtifactType.ID.ToString();
+        }
+        
+        private static string GetPermissionKey(PermissionRef permissionRef, int workspaceId, int? instanceId = null) =>
+            $"{GetPermissionTypeDescription(permissionRef.ArtifactType)};{permissionRef.PermissionType.Name};{workspaceId};{instanceId}";
     }
 }
