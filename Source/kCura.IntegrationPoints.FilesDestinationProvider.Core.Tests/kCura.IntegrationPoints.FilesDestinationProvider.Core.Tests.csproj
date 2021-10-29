@@ -68,6 +68,7 @@
     <Compile Include="Process\VolumeInfoBuilderTests.cs" />
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
     <Compile Include="Services\ExportInitProcessServiceTests.cs" />
+    <Compile Include="Services\WebAPIViewServiceTests.cs" />
     <Compile Include="Services\ViewServiceTests.cs" />
     <Compile Include="SharedLibrary\CoreServiceFactoryTests.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactoryTests.cs" />
@@ -334,6 +335,17 @@
         </Reference>
         <Reference Include="Relativity.DataExchange.Client.SDK">
           <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

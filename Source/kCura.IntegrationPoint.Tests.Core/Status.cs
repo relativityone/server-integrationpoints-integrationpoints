@@ -36,28 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				numberOfPendingJobs = queueRepository.GetNumberOfPendingJobs(workspaceArtifactId, integrationPointArtifactId);
 			}
 		}
-
-		public static void WaitForScheduledJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int sleepIntervalInMilliseconds = 500)
-		{
-			var integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-
-			double timeWaitedInSeconds = 0.0;
-			IntegrationPoints.Data.IntegrationPoint integrationPoint = integrationPointRepository
-				.ReadAsync(integrationPointArtifactId)
-				.GetAwaiter()
-				.GetResult();
-
-			while (integrationPoint.LastRuntimeUTC == null)
-			{
-				VerifyTimeout(timeWaitedInSeconds, timeoutInSeconds, nameof(WaitForScheduledJobToComplete));
-				timeWaitedInSeconds = SleepAndUpdateTimeout(sleepIntervalInMilliseconds, timeWaitedInSeconds);
-				integrationPoint = integrationPointRepository
-					.ReadAsync(integrationPointArtifactId)
-					.GetAwaiter()
-					.GetResult();
-			}
-		}
-
+		
 		private static void VerifyTimeout(double timeWaitedInSeconds, int timeoutInSeconds, string operationName)
 		{
 			if (timeWaitedInSeconds >= timeoutInSeconds)
