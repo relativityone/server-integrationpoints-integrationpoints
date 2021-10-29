@@ -24,19 +24,19 @@ namespace Relativity.Sync.Storage
 			_dateTime = dateTime;
 		}
 
-		public Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex)
+		public Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId, int totalDocumentsCount, int startingIndex)
 		{
-			return Batch.CreateAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, totalDocumentsCount, startingIndex);
+			return Batch.CreateAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, exportRunId, totalDocumentsCount, startingIndex);
 		}
 
-		public Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId)
+		public Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId, Guid exportRunId)
 		{
-			return Batch.GetAsync(_rdoManager, _serviceFactory, workspaceArtifactId, artifactId);
+			return Batch.GetAsync(_rdoManager, _serviceFactory, workspaceArtifactId, artifactId, exportRunId);
 		}
 
-		public Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
+		public Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId)
 		{
-			return Batch.GetAllAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationArtifactId);
+			return Batch.GetAllAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, exportRunId);
 		}
 
 		public async Task DeleteAllForConfigurationAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
@@ -65,24 +65,24 @@ namespace Relativity.Sync.Storage
 			await Task.WhenAll(deleteTasks).ConfigureAwait(false);
 		}
 
-		public Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId)
+		public Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId, Guid exportRunId)
 		{
-			return Batch.GetLastAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationId);
+			return Batch.GetLastAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationId, exportRunId);
 		}
 
-		public Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int workspaceArtifactId, int syncConfigurationId)
+		public Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int workspaceArtifactId, int syncConfigurationId, Guid exportRunId)
 		{
-			return Batch.GetAllBatchesIdsToExecuteAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationId);
+			return Batch.GetAllBatchesIdsToExecuteAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationId, exportRunId);
 		}
 
-		public Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(int workspaceArtifactId, int syncConfigurationId)
+		public Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(int workspaceArtifactId, int syncConfigurationId, Guid exportRunId)
 		{
-			return Batch.GetAllSuccessfullyExecutedBatchesAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationId);
+			return Batch.GetAllSuccessfullyExecutedBatchesAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationId, exportRunId);
 		}
 
-		public Task<IBatch> GetNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, int startingIndex)
+		public Task<IBatch> GetNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId, int startingIndex)
 		{
-			return Batch.GetNextAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, startingIndex);
+			return Batch.GetNextAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, startingIndex, exportRunId);
 		}
 		
 		private static async Task<IEnumerable<int>> GetConfigurationsOlderThanAsync(ISourceServiceFactoryForAdmin serviceFactory, IDateTime dateTime, int workspaceArtifactId, TimeSpan olderThan)

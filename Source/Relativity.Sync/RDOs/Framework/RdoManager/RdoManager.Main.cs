@@ -5,7 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using Castle.Components.DictionaryAdapter.Xml;
 using Polly;
 using Relativity.API;
 using Relativity.Kepler.Transport;
@@ -18,6 +17,8 @@ namespace Relativity.Sync.RDOs.Framework
 {
     internal partial class RdoManager : IRdoManager
     {
+        internal const string _EXPORT_RUN_ID_FIELD_NAME = "ExportRunId";
+
         private readonly ISyncLog _logger;
         private readonly ISyncServiceManager _servicesMgr;
         private readonly IRdoGuidProvider _rdoGuidProvider;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.RDOs.Framework
             _rdoGuidProvider = rdoGuidProvider;
         }
 
-        public async Task CreateAsync<TRdo>(int workspaceId, TRdo rdo, int? parentObjectId = null) where TRdo : IRdoType
+        public async Task CreateAsync<TRdo>(int workspaceId, TRdo rdo, Guid exportRunId, int? parentObjectId = null) where TRdo : IRdoType
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
 
@@ -110,7 +111,7 @@ namespace Relativity.Sync.RDOs.Framework
             }
         }
 
-        public async Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId,
+        public async Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId, Guid exportRunId,
             params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType, new()
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
@@ -136,7 +137,7 @@ namespace Relativity.Sync.RDOs.Framework
                 {
                     Guid = x.Guid
                 }),
-                Condition = $"'ArtifactId' == {artifactId}"
+                Condition = $"'ArtifactId' == {artifactId} AND {_EXPORT_RUN_ID_FIELD_NAME} == {exportRunId}"
             };
 
             using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))

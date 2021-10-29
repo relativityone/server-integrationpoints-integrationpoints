@@ -22,9 +22,10 @@
 		/// <param name="totalItems">Total items count in batch</param>
 		/// <param name="failedItemsCount">Count of already failed items in the batch</param>
 		/// <param name="transferredItemsCount">Count of already transferred items in batch</param>
-		public SyncBatchProgress(int batchId, int totalItems, int failedItemsCount, int transferredItemsCount)
+		public SyncBatchProgress(int batchId, int runId, int totalItems, int failedItemsCount, int transferredItemsCount)
 		{
 			BatchId = batchId;
+			RunId = runId;
 			TotalItems = totalItems;
 			ItemsAlreadyFailed = failedItemsCount;
 			ItemsAlreadyProcessed = transferredItemsCount;
@@ -74,6 +75,7 @@
 		}
 
 		public int BatchId { get; }
+		public int RunId { get; }
 
 		public int TotalItems { get; }
 	}
