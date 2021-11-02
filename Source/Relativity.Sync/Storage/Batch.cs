@@ -22,7 +22,7 @@ namespace Relativity.Sync.Storage
         private static readonly Guid StatusGuid = new Guid(SyncBatchGuids.StatusGuid);
 
         internal const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
-        internal const string _EXPORT_RUN_ID_FIELD_NAME = "ExportRunId";
+        internal const string _EXPORT_RUN_ID_NAME = "ExportRunId";
         internal static readonly Guid BatchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
 
         private SyncBatchRdo _batchRdo = new SyncBatchRdo();
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Storage
             await UpdateFieldValueAsync(x => x.StartingIndex, newStartIndex).ConfigureAwait(false);
         }
 
-        private async Task CreateAsync(int syncConfigurationArtifactId, Guid exportRunId, int totalDocumentsCount, int startingIndex)
+        private async Task CreateAsync(int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex)
         {
             _batchRdo.TotalDocumentsCount = totalDocumentsCount;
             _batchRdo.StartingIndex = startingIndex;
@@ -131,7 +131,7 @@ namespace Relativity.Sync.Storage
                     {
                         Guid = BatchObjectTypeGuid
                     },
-                    Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND {_EXPORT_RUN_ID_FIELD_NAME} == {exportRunId}",
+                    Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{_EXPORT_RUN_ID_NAME}' == '{exportRunId}'",
                     IncludeNameInQueryResult = true,
                     Sorts = new[]
                     {
@@ -173,7 +173,7 @@ namespace Relativity.Sync.Storage
                         Guid = BatchObjectTypeGuid
                     },
                     Condition =
-                        $"('{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}) AND ('{StartingIndexGuid}' > {startingIndex}) AND {_EXPORT_RUN_ID_FIELD_NAME} == {exportRunId}",
+                        $"('{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}) AND ('{StartingIndexGuid}' > {startingIndex}) AND '{_EXPORT_RUN_ID_NAME}' == '{exportRunId}'",
                     IncludeNameInQueryResult = true,
                     Sorts = new[]
                     {
@@ -203,7 +203,7 @@ namespace Relativity.Sync.Storage
             }
         }
 
-        private async Task InitializeAsync(int artifactId, Guid exportRunId)
+        private async Task InitializeAsync(int artifactId)
         {
             _batchRdo = await _rdoManager.GetAsync<SyncBatchRdo>(_workspaceArtifactId, artifactId)
                 .ConfigureAwait(false);
@@ -255,7 +255,7 @@ namespace Relativity.Sync.Storage
                         Guid = BatchObjectTypeGuid
                     },
                     Condition =
-                        $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{batchStatus.GetDescription()}' AND {_EXPORT_RUN_ID_FIELD_NAME} == {exportRunId}",
+                        $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{batchStatus.GetDescription()}' AND '{_EXPORT_RUN_ID_NAME}' == '{exportRunId}'",
                     IncludeNameInQueryResult = true
                 };
 
@@ -285,7 +285,7 @@ namespace Relativity.Sync.Storage
                         Guid = BatchObjectTypeGuid
                     },
                     Condition =
-                        $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{batchStatus.GetDescription()}' AND {_EXPORT_RUN_ID_FIELD_NAME} == {exportRunId}",
+                        $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{StatusGuid}' == '{batchStatus.GetDescription()}' AND '{_EXPORT_RUN_ID_NAME}' == '{exportRunId}'",
                     IncludeNameInQueryResult = true
                 };
 
@@ -299,7 +299,7 @@ namespace Relativity.Sync.Storage
                     Parallel.ForEach(batchIds, batchArtifactId =>
                     {
                         var batch = new Batch(_rdoManager, _serviceFactory, _workspaceArtifactId);
-                        batch.InitializeAsync(batchArtifactId, exportRunId).ConfigureAwait(false).GetAwaiter().GetResult();
+                        batch.InitializeAsync(batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
                         batches.Add(batch);
                     });
                 }
@@ -320,7 +320,7 @@ namespace Relativity.Sync.Storage
                     {
                         Guid = BatchObjectTypeGuid
                     },
-                    Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND {_EXPORT_RUN_ID_FIELD_NAME} == {exportRunId}",
+                    Condition = $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{_EXPORT_RUN_ID_NAME}' == '{exportRunId}'",
                     IncludeNameInQueryResult = true
                 };
 
@@ -334,7 +334,7 @@ namespace Relativity.Sync.Storage
                     Parallel.ForEach(batchIds, batchArtifactId =>
                     {
                         Batch batch = new Batch(_rdoManager, _serviceFactory, _workspaceArtifactId);
-                        batch.InitializeAsync(batchArtifactId, exportRunId).ConfigureAwait(false).GetAwaiter().GetResult();
+                        batch.InitializeAsync(batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
                         batches.Add(batch);
                     });
                 }
@@ -354,7 +354,7 @@ namespace Relativity.Sync.Storage
             int totalDocumentsCount, int startingIndex)
         {
             Batch batch = new Batch(rdoManager, serviceFactory, workspaceArtifactId);
-            await batch.CreateAsync(syncConfigurationArtifactId, exportRunId, totalDocumentsCount, startingIndex)
+            await batch.CreateAsync(syncConfigurationArtifactId, totalDocumentsCount, startingIndex)
                 .ConfigureAwait(false);
             return batch;
         }
@@ -363,7 +363,7 @@ namespace Relativity.Sync.Storage
             int workspaceArtifactId, int artifactId, Guid exportRunId)
         {
             Batch batch = new Batch(rdoManager, serviceFactory, workspaceArtifactId);
-            await batch.InitializeAsync(artifactId, exportRunId).ConfigureAwait(false);
+            await batch.InitializeAsync(artifactId).ConfigureAwait(false);
             return batch;
         }
 

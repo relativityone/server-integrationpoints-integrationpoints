@@ -27,6 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		private const int _WORKSPACE_ID = 433;
 		private const int _ARTIFACT_ID = 416;
 		private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
+        internal const string _EXPORT_RUN_ID_NAME = "ExportRunId";
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
@@ -315,20 +316,20 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			batch.Should().NotBeNull();
-			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr, syncConfigurationArtifactId)), 1, 1), Times.Once);
+			_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(qr => AssertQueryRequest(qr, syncConfigurationArtifactId, ExportRunId)), 1, 1), Times.Once);
 		}
 
-		private bool AssertQueryRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
+		private bool AssertQueryRequest(QueryRequest queryRequest, int syncConfigurationArtifactId, Guid exportRunId)
 		{
 			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}");
+			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{_EXPORT_RUN_ID_NAME}' == '{exportRunId}'");
 			return true;
 		}
 
-		private bool AssertQueryRequestSlim(QueryRequest queryRequest, int syncConfigurationArtifactId)
+		private bool AssertQueryRequestSlim(QueryRequest queryRequest, int syncConfigurationArtifactId, Guid exportRunId)
 		{
 			queryRequest.ObjectType.Guid.Should().Be(BatchObjectTypeGuid);
-			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}");
+			queryRequest.Condition.Should().Be($"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId} AND '{_EXPORT_RUN_ID_NAME}' == '{exportRunId}'");
 			return true;
 		}
 
@@ -400,7 +401,7 @@ namespace Relativity.Sync.Tests.Unit
 			batches.Should().NotBeNullOrEmpty();
 			batches.Should().NotContainNulls();
 
-			_objectManager.Verify(x => x.QuerySlimAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryRequestSlim(rr, syncConfigurationArtifactId)), 1, int.MaxValue), Times.Once);
+			_objectManager.Verify(x => x.QuerySlimAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => AssertQueryRequestSlim(rr, syncConfigurationArtifactId, ExportRunId)), 1, int.MaxValue), Times.Once);
 		}
 
 		[Test]
@@ -486,7 +487,7 @@ namespace Relativity.Sync.Tests.Unit
 			void VerifyStatusWasRead(BatchStatus status)
 			{
 				string expectedCondition =
-					$"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == '{status.GetDescription()}'";
+					$"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == '{status.GetDescription()}' AND '{_EXPORT_RUN_ID_NAME}' == '{ExportRunId}'";
 				_objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => rr.ObjectType.Guid == BatchObjectTypeGuid && rr.Condition == expectedCondition), 1, int.MaxValue), Times.Once);
 			}
 			

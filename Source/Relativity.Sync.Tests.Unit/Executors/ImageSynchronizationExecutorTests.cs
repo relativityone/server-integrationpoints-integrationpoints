@@ -936,7 +936,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			
 
 			_batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(_batchesStubs.Select(x => x.ArtifactId));
-			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync((int workspaceId, int batchId) => _batchesStubs.First(x => x.ArtifactId == batchId));
+			_batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync((int workspaceId, int batchId, Guid exportRunId) => _batchesStubs.First(x => x.ArtifactId == batchId));
 		}
 
 		private void SetupImportJob(ExecutionResult result = null, long metadataBytesTransferred = _METADATA_SIZE, long filesBytesTransferred = _FILES_SIZE, long totalBytesTransferred = _JOB_SIZE)
