@@ -30,6 +30,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
 		private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
+		private static readonly Guid ExportRunId = new Guid("86A98BD1-7593-46FE-B980-3114CF4D8572");
 		
 		[SetUp]
 		public void SetUp()
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit
 			
 
 			// ACT
-			IBatch batch = await _batchRepository.CreateAsync(_WORKSPACE_ID, syncConfigurationArtifactId, totalDocumentsCount, startingIndex).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.CreateAsync(_WORKSPACE_ID, syncConfigurationArtifactId, ExportRunId, totalDocumentsCount, startingIndex).ConfigureAwait(false);
 
 			// ASSERT
 			batch.TotalDocumentsCount.Should().Be(totalDocumentsCount);
@@ -106,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit
 			_fakeRdoManager.Mock.Setup(x => x.GetAsync<SyncBatchRdo>(_WORKSPACE_ID, _ARTIFACT_ID)).ReturnsAsync(batchRdo);
 			
 			// ACT
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ASSERT
 			batch.ArtifactId.Should().Be(_ARTIFACT_ID);
@@ -131,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit
 			_fakeRdoManager.Mock.Setup(x => x.GetAsync<SyncBatchRdo>(_WORKSPACE_ID, _ARTIFACT_ID)).ReturnsAsync((SyncBatchRdo)null);
 
 			// ACT
-			Func<Task> action = () => _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID);
+			Func<Task> action = () => _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId);
 
 			// ASSERT
 			action.Should().Throw<SyncException>().Which.Message.Should().Be($"Batch ArtifactID: {_ARTIFACT_ID} not found.");
@@ -142,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int failedItemsCount = 9876;
 
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetFailedItemsCountAsync(failedItemsCount).ConfigureAwait(false);
@@ -158,7 +159,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int transferredItemsCount = 849170;
 			
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetTransferredItemsCountAsync(transferredItemsCount).ConfigureAwait(false);
@@ -175,7 +176,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const long metadataBytesTransferred = 1024;
 
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetMetadataBytesTransferredAsync(metadataBytesTransferred).ConfigureAwait(false);
@@ -191,7 +192,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const long filesBytesTransferred = 5120;
 
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetFilesBytesTransferredAsync(filesBytesTransferred).ConfigureAwait(false);
@@ -207,7 +208,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const long totalBytesTransferred = 6144;
 
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetTotalBytesTransferredAsync(totalBytesTransferred).ConfigureAwait(false);
@@ -223,7 +224,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int failedDocumentsCount = 111;
 
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetFailedDocumentsCountAsync(failedDocumentsCount).ConfigureAwait(false);
@@ -239,7 +240,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int transferredDocumentsCount = 222;
 
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetTransferredDocumentsCountAsync(transferredDocumentsCount).ConfigureAwait(false);
@@ -254,7 +255,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task SetStatusAsync_ShouldUpdateStatus()
 		{
 			const BatchStatus status = BatchStatus.InProgress;
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetStatusAsync(status).ConfigureAwait(false);
@@ -270,7 +271,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			const int taggedDocumentsCount = 849170;
 
-			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// ACT
 			await batch.SetTaggedDocumentsCountAsync(taggedDocumentsCount).ConfigureAwait(false);
@@ -290,7 +291,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
 
 			// ACT
-			IBatch batch = await _batchRepository.GetLastAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetLastAsync(_WORKSPACE_ID, syncConfigurationArtifactId, ExportRunId).ConfigureAwait(false);
 
 			// ASSERT
 			batch.Should().BeNull();
@@ -310,7 +311,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, 1)).ReturnsAsync(queryResult);
 
 			// ACT
-			IBatch batch = await _batchRepository.GetLastAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+			IBatch batch = await _batchRepository.GetLastAsync(_WORKSPACE_ID, syncConfigurationArtifactId, ExportRunId).ConfigureAwait(false);
 
 			// ASSERT
 			batch.Should().NotBeNull();
@@ -341,7 +342,7 @@ namespace Relativity.Sync.Tests.Unit
 			
 
 			// Act
-			IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// Assert
 			batchIds.Should().NotBeNullOrEmpty();
@@ -358,7 +359,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).ReturnsAsync(queryResult);
 
 			// Act
-			IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+			IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
 			// Assert
 			batchIds.Should().NotBeNull();
@@ -375,7 +376,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, int.MaxValue)).Throws<NotAuthorizedException>();
 
 			// Act & Assert
-			Assert.ThrowsAsync<NotAuthorizedException>(() => _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID));
+			Assert.ThrowsAsync<NotAuthorizedException>(() => _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId));
 
 			VerifyQueryAllRequests();
 		}
@@ -393,7 +394,7 @@ namespace Relativity.Sync.Tests.Unit
 			_objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult);
 
 			// ACT
-			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId).ConfigureAwait(false);
+			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId, ExportRunId).ConfigureAwait(false);
 
 			// ASSERT
 			batches.Should().NotBeNullOrEmpty();

@@ -30,6 +30,7 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
 		private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
 		private static readonly Guid _SYNC_BATCH_OBJECT_TYPE = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+		private static readonly Guid _EXPORT_RUN_ID = new Guid("2574E4D4-F067-4D1C-A534-87C9C140FB20");
 
 		private static ObjectTypeRef SyncBatchObjectTypeRef => new ObjectTypeRef { Guid = _SYNC_BATCH_OBJECT_TYPE };
 
@@ -102,9 +103,9 @@ namespace Relativity.Sync.Tests.System
 			const int firstStartingIndex = 0;
 			const int secondStartingIndex = firstStartingIndex + batchSize;
 			const int thirdStartingIndex = secondStartingIndex + batchSize;
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, batchSize, firstStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, batchSize, secondStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, batchSize, thirdStartingIndex).ConfigureAwait(false);
+			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, firstStartingIndex).ConfigureAwait(false);
+			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, secondStartingIndex).ConfigureAwait(false);
+			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, thirdStartingIndex).ConfigureAwait(false);
 
 			const int totalRecordsCount = 1000;
 			ConfigurationStub configuration = new ConfigurationStub()
@@ -138,9 +139,9 @@ namespace Relativity.Sync.Tests.System
 			const int firstStartingIndex = 0;
 			const int secondStartingIndex = firstStartingIndex + originalBatchSize;
 			const int thirdStartingIndex = secondStartingIndex + originalBatchSize;
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, originalBatchSize, firstStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, originalBatchSize, secondStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, originalBatchSize, thirdStartingIndex).ConfigureAwait(false);
+			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, firstStartingIndex).ConfigureAwait(false);
+			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, secondStartingIndex).ConfigureAwait(false);
+			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, thirdStartingIndex).ConfigureAwait(false);
 
 			const int totalRecordsCount = 1000;
 			const int newBatchSize = 350;

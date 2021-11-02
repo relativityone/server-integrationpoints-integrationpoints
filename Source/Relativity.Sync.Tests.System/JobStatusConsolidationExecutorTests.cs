@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
@@ -30,6 +29,7 @@ namespace Relativity.Sync.Tests.System
 		private static readonly Guid CompletedItemsCountGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c");
 		private static readonly Guid FailedItemsCountGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e");
 		private static readonly Guid TotalItemsCountGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b");
+		private static readonly Guid ExportRunId = new Guid("81F9F85A-E568-4F2B-B34F-04992FC5EA54");
 
 		protected override Task ChildSuiteSetup()
 		{
@@ -145,6 +145,7 @@ namespace Relativity.Sync.Tests.System
 				.Select(i => _batchRepository
 					.CreateAsync(workspaceArtifactId,
 						syncConfigurationArtifactId,
+                        ExportRunId,
 						itemsCountPerBatch,
 						i * itemsCountPerBatch));
 
