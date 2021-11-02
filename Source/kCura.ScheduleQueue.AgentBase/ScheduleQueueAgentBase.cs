@@ -112,7 +112,14 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				if (isPreExecuteSuccessful)
 				{
-					ProcessQueueJobs();
+					if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
+					{
+						ProcessQueueJobsInKubernetesMode();
+                    }
+                    else
+                    {
+						ProcessQueueJobs();
+					}
 					CleanupQueueJobs();
 				}
 
@@ -217,6 +224,54 @@ namespace kCura.ScheduleQueue.AgentBase
 			catch (Exception ex)
 			{
 				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
+				_jobService.UnlockJobs(_agentId.Value);
+			}
+		}
+
+		private void ProcessQueueJobsInKubernetesMode()
+		{
+			try
+			{
+				Job nextJob = GetNextQueueJob();
+				if (nextJob == null)
+				{
+					Logger.LogDebug("No active job found in Schedule Agent Queue table");
+				}
+
+				LogJobInformation(nextJob);
+
+				bool isJobValid = PreExecuteJobValidation(nextJob);
+				if (!isJobValid)
+				{
+					Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
+
+					_jobService.DeleteJob(nextJob.JobId);
+					return;
+				}
+
+				Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+
+				TaskResult jobResult = ProcessJob(nextJob);
+
+				Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
+
+				// If job was drain-stopped, do not finalize the it (i.e. do not remove it from the queue).
+				if (jobResult.Status == TaskStatusEnum.DrainStopped)
+				{
+					Logger.LogInformation("Job has been drain-stopped. Another agent may pick it up from the queue");
+					_jobService.FinalizeDrainStoppedJob(nextJob);
+				}
+				else
+				{
+					FinalizeJobExecution(nextJob, jobResult);
+				}
+
+				// Agent after finishing single job is being removed
+				_jobService.UnlockJobs(_agentId.Value);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Unhandled exception occurred while processing job from queue. Unlocking the job");
 				_jobService.UnlockJobs(_agentId.Value);
 			}
 		}
