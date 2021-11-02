@@ -295,7 +295,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 				ArtifactId = ArtifactId,
 				ParentArtifactId = ParenObjectArtifactId,
 				NextScheduledRuntimeUTC = NextScheduledRuntimeUTC,
-				LastRuntimeUTC = LastRuntimeUTC, //
+				LastRuntimeUTC = LastRuntimeUTC, 
 				FieldMappings = FieldMappings,
 				EnableScheduler = EnableScheduler,
 				SourceConfiguration = SourceConfiguration,
@@ -304,12 +304,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 				ScheduleRule = ScheduleRule,
 				OverwriteFields = OverwriteFields,
 				DestinationProvider = DestinationProvider,
-				JobHistory = JobHistory,//
+				JobHistory = JobHistory,
 				LogErrors = LogErrors,
 				EmailNotificationRecipients = EmailNotificationRecipients,
 				HasErrors = HasErrors,
 				Type = Type,
-				SecuredConfiguration = SecuredConfiguration,//
+				SecuredConfiguration = SecuredConfiguration,
 				PromoteEligible = PromoteEligible,
 				Name = Name
 			};

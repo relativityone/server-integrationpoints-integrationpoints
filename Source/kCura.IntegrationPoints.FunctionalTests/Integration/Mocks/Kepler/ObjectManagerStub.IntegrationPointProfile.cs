@@ -14,22 +14,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-        bool IsIntegrationPointProfileCondition(string condition, out int integrationPointProfileId)
+        private IList<IntegrationPointProfileTest> IntegrationPointProfileFilter(QueryRequest request, IList<IntegrationPointProfileTest> list)
         {
-            //here condition for quering by id, will add later
-
-            integrationPointProfileId = -1;
-            return false;
-        }
-        IList<IntegrationPointProfileTest> IntegrationPointProfileFilter(QueryRequest request, IList<IntegrationPointProfileTest> list)
-        {
-            if(IsIntegrationPointProfileCondition(request.Condition, out int integrationPointProfileId))
-            {
-                // filtering by id, will add later
-                //return list.Where(x => x.IntegrationPointProfile)
-            }
             return list;
-
         }
         private void SetupIntegrationPointProfile()
         {

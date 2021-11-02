@@ -12,23 +12,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
     public class FakeCaseServiceContext: IServiceContextHelper
 	{
 		private readonly IHelper _helper;
+		private int UserArtifactId;
 
-		public FakeCaseServiceContext(IHelper helper, int workspaceArtifactId)
+		public FakeCaseServiceContext(IHelper helper, int workspaceArtifactId, int userArtifactId)
 		{
 			_helper = helper;
 			WorkspaceID = workspaceArtifactId;
+			UserArtifactId = userArtifactId;
 		}
 
 		public int WorkspaceID { get; }
 
 		public int GetEddsUserID()
 		{
-			return 9;
+			return UserArtifactId;
 		}
 
 		public int GetWorkspaceUserID()
 		{
-			return 9;
+			return UserArtifactId;
 		}
 
 		public IDBContext GetDBContext(int workspaceID = -1)

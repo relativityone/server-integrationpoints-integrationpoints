@@ -77,9 +77,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            //var objectContent = response.Content as ObjectContent;
-            //var result = (IntegrationPointProfileModel)objectContent?.Value;
-
             var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
 
             AssertIntegrationPointProfilesMatches(integrationPointProfile, result);
@@ -99,8 +96,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            //var objectContent = response.Content as ObjectContent;
-            //var result = (IntegrationPointProfileModel)objectContent?.Value;
             var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
 
             AssertIntegrationPointProfilesMatches(integrationPointProfile, result);
@@ -120,8 +115,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.GetByType(integrationPointProfile.Type);
 
             // Assert
-            //var objectContent = response.Content as ObjectContent;
-            //var result = (IEnumerable<IntegrationPointProfileModel>)objectContent?.Value;
             var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileModel>>(response);
 
             AssertIntegrationPointProfilesSimplerMatches(integrationPointProfile, result.First());
@@ -141,8 +134,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            //var objectContent = response.Content as ObjectContent;
-            //var result = (IntegrationPointProfileModel)objectContent?.Value;
 
             var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
 
@@ -163,9 +154,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            //var objectContent = response.Content as ObjectContent;
-            //var result = (IntegrationPointProfileModel)objectContent?.Value;
-
             var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -185,9 +173,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            //var objectContent = response.Content as ObjectContent;
-            //var result = (IntegrationPointProfileModel)objectContent?.Value;
-
             var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();

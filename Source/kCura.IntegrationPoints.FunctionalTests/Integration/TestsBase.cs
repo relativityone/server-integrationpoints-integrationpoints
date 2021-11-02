@@ -183,7 +183,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				.Named(nameof(FakeWorkspaceDbContext)).IsDefault());
 
             Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
-				new FakeCaseServiceContext(c.Resolve<IAgentHelper>(), sourceWorkspaceId)));
+				new FakeCaseServiceContext(c.Resolve<IAgentHelper>(), sourceWorkspaceId, User.ArtifactId)));
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
 			Container.Register(Component.For<IJobService>().ImplementedBy<JobService>());
