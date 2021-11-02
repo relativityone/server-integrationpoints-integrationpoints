@@ -116,12 +116,12 @@ namespace Relativity.Sync.Executors
 				_logger.LogInformation("Gathering batches to execute.");
 				IEnumerable<int> batchesIds = await _batchRepository
 					.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId,
-						configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+						configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
 				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
 				List<IBatch> executedBatches = (await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
 					configuration.SourceWorkspaceArtifactId,
-					configuration.SyncConfigurationArtifactId)
+					configuration.SyncConfigurationArtifactId, configuration.ExportRunId)
 				.ConfigureAwait(false)).ToList();
 
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
@@ -138,7 +138,7 @@ namespace Relativity.Sync.Executors
 
 						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
 						IStopwatch batchTimer = GetStartedTimer();
-						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
+						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId, configuration.ExportRunId).ConfigureAwait(false);
 						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.AnyReasonCancellationToken).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch))

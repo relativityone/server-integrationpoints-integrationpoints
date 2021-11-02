@@ -21,7 +21,7 @@ namespace Relativity.Sync.ExecutionConstrains
 		{
 			try
 			{
-				IBatch batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+				IBatch batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
 
 				if (batch == null)
 				{

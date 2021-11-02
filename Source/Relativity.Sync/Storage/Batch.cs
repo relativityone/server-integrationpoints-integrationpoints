@@ -35,9 +35,7 @@ namespace Relativity.Sync.Storage
         }
 
         public int ArtifactId => _batchRdo.ArtifactId;
-
-        public Guid ExportRunId => _batchRdo.ExportRunId;
-
+        
         public int TotalDocumentsCount => _batchRdo.TotalDocumentsCount;
 
         public int TransferredDocumentsCount => _batchRdo.TransferredDocumentsCount;
@@ -118,7 +116,7 @@ namespace Relativity.Sync.Storage
             _batchRdo.StartingIndex = startingIndex;
             _batchRdo.Status = BatchStatus.New;
 
-            await _rdoManager.CreateAsync(_workspaceArtifactId, _batchRdo, syncConfigurationArtifactId, exportRunId)
+            await _rdoManager.CreateAsync(_workspaceArtifactId, _batchRdo, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
         }
 
@@ -207,7 +205,7 @@ namespace Relativity.Sync.Storage
 
         private async Task InitializeAsync(int artifactId, Guid exportRunId)
         {
-            _batchRdo = await _rdoManager.GetAsync<SyncBatchRdo>(_workspaceArtifactId, artifactId, exportRunId)
+            _batchRdo = await _rdoManager.GetAsync<SyncBatchRdo>(_workspaceArtifactId, artifactId)
                 .ConfigureAwait(false);
 
             if (_batchRdo is null)
@@ -336,7 +334,7 @@ namespace Relativity.Sync.Storage
                     Parallel.ForEach(batchIds, batchArtifactId =>
                     {
                         Batch batch = new Batch(_rdoManager, _serviceFactory, _workspaceArtifactId);
-                        batch.InitializeAsync(batchArtifactId).ConfigureAwait(false).GetAwaiter().GetResult();
+                        batch.InitializeAsync(batchArtifactId, exportRunId).ConfigureAwait(false).GetAwaiter().GetResult();
                         batches.Add(batch);
                     });
                 }
@@ -356,7 +354,7 @@ namespace Relativity.Sync.Storage
             int totalDocumentsCount, int startingIndex)
         {
             Batch batch = new Batch(rdoManager, serviceFactory, workspaceArtifactId);
-            await batch.CreateAsync(syncConfigurationArtifactId, exportRunId,totalDocumentsCount, startingIndex)
+            await batch.CreateAsync(syncConfigurationArtifactId, exportRunId, totalDocumentsCount, startingIndex)
                 .ConfigureAwait(false);
             return batch;
         }

@@ -6,7 +6,6 @@ namespace Relativity.Sync.Storage
 	internal interface IBatch
 	{
 		int ArtifactId { get; }
-		Guid ExportRunId { get; }
 		int StartingIndex { get; }
 		BatchStatus Status { get; }
 		

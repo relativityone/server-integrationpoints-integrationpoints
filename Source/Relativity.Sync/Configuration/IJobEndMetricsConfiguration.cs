@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface IJobEndMetricsConfiguration : IConfiguration
 	{
@@ -19,5 +21,7 @@
 		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 
 		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
+
+        Guid ExportRunId { get; }
 	}
 }

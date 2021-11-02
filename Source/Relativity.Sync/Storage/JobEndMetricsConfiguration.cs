@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Configuration;
+﻿using System;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
@@ -17,6 +18,20 @@ namespace Relativity.Sync.Storage
 		public DestinationLocationType DestinationType => _cache.GetFieldValue(x => x.DataDestinationType);
 		public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
 		public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode);
+
+        public Guid ExportRunId
+        {
+            get
+            {
+                Guid? snapshotId = _cache.GetFieldValue(x => x.SnapshotId);
+                if (snapshotId == Guid.Empty)
+                {
+                    snapshotId = null;
+                }
+
+                return snapshotId ?? throw new ArgumentException($"Run ID needs to be valid GUID, but null found.");
+            }
+        }
 
 		public JobEndMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
 		{

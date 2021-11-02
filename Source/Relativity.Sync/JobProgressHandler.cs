@@ -35,6 +35,7 @@ namespace Relativity.Sync
 						alreadyExecutedBatch.TotalDocumentsCount,
 						alreadyExecutedBatch.FailedItemsCount,
 						alreadyExecutedBatch.TransferredItemsCount
+                        
 					)
 					{Completed = true};
 			}
