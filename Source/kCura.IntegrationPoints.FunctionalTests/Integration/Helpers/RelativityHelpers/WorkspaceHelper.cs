@@ -70,6 +70,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				ObjectTypeId = (int)ArtifactType.Document,
 				Guid = IntegrationPointProfileFieldGuids.OverwriteFieldsGuid,
 				IsIdentifier = false,
+				Artifact =
+                {
+					ArtifactId = 1234567
+				},
 				Name = "Overwrite Fields"
 			});
 			workspace.Fields.Add(new FieldTest

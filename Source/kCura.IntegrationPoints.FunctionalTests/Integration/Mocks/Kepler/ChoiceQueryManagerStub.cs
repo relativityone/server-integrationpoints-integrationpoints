@@ -12,7 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
 		public void SetupArtifactGuidManager()
 		{
-			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<int>(a => CheckIfOverwfiteFieldId(a))))
+			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<int>(a => a == 1234567)))
 				.Returns((int workspaceId, int fieldArtifactId) =>
 				{
 					return Task.FromResult(
@@ -36,12 +36,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 							}
 						);
 				});
-		}
-
-		private bool CheckIfOverwfiteFieldId(int fieldId)
-        {
-			List<int> correctOverwriteFieldsIds = new List<int> { 100014, 100225, 100257 };
-			return correctOverwriteFieldsIds.Contains(fieldId);
 		}
 	}
 }
