@@ -1,4 +1,6 @@
-﻿using Atata;
+﻿using System;
+using System.Threading;
+using Atata;
 using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
@@ -28,6 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindByPrecedingDivContent]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		[WaitFor(Until.Visible, TriggerEvents.BeforeAccess, AbsenceTimeout = 20)]
+		[InvokeMethod(nameof(WaitSavedSearchToLoad), TriggerEvents.AfterClick)]
 		public Select2<string, _> SavedSearch { get; private set; }
 
 		[FindByPrecedingDivContent]
@@ -54,5 +57,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindById("select2-chosen-4")]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public Clickable<_> DestinationWorkspaceDropDown { get; private set; }
+
+		private void WaitSavedSearchToLoad()
+		{
+			Thread.Sleep(TimeSpan.FromSeconds(2));
+			this.Log.Info("Wait for SavedSearch list to load.");
+		}
 	}
 }
