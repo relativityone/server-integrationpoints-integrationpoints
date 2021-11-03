@@ -110,10 +110,11 @@ namespace Relativity.Sync.Storage
             await UpdateFieldValueAsync(x => x.StartingIndex, newStartIndex).ConfigureAwait(false);
         }
 
-        private async Task CreateAsync(int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex)
+        private async Task CreateAsync(int syncConfigurationArtifactId, int totalDocumentsCount, int startingIndex, Guid exportRunId)
         {
             _batchRdo.TotalDocumentsCount = totalDocumentsCount;
             _batchRdo.StartingIndex = startingIndex;
+            _batchRdo.ExportRunId = exportRunId;
             _batchRdo.Status = BatchStatus.New;
 
             await _rdoManager.CreateAsync(_workspaceArtifactId, _batchRdo, syncConfigurationArtifactId)
@@ -354,13 +355,13 @@ namespace Relativity.Sync.Storage
             int totalDocumentsCount, int startingIndex)
         {
             Batch batch = new Batch(rdoManager, serviceFactory, workspaceArtifactId);
-            await batch.CreateAsync(syncConfigurationArtifactId, totalDocumentsCount, startingIndex)
+            await batch.CreateAsync(syncConfigurationArtifactId, totalDocumentsCount, startingIndex, exportRunId)
                 .ConfigureAwait(false);
             return batch;
         }
 
         public static async Task<IBatch> GetAsync(IRdoManager rdoManager, ISourceServiceFactoryForAdmin serviceFactory,
-            int workspaceArtifactId, int artifactId, Guid exportRunId)
+            int workspaceArtifactId, int artifactId)
         {
             Batch batch = new Batch(rdoManager, serviceFactory, workspaceArtifactId);
             await batch.InitializeAsync(artifactId).ConfigureAwait(false);

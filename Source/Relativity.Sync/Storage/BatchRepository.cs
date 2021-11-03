@@ -29,9 +29,9 @@ namespace Relativity.Sync.Storage
 			return Batch.CreateAsync(_rdoManager, _serviceFactory, workspaceArtifactId, syncConfigurationArtifactId, exportRunId, totalDocumentsCount, startingIndex);
 		}
 
-		public Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId, Guid exportRunId)
+		public Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId)
 		{
-			return Batch.GetAsync(_rdoManager, _serviceFactory, workspaceArtifactId, artifactId, exportRunId);
+			return Batch.GetAsync(_rdoManager, _serviceFactory, workspaceArtifactId, artifactId);
 		}
 
 		public Task<IEnumerable<IBatch>> GetAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId)

@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.System
 
 			// ACT
 			IBatch createdBatch = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, _exportRunId, totalRecords, startingIndex).ConfigureAwait(false);
-			IBatch readBatch = await _sut.GetAsync(_workspaceId, createdBatch.ArtifactId, _exportRunId).ConfigureAwait(false);
+			IBatch readBatch = await _sut.GetAsync(_workspaceId, createdBatch.ArtifactId).ConfigureAwait(false);
 
 			// ASSERT
 			readBatch.StartingIndex.Should().Be(startingIndex);
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.System
 			await createdBatch.SetTotalBytesTransferredAsync(totalBytesTransferred).ConfigureAwait(false);
 
 			// ASSERT
-			IBatch readBatch = await _sut.GetAsync(_workspaceId, createdBatch.ArtifactId, _exportRunId).ConfigureAwait(false);
+			IBatch readBatch = await _sut.GetAsync(_workspaceId, createdBatch.ArtifactId).ConfigureAwait(false);
 
 			readBatch.Status.Should().Be(status);
 			readBatch.FailedItemsCount.Should().Be(failedItemsCount);

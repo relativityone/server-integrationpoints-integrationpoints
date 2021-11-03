@@ -14,7 +14,7 @@ namespace Relativity.Sync.Storage
 		/// <summary>
 		/// Gets batch based on artifact ID.
 		/// </summary>
-		Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId, Guid exportRunId);
+		Task<IBatch> GetAsync(int workspaceArtifactId, int artifactId);
 
 		/// <summary>
 		/// Returns all batches belonging to the particular job.
