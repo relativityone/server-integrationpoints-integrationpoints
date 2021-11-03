@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
@@ -28,9 +27,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 	[TestFixture, Category("Unit")]
 	public class ImageExporterServiceTests : TestBase
 	{
-		private ImageExporterService _instance;
-
-		#region "Dependencies"
+		private ImageExporterService _sut;
+		
 		private IDocumentRepository _documentRepository;
 		private IRepositoryFactory _repositoryFactoryMock;
 		private IJobStopManager _jobStopManager;
@@ -39,10 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		private IFileRepository _fileRepository;
 		private IRelativityObjectManager _relativityObjectManager;
 		private ISerializer _serializer;
-		private ISearchManager _searchManagerMock;
-
-		#endregion
-
+		
 		private const int _START_AT = 0;
 		private const int _SEARCH_ARTIFACT_ID = 0;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
@@ -58,7 +53,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_helper = Substitute.For<IHelper>();
 			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 			_serializer = Substitute.For<ISerializer>();
-			_searchManagerMock = Substitute.For<ISearchManager>();
 
 			_mappedFields = new[]
 			{
@@ -90,16 +84,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_fileRepository = Substitute.For<IFileRepository>();
 		}
 
-
-		#region "Tests"
-
+		
 		[Test]
 		public void ItShouldGetDataTransferContext()
 		{
 			// Arrange
 			SourceConfiguration sourceConfiguration = GetConfig(SourceConfiguration.ExportType.SavedSearch);
 
-			_instance = new ImageExporterService(
+			_sut = new ImageExporterService(
 				_documentRepository,
 				_relativityObjectManager,
 				_repositoryFactoryMock,
@@ -111,13 +103,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_START_AT,
 				sourceConfiguration,
 				_SEARCH_ARTIFACT_ID,
-				null,
-				() => _searchManagerMock);
+				null);
 
 			IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
 			// Act
-			IDataTransferContext actual = _instance.GetDataTransferContext(transferConfiguration);
+			IDataTransferContext actual = _sut.GetDataTransferContext(transferConfiguration);
 
 			// Assert
 			Assert.NotNull(actual);
@@ -142,10 +133,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			_fileRepository
 				.GetImagesLocationForDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
-					Arg.Is<int[]>(x => x.Single() == documentArtifactID), Arg.Any<ISearchManager>())
+					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(CreateDocumentImageResponses(new[] { documentArtifactID }));
 
-			_instance = new ImageExporterService(
+			_sut = new ImageExporterService(
 				_documentRepository,
 				_relativityObjectManager,
 				_repositoryFactoryMock, 
@@ -157,15 +148,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_START_AT,
 				config,
 				_SEARCH_ARTIFACT_ID,
-				settings,
-				() => _searchManagerMock
-
+				settings
 			);
 
-			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
+			_sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
 			// Act
-			ArtifactDTO[] actual = _instance.RetrieveData(0);
+			ArtifactDTO[] actual = _sut.RetrieveData(0);
 
 			// Assert
 			Assert.That(actual.Length, Is.EqualTo(1));
@@ -195,10 +184,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					productionArtifactID,
-					Arg.Is<int[]>(x => x.Single() == documentArtifactID), Arg.Any<ISearchManager>())
+					Arg.Is<int[]>(x => x.Single() == documentArtifactID))
 				.Returns(CreateProductionDocumentImageResponses(new int[] { documentArtifactID }));
 
-			_instance = new ImageExporterService(
+			_sut = new ImageExporterService(
 				_documentRepository,
 				_relativityObjectManager,
 				_repositoryFactoryMock, 
@@ -210,15 +199,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_START_AT,
 				config,
 				_SEARCH_ARTIFACT_ID,
-				_settings,
-				() => _searchManagerMock
-					);
-			;
+				_settings);
 
-			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
+			_sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
 			// Act
-			ArtifactDTO[] actual = _instance.RetrieveData(0);
+			ArtifactDTO[] actual = _sut.RetrieveData(0);
 
 			// Assert
 			Assert.That(actual.Length, Is.EqualTo(1));
@@ -249,7 +235,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					1,
-					Arg.Any<int[]>(), Arg.Any<ISearchManager>())
+					Arg.Any<int[]>())
 				.Returns(callInfo =>
 					CreateProductionDocumentImageResponses(new[] { 1, 2, 3 }, 1));
 
@@ -257,7 +243,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					2,
-					Arg.Any<int[]>(), Arg.Any<ISearchManager>())
+					Arg.Any<int[]>())
 				.Returns(callInfo =>
 					CreateProductionDocumentImageResponses(new[] { 1, 2, 3, 4, 5, 6 }, 2));
 
@@ -265,17 +251,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					3,
-					Arg.Any<int[]>(), Arg.Any<ISearchManager>())
+					Arg.Any<int[]>())
 				.Returns(callInfo =>
 					CreateProductionDocumentImageResponses(Enumerable.Range(1, documentCount - 10).ToArray(), 3));
 
 			_fileRepository.GetImagesLocationForDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
-					Arg.Any<int[]>(),
-					Arg.Any<ISearchManager>())
+					Arg.Any<int[]>())
 				.Returns(CreateDocumentOriginalImageResponses(Enumerable.Range(1, documentCount).ToArray()));
 
-			_instance = new ImageExporterService(
+			_sut = new ImageExporterService(
 				_documentRepository,
 				_relativityObjectManager,
 				_repositoryFactoryMock,
@@ -287,15 +272,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_START_AT,
 				config,
 				_SEARCH_ARTIFACT_ID,
-				_settings,
-				() => _searchManagerMock
-			);
-			;
+				_settings);
 
-			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
+			_sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
 			// Act
-			ArtifactDTO[] actual = _instance.RetrieveData(0);
+			ArtifactDTO[] actual = _sut.RetrieveData(0);
 			var sourceProductionIds = actual.Select(x => x.GetFieldByName("NATIVE_FILE_PATH_001").Value.ToString().Split('_').First()).ToArray();
 
 			// Assert
@@ -332,7 +314,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					1,
-					Arg.Any<int[]>(), Arg.Any<ISearchManager>())
+					Arg.Any<int[]>())
 				.Returns(callInfo =>
 					CreateProductionDocumentImageResponses(new[] { 1, 2, 3 }, 1));
 
@@ -340,7 +322,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					2,
-					Arg.Any<int[]>(), Arg.Any<ISearchManager>())
+					Arg.Any<int[]>())
 				.Returns(callInfo =>
 					CreateProductionDocumentImageResponses(new[] { 1, 2, 3, 4, 5, 6 }, 2));
 
@@ -348,11 +330,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				.GetImagesLocationForProductionDocuments(
 					_SOURCE_WORKSPACE_ARTIFACT_ID,
 					3,
-					Arg.Any<int[]>(), Arg.Any<ISearchManager>())
+					Arg.Any<int[]>())
 				.Returns(callInfo =>
 					CreateProductionDocumentImageResponses(Enumerable.Range(1, documentCount).ToArray(), 3));
 
-			_instance = new ImageExporterService(
+			_sut = new ImageExporterService(
 				_documentRepository,
 				_relativityObjectManager,
 				_repositoryFactoryMock,
@@ -364,15 +346,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 				_START_AT,
 				config,
 				_SEARCH_ARTIFACT_ID,
-				_settings,
-				() => _searchManagerMock
-			);
-			;
+				_settings);
 
-			_instance.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
+			_sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
 			// Act
-			ArtifactDTO[] actual = _instance.RetrieveData(0);
+			ArtifactDTO[] actual = _sut.RetrieveData(0);
 			var sourceProductionIds = actual.Select(x => x.GetFieldByName("NATIVE_FILE_PATH_001").Value.ToString().Split('_').First()).ToArray();
 
 
@@ -384,12 +363,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			sourceProductionIds.Skip(3).Take(3).All(x => x == "2").Should().BeTrue();
 			sourceProductionIds.Skip(6).All(x => x == "3").Should().BeTrue();
 		}
-
-
-		#endregion
-
-		#region "Helpers"
-
+		
 		private SourceConfiguration GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)
 		{
 			var sourceConfiguration = new SourceConfiguration()
@@ -419,9 +393,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		{
 			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));
 		}
-
-
-
+		
 		private ILookup<int, ImageFile> CreateDocumentImageResponses(int[] ids)
 		{
 			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));
@@ -436,7 +408,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 		{
 			return ids.ToLookup(x => x, x => new ImageFile(x, $"{productionId}_{x}", "x.tiff", 1, productionId));
 		}
-
-		#endregion
 	}
 }

@@ -4,8 +4,6 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
@@ -16,12 +14,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	[TestFixture, Category("Unit")]
 	internal class WorkspaceViewControllerTests : TestBase
 	{
-		#region Fields
-
-		private WorkspaceViewController _subjectUnderTest;
-
-		private IRepositoryFactory _repositoryFactoryMock;
-		private IErrorRepository _errorRepositoryMock;
+		private WorkspaceViewController _sut;
+		
 		private IViewService _viewServiceMock;
 
 		private const int _WORKSPACE_ID = 12345;
@@ -40,24 +34,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				IsAvailableInObjectTab = _VIEW_AVAILABLE
 			}
 		};
-
-		#endregion //Fields
-
+		
 		[SetUp]
 		public override void SetUp()
 		{
-			_repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
-			_errorRepositoryMock = Substitute.For<IErrorRepository>();
 			_viewServiceMock = Substitute.For<IViewService>();
-
-			_repositoryFactoryMock.GetErrorRepository().Returns(_errorRepositoryMock);
-
-			_subjectUnderTest = new WorkspaceViewController(_viewServiceMock, _repositoryFactoryMock)
+			
+			_sut = new WorkspaceViewController(_viewServiceMock)
 			{
 				Request = new HttpRequestMessage()
 			};
 
-			_subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
+			_sut.Request.SetConfiguration(new HttpConfiguration());
 		}
 
 		[Test]
@@ -68,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_viewServiceMock.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFAC_TYPE_ID).Returns(_views);
 
 			// Act
-			HttpResponseMessage httpResponseMessage = _subjectUnderTest
+			HttpResponseMessage httpResponseMessage = _sut
 				.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFAC_TYPE_ID);
 
 			// Assert

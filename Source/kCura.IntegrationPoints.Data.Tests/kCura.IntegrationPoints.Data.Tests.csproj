@@ -155,6 +155,7 @@
     <Compile Include="Repositories\Implementations\ErrorRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\ExportQueryResultTests.cs" />
     <Compile Include="Repositories\Implementations\FieldRepositoryTests.cs" />
+    <Compile Include="Repositories\Implementations\WebAPIFileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FileRepositoryTests.cs" />
     <Compile Include="Repositories\Implementations\FoundationRepositoryFactoryTests.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryErrorRepositoryTests.cs" />
@@ -381,6 +382,17 @@
         </Reference>
         <Reference Include="Relativity.DataExchange.Client.SDK">
           <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

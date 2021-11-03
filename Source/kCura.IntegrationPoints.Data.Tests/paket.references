@@ -7,6 +7,7 @@ Relativity.IntegrationPoints.Contracts
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.Legacy.SDK
 iTextSharp
 
 Relativity.Kepler.Service

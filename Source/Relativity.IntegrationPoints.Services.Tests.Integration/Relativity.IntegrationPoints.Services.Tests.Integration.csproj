@@ -58,26 +58,21 @@
     <Compile Include="HealthCheck\IntegrationPointHealthCheckManagerTests.cs" />
     <Compile Include="Helpers\ChoicesHelper.cs" />
     <Compile Include="Helpers\IntegrationPointBaseHelper.cs" />
-    <Compile Include="Helpers\PermissionsHelper.cs" />
-    <Compile Include="IntegrationPointManager\IntegrationPointPermissionTests.cs" />
     <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
     <Compile Include="IntegrationPointManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointManager\ItShouldHandleRetrievingNoIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveAllIntegrationPoints.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRetrieveIntegrationPointArtifactTypeId.cs" />
-    <Compile Include="IntegrationPointProfileManager\IntegrationPointProfilePermissionTests.cs" />
     <Compile Include="IntegrationPointProfileManager\ItShouldCreateIntegrationPointProfile.cs" />
     <Compile Include="IntegrationPointProfileManager\ItShouldeRetrieveOverwriteFieldsChoices.cs" />
     <Compile Include="IntegrationPointProfileManager\ItShouldHandleRetrievingNoIntegrationPointProfiles.cs" />
     <Compile Include="IntegrationPointProfileManager\ItShouldRetrieveAllIntegrationPointProfiles.cs" />
     <Compile Include="IntegrationPointTypeManager\IntegrationPointTypeManagerTests.cs" />
-    <Compile Include="IntegrationPointTypeManager\IntegrationPointTypePermissionTests.cs" />
     <Compile Include="JobHistoryManager\JobHistoryPermissionTests.cs" />
     <Compile Include="Permissions\KeplerServicePermissionsTestsBase.cs" />
     <Compile Include="ProviderManager\ProviderManagerTests.cs" />
     <Compile Include="IntegrationPointManager\ItShouldRunIntegrationPoint.cs" />
     <Compile Include="JobHistoryManager\ItShouldRetrieveJobHistory.cs" />
-    <Compile Include="ProviderManager\ProviderPermissionTests.cs" />
     <Compile Include="StatisticsManager\StatisticsManagerTests.cs" />
     <Compile Include="StatisticsManager\TestCaseSettings.cs" />
     <Compile Include="StatisticsManager\TestCase\GetDocumentsTotalForProduction.cs" />
@@ -184,6 +179,9 @@
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Permissions" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 
@@ -34,24 +33,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			using (var proxy = Helper.CreateProxy<IPermissionManager>())
 			{
 				await proxy.SetWorkspaceGroupPermissionsAsync(workspaceID, permissions).ConfigureAwait(false);
-			}
-		}
-
-		public static async Task RemoveAddWorkspaceGroupAsync(int workspaceID, GroupSelector groupSelector)
-		{
-			using (var proxy = Helper.CreateProxy<IPermissionManager>())
-			{
-				GroupSelector workspaceGroupSelector = await proxy
-					.GetWorkspaceGroupSelectorAsync(workspaceID)
-					.ConfigureAwait(false);
-				GroupSelector originalGroupSelector = await proxy
-					.GetAdminGroupSelectorAsync()
-					.ConfigureAwait(false);
-				originalGroupSelector.DisabledGroups = groupSelector.DisabledGroups;
-				originalGroupSelector.EnabledGroups = groupSelector.EnabledGroups;
-				originalGroupSelector.LastModified = workspaceGroupSelector.LastModified;
-
-				await proxy.AddRemoveWorkspaceGroupsAsync(workspaceID, originalGroupSelector).ConfigureAwait(false);
 			}
 		}
 	}

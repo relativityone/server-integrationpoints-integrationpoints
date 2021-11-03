@@ -1743,6 +1743,11 @@
       <Notes />
     </Assembly>
     <Assembly>
+      <ArtifactId>5511033</ArtifactId>
+      <Keywords />
+      <Name>Relativity.DataTransfer.Legacy.SDK.dll</Name>
+    </Assembly>
+    <Assembly>
       <ArtifactId>5511188</ArtifactId>
       <Keywords />
       <Name>Relativity.AutomatedWorkflows.SDK.dll</Name>

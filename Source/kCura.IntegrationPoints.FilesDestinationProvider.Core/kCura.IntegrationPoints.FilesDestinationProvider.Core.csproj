@@ -54,6 +54,10 @@
     <Compile Include="Helpers\LongPathFileHelper.cs" />
     <Compile Include="Installer\CoreServicesForExportRegistration.cs" />
     <Compile Include="Installer\ExportRepositoryRegistration.cs" />
+    <Compile Include="Services\ExportFieldsServiceProxy.cs" />
+    <Compile Include="Services\ViewServiceProxy.cs" />
+    <Compile Include="Services\WebAPIViewService .cs" />
+    <Compile Include="Services\WebAPIExportFieldsService.cs" />
     <Compile Include="SharedLibrary\ExportServiceFactory.cs" />
     <Compile Include="SharedLibrary\IExportServiceFactory.cs" />
     <Compile Include="Extensions\ExportFileExtension.cs" />
@@ -329,6 +333,17 @@
         </Reference>
         <Reference Include="Relativity.DataExchange.Client.SDK">
           <HintPath>..\..\packages\Relativity.DataExchange.Client.SDK\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -108,6 +108,7 @@
     <Compile Include="Provider\IRipProviderUninstaller.cs" />
     <Compile Include="Provider\RipProviderInstaller.cs" />
     <Compile Include="Provider\RipProviderUninstaller.cs" />
+    <Compile Include="Services\Exporter\Images\WebAPIImageExporterService.cs" />
     <Compile Include="Services\Exporter\Sanitization\ChoiceTreeToStringConverter.cs" />
     <Compile Include="Services\Exporter\Sanitization\ExportDataSanitizer.cs" />
     <Compile Include="Services\Exporter\Sanitization\IChoiceTreeToStringConverter.cs" />
@@ -565,6 +566,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

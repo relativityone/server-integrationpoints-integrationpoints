@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Services;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.Utility.Extensions;
-using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 {
 	[TestFixture, Category("Unit")]
 	public class ViewServiceTests : TestBase
 	{
-		private ViewService _subjectUnderTest;
-		private ISearchManager _searchManagerMock;
+		private ViewService _sut;
+		private ISearchService _searchServiceMock;
 
 		private const int _WORKSPACE_ID = 12345;
 		private const int _ARTIFACT_TYPE_ID = 10;
@@ -56,24 +55,23 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		[SetUp]
 		public override void SetUp()
 		{
+			_searchServiceMock = Substitute.For<ISearchService>();
+
 			IHelper helper = Substitute.For<IHelper>();
-			_searchManagerMock = Substitute.For<ISearchManager>();
+			helper.GetServicesManager().CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser).Returns(_searchServiceMock);
 
-			IServiceManagerProvider serviceManagerProviderMock = Substitute.For<IServiceManagerProvider>();
-			serviceManagerProviderMock.Create<ISearchManager, SearchManagerFactory>().Returns(_searchManagerMock);
-
-			_subjectUnderTest = new ViewService(serviceManagerProviderMock, helper);
+			_sut = new ViewService(helper);
 		}
 
 		[Test]
 		public void ItShoulGetWorkspaceViewsSorted()
 		{
 			// Arrange
-			_searchManagerMock.RetrieveViewsByContextArtifactID(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, false)
+			_searchServiceMock.RetrieveViewsByContextArtifactIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, false, string.Empty)
 				.Returns(CreateDataSet());
 
 			// Act
-			List<ViewDTO> views = _subjectUnderTest.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
+			List<ViewDTO> views = _sut.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFACT_TYPE_ID);
 
 			// Assert
 			Assert.That(views.IsNullOrEmpty(), Is.Not.Null);
@@ -104,13 +102,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 		public void ItShouldThrowException()
 		{
 			// Arrange
-			_searchManagerMock.RetrieveViewsByContextArtifactID(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, false).Returns(new DataSet());
+			_searchServiceMock.RetrieveViewsByContextArtifactIDAsync(_WORKSPACE_ID, _ARTIFACT_TYPE_ID, false, string.Empty)
+				.Returns(new DataSetWrapper(new DataSet()));
 
 			// Act & Assert
-			Assert.Throws<Exception>(() => _subjectUnderTest.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFACT_TYPE_ID));
+			Assert.Throws<Exception>(() => _sut.GetViewsByWorkspaceAndArtifactType(_WORKSPACE_ID, _ARTIFACT_TYPE_ID));
 		}
 
-		private DataSet CreateDataSet()
+		private DataSetWrapper CreateDataSet()
 		{
 			DataSet ds = new DataSet();
 			DataTable dt = ds.Tables.Add("Table");
@@ -126,7 +125,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
 			AddRow(dt, _VIEW_4_ARTIFACT_ID, _VIEW_4_NAME, _VIEW_4_AVAILABLE, _VIEW_4_ORDER);
 			AddRow(dt, _VIEW_5_ARTIFACT_ID, _VIEW_5_NAME, _VIEW_5_AVAILABLE, _VIEW_5_ORDER);
 
-			return ds;
+			return new DataSetWrapper(ds);
 		}
 
 		private void AddRow(DataTable dt, int artifactId, string name, bool available, int order)
