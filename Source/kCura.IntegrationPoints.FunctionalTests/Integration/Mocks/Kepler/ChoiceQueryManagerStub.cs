@@ -12,30 +12,36 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
 		public void SetupArtifactGuidManager()
 		{
-			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<int>()))
+			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<int>(a => CheckIfOverwfiteFieldId(a))))
 				.Returns((int workspaceId, int fieldArtifactId) =>
 				{
 					return Task.FromResult(
-						new List<global::Relativity.Services.ChoiceQuery.Choice>()
-						{
-							new global::Relativity.Services.ChoiceQuery.Choice()
+							new List<global::Relativity.Services.ChoiceQuery.Choice>()
 							{
-								ArtifactID = 1039894,
-								Name = "Append Only"
-							},
-							new global::Relativity.Services.ChoiceQuery.Choice()
-							{
-								ArtifactID = 1039895,
-								Name = "Append/Overlay"
-							},
-							new global::Relativity.Services.ChoiceQuery.Choice()
-							{
-								ArtifactID = 1039896,
-								Name = "Overlay Only"
+								new global::Relativity.Services.ChoiceQuery.Choice()
+								{
+									ArtifactID = 1039894,
+									Name = "Append Only"
+								},
+								new global::Relativity.Services.ChoiceQuery.Choice()
+								{
+									ArtifactID = 1039895,
+									Name = "Append/Overlay"
+								},
+								new global::Relativity.Services.ChoiceQuery.Choice()
+								{
+									ArtifactID = 1039896,
+									Name = "Overlay Only"
+								}
 							}
-						}
-					);
+						);
 				});
+		}
+
+		private bool CheckIfOverwfiteFieldId(int fieldId)
+        {
+			List<int> correctOverwriteFieldsIds = new List<int> { 100014, 100225, 100257 };
+			return correctOverwriteFieldsIds.Contains(fieldId);
 		}
 	}
 }

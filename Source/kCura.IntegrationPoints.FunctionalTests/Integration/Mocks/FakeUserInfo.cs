@@ -4,9 +4,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
     class FakeUserInfo : IUserInfo
     {
-        public FakeUserInfo()
+        public FakeUserInfo(int userArtifactId)
         {
-            WorkspaceUserArtifactID = 1;
+            WorkspaceUserArtifactID = userArtifactId;
+            ArtifactID = userArtifactId;
         }
 
         public int WorkspaceUserArtifactID { get; }

@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Installers;
 using kCura.IntegrationPoints.Web.Installers.Context;
@@ -91,7 +92,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			};
 			
 			Proxy = new ProxyMock(Context);
-			Helper = new TestHelper(Proxy);
+			Helper = new TestHelper(Proxy, User);
 
 			int sourceWorkspaceArtifactId = ArtifactProvider.NextId();
 
@@ -121,6 +122,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			}).Named("TestJobContext").IsDefault());
 		}
 
+		public void RegisterComponents()
+		{
+			Container.Register(Component.For<JobController>().ImplementedBy<JobController>());
+			Container.Register(Component.For<LdapController>().ImplementedBy<LdapController>());
+			Container.Register(Component.For<IntegrationPointProfilesAPIController>().ImplementedBy<IntegrationPointProfilesAPIController>());
+		}
+
 		protected virtual WindsorContainer GetContainer()
 		{
 			return new WindsorContainer();
@@ -134,7 +142,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
 			Container.Register(Component.For<RelativityInstanceTest>().UsingFactoryMethod(() => FakeRelativityInstance).LifestyleSingleton());
 
-            RegisterRelativityApiServices();
+			RegisterComponents();
+
+			RegisterRelativityApiServices();
             RegisterScheduleAgentBase();
 
 			Container.Install(new AgentInstaller(Helper, new DefaultScheduleRuleFactory(Container.Resolve<ITimeService>())));
@@ -182,8 +192,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(c => new FakeWorkspaceDbContext(SourceWorkspace.ArtifactId, FakeRelativityInstance ))
 				.Named(nameof(FakeWorkspaceDbContext)).IsDefault());
 
-            Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
-				new FakeCaseServiceContext(c.Resolve<IAgentHelper>(), sourceWorkspaceId, User.ArtifactId)));
+			Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
+				new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspaceId)));
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
 			Container.Register(Component.For<IJobService>().ImplementedBy<JobService>());

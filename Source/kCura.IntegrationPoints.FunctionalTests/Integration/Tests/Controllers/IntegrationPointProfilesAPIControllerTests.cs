@@ -31,15 +31,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             _longTextLimit = Convert.ToInt32(instanceSettingRepository.GetConfigurationValue(_LONG_TEXT_LIMIT_SECTION, _LONG_TEXT_LIMIT_NAME));
         }
 
-        protected override WindsorContainer GetContainer()
-        {
-            var container = base.GetContainer();
-            
-            container.Register(Component.For<IntegrationPointProfilesAPIController>().ImplementedBy<IntegrationPointProfilesAPIController>().LifestyleTransient());
-
-            return container;
-        }
-
         [IdentifiedTest("d6cfade7-ccf0-4618-9173-4a52bb351172")]
         public void GetAll_ShouldReturnSuccessStatusCode()
         {
@@ -55,12 +46,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Assert
             var objectContent = response.Content as ObjectContent;
             var result = (List<IntegrationPointProfileModel>)objectContent?.Value;
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileModel());
 
-            foreach(var res in result)
-            {
-                var original = res.ArtifactID == integrationPointProfileFirst.ArtifactId ? integrationPointProfileFirst : integrationPointProfileSecond;
-                AssertIntegrationPointProfilesMatches(original, res);
-            }
+            result.ShouldAllBeEquivalentTo(expected);
             response.IsSuccessStatusCode.Should().BeTrue();
         }
 
@@ -78,8 +66,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileModel()).First();
 
-            AssertIntegrationPointProfilesMatches(integrationPointProfile, result);
+            result.ShouldBeEquivalentTo(expected);
             response.IsSuccessStatusCode.Should().BeTrue();
         }
 
@@ -97,8 +86,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileModel()).First();
 
-            AssertIntegrationPointProfilesMatches(integrationPointProfile, result);
+            result.ShouldBeEquivalentTo(expected);
             response.IsSuccessStatusCode.Should().BeTrue();
         }
 
@@ -117,7 +107,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Assert
             var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileModel>>(response);
 
-            AssertIntegrationPointProfilesSimplerMatches(integrationPointProfile, result.First());
+            AssertIntegrationPointProfilesSimpleMatches(integrationPointProfile, result.First());
             response.IsSuccessStatusCode.Should().BeTrue();
         }
 
@@ -254,16 +244,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             return result;
         }
 
-        private void AssertIntegrationPointProfilesMatches(IntegrationPointProfileTest initial, IntegrationPointProfileModel result)
-        {
-            AssertIntegrationPointProfilesSimplerMatches(initial, result);
-            result.Map.Should().Be(initial.FieldMappings);
-            result.SourceConfiguration.Should().Be(initial.SourceConfiguration);
-            result.Destination.Should().Be(initial.DestinationConfiguration);
-            result.Type.Should().Be(initial.Type);
-        }
-
-        private void AssertIntegrationPointProfilesSimplerMatches(IntegrationPointProfileTest initial, IntegrationPointProfileModel result)
+        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileModel result)
         {
             result.ArtifactID.Should().Be(initial.ArtifactId);
             result.Name.Should().Be(initial.Name);

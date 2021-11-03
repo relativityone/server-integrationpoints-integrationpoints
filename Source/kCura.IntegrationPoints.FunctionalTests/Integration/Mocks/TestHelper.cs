@@ -16,14 +16,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 	public class TestHelper : IServiceHelper, IAgentHelper, ICPHelper
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
+		private readonly FakeUser _user;
 
 		public FakeSecretStore SecretStore { get; }
 
-		public TestHelper(ProxyMock proxy)
+		public TestHelper(ProxyMock proxy, FakeUser user)
 		{
 			SecretStore = new FakeSecretStore();
 
 			_serviceManager = new Mock<IServicesMgr>();
+			_user = user;
 
 			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
 			RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
@@ -110,7 +112,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public IAuthenticationMgr GetAuthenticationManager()
 		{
-			return new FakeAuthenticationMgr();
+			return new FakeAuthenticationMgr(_user);
 		}
 
 		public ICSRFManager GetCSRFManager()

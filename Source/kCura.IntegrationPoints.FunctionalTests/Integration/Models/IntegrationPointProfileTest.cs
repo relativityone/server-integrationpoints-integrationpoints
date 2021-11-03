@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -250,6 +251,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 				Type = Type,
 				PromoteEligible = PromoteEligible,
 				Name = Name
+			};
+		}
+
+		public IntegrationPointProfileModel ToIntegrationPointProfileModel()
+        {
+			return new IntegrationPointProfileModel
+			{
+				ArtifactID = ArtifactId,
+				Name = Name,
+				SelectedOverwrite = OverwriteFields == null ? string.Empty : OverwriteFields.Name,
+				SourceProvider = SourceProvider.GetValueOrDefault(0),
+				Destination = DestinationConfiguration,
+				SourceConfiguration = SourceConfiguration,
+				DestinationProvider = DestinationProvider.GetValueOrDefault(0),
+				Type = Type,
+				Scheduler = new Scheduler(EnableScheduler.GetValueOrDefault(false), ScheduleRule),
+				NotificationEmails = EmailNotificationRecipients ?? string.Empty,
+				LogErrors = LogErrors.GetValueOrDefault(false),
+				Map = FieldMappings,
+				NextRun = null,
+				PromoteEligible = false,
+				SecuredConfiguration = null
 			};
 		}
 	}

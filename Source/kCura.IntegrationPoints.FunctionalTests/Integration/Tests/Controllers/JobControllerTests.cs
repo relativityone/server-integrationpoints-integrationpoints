@@ -26,15 +26,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
     {
         private WorkspaceTest _destinationWorkspace;
 
-        protected override WindsorContainer GetContainer()
-        {
-            var container = base.GetContainer();
-
-            container.Register(Component.For<JobController>().ImplementedBy<JobController>());
-
-            return container;
-        }
-
         [SetUp]
         public void Setup()
         {
