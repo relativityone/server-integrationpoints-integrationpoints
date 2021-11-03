@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 			{
 				IWindsorContainer container = _windsorContainer;
 				_windsorContainer = null;
-				container.Dispose();
+				container?.Dispose();
 			}
 			else
 			{
