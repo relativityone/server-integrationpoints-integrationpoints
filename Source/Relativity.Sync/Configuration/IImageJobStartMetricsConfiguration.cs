@@ -17,6 +17,5 @@ namespace Relativity.Sync.Configuration
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
 
         Guid ExportRunId { get; }
-
 	}
 }
