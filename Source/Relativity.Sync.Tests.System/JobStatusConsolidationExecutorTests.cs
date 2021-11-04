@@ -59,6 +59,7 @@ namespace Relativity.Sync.Tests.System
 				DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
 				SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
 				JobHistoryArtifactId = jobHistoryArtifactId,
+				ExportRunId = ExportRunId
 			};
 
 			configuration.SyncConfigurationArtifactId = await Rdos

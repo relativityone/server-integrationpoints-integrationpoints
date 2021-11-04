@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				TotalRecordsCount = totalRecordsCount,
 				BatchSize = batchSize,
-				ExportRunId = Guid.Empty,
+				ExportRunId = _EXPORT_RUN_ID,
 				SourceWorkspaceArtifactId = _workspaceId,
 				SyncConfigurationArtifactId = _syncConfigurationId
 			};
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.System
 			{
 				TotalRecordsCount = totalRecordsCount,
 				BatchSize = newBatchSize,
-				ExportRunId = Guid.Empty,
+				ExportRunId = _EXPORT_RUN_ID,
 				SourceWorkspaceArtifactId = _workspaceId,
 				SyncConfigurationArtifactId = _syncConfigurationId
 			};
