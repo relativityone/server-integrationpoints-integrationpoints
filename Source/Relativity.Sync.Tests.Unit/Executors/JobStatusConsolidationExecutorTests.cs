@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
 				.ThrowsAsync(_EXCEPTION),
 			ctx => ctx._batchRepositoryStub
-				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
 				.ThrowsAsync(_EXCEPTION)
 		};
 
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batches = new List<IBatch>();
 
 			_batchRepositoryStub
-				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
 				.ReturnsAsync(_batches);
 
 			SetUpUpdateCall(success: true);

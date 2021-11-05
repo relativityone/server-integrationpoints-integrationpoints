@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -33,7 +32,7 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				List<IBatch> batches = (await _batchRepository
-					.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId)
+					.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId)
 					.ConfigureAwait(false)).ToList();
 
 				int completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);

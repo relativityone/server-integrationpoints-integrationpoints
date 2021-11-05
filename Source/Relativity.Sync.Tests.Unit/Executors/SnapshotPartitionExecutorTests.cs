@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[Test]
 		public async Task ItShouldReturnFailureWhenCannotReadLastBatch()
 		{
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).Throws<InvalidOperationException>();
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).Throws<InvalidOperationException>();
 
 			// ACT
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configuration.Setup(x => x.TotalRecordsCount).Returns(ten);
 
 			IBatch batch = null;
-			_batchRepository.SetupSequence(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batch).Throws<InvalidOperationException>();
+			_batchRepository.SetupSequence(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batch).Throws<InvalidOperationException>();
 			// ACT
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -67,12 +67,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public async Task ItShouldCreateBatchesWhenTheyDoNotExist()
 		{
 			const int items = 10;
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync((IBatch) null);
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync((IBatch) null);
 
 			_configuration.Setup(x => x.BatchSize).Returns(1);
 			_configuration.Setup(x => x.TotalRecordsCount).Returns(items);
 
-			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
+			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
 
 			// ACT
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			for (int i = 0; i < items; i++)
 			{
 				int index = i;
-				_batchRepository.Verify(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, 1, index));
+				_batchRepository.Verify(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), 1, index));
 			}
 		}
 
@@ -102,12 +102,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			lastBatch.Setup(x => x.StartingIndex).Returns(lastStartingIndex);
 			lastBatch.Setup(x => x.TotalDocumentsCount).Returns(lastBatchSize);
 
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(lastBatch.Object);
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync(lastBatch.Object);
 
 			_configuration.Setup(x => x.BatchSize).Returns(batchSize);
 			_configuration.Setup(x => x.TotalRecordsCount).Returns(totalItems);
 
-			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
+			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
 
 			// ACT
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -115,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
-			_batchRepository.Verify(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, itemsLeft, indexToStartFrom));
+			_batchRepository.Verify(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), itemsLeft, indexToStartFrom));
 		}
 
 		[Test]
@@ -126,12 +126,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			lastBatch.Setup(x => x.StartingIndex).Returns(ten);
 			lastBatch.Setup(x => x.TotalDocumentsCount).Returns(ten);
 
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(lastBatch.Object);
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync(lastBatch.Object);
 
 			_configuration.Setup(x => x.BatchSize).Returns(ten);
 			_configuration.Setup(x => x.TotalRecordsCount).Returns(ten);
 
-			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
+			_batchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
 
 			// ACT
 			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -139,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// ASSERT
 			result.Status.Should().Be(ExecutionStatus.Completed);
 
-			_batchRepository.Verify(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+			_batchRepository.Verify(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface IJobStatusConsolidationConfiguration : IConfiguration
 	{
@@ -7,5 +9,7 @@
 		int SyncConfigurationArtifactId { get; }
 
 		int JobHistoryArtifactId { get; }
+
+        Guid ExportRunId { get; }
 	}
 }

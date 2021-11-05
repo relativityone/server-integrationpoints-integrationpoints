@@ -36,6 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private const string _TEST_STACK_TRACE = "Test stack trace.";
 
 		private const string _ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
+		private const string _VIOLATION_OF_PRIMARY_KEY_EXCPETION = "Violation of PRIMARY KEY constraint 'PK_1000081'. Cannot insert duplicate key in object 'EDDSDBO.JobHistoryError'. The duplicate key value is (596699325)";
 
 		private readonly Guid _expectedErrorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
 		private readonly Guid _expectedErrorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
@@ -140,6 +141,28 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// Assert
 			result.Should().HaveCount(itemLevelErrorsCount);
 
+			_objectManagerMock.Verify(x => x.CreateAsync(
+				It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
+				It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
+		}
+		
+		[Test]
+		public void CreateMassAsync_ShouldRetry_WhenPRimaryKeyViolationOccurs()
+		{
+			// Arrange
+			const int itemLevelErrorsCount = 5;
+			const int expectedCalls = 4; // 1 call, 3 retries
+			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(CreateJobHistoryErrorDto(ErrorType.Item), itemLevelErrorsCount).ToList();
+
+			_objectManagerMock.Setup(x => x.CreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.IsAny<MassCreateRequest>()))
+				.Throws(new ServiceException(_VIOLATION_OF_PRIMARY_KEY_EXCPETION));
+
+			// Act
+			var action = new Func<Task<IEnumerable<int>>>(() => _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, itemLevelErrors));
+
+			// Assert
+			action.Should().Throw<ServiceException>();
+			
 			_objectManagerMock.Verify(x => x.CreateAsync(
 				It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
 				It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));

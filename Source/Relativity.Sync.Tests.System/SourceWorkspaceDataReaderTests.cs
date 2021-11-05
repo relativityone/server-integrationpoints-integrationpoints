@@ -26,7 +26,8 @@ namespace Relativity.Sync.Tests.System
 	[TestFixture]
 	[Feature.DataTransfer.IntegrationPoints.Sync]
 	internal sealed class SourceWorkspaceDataReaderTests : SystemTest
-	{
+    {
+
 		[IdentifiedTest("789d730f-1d5a-403e-83c8-b0f7bfae8a1a")]
 		public async Task Read_ShouldPassGoldFlow_WhenPushingNatives()
 		{
@@ -119,7 +120,7 @@ namespace Relativity.Sync.Tests.System
 			// Create batch and SourceWorkspaceDataReader
 			IBatchRepository batchRepository = container.Resolve<IBatchRepository>();
 			IBatch batch = await batchRepository
-				.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0)
+				.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId, totalItemsCount, 0)
 				.ConfigureAwait(false);
 			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>()
 				.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None);
@@ -243,7 +244,7 @@ namespace Relativity.Sync.Tests.System
 			// Create batch and SourceWorkspaceDataReader
 			IBatchRepository batchRepository = container.Resolve<IBatchRepository>();
 			IBatch batch = await batchRepository
-				.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, totalItemsCount, 0)
+				.CreateAsync(sourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId, totalItemsCount, 0)
 				.ConfigureAwait(false);
 			ISourceWorkspaceDataReader dataReader = container.Resolve<ISourceWorkspaceDataReaderFactory>()
 				.CreateImageSourceWorkspaceDataReader(batch, CancellationToken.None);
