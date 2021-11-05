@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
-using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 
@@ -21,17 +21,19 @@ namespace Relativity.Sync.Tests.System
 		private BatchRepository _sut;
 		private int _syncConfigurationArtifactId;
 		private int _workspaceId;
+        private Guid _exportRunId; 
 
 		protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup().ConfigureAwait(false);
 
+            _exportRunId = Guid.NewGuid();
 			_sut = new BatchRepository(new TestRdoManager(Logger),new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
 
 			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_workspaceId = workspace.ArtifactID;
 
-			int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
+            int jobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
 			_syncConfigurationArtifactId = await Rdos.CreateSyncConfigurationRdoAsync(_workspaceId, jobHistoryArtifactId).ConfigureAwait(false);
 		}
 
@@ -42,7 +44,7 @@ namespace Relativity.Sync.Tests.System
 			const int totalRecords = 100;
 
 			// ACT
-			IBatch createdBatch = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, totalRecords, startingIndex).ConfigureAwait(false);
+			IBatch createdBatch = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, _exportRunId, totalRecords, startingIndex).ConfigureAwait(false);
 			IBatch readBatch = await _sut.GetAsync(_workspaceId, createdBatch.ArtifactId).ConfigureAwait(false);
 
 			// ASSERT
@@ -67,7 +69,7 @@ namespace Relativity.Sync.Tests.System
 			const int filesBytesTransferred = 5120;
 			const int totalBytesTransferred = 6144;
 
-			IBatch createdBatch = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, totalRecords, startingIndex).ConfigureAwait(false);
+			IBatch createdBatch = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, _exportRunId, totalRecords, startingIndex).ConfigureAwait(false);
 
 			// ACT
 			await createdBatch.SetStatusAsync(status).ConfigureAwait(false);
@@ -98,14 +100,14 @@ namespace Relativity.Sync.Tests.System
 			const int startingIndex = 5;
 			const int totalRecords = 10;
 
-			IBatch batch1 = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, totalRecords, startingIndex).ConfigureAwait(false);
-			IBatch batch2 = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, totalRecords, startingIndex).ConfigureAwait(false);
+			IBatch batch1 = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, _exportRunId, totalRecords, startingIndex).ConfigureAwait(false);
+			IBatch batch2 = await _sut.CreateAsync(_workspaceId, _syncConfigurationArtifactId, _exportRunId, totalRecords, startingIndex).ConfigureAwait(false);
 
 			// ACT
 			await _sut.DeleteAllForConfigurationAsync(_workspaceId, _syncConfigurationArtifactId).ConfigureAwait(false);
 
 			// ASSERT
-			IEnumerable<IBatch> batches = await _sut.GetAllAsync(_workspaceId, _syncConfigurationArtifactId).ConfigureAwait(false);
+			IEnumerable<IBatch> batches = await _sut.GetAllAsync(_workspaceId, _syncConfigurationArtifactId, _exportRunId).ConfigureAwait(false);
 			batches.Should().BeEmpty();
 		}
 	}

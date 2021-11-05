@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface ISnapshotPartitionConfiguration : IConfiguration
 	{
@@ -9,5 +11,7 @@
 		int SourceWorkspaceArtifactId { get; }
 
 		int SyncConfigurationArtifactId { get; }
+
+        Guid ExportRunId { get; }
 	}
 }

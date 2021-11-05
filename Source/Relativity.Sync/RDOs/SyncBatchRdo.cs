@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.RDOs.Framework;
+﻿using System;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
 
 namespace Relativity.Sync.RDOs
@@ -7,7 +8,10 @@ namespace Relativity.Sync.RDOs
 	internal sealed class SyncBatchRdo : IRdoType
 	{
 		public int ArtifactId { get; set; }
-		
+
+		[RdoField(SyncBatchGuids.ExportRunIdGuid, RdoFieldType.FixedLengthText, 36)]
+        public Guid ExportRunId { get; set; }
+
 		[RdoField(SyncBatchGuids.StartingIndexGuid, RdoFieldType.WholeNumber)]
 		public int StartingIndex { get; set; }
 
@@ -40,5 +44,5 @@ namespace Relativity.Sync.RDOs
 
 		[RdoLongField(SyncBatchGuids.TotalBytesTransferredGuid)]
 		public long TotalTransferredBytes { get; set; }
-	}
+    }
 }

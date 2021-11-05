@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Configuration
+﻿using System;
+
+namespace Relativity.Sync.Configuration
 {
 	internal interface IImageJobStartMetricsConfiguration : IConfiguration
 	{
@@ -13,5 +15,7 @@
 		int[] ProductionImagePrecedence { get; }
 
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
+
+        Guid ExportRunId { get; }
 	}
 }

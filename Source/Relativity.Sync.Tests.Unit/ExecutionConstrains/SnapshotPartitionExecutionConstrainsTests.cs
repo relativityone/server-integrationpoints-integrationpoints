@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		[Test]
 		public async Task ItShouldExecuteWhenBatchesAreMissing()
 		{
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync((IBatch) null);
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync((IBatch) null);
 
 			// ACT
 			bool shouldExecute = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 			batch.Setup(x => x.StartingIndex).Returns(startingIndex);
 			batch.Setup(x => x.TotalDocumentsCount).Returns(batchSize);
 
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(batch.Object);
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync(batch.Object);
 
 			// ACT
 			bool shouldExecute = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 			batch.Setup(x => x.StartingIndex).Returns(startingIndex);
 			batch.Setup(x => x.TotalDocumentsCount).Returns(batchSize);
 
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).ReturnsAsync(batch.Object);
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync(batch.Object);
 
 			// ACT
 			bool shouldExecute = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
@@ -94,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		[Test]
 		public void ItShouldNotHideException()
 		{
-			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID)).Throws<InvalidOperationException>();
+			_batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).Throws<InvalidOperationException>();
 
 			// ACT
 			Func<Task> action = async () => await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
