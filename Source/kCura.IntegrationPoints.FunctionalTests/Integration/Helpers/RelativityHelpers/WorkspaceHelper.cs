@@ -65,15 +65,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				IsIdentifier = false,
 				Name = "Full Name"
 			});
-			workspace.Fields.Add(new FieldTest
+			workspace.Fields.Add(new FieldTest(Const.OVERWRITE_FIELD_ARTIFACT_ID)
 			{
 				ObjectTypeId = (int)ArtifactType.Document,
 				Guid = IntegrationPointProfileFieldGuids.OverwriteFieldsGuid,
 				IsIdentifier = false,
-				Artifact =
-                {
-					ArtifactId = 1234567
-				},
 				Name = "Overwrite Fields"
 			});
 			workspace.Fields.Add(new FieldTest

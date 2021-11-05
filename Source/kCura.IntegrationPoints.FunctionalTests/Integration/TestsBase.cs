@@ -122,13 +122,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			}).Named("TestJobContext").IsDefault());
 		}
 
-		public void RegisterComponents()
-		{
-			Container.Register(Component.For<JobController>().ImplementedBy<JobController>());
-			Container.Register(Component.For<LdapController>().ImplementedBy<LdapController>());
-			Container.Register(Component.For<IntegrationPointProfilesAPIController>().ImplementedBy<IntegrationPointProfilesAPIController>());
-		}
-
 		protected virtual WindsorContainer GetContainer()
 		{
 			return new WindsorContainer();
@@ -142,7 +135,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
 			Container.Register(Component.For<RelativityInstanceTest>().UsingFactoryMethod(() => FakeRelativityInstance).LifestyleSingleton());
 
-			RegisterComponents();
+			RegisterAPIControllers();
 
 			RegisterRelativityApiServices();
             RegisterScheduleAgentBase();
@@ -162,6 +155,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
             RegisterKeplerServices();
+		}
+
+		private void RegisterAPIControllers()
+		{
+			Container.Register(Component.For<JobController>().ImplementedBy<JobController>());
+			Container.Register(Component.For<LdapController>().ImplementedBy<LdapController>());
+			Container.Register(Component.For<IntegrationPointProfilesAPIController>().ImplementedBy<IntegrationPointProfilesAPIController>());
 		}
 
 		private void OverrideRelativitySyncInstaller()

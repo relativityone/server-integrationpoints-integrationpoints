@@ -8,34 +8,27 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
-    public class ChoiceQueryManagerStub: KeplerStubBase<IChoiceQueryManager>
-    {
+	public class ChoiceQueryManagerStub : KeplerStubBase<IChoiceQueryManager>
+	{
 		public void SetupArtifactGuidManager()
 		{
-			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<int>(a => a == 1234567)))
+			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<int>()))
 				.Returns((int workspaceId, int fieldArtifactId) =>
 				{
-					return Task.FromResult(
-							new List<global::Relativity.Services.ChoiceQuery.Choice>()
-							{
-								new global::Relativity.Services.ChoiceQuery.Choice()
-								{
-									ArtifactID = 1039894,
-									Name = "Append Only"
-								},
-								new global::Relativity.Services.ChoiceQuery.Choice()
-								{
-									ArtifactID = 1039895,
-									Name = "Append/Overlay"
-								},
-								new global::Relativity.Services.ChoiceQuery.Choice()
-								{
-									ArtifactID = 1039896,
-									Name = "Overlay Only"
-								}
-							}
-						);
+					List<Choice> result = new List<Choice>();
+
+					if (IsQueryForOverwrite(fieldArtifactId))
+					{
+						result = Const.Choices.OverwriteFields;
+					}
+
+					return Task.FromResult(result);
 				});
 		}
+
+		private bool IsQueryForOverwrite( int fieldArtifactId)
+        {
+			return (fieldArtifactId == Const.OVERWRITE_FIELD_ARTIFACT_ID) ? true : false;
+        }
 	}
 }
