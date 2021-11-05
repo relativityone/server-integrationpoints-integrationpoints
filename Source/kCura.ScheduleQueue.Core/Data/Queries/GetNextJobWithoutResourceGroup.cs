@@ -31,7 +31,8 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 				new SqlParameter("@AgentTypeID", _agentTypeId)
 			};
 
-			return _dbContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
+			DataTable dataTable = _dbContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
+			return dataTable;
 		}
 	}
 }

@@ -87,6 +87,7 @@
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoFieldsTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceRdoObjectTypeTests.cs" />
     <Compile Include="RelativitySourceRdo\RelativitySourceWorkspaceRdoInitializerTests.cs" />
+    <Compile Include="Services\Exporter\Images\WebAPIImageExporterServiceTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\ChoiceTreeToStringConverterTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\ExportDataSanitizerTests.cs" />
     <Compile Include="Services\Exporter\Sanitization\MultipleChoiceFieldSanitizerTests.cs" />
@@ -288,6 +289,7 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -489,6 +491,17 @@
       <ItemGroup>
         <Reference Include="Relativity.DataGrid">
           <HintPath>..\..\packages\Relativity.DataGrid\lib\net462\Relativity.DataGrid.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

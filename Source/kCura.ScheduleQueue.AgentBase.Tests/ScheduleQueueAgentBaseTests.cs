@@ -4,13 +4,17 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Toggles;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
+using Moq.Language;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
@@ -20,6 +24,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private Mock<IJobService> _jobServiceMock;
 		private Mock<IQueueJobValidator> _queueJobValidatorFake;
 		private Mock<IQueueQueryManager> _queryManager;
+		private Mock<IToggleProvider> _toggleProviderFake;
+		private Mock<IDateTime> _dateTime;
 
 		[Test]
 		public void Execute_ShouldProcessJobInQueue()
@@ -145,6 +151,36 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			sut.DidWork.Should().BeTrue();
 		}
 
+		[Test]
+		public void GetAgentID_ShouldReturnAgentID_WhenNotInKubernetes()
+		{
+			// Arrange
+			TestAgent sut = GetSut();
+			_dateTime.SetupGet(x => x.UtcNow).Returns(new DateTime(2021, 10, 13));
+			_toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(false);
+
+			// Act
+			int agentId = sut.GetAgentIDTest();
+
+			// Assert
+			agentId.Should().Be(0);
+		}
+
+		[Test]
+		public void GetAgentID_ShouldReturnAgentIDBasedOnTimestamp_WhenInKubernetes()
+		{
+			// Arrange
+			TestAgent sut = GetSut();
+			_dateTime.SetupGet(x => x.UtcNow).Returns(new DateTime(2021, 10, 13));
+			_toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(true);
+
+			// Act
+			int agentId = sut.GetAgentIDTest();
+
+			// Assert
+			agentId.Should().Be(1290028852);
+		}
+
 		private TestAgent GetSut(TaskStatusEnum jobStatus = TaskStatusEnum.Success)
 		{
 			var agentService = new Mock<IAgentService>();
@@ -161,9 +197,11 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 				.ReturnsAsync(ValidationResult.Success);
 
 			_queryManager = new Mock<IQueueQueryManager>();
+			_toggleProviderFake = new Mock<IToggleProvider>();
+			_dateTime = new Mock<IDateTime>();
 
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
-				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, emptyLog.Object)
+				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, _toggleProviderFake.Object, _dateTime.Object, emptyLog.Object)
 			{
 				JobResult = jobStatus
 			};
@@ -171,7 +209,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 		private void SetupJobQueue(params Job[] jobs)
 		{
-			var sequenceSetup = _jobServiceMock.SetupSequence(x => x.GetNextQueueJob(
+			ISetupSequentialResult<Job> sequenceSetup = _jobServiceMock.SetupSequence(x => x.GetNextQueueJob(
 				It.IsAny<IEnumerable<int>>(), It.IsAny<int>()));
 
 			foreach (var job in jobs)
@@ -190,8 +228,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		{
 			public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IAPILog log = null) 
-				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, log)
+				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IDateTime dateTime = null, IAPILog log = null) 
+				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, toggleProvider, dateTime, log)
 			{
 				//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
 				typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)
@@ -201,6 +239,11 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			public TaskStatusEnum JobResult { get; set; } = TaskStatusEnum.Success;
 
 			public override string Name { get; } = "Test";
+
+			public int GetAgentIDTest()
+			{
+				return GetAgentID();
+			}
 			
 			protected override TaskResult ProcessJob(Job job)
 			{

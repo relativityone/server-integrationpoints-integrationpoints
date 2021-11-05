@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Queries;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -15,6 +16,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -73,7 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IJobHistoryService jobHistoryService = Substitute.For<IJobHistoryService>();
 			_jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 			IJobManager jobManager = Substitute.For<IJobManager>();
-			IManagerQueueService managerQueueService = Substitute.For<IManagerQueueService>();
+			IQueueQueryManager queueQueryManager = Substitute.For<IQueueQueryManager>();
 			JobStatisticsService statisticsService = Substitute.For<JobStatisticsService>();
 			IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
 			_jobService = Substitute.For<IJobService>();
@@ -97,7 +99,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				jobHistoryService,
 				_jobHistoryErrorService,
 				jobManager,
-				managerQueueService,
+				queueQueryManager,
 				statisticsService,
 				managerFactory,
 				_jobService,
@@ -198,17 +200,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				}
 			};
 
-			List<EntityManagerMap> custodianManagerMaps = new List<EntityManagerMap>
-			{
-				new EntityManagerMap
-				{
-					EntityID = "213",
-					ManagerArtifactID = 3423,
-					NewManagerID = "453",
-					OldManagerID = "67"
-				}
-			};
-
 			_jobService.GetJob(_job.JobId).Returns(_job);
 
 			var associatedJobs = new List<Job> { _job };
@@ -220,9 +211,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(taskParams);
 			jobHistoryService.CreateRdo(_integrationPoint, taskParams.BatchInstance,
 				JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
-			managerQueueService.AreAllTasksOfTheBatchDone(_job, Arg.Any<string[]>()).Returns(true);
-			managerQueueService.GetEntityManagerLinksToProcess(_job, Arg.Any<Guid>(), Arg.Any<List<EntityManagerMap>>())
-				.Returns(custodianManagerMaps);
+			queueQueryManager.CheckAllSyncWorkerBatchesAreFinished(_job.JobId).Returns(new ValueReturnQuery<bool>(true));
 			managerFactory.CreateJobStopManager(_jobService, jobHistoryService, taskParams.BatchInstance, _job.JobId, true)
 				.Returns(_jobStopManager);
 			serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);

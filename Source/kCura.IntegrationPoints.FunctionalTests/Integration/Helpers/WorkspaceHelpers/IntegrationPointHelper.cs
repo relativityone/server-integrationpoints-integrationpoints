@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.IntegrationPoints.Tests.Common;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
@@ -209,7 +210,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			LDAPSettings sourceConfiguration = new LDAPSettings
 			{
-				ConnectionPath = Const.LDAP._OPEN_LDAP_CONNECTION_PATH(ou),
+				ConnectionPath = GlobalConst.LDAP._OPEN_LDAP_CONNECTION_PATH(ou),
 				ConnectionAuthenticationType = AuthenticationTypesEnum.FastBind,
 				ImportNested = false
 			};
@@ -230,8 +231,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
 			{
-				UserName = Const.LDAP._OPEN_LDAP_USER,
-				Password = Const.LDAP._OPEN_LDAP_PASSWORD
+				UserName = GlobalConst.LDAP._OPEN_LDAP_USER,
+				Password = GlobalConst.LDAP._OPEN_LDAP_PASSWORD
 			};
 
 			integrationPoint.SecuredConfiguration = Guid.NewGuid().ToString();

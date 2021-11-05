@@ -54,7 +54,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		private void SetupFixedMocks()
 		{
-			PermissionManager.SetupPermissionsCheck();
 			WorkspaceManager.SetupWorkspaceMock();
 			InstanceSettingManager.SetupInstanceSetting();
 			GroupManager.SetupGroupManager();

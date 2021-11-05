@@ -1,4 +1,5 @@
-﻿using Relativity.IntegrationPoints.Tests.Integration.Models;
+﻿using Relativity.IntegrationPoints.Tests.Common;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
@@ -14,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportName,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString(),
-				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
+				ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID,
 			};
 
 			Workspace.IntegrationPointTypes.Add(integrationPointType);
@@ -28,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportName,
 				Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString(),
-				ApplicationIdentifier = Const.INTEGRATION_POINTS_APP_GUID,
+				ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID,
 			};
 
 			Workspace.IntegrationPointTypes.Add(integrationPointType);

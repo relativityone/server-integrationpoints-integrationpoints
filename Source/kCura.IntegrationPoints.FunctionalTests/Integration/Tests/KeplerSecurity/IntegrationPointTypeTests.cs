@@ -1,48 +1,54 @@
 ﻿using System.Collections.Generic;
-using FluentAssertions;
+using kCura.IntegrationPoints.Data;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
-using Relativity.Testing.Identification;
+using Relativity.IntegrationPoints.Tests.Integration.Utils;
+using Relativity.Services;
+using Relativity.Services.Permission;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 {
-    class IntegrationPointTypeTests : KeplerSecurityTestsBase
+    class IntegrationPointTypeTests : KeplerSecurityTestBase
     {
         private IIntegrationPointTypeManager _sut;
 
-        public override void SetUp()
-        {
-            base.SetUp();
+        [SetUp]
+        public void Setup() => _sut = new IntegrationPointTypeManager(Logger, PermissionRepositoryFactory, Container);
 
-            _sut = new IntegrationPointTypeManager(Logger, PermissionRepositoryFactory, Container);
+        [Test]
+        public void GetOverwriteFieldsChoicesAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
+        {
+            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointTypes>(() => 
+                _sut.GetIntegrationPointTypes(WorkspaceId));
+        }
+        
+        [TestCaseSource(typeof(PermissionsForGetIntegrationPointTypes))]
+        public void GetOverwriteFieldsChoicesAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
+        {
+            ShouldThrowInsufficientPermissions(permissionSetups,() => 
+                _sut.GetIntegrationPointTypes(WorkspaceId));
         }
 
-        [IdentifiedTestCase("D5995683-160D-459A-B36C-3D2D7F24AF4A", false, false, null, 0)]
-        [IdentifiedTestCase("510F61F2-F0AC-4407-A708-6BDF7A282E93", false, true, null, 0)]
-        [IdentifiedTestCase("6347274A-A1CF-4127-BB85-873FBB39173A", true, false, null, 0)]
-        [IdentifiedTestCase("776530F7-FFC1-4CD3-83B7-618D288308AD", true, true, "Adler Sieben", 10)]
-        public void UserPermissionsToGetJobHistoryVerification(bool workspaceAccessPermissionsValue, bool artifactTypePermissionsValue,
-            string expectedName, int expectedArtifactId)
+        #region Permissions
+
+        class PermissionsForGetIntegrationPointTypes : PermissionPermutator
         {
-            // Arrange
-            Arrange(workspaceAccessPermissionsValue, artifactTypePermissionsValue);
-            IList<IntegrationPointTypeModel> integrationPointTypeModel = new List<IntegrationPointTypeModel>
+            protected override IEnumerable<PermissionSetup> NeededPermissions => new[]
             {
-                new IntegrationPointTypeModel
+                GetPermissionRefForWorkspace(WorkspaceId),
+                new PermissionSetup
                 {
-                    Name = null,
-                    ArtifactId = 0
+                    Workspace = WorkspaceId,
+                    Permission = new PermissionRef
+                    {
+                        Name = ObjectTypes.IntegrationPointType,
+                        PermissionType = PermissionType.View,
+                        ArtifactType = new ArtifactTypeIdentifier(ObjectTypeGuids.IntegrationPointTypeGuid)
+                    }
                 }
             };
-
-            // Act
-            integrationPointTypeModel = ActAndGetResult(() => _sut.GetIntegrationPointTypes(SourceWorkspace.ArtifactId).Result,
-                integrationPointTypeModel, workspaceAccessPermissionsValue & artifactTypePermissionsValue);
-
-            // Assert
-            Assert();
-            integrationPointTypeModel[0].Name.ShouldBeEquivalentTo(expectedName);
-            integrationPointTypeModel[0].ArtifactId.ShouldBeEquivalentTo(expectedArtifactId);
         }
 
+        #endregion
     }
 }

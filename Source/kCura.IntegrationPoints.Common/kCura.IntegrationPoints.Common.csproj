@@ -56,6 +56,8 @@
     <Compile Include="Handlers\IRetryHandler.cs" />
     <Compile Include="Handlers\IRetryHandlerFactory.cs" />
     <Compile Include="Extensions\DotNet\EnumerableExtensions.cs" />
+    <Compile Include="Helpers\DateTimeWrapper.cs" />
+    <Compile Include="Helpers\IDateTime.cs" />
     <Compile Include="Metrics\IRipMetrics.cs" />
     <Compile Include="Metrics\Sink\ApmRipMetricSink.cs" />
     <Compile Include="Metrics\Sink\IRipMetricsSink.cs" />

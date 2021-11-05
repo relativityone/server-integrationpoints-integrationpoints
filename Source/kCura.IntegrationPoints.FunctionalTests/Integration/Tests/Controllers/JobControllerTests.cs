@@ -338,7 +338,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public async Task Run_ShouldResultInValidationFailed()
         {
             // Arrange
-            Proxy.PermissionManager.SetupPermissionsCheck(workspaceOrArtifactInstancePermissionsValue: false, artifactTypePermissionsValue: false);
+            Proxy.PermissionManager.GrantNotConfiguredPermissions = false;
 
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper

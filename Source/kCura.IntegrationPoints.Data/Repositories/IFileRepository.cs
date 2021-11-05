@@ -8,10 +8,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IFileRepository
 	{
-		ILookup<int, ImageFile> GetImagesLocationForProductionDocuments(int workspaceID, int productionID, int[] documentIDs, ISearchManager sm = null);
+		ILookup<int, ImageFile> GetImagesLocationForProductionDocuments(int workspaceID, int productionID, int[] documentIDs, ISearchManager searchManager = null);
 
 		ILookup<int, ImageFile> GetImagesLocationForDocuments(int workspaceID, int[] documentIDs, ISearchManager searchManager = null);
 
-		List<FileDto> GetNativesForDocuments(int workspaceID, int[] documentIDs, ISearchManager sm = null);
+		List<FileDto> GetNativesForDocuments(int workspaceID, int[] documentIDs, ISearchManager searchManager = null);
 	}
 }

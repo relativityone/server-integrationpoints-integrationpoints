@@ -5,6 +5,7 @@ kCura.Apps.Common.Utils
 Relativity
 Relativity.API
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.Legacy.SDK 
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.Toggles

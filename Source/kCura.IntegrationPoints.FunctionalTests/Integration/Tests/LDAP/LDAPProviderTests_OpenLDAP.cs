@@ -7,7 +7,8 @@ using FluentAssertions;
 using kCura.IntegrationPoints.LDAPProvider;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP.TestData;
+using Relativity.IntegrationPoints.Tests.Common;
+using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Utils;
 using Relativity.Testing.Identification;
 
@@ -33,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			// Arrange
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Human Resources", AuthenticationTypesEnum.FastBind);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(HumanResourcesTestData.OU);
 
 			// Act
 			IDataReader reader = sut.GetBatchableIds(HumanResourcesTestData.IdentifierFieldEntry, sourceProviderConfiguration);
@@ -54,7 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			// Arrange
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Administrative", AuthenticationTypesEnum.FastBind, importNested: true);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(AdministrativeTestData.OU, importNested: true);
 
 			// Act
 			IDataReader reader = sut.GetBatchableIds(AdministrativeTestData.IdentifierFieldEntry, sourceProviderConfiguration);
@@ -76,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			// Arrange
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Product Development,ou=Administrative", AuthenticationTypesEnum.FastBind);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration($"{ProductDevelopmentTestData.OU},{AdministrativeTestData.OU}");
 
 			// Act
 			IDataReader reader = sut.GetBatchableIds(ProductDevelopmentTestData.IdentifierFieldEntry, sourceProviderConfiguration);
@@ -97,7 +98,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			// Arrange
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Human Resources", AuthenticationTypesEnum.FastBind);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(HumanResourcesTestData.OU);
 
 			// Act
 			IEnumerable<FieldEntry> fields = sut.GetFields(sourceProviderConfiguration);
@@ -112,7 +113,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			// Arrange
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Human Resources", AuthenticationTypesEnum.FastBind);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(HumanResourcesTestData.OU);
 
 			IEnumerable<FieldEntry> fieldEntries = HumanResourcesTestData.GetFieldEntries();
 
@@ -133,7 +134,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			// Arrange
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Administrative", AuthenticationTypesEnum.FastBind, importNested: true);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(AdministrativeTestData.OU, importNested: true);
 
 			IEnumerable<FieldEntry> fieldEntries = AdministrativeTestData.GetFieldEntries();
 
@@ -154,7 +155,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			// Arrange
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Product Development,ou=Administrative", AuthenticationTypesEnum.FastBind);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration($"{ProductDevelopmentTestData.OU},{AdministrativeTestData.OU}");
 
 			IEnumerable<FieldEntry> fieldEntries = ProductDevelopmentTestData.GetFieldEntries();
 
@@ -177,7 +178,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration("ou=Human Resources", AuthenticationTypesEnum.FastBind);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(HumanResourcesTestData.OU);
 
 			IEnumerable<FieldEntry> fieldEntries = new[]
 			{
@@ -208,7 +209,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 			IDataSourceProvider sut = PrepareSut();
 
 			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(
-				"ou=Human Resources", AuthenticationTypesEnum.FastBind, multiValueDelimiter: delimiter);
+				HumanResourcesTestData.OU, multiValueDelimiter: delimiter);
 
 
 			IEnumerable<FieldEntry> fieldEntries = new[]
@@ -240,8 +241,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 
 			IDataSourceProvider sut = PrepareSut();
 
-			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(
-				"ou=Human Resources", AuthenticationTypesEnum.FastBind);
+			DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(HumanResourcesTestData.OU);
 			
 			IEnumerable<FieldEntry> fieldEntries = new[]
 			{
@@ -270,11 +270,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 				Serializer);
 		}
 
-		private DataSourceProviderConfiguration PrepareOpenLDAPConfiguration(string ou, AuthenticationTypesEnum authType, bool importNested = false, char? multiValueDelimiter = '|')
+		private DataSourceProviderConfiguration PrepareOpenLDAPConfiguration(string ou, 
+			AuthenticationTypesEnum authType = AuthenticationTypesEnum.FastBind,
+			bool importNested = false, char? multiValueDelimiter = '|')
 		{
 			LDAPSettings settings = new LDAPSettings
 			{
-				ConnectionPath = Const.LDAP._OPEN_LDAP_CONNECTION_PATH(ou),
+				ConnectionPath = GlobalConst.LDAP._OPEN_LDAP_CONNECTION_PATH(ou),
 				ConnectionAuthenticationType = authType,
 				ImportNested = importNested,
 				MultiValueDelimiter = multiValueDelimiter
@@ -282,8 +284,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 
 			LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
 			{
-				UserName = Const.LDAP._OPEN_LDAP_USER,
-				Password = Const.LDAP._OPEN_LDAP_PASSWORD
+				UserName = GlobalConst.LDAP._OPEN_LDAP_USER,
+				Password = GlobalConst.LDAP._OPEN_LDAP_PASSWORD
 			};
 
 			return new DataSourceProviderConfiguration(

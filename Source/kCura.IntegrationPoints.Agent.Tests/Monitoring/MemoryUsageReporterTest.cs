@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<ICounterMeasure> _counterMeasure;
         private Mock<IProcessMemoryHelper> _processMemoryHelper;
         private MemoryUsageReporter _sut;
+        private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
         private const string _jobDetails = "jobDetails";
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
@@ -32,6 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _ripMetricMock = new Mock<IRipMetrics>();
             _apmMock = new Mock<IAPM>();
             _processMemoryHelper = new Mock<IProcessMemoryHelper>();
+            _appDomainMonitoringEnablerMock = new Mock<IAppDomainMonitoringEnabler>();
 
             _apmMock.Setup(x => x.CountOperation(It.IsAny<string>(),
                     It.IsAny<Guid>(),
@@ -55,15 +57,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "PrivateMemoryInMB", _dummyMemorySize },
                     { "SystemFreeMemoryPercent",  _dummyMemorySize}
                 });
-
-            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object);
+            _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
+            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object);
         }
 
         [Test]
         public void Execute_ShouldSendMetrics_AfterTimerActivation()
         {
             // Arrange
-            AppDomain.MonitoringIsEnabled = true;
 
             // Act
             IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
@@ -95,7 +96,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void Execute_ShouldNotSendMetrics_AfterDisposingTimer()
         {
             // Arrange
-            AppDomain.MonitoringIsEnabled = true;
 
             // Act
             IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
@@ -142,9 +142,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object)
                 .Returns(_counterMeasure.Object);
 
-            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object);
+            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object,_appDomainMonitoringEnablerMock.Object);
 
-            AppDomain.MonitoringIsEnabled = true;
             int metricsProperlySend = 3;
             int metricsWithError = 2;
             const string errorMessage = "An error occured in Execute while sending APM metric";
@@ -183,7 +182,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             // Arrange
             string metricName = "IntegrationPoints.Performance.System";
             string logMessage = "Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}";
-            AppDomain.MonitoringIsEnabled = true;
 
             // Act
             IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
@@ -209,6 +207,27 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _counterMeasure.Verify(x => x.Write());
         }
 
+        [Test]
+        public void Execute_ShouldNotStartTheTimer_WhenEnableMonitoringIsNotWorking()
+        {
+            //Arrange
+            _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(false);
+
+            //Act
+            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            Thread.Sleep(10);
+
+            //Assert
+            _apmMock.Verify(x => x.CountOperation(
+                It.IsAny<string>(),
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<int?>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<IEnumerable<ISink>>()), Times.Never);
+        }
         private bool CheckIfHasAllValues(Dictionary<string, object> dict)
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>

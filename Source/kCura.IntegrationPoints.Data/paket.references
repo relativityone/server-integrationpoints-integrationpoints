@@ -11,6 +11,7 @@ Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
 Relativity.Toggles
 Relativity.DataExchange.Client.SDK
+Relativity.DataTransfer.Legacy.SDK
 Relativity.DataTransfer.MessageService
 iTextSharp
 

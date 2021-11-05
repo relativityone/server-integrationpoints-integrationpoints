@@ -31,6 +31,7 @@
     <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj" />
@@ -59,6 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="Functional\Helpers\DataFiles\kcura.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\Images\IMAGE_62K.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Functional\Helpers\Images\IMAGE_66K.tif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007291.htm">
@@ -91,22 +98,22 @@
     <None Update="Functional\Helpers\LoadFiles\Natives\AZIPPER_0007748.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Integration\Tests\LDAP\TestData\AdministrativeTestData.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Integration\Tests\LDAP\TestData\HumanResourcesTestData.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Integration\Tests\LDAP\TestData\JumpCloudUsersTestData.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Integration\Tests\LDAP\TestData\ManagementTestData.csv">
+    <None Update="Common\LDAP\TestData\AdministrativeTestData.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Integration\Tests\LDAP\TestData\ProductDevelopmentTestData.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Common\LDAP\TestData\HumanResourcesTestData.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Integration\Tests\LDAP\TestData\TestData.ldif">
+    <None Update="Common\LDAP\TestData\JumpCloudUsersTestData.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\LDAP\TestData\ManagementTestData.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\LDAP\TestData\ProductDevelopmentTestData.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Common\LDAP\TestData\TestData.ldif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -19,9 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private static readonly string TestDataTextNativesPath = $@"{TestDataTextPath}\NATIVES";
 		private static readonly string SaltPepperTestDataPath = @"TestDataSaltPepper";
 		private static readonly string SaltPepperTestDataNativesPath = $@"{SaltPepperTestDataPath}\NATIVES";
-
-		private const string _WORKSPACE_EXTRACTED_TEXT = "Extracted Text";
-
+		
 		public static DocumentsTestData BuildTestData(
 			string prefix = "", 
 			string testDirectory = null, 

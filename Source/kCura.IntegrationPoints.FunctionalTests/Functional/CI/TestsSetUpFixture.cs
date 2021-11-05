@@ -35,6 +35,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			int workspaceId = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME).ArtifactID;
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
+
+			InstallARMTestServices();
+
+			InstallDataTransferLegacy();
 		}
 
 		[OneTimeTearDown]
@@ -61,11 +65,42 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
 
-		public static void CopyScreenshotsToBase()
+		private static void InstallARMTestServices()
+		{
+			SetDevelopmentModeToTrue();
+
+			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+				.InstallToLibrary(TestConfig.ARMTestServicesRapFileLocation, 
+					new LibraryApplicationInstallOptions
+					{
+						CreateIfMissing = true
+					});
+		}
+
+		private static void SetDevelopmentModeToTrue()
+		{
+			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+				.Require(new Testing.Framework.Models.InstanceSetting
+				{
+					Name = "DevelopmentMode",
+					Section = "kCura.ARM",
+					Value = "True",
+					ValueType = InstanceSettingValueType.TrueFalse
+				});
+		}
+
+		private static void InstallDataTransferLegacy()
+		{
+			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+				.InstallToLibrary(TestConfig.DataTransferLegacyRapFileLocation,
+					new LibraryApplicationInstallOptions { IgnoreVersion = true });
+		}
+
+		private static void CopyScreenshotsToBase()
 		{
 			string screenshotExtension = "*.png";
-			string basePath = GetBaseArchiveDirectoryPath();
-			
+			string basePath = TestConfig.LogsDirectoryPath;
+
 			try
 			{
 				string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
@@ -87,8 +122,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				TestContext.Progress.Log($"Could not found path with screenshots {basePath}", ex);
 			}
 		}
-		
-		private static string GetBaseArchiveDirectoryPath() => Path.Combine(TestContext.CurrentContext.WorkDirectory, "Artifacts", "Logs");
-
 	}
 }

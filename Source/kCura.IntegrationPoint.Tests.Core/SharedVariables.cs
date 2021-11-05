@@ -305,24 +305,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string LdapPassword => AppSettingString("ldapPassword");
 
 		#endregion LDAP Configuration Settings
-
-		#region O365 Configuration Settings
-
-		public static string O365Path => AppSettingString("O365Path");
-
-		#endregion
-
-		#region ImportSDK Configuration Settings
-
-		public static string JsonLoaderPath => AppSettingString("JsonLoaderPath");
-		public static string MyFirstProviderPath => AppSettingString("MyFirstProviderPath");
-
-		#endregion
-
+		
 		#region Fileshare Configuration Settings
 
 		public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
-		
+
+		#endregion
+
+		#region DataTransfer.Legacy Settings
+
+		public static string DataTransferLegacyRapPath => AppSettingString("DataTransferLegacyPath");
+
 		#endregion
 
 		#region System Tests Settings

@@ -26,8 +26,6 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
-using Relativity.AutomatedWorkflows.Services.Interfaces;
-using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using Relativity.Services.Objects;
@@ -35,6 +33,8 @@ using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using Newtonsoft.Json.Linq;
+using Relativity.AutomatedWorkflows.SDK;
+using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -50,6 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IDataReaderFactory _dataReaderFactory;
 		private readonly IImportFileLocationService _importFileLocationService;
 		private readonly IJobStatusUpdater _jobStatusUpdater;
+		private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
 
 		public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
 		public const string RAW_STATE_COMPLETE = "complete";
@@ -74,7 +75,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IImportFileLocationService importFileLocationService,
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository,
-			IJobStatusUpdater jobStatusUpdater)
+			IJobStatusUpdater jobStatusUpdater,
+			IAutomatedWorkflowsManager automatedWorkflowsManager)
 			: base(
 				helper,
 				jobService,
@@ -96,6 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_importFileLocationService = importFileLocationService;
 			_jobStatusUpdater = jobStatusUpdater;
 			Logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
+			_automatedWorkflowsManager = automatedWorkflowsManager;
 		}
 
 		public override void Execute(Job job)
@@ -260,10 +263,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				await _automatedWorkflowsRetryHandler.ExecuteWithRetriesAsync(async () =>
 				{
-					using (IAutomatedWorkflowsService triggerProcessor = _helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System))
-					{
-						await triggerProcessor.SendTriggerAsync(workspaceId, triggerName, body).ConfigureAwait(false);
-					}
+					await _automatedWorkflowsManager.SendTriggerAsync(workspaceId, triggerName, body).ConfigureAwait(false);
 				}).ConfigureAwait(false);
 
 				Logger.LogInformation("For workspace : {0} trigger {1} finished sending.", workspaceId, triggerName);
