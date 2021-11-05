@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 		private bool IsQueryForOverwrite( int fieldArtifactId)
         {
-			return (fieldArtifactId == Const.OVERWRITE_FIELD_ARTIFACT_ID) ? true : false;
+			return fieldArtifactId == Const.OVERWRITE_FIELD_ARTIFACT_ID;
         }
 	}
 }
