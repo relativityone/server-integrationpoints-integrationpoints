@@ -14,6 +14,7 @@ using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.PermissionCheck;
+using Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
@@ -69,8 +70,8 @@ namespace Relativity.Sync.Tests.Integration
 				.As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(_destinationServiceFactoryForAdminFake.Object)
 				.As<IDestinationServiceFactoryForAdmin>();
-			containerBuilder.RegisterType<SourcePermissionCheck>().As<IPermissionCheck>();
-			containerBuilder.RegisterType<DestinationPermissionCheck>().As<IPermissionCheck>();
+			containerBuilder.RegisterType<SourceDocumentPermissionCheck>().As<IPermissionCheck>();
+			containerBuilder.RegisterType<DestinationDocumentPermissionCheck>().As<IPermissionCheck>();
 			containerBuilder.RegisterType<SyncObjectTypeManager>().As<ISyncObjectTypeManager>();
 
 			_sourceServiceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IPermissionManager>())
