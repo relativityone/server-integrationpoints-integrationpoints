@@ -171,30 +171,30 @@ namespace kCura.ScheduleQueue.AgentBase
 			return GetResourceGroupIDs();
 		}
 
-		private void ProcessQueueJobs()
-		{
-			try
-			{
-				Job nextJob = GetNextJobFromQueue();
+        private void ProcessQueueJobs()
+        {
+            try
+            {
+                Job nextJob = GetNextJobFromQueue();
 
-				while (nextJob != null)
-				{
-					RunFullJobProcessingPath(nextJob);
-				}
+                while (nextJob != null)
+                {
+                    nextJob = RunFullJobProcessingPath(nextJob);
+                }
 
-				if (ToBeRemoved)
-				{
-					_jobService.UnlockJobs(_agentId.Value); // what if exception
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
-				_jobService.UnlockJobs(_agentId.Value);
-			}
-		}
+                if (ToBeRemoved)
+                {
+                    _jobService.UnlockJobs(_agentId.Value); // what if exception
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
+                _jobService.UnlockJobs(_agentId.Value);
+            }
+        }
 
-		private void ProcessQueueJobsInKubernetesMode()
+        private void ProcessQueueJobsInKubernetesMode()
 		{
 			try
 			{
