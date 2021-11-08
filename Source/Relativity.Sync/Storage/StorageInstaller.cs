@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Autofac;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage.RdoGuidsProviders;
 
@@ -17,6 +18,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<PermissionsCheckConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SnapshotPartitionConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<ObjectLinkingSnapshotPartitionConfiguration>().As<IObjectLinkingSnapshotPartitionConfiguration>();
 			builder.RegisterType<DocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ImageJobStartMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DataSourceSnapshotConfiguration>().AsImplementedInterfaces();

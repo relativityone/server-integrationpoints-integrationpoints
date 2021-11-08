@@ -88,6 +88,9 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.SnapshotIdGuid, RdoFieldType.FixedLengthText)]
         public Guid? SnapshotId { get; set; }
 
+        [RdoField(SyncRdoGuids.ObjectLinkingSnapshotGuid, RdoFieldType.FixedLengthText)]
+        public Guid? ObjectLinkingSnapshotId { get; set; }
+
         [RdoField(SyncRdoGuids.SnapshotRecordsCountGuid, RdoFieldType.WholeNumber)]
         public int SnapshotRecordsCount { get; set; }
 

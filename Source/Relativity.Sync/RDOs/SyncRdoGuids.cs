@@ -36,6 +36,7 @@ namespace Relativity.Sync.RDOs
         public const string ProductionImagePrecedenceGuid = "421CF05E-BAB4-4455-A9CA-FA83D686B5ED";
         public const string ImageFileCopyModeGuid = "BD5DC6D2-FAA2-4312-8DC0-4D1B6945DFE1";
         public const string SnapshotIdGuid = "D1210A1B-C461-46CB-9B73-9D22D05880C5";
+        public const string ObjectLinkingSnapshotGuid = "5CB09B03-17B6-408A-B3DF-390377312954";
         public const string SnapshotRecordsCountGuid = "57B93F20-2648-4ACF-973B-BCBA8A08E2BD";
         public const string SourceJobTagArtifactIdGuid = "C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E";
         public const string SourceJobTagNameGuid = "DA0E1931-9460-4A61-9033-A8035697C1A4";

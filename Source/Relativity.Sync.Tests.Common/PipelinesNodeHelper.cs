@@ -174,7 +174,7 @@ namespace Relativity.Sync.Tests.Common
 					typeof(IDataDestinationInitializationConfiguration)
 				},
 				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
-				new[] {typeof(ISnapshotPartitionConfiguration)},
+				new[] {typeof(IObjectLinkingSnapshotPartitionConfiguration)},
 				new[] {typeof(IDocumentSynchronizationConfiguration)},
 				new[] {typeof(IDataDestinationFinalizationConfiguration)},
 				new[] {typeof(IJobStatusConsolidationConfiguration)},
