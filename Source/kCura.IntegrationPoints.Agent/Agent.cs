@@ -28,7 +28,6 @@ using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using kCura.ScheduleQueue.Core.Validation;
@@ -107,53 +106,60 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected override TaskResult ProcessJob(Job job)
 		{
-			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
-			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId, GetCorrelationId(job, ripContainerForSync.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE))
-			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
-			{
-				SetWebApiTimeout();
-
-				if (ShouldUseRelativitySync(job, ripContainerForSync))
+            using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
+            {
+				using (IMemoryUsageReporter memoryUsageReporter = ripContainerForSync.Resolve<IMemoryUsageReporter>())
 				{
-					ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
-					try
-					{
-						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
-						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
-						AgentCorrelationContext correlationContext = GetCorrelationContext(job);
-						using (logger.LogContextPushProperties(correlationContext))
-						{
-							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-						}
-					}
-					catch (Exception e)
-					{
-						//Not much we can do here. If container failed we're unable to do anything.
-						//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-						Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+					memoryUsageReporter.ActivateTimer(_TIMER_INTERVAL, job.JobId,
+						GetCorrelationId(job, ripContainerForSync.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE);
+				}
+				using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
+				{
+					SetWebApiTimeout();
 
+					if (ShouldUseRelativitySync(job, ripContainerForSync))
+					{
+						ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
 						try
 						{
-							IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
-							if (syncJob != null)
+							RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
+							IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
+							AgentCorrelationContext correlationContext = GetCorrelationContext(job);
+							using (logger.LogContextPushProperties(correlationContext))
 							{
-								IJobHistorySyncService jobHistorySyncService = ripContainerForSync.Resolve<IJobHistorySyncService>();
-								jobHistorySyncService.MarkJobAsFailedAsync(syncJob, e).ConfigureAwait(false).GetAwaiter().GetResult();
+								return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 							}
 						}
-						catch (Exception ie)
+						catch (Exception e)
 						{
-							Logger.LogError(ie, "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.", job.WorkspaceID, job.JobId);
-						}
+							//Not much we can do here. If container failed we're unable to do anything.
+							//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+							Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
 
-						return new TaskResult
-						{
-							Status = TaskStatusEnum.Fail,
-							Exceptions = new[] { e }
-						};
+							try
+							{
+								IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
+								if (syncJob != null)
+								{
+									IJobHistorySyncService jobHistorySyncService = ripContainerForSync.Resolve<IJobHistorySyncService>();
+									jobHistorySyncService.MarkJobAsFailedAsync(syncJob, e).ConfigureAwait(false).GetAwaiter().GetResult();
+								}
+							}
+							catch (Exception ie)
+							{
+								Logger.LogError(ie, "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.", job.WorkspaceID, job.JobId);
+							}
+
+							return new TaskResult
+							{
+								Status = TaskStatusEnum.Fail,
+								Exceptions = new[] { e }
+							};
+						}
 					}
 				}
 			}
+            
 
 			using (JobContextProvider.StartJobContext(job))
 			{
