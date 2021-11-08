@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;
-            const string errorMessage = "An error occured in Execute while sending APM metric";
+            const string errorMessage = "An error occurred in Execute while sending APM metric";
 
             // Act
             sutWithErrors.ActivateTimer(1, _jobId, _jobDetails, _jobType);
