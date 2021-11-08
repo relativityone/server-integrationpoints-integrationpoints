@@ -45,6 +45,26 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		}
 
 		[Test]
+		public void Execute_ShouldProcessOnlyOneJobFromQueue_WhenInKubernetes()
+		{
+			// Arrange
+			Job expectedJob1 = new JobBuilder().WithJobId(1).Build();
+			Job expectedJob2 = new JobBuilder().WithJobId(2).Build();
+
+			TestAgent sut = GetSut();
+			_toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(true);
+
+			SetupJobQueue(expectedJob1, expectedJob2);
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			sut.ProcessedJobs.Count.Should().Be(1);
+			sut.ProcessedJobs.Single().ShouldBeEquivalentTo(expectedJob1);
+		}
+
+		[Test]
 		public void Execute_ShouldDeleteJobFromQueue_WhenJobIsInvalid()
 		{
 			// Arrange
