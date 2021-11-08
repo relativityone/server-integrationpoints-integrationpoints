@@ -2,26 +2,30 @@
 using Moq;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
+using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Error;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
 using Relativity.Services.Workspace;
+using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
 	public class TestHelper : IServiceHelper, IAgentHelper, ICPHelper
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
+		private readonly FakeUser _user;
 
 		public FakeSecretStore SecretStore { get; }
 
-		public TestHelper(ProxyMock proxy)
+		public TestHelper(ProxyMock proxy, FakeUser user)
 		{
 			SecretStore = new FakeSecretStore();
 
 			_serviceManager = new Mock<IServicesMgr>();
+			_user = user;
 
 			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
 			RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
@@ -30,6 +34,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			RegisterProxyInServiceManagerMock<IGroupManager>(proxy.GroupManager.Object);
 			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(proxy.ArtifactGuidManager.Object);
 			RegisterProxyInServiceManagerMock<IErrorManager>(proxy.ErrorManager.Object);
+			RegisterProxyInServiceManagerMock<IChoiceQueryManager>(proxy.ChoiceQueryManager.Object);
+			RegisterProxyInServiceManagerMock<IAPMManager>(proxy.APMManager.Object);
+			RegisterProxyInServiceManagerMock<IMetricsManager>(proxy.MetricsManager.Object);
 		}
 
 		private void RegisterProxyInServiceManagerMock<T>(T proxy) 
@@ -105,7 +112,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public IAuthenticationMgr GetAuthenticationManager()
 		{
-			return new FakeAuthenticationMgr();
+			return new FakeAuthenticationMgr(_user);
 		}
 
 		public ICSRFManager GetCSRFManager()

@@ -24,6 +24,11 @@ using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Helpers;
+using kCura.IntegrationPoints.Web.Installers;
+using kCura.IntegrationPoints.Web.Installers.Context;
+using kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -45,8 +50,10 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.We
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Logging;
+using Relativity.Telemetry.Services.Metrics;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
+using HelpersRegistration = kCura.IntegrationPoints.Web.Installers.HelpersRegistration;
 using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
@@ -70,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public FakeUser User { get; set; }
 
 		public ISerializer Serializer { get; set; }
-		
+
 		[SetUp]
 		public virtual void SetUp()
 		{
@@ -85,7 +92,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			};
 			
 			Proxy = new ProxyMock(Context);
-			Helper = new TestHelper(Proxy);
+			Helper = new TestHelper(Proxy, User);
 
 			int sourceWorkspaceArtifactId = ArtifactProvider.NextId();
 
@@ -128,7 +135,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<TestContext>().Instance(Context).LifestyleSingleton());
 			Container.Register(Component.For<RelativityInstanceTest>().UsingFactoryMethod(() => FakeRelativityInstance).LifestyleSingleton());
 
-            RegisterRelativityApiServices();
+			RegisterAPIControllers();
+
+			RegisterRelativityApiServices();
             RegisterScheduleAgentBase();
 
 			Container.Install(new AgentInstaller(Helper, new DefaultScheduleRuleFactory(Container.Resolve<ITimeService>())));
@@ -146,6 +155,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
             RegisterKeplerServices();
+		}
+
+		private void RegisterAPIControllers()
+		{
+			Container.Register(Component.For<JobController>().ImplementedBy<JobController>());
+			Container.Register(Component.For<LdapController>().ImplementedBy<LdapController>());
+			Container.Register(Component.For<IntegrationPointProfilesAPIController>().ImplementedBy<IntegrationPointProfilesAPIController>());
 		}
 
 		private void OverrideRelativitySyncInstaller()
@@ -176,7 +192,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(c => new FakeWorkspaceDbContext(SourceWorkspace.ArtifactId, FakeRelativityInstance ))
 				.Named(nameof(FakeWorkspaceDbContext)).IsDefault());
 
-            Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
+			Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>
 				new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspaceId)));
 
 			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
@@ -226,6 +242,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
 			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
+			Container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<FakeRelativityUrlHelper>());
 
 			// LDAP Entity
 			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>().IsDefault());

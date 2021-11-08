@@ -10,6 +10,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 		public string RestrictReferentialFileLinksOnImport { get; set; }
 
+		public string MaximumNumberOfCharactersSupportedByLongText { get; set; }
+
 		public string BlockedHosts { get; set; }
 
 		public TimeSpan DrainStopTimeout { get; set; }
