@@ -13,6 +13,8 @@ namespace Relativity.Sync.Configuration
 		int SavedSearchArtifactId { get; }
 
 		int DestinationFolderArtifactId { get; }
+		
+		int RdoArtifactTypeId { get; }
 
 		Guid JobHistoryObjectTypeGuid { get; }
 

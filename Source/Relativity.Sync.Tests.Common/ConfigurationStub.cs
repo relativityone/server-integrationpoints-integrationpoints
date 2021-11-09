@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Common
 
 		public bool MoveExistingDocuments { get; set; }
 
-		public int RdoArtifactTypeId => (int)ArtifactType.Document;
+		public int RdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
 
 		public string GetSourceWorkspaceTag() => string.Empty;
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,8 +14,6 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal abstract class FieldMappingValidatorBase : IValidator
 	{
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
 		protected readonly ISyncLog _logger;
@@ -107,7 +104,7 @@ namespace Relativity.Sync.Executors.Validation
 			ValidationMessage validationMessage = null;
 
 			IDictionary<int, string> mappedFieldIdNames = fieldMaps.ToDictionary(x => x.DestinationField.FieldIdentifier, x => x.DestinationField.DisplayName);
-			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_destinationServiceFactoryForUser, mappedFieldIdNames, configuration.DestinationWorkspaceArtifactId, token).ConfigureAwait(false);
+			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_destinationServiceFactoryForUser, mappedFieldIdNames, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, token).ConfigureAwait(false);
 			if (missingFields.Count > 0)
 			{
 				validationMessage =
@@ -117,14 +114,15 @@ namespace Relativity.Sync.Executors.Validation
 			return validationMessage;
 		}
 
-		protected async Task<ValidationMessage> ValidateSourceFieldsAsync(IValidationConfiguration configuration, IList<FieldMap> fieldMaps, CancellationToken token)
+		protected async Task<ValidationMessage> ValidateSourceFieldsAsync(IValidationConfiguration configuration,
+			IList<FieldMap> fieldMaps, CancellationToken token)
 		{
 			_logger.LogInformation("Validating fields in source workspace");
 
 			ValidationMessage validationMessage = null;
 
 			IDictionary<int, string> mappedFieldIdNames = fieldMaps.ToDictionary(x => x.SourceField.FieldIdentifier, x => x.SourceField.DisplayName);
-			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_sourceServiceFactoryForUser, mappedFieldIdNames, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
+			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_sourceServiceFactoryForUser, mappedFieldIdNames, configuration.SourceWorkspaceArtifactId, configuration.RdoArtifactTypeId, token).ConfigureAwait(false);
 			if (missingFields.Count > 0)
 			{
 				validationMessage =
@@ -134,14 +132,14 @@ namespace Relativity.Sync.Executors.Validation
 			return validationMessage;
 		}
 
-		private static async Task<IDictionary<int, string>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IDictionary<int, string> mappedFieldIdNames, int workspaceArtifactId, CancellationToken token)
+		private static async Task<IDictionary<int, string>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IDictionary<int, string> mappedFieldIdNames, int workspaceArtifactId, int rdoType, CancellationToken token)
 		{
 			string fieldArtifactIds = string.Join(",", mappedFieldIdNames.Keys);
 			using (IObjectManager objectManager = await proxyFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = new QueryRequest()
 				{
-					Condition = $"(('FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'ArtifactID' IN [{fieldArtifactIds}]))",
+					Condition = $"(('FieldArtifactTypeID' == {rdoType} AND 'ArtifactID' IN [{fieldArtifactIds}]))",
 					ObjectType = new ObjectTypeRef()
 					{
 						Name = "Field"

@@ -62,6 +62,7 @@ namespace Relativity.Sync.Tests.Integration
 			_destinationServiceFactoryForAdminFake = new Mock<IDestinationServiceFactoryForAdmin>();
 			_permissionManagerFake = new Mock<IPermissionManager>();
 
+			containerBuilder.RegisterInstance(_configurationStubFake).AsImplementedInterfaces();
 			containerBuilder.RegisterInstance(_sourceServiceFactoryForUserFake.Object)
 				.As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(_sourceServiceFactoryForAdminFake.Object)
