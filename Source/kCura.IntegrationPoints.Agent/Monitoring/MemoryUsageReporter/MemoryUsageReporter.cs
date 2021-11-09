@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured in Execute while sending APM metric");
+                _logger.LogError(ex, "An error occurred in Execute while sending APM metric");
             }
         }
     }
