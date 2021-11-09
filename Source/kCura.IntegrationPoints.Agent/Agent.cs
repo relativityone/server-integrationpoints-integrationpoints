@@ -107,17 +107,17 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected override TaskResult ProcessJob(Job job)
         {
-            using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
+            using (StartMemoryUsageMetricReporting(job))
             {
-                ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId,
-                    GetCorrelationId(job, ripContainerForSync.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE);
-				using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
+                using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
+                using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
                 {
                     SetWebApiTimeout();
 
                     if (ShouldUseRelativitySync(job, ripContainerForSync))
                     {
-                        ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
+                        ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job)
+                            .Named($"{job.JobId}-{Guid.NewGuid()}"));
                         try
                         {
                             RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
@@ -139,33 +139,44 @@ namespace kCura.IntegrationPoints.Agent
                                 IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
                                 if (syncJob != null)
                                 {
-                                    IJobHistorySyncService jobHistorySyncService = ripContainerForSync.Resolve<IJobHistorySyncService>();
-                                    jobHistorySyncService.MarkJobAsFailedAsync(syncJob, e).ConfigureAwait(false).GetAwaiter().GetResult();
+                                    IJobHistorySyncService jobHistorySyncService =
+                                        ripContainerForSync.Resolve<IJobHistorySyncService>();
+                                    jobHistorySyncService.MarkJobAsFailedAsync(syncJob, e).ConfigureAwait(false)
+                                        .GetAwaiter().GetResult();
                                 }
                             }
                             catch (Exception ie)
                             {
-                                Logger.LogError(ie, "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.", job.WorkspaceID, job.JobId);
+                                Logger.LogError(ie,
+                                    "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.",
+                                    job.WorkspaceID, job.JobId);
                             }
 
                             return new TaskResult
                             {
                                 Status = TaskStatusEnum.Fail,
-                                Exceptions = new[] { e }
+                                Exceptions = new[] {e}
                             };
                         }
                     }
                 }
-			}
- 
-			using (JobContextProvider.StartJobContext(job))
-			{
-				SendJobStartedMessage(job);
-				TaskResult result = JobExecutor.ProcessJob(job);
-				return result;
-			}
-		}
-		private string GetCorrelationId(Job job, ISerializer serializer)
+
+                using (JobContextProvider.StartJobContext(job))
+                {
+                    SendJobStartedMessage(job);
+                    TaskResult result = JobExecutor.ProcessJob(job);
+                    return result;
+                }
+            }
+        }
+
+        private IDisposable StartMemoryUsageMetricReporting(Job job)
+        {
+            return _agentLevelContainer.Value.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId,
+                GetCorrelationId(job, _agentLevelContainer.Value.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE);
+        }
+
+        private string GetCorrelationId(Job job, ISerializer serializer)
 		{
 			string result = string.Empty;
 			try
