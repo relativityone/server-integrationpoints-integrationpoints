@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
-    public interface IMemoryUsageReporter : IDisposable
+    public interface IMemoryUsageReporter
     {
         IDisposable ActivateTimer(int timeInterval, long jobId, string jobDetails, string jobType);
     }
