@@ -60,6 +60,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			sut.Execute();
 
 			// Assert
+			sut.DidWork.Should().BeTrue();
 			sut.ProcessedJobs.Count.Should().Be(1);
 			sut.ProcessedJobs.Single().ShouldBeEquivalentTo(expectedJob1);
 		}
