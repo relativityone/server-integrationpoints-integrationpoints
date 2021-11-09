@@ -22,5 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 			set { _commonScriptsFactory = value; }
 		}
+
+		public override string[] ScriptFileNames => new[] { "integration-point-event-handler.js" };
 	}
 }
