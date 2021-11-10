@@ -44,8 +44,16 @@ namespace Relativity.Sync.Transfer
 		{
 			if (initialValue == _BIG_LONG_TEXT_SHIBBOLETH)
 			{
-				return await CreateBigLongTextStreamAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName).ConfigureAwait(false);
-			}
+                try
+                {
+                    return await CreateBigLongTextStreamAsync(workspaceArtifactId, itemIdentifierSourceFieldName,
+                        itemIdentifier, sanitizingSourceFieldName).ConfigureAwait(false);
+                }
+                catch (SyncItemLevelErrorException ex) when (ex.Message == $"Objects not found for itemIdentifier = {itemIdentifier}, itemIdentifierSourceFieldName = {itemIdentifierSourceFieldName}.")
+                {
+                    throw new SyncItemLevelErrorException($"Reading LongText field value failed: {ex.Message}");
+                }
+            }
 			return initialValue;
 		}
 
