@@ -6,6 +6,7 @@ using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.PermissionCheck
 {
@@ -19,6 +20,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		}
 
 		public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
+		public abstract bool ShouldValidate(ISyncPipeline pipeline);
 
 		protected async Task<IList<PermissionValue>> GetPermissionsForArtifactIdAsync(int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
 		{

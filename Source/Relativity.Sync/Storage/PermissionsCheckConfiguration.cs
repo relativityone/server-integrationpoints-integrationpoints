@@ -40,6 +40,10 @@ namespace Relativity.Sync.Storage
 
 		public Guid JobHistoryObjectTypeGuid => _cache.GetFieldValue(x => x.JobHistoryType);
 
+		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
+
+		public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);
+
 		private async Task<int> GetSourceProviderArtifactIdAsync()
 		{
 			using (var objectManager = await _sourceServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))

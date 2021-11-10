@@ -39,6 +39,7 @@ namespace Relativity.Sync.Storage
         public int SavedSearchArtifactId => _cache.GetFieldValue(x => x.DataSourceArtifactId);
 
         public int DestinationFolderArtifactId => _cache.GetFieldValue(x => x.DataDestinationArtifactId);
+        public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
         public Guid JobHistoryObjectTypeGuid => _cache.GetFieldValue(x => x.JobHistoryType);
 
