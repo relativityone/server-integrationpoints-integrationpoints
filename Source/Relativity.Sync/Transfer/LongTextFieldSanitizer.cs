@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
@@ -43,8 +44,16 @@ namespace Relativity.Sync.Transfer
 		{
 			if (initialValue == _BIG_LONG_TEXT_SHIBBOLETH)
 			{
-				return await CreateBigLongTextStreamAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName).ConfigureAwait(false);
-			}
+                try
+                {
+                    return await CreateBigLongTextStreamAsync(workspaceArtifactId, itemIdentifierSourceFieldName,
+                        itemIdentifier, sanitizingSourceFieldName).ConfigureAwait(false);
+                }
+                catch (SyncItemLevelErrorException ex)
+                {
+                    throw new SyncItemLevelErrorException($"Reading LongText field value failed: {ex.Message}");
+                }
+            }
 			return initialValue;
 		}
 
@@ -69,6 +78,12 @@ namespace Relativity.Sync.Transfer
 					Condition = $"'{itemIdentifierSourceFieldName}' == '{itemIdentifier}'"
 				};
 				QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
+                
+                if (result.Objects == null | !result.Objects.Any())
+                {
+                    throw new SyncItemLevelErrorException($"Objects not found for itemIdentifier = {itemIdentifier}, itemIdentifierSourceFieldName = {itemIdentifierSourceFieldName}.");
+                }
+
 				return result.Objects[0].ArtifactID;
 			}
 		}
