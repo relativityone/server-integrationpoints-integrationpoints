@@ -73,8 +73,7 @@ namespace Relativity.Sync.Transfer
                 
                 if (result.Objects == null | !result.Objects.Any())
                 {
-                    throw new SyncItemLevelErrorException($"Objects not found for itemIdentifier = {itemIdentifier}, itemIdentifierSourceFieldName = {itemIdentifierSourceFieldName}" +
-                                                          $", workspaceArtifactId = {workspaceArtifactId}.");
+                    throw new SyncItemLevelErrorException($"Objects not found for itemIdentifier = {itemIdentifier}, itemIdentifierSourceFieldName = {itemIdentifierSourceFieldName}.");
                 }
 
 				return result.Objects[0].ArtifactID;
