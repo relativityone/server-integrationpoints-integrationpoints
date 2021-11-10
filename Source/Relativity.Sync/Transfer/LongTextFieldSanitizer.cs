@@ -49,7 +49,7 @@ namespace Relativity.Sync.Transfer
                     return await CreateBigLongTextStreamAsync(workspaceArtifactId, itemIdentifierSourceFieldName,
                         itemIdentifier, sanitizingSourceFieldName).ConfigureAwait(false);
                 }
-                catch (SyncItemLevelErrorException ex) when (ex.Message == $"Objects not found for itemIdentifier = {itemIdentifier}, itemIdentifierSourceFieldName = {itemIdentifierSourceFieldName}.")
+                catch (SyncItemLevelErrorException ex)
                 {
                     throw new SyncItemLevelErrorException($"Reading LongText field value failed: {ex.Message}");
                 }
