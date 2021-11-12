@@ -179,7 +179,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 while (nextJob != null)
                 {
-                    nextJob = RunFullJobProcessingPath(nextJob);
+                    nextJob = RunFullJobProcessingPath(nextJob, k8sMode: false);
                 }
 
                 if (ToBeRemoved)
@@ -200,7 +200,10 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				Job nextJob = GetNextJobFromQueue();
 
-				RunFullJobProcessingPath(nextJob, true);
+				if (nextJob != null)
+				{
+					RunFullJobProcessingPath(nextJob, k8sMode: true);
+				}
 
 				// Agent after finishing single job is being removed
 				_jobService.UnlockJobs(_agentId.Value);
@@ -222,7 +225,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			return nextJob;
 		}
 
-		private Job RunFullJobProcessingPath(Job nextJob, bool k8sMode = false)
+		private Job RunFullJobProcessingPath(Job nextJob, bool k8sMode)
 		{
 			LogJobInformation(nextJob);
 
@@ -257,12 +260,6 @@ namespace kCura.ScheduleQueue.AgentBase
 				nextJob = !k8sMode ? GetNextQueueJob() : null; // assumptions: it will not throws exception
 			}
 			return nextJob;
-		}
-
-		private void HandleRunningJobProcessingExceptions(Exception ex)
-        {
-			Logger.LogError(ex, "Unhandled exception occurred while processing job from queue. Unlocking the job");
-			_jobService.UnlockJobs(_agentId.Value);
 		}
 
 		private bool PreExecuteJobValidation(Job job)

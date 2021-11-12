@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Agent
         private IDisposable StartMemoryUsageMetricReporting(Job job)
         {
             return _agentLevelContainer.Value.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId,
-                GetCorrelationId(job, _agentLevelContainer.Value.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE);
+                GetCorrelationId(job, _agentLevelContainer.Value.Resolve<ISerializer>()), job.TaskType);
         }
 
         private string GetCorrelationId(Job job, ISerializer serializer)
