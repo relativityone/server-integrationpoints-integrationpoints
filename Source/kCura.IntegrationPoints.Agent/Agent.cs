@@ -106,63 +106,77 @@ namespace kCura.IntegrationPoints.Agent
 		}
 
 		protected override TaskResult ProcessJob(Job job)
-		{
-			using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
-			using (ripContainerForSync.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId, GetCorrelationId(job, ripContainerForSync.Resolve<ISerializer>()), _RELATIVITY_SYNC_JOB_TYPE))
-			using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
-			{
-				SetWebApiTimeout();
+        {
+            using (StartMemoryUsageMetricReporting(job))
+            {
+                using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
+                using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
+                {
+                    SetWebApiTimeout();
 
-				if (ShouldUseRelativitySync(job, ripContainerForSync))
-				{
-					ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
-					try
-					{
-						RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
-						IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
-						AgentCorrelationContext correlationContext = GetCorrelationContext(job);
-						using (logger.LogContextPushProperties(correlationContext))
-						{
-							return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-						}
-					}
-					catch (Exception e)
-					{
-						//Not much we can do here. If container failed we're unable to do anything.
-						//Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-						Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+                    if (ShouldUseRelativitySync(job, ripContainerForSync))
+                    {
+                        ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job)
+                            .Named($"{job.JobId}-{Guid.NewGuid()}"));
+                        try
+                        {
+                            RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
+                            IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
+                            AgentCorrelationContext correlationContext = GetCorrelationContext(job);
+                            using (logger.LogContextPushProperties(correlationContext))
+                            {
+                                return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            //Not much we can do here. If container failed we're unable to do anything.
+                            //Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+                            Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
 
-						try
-						{
-							IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
-							if (syncJob != null)
-							{
-								IJobHistorySyncService jobHistorySyncService = ripContainerForSync.Resolve<IJobHistorySyncService>();
-								jobHistorySyncService.MarkJobAsFailedAsync(syncJob, e).ConfigureAwait(false).GetAwaiter().GetResult();
-							}
-						}
-						catch (Exception ie)
-						{
-							Logger.LogError(ie, "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.", job.WorkspaceID, job.JobId);
-						}
+                            try
+                            {
+                                IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
+                                if (syncJob != null)
+                                {
+                                    IJobHistorySyncService jobHistorySyncService =
+                                        ripContainerForSync.Resolve<IJobHistorySyncService>();
+                                    jobHistorySyncService.MarkJobAsFailedAsync(syncJob, e).ConfigureAwait(false)
+                                        .GetAwaiter().GetResult();
+                                }
+                            }
+                            catch (Exception ie)
+                            {
+                                Logger.LogError(ie,
+                                    "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.",
+                                    job.WorkspaceID, job.JobId);
+                            }
 
-						return new TaskResult
-						{
-							Status = TaskStatusEnum.Fail,
-							Exceptions = new[] { e }
-						};
-					}
-				}
-			}
+                            return new TaskResult
+                            {
+                                Status = TaskStatusEnum.Fail,
+                                Exceptions = new[] {e}
+                            };
+                        }
+                    }
+                }
 
-			using (JobContextProvider.StartJobContext(job))
-			{
-				SendJobStartedMessage(job);
-				TaskResult result = JobExecutor.ProcessJob(job);
-				return result;
-			}
-		}
-		private string GetCorrelationId(Job job, ISerializer serializer)
+                using (JobContextProvider.StartJobContext(job))
+                {
+                    SendJobStartedMessage(job);
+                    TaskResult result = JobExecutor.ProcessJob(job);
+                    return result;
+                }
+            }
+        }
+
+        private IDisposable StartMemoryUsageMetricReporting(Job job)
+        {
+            return _agentLevelContainer.Value.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId,
+                GetCorrelationId(job, _agentLevelContainer.Value.Resolve<ISerializer>()), job.TaskType);
+        }
+
+        private string GetCorrelationId(Job job, ISerializer serializer)
 		{
 			string result = string.Empty;
 			try
@@ -172,7 +186,7 @@ namespace kCura.IntegrationPoints.Agent
 			}
 			catch (Exception ex)
 			{
-				Logger.LogWarning(ex, "Error occured while retrieving batch instance for job: {jobId}", job.JobId);
+				Logger.LogWarning(ex, "Error occurred while retrieving batch instance for job: {jobId}", job.JobId);
 			}
 			return result;
 		}

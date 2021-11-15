@@ -18,6 +18,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		{
 		}
 
+		public FieldTest(int artifactId) : base("Field", artifactId)
+		{
+		}
+
 		public override List<Guid> Guids => new List<Guid>();
 
 		public override RelativityObject ToRelativityObject()

@@ -4,9 +4,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
     class FakeAuthenticationMgr : IAuthenticationMgr
     {
-        public FakeAuthenticationMgr()
+        public FakeAuthenticationMgr(FakeUser user)
         {
-            UserInfo = new FakeUserInfo();
+            UserInfo = new FakeUserInfo(user.ArtifactId);
         }
 
         public string GetAuthenticationToken()

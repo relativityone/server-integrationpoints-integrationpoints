@@ -295,7 +295,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 				ArtifactId = ArtifactId,
 				ParentArtifactId = ParenObjectArtifactId,
 				NextScheduledRuntimeUTC = NextScheduledRuntimeUTC,
-				LastRuntimeUTC = LastRuntimeUTC,
+				LastRuntimeUTC = LastRuntimeUTC, 
 				FieldMappings = FieldMappings,
 				EnableScheduler = EnableScheduler,
 				SourceConfiguration = SourceConfiguration,

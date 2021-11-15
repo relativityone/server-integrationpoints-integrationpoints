@@ -17,6 +17,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<IntegrationPointTest> IntegrationPoints { get; } = new List<IntegrationPointTest>();
 
+        public IList<IntegrationPointProfileTest> IntegrationPointProfiles { get; } = new List<IntegrationPointProfileTest>();
+
         public IList<IntegrationPointTypeTest> IntegrationPointTypes { get; } = new List<IntegrationPointTypeTest>();
 
 		public IList<JobHistoryTest> JobHistory { get; } = new List<JobHistoryTest>();
@@ -45,6 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
             return GetArtifacts(IntegrationPoints)
                 .Concat(GetArtifacts(IntegrationPointTypes))
+                .Concat(GetArtifacts(IntegrationPointProfiles))
                 .Concat(GetArtifacts(JobHistory))
                 .Concat(GetArtifacts(JobHistoryErrors))
                 .Concat(GetArtifacts(SourceProviders))
@@ -81,6 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             }
 
             return TryFind(IntegrationPoints)
+                   ?? TryFind(IntegrationPointProfiles)
                    ?? TryFind(IntegrationPointTypes)
                    ?? TryFind(JobHistory)
                    ?? TryFind(JobHistoryErrors)
@@ -120,6 +124,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             private SourceProviderHelper _sourceProviderHelper;
             private ISerializer _serializer;
             private IntegrationPointHelper _integrationPointHelper;
+            private IntegrationPointProfileHelper _integrationPointProfileHelper;
             private IntegrationPointTypeHelper _integrationPointTypeHelper;
             private JobHistoryHelper _jobHistoryHelper;
             private FieldsMappingHelper _fieldsMappingHelper;
@@ -143,7 +148,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                                                                     (_integrationPointHelper =
                                                                         new IntegrationPointHelper(_workspace,
                                                                             _serializer));
-            
+            public IntegrationPointProfileHelper IntegrationPointProfileHelper => _integrationPointProfileHelper ??
+                                                                    (_integrationPointProfileHelper =
+                                                                        new IntegrationPointProfileHelper(_workspace,
+                                                                            _serializer));
+
             public IntegrationPointTypeHelper IntegrationPointTypeHelper => _integrationPointTypeHelper ??
                                                                     (_integrationPointTypeHelper =
                                                                         new IntegrationPointTypeHelper(_workspace));

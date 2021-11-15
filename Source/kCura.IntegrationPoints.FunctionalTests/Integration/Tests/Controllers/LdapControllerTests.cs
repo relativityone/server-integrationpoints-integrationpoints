@@ -12,16 +12,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
 	public class LdapControllerTests : TestsBase
-	{
-		protected override WindsorContainer GetContainer()
-		{
-			var container = base.GetContainer();
-
-			container.Register(Component.For<LdapController>().ImplementedBy<LdapController>());
-
-			return container;
-		}
-		
+	{	
 		[IdentifiedTest("D13E2898-CC2E-4CFC-93B3-25C4398B7F32")]
 		public void CheckLdap_ShouldAuthenticateLDAPConnection()
 		{

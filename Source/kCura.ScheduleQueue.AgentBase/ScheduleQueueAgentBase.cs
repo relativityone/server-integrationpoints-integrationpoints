@@ -112,8 +112,15 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				if (isPreExecuteSuccessful)
 				{
-					ProcessQueueJobs();
-					CleanupQueueJobs();
+                    if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
+                    {
+                        ProcessQueueJobsInKubernetesMode();
+                    }
+                    else
+                    {
+                        ProcessQueueJobs();
+                    }
+                    CleanupQueueJobs();
 				}
 
 				CompleteExecution();
@@ -164,61 +171,95 @@ namespace kCura.ScheduleQueue.AgentBase
 			return GetResourceGroupIDs();
 		}
 
-		private void ProcessQueueJobs()
+        private void ProcessQueueJobs()
+        {
+            try
+            {
+                Job nextJob = GetNextJobFromQueue();
+
+                while (nextJob != null)
+                {
+                    nextJob = RunFullJobProcessingPath(nextJob, k8sMode: false);
+                }
+
+                if (ToBeRemoved)
+                {
+                    _jobService.UnlockJobs(_agentId.Value); // what if exception
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
+                _jobService.UnlockJobs(_agentId.Value);
+            }
+        }
+
+        private void ProcessQueueJobsInKubernetesMode()
 		{
 			try
 			{
-				Job nextJob = GetNextQueueJob();
-				if (nextJob == null)
+				Job nextJob = GetNextJobFromQueue();
+
+				if (nextJob != null)
 				{
-					Logger.LogDebug("No active job found in Schedule Agent Queue table");
+					RunFullJobProcessingPath(nextJob, k8sMode: true);
 				}
 
-				while (nextJob != null)
-				{
-					LogJobInformation(nextJob);
-
-					bool isJobValid = PreExecuteJobValidation(nextJob);
-					if (!isJobValid)
-					{
-						Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
-
-						_jobService.DeleteJob(nextJob.JobId);
-						nextJob = GetNextQueueJob();
-						continue;
-					}
-
-					Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
-
-					TaskResult jobResult = ProcessJob(nextJob);
-
-					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-					
-					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
-					// Also do not finalize the job (i.e. do not remove it from the queue).
-					if (jobResult.Status == TaskStatusEnum.DrainStopped)
-					{
-						Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
-						_jobService.FinalizeDrainStoppedJob(nextJob);
-                        nextJob = null;
-					}
-					else
-					{
-						FinalizeJobExecution(nextJob, jobResult);
-						nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
-					}
-				}
-
-				if (ToBeRemoved)
-				{
-					_jobService.UnlockJobs(_agentId.Value); // what if exception
-				}
+				// Agent after finishing single job is being removed
+				_jobService.UnlockJobs(_agentId.Value);
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
+				Logger.LogError(ex, "Unhandled exception occurred while processing job from queue. Unlocking the job");
 				_jobService.UnlockJobs(_agentId.Value);
 			}
+		}
+
+		private Job GetNextJobFromQueue()
+        {
+			Job nextJob = GetNextQueueJob();
+			if (nextJob == null)
+			{
+				Logger.LogDebug("No active job found in Schedule Agent Queue table");
+			}
+			return nextJob;
+		}
+
+		private Job RunFullJobProcessingPath(Job nextJob, bool k8sMode)
+		{
+			LogJobInformation(nextJob);
+
+			bool isJobValid = PreExecuteJobValidation(nextJob);
+			if (!isJobValid)
+			{
+				Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
+
+				_jobService.DeleteJob(nextJob.JobId);
+				nextJob = !k8sMode ? GetNextQueueJob() : null;
+				
+				return nextJob;
+			}
+
+			Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+
+			TaskResult jobResult = ProcessJob(nextJob);
+
+			Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
+
+			// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
+			// Also do not finalize the job (i.e. do not remove it from the queue).
+			if (jobResult.Status == TaskStatusEnum.DrainStopped)
+			{
+				Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
+				_jobService.FinalizeDrainStoppedJob(nextJob);
+				nextJob = null;
+			}
+			else
+			{
+				FinalizeJobExecution(nextJob, jobResult);
+				nextJob = !k8sMode ? GetNextQueueJob() : null; // assumptions: it will not throws exception
+			}
+			return nextJob;
 		}
 
 		private bool PreExecuteJobValidation(Job job)

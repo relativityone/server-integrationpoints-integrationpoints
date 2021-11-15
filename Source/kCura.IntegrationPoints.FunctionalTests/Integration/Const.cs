@@ -7,6 +7,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 {
 	public static class Const
 	{
+		public const string INTEGRATION_POINTS_APP_GUID = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
+
+		public static int OVERWRITE_FIELD_ARTIFACT_ID = ArtifactProvider.NextId();
+
 		public static class Agent
 		{
 			public static readonly Guid RELATIVITY_INTEGRATION_POINTS_AGENT_GUID =
@@ -26,6 +30,29 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public static class LDAP
 		{
 			public static readonly int _ENTITY_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
+		}
+
+		public static class Choices
+		{
+			public static readonly List<global::Relativity.Services.ChoiceQuery.Choice> OverwriteFields =
+				new List<global::Relativity.Services.ChoiceQuery.Choice>()
+				{
+						new global::Relativity.Services.ChoiceQuery.Choice()
+						{
+							ArtifactID = 1039894,
+							Name = "Append Only"
+						},
+						new global::Relativity.Services.ChoiceQuery.Choice()
+						{
+							ArtifactID = 1039895,
+							Name = "Append/Overlay"
+						},
+						new global::Relativity.Services.ChoiceQuery.Choice()
+						{
+							ArtifactID = 1039896,
+							Name = "Overlay Only"
+						}
+				};
 		}
 
 		public static class RdoGuids

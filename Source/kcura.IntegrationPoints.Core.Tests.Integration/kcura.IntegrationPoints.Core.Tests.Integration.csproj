@@ -58,7 +58,6 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="Services\IntegrationPointProfileServiceTests.cs" />
     <Compile Include="Tagging\SourceDocumentsTaggerTests.cs" />
   </ItemGroup>
   <ItemGroup>

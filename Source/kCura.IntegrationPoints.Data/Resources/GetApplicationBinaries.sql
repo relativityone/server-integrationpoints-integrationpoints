@@ -10,4 +10,4 @@ FROM
 					RF.[ArtifactID] = RFD.[ArtifactID]
 WHERE 
 					RF.[ApplicationGuid]=@ApplicationGuid
-	
+	AND				RF.[FileType]=0
