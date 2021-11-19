@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[IdentifiedTest("932edc63-2e14-4565-98ca-e459aa308b53")]
 		[SmokeTest]
+		[Ignore("")]
 		public void Ldap_MultipleJobs_AgentDropsJob_RunJob()
 		{
 			Job job1 = null;
@@ -123,6 +124,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[IdentifiedTest("8b8f296a-d5e7-420d-b801-b8a7c30f0c42")]
+		[Ignore("")]
 		public void Ldap_MultipleJobs_AgentDropsJob_ScheduledJob()
 		{
 			Job job1 = null;

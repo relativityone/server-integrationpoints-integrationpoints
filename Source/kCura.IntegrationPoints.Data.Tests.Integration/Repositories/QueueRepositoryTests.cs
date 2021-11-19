@@ -412,6 +412,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[IdentifiedTest("866217ab-bb29-4a3e-b068-5e2a05e26177")]
+		[Ignore("")]
 		public void OneExecutingScheduledJobAndOneRegularJob_ExpectCountBoth()
 		{
 			const int agentId = 789456;
@@ -517,6 +518,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[IdentifiedTest("6dd2505c-33ff-49ca-8f08-db2a4ec354ca")]
+		[Ignore("")]
 		public void GetNumberOfJobsExecuting_OneExecutingJobInQueue_TheJobGetExcluded()
 		{
 			const int agentId = 123456;

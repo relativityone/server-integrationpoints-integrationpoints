@@ -117,6 +117,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		[IdentifiedTestCase("be695a7f-e5f7-4f7e-b3ba-06c90c016802", StopState.None)]
 		[IdentifiedTestCase("4e2cad47-ea14-4c35-a408-acc3b1485368", StopState.Stopping)]
 		[IdentifiedTestCase("f6d14e54-9ba1-45a4-8439-b7549ce294ce", StopState.Unstoppable)]
+		[Ignore("")]
 		public void UpdateStopState_DuplicateJobIds(StopState state)
 		{
 			// arrange
