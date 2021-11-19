@@ -93,6 +93,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 				MoveExistingDocuments = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.MoveExistingDocumentsGuid)),
 				NativesBehavior = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.NativesBehaviorGuid)).GetEnumFromDescription<ImportNativeFileCopyMode>(),
 				RdoArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.RdoArtifactTypeIdGuid)),
+				DestinationRdoArtifactTypeId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.DestinationRdoArtifactTypeIdGuid)),
 				JobHistoryToRetryId = ReadSyncConfigurationValue<int?>(configuration, new Guid(SyncRdoGuids.JobHistoryToRetryIdGuid)),
 				JobHistoryId = ReadSyncConfigurationValue<int>(configuration, new Guid(SyncRdoGuids.JobHistoryIdGuid)),
 				ImageImport = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.ImageImportGuid)),

@@ -27,11 +27,18 @@ namespace Relativity.Sync.SyncConfiguration
 	        _fieldsMappingBuilder = fieldsMappingBuilder;
 
             SyncConfiguration.RdoArtifactTypeId = options.RdoArtifactTypeId;
-            SyncConfiguration.DataSourceType = DataSourceType.View;
+            SyncConfiguration.DestinationRdoArtifactTypeId = options.DestinationRdoArtifactTypeId;
 
+            SyncConfiguration.DataSourceType = DataSourceType.View;
             SyncConfiguration.DataSourceArtifactId = options.SourceViewArtifactId;
         }
 
+		public INonDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingAction)
+        {
+            _fielsdMappingAction = fieldsMappingAction;
+            return this;
+		}
+        
         protected override async Task ValidateAsync()
         {
             SetFieldsMapping();
@@ -71,10 +78,5 @@ namespace Relativity.Sync.SyncConfiguration
 	        }
         }
 
-        public INonDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingAction)
-        {
-            _fielsdMappingAction = fieldsMappingAction;
-            return this;
-        }
     }
 }

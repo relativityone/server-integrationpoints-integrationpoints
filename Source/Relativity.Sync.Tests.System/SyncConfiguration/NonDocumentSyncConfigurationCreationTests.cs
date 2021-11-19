@@ -16,6 +16,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 	internal class NonDocumentSyncConfigurationCreationTests : SyncConfigurationCreationTestsBase
 	{
 		private const int RdoArtifactTypeId = (int)ArtifactType.Production;
+		private const int DestinationRdoArtifactTypeId = (int)ArtifactType.Production;
 		private const string DefaultViewName = "All Productions";
 
 		[IdentifiedTest("23DAD98E-10B3-4AD8-947F-3E314624600D")]
@@ -27,13 +28,14 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			
 			ISyncContext syncContext = new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-			NonDocumentSyncOptions options = new NonDocumentSyncOptions(viewArtifactId, RdoArtifactTypeId);
+			NonDocumentSyncOptions options = new NonDocumentSyncOptions(viewArtifactId, RdoArtifactTypeId, DestinationRdoArtifactTypeId);
 
 			// Act
 			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
 				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureNonDocumentSync(options)
-				.SaveAsync().ConfigureAwait(false);
+				.SaveAsync()
+				.ConfigureAwait(false);
 
 			// Assert
 			await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
@@ -45,7 +47,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			// Arrange
 			int viewArtifactId = 1111;
 			ISyncContext syncContext = new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
-			NonDocumentSyncOptions options = new NonDocumentSyncOptions(viewArtifactId, RdoArtifactTypeId);
+			NonDocumentSyncOptions options = new NonDocumentSyncOptions(viewArtifactId, RdoArtifactTypeId, DestinationRdoArtifactTypeId);
 
 			// Act
 			Func<Task<int>> action = async () => await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
@@ -62,6 +64,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			return new SyncConfigurationRdo
 			{
 				RdoArtifactTypeId = RdoArtifactTypeId,
+				DestinationRdoArtifactTypeId = DestinationRdoArtifactTypeId,
 				DataSourceType = DataSourceType.View,
 				DataSourceArtifactId = viewArtifactId,
 				DestinationWorkspaceArtifactId = DestinationWorkspaceId,
