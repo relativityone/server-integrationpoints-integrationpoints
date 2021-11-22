@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[IdentifiedTestCase("7256fb90-5742-4458-978d-94349eb287ef", ImportNativeFileCopyModeEnum.CopyFiles)]
 		[IdentifiedTestCase("1f31ef1c-9917-4712-98c4-4a97a067169d", ImportNativeFileCopyModeEnum.SetFileLinks)]
-		[Ignore("")]
+		[Ignore("Ignoring due to random fails")]
 		public void NativesShouldBeDeletedInTargetWorkspace_InImportNativesModes(ImportNativeFileCopyModeEnum importNativeFileCopyMode)
 		{
 			TestNativeFilesImport(false, true, true, importNativeFileCopyMode, false);

@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 
 		[IdentifiedTest("750ec1e6-7446-44bd-9dbd-641d04e5b8a4")]
 		[SmokeTest]
-		[Ignore("")]
+		[Ignore("Ignoring due to random fails")]
 		public void ItShouldReturnSourceWorkspaceFields()
 		{
 			//Arrange
