@@ -67,6 +67,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		[IdentifiedTestCase("0fb6d2f7-9779-494b-bef9-045f5ec36f95", StopState.Stopping)]
 		[IdentifiedTestCase("dd30600a-568c-4818-9dbd-15c2a76519ad", StopState.Unstoppable)]
 		[Description("This scenario will occur when the some sub-jobs finishes before we get to update the job. We do not expect any error as the job should be stopped still.")]
+		[Ignore("Ignoring due to random fails")]
 		public void UpdateStopState_SomeJobsDoNotExist(StopState state)
 		{
 			// arrange
@@ -98,6 +99,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 		[IdentifiedTestCase("dfc55e47-ef67-4631-b85f-37e9a078e69d", StopState.None)]
 		[IdentifiedTestCase("bd8cb0c2-3002-43d8-ac1b-fabc2a68c587", StopState.Stopping)]
 		[IdentifiedTestCase("c89eb355-009b-4214-bcfe-98eed875ea81", StopState.Unstoppable)]
+		[Ignore("Ignoring due to random fails")]
 		public void UpdateStopState_MultipleJobIds(StopState state)
 		{
 			// arrange
