@@ -30,6 +30,7 @@ namespace Relativity.Sync.RDOs
         public const string MoveExistingDocumentsGuid = "26F9BF88-420D-4EFF-914B-C47BA36E10BF";
         public const string NativesBehaviorGuid = "D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2";
         public const string RdoArtifactTypeIdGuid = "4DF15F2B-E566-43CE-830D-671BD0786737";
+        public const string DestinationRdoArtifactTypeIdGuid = "2C12570E-1D4F-4A58-A049-6ACCD2192BDE";
         public const string JobHistoryToRetryIdGuid = "DFCEC105-F6E1-44BE-B614-3876FE002FF6";
         public const string ImageImportGuid = "B282BBE4-7B32-41D1-BB50-960A0E483BB5";
         public const string IncludeOriginalImagesGuid = "F2CAD5C5-63D5-49FC-BD47-885661EF1D8B";
