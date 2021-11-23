@@ -69,6 +69,7 @@
           <Assembly>Source\Relativity.IntegrationPoints.FieldsMapping\bin\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
         </Assemblies>
         <ResourceFiles>
+		  <ResourceFile>ApplicationsXML\deploy.yaml</ResourceFile>
           <ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\IntegrationPointProfile\integration-point-profile-event-handler.js</ResourceFile>
           <ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\IntegrationPoint\integration-point-event-handler.js</ResourceFile>          
         </ResourceFiles>
