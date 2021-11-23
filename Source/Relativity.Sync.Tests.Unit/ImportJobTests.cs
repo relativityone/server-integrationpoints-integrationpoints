@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit
 			_syncImportBulkArtifactJobMock.SetupGet(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
 
 			_importJob = new ImportJob(_syncImportBulkArtifactJobMock.Object, _semaphoreMock.Object, _jobHistoryErrorRepositoryMock.Object,
-				_SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, new EmptyLogger());
+				new ItemLevelErrorLogAggregator(new EmptyLogger()), _SOURCE_WORKSPACE_ARTIFACT_ID, _JOB_HISTORY_ARTIFACT_ID, new EmptyLogger());
 		}
 
 		[Test]

@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Utils
+﻿using System.Text.RegularExpressions;
+
+namespace Relativity.Sync.Utils
 {
 	internal static class StringExtensions
 	{
@@ -14,6 +16,28 @@
 				: value;
 
 			return truncatedValue;
+		}
+
+		/// <summary>
+		/// Replaces a group from regex in a string
+		/// </summary>
+		/// <param name="text">Text</param>
+		/// <param name="regex">Regex with groups</param>
+		/// <param name="groupToReplace">0-based index of a group</param>
+		/// <param name="replaceWith">text to replace with</param>
+		/// <returns></returns>
+		internal static string ReplaceGroup(this string text, string regex, int groupToReplace, string replaceWith)
+		{
+			groupToReplace++; // Match.Groups collection indexes start at 1, but 0-based is more natural in C#
+			Match matches = Regex.Match(text, regex, RegexOptions.IgnoreCase);
+			if (matches.Success 
+			    && matches.Groups.Count >= groupToReplace 
+			    && matches.Groups[groupToReplace].Success)
+			{
+				return text.Replace(matches.Groups[groupToReplace].Value, replaceWith);
+			}
+
+			return text;
 		}
 	}
 }

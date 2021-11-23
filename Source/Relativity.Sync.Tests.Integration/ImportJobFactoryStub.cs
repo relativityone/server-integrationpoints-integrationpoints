@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Integration
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Task<Executors.IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration)
 		{
 			Executors.IImportJob importJob = new ImportJob(_importBulkArtifactJob, _semaphoreSlim, _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+				new ItemLevelErrorLogAggregator(_logger), configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 			return Task.FromResult(importJob);
 		}
 	}

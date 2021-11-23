@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
@@ -19,6 +20,39 @@ namespace Relativity.Sync.Tests.Unit
 			
 			// Assert
 			return actualString;
+		}
+
+		[Test]
+		public void ReplaceGroupTest()
+		{
+			// Arrange
+			string text =
+				@"IAPI - Field [ExtractedText] Error: Cannot create \\files2.T005.ukso060000.relativity.one\T005C\Files\EDDS15546933\relativity_ukso060000-t005_edds15546933_10\Fields.ExtractedText\c52\35e because a file or directory with the same name already exists.";
+			string regex = @"(Cannot create )(.*)( because)";
+			
+			// Act
+			string result = text.ReplaceGroup(regex, 1, "{path}");
+			
+			// Assert
+			result.Should()
+				.Be(
+					@"IAPI - Field [ExtractedText] Error: Cannot create {path} because a file or directory with the same name already exists.");
+		}
+		
+		[Test]
+		public void ReplaceGroupTest_NoMatch()
+		{
+			// Arrange
+			string text =
+				@"IAPI - Field [ExtractedText] Error: Cannot create \\files2.T005.ukso060000.relativity.one\T005C\Files\EDDS15546933\relativity_ukso060000-t005_edds15546933_10\Fields.ExtractedText\c52\35e because a file or directory with the same name already exists.";
+			string regex = @"(Cannot create )(something specific)( because)";
+			
+			// Act
+			string result = text.ReplaceGroup(regex, 1, "{path}");
+			
+			// Assert
+			result.Should()
+				.Be(text);
 		}
 	}
 }

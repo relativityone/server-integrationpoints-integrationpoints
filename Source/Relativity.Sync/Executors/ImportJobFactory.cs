@@ -60,7 +60,7 @@ namespace Relativity.Sync.Executors
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
 			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+				new ItemLevelErrorLogAggregator(_logger), configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
 			_logger.LogInformation("Import Settings: {@settings}", 
 				ImageImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
@@ -109,7 +109,7 @@ namespace Relativity.Sync.Executors
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
 			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+				new ItemLevelErrorLogAggregator(_logger), configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
 			_logger.LogInformation("Import Settings: {@settings}", 
 				NativeImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
