@@ -12,11 +12,14 @@ using Autofac;
 using kCura.WinEDDS.Service.Export;
 using Moq;
 using Moq.Language.Flow;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer;
+using Relativity.Toggles;
 
 namespace Relativity.Sync.Tests.Integration.Helpers
 {
@@ -36,19 +39,22 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		public Mock<ISourceServiceFactoryForUser> SourceServiceFactoryForUser { get; }
 		public Mock<ISourceServiceFactoryForAdmin> SourceServiceFactoryForAdmin { get; }
 		public Mock<IObjectManager> ObjectManager { get; }
+		public Mock<ISearchService> SearchService { get; }
 		public Mock<ISearchManager> SearchManager { get; }
 
-		public DocumentTransferServicesMocker()
+        public DocumentTransferServicesMocker()
 		{
 			SourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			SourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			ObjectManager = new Mock<IObjectManager>();
-			SearchManager = new Mock<ISearchManager>();
+			SearchService = new Mock<ISearchService>();
+            SearchManager = new Mock<ISearchManager>();
 		}
 
 		private void SetupServicesWithTestData(DocumentImportJob job)
 		{
 			SetupServiceCreation(ObjectManager);
+            SetupServiceCreation(SearchService);
 			SetupFields(job.Schema);
 		}
 
@@ -74,32 +80,40 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			SetupFailingServiceCreation<IObjectManager>();
 		}
 
-		public void SetupFailingSearchManagerCreation()
+		public void SetupFailingSearchServiceCreation()
 		{
-			SetupFailingServiceCreation<ISearchManager>();
+			SetupFailingServiceCreation<ISearchService>();
 		}
 
-		public void SetupFailingObjectManagerCall<TResult>(Expression<Func<IObjectManager, TResult>> expression)
+        public void SetupFailingSearchManagerCreation()
+        {
+            SetupFailingServiceCreation<ISearchManager>();
+        }
+
+        public void SetupFailingObjectManagerCall<TResult>(Expression<Func<IObjectManager, TResult>> expression)
 		{
 			ObjectManager.Setup(expression).Throws<AggregateException>();
 		}
 
-		public void SetupFailingSearchManagerCall<TResult>(Expression<Func<ISearchManager, TResult>> expression)
+		public void SetupFailingSearchServiceCall<TResult>(Expression<Func<ISearchService, TResult>> expression)
 		{
-			SearchManager.Setup(expression).Throws<AggregateException>();
+			SearchService.Setup(expression).Throws<AggregateException>();
 		}
-
+        public void SetupFailingSearchManagerCall<TResult>(Expression<Func<ISearchManager, TResult>> expression)
+        {
+            SearchManager.Setup(expression).Throws<AggregateException>();
+        }
 		public void RegisterServiceMocks(ContainerBuilder containerBuilder)
 		{
 			containerBuilder.RegisterInstance(SourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(SourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
 
-			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
-			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
-				.Returns(Task.FromResult(SearchManager.Object));
+            Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
+            searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
+                .Returns(Task.FromResult(SearchManager.Object));
 
-			containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>();
-		}
+            containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>();
+        }
 
 		public void SetupLongTextStream(string fieldName, Encoding encoding, string streamContents)
 		{
@@ -230,75 +244,101 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 		private void SetupNatives(Document[] documents)
 		{
-			DataSet dataSet = GetDataSetForDocumentsWithNatives(documents);
-			SearchManager
-				.Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
-				.Returns(dataSet);
+            DataSet searchManagerDataSet = GetSearchManagerDataSetForDocumentsWithNatives(documents);
+            SearchManager
+                .Setup(x => x.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(searchManagerDataSet);
+
+            DataSetWrapper searchServiceDataSet = GetSearchServiceDataSetForDocumentsWithNatives(documents);
+            SearchService
+                .Setup(x => x.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(searchServiceDataSet);
 		}
+
+        private static DataSetWrapper GetSearchServiceDataSetForDocumentsWithNatives(Document[] documents)
+        {
+            DataSet dataSet = GetSearchManagerDataSetForDocumentsWithNatives(documents);
+            return new DataSetWrapper(dataSet);
+        }
+
+        private static DataSet GetSearchManagerDataSetForDocumentsWithNatives(Document[] documents)
+        {
+            DataSet dataSet = new DataSet();
+            DataTable dataTable = new DataTable("DataTableWithNatives");
+            dataSet.Tables.Add(dataTable);
+            dataTable.Columns.AddRange(new[]
+            {
+                new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
+                new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
+                new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
+                new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
+            });
+            DataRow[] rows = documents.Select(document =>
+            {
+                DataRow dataRow = dataTable.NewRow();
+                dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
+                dataRow[_LOCATION_COLUMN_NAME] = document.NativeFile.Location;
+                dataRow[_FILENAME_COLUMN_NAME] = document.NativeFile.Filename;
+                dataRow[_SIZE_COLUMN_NAME] = document.NativeFile.Size;
+                return dataRow;
+            }).ToArray();
+            rows.ForEach(row => dataTable.Rows.Add(row));
+            return dataSet;
+        }
 
 		private void SetupImages(Document[] documents)
 		{
-			DataSet dataSet = GetDataSetForDocumentsWithImages(documents);
-			SearchManager
-				.Setup(x => x.RetrieveImagesForDocuments(It.IsAny<int>(), It.IsAny<int[]>()))
-				.Returns(dataSet);
-		}
+            DataSet searchManagerDataSet = GetSearchManagerDataSetForDocumentsWithImages(documents);
+            SearchManager
+                .Setup(x => x.RetrieveImagesForDocuments(It.IsAny<int>(), It.IsAny<int[]>()))
+                .Returns(searchManagerDataSet);
 
-		private static DataSet GetDataSetForDocumentsWithNatives(Document[] documents)
-		{
+            DataSetWrapper searchServiceDataSet = GetSearchServiceDataSetForDocumentsWithImages(documents);
+            SearchService
+                .Setup(x => x.RetrieveImagesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>(), It.IsAny<string>()))
+                .ReturnsAsync(searchServiceDataSet);
+		}
+		
+        private static DataSetWrapper GetSearchServiceDataSetForDocumentsWithImages(Document[] documents)
+        {
+            DataSet dataSet = GetSearchManagerDataSetForDocumentsWithImages(documents);
+            return new DataSetWrapper(dataSet);
+        }
+
+		private static DataSet GetSearchManagerDataSetForDocumentsWithImages(Document[] documents)
+        {
 			DataSet dataSet = new DataSet();
-			DataTable dataTable = new DataTable("DataTableWithNatives");
-			dataSet.Tables.Add(dataTable);
-			dataTable.Columns.AddRange(new[]
-			{
-				new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
-				new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
-				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
-				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
-			});
-			DataRow[] rows = documents.Select(document =>
-			{
-				DataRow dataRow = dataTable.NewRow();
-				dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
-				dataRow[_LOCATION_COLUMN_NAME] = document.NativeFile.Location;
-				dataRow[_FILENAME_COLUMN_NAME] = document.NativeFile.Filename;
-				dataRow[_SIZE_COLUMN_NAME] = document.NativeFile.Size;
-				return dataRow;
-			}).ToArray();
-			rows.ForEach(row => dataTable.Rows.Add(row));
-			return dataSet;
-		}
+            DataTable dataTable = new DataTable("DataTableWithImages");
+            dataSet.Tables.Add(dataTable);
+            dataTable.Columns.AddRange(new[]
+            {
+                new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
+                new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
+                new DataColumn(_IDENTIFIER_COLUMN_NAME, typeof(string)),
+                new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
+                new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
+            });
 
-		private static DataSet GetDataSetForDocumentsWithImages(Document[] documents)
-		{
-			DataSet dataSet = new DataSet();
-			DataTable dataTable = new DataTable("DataTableWithImages");
-			dataSet.Tables.Add(dataTable);
-			dataTable.Columns.AddRange(new[]
-			{
-				new DataColumn(_DOCUMENT_ARTIFACT_ID_COLUMN_NAME, typeof(int)),
-				new DataColumn(_FILENAME_COLUMN_NAME, typeof(string)),
-				new DataColumn(_IDENTIFIER_COLUMN_NAME, typeof(string)),
-				new DataColumn(_LOCATION_COLUMN_NAME, typeof(string)),
-				new DataColumn(_SIZE_COLUMN_NAME, typeof(long))
-			});
+            foreach (Document document in documents)
+            {
+                foreach (ImageFile image in document.Images)
+                {
+                    DataRow dataRow = dataTable.NewRow();
+                    dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
+                    dataRow[_FILENAME_COLUMN_NAME] = image.Filename;
+                    dataRow[_IDENTIFIER_COLUMN_NAME] = image.Identifier;
+                    dataRow[_LOCATION_COLUMN_NAME] = image.Location;
+                    dataRow[_SIZE_COLUMN_NAME] = image.Size;
+                    dataTable.Rows.Add(dataRow);
+                }
+            }
 
-			foreach (Document document in documents)
-			{
-				foreach (ImageFile image in document.Images)
-				{
-					DataRow dataRow = dataTable.NewRow();
-					dataRow[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME] = document.ArtifactId;
-					dataRow[_FILENAME_COLUMN_NAME] = image.Filename;
-					dataRow[_IDENTIFIER_COLUMN_NAME] = image.Identifier;
-					dataRow[_LOCATION_COLUMN_NAME] = image.Location;
-					dataRow[_SIZE_COLUMN_NAME] = image.Size;
-					dataTable.Rows.Add(dataRow);
-				}
-			}
-			
-			return dataSet;
-		}
+            return dataSet;
+        }
+
+
+
+		
 
 		private static bool MatchesQueryByIdentifierRequest(QueryRequest request)
 		{

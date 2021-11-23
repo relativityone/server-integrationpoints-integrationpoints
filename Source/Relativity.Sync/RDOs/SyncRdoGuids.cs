@@ -30,12 +30,14 @@ namespace Relativity.Sync.RDOs
         public const string MoveExistingDocumentsGuid = "26F9BF88-420D-4EFF-914B-C47BA36E10BF";
         public const string NativesBehaviorGuid = "D18F0199-7096-4B0C-AB37-4C9A3EA1D3D2";
         public const string RdoArtifactTypeIdGuid = "4DF15F2B-E566-43CE-830D-671BD0786737";
+        public const string DestinationRdoArtifactTypeIdGuid = "2C12570E-1D4F-4A58-A049-6ACCD2192BDE";
         public const string JobHistoryToRetryIdGuid = "DFCEC105-F6E1-44BE-B614-3876FE002FF6";
         public const string ImageImportGuid = "B282BBE4-7B32-41D1-BB50-960A0E483BB5";
         public const string IncludeOriginalImagesGuid = "F2CAD5C5-63D5-49FC-BD47-885661EF1D8B";
         public const string ProductionImagePrecedenceGuid = "421CF05E-BAB4-4455-A9CA-FA83D686B5ED";
         public const string ImageFileCopyModeGuid = "BD5DC6D2-FAA2-4312-8DC0-4D1B6945DFE1";
         public const string SnapshotIdGuid = "D1210A1B-C461-46CB-9B73-9D22D05880C5";
+        public const string ObjectLinkingSnapshotGuid = "5CB09B03-17B6-408A-B3DF-390377312954";
         public const string SnapshotRecordsCountGuid = "57B93F20-2648-4ACF-973B-BCBA8A08E2BD";
         public const string SourceJobTagArtifactIdGuid = "C0A63A29-ABAE-4BF4-A3F4-59E5BD87A33E";
         public const string SourceJobTagNameGuid = "DA0E1931-9460-4A61-9033-A8035697C1A4";

@@ -22,6 +22,9 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.RdoArtifactTypeIdGuid, RdoFieldType.WholeNumber)]
         public int RdoArtifactTypeId { get; set; }
 
+        [RdoField(SyncRdoGuids.DestinationRdoArtifactTypeIdGuid, RdoFieldType.WholeNumber)]
+        public int DestinationRdoArtifactTypeId { get; set; }
+
         [RdoEnumField(SyncRdoGuids.DataSourceTypeGuid)]
         public DataSourceType DataSourceType { get; set; }
 
@@ -87,6 +90,9 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.SnapshotIdGuid, RdoFieldType.FixedLengthText)]
         public Guid? SnapshotId { get; set; }
+
+        [RdoField(SyncRdoGuids.ObjectLinkingSnapshotGuid, RdoFieldType.FixedLengthText)]
+        public Guid? ObjectLinkingSnapshotId { get; set; }
 
         [RdoField(SyncRdoGuids.SnapshotRecordsCountGuid, RdoFieldType.WholeNumber)]
         public int SnapshotRecordsCount { get; set; }

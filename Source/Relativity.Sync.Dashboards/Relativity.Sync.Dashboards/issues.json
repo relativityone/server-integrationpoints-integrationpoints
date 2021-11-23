@@ -682,5 +682,33 @@
 	{
 		"Jira": "REL-600286",
 		"Exception": "Relativity.Sync.Executors.RelativitySourceJobTagRepositoryException:*Create Ancestry Failed*"
+	},
+	{
+		"Jira": "REL-609259",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: Violation of PRIMARY KEY constraint*Cannot insert duplicate key in object 'EDDSDBO.JobHistoryError'.*"
+	},
+	{
+		"Jira": "REL-609778",
+		"Exception": "*Relativity.Services.Exceptions.ServiceException: Read Failed*Relativity.Sync.Executors.DestinationWorkspaceObjectTypesCreationExecutor.<ExecuteAsync>*"
+	},
+	{
+		"Jira": "REL-609800",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error occured while executing 'LoadColumnDefinitionCacheStage'*Error: An item with the same key has already been added.*"
+	},
+	{
+		"Jira": "REL-609821",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Web.Services.Protocols.SoapException: Object reference not set to an instance of an object.*"
+	},
+	{
+		"Jira": "REL-609832",
+		"Exception": "*Relativity.Services.Exceptions.ConflictException: Create Ancestry Failed*SnapshotPartitionExecutor.<ExecuteAsync>*"
+	},
+	{
+		"Jira": "REL-609859",
+		"Exception": "*Relativity.Sync.SyncException: Failed to create Saved Search for promoted documents in destination workspace*kcura.edds.contentanalystsearchprovider.dll*DestinationWorkspaceSavedSearchCreationExecutor*"
+	},
+	{
+		"Jira": "REL-609880",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Index was out of range.*LongTextFieldSanitizer.<GetItemArtifactIdAsync>*"
 	}
 ]

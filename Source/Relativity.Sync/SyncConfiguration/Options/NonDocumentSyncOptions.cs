@@ -5,23 +5,29 @@ namespace Relativity.Sync.SyncConfiguration.Options
     /// </summary>
     public class NonDocumentSyncOptions
     {
-        /// <summary>
-        /// Creates instance of <see cref="NonDocumentSyncOptions"/> class
-        /// </summary>
-        /// <param name="sourceViewArtifactId">Source object view Artifact Id</param>
-        /// <param name="rdoArtifactTypeId">Object type Artifact If</param>
-        public NonDocumentSyncOptions(int sourceViewArtifactId, int rdoArtifactTypeId)
-        {
-            SourceViewArtifactId = sourceViewArtifactId;
-            RdoArtifactTypeId = rdoArtifactTypeId;
-        }
+		/// <summary>
+		/// Creates instance of <see cref="NonDocumentSyncOptions"/> class
+		/// </summary>
+		/// <param name="sourceViewArtifactId">Source object view Artifact Id</param>
+		/// <param name="rdoArtifactTypeId">Artifact Type ID of the source RDO</param>
+		/// <param name="destinationRdoArtifactTypeId">Artifact Type ID of the destination RDO</param>
+		public NonDocumentSyncOptions(int sourceViewArtifactId, int rdoArtifactTypeId, int destinationRdoArtifactTypeId)
+		{
+			SourceViewArtifactId = sourceViewArtifactId;
+			RdoArtifactTypeId = rdoArtifactTypeId;
+			DestinationRdoArtifactTypeId = destinationRdoArtifactTypeId;
+		}
+
+		/// <summary>
+		/// Determines Artifact Type ID of the source RDO
+		/// </summary>
+		public int RdoArtifactTypeId { get; }
 
         /// <summary>
-        /// Determine type of transferred objects
+        /// Determines Artifact Type ID of the destination RDO
         /// </summary>
-        public int RdoArtifactTypeId { get; }
-        
-        
+        public int DestinationRdoArtifactTypeId { get; }
+                
         /// <summary>
         /// Determines the Artifact Id of the source objects view
         /// </summary>

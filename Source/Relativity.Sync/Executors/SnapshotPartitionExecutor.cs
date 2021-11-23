@@ -23,7 +23,7 @@ namespace Relativity.Sync.Executors
 			IBatch batch;
 			try
 			{
-				batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+				batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -48,7 +48,7 @@ namespace Relativity.Sync.Executors
 			{
 				foreach (SnapshotPart snapshotPart in snapshot.GetSnapshotParts())
 				{
-					await _batchRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, snapshotPart.NumberOfRecords, snapshotPart.StartingIndex)
+					await _batchRepository.CreateAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId, snapshotPart.NumberOfRecords, snapshotPart.StartingIndex)
 						.ConfigureAwait(false);
 				}
 			}

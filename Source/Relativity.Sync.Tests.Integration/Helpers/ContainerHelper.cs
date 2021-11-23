@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
-using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 using Relativity.Telemetry.APM;
@@ -84,7 +82,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			containerFactory.RegisterSyncDependencies(containerBuilder, parameters,
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
 
-			MockSearchManagerFactory(containerBuilder);
+            MockSearchManagerFactory(containerBuilder);
 
 			return containerBuilder;
 		}
@@ -127,14 +125,14 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			return new RelativityServices(apm, servicesMgr.Object, authenticationUri, helper);
 		}
 
-		public static void MockSearchManagerFactory(ContainerBuilder containerBuilder)
-		{
-			Mock<ISearchManager> searchManager = new Mock<ISearchManager>();
-			Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
-			searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
-				.Returns(Task.FromResult(searchManager.Object));
+        public static void MockSearchManagerFactory(ContainerBuilder containerBuilder)
+        {
+            Mock<ISearchManager> searchManager = new Mock<ISearchManager>();
+            Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
+            searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
+                .Returns(Task.FromResult(searchManager.Object));
 
-			containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>().SingleInstance();
-		}
+            containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>().SingleInstance();
+        }
 	}
 }

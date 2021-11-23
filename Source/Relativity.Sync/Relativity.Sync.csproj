@@ -50,6 +50,7 @@
     <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3000.0.1]" />
     <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.10.0-pre.1" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" Version="0.10.0-pre.1" />
+    <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" Version="0.1.30" />
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
@@ -63,10 +64,10 @@
     <PackageReference Include="Banzai.Autofac" Version="[3.0.3,4.0.0)" />
     <PackageReference Include="Newtonsoft.Json" Version="[6.0.8,13.0.0)" />
     <PackageReference Include="Relativity.Toggles" Version="1.0.1" />
+    <PackageReference Include="System.Reactive.Linq" Version="[4.0.0]" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web.Services" />
-    <PackageReference Include="System.Reactive.Linq" Version="[4.0.0]" />
   </ItemGroup>
 </Project>

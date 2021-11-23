@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Common
 	[ExcludeFromCodeCoverage]
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
-		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration,
+		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Common
 
 		public bool MoveExistingDocuments { get; set; }
 
-		public int RdoArtifactTypeId => (int)ArtifactType.Document;
+		public int RdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
 
 		public string GetSourceWorkspaceTag() => string.Empty;
 

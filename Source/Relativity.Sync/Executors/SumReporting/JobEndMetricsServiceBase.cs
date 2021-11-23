@@ -40,7 +40,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			jobEndMetric.TotalRecordsFailed = 0;
 			jobEndMetric.TotalRecordsRequested = 0;
 
-			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+			IEnumerable<IBatch> batches = await _batchRepository.GetAllAsync(_configuration.SourceWorkspaceArtifactId, _configuration.SyncConfigurationArtifactId, _configuration.ExportRunId).ConfigureAwait(false);
 			foreach (IBatch batch in batches)
 			{
 				jobEndMetric.TotalRecordsTransferred += batch.TransferredDocumentsCount;

@@ -25,7 +25,7 @@ namespace Relativity.Sync.ExecutionConstrains
 
 			try
 			{
-				IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
+				IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
 				if (batchIds == null || !batchIds.Any())
 				{
 					_syncLog.LogInformation("No batches to execute has been found.");

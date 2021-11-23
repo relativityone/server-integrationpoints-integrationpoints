@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Configuration;
+﻿using System;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
@@ -18,6 +19,20 @@ namespace Relativity.Sync.Storage
 
 		public bool IncludeOriginalImageIfNotFoundInProductions =>
 			_cache.GetFieldValue(x => x.IncludeOriginalImages);
+
+        public Guid ExportRunId
+        {
+            get
+            {
+                Guid? snapshotId = _cache.GetFieldValue(x => x.SnapshotId);
+                if (snapshotId == Guid.Empty)
+                {
+                    snapshotId = null;
+                }
+
+                return snapshotId ?? throw new ArgumentException($"Run ID needs to be valid GUID, but null found.");
+            }
+        }
 
 		public ImageJobStartMetricsConfiguration(IConfiguration cache, ISerializer serializer, SyncJobParameters syncJobParameters)
 		{

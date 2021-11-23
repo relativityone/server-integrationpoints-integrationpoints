@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Autofac;
+﻿using Autofac;
 using Relativity.AutomatedWorkflows.SDK;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;

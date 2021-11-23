@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			batch.SetupGet(x => x.TaggedDocumentsCount).Returns(taggedItemsPerBatch);
 			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCountPerBatch);
 			var testBatches = new List<IBatch> { batch.Object, batch.Object };
-			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(testBatches);
+			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(testBatches);
 
 			const int testNumberOfFields = 10;
 			IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.NativeFileFilenameField(), testNumberOfFields);
@@ -165,7 +165,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Arrange
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
 
-			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).Throws<SyncException>();
+			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).Throws<SyncException>();
 
 			// Act
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);

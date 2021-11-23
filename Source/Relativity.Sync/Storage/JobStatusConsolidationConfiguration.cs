@@ -18,5 +18,19 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
 		public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
 		public int JobHistoryArtifactId => _cache.GetFieldValue(x => x.JobHistoryId);
+
+        public Guid ExportRunId
+        {
+            get
+            {
+                Guid? snapshotId = _cache.GetFieldValue(x => x.SnapshotId);
+                if (snapshotId == Guid.Empty)
+                {
+                    snapshotId = null;
+                }
+
+                return snapshotId ?? throw new ArgumentException($"Run ID needs to be valid GUID, but null found.");
+            }
+        }
 	}
 }

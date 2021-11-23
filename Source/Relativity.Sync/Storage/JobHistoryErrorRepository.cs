@@ -19,7 +19,9 @@ namespace Relativity.Sync.Storage
 
         private const int _MAX_NUMBER_OF_RETRIES = 3;
         private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
-        
+        private const string ViolationOfPrimaryKeyConstraint = "Violation of PRIMARY KEY constraint";
+        private const string CannotInsertDuplicateKeyInObject = "Cannot insert duplicate key in object";
+
         private readonly IDateTime _dateTime;
         private readonly ISourceServiceFactoryForUser _serviceFactory;
         private readonly IRdoGuidConfiguration _rdoConfiguration;
@@ -112,6 +114,7 @@ namespace Relativity.Sync.Storage
         {
             RetryPolicy massCreateRetryPolicy = Policy
                 .Handle<SyncException>()
+                .Or<Relativity.Services.Exceptions.ServiceException>(ex => ex.Message.Contains(ViolationOfPrimaryKeyConstraint) && ex.Message.Contains(CannotInsertDuplicateKeyInObject))
                 .WaitAndRetryAsync(_MAX_NUMBER_OF_RETRIES, retryAttempt =>
                     {
                         const int maxJitterMs = 100;
