@@ -111,8 +111,8 @@ namespace Relativity.Sync.Tests.Integration
 					int artifactId = value.ArtifactID;
 					int parentArtifactId = value.Parent;
 					objectManager
-						.Setup(x => x.ReadAsync(It.IsAny<int>(), It.Is<ReadRequest>(r => r.Object.ArtifactID == artifactId)))
-						.ReturnsAsync(new ReadResult { Object = new RelativityObject { ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId } } });
+						.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.ArtifactID == artifactId), It.IsAny<int>(), It.IsAny<int>()))
+						.ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> {new RelativityObject { ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId } } } });
 
 					registered.Add(value.ArtifactID);
 				}
