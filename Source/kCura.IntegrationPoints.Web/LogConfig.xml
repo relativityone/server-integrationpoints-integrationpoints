@@ -1,9 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <kCuraLogging masterLoggingConfiguration="EDDS">
 	<rules enabled="true">
-		<rule system="*" loggingLevel="Error" sink="File1"/>
 	</rules>
 	<sinks>
-		<fileSink name="File1" logFileLocation="%RELATIVITY_LOGS%" maxFileSizeInMB ="10000" />
 	</sinks>
 </kCuraLogging>
