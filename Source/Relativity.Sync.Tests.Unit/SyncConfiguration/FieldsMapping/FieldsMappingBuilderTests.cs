@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 
 		private const int _SOURCE_WORKSPACE_ID = 1;
 		private const int _DESTINATION_WORKSPACE_ID = 2;
+		private readonly int _rdoArtifactTypeId = (int)ArtifactType.Production;
 
 		[SetUp]
 		public void SetUp()
@@ -37,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 			syncServicesMgrFake.Setup(x => x.CreateProxy<IFieldManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_fieldManagerFake.Object);
 
-			_sut = new FieldsMappingBuilder(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID,
+			_sut = new FieldsMappingBuilder(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, _rdoArtifactTypeId,
 				syncServicesMgrFake.Object);
 		}
 
@@ -217,7 +218,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 		{
 			_objectManagerFake.Setup(x =>
 					x.QueryAsync(workspaceId, It.Is<QueryRequest>(q => 
-						q.IncludeNameInQueryResult == true && q.Condition.Contains("'Is Identifier' == true")),
+						q.IncludeNameInQueryResult == true && q.Condition.Contains($"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Is Identifier' == true")),
 						It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new QueryResult
 				{
@@ -237,7 +238,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 			_objectManagerFake.Setup(x =>
 					x.QueryAsync(workspaceId, It.Is<QueryRequest>(q =>
 						q.IncludeNameInQueryResult == true 
-						&& q.Condition.Contains($"'Name' == '{fieldName}'")
+						&& q.Condition.Contains($"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Name' == '{fieldName}'")
 						&& q.Fields.Any(f => f.Name == "Is Identifier")),
 						It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new QueryResult

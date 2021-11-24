@@ -13,14 +13,14 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 	{
 		private readonly int _sourceWorkspaceId;
 		private readonly int _destinationWorkspaceId;
-
+		private readonly int _rdoArtifactTypeId;
 		private readonly ISyncServiceManager _servicesMgr;
 
-		public FieldsMappingBuilder(int sourceWorkspaceId, int destinationWorkspaceId, ISyncServiceManager servicesMgr)
+		public FieldsMappingBuilder(int sourceWorkspaceId, int destinationWorkspaceId, int rdoArtifactTypeId, ISyncServiceManager servicesMgr)
 		{
 			_sourceWorkspaceId = sourceWorkspaceId;
 			_destinationWorkspaceId = destinationWorkspaceId;
-
+			_rdoArtifactTypeId = rdoArtifactTypeId;
 			_servicesMgr = servicesMgr;
 
 			FieldsMapping = new List<FieldMap>();
@@ -95,7 +95,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 				{
 					ArtifactTypeID = (int)ArtifactType.Field
 				},
-				Condition = "'Is Identifier' == true",
+				Condition = $"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Is Identifier' == true",
 				IncludeNameInQueryResult = true
 			};
 
@@ -148,7 +148,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 				{
 					ArtifactTypeID = (int)ArtifactType.Field
 				},
-				Condition = $"'Name' == '{fieldName}'",
+				Condition = $"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Name' == '{fieldName}'",
 				Fields = new List<FieldRef>
 				{
 					new FieldRef { Name = "Is Identifier" }
