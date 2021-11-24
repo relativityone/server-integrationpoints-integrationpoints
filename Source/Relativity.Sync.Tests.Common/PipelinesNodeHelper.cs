@@ -165,7 +165,7 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDataSourceSnapshotConfiguration)},
+				new[] {typeof(INonDocumentDataSourceSnapshotConfiguration)},
 				new[]
 				{
 					typeof(IDocumentJobStartMetricsConfiguration),

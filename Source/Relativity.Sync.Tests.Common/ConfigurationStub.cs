@@ -9,7 +9,7 @@ using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 namespace Relativity.Sync.Tests.Common
 {
 	[ExcludeFromCodeCoverage]
-	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
+	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration, INonDocumentDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
@@ -198,6 +198,11 @@ namespace Relativity.Sync.Tests.Common
 			await Task.Yield();
 			SourceWorkspaceTagArtifactId = artifactId;
 			SourceWorkspaceTagName = name;
+		}
+
+		public Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId, int totalRecordsCount)
+		{
+			throw new NotImplementedException();
 		}
 
 		public int ExecutingUserId { get; set; } = _ADMIN_ID;
