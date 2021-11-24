@@ -27,6 +27,8 @@ namespace Relativity.Sync.Storage
 
 		public int DataSourceArtifactId => Cache.GetFieldValue(x => x.DataSourceArtifactId);
 
+		public int RdoArtifactTypeId => Cache.GetFieldValue(x => x.RdoArtifactTypeId);
+
 		public bool IsSnapshotCreated
 		{
 			get

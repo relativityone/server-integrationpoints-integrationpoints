@@ -11,6 +11,8 @@ namespace Relativity.Sync.Configuration
 
 		int DataSourceArtifactId { get; }
 
+		int RdoArtifactTypeId { get; }
+
 		IList<FieldMap> GetFieldMappings();
 
 		bool IsSnapshotCreated { get; }
