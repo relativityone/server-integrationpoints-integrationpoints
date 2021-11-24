@@ -47,7 +47,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             _ripMetricMock.Setup(x => x.GetWorkflowId()).Returns("workflowId");
 
-            _processMemoryHelper.Setup(x => x.GetCurrentProcessMemoryUsage()).Returns(_dummyMemorySize);
             _processMemoryHelper.Setup(x => x.GetApplicationSystemStats()).Returns(
                 new Dictionary<string, object>()
                 {
@@ -55,7 +54,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "AppDomainMemoryInMB", _dummyMemorySize },
                     { "AppDomainLifetimeTotalAllocatedMemoryInMB", _dummyMemorySize },
                     { "PrivateMemoryInMB", _dummyMemorySize },
-                    { "SystemFreeMemoryPercent",  _dummyMemorySize}
+                    { "SystemFreeMemoryPercentage",  _dummyMemorySize},
+                    { "CpuUsageSystem",  _dummyMemorySize},
+                    { "CpuUsageProcess",  _dummyMemorySize}
                 });
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
             _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object);
@@ -232,7 +233,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
             {
-                { "MemoryUsage", _dummyMemorySize},
                 { "JobId", _jobId},
                 { "JobType", _jobType},
                 { "WorkflowId", _jobDetails},
@@ -240,7 +240,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 { "AppDomainMemoryInMB", _dummyMemorySize },
                 { "AppDomainLifetimeTotalAllocatedMemoryInMB", _dummyMemorySize },
                 { "PrivateMemoryInMB", _dummyMemorySize },
-                { "SystemFreeMemoryPercent",  _dummyMemorySize}
+                { "SystemFreeMemoryPercentage",  _dummyMemorySize},
+                { "CpuUsageSystem",  _dummyMemorySize},
+                { "CpuUsageProcess",  _dummyMemorySize}
             };
 
             foreach (var val in valuesToBeSend)
