@@ -29,6 +29,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private IContainer _container;
 
+		private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
 		private const int _ITEM_ARTIFACT_ID = 1012323;
 		private const int _SOURCE_WORKSPACE_ID = 1014023;
 		private const string _IDENTIFIER_FIELD_NAME = "blech";
@@ -169,18 +170,21 @@ namespace Relativity.Sync.Tests.Integration
 
 			foreach (Choice choice in choices)
 			{
-				ReadResult readResult = new ReadResult()
+				QueryResult queryResult = new QueryResult()
 				{
-					Object = new RelativityObject()
-					{
-						ArtifactID = choice.ArtifactID,
-						Name = choice.Name,
-						ParentObject = new RelativityObjectRef()
+					Objects = new List<RelativityObject>
+                    {
+						new RelativityObject
+                        {
+                            ArtifactID = choice.ArtifactID,
+                            Name = choice.Name,
+                            ParentObject = new RelativityObjectRef()
+                        }
 					}
 				};
-				_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.Is<ReadRequest>(r =>
-						r.Object.ArtifactID == choice.ArtifactID)))
-						.ReturnsAsync(readResult);
+				_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
+						r.ObjectType.ArtifactTypeID == _CHOICE_ARTIFACT_TYPE_ID), It.IsAny<int>(), It.IsAny<int>()))
+						.ReturnsAsync(queryResult);
 			}
 
 			string expectedResult = $"Test Name{_MULTI_DELIM}Cool Name{_MULTI_DELIM}Rad Name{_MULTI_DELIM}";
@@ -221,33 +225,41 @@ namespace Relativity.Sync.Tests.Integration
 				nestedChoice,
 			};
 
-			ReadResult queryResultForParent = new ReadResult()
+			QueryResult queryResultForParent = new QueryResult
 			{
-				Object = new RelativityObject()
-				{
-					ArtifactID = parentChoice.ArtifactID,
-					Name = parentChoice.Name,
-					ParentObject = new RelativityObjectRef()
-				}
-			};
-			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.Is<ReadRequest>(r =>
-					r.Object.ArtifactID == parentArtifactId)))
-					.ReturnsAsync(queryResultForParent);
 
-			ReadResult queryResultForNested = new ReadResult()
-			{
-				Object = new RelativityObject()
-				{
-					ArtifactID = nestedChoice.ArtifactID,
-					Name = nestedChoice.Name,
-					ParentObject = new RelativityObjectRef()
-					{
-						ArtifactID = parentArtifactId
+				Objects = new List<RelativityObject>
+                {
+                    new RelativityObject
+                    {
+                        ArtifactID = parentChoice.ArtifactID,
+                        Name = parentChoice.Name,
+                        ParentObject = new RelativityObjectRef()
 					}
 				}
 			};
-			_objectManager.Setup(x => x.ReadAsync(It.IsAny<int>(), It.Is<ReadRequest>(r =>
-					r.Object.ArtifactID == nestedArtifactId)))
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
+                    r.Condition == $"'Artifact ID' == {parentArtifactId}"), It.IsAny<int>(), It.IsAny<int>()))
+					.ReturnsAsync(queryResultForParent);
+
+			QueryResult queryResultForNested = new QueryResult
+			{
+
+				Objects = new List<RelativityObject>
+                {
+					new RelativityObject
+                    {
+						ArtifactID = nestedChoice.ArtifactID,
+                        Name = nestedChoice.Name,
+                        ParentObject = new RelativityObjectRef()
+                        {
+                            ArtifactID = parentArtifactId
+                        }
+					}
+                }
+			};
+			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
+					r.Condition == $"'Artifact ID' == {nestedArtifactId}" ), It.IsAny<int>(), It.IsAny<int>()))
 					.ReturnsAsync(queryResultForNested);
 
 			string expectedResult = $"{parentChoice.Name}{_NESTED_DELIM}{nestedChoice.Name}{_MULTI_DELIM}";

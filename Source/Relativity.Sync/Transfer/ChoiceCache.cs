@@ -12,6 +12,8 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class ChoiceCache : IChoiceCache
 	{
+        private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
+
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IDictionary<int, ChoiceWithParentInfo> _cache;
@@ -51,24 +53,25 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<ChoiceWithParentInfo> QueryChoiceWithParentInfoAsync(IObjectManager objectManager, Choice choice, ICollection<Choice> choices)
 		{
-			var request = new ReadRequest
+			var request = new QueryRequest
 			{
-				Object = new RelativityObjectRef
-				{
-					ArtifactID = choice.ArtifactID
-				}
+                ObjectType = new ObjectTypeRef { ArtifactTypeID = _CHOICE_ARTIFACT_TYPE_ID },
+                Fields = new FieldRef[0],
+                Condition = $"'Artifact ID' == {choice.ArtifactID}"
 			};
-			ReadResult readResult;
+			QueryResult queryResult;
 			try
 			{
-				readResult = await objectManager.ReadAsync(_configuration.SourceWorkspaceArtifactId, request).ConfigureAwait(false);
+				queryResult = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, request, 0, 1).ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
 				throw new SyncKeplerException($"Failed to retrieve data on choice '{choice.Name}' ({choice.ArtifactID}) in workspace {_configuration.SourceWorkspaceArtifactId}.", ex);
 			}
 
-			int? parentArtifactId = readResult.Object.ParentObject.ArtifactID;
+            var result = queryResult.Objects.Single();
+			int? parentArtifactId = result.ParentObject.ArtifactID;
+
 			if (choices.All(x => x.ArtifactID != parentArtifactId))
 			{
 				parentArtifactId = null;
