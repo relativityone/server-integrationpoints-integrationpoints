@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			await Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			await Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			await CreateEntitiesAsync(3).ConfigureAwait(false);
+			await CreateEntitiesAsync(5).ConfigureAwait(false);
 
 			_viewArtifactId = await GetViewArtifactIdAsync(ViewName).ConfigureAwait(false);
 		}
@@ -103,10 +103,25 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 				// Create Manager Entity
 
-				CreateResult managerCreateResult = await objectManager.CreateAsync(_sourceWorkspace.ArtifactID, new CreateRequest()
+				const string managerName = "My Manager";
+				int managerArtifactId;
+
+				QueryResult managerQueryResult = await objectManager.QueryAsync(_sourceWorkspace.ArtifactID, new QueryRequest()
 				{
 					ObjectType = entityObjectType,
-					FieldValues = new[]
+					Condition = $"'Full Name' == '{managerName}'"
+				}, 0, 1).ConfigureAwait(false);
+
+				if (managerQueryResult.Objects.Any())
+				{
+					managerArtifactId = managerQueryResult.Objects.First().ArtifactID;
+				}
+				else
+				{
+					CreateResult managerCreateResult = await objectManager.CreateAsync(_sourceWorkspace.ArtifactID, new CreateRequest()
+					{
+						ObjectType = entityObjectType,
+						FieldValues = new[]
 					{
 						new FieldRefValuePair()
 						{
@@ -114,10 +129,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 							{
 								Name = "Full Name"
 							},
-							Value = "Some Manager"
+							Value = managerName
 						}
 					}
-				}).ConfigureAwait(false);
+					}).ConfigureAwait(false);
+
+					managerArtifactId = managerCreateResult.Object.ArtifactID;
+				}
 
 				// Create Entities linked to Manager
 
@@ -137,10 +155,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					.Range(0, entitiesCount)
 					.Select(i => new List<object>()
 					{
-						$"User {i}",
+						$"Employee {i}",
 						new RelativityObjectRef()
 						{
-							ArtifactID = managerCreateResult.Object.ArtifactID
+							ArtifactID = managerArtifactId
 						}
 					})
 					.ToList();
