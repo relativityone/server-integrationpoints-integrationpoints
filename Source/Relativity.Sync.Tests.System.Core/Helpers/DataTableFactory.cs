@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	{
 		public static ImportDataTableWrapper GenerateDocumentsWithExtractedText(int numDocuments, string controlNumberPrefix = "RND")
 		{
-			var documentData = new ImportDataTableWrapper(true, false, false, false);
+			var documentData = new ImportDataTableWrapper(true, false, false, false, false);
 
 			Func<string> generateExtractedText = () => Guid.NewGuid().ToString();
 			Func<int, string> getControlNumber = number => string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, number);
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static ImportDataTableWrapper GenerateDocumentWithNoFields(string controlNumberPrefix = "RND", int documentsCount = 1)
 		{
-			var documentData = new ImportDataTableWrapper(false, false, true, false);
+			var documentData = new ImportDataTableWrapper(false, false, true, false, false);
 
 			Enumerable.Range(0, documentsCount).ForEach(documentNumber => documentData.AddDocument(
 				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, documentNumber),
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static ImportDataTableWrapper GenerateDocumentWithUserField(string controlNumberPrefix = "RND")
 		{
-			var documentData = new ImportDataTableWrapper(false, false, true, false);
+			var documentData = new ImportDataTableWrapper(false, false, true, false, false);
 
 			documentData.AddDocument(
 				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, 0),
@@ -86,7 +86,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			IEnumerable<string> validControlNumbers = GetIntersectionOfEnumerables(groupsOfControlNumbers);
 
-			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, false);
+			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, false, true);
 			foreach (string controlNumber in validControlNumbers)
 			{
 				var columnValuePairs = new List<Tuple<string, string>>();
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		{
 			IEnumerable<FileInfo> images = dataset.GetFiles();
 			
-			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, true);
+			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, true, false);
 
 			foreach (FileInfo imageFile in images)
 			{

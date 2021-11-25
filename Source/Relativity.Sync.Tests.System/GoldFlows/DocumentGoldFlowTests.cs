@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Configuration;
