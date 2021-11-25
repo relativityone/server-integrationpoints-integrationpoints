@@ -102,6 +102,8 @@ namespace Relativity.Sync.Tests.Common
 
 		public int RdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
 
+		public int DestinationRdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
+
 		public string GetSourceWorkspaceTag() => string.Empty;
 
 		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
@@ -238,6 +240,7 @@ namespace Relativity.Sync.Tests.Common
 
 		public string ExecutingApplication { get; set; }
 
-		public string ExecutingApplicationVersion { get; set; } 
+		public string ExecutingApplicationVersion { get; set; }
+
 	}
 }

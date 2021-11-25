@@ -65,12 +65,12 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
-			
+
 			builder.RegisterType<DocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<IDocumentSynchronizationConfiguration>>();
 			builder.RegisterType<ImageSynchronizationExecutionConstrains>().As<IExecutionConstrains<IImageSynchronizationConfiguration>>();
 			builder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<IDocumentSynchronizationConfiguration>>();
 			builder.RegisterType<ImageSynchronizationExecutor>().As<IExecutor<IImageSynchronizationConfiguration>>();
-			
+
 			builder.RegisterType<DataDestinationInitializationExecutor>().As<IExecutor<IDataDestinationInitializationConfiguration>>();
 			builder.RegisterType<DataDestinationInitializationExecutionConstrains>().As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
 			builder.RegisterType<DataDestinationFinalizationExecutor>().As<IExecutor<IDataDestinationFinalizationConfiguration>>();
@@ -90,6 +90,18 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 			builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
+
+			RegisterNonDocumentFlowComponents(builder);
+		}
+
+		private void RegisterNonDocumentFlowComponents(ContainerBuilder builder)
+		{
+			builder.RegisterType<NonDocumentObjectDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<INonDocumentDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<NonDocumentObjectDataSourceSnapshotExecutor>().As<IExecutor<INonDocumentDataSourceSnapshotConfiguration>>();
+
+			builder.RegisterType<ObjectLinkingSnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<IObjectLinkingSnapshotPartitionConfiguration>>();
+			builder.RegisterType<ObjectLinkingSnapshotPartitionExecutor>().As<IExecutor<IObjectLinkingSnapshotPartitionConfiguration>>();
+
 		}
 	}
 }

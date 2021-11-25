@@ -18,7 +18,6 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<ValidationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<PermissionsCheckConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<SnapshotPartitionConfiguration>().AsImplementedInterfaces();
-			builder.RegisterType<ObjectLinkingSnapshotPartitionConfiguration>().As<IObjectLinkingSnapshotPartitionConfiguration>();
 			builder.RegisterType<DocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ImageJobStartMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<DataSourceSnapshotConfiguration>().AsImplementedInterfaces();
@@ -46,7 +45,15 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<JobProgressUpdaterFactory>().As<IJobProgressUpdaterFactory>();
 			builder.RegisterType<JobProgressHandlerFactory>().As<IJobProgressHandlerFactory>();
 
+			RegisterNonDocumentFlowComponents(builder);
+
 			builder.Register(CreateConfiguration).As<IConfiguration>().SingleInstance();
+		}
+
+		private void RegisterNonDocumentFlowComponents(ContainerBuilder builder)
+		{
+			builder.RegisterType<NonDocumentDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<ObjectLinkingSnapshotPartitionConfiguration>().As<IObjectLinkingSnapshotPartitionConfiguration>();
 		}
 
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)

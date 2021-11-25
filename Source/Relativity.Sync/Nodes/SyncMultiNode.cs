@@ -24,7 +24,10 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnAfterExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			context.Subject.Results.AddRange(_childrenExecutionContext.Subject.Results);
+			if (_childrenExecutionContext != null)
+			{
+				context.Subject.Results.AddRange(_childrenExecutionContext.Subject.Results);
+			}
 			base.OnAfterExecute(context);
 		}
 
