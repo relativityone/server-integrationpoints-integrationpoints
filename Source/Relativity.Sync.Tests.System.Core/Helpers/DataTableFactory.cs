@@ -98,6 +98,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					columnValuePairs.Add(
 						Tuple.Create(ImportDataTableWrapper.ExtractedTextFilePath, extractedTextFile.FullName)
 					);
+					columnValuePairs.Add(Tuple.Create(ImportDataTableWrapper.SyncMultiChoice, ""));
 				}
 
 				// Fill native file columns
@@ -113,7 +114,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					columnValuePairs.AddRange(nativeColumnValuePairs);
 				}
 
-				dataTableWrapper.AddDocument(controlNumber, columnValuePairs);
+                dataTableWrapper.AddDocument(controlNumber, columnValuePairs);
 			}
 
 			return dataTableWrapper;
