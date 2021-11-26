@@ -16,7 +16,7 @@ namespace Relativity.Sync.Pipelines
                 .AddChild<NonDocumentObjectDataSourceSnapshotNode>()
                 .AddChild<SyncMultiNode>()
                 .ForLastChild()
-                .AddChild<DocumentJobStartMetricsNode>()
+                .AddChild<NonDocumentJobStartMetricsNode>()
                 .ForParent()
                 .AddChild<SnapshotPartitionNode>()
                 .AddChild<ObjectLinkingSnapshotPartitionNode>();

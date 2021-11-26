@@ -101,7 +101,9 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<ObjectLinkingSnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<IObjectLinkingSnapshotPartitionConfiguration>>();
 			builder.RegisterType<ObjectLinkingSnapshotPartitionExecutor>().As<IExecutor<IObjectLinkingSnapshotPartitionConfiguration>>();
-
+			
+			builder.RegisterType<NonDocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<INonDocumentJobStartMetricsConfiguration>>();
+			builder.RegisterType<NonDocumentJobStartMetricsExecutor>().As<IExecutor<INonDocumentJobStartMetricsConfiguration>>();
 		}
 	}
 }
