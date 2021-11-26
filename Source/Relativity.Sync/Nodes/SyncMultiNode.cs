@@ -10,7 +10,7 @@ namespace Relativity.Sync.Nodes
 		private IExecutionContext<SyncExecutionContext> _childrenExecutionContext;
 		private readonly ISyncExecutionContextFactory _contextFactory;
 		private readonly string _parallelGroupName = string.Empty;
-		
+
 		public SyncMultiNode(ISyncExecutionContextFactory contextFactory)
 		{
 			_contextFactory = contextFactory;
@@ -24,10 +24,7 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnAfterExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			if (_childrenExecutionContext != null)
-			{
-				context.Subject.Results.AddRange(_childrenExecutionContext.Subject.Results);
-			}
+			context.Subject.Results.AddRange(_childrenExecutionContext.Subject.Results);
 			base.OnAfterExecute(context);
 		}
 

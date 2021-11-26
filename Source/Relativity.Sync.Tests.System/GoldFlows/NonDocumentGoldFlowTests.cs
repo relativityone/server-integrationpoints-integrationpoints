@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -28,12 +29,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 	[TestFixture]
 	internal class NonDocumentGoldFlowTests : SystemTest
 	{
-		private readonly int _entityArtifactTypeId = 1000061; // TODO query with OM
-		private readonly Guid _entityGuid = new Guid("d216472d-a1aa-4965-8b36-367d43d4e64c"); // TODO use artifact type id
+		private const string EntityArtifactTypeName = "Entity";
 		private const string ViewName = "Entities - Legal Hold View";
 
 		private WorkspaceRef _sourceWorkspace;
 		private WorkspaceRef _destinationWorkspace;
+		private int _sourceEntityArtifactTypeId;
+		private int _destinationEntityArtifactTypeId;
 		private int _viewArtifactId;
 
 		protected override async Task ChildSuiteSetup()
@@ -45,11 +47,15 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			_destinationWorkspace = await Environment.GetWorkspaceAsync(destinationWorkspaceId).ConfigureAwait(false);
 
 			await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-			await Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-			await Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID).ConfigureAwait(false);
-			await CreateEntitiesAsync(5).ConfigureAwait(false);
+			Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
+			Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
+			await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
 
+			_sourceEntityArtifactTypeId = await GetArtifactTypeIdAsync(_sourceWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
+			_destinationEntityArtifactTypeId = await GetArtifactTypeIdAsync(_destinationWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
 			_viewArtifactId = await GetViewArtifactIdAsync(ViewName).ConfigureAwait(false);
+
+			await PrepareSourceDataEntitiesAsync(5, _sourceEntityArtifactTypeId).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("C721DA78-1D27-4463-B49C-9A9E9E65F700")]
@@ -65,7 +71,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			int syncConfigurationId = await builder
 				.ConfigureRdos(CustomAppGuids.Guids)
-				.ConfigureNonDocumentSync(new NonDocumentSyncOptions(_viewArtifactId, _entityArtifactTypeId, _entityArtifactTypeId))
+				.ConfigureNonDocumentSync(new NonDocumentSyncOptions(_viewArtifactId, _sourceEntityArtifactTypeId, _destinationEntityArtifactTypeId))
 				.WithFieldsMapping(mappingBuilder => mappingBuilder.WithIdentifier())
 				.SaveAsync()
 				.ConfigureAwait(false);
@@ -92,13 +98,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			// TODO
 		}
 
-		private async Task CreateEntitiesAsync(int entitiesCount)
+		private async Task PrepareSourceDataEntitiesAsync(int entitiesCount, int artifactTypeId)
 		{
 			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
 			{
 				ObjectTypeRef entityObjectType = new ObjectTypeRef()
 				{
-					Guid = _entityGuid
+					ArtifactTypeID = artifactTypeId
 				};
 
 				// Create Manager Entity
@@ -169,6 +175,22 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					Fields = fields,
 					ValueLists = values
 				}, CancellationToken.None).ConfigureAwait(false);
+			}
+		}
+
+		private async Task<int> GetArtifactTypeIdAsync(int workspaceId, string artifactTypeName)
+		{
+			using (var service = ServiceFactory.CreateProxy<IObjectTypeManager>())
+			{
+				List<ObjectTypeIdentifier> artifactTypes = await service.GetAvailableParentObjectTypesAsync(workspaceId).ConfigureAwait(false);
+				ObjectTypeIdentifier artifactType = artifactTypes.FirstOrDefault(x => x.Name == artifactTypeName);
+
+				if (artifactType == null)
+				{
+					throw new Exception($"Can't find Artifact Type: {artifactTypeName}");
+				}
+
+				return artifactType.ArtifactTypeID;
 			}
 		}
 

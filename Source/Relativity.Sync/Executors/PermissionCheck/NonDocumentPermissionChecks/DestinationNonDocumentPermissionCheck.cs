@@ -31,6 +31,6 @@ namespace Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks
         }
 
         private static string TransferredObjectNoAdd(int objectTypeArtifactId) => $"User does not have permission to add objects of type {objectTypeArtifactId} in the destination workspace.";
-        private static string TransferredObjectNoEdit(int objectTypeArtifactId) => $"User does not have permission to Edit objects of type {objectTypeArtifactId} in the destination workspace.";
+        private static string TransferredObjectNoEdit(int objectTypeArtifactId) => $"User does not have permission to edit objects of type {objectTypeArtifactId} in the destination workspace.";
     }
 }
