@@ -13,8 +13,7 @@ namespace Relativity.Sync.SyncConfiguration
         private readonly RdoOptions _rdoOptions;
         private readonly ISerializer _serializer;
 
-        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
-            RdoOptions rdoOptions, ISerializer serializer)
+        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;
@@ -25,7 +24,7 @@ namespace Relativity.Sync.SyncConfiguration
         public IDocumentSyncConfigurationBuilder ConfigureDocumentSync(DocumentSyncOptions options)
         {
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
-                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, _servicesMgr);
+                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, _servicesMgr);
 
             return new DocumentSyncConfigurationBuilder(_syncContext, _servicesMgr, fieldsMappingBuilder, _serializer,
                 options, _rdoOptions, new RdoManager(new EmptyLogger(), _servicesMgr, new RdoGuidProvider()));
@@ -34,7 +33,7 @@ namespace Relativity.Sync.SyncConfiguration
         public IImageSyncConfigurationBuilder ConfigureImageSync(ImageSyncOptions options)
         {
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
-                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, _servicesMgr);
+                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, _servicesMgr);
 
             return new ImageSyncConfigurationBuilder(_syncContext, _servicesMgr, fieldsMappingBuilder, _serializer,
                 options, _rdoOptions, new RdoManager(new EmptyLogger(), _servicesMgr, new RdoGuidProvider()));
@@ -43,7 +42,7 @@ namespace Relativity.Sync.SyncConfiguration
         public INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options)
         {
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
-                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, _servicesMgr);
+                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, options.DestinationRdoArtifactTypeId, _servicesMgr);
             
             return new NonDocumentSyncConfigurationBuilder(_syncContext, _servicesMgr,
                 fieldsMappingBuilder, _serializer, options, _rdoOptions,
