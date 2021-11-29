@@ -8,18 +8,19 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
     public class ProcessMemoryHelper: IProcessMemoryHelper
     {
-        public long GetCurrentProcessMemoryUsage()
-        {
-            return Process.GetCurrentProcess().PrivateMemorySize64;
-        }
+		internal PerformanceCounter _cpuUsageProcess { get; set; } = new PerformanceCounter("Process", "% Processor Time", currentProcess.ProcessName);
+		internal PerformanceCounter _cpuUsageSystemTotal { get; set; } = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+		internal static Process currentProcess { get; set; } = Process.GetCurrentProcess();
+		
 
 		public Dictionary<string, object> GetApplicationSystemStats()
 		{
 			var memoryProcess = AppDomain.MonitoringSurvivedProcessMemorySize / (1024 * 1024);
 			var AppDomainCurrentMemory = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize / (1024 * 1024);
 			var AppDomainLifetimeTotalAllocatedMemory = AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize / (1024 * 1024);
-			var currentProcess = Process.GetCurrentProcess();
-			long memoryUsage = currentProcess.PrivateMemorySize64 / (1024 * 1024);
+			long memoryUsage = GetCurrentProcessMemoryUsage() / (1024 * 1024);
+			float cpuUsageSystem = _cpuUsageSystemTotal.NextValue();
+			float cpuUsageProcess = _cpuUsageProcess.NextValue() / Environment.ProcessorCount;
 
 			Dictionary<string, object> appSystemStats = new Dictionary<string, object>()
 				{
@@ -27,14 +28,20 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 					{ "AppDomainMemoryInMB", AppDomainCurrentMemory },
 					{ "AppDomainLifetimeTotalAllocatedMemoryInMB", AppDomainLifetimeTotalAllocatedMemory },
 					{ "PrivateMemoryInMB", memoryUsage },
-					{ "SystemFreeMemoryPercent",  LogSystemPerformanceStats()}
+					{ "SystemFreeMemoryPercentage",  GetSystemFreeMemoryPercentage()},
+					{ "CpuUsageSystem", cpuUsageSystem },
+					{ "CpuUsageProcess",  cpuUsageProcess}
 				};
 
 			return appSystemStats;
 
 		}
+		private long GetCurrentProcessMemoryUsage()
+		{
+			return currentProcess.PrivateMemorySize64;
+		}
 
-		private double LogSystemPerformanceStats()
+		private double GetSystemFreeMemoryPercentage()
 		{
 			var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
 
