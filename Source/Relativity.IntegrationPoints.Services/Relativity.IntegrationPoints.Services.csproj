@@ -70,6 +70,7 @@
     <Compile Include="Installers\IntegrationPointManagerInstaller.cs" />
     <Compile Include="Installers\ProviderManagerInstaller.cs" />
     <Compile Include="IntegrationPointAgentManager.cs" />
+    <Compile Include="IntegrationPointHealthCheckManager.cs" />
     <Compile Include="IntegrationPointManager.cs" />
     <Compile Include="IntegrationPointProfileManager.cs" />
     <Compile Include="IntegrationPointsModule.cs" />
