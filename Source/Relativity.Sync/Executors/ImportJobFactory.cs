@@ -34,6 +34,28 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
+		public async Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+        {
+			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNonDocumentSourceWorkspaceDataReader(batch, token);
+			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+			ImportBulkArtifactJob importJob = importApi.NewObjectImportJob(configuration.DestinationRdoArtifactTypeId);
+
+			SetCommonIapiSettings(configuration, importJob.Settings);
+
+			importJob.SourceData.SourceData = sourceWorkspaceDataReader;
+			//set everything what is needed in importJob settings 
+
+			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+			ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
+				configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+
+			_logger.LogInformation("Import Settings: {@settings}",
+				NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
+
+			return job;
+		}
+
 		public async Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateImageSourceWorkspaceDataReader(batch, token);

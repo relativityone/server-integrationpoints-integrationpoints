@@ -22,18 +22,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public class ImportJobFactoryTests
 	{
-		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
+
+		private ISyncLog _logger;
+		private Mock<IBatch> _batch;
 		
 		private Mock<IDocumentSynchronizationConfiguration> _documentConfigurationMock;
 		private Mock<IImageSynchronizationConfiguration> _imageConfigurationMock;
+		private Mock<INonDocumentSynchronizationConfiguration> _nonDocumentConfigurationMock;
+		private Mock<IInstanceSettings> _instanceSettings;
+		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
-		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
-		private Mock<IInstanceSettings> _instanceSettings;
 		private SyncJobParameters _syncJobParameters;
-		private Mock<IBatch> _batch;
-
-		private ISyncLog _logger;
+		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
+		private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
 
 		[SetUp]
 		public void SetUp()
@@ -57,6 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_imageConfigurationMock.SetupGet(x => x.IdentifierColumn).Returns(_IMAGE_IDENTIFIER_DISPLAY_NAME);
 			_documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
+			_nonDocumentConfigurationMock.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns(_DEST_RDO_ARTIFACT_TYPE);
 		}
 
 		[Test]
@@ -72,6 +75,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			result.Should().NotBeNull();
 		}
+
+		//[Test]
+		//public async Task CreateNonDocumentImportJobAsync_ShouldPassGoldFlow()
+		//{
+		//	// Arrange
+		//	ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock());
+
+		//	// Act
+		//	Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+		//	result.Dispose();
+
+		//	// Assert
+		//	result.Should().NotBeNull();
+		//}
 
 		[Test]
 		public async Task CreateNativeImportJobAsync_ShouldPassGoldFlow_WhenDoNotImporNatives()
@@ -408,6 +425,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IImportApiFactory> GetNativesImportAPIFactoryMock(ImportBulkArtifactJob job = null)
 		{
 			return GetImportAPIFactoryMock(iapi => iapi.NewNativeDocumentImportJob(), job ?? new ImportBulkArtifactJob());
+		}
+
+		private Mock<IImportApiFactory> GetNonDocumentImportAPIFactoryMock(ImportBulkArtifactJob job = null)
+		{
+			return GetImportAPIFactoryMock(iapi => iapi.NewObjectImportJob(_DEST_RDO_ARTIFACT_TYPE), job ?? new ImportBulkArtifactJob());
 		}
 
 		private Mock<IImportApiFactory> GetImagesImportAPIFactoryMock(ImageImportBulkArtifactJob job = null)
