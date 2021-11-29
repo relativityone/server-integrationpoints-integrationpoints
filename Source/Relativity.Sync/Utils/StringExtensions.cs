@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Relativity.Sync.Utils
+﻿namespace Relativity.Sync.Utils
 {
 	internal static class StringExtensions
 	{
