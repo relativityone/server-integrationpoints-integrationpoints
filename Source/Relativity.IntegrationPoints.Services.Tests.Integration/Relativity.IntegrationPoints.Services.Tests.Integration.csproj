@@ -55,7 +55,6 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="HealthCheck\IntegrationPointHealthCheckManagerTests.cs" />
     <Compile Include="Helpers\ChoicesHelper.cs" />
     <Compile Include="Helpers\IntegrationPointBaseHelper.cs" />
     <Compile Include="IntegrationPointManager\ItShouldCreateIntegrationPoint.cs" />
@@ -136,9 +135,7 @@
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
-  <ItemGroup>
-    <Folder Include="Permissions" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
