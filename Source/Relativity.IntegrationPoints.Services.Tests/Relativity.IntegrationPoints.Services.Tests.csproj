@@ -51,7 +51,6 @@
     <Compile Include="JobHistory\JobHistorySummaryModelBuilderTests.cs" />
     <Compile Include="Managers\DocumentManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointAgentManagerTests.cs" />
-    <Compile Include="Managers\IntegrationPointHealthCheckManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointProfileManagerTests.cs" />
     <Compile Include="Managers\IntegrationPointTypeManagerTests.cs" />
