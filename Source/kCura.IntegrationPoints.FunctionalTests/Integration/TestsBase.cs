@@ -17,8 +17,6 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
-using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -26,9 +24,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Helpers;
-using kCura.IntegrationPoints.Web.Installers;
-using kCura.IntegrationPoints.Web.Installers.Context;
-using kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -50,10 +45,8 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.We
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Logging;
-using Relativity.Telemetry.Services.Metrics;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
-using HelpersRegistration = kCura.IntegrationPoints.Web.Installers.HelpersRegistration;
 using ImportInstaller = kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller;
 
 namespace Relativity.IntegrationPoints.Tests.Integration

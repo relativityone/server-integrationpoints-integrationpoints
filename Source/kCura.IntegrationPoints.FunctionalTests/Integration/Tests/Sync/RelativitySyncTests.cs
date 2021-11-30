@@ -1,10 +1,5 @@
-﻿using Castle.MicroKernel.Registration;
-using FluentAssertions;
-using kCura.IntegrationPoints.Common.Agent;
+﻿using FluentAssertions;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data;
-using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
