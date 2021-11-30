@@ -169,6 +169,7 @@ namespace Relativity.Sync.Executors
 			{
 				const string message = "Failed to start executing import job.";
 				_logger.LogError(ex, message);
+				await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 				throw new ImportFailedException(message, ex);
 			}
 
