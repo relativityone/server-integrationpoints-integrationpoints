@@ -23,6 +23,7 @@ using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Extensions;
+using Relativity.Toggles;
 using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
@@ -101,6 +102,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		internal interface IGoldFlowTestRun
 		{
+			IToggleProvider ToggleProvider { get; }
 			int DestinationWorkspaceArtifactId { get; }
 
 			Task<SyncJobState> RunAsync();
@@ -112,6 +114,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		private class GoldFlowTestRun : IGoldFlowTestRun
 		{
+			public IToggleProvider ToggleProvider { get; }
 			private readonly GoldFlowTestSuite _goldFlowTestSuite;
 			private readonly ConfigurationStub _configuration;
 			private readonly SyncJobParameters _parameters;
@@ -120,6 +123,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			public GoldFlowTestRun(GoldFlowTestSuite goldFlowTestSuite, int configurationId, ConfigurationStub configuration)
 			{
+				ToggleProvider = new TestSyncToggleProvider();
 				_goldFlowTestSuite = goldFlowTestSuite;
 				_configuration = configuration;
 				_parameters = new SyncJobParameters(configurationId, goldFlowTestSuite.SourceWorkspace.ArtifactID, Guid.NewGuid());
@@ -127,7 +131,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			public Task<SyncJobState> RunAsync()
 			{
-				var syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger());
+				var syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger(), ToggleProvider);
 
 				return syncRunner.RunAsync(_parameters, _goldFlowTestSuite.User.ArtifactID);
 			}
