@@ -42,6 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			_documentConfigurationMock = new Mock<IDocumentSynchronizationConfiguration>();
 			_imageConfigurationMock = new Mock<IImageSynchronizationConfiguration>();
+			_nonDocumentConfigurationMock = new Mock<INonDocumentSynchronizationConfiguration>();
 			Mock<IJobProgressHandler> jobProgressHandler = new Mock<IJobProgressHandler>();
 			_jobProgressHandlerFactory = new Mock<IJobProgressHandlerFactory>();
 			_jobProgressHandlerFactory.Setup(x => x.CreateJobProgressHandler(Enumerable.Empty<IBatch>(), It.IsAny<IScheduler>())).Returns(jobProgressHandler.Object);
@@ -49,6 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_dataReaderFactory = new Mock<ISourceWorkspaceDataReaderFactory>();
 			_dataReaderFactory.Setup(x => x.CreateNativeSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_dataReaderFactory.Setup(x => x.CreateImageSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
+			_dataReaderFactory.Setup(x => x.CreateNonDocumentSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
@@ -76,21 +78,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Should().NotBeNull();
 		}
 
-		//[Test]
-		//public async Task CreateNonDocumentImportJobAsync_ShouldPassGoldFlow()
-		//{
-		//	// Arrange
-		//	ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock());
+        [Test]
+        public async Task CreateNonDocumentImportJobAsync_ShouldPassGoldFlow()
+        {
+            // Arrange
+            ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock());
 
-		//	// Act
-		//	Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
-		//	result.Dispose();
+            // Act
+            Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+            result.Dispose();
 
-		//	// Assert
-		//	result.Should().NotBeNull();
-		//}
+            // Assert
+            result.Should().NotBeNull();
+        }
 
-		[Test]
+        [Test]
 		public async Task CreateNativeImportJobAsync_ShouldPassGoldFlow_WhenDoNotImporNatives()
 		{
 			// Arrange

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Transfer
 
 		public ISourceWorkspaceDataReader CreateNonDocumentSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
-			return CreateSourceWorkspaceDataReader(batch, new NonDocumentBatchDataReaderBuilder(_fieldManager, _dataSanitizer, _logger), token);
+			throw new NotImplementedException();
 		}
 
 		private ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, IBatchDataReaderBuilder batchDataReaderBuilder, CancellationToken token)

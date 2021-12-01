@@ -32,6 +32,11 @@ namespace Relativity.Sync.Tests.Integration
 			return CreateImportJobAsync(configuration);
 		}
 
+		public Task<Executors.IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		{
+			return CreateImportJobAsync(configuration);
+		}
+
 		private Task<Executors.IImportJob> CreateImportJobAsync(ISynchronizationConfiguration configuration)
 		{
 			Executors.IImportJob importJob = new ImportJob(_importBulkArtifactJob, _semaphoreSlim, _jobHistoryErrorRepository,
