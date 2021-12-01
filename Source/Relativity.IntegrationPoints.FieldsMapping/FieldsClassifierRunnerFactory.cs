@@ -1,32 +1,27 @@
 ﻿using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
-using kCura.Relativity.ImportAPI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class FieldsClassifyRunnerFactory : IFieldsClassifyRunnerFactory
 	{
-		private readonly IImportAPI _importApi;
+		private readonly IFieldsMappingImportApiFacade _importApiFacade;
 		private readonly IFieldsRepository _fieldsRepository;
 
 		private readonly IList<IFieldsClassifier> _defaultSourceFieldsClassifiers;
 		private readonly IList<IFieldsClassifier> _defaultDestinationFieldsClassifiers;
 
-		public FieldsClassifyRunnerFactory(IImportAPI importAPI, IFieldsRepository fieldsRepository)
+		public FieldsClassifyRunnerFactory(IFieldsMappingImportApiFacade importApiFacade, IFieldsRepository fieldsRepository)
 		{
-			_importApi = importAPI;
+			_importApiFacade = importApiFacade;
 			_fieldsRepository = fieldsRepository;
 
 			_defaultSourceFieldsClassifiers = new List<IFieldsClassifier>
 			{
 				new RipFieldsClassifier(),
 				new SystemFieldsClassifier(),
-				new NotSupportedByIAPIFieldsClassifier(_importApi),
+				new NotSupportedByIAPIFieldsClassifier(_importApiFacade),
 				new ObjectFieldsClassifier()
 			};
 
@@ -34,7 +29,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			{
 				new RipFieldsClassifier(),
 				new SystemFieldsClassifier(),
-				new NotSupportedByIAPIFieldsClassifier(_importApi),
+				new NotSupportedByIAPIFieldsClassifier(_importApiFacade),
 				new OpenToAssociationsFieldsClassifier(),
 				new ObjectFieldsClassifier()
 			};
