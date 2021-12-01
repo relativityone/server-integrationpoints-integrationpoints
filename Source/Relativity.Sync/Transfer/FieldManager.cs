@@ -18,7 +18,6 @@ namespace Relativity.Sync.Transfer
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
-		private IReadOnlyList<FieldInfoDto> _nonDocAllFields;
 
 		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
@@ -95,22 +94,6 @@ namespace Relativity.Sync.Transfer
 			}
 
 			return _imageAllFields;
-		}
-
-		public async Task<IReadOnlyList<FieldInfoDto>> GetNonDocumentAllFieldsAsync(CancellationToken token)
-		{
-			if (_nonDocAllFields == null)
-			{
-				IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
-				var result = new List<FieldInfoDto>();
-
-				foreach (FieldInfoDto mappedDocumentField in mappedDocumentFields)
-				{
-					result.Add(mappedDocumentField);
-				}
-				_nonDocAllFields = EnrichDocumentFieldsWithIndex(result);
-			}
-			return _nonDocAllFields;
 		}
 
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
