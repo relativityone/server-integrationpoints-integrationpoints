@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Castle.MicroKernel.Registration;
-using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Data;

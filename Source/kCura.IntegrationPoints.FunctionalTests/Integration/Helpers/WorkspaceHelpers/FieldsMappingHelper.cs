@@ -10,6 +10,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 	public class FieldsMappingHelper : WorkspaceHelperBase
     {
         private const string FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
+        private const string LONG_TEXT_NAME = "Long Text";
 
 		public FieldsMappingHelper(WorkspaceTest workspace) : base(workspace)
 		{
@@ -210,7 +211,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public List<FieldMap> PrepareLongTextFieldsMapping()
 		{
-            return AddFieldEntriesToFieldsMap(Const.LONG_TEXT_TYPE_ARTIFACT_ID, "Long Text");
+            return AddFieldEntriesToFieldsMap(Const.LONG_TEXT_TYPE_ARTIFACT_ID, LONG_TEXT_NAME);
         }
 
         public List<FieldMap> PrepareFixedLengthTextFieldsMapping()
